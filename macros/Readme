@@ -7,7 +7,10 @@ To Compile this code:
 This make the executable 
 	FCNC_selection
 To run the code: 
-	./FCNC_selection
+	./FCNC_selection options
+	options: --channel  with channel = 3L / 1L3B / 4L / SSdilepton / OSdilepton / 1gamma / 2gamma
+	         --xml file.xml  
+		 
 This takes the configuration files from 
 	FCNCAnalysis/config
 And makes output rootfiles in 
