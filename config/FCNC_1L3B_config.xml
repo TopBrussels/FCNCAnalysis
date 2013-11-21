@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<datasets>
+
+
+  
+   
+  <d name="TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR" title="tcH (H->WW)"	add="1"   color="14"  ls="1"  lw="2" normf="1"  EqLumi="78037.42" xsection="0.090636"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170501/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL" title="tcH (H->WW)"	add="1"   color="14"  ls="1"  lw="2" normf="1"  EqLumi="109206.05" xsection="0.090636"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/12112013_173636/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToBB_HctL" title="tcH (H->bb)"	add="1"   color="14"  ls="1"  lw="2" normf="1"  EqLumi="19918.32" xsection="0.5632"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToBB_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToBB_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/12112013_110534/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToBB_HctR" title="tcH (H->bb)"	add="1"   color="2"  ls="1"  lw="2" normf="1"  EqLumi="12226.56" xsection="0.5632"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToBB_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToBB_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170451/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocZbW" title="tcZ"	add="1"   color="2"  ls="1"  lw="2" normf="1"  EqLumi="6139365" xsection="0.1575"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocZbW_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v1/21062013_162346/TOPTREE/*.root"/> 
+ 
+ 
+  <d name="ttbar" title="ttbar" 		add="1"   color="46"  ls="1"  lw="2" normf="1"  EqLumi="76141.56" xsection="157.5"   PreselEff="0.0" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJets_SemiLeptMGDecays_TuneP11_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V19-v1/04072013_095642/TOPTREE/*.root"/> 
+  
+  <d name="Wjets" title="W(l,nu) + 2 b-jets" 	add="1"   color="46"  ls="1"  lw="2" normf="1"  EqLumi="11691.11" xsection="1750"   PreselEff="0.0" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/WbbJetsToLNu_Massive_TuneZ2star_8TeV-madgraph-pythia6_tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/03072013_005623/TOPTREE/*.root"/> 
+  <!-- WATCH OUT, NOT SURE ABOUT THIS CROSS SECTION, because I didn't find any for Wbb specific, so I took W + 2 jets -->
+ 
+  
+</datasets>
+
+<analysis>
+
+<a type="Collections" PVCollection="PrimaryVertex" JetType="2" JetCollection="PFJets_selectedPatJetsPF2PAT" METType="2" METCollection="PFMET_patType1CorrectedPFMetPF2PAT" MuonCollection="Muons_selectedPatMuonsPF2PAT" ElectronCollection="Electrons_selectedPatElectronsPF2PAT" loadGenJetCollection="1" GenJetCollection="GenJets_ak5GenJetsNoNu" loadGenEventCollection="0" GenEventCollection="GenEvent" loadNPGenEventCollection="0" NPGenEventCollection="NPGenEvent" loadMCParticles="0" MCParticlesCollection="MCParticles" TrackMETCollection="" loadTrackMET="0"/>
+
+
+</analysis>
+

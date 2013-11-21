@@ -1,0 +1,5 @@
+<use name="boost"/>
+<use name="root"/>
+<use name="PhysicsTools/FWLite"/>
+<bin file="ntuplizer.cc" name="ntuplizer"/>
+<bin file="AnalysisSkeleton.cc" name="AnalysisSkeleton"/>

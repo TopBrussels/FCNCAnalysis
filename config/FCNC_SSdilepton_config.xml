@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<datasets>
+
+
+
+  <d name="TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR" title="tcH (H->WW)"	add="1"   color="14"  ls="1"  lw="2" normf="1"  EqLumi="78037.42" xsection="0.090636"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170501/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL" title="tcH (H->WW)"	add="1"   color="14"  ls="1"  lw="2" normf="1"  EqLumi="109206.05" xsection="0.090636"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/12112013_173636/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToWW_WToLNuL_HctL" title="tcH (H->WW)"	add="0"   color="14"  ls="1"  lw="2" normf="1"  EqLumi="17564.76" xsection="0.022659"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToWW_WToLNuL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToWW_WToLNuL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_173512/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToWW_WToLNuL_HctR" title="tcH (H->WW)"	add="0"   color="14"  ls="1"  lw="2" normf="1"  EqLumi="52138.22" xsection="0.022659"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToWW_WToLNuL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToWW_WToLNuL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_180517/TOPTREE/*.root"/> 
+  
+  <d name="TTJetsTocZbW" title="tcZ"	add="1"   color="2"  ls="1"  lw="2" normf="1"  EqLumi="6139365" xsection="0.1575"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocZbW_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v1/21062013_162346/TOPTREE/*.root"/> 
+
+  
+  
+  <d name="ttW" title="ttbar + W + jets"	add="1"   color="46"  ls="1"  lw="2" normf="1"  EqLumi="912690.875" xsection="0.2148"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTWJets_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/06062013_131723/TOPTREE/*.root"/> 
+  <!--
+  <d name="tttt" title="ttt" 			add="0"   color="40"    filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTTT_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/29052013_111633/TOPTREE/*.root"/> 
+  -->
+  <d name="ttZ" title="ttbar + Z + jets" 	add="1"   color="6"  ls="1"  lw="2" normf="1"  EqLumi="1221848.84" xsection="0.172"   PreselEff="0.0"       filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTZJets_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/06062013_144733/TOPTREE/*.root"/>
+  
+  <d name="WZ" title="WZ(inclusive)" 		add="1"   color="5"  ls="1"  lw="2" normf="1"  EqLumi="1832468.95" xsection="1.755"  PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/WZJetsTo2L2Q_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/21062013_132321/TOPTREE/*.root"/>
+ 
+  <d name="Zjets" title="Z + jets" 	add="1"   color="4"  ls="1"  lw="2" normf="1"  EqLumi="228175.44" xsection="27.36"   PreselEff="0.0"       filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DY4JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/22042013_162620/TOPTREE/*.root"/>
+
+  <d name="ttbar" title="ttbar" 		add="1"   color="633"  ls="1"  lw="2" normf="1"  EqLumi="483940.81" xsection="24.82"   PreselEff="0.0"    filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJets_FullLeptMGDecays_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v2/22042013_211043/TOPTREE/*.root"/> 
+ 
+ 
+  
+</datasets>
+
+<analysis>
+
+<a type="Collections" PVCollection="PrimaryVertex" JetType="2" JetCollection="PFJets_selectedPatJetsPF2PAT" METType="2" METCollection="PFMET_patType1CorrectedPFMetPF2PAT" MuonCollection="Muons_selectedPatMuonsPF2PAT" ElectronCollection="Electrons_selectedPatElectronsPF2PAT" loadGenJetCollection="1" GenJetCollection="GenJets_ak5GenJetsNoNu" loadGenEventCollection="0" GenEventCollection="GenEvent" loadNPGenEventCollection="0" NPGenEventCollection="NPGenEvent" loadMCParticles="0" MCParticlesCollection="MCParticles" TrackMETCollection="" loadTrackMET="0"/>
+
+
+</analysis>
+

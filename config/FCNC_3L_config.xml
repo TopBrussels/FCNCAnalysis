@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<datasets>
+
+
+  
+  <d name="TTJetsTocHbW_HToWW_WToLNuL_HctL" title="tcH (H->WW)"	add="1"   color="14"  ls="1"  lw="2" normf="1"  EqLumi="17564.76" xsection="0.022659"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToWW_WToLNuL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToWW_WToLNuL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_173512/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToWW_WToLNuL_HctR" title="tcH (H->WW)"	add="1"   color="14"  ls="1"  lw="2" normf="1"  EqLumi="52138.22" xsection="0.022659"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToWW_WToLNuL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToWW_WToLNuL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_180517/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL" title="tcH (H->ZZ)"	add="1"   color="3"  ls="1"  lw="2" normf="1"  EqLumi="15000973" xsection="0.0005135"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/13112013_080643/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctR" title="tcH (H->ZZ)"	add="1"   color="3"  ls="1"  lw="2" normf="1"  EqLumi="39980526" xsection="0.0005135"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170411/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL" title="tcH (H->ZZ)"	add="1"   color="3"  ls="1"  lw="2" normf="1"  EqLumi="3957762" xsection="0.0018609"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170345/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctR" title="tcH (H->ZZ)"	add="1"   color="3"  ls="1"  lw="2" normf="1"  EqLumi="3930894" xsection="0.0018609"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/12112013_173631/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL" title="tcH (H->ZZ)"	add="1"   color="3"  ls="1"  lw="2" normf="1"  EqLumi="21141192" xsection="0.00067929"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170506/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR" title="tcH (H->ZZ)"	add="1"   color="3"  ls="1"  lw="2" normf="1"  EqLumi="24715512" xsection="0.00067929"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170421/TOPTREE/*.root"/> 
+   
+  <d name="TTJetsTocHbW_HToZZ_ZToLL_HctL" title="tcH (H->ZZ)"	add="1"   color="3"  ls="1"  lw="2" normf="1"  EqLumi="32501816" xsection="0.00016516"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170416/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToZZ_ZToLL_HctR" title="tcH (H->ZZ)"	add="1"   color="3"  ls="1"  lw="2" normf="1"  EqLumi="37509082" xsection="0.00016516"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170431/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocZbW" title="tcZ"	add="1"   color="2"  ls="1"  lw="2" normf="1"  EqLumi="6139365" xsection="0.1575"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocZbW_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v1/21062013_162346/TOPTREE/*.root"/> 
+
+  
+ 
+  <d name="ttW" title="ttbar + W + jets"	add="1"   color="46"  ls="1"  lw="2" normf="1"  EqLumi="912690.875" xsection="0.2148"   PreselEff="0.0" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTWJets_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/06062013_131723/TOPTREE/*.root"/> 
+  
+  <d name="ttbar" title="ttbar" 		add="1"   color="633"  ls="1"  lw="2" normf="1"  EqLumi="483940.81" xsection="24.82"   PreselEff="0.0"    filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJets_FullLeptMGDecays_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v2/22042013_211043/TOPTREE/*.root"/> 
+  
+  <d name="WZ" title="W(l,nu) Z(l,l)" 		add="1"   color="5"  ls="1"  lw="2" normf="1"  EqLumi="2326464.15" xsection="0.8674"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/WZJetsTo3LNu_TuneZ2_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/23062013_152453/TOPTREE/*.root"/>
+  
+  <d name="ZZ" title="Z(l,l) Z(l,l)" 		add="1"   color="220"  ls="1"  lw="2" normf="1"  EqLumi="37097885.8" xsection="0.1296"   PreselEff="0.0"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/ZZJetsTo4L_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/21062013_132341/TOPTREE/*.root"/>
+ 
+  <d name="ttZ" title="ttbar + Z + jets" 	add="1"   color="6"  ls="1"  lw="2" normf="1"  EqLumi="1221848.84" xsection="0.172"   PreselEff="0.0"    filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTZJets_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/06062013_144733/TOPTREE/*.root"/>
+
+  <d name="Zjets" title="Z + jets" 	add="1"   color="4"  ls="1"  lw="2" normf="1"  EqLumi="228175.44" xsection="27.36"   PreselEff="0.0"       filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DY4JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/22042013_162620/TOPTREE/*.root"/>
+
+
+</datasets>
+
+<analysis>
+
+<a type="Collections" PVCollection="PrimaryVertex" JetType="2" JetCollection="PFJets_selectedPatJetsPF2PAT" METType="2" METCollection="PFMET_patType1CorrectedPFMetPF2PAT" MuonCollection="Muons_selectedPatMuonsPF2PAT" ElectronCollection="Electrons_selectedPatElectronsPF2PAT" loadGenJetCollection="1" GenJetCollection="GenJets_ak5GenJetsNoNu" loadGenEventCollection="0" GenEventCollection="GenEvent" loadNPGenEventCollection="0" NPGenEventCollection="NPGenEvent" loadMCParticles="0" MCParticlesCollection="MCParticles" TrackMETCollection="" loadTrackMET="0"/>
+
+
+</analysis>
+
