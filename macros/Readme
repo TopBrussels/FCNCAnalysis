@@ -1,0 +1,24 @@
+*********************************
+* Main code:  FCNC_selection.cc *
+*********************************
+
+To Compile this code: 
+	sh FCNC_compileANDrun.sh
+This make the executable 
+	FCNC_selection
+To run the code: 
+	./FCNC_selection
+This takes the configuration files from 
+	FCNCAnalysis/config
+And makes output rootfiles in 
+	FCNCAnalysis/data
+	
+
+*********************************************
+* Plotanalyzer code: FCNC_CutEfficiencies.C *
+*********************************************
+
+This code takes the rootfiles from
+ 	FCNCAnalysis/data
+And makes efficiency cutflows in 
+	FCNCAnalysis/data
