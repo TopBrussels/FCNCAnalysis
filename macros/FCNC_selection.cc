@@ -78,7 +78,7 @@ int main(int argc, char *argv[]){
 	bool information = true; 
 
         //set the xml file
-	string xmlfile = "config/FCNC_config.xml";     //place of the xml file 
+	string xmlfile = "../config/FCNC_config.xml";     //place of the xml file 
 	
 	//set the channel 
 	string channel = "undefined";
@@ -132,31 +132,31 @@ int main(int argc, char *argv[]){
 		}
 		if (argval=="--1gamma") {
                 	channel = "1gamma";
-			xmlfile = "config/FCNC_1gamma_config.xml";
+			xmlfile = "../config/FCNC_1gamma_config.xml";
         	}
 		if (argval=="--2gamma") {
                 	channel = "2gamma";
-			xmlfile = "config/FCNC_2gamma_config.xml";
+			xmlfile = "../config/FCNC_2gamma_config.xml";
         	}
 		if (argval=="--1L3B") {
                 	channel = "1L3B";
-			xmlfile = "config/FCNC_1L3B_config.xml";
+			xmlfile = "../config/FCNC_1L3B_config.xml";
         	}
 		if (argval=="--SSdilepton") {
                 	channel = "SSdilepton";
-			xmlfile = "config/FCNC_SSdilepton_config.xml";
+			xmlfile = "../config/FCNC_SSdilepton_config.xml";
         	}
 		if (argval=="--OSdilepton") {
                 	channel = "OSdilepton";
-			xmlfile = "config/FCNC_OSdilepton_config.xml";
+			xmlfile = "../config/FCNC_OSdilepton_config.xml";
         	}
 		if (argval=="--3L") {
                 	channel = "3L";
-			xmlfile = "config/FCNC_3L_config.xml";
+			xmlfile = "../config/FCNC_3L_config.xml";
         	}
 		if (argval=="--4L") {
                 	channel = "4L";
-			xmlfile = "config/FCNC_4L_config.xml";
+			xmlfile = "../config/FCNC_4L_config.xml";
         	}
 
 
@@ -255,7 +255,7 @@ int main(int argc, char *argv[]){
 	if(channel.find("SSdilepton")!=string::npos)	sprintf(channelchar, "SSdilepton");
 	if(channel.find("OSdilepton")!=string::npos)	sprintf(channelchar, "OSdilepton");
 	
-	sprintf(rootFileName,"Output/FCNC_selection_%s.root",channelchar);
+	sprintf(rootFileName,"../data/FCNC_selection_%s.root",channelchar);
 	TFile *fout = new TFile (rootFileName, "RECREATE");
 	if(debug) cout << "[PROCES]	Declared output rootfiles  "<< endl;
 	
@@ -357,7 +357,7 @@ int main(int argc, char *argv[]){
   	
 	//Defining a directory in which .png files of all the plots created will be stored.
 	char pathPNG[900];
-	sprintf(pathPNG,"FCNC_%s_MSPlots_MCStudy/",channelchar);
+	sprintf(pathPNG,"../data/FCNC_%s_MSPlots_MCStudy/",channelchar);
   	//string pathPNG = "FCNC_%s";
   	//pathPNG += "_MSPlots_MCStudy/";
   	//mkdir(pathPNG.c_str(),0777);	
