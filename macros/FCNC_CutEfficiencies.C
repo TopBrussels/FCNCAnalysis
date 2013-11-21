@@ -14,7 +14,7 @@ using namespace std;
 void FCNC_CutEfficiencies(string channel = "3L"){
 
 
-	string rootFileName = "../Output/FCNC_selection_";
+	string rootFileName = "../data/FCNC_selection_";
 	rootFileName += channel;
 	rootFileName += ".root";
 	
@@ -64,7 +64,7 @@ void FCNC_CutEfficiencies(string channel = "3L"){
 		if(Histo) Efficiency_cutflows.push_back(Histo);
 	}
 	
-	string outputName = "Output/Efficiency_cutflows_";
+	string outputName = "../data/Efficiency_cutflows_";
 	outputName += channel;
 	outputName += ".root";
 	TFile *outputFile = new TFile(outputName.c_str(),"RECREATE"); 
