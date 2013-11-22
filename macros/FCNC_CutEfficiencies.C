@@ -37,6 +37,8 @@ void FCNC_CutEfficiencies(string channel = "3L"){
 	Vector_SampleName.push_back("wz");
 	Vector_SampleName.push_back("zz");
 	Vector_SampleName.push_back("ttz");
+	Vector_SampleName.push_back("Zjets");
+	Vector_SampleName.push_back("zz");
 	Vector_SampleName.push_back("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");
 	Vector_SampleName.push_back("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL");
 	Vector_SampleName.push_back("TTJetsTocHbW_HToWW_WToLNuL_HctL");
@@ -51,6 +53,8 @@ void FCNC_CutEfficiencies(string channel = "3L"){
 	Vector_SampleName.push_back("TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR");
 	Vector_SampleName.push_back("TTJetsTocHbW_HToZZ_ZToLL_HctL");
 	Vector_SampleName.push_back("TTJetsTocHbW_HToZZ_ZToLL_HctR");
+	Vector_SampleName.push_back("TTJetsTocZbW");
+
 
 
 	//loop over all TH1F in the input rootfile and check if the corresponding samples are present in them
