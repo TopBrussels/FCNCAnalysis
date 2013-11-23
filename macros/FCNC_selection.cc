@@ -107,7 +107,8 @@ int main(int argc, char *argv[]){
 	///////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////
 	std::string tempxml; 
-	bool foundxml = false; 
+	bool foundxml = false;
+	bool Big_xml = true;
     
     	for(int iarg = 0; iarg < argc && argc>1 ; iarg++)
 	{
@@ -124,7 +125,7 @@ int main(int argc, char *argv[]){
 			cout << "--3L: use the 3 lepton channel (exactly 3)" << endl;
 			cout << "--4L: use the 4 lepton channel (at least 4)" << endl;
                 	return 0;
-        	}
+        	}		
 		if (argval=="--xml") {
 			iarg++;
 			tempxml = argv[iarg];
@@ -165,6 +166,10 @@ int main(int argc, char *argv[]){
     	if (foundxml)
 	{
 		xmlfile = tempxml; 
+	}
+	if (Big_xml){ 
+		xmlfile = "../config/FCNC_config.xml";
+		std::cout << "[WARNING]   Using the big xml file" << endl;
 	}
 	if(information)	std::cout << "[INFO]	Used configuration file: " << xmlfile << endl;
 	if(information)	std::cout << "[INFO]	Used channel: " << channel << endl;
@@ -313,6 +318,8 @@ int main(int argc, char *argv[]){
 		
 		char datasetNamechar[900];
 		if(datasetName.find("ttbar")!=string::npos) {sprintf(datasetNamechar,"ttbar");}
+		if(datasetName.find("ttbar_fullLept")!=string::npos) {sprintf(datasetNamechar,"ttbar_fullLept");}
+		if(datasetName.find("ttbar_semiLept")!=string::npos) {sprintf(datasetNamechar,"ttbar_semiLept");}
 		if(datasetName.find("Wjets")!=string::npos) {sprintf(datasetNamechar,"wjets");}
 		if(datasetName.find("ttt")!=string::npos) {sprintf(datasetNamechar,"ttt");}
 		if(datasetName.find("ttW")!=string::npos) {sprintf(datasetNamechar,"ttw");}
@@ -379,6 +386,8 @@ int main(int argc, char *argv[]){
 		
 		char datasetNamechar[900];
 		if(datasetName.find("ttbar")!=string::npos) {sprintf(datasetNamechar,"ttbar");}
+		if(datasetName.find("ttbar_fullLept")!=string::npos) {sprintf(datasetNamechar,"ttbar_fullLept");}
+		if(datasetName.find("ttbar_semiLept")!=string::npos) {sprintf(datasetNamechar,"ttbar_semiLept");}
 		if(datasetName.find("Wjets")!=string::npos) {sprintf(datasetNamechar,"wjets");}
 		if(datasetName.find("ttt")!=string::npos) {sprintf(datasetNamechar,"ttt");}
 		if(datasetName.find("ttW")!=string::npos) {sprintf(datasetNamechar,"ttw");}

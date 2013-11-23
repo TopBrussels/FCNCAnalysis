@@ -31,6 +31,8 @@ void FCNC_CutEfficiencies(string channel = "SSdilepton"){
 	
 	//Put in the individual samples
 	Vector_SampleName.push_back("ttbar");
+	Vector_SampleName.push_back("ttbar_fullLept");
+	Vector_SampleName.push_back("ttbar_semiLept");
 	Vector_SampleName.push_back("wjets");
 	Vector_SampleName.push_back("ttt");
 	Vector_SampleName.push_back("ttw");
