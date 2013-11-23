@@ -11,7 +11,7 @@
 
 using namespace std;
 
-void FCNC_CutEfficiencies(string channel = "3L"){
+void FCNC_CutEfficiencies(string channel = "SSdilepton"){
 
 
 	string rootFileName = "../data/FCNC_selection_";
