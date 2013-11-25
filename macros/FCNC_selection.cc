@@ -86,29 +86,19 @@ int main(int argc, char *argv[]){
 	//set a default luminosity in pb^-1
 	float Luminosity = 20000;
 
-
-	///////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////
-	// Controll flags for scale factor shifts etc.. ///////////
-	///////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////
-	
-	int dobTagEffShift = 0; //0: off (except nominal scalefactor for btag eff) 1: minus 2: plus
-  	cout << "dobTagEffShift: " << dobTagEffShift << endl;
-
-  	int domisTagEffShift = 0; //0: off (except nominal scalefactor for mistag eff) 1: minus 2: plus
-  	cout << "domisTagEffShift: " << domisTagEffShift << endl;
-	
-
+	//set btag algorithm:CSVM
+	string btagger = "CSVM";
 	
 	///////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////
 	//   different options for executing this macro          //
 	///////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////
-	std::string tempxml; 
+	std::string tempxml;
+	string tempbtagger;
 	bool foundxml = false;
-	bool Big_xml = true;
+	bool foundbtag = false;
+	bool Big_xml = false;
     
     	for(int iarg = 0; iarg < argc && argc>1 ; iarg++)
 	{
@@ -117,15 +107,20 @@ int main(int argc, char *argv[]){
         	if(argval=="--help" || argval =="--h")
 		{
 			cout << "--xml myxml.xml: change Xml file" << endl;
-			cout << "--1gamma: use the 1 gamma channel" << endl;
-			cout << "--2gamma: use the 2 gamma channel" << endl; 
+			cout << "--btag CSVM: change btag algorithm" << endl; 
 			cout << "--1L3B: use the 1 lepton + 3 b-tags channel" << endl; 
 			cout << "--SSdilepton: use the same sign dilepton channel" << endl;
 			cout << "--OSdilepton: use the opposite sign dilepton channel" << endl;
 			cout << "--3L: use the 3 lepton channel (exactly 3)" << endl;
 			cout << "--4L: use the 4 lepton channel (at least 4)" << endl;
+			cout << "--Bigxml: use the xml file containing all samples (not channel dependent)" << endl; 
                 	return 0;
         	}		
+		if (argval=="--btag") {
+			iarg++;
+			tempbtagger = argv[iarg];
+			foundbtag = true; 
+		}
 		if (argval=="--xml") {
 			iarg++;
 			tempxml = argv[iarg];
@@ -159,22 +154,24 @@ int main(int argc, char *argv[]){
                 	channel = "4L";
 			xmlfile = "../config/FCNC_4L_config.xml";
         	}
+		if (argval=="--Bigxml"){
+			Big_xml= true; 
+			xmlfile = "../config/FCNC_config.xml";
+		
+		}
+		
 
 
     	} 
 	
-    	if (foundxml)
-	{
-		xmlfile = tempxml; 
-	}
-	if (Big_xml){ 
-		xmlfile = "../config/FCNC_config.xml";
-		std::cout << "[WARNING]   Using the big xml file" << endl;
-	}
+    	if (foundxml)	xmlfile = tempxml; 
+	if (foundbtag) btagger = tempbtagger; 
+	
 	if(information)	std::cout << "[INFO]	Used configuration file: " << xmlfile << endl;
 	if(information)	std::cout << "[INFO]	Used channel: " << channel << endl;
+	if(information) std::cout << "[INFO]	Used btag algorithm: " << btagger << endl; 
 	if(channel.find("undefined")!=string::npos && warnings) std:cout << "[WARNING]	No channel was defined" << endl; 
-	
+	if(Big_xml) std::cout << "[WARNING]   Using the big xml file" << endl;
 	///////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////
 	//   end different options for executing this macro      //
@@ -187,45 +184,15 @@ int main(int argc, char *argv[]){
 	// Options for different b-tagging algorithms	      /////
 	///////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////
-	//Choose which b-tag algorithm will be used.
-	string btagger = "CSVM";
-	
-	// b-tag scalefactor => TCHEL: data/MC scalefactor = 0.95 +- 0.10, TCHEM: data/MC scalefactor = 0.94 +- 0.09
-	// mistag scalefactor => TCHEL: data/MC scalefactor = 1.11 +- 0.12, TCHEM: data/MC scalefactor = 1.21 +- 0.17
- 	 float scalefactorbtageff, mistagfactor;
-  	if(btagger == "TCHPM" || btagger == "TCHET" || btagger == "SSV" ){
-    	cout<<"This tagger ("<< btagger <<")is not commisioned in 2012, please use CSV, TCHP or JetProb"<<endl;
-    	exit(1);
-	}
-  	else if(btagger == "TCHEM") //redundant for now (these values need updating), but will use as skeleton for CSVM
-  	{
-           if(dobTagEffShift == 0)
-                scalefactorbtageff = 0.94;
-         if(dobTagEffShift == 1)
-                scalefactorbtageff = 0.85;
-         if(dobTagEffShift == 2)
-                scalefactorbtageff = 1.03;
-                
-         if(domisTagEffShift == 0)
-                mistagfactor = 1.21;
-         if(domisTagEffShift == 1)
-                mistagfactor = 1.04;
-         if(domisTagEffShift == 2)
-                mistagfactor = 1.38;
-  	}
-    
-  	float workingpointvalue = 9999; //working points updated to 2012 BTV-POG recommendations.
+	float workingpointvalue = 9999; //working points updated to 2012 BTV-POG recommendations.
  
   	if(btagger == "TCHPM" || btagger == "TCHET" || btagger == "SSV" ){
-    	cout<<"This tagger ("<< btagger <<")is not commisioned in 2012, please use CSV, TCHP or JetProb"<<endl;
-    	exit(1);
+    		cout<<"This tagger ("<< btagger <<")is not commisioned in 2012, please use CSV, TCHP or JetProb"<<endl;
+    		exit(1);
   	}
-   	else if(btagger == "CSVL")
-     	workingpointvalue = .244;        
-  	else if(btagger == "CSVM")
-    	workingpointvalue = .679;
-  	else if(btagger == "CSVT")
-    	workingpointvalue = .898;
+   	else if(btagger == "CSVL")	workingpointvalue = .244;        
+  	else if(btagger == "CSVM")   	workingpointvalue = .679;
+  	else if(btagger == "CSVT")    	workingpointvalue = .898;
 	
 	/////////////////////////////////////////////////////////
 	// End b-tagging working points      ////////////////////
@@ -365,10 +332,7 @@ int main(int argc, char *argv[]){
 	//Defining a directory in which .png files of all the plots created will be stored.
 	char pathPNG[900];
 	sprintf(pathPNG,"../data/FCNC_%s_MSPlots_MCStudy/",channelchar);
-  	//string pathPNG = "FCNC_%s";
-  	//pathPNG += "_MSPlots_MCStudy/";
-  	//mkdir(pathPNG.c_str(),0777);	
-	mkdir(pathPNG,0777);
+  	mkdir(pathPNG,0777);
 	if(debug) cout << "[PROCES]	Declared PNG directory  "<< endl;
 	
 	///////////////////////////////////////////////////////////
@@ -379,7 +343,8 @@ int main(int argc, char *argv[]){
 	if(information)	cout << "[PROCES]	Looping over the datasets:  " << datasets.size()<< " datasets" << endl;
 	for(unsigned int d = 0; d < datasets.size();d++)
 	{
-	bool is_signal = false;
+		bool is_signal = false;
+		
 		//Load datasets
 		treeLoader.LoadDataset(datasets[d], anaEnv); 
 		string datasetName = datasets[d]->Name(); 
@@ -395,7 +360,6 @@ int main(int argc, char *argv[]){
 		if(datasetName.find("ZZ")!=string::npos) {sprintf(datasetNamechar,"zz");}
 		if(datasetName.find("ttZ")!=string::npos) {sprintf(datasetNamechar,"ttz");}
 		if(datasetName.find("Zjets")!=string::npos) {sprintf(datasetNamechar,"Zjets");}
-				
 		if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");
 			is_signal = true;
@@ -457,19 +421,22 @@ int main(int argc, char *argv[]){
 			is_signal = true;
 		}
 		
-		string Process_cutflow = "cutflow_";
-		Process_cutflow += datasetNamechar;
+		
 		
 		if(information) cout << "[INFO]	Dataset " << d << " name : " << datasetName << " / title : " << datasets[d]->Title() << endl;
 		
+		//def
+		string Process_cutflow = "cutflow_";
+		Process_cutflow += datasetNamechar;
 		
 		///////////////////////////////////////////////////////////
 		//                START LOOPING OVER THE EVENTS          //
 		///////////////////////////////////////////////////////////
 
 		int NofEvts = 100000;
-
 		int NofRuns = 0; 
+		
+		//set the maximal number of events to NofEvts
 		if( NofEvts > datasets[d]->NofEvtsToRunOver()) 
 		{
 			NofRuns = datasets[d]->NofEvtsToRunOver(); 
@@ -503,26 +470,20 @@ int main(int argc, char *argv[]){
 			histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(2, "initial");
 			
 			
-			//Make a selection 
+			//Make a preliminary selection 
 			Selection selection(init_jets, init_muons,init_electrons,mets);
 			//define selection cuts --> have to be validated!!!
 			// From the class Selection the following functions are used: 
-				// 	void Selection::setJetCuts(float Pt, float Eta, float EMF, float n90Hits, float fHPD, float dRJetElectron, float dRJetMuon)
-				//	void Selection::setDiElectronCuts(float Et, float Eta, float RelIso, float d0, float MVAId, float DistVzPVz, float DRJets, int MaxMissingHits) 
-				//	void Selection::setLooseDiElectronCuts(float ptt, float Eta, float RelIso, MVAid) 
-				//	void Selection::setDiMuonCuts(float Pt, float Eta, float RelIso, float d0) 
+				// 	void Selection::setJetCuts(float Pt, float Eta, float EMF, float n90Hits, float fHPD, float dRJetElectron, float dRJetMuon) 
+				//	void Selection::setLooseDiElectronCuts(float ptt, float Eta, float RelIso, MVAid)  
 				// 	void Selection::setLooseMuonCuts(float Pt, float Eta, float RelIso) 
-			selection.setJetCuts(20.,5.,0.01,1.,0.98,0.3,0.1);
-			selection.setDiMuonCuts(20.,2.4,0.20,999.);
-			selection.setDiElectronCuts(20.,2.5,0.15,0.04,0.5,1,0.3,1); 
+			selection.setJetCuts(20.,5.,0.01,1.,0.98,0.3,0.1); 
 			selection.setLooseMuonCuts(10.,2.5,0.2);
 			selection.setLooseDiElectronCuts(15.0,2.5,0.2,0.5); 
 			
 			//select the right objects and put them in a vector
 			vector<TRootJet*> selectedJets = selection.GetSelectedJets(true);
-			vector<TRootMuon*> selectedMuons = selection.GetSelectedDiMuons();
 			vector<TRootMuon*> looseMuons = selection.GetSelectedLooseMuons();
-			vector<TRootElectron*> selectedElectrons = selection.GetSelectedDiElectrons();
 			vector<TRootElectron*> looseElectrons = selection.GetSelectedLooseDiElectrons();
 			vector<TRootJet*> selectedBJets; // B-Jets, to be filled after b-tagging
     			vector<TRootJet*> selectedLightJets; // light-Jets, to be filled afer b-tagging
@@ -530,56 +491,19 @@ int main(int argc, char *argv[]){
 			
 			
 			//order the jets according to the Pt 
-			sort(selectedJets.begin(),selectedJets.end(),HighestPt()); //order jets wrt Pt.  
+			sort(selectedJets.begin(),selectedJets.end(),HighestPt());   
 			
 			
-			
-			int bjets = 0;
+			//Start btagging 
 			int nTags = 0;
 			float Passed_selection = false;
 			
 			
 			// scale factor for the event
         		float scaleFactor = 1.;
-
-        /*	ONLY HAS TO BE APPLIED WHEN INCLUDING DATA AND/OR PILE-UP REWEIGHTING
 	
-	
-	
-        		//A simple filter to remove events which arise from the interaction LHC beam with
-        		// the beampipe known as "beam scraping events".
-        		if(datasetName == "Data" || datasetName == "data" || datasetName == "DATA")
-        		{
-                	// Apply the scraping veto. (Is it still needed?)
-                	bool isBeamBG = true;
-                	if(event->nTracks() > 10)
-                	{
-                        	if( ( (float) event->nHighPurityTracks() ) / ( (float) event->nTracks() ) > 0.25 )
-                        	isBeamBG = false;
-                	}
-                      		if(isBeamBG) continue;
-        		}
-        		else{
-        		double lumiWeight = LumiWeights.ITweight( (int)event->nTruePU() );
-        		double lumiWeightOLD=lumiWeight;
-        		if(dataSetName.find("Data") == 0 || dataSetName.find("data") == 0 || dataSetName.find("DATA") == 0)
-         		lumiWeight=1;
-        		scaleFactor = scaleFactor*lumiWeight;
-        
-        		}
-	*/
-			
 					
       			for(unsigned int iJet=0; iJet<selectedJets.size(); iJet++){
-				int pdgID = selectedJets[iJet]->partonFlavour();
-				
-				if(fabs(pdgID) == 5 && datasetName != "Data" && datasetName != "data" && datasetName != "DATA")
-				{
-	      				bjets++;
-								
-	 			}
-				
-				//filling vector of b-jets
 				if (selectedJets[iJet]->btag_combinedSecondaryVertexBJetTags() > workingpointvalue){
 					nTags++;
 					selectedBJets.push_back(selectedJets[iJet]);
@@ -598,12 +522,17 @@ int main(int argc, char *argv[]){
 				if(looseElectrons.size() + looseMuons.size() ==3)
 				{ 
 					if(debug) cout << "fill 3L" << endl;
-					histo1D["cutflow_total_B"]->Fill(2);
+					
+					//fill histograms
+					if(!is_signal)histo1D["cutflow_total_B"]->Fill(2);
 					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
 					histo1D[Process_cutflow]->Fill(2);
-					histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "3L");
+					
+					//set labels
+					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "3L");
 					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "3L");		
 					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(3, "3L");
+					
 					if(debug) cout << "filled 3L" << endl;
 					
 					Passed_selection = true;
@@ -613,16 +542,21 @@ int main(int argc, char *argv[]){
 			//more than 4 leptons
 			if(channel.find("4L")!=string::npos)
 			{
-				if(debug) cout << "in 3L channel" << endl;
+				if(debug) cout << "in 4L channel" << endl;
+				
 				if(looseElectrons.size() + looseMuons.size() > 3)
 				{ 
 					if(debug) cout << "fill 4L" << endl;
-					histo1D["cutflow_total_B"]->Fill(2);
+					
+					//fill histograms
+					if(!is_signal)	histo1D["cutflow_total_B"]->Fill(2);
 					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
 					histo1D[Process_cutflow]->Fill(2);
-					histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "4L");
+					//label histograms
+					if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "4L");
 					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "4L");
 					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(3, "4L");
+					
 					if(debug) cout << "filled 4L" << endl;
 					
 					Passed_selection = true;
@@ -633,33 +567,43 @@ int main(int argc, char *argv[]){
 			if(channel.find("1L3B")!=string::npos)
 			{
 				if(debug) cout << "in 1L3B channel" << endl;
+				
 				if(looseElectrons.size() +  looseMuons.size() == 1)
 				{
 					if(debug) cout << "in fill 1l3b loop" << endl;
-					histo1D["cutflow_total_B"]->Fill(2);
+					
+					//fill histograms
+					if(!is_signal) histo1D["cutflow_total_B"]->Fill(2);
 					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
 					histo1D[Process_cutflow]->Fill(2);
-					histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "1L");
+					//label histograms
+					if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "1L");
 					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "1L");
 					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(3, "1L");
+					
 					if(debug) cout << "selectedJets.size() = " << selectedJets.size() << endl;
 					
 					if(selectedJets.size() >= 3)
 					{
 						if(debug) cout << "in fill 1l3b loop: 3jets" << endl;
-						histo1D["cutflow_total_B"]->Fill(3);
+						//fill histograms
+						if(!is_signal) histo1D["cutflow_total_B"]->Fill(3);
 						if(is_signal) histo1D["cutflow_total_S"]->Fill(3);
 						histo1D[Process_cutflow]->Fill(3);
-						histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, ">= 3jets");
+						//label histograms
+						if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, ">= 3jets");
 						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, ">= 3jets");
 						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, ">=3jets");
+						
 						if(nTags == 3)
 						{
 							if(debug) cout << "in fill 1l3b loop: 3bjets" << endl;
-							histo1D["cutflow_total_B"]->Fill(4);
+							//fill histograms
+							if(!is_signal) histo1D["cutflow_total_B"]->Fill(4);
 							if(is_signal) histo1D["cutflow_total_S"]->Fill(4);
 							histo1D[Process_cutflow]->Fill(4);
-							histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5, "== 3 bjets");
+							//label histograms
+							if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5, "== 3 bjets");
 							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5, "== 3 bjets");
 							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, "== 3 bjets");
 							
@@ -673,14 +617,16 @@ int main(int argc, char *argv[]){
 			if(channel.find("SSdilepton")!=string::npos)
 			{
 				if(debug) cout << "in SSdilepton channel" << endl;
+				
 				if(looseElectrons.size() + looseMuons.size() == 2)
 				{
 					if(debug) cout << "in fill SS dilepton " << endl; 
-					histo1D["cutflow_total_B"]->Fill(2);
+					
+					if(!is_signal)histo1D["cutflow_total_B"]->Fill(2);
 					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
 					histo1D[Process_cutflow]->Fill(2);
 					
-					histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "2L");
+					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "2L");
 					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "2L");
 					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(3, "2L");
 					
@@ -708,10 +654,12 @@ int main(int argc, char *argv[]){
 					if(muon || electron || EMu)
 					{
 						if(debug) cout << "in fill SS dilepton: same sign " << endl;
-						histo1D["cutflow_total_B"]->Fill(3);
+						
+						if(!is_signal)histo1D["cutflow_total_B"]->Fill(3);
 						if(is_signal) histo1D["cutflow_total_S"]->Fill(3);
 						histo1D[Process_cutflow]->Fill(3);
-						histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, "2 SS L");
+						
+						if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, "2 SS L");
 						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, "2 SS L");
 						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, "2 SS L");
 						
@@ -726,11 +674,11 @@ int main(int argc, char *argv[]){
 				if(looseElectrons.size() + looseMuons.size() == 2)
 				{
 					if(debug) cout << "in fill OS dilepton " << endl; 
-					histo1D["cutflow_total_B"]->Fill(2);
+					if(!is_signal)histo1D["cutflow_total_B"]->Fill(2);
 					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
 					histo1D[Process_cutflow]->Fill(2);
 					
-					histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "2L");
+					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "2L");
 					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "2L");
 					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(3, "2L");
 					
@@ -773,7 +721,7 @@ int main(int argc, char *argv[]){
 
 			if(channel.find("1gamma")!=string::npos)
 			{
-				cout << "Photons are not yet included in selection class !!! " << endl; 
+				cout << "[WARNING]	Photons are not yet included in selection class !!! " << endl; 
 			/*	if(debug) cout << "in fill 1gamma " << endl;
 				
 				if(selectedPhotons.size() == 1)
@@ -792,7 +740,7 @@ int main(int argc, char *argv[]){
 			}
 			if(channel.find("2gamma")!=string::npos)
 			{
-				cout << "Photons are not yet included in selection class !!! " << endl; 
+				cout << "[WARNING]	Photons are not yet included in selection class !!! " << endl; 
 			/*	if(debug) cout << "in fill 2gamma " << endl;
 				
 				if(selectedPhotons.size() == 2)
@@ -847,21 +795,22 @@ int main(int argc, char *argv[]){
 
 	
 	fout->cd();
+	if(information)	cout << "[PROCES]	Looping over MSplots" << endl;  
 	for(map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
     	{
         
       
         	MultiSamplePlot *temp = it->second;
         	TH1F *tempHisto_data;
-        	TH1F *tempHisto_TTTT;
+        	TH1F *tempHisto_back;
         	//        temp->addText("CMS preliminary");
         	string name = it->first;
 		temp->Draw( name, 0, false, false, false, 1);
       
-      	cout <<" looping plots..., name ... "<< name<<endl;
+      		if(debug) cout <<" looping plots..., name ... "<< name<<endl;
         
-        	temp->Write(fout, name, false/*, pathPNG, "pdf"*/);
-        	cout <<" written...."<<endl;
+        	temp->Write(fout, name, false, pathPNG, "pdf");
+        	if(debug) cout <<" written...."<<endl;
 
   	}
 	
@@ -873,8 +822,8 @@ int main(int argc, char *argv[]){
     
         	TH1F *temp = it->second;
         	temp->Write();
-        	//TCanvas* tempCanvas = TCanvasCreator(temp, it->first);
-        	//tempCanvas->SaveAs( (pathPNG+it->first+".png").c_str() );
+        	TCanvas* tempCanvas = TCanvasCreator(temp, it->first);
+        	tempCanvas->SaveAs( (pathPNG+it->first+".png").c_str() );
   	}
 	
 	std::cout << "******************************************"<<std::endl; 
