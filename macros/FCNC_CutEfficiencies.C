@@ -80,6 +80,25 @@ void FCNC_CutEfficiencies(string channel = "SSdilepton"){
 		
 		Efficiency_cutflows[i]->Scale(1./NbOfEvents);
 		Efficiency_cutflows[i]->Write();
+		 
+	}
+	
+	for( int k = 0; k < Efficiency_cutflows.size(); k++)
+	{
+		TH1F *histogram = (TH1F*) Efficiency_cutflows[k]; 
+		//cout << "Histogram: " << k << " with name " << histogram->GetName() << " and title " << histogram->GetTitle() << endl;
+		int NbOfbins = histogram->GetNbinsX(); 
+		cout <<  histogram->GetTitle() << " : " << endl;
+		for(int i = 1; i < NbOfbins; i ++)
+		{
+			float icontent = histogram->GetBinContent(i); 
+			float icontent_prev = 1;
+			if(i>2) icontent_prev=histogram->GetBinContent(i-1);
+			if(icontent_prev != 0)
+			{
+				cout << " bincontent bin " << i << " : " << icontent << endl;
+			} 
+		}
 	}
 
 
