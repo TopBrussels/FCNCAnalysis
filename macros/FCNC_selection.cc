@@ -462,7 +462,7 @@ int main(int argc, char *argv[]){
 
 			
 			histo1D[Process_cutflow]->Fill(1);
-			histo1D["cutflow_total_B"]->Fill(1);
+			if(!is_signal) histo1D["cutflow_total_B"]->Fill(1);
 			if(is_signal) histo1D["cutflow_total_S"]->Fill(1);
 			
 			histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(2, "initial");
@@ -745,7 +745,7 @@ int main(int argc, char *argv[]){
 						if(debug) cout << "in fill OS dilepton: same sign " << endl;
 						histo1D["cutflow_total_B"]->Fill(3);
 						if(is_signal) histo1D["cutflow_total_S"]->Fill(3);
-						histo1D[Process_cutflow]->Fill(3);
+						if (!is_signal) histo1D[Process_cutflow]->Fill(3);
 						histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, "2 OS L");
 						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, "2 OS L");
 						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, "2 OS L");
@@ -765,10 +765,10 @@ int main(int argc, char *argv[]){
 				{
 					if(debug) cout << "in fill 1 gamma: selected photons loop " << endl;
 					histo1D[Process_cutflow]->Fill(100/NofRuns);
-					histo1D["cutflow_total_B"]->Fill(100/NofRuns)
+					if(!is_signal)histo1D["cutflow_total_B"]->Fill(100/NofRuns)
 					if(is_signal) histo1D["cutflow_total_S"]->Fill(100/NofRuns)
 					
-					histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "1 photons");
+					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "1 photons");
 					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "1 photons");
 					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(3, "1 photons");
 				}	
@@ -783,11 +783,11 @@ int main(int argc, char *argv[]){
 				if(selectedPhotons.size() == 2)
 				{
 					if(debug) cout << "in fill 2 gamma: selected photons loop " << endl;
-					histo1D[Process_cutflow]->Fill(2);
+					if(!is_signal)histo1D[Process_cutflow]->Fill(2);
 					histo1D["cutflow_total_B"]->Fill(2)
 					if(is_signal) histo1D["cutflow_total_S"]->Fill(2)
 					
-					histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "2 photons");
+					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "2 photons");
 					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "2 photons");
 					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(3, "2 photons");
 				}	
