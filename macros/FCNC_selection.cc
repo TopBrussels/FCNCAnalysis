@@ -465,7 +465,7 @@ int main(int argc, char *argv[]){
 			if(!is_signal) histo1D["cutflow_total_B"]->Fill(1);
 			if(is_signal) histo1D["cutflow_total_S"]->Fill(1);
 			
-			histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(2, "initial");
+			if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(2, "initial");
 			if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(2, "initial");
 			histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(2, "initial");
 			
@@ -533,7 +533,7 @@ int main(int argc, char *argv[]){
 					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "3L");		
 					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(3, "3L");
 					
-					if(selectedJets.size()>1)
+					if(selectedJets.size()>=1)
 					{
 						//fill histograms
 						if(!is_signal)histo1D["cutflow_total_B"]->Fill(3);
@@ -543,7 +543,7 @@ int main(int argc, char *argv[]){
 						//set labels
 						if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, ">1j");
 						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, ">1j");		
-						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, ">1j");
+						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, ">=1j");
 						Passed_selection = true;
 					}
 					if(debug) cout << "filled 3L" << endl;
@@ -569,7 +569,7 @@ int main(int argc, char *argv[]){
 					if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "4L");
 					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "4L");
 					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(3, "4L");
-					if(selectedJets.size()>1)
+					if(selectedJets.size()>=1)
 					{
 						//fill histograms
 						if(!is_signal)histo1D["cutflow_total_B"]->Fill(3);
@@ -579,7 +579,7 @@ int main(int argc, char *argv[]){
 						//set labels
 						if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, ">1j");
 						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, ">1j");		
-						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, ">1j");
+						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, ">=1j");
 						Passed_selection = true;
 					}					
 					if(debug) cout << "filled 4L" << endl;
@@ -688,7 +688,7 @@ int main(int argc, char *argv[]){
 						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, "2 SS L");
 						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, "2 SS L");
 						
-						if(selectedJets.size()>1)
+						if(selectedJets.size()>=1)
 						{
 							//fill histograms
 							if(!is_signal)histo1D["cutflow_total_B"]->Fill(4);
@@ -698,7 +698,7 @@ int main(int argc, char *argv[]){
 							//set labels
 							if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5, ">1j");
 							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5, ">1j");		
-							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">1j");
+							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">=1j");
 							Passed_selection = true;
 						}						
 					}
@@ -743,15 +743,28 @@ int main(int argc, char *argv[]){
 					if(muon || electron || EMu)
 					{
 						if(debug) cout << "in fill OS dilepton: same sign " << endl;
-						histo1D["cutflow_total_B"]->Fill(3);
+						if(!is_signal) histo1D["cutflow_total_B"]->Fill(3);
 						if(is_signal) histo1D["cutflow_total_S"]->Fill(3);
-						if (!is_signal) histo1D[Process_cutflow]->Fill(3);
-						histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, "2 OS L");
+						histo1D[Process_cutflow]->Fill(3);
+						if (!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, "2 OS L");
 						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, "2 OS L");
 						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, "2 OS L");
 						
 						Passed_selection = true;
 					}
+						if(selectedJets.size()>=1)
+						{
+							//fill histograms
+							if(!is_signal)histo1D["cutflow_total_B"]->Fill(4);
+							if(is_signal) histo1D["cutflow_total_S"]->Fill(4);
+							histo1D[Process_cutflow]->Fill(4);
+					
+							//set labels
+							if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5, ">1j");
+							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5, ">1j");		
+							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">=1j");
+							Passed_selection = true;
+						}		
 					if(debug) cout << "out fill OS dilepton " << endl;
 				}
 			}
@@ -783,8 +796,8 @@ int main(int argc, char *argv[]){
 				if(selectedPhotons.size() == 2)
 				{
 					if(debug) cout << "in fill 2 gamma: selected photons loop " << endl;
-					if(!is_signal)histo1D[Process_cutflow]->Fill(2);
-					histo1D["cutflow_total_B"]->Fill(2)
+					histo1D[Process_cutflow]->Fill(2);
+					if(!is_signal) histo1D["cutflow_total_B"]->Fill(2)
 					if(is_signal) histo1D["cutflow_total_S"]->Fill(2)
 					
 					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "2 photons");
