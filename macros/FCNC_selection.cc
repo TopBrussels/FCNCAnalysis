@@ -98,7 +98,7 @@ int main(int argc, char *argv[]){
 	string tempbtagger;
 	bool foundxml = false;
 	bool foundbtag = false;
-	bool Big_xml = false;
+	bool Big_xml = true;
     
     	for(int iarg = 0; iarg < argc && argc>1 ; iarg++)
 	{
@@ -164,8 +164,8 @@ int main(int argc, char *argv[]){
 
     	} 
 	
-    	if (foundxml)	xmlfile = tempxml; 
-	if (foundbtag) btagger = tempbtagger; 
+    	if (Big_xml)	xmlfile = "../config/FCNC_config.xml"; 
+	if (foundbtag) btagger = tempbtagger;
 	
 	if(information)	std::cout << "[INFO]	Used configuration file: " << xmlfile << endl;
 	if(information)	std::cout << "[INFO]	Used channel: " << channel << endl;
