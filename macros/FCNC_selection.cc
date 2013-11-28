@@ -290,6 +290,14 @@ int main(int argc, char *argv[]){
 	sprintf(plotTitle_total_B,"The pt of lepton with largest pt %s channel (B)",channelchar);
 	histo1D["pt_lepton_max_B"] = new TH1F("pt_lepton_max_B", plotTitle_total_B, 50,0,100);
 	histo1D["pt_lepton_max_B"]->Sumw2();
+	
+	sprintf(plotTitle_total_B,"The pt of lepton with smallest pt %s channel (B)",channelchar);
+	histo1D["pt_lepton_min_B"] = new TH1F("pt_lepton_max_B", plotTitle_total_B, 50,0,100);
+	histo1D["pt_lepton_max_B"]->Sumw2();
+	
+	sprintf(plotTitle_total_B,"The pt of jet with largest pt %s channel (B)",channelchar);
+	histo1D["pt_jet_max_B"] = new TH1F("pt_jet_max_B", plotTitle_total_B, 100,0,200);
+	histo1D["pt_jet_max_B"]->Sumw2();
 	/*
 	histo_eta_jet_max
 	histo_eta_jet
@@ -297,10 +305,9 @@ int main(int argc, char *argv[]){
 	histo_ptsys
 	histo_met
 	histo_ht
-	histo_pt_jet
-	histo_pt_lepton_max
-	histo_pt_lepton_min
-	histo_mll
+	
+	
+	
 	*/
 
 	char plotTitle_total_S[900];
@@ -330,6 +337,15 @@ int main(int argc, char *argv[]){
 	sprintf(plotTitle_total_S,"The pt of lepton with largest pt %s channel (S)",channelchar);
 	histo1D["pt_lepton_max_S"] = new TH1F("pt_lepton_max_S", plotTitle_total_S, 50,0,100);
 	histo1D["pt_lepton_max_S"]->Sumw2();
+	
+	sprintf(plotTitle_total_S,"The pt of lepton with smallest pt %s channel (S)",channelchar);
+	histo1D["pt_lepton_min_S"] = new TH1F("pt_lepton_max_S", plotTitle_total_S, 50,0,100);
+	histo1D["pt_lepton_max_S"]->Sumw2();
+	
+	sprintf(plotTitle_total_S,"The pt of jet with largest pt %s channel (S)",channelchar);
+	histo1D["pt_jet_max_S"] = new TH1F("pt_jet_max_S", plotTitle_total_S, 100,0,200);
+	histo1D["pt_jet_max_S"]->Sumw2();
+	
 
 	// Define different cutflow plots for each channel and dataset	
 	for(unsigned int d = 0; d < datasets.size();d++){ 
@@ -890,53 +906,85 @@ int main(int argc, char *argv[]){
 			
 			//variable definition
 			double mll_z = 0;
-			double maxPt_lepton=0;
-			TLorentzVector lepton0;
-			TLorentzVector lepton1;
-			TLorentzVector lepton2;
+			double maxPt_lepton3 = 0;
+			double minPt_lepton3 = 0;
+			
+			TLorentzVector electron_lepton0;
+			TLorentzVector electron_lepton1;
+			TLorentzVector electron_lepton2;
+			TLorentzVector muon_lepton0;
+			TLorentzVector muon_lepton1;
+			TLorentzVector muon_lepton2;
 			TLorentzVector leptonpair; 
 			
-			lepton0.Clear(); 
-			lepton1.Clear();
-			lepton2.Clear();
+			electron_lepton0.Clear(); 
+			electron_lepton1.Clear();
+			electron_lepton2.Clear();
+			muon_lepton0.Clear(); 
+			muon_lepton1.Clear();
+			muon_lepton2.Clear();
 			leptonpair.Clear();
 					
 			if(Passed_selection && channel.find("3L")!=string::npos)
 			{	 
 			        if(debug) cout << "[PROCES]	In kinematic plots loop" << endl; 
-				if(looseElectrons.size()>1)
+				if(looseElectrons.size() > 0)
 				{
-					if(debug) cout << "[PROCES]	In leptonpair for electrons" << endl;
-					lepton0 =(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
-					lepton1 =(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy()); 
-					leptonpair = lepton0+lepton1;
+					electron_lepton0 =(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+					if(looseElectrons.size() > 1)
+					{
+						electron_lepton1 =(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy()); 
+						if(looseElectrons.size() == 3)
+						{
+							electron_lepton2 =(looseElectrons[2]->Px(),looseElectrons[2]->Py(),looseElectrons[2]->Pz(),looseElectrons[2]->Energy()); 
+						}
+					}
 				}
-				if(looseMuons.size()>1)
+				if(looseMuons.size() > 0)
 				{
-					if(debug) cout << "[PROCESS]	In leptonpair for muons" << endl;
-					lepton0 =(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
-					lepton1 =(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy()); 
-					leptonpair = lepton0+lepton1;
-				}
-				
-				if(looseElectrons.size()  < 3)
-				{
-					if(debug) cout << "[PROCESS]	Define 3th lepton as a muon" << endl;
-					if(looseMuons.size()==1)lepton2 =(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
-					if(looseMuons.size()==2)lepton2 =(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
-					if(looseMuons.size()==3)lepton2 =(looseMuons[2]->Px(),looseMuons[2]->Py(),looseMuons[2]->Pz(),looseMuons[2]->Energy());
-					maxPt_lepton = TMath::Max(lepton1.Pt(), lepton2.Pt());
-					if(debug) cout << "[PROCESS]	Max lepton pt defined" << endl;
-				}
-				else if(looseElectrons.size() == 3)
-				{
-					if(debug) cout << "[PROCESS]	Define 3th lepton as an electron" << endl;
-					lepton2 =(looseElectrons[2]->Px(),looseElectrons[2]->Py(),looseElectrons[2]->Pz(),looseElectrons[2]->Energy());
-					maxPt_lepton = TMath::Max(lepton1.Pt(), lepton2.Pt());
-					if(debug) cout << "[PROCESS]	Max lepton pt defined" << endl;
+					muon_lepton0 =(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+					if(looseMuons.size() > 1)
+					{
+						muon_lepton1 =(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy()); 
+						if(looseMuons.size() == 3)
+						{
+							muon_lepton2 =(looseMuons[2]->Px(),looseMuons[2]->Py(),looseMuons[2]->Pz(),looseMuons[2]->Energy()); 
+						}
+					}
 				}
 				
-				if(debug) cout << "[PROCESS]	Define mll" << endl;
+				if(looseMuons.size()==0)
+				{ 
+					leptonpair = electron_lepton0 + electron_lepton1; 
+					maxPt_lepton3 = electron_lepton0.Pt();
+					minPt_lepton3 = electron_lepton2.Pt();
+				}
+				else if(looseElectrons.size()==0) 
+				{
+					leptonpair = muon_lepton0 + muon_lepton1;
+					maxPt_lepton3 = muon_lepton0.Pt();
+					minPt_lepton3 = muon_lepton2.Pt(); 
+				}
+				else if(looseMuons.size() == 1 && muon_lepton0.Pt() < electron_lepton1.Pt()) 
+				{
+					leptonpair = electron_lepton0 + electron_lepton1;
+					maxPt_lepton3 = TMath::Max(muon_lepton0.Pt(), electron_lepton0.Pt());
+					minPt_lepton3 = muon_lepton0.Pt();
+				}
+				else if(looseElectrons.size() == 1 && electron_lepton0.Pt() < muon_lepton1.Pt()) 
+				{ 
+					leptonpair = muon_lepton0 + muon_lepton1;
+					maxPt_lepton3 = TMath::Max(muon_lepton0.Pt(), electron_lepton0.Pt());	
+					minPt_lepton3 = electron_lepton0.Pt();
+				}
+				else 
+				{
+					leptonpair = muon_lepton0 + electron_lepton0;
+					maxPt_lepton3 = TMath::Max(muon_lepton0.Pt(), electron_lepton0.Pt());
+					if(looseMuons.size() == 1) minPt_lepton3 = electron_lepton1.Pt(); 
+					if(looseElectrons.size()==1) minPt_lepton3 = muon_lepton1.Pt(); 
+				}
+
 				mll_z = -leptonpair.M();
 				if(debug)	cout << "[INFO]	mll = " << mll_z << endl;
 				
@@ -946,8 +994,9 @@ int main(int argc, char *argv[]){
 					histo1D["njets_btagged_B"]->Fill(selectedBJets.size(),Luminosity*scaleFactor);
 					histo1D["njets_light_B"]->Fill(selectedLightJets.size(),Luminosity*scaleFactor); 
 					histo1D["mll_z_B"]->Fill(mll_z,Luminosity*scaleFactor); 
-					histo1D["pt_lepton_max_B"]->Fill(maxPt_lepton,Luminosity*scaleFactor);
-					//histo1D["pt_jet_max_B"]->Fill(maxPt_jet,Luminosity*scale); 
+					histo1D["pt_lepton_max_B"]->Fill(maxPt_lepton3,Luminosity*scaleFactor);
+					histo1D["pt_lepton_min_B"]->Fill(minPt_lepton3,Luminosity*scaleFactor);
+					histo1D["pt_jet_max_B"]->Fill(selectedJets[0]->Pt(),Luminosity*scaleFactor); 
 				}
 				else
 				{	
@@ -955,7 +1004,9 @@ int main(int argc, char *argv[]){
 					histo1D["njets_btagged_S"]->Fill(selectedBJets.size(),Luminosity*scaleFactor);
 					histo1D["njets_light_S"]->Fill(selectedLightJets.size(),Luminosity*scaleFactor); 
 					histo1D["mll_z_S"]->Fill(mll_z,Luminosity*scaleFactor); 
-					histo1D["pt_lepton_max_S"]->Fill(maxPt_lepton,Luminosity*scaleFactor);
+					histo1D["pt_lepton_max_S"]->Fill(maxPt_lepton3,Luminosity*scaleFactor);
+					histo1D["pt_lepton_min_S"]->Fill(minPt_lepton3,Luminosity*scaleFactor);
+					histo1D["pt_jet_max_S"]->Fill(selectedJets[0]->Pt(),Luminosity*scaleFactor);
 				}
 			}
 	
