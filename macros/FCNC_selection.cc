@@ -901,7 +901,7 @@ int main(int argc, char *argv[]){
 			lepton2.Clear();
 			leptonpair.Clear();
 					
-			if(Passed_selection && channel.find("3L")!=string::npos && !is_signal)
+			if(Passed_selection && channel.find("3L")!=string::npos)
 			{	 
 			        if(debug) cout << "[PROCES]	In kinematic plots loop" << endl; 
 				if(looseElectrons.size()>1)
@@ -940,56 +940,23 @@ int main(int argc, char *argv[]){
 				mll_z = -leptonpair.M();
 				if(debug)	cout << "[INFO]	mll = " << mll_z << endl;
 				
-				histo1D["njets_B"]->Fill(selectedJets.size(),Luminosity*scaleFactor);
-				histo1D["njets_btagged_B"]->Fill(selectedBJets.size(),Luminosity*scaleFactor);
-				histo1D["njets_light_B"]->Fill(selectedLightJets.size(),Luminosity*scaleFactor); 
-				histo1D["mll_z_B"]->Fill(mll_z,Luminosity*scaleFactor); 
-				histo1D["pt_lepton_max_B"]->Fill(maxPt_lepton,Luminosity*scaleFactor);
-			}
-			if(Passed_selection && channel.find("3L")!=string::npos && is_signal)
-			{	 
-			        if(debug) cout << "[PROCES]	In kinematic plots loop: signal" << endl; 
-				if(looseElectrons.size()>1)
+				if(!is_signal)
 				{
-					if(debug) cout << "[PROCES]	In leptonpair for electrons" << endl;
-					lepton0 =(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
-					lepton1 =(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy()); 
-					leptonpair = lepton0+lepton1;
+					histo1D["njets_B"]->Fill(selectedJets.size(),Luminosity*scaleFactor);
+					histo1D["njets_btagged_B"]->Fill(selectedBJets.size(),Luminosity*scaleFactor);
+					histo1D["njets_light_B"]->Fill(selectedLightJets.size(),Luminosity*scaleFactor); 
+					histo1D["mll_z_B"]->Fill(mll_z,Luminosity*scaleFactor); 
+					histo1D["pt_lepton_max_B"]->Fill(maxPt_lepton,Luminosity*scaleFactor);
+					//histo1D["pt_jet_max_B"]->Fill(maxPt_jet,Luminosity*scale); 
 				}
-				if(looseMuons.size()>1)
-				{
-					if(debug) cout << "[PROCESS]	In leptonpair for muons" << endl;
-					lepton0 =(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
-					lepton1 =(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy()); 
-					leptonpair = lepton0+lepton1;
+				else
+				{	
+					histo1D["njets_S"]->Fill(selectedJets.size(),Luminosity*scaleFactor);
+					histo1D["njets_btagged_S"]->Fill(selectedBJets.size(),Luminosity*scaleFactor);
+					histo1D["njets_light_S"]->Fill(selectedLightJets.size(),Luminosity*scaleFactor); 
+					histo1D["mll_z_S"]->Fill(mll_z,Luminosity*scaleFactor); 
+					histo1D["pt_lepton_max_S"]->Fill(maxPt_lepton,Luminosity*scaleFactor);
 				}
-				
-				if(looseElectrons.size()  < 3)
-				{
-					if(debug) cout << "[PROCESS]	Define 3th lepton as a muon" << endl;
-					if(looseMuons.size()==1)lepton2 =(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
-					if(looseMuons.size()==2)lepton2 =(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
-					if(looseMuons.size()==3)lepton2 =(looseMuons[2]->Px(),looseMuons[2]->Py(),looseMuons[2]->Pz(),looseMuons[2]->Energy());
-					maxPt_lepton = TMath::Max(lepton1.Pt(), lepton2.Pt());
-					if(debug) cout << "[PROCESS]	Max lepton pt defined" << endl;
-				}
-				else if(looseElectrons.size() == 3)
-				{
-					if(debug) cout << "[PROCESS]	Define 3th lepton as an electron" << endl;
-					lepton2 =(looseElectrons[2]->Px(),looseElectrons[2]->Py(),looseElectrons[2]->Pz(),looseElectrons[2]->Energy());
-					maxPt_lepton = TMath::Max(lepton1.Pt(), lepton2.Pt());
-					if(debug) cout << "[PROCESS]	Max lepton pt defined" << endl;
-				}
-				
-				if(debug) cout << "[PROCESS]	Define mll" << endl;
-				mll_z = -leptonpair.M();
-				if(debug) cout << "[INFO]	mll = " << mll_z << endl;
-				
-				histo1D["njets_S"]->Fill(selectedJets.size(),Luminosity*scaleFactor);
-				histo1D["njets_btagged_S"]->Fill(selectedBJets.size(),Luminosity*scaleFactor);
-				histo1D["njets_light_S"]->Fill(selectedLightJets.size(),Luminosity*scaleFactor); 
-				histo1D["mll_z_S"]->Fill(mll_z,Luminosity*scaleFactor); 
-				histo1D["pt_lepton_max_S"]->Fill(maxPt_lepton,Luminosity*scaleFactor);
 			}
 	
 		}
