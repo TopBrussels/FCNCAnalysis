@@ -259,8 +259,11 @@ int main(int argc, char *argv[]){
     	MSPlot["JetEta"] = new MultiSamplePlot(datasets, "JetEta", 30,-3., 3., "Jet #eta");
     	MSPlot["JetPhi"] = new MultiSamplePlot(datasets, "JetPhi", 50, -4., 4., "Jet #phi");
 	MSPlot["MET"] = new MultiSamplePlot(datasets, "MET", 40, 0., 700., "MET");
-	
-	
+	MSPlot["mll_z"] = new MultiSamplePlot(datasets,"mll_z",50,0,100,"MLL leptons with same flavour");
+	MSPlot["pt_lepton_max"] = new MultiSamplePlot(datasets,"pt_lepton_max",50,0,100,"Pt lepton highest Pt");
+	MSPlot["pt_lepton_min"] = new MultiSamplePlot(datasets,"pt_lepton_min",50,0,100,"Pt lepton lowest Pt");
+	MSPlot["pt_jet_max"] = new MultiSamplePlot(datasets,"pt_jet_max",100,0,200,"Pt jet highest Pt"); 
+	MSPlot["NbOfSelectedLeptons"] = new MultiSamplePlot(datasets, "NbOfSelectedLeptons", 6, 0., 6., "Nb. of leptons");
 
 	//////////////////  Cut flow histograms	/////////////////////////////
 	char plotTitle_total_B[900];
@@ -273,6 +276,10 @@ int main(int argc, char *argv[]){
 	histo1D["njets_B"] = new TH1F("njets_B", plotTitle_total_B, 10,0,10);
 	histo1D["njets_B"]->Sumw2();
 	
+	sprintf(plotTitle_total_B,"The nb of leptons %s channel (B)",channelchar);
+	histo1D["nleptons_B"]= new TH1F("nleptons_B", plotTitle_total_B, 6,0,6);
+	histo1D["nleptons_B"]->Sumw2();
+	
 	sprintf(plotTitle_total_B,"The njets btagged %s channel (B)",channelchar);
 	histo1D["njets_btagged_B"] = new TH1F("njets_btagged_B", plotTitle_total_B, 10,0,10);
 	histo1D["njets_btagged_B"]->Sumw2();
@@ -281,34 +288,22 @@ int main(int argc, char *argv[]){
 	histo1D["njets_light_B"] = new TH1F("njets_light_B", plotTitle_total_B, 10,0,10);
 	histo1D["njets_light_B"]->Sumw2();
 
-
 	sprintf(plotTitle_total_B,"The invariant mass of same kind of leptons %s channel (B)",channelchar);
 	histo1D["mll_z_B"] = new TH1F("mll_z_B", plotTitle_total_B, 50,0,100);
 	histo1D["mll_z_B"]->Sumw2();
-	
 	
 	sprintf(plotTitle_total_B,"The pt of lepton with largest pt %s channel (B)",channelchar);
 	histo1D["pt_lepton_max_B"] = new TH1F("pt_lepton_max_B", plotTitle_total_B, 50,0,100);
 	histo1D["pt_lepton_max_B"]->Sumw2();
 	
 	sprintf(plotTitle_total_B,"The pt of lepton with smallest pt %s channel (B)",channelchar);
-	histo1D["pt_lepton_min_B"] = new TH1F("pt_lepton_max_B", plotTitle_total_B, 50,0,100);
-	histo1D["pt_lepton_max_B"]->Sumw2();
+	histo1D["pt_lepton_min_B"] = new TH1F("pt_lepton_min_B", plotTitle_total_B, 50,0,100);
+	histo1D["pt_lepton_min_B"]->Sumw2();
 	
 	sprintf(plotTitle_total_B,"The pt of jet with largest pt %s channel (B)",channelchar);
 	histo1D["pt_jet_max_B"] = new TH1F("pt_jet_max_B", plotTitle_total_B, 100,0,200);
 	histo1D["pt_jet_max_B"]->Sumw2();
-	/*
-	histo_eta_jet_max
-	histo_eta_jet
-	histo_eta_lepton
-	histo_ptsys
-	histo_met
-	histo_ht
-	
-	
-	
-	*/
+
 
 	char plotTitle_total_S[900];
 	sprintf(plotTitle_total_S,"The total cutflow for %s channel (S)",channelchar); 
@@ -320,6 +315,10 @@ int main(int argc, char *argv[]){
 	histo1D["njets_S"] = new TH1F("njets_S", plotTitle_total_S, 10,0,10);
 	histo1D["njets_S"]->Sumw2();
 	
+	sprintf(plotTitle_total_S,"The nb of leptons %s channel (S)",channelchar);
+	histo1D["nleptons_S"]= new TH1F("nleptons_S", plotTitle_total_S, 6,0,6);
+	histo1D["nleptons_S"]->Sumw2();
+	
 	sprintf(plotTitle_total_S,"The njets btagged %s channel (S)",channelchar);
 	histo1D["njets_btagged_S"] = new TH1F("njets_btagged_S", plotTitle_total_S, 10,0,10);
 	histo1D["njets_btagged_S"]->Sumw2();
@@ -327,7 +326,6 @@ int main(int argc, char *argv[]){
 	sprintf(plotTitle_total_S,"The njets light %s channel (S)",channelchar);
 	histo1D["njets_light_S"] = new TH1F("njets_light_S", plotTitle_total_S, 10,0,10);
 	histo1D["njets_light_S"]->Sumw2();
-
 
 	sprintf(plotTitle_total_S,"The invariant mass of same kind of leptons %s channel (S)",channelchar);
 	histo1D["mll_z_S"] = new TH1F("mll_z_S", plotTitle_total_S, 50,0,100);
@@ -339,8 +337,8 @@ int main(int argc, char *argv[]){
 	histo1D["pt_lepton_max_S"]->Sumw2();
 	
 	sprintf(plotTitle_total_S,"The pt of lepton with smallest pt %s channel (S)",channelchar);
-	histo1D["pt_lepton_min_S"] = new TH1F("pt_lepton_max_S", plotTitle_total_S, 50,0,100);
-	histo1D["pt_lepton_max_S"]->Sumw2();
+	histo1D["pt_lepton_min_S"] = new TH1F("pt_lepton_min_S", plotTitle_total_S, 50,0,100);
+	histo1D["pt_lepton_min_S"]->Sumw2();
 	
 	sprintf(plotTitle_total_S,"The pt of jet with largest pt %s channel (S)",channelchar);
 	histo1D["pt_jet_max_S"] = new TH1F("pt_jet_max_S", plotTitle_total_S, 100,0,200);
@@ -912,31 +910,41 @@ int main(int argc, char *argv[]){
 			TLorentzVector electron_lepton0;
 			TLorentzVector electron_lepton1;
 			TLorentzVector electron_lepton2;
+			TLorentzVector electron_lepton3;
 			TLorentzVector muon_lepton0;
 			TLorentzVector muon_lepton1;
 			TLorentzVector muon_lepton2;
+			TLorentzVector muon_lepton3;
 			TLorentzVector leptonpair; 
 			
 			electron_lepton0.Clear(); 
 			electron_lepton1.Clear();
 			electron_lepton2.Clear();
+			electron_lepton3.Clear();
 			muon_lepton0.Clear(); 
 			muon_lepton1.Clear();
 			muon_lepton2.Clear();
+			muon_lepton3.Clear();
 			leptonpair.Clear();
 					
-			if(Passed_selection && channel.find("3L")!=string::npos)
-			{	 
+			if(Passed_selection && (channel.find("3L")!=string::npos || channel.find("4L")!=string::npos ||channel.find("SSdilepton")!=string::npos|| channel.find("OSdilepton")!=string::npos ))
+			{
+				//in this loop are at least 2 leptons	 
 			        if(debug) cout << "[PROCES]	In kinematic plots loop" << endl; 
+				//define leptons
 				if(looseElectrons.size() > 0)
 				{
 					electron_lepton0 =(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
 					if(looseElectrons.size() > 1)
 					{
 						electron_lepton1 =(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy()); 
-						if(looseElectrons.size() == 3)
+						if(looseElectrons.size() > 2)
 						{
 							electron_lepton2 =(looseElectrons[2]->Px(),looseElectrons[2]->Py(),looseElectrons[2]->Pz(),looseElectrons[2]->Energy()); 
+							if(looseElectrons.size() == 4)
+							{
+								electron_lepton3 =(looseElectrons[3]->Px(),looseElectrons[3]->Py(),looseElectrons[3]->Pz(),looseElectrons[3]->Energy()); 
+							}
 						}
 					}
 				}
@@ -949,42 +957,179 @@ int main(int argc, char *argv[]){
 						if(looseMuons.size() == 3)
 						{
 							muon_lepton2 =(looseMuons[2]->Px(),looseMuons[2]->Py(),looseMuons[2]->Pz(),looseMuons[2]->Energy()); 
+							if(looseMuons.size() == 4)
+							{
+								muon_lepton3 =(looseMuons[3]->Px(),looseMuons[3]->Py(),looseMuons[3]->Pz(),looseMuons[3]->Energy()); 
+							}
 						}
 					}
 				}
 				
+				//Start declaring the variables
 				if(looseMuons.size()==0)
 				{ 
+					//no muons present
 					leptonpair = electron_lepton0 + electron_lepton1; 
 					maxPt_lepton3 = electron_lepton0.Pt();
-					minPt_lepton3 = electron_lepton2.Pt();
+					if(looseElectrons.size()==4) minPt_lepton3 = electron_lepton3.Pt();
+					else if (looseElectrons.size()==3) minPt_lepton3 = electron_lepton2.Pt();
+					else if (looseElectrons.size()==2) minPt_lepton3 = electron_lepton1.Pt();
 				}
 				else if(looseElectrons.size()==0) 
 				{
-					leptonpair = muon_lepton0 + muon_lepton1;
+					//no electrons present
 					maxPt_lepton3 = muon_lepton0.Pt();
-					minPt_lepton3 = muon_lepton2.Pt(); 
-				}
-				else if(looseMuons.size() == 1 && muon_lepton0.Pt() < electron_lepton1.Pt()) 
-				{
-					leptonpair = electron_lepton0 + electron_lepton1;
-					maxPt_lepton3 = TMath::Max(muon_lepton0.Pt(), electron_lepton0.Pt());
-					minPt_lepton3 = muon_lepton0.Pt();
-				}
-				else if(looseElectrons.size() == 1 && electron_lepton0.Pt() < muon_lepton1.Pt()) 
-				{ 
-					leptonpair = muon_lepton0 + muon_lepton1;
-					maxPt_lepton3 = TMath::Max(muon_lepton0.Pt(), electron_lepton0.Pt());	
-					minPt_lepton3 = electron_lepton0.Pt();
+					if(looseMuons.size()==4) minPt_lepton3 = muon_lepton3.Pt();
+					else if (looseMuons.size()==3) minPt_lepton3 = muon_lepton2.Pt();
+					else if (looseMuons.size()==2) minPt_lepton3 = muon_lepton1.Pt();
 				}
 				else 
-				{
-					leptonpair = muon_lepton0 + electron_lepton0;
-					maxPt_lepton3 = TMath::Max(muon_lepton0.Pt(), electron_lepton0.Pt());
-					if(looseMuons.size() == 1) minPt_lepton3 = electron_lepton1.Pt(); 
-					if(looseElectrons.size()==1) minPt_lepton3 = muon_lepton1.Pt(); 
+				{	
+					if(looseElectrons.size() == 1 && looseMuons.size() ==1)
+					{
+						if(electron_lepton0.Pt()>muon_lepton0.Pt())
+						{
+						 	maxPt_lepton3 = electron_lepton0.Pt(); 
+							minPt_lepton3 = muon_lepton0.Pt();
+						}
+						else if(electron_lepton0.Pt()< muon_lepton0.Pt())
+						{
+							minPt_lepton3 = electron_lepton0.Pt(); 
+							maxPt_lepton3 = muon_lepton0.Pt();
+						}
+					}
+					else if(looseElectrons.size() == 1 && looseMuons.size() == 2)
+					{
+						leptonpair = muon_lepton0 + muon_lepton1;
+						if(electron_lepton0.Pt()>muon_lepton0.Pt())
+						{
+						 	maxPt_lepton3 = electron_lepton0.Pt(); 
+							minPt_lepton3 = muon_lepton1.Pt();
+						}
+						else if(electron_lepton0.Pt() > muon_lepton1.Pt())
+						{
+						 	maxPt_lepton3 = muon_lepton0.Pt(); 
+							minPt_lepton3 = muon_lepton1.Pt();
+						}
+						else 
+						{
+						 	maxPt_lepton3 = muon_lepton0.Pt(); 
+							minPt_lepton3 = electron_lepton0.Pt();
+						}
+					}
+					else if(looseElectrons.size() == 1 && looseMuons.size() == 3)
+					{
+						leptonpair = muon_lepton0 + muon_lepton1;
+						if(electron_lepton0.Pt()>muon_lepton0.Pt())
+						{
+						 	maxPt_lepton3 = electron_lepton0.Pt(); 
+							minPt_lepton3 = muon_lepton2.Pt();
+						}
+						else if(electron_lepton0.Pt() > muon_lepton1.Pt())
+						{
+						 	maxPt_lepton3 = muon_lepton0.Pt(); 
+							minPt_lepton3 = muon_lepton2.Pt();
+						}
+						else if(electron_lepton0.Pt() < muon_lepton2.Pt())
+						{
+						 	maxPt_lepton3 = muon_lepton0.Pt(); 
+							minPt_lepton3 = electron_lepton0.Pt();
+						}
+						else 
+						{
+						 	maxPt_lepton3 = muon_lepton0.Pt(); 
+							minPt_lepton3 = muon_lepton2.Pt();
+						}
+					}
+					else if(looseElectrons.size()==2 && looseMuons.size() == 1)
+					{
+						leptonpair = electron_lepton0 + electron_lepton1;
+						
+						if(muon_lepton0.Pt()>electron_lepton0.Pt())
+						{ 
+							maxPt_lepton3 = muon_lepton0.Pt(); 
+							minPt_lepton3 = electron_lepton1.Pt();
+						}
+						else if(muon_lepton0.Pt() > electron_lepton1.Pt())
+						{ 
+							maxPt_lepton3 = electron_lepton0.Pt();
+							minPt_lepton3 = electron_lepton1.Pt();
+						}
+						else
+						{
+							maxPt_lepton3 = electron_lepton0.Pt();
+							minPt_lepton3 = muon_lepton0.Pt();
+						}
+					}
+					else if(looseElectrons.size()==2 && looseMuons.size() == 2)
+					{
+						if(muon_lepton1.Pt()>electron_lepton0.Pt())
+						{
+							leptonpair = muon_lepton0 + muon_lepton1;
+							maxPt_lepton3 = muon_lepton0.Pt(); 
+							minPt_lepton3 = electron_lepton1.Pt();
+						}
+						else if(electron_lepton1.Pt()>muon_lepton0.Pt())
+						{
+							leptonpair = electron_lepton0 + electron_lepton1;
+							maxPt_lepton3 = electron_lepton0.Pt(); 
+							minPt_lepton3 = muon_lepton1.Pt();
+						}
+						else if(electron_lepton0.Pt() > muon_lepton0.Pt())
+						{
+							leptonpair = electron_lepton0 + electron_lepton1;
+							maxPt_lepton3 = electron_lepton0.Pt();
+							if (muon_lepton0.Pt() > electron_lepton1.Pt())
+							{
+								minPt_lepton3 = electron_lepton1.Pt();
+							}
+							else
+							{
+								minPt_lepton3 = muon_lepton1.Pt();
+							}
+						}
+						else if(electron_lepton0.Pt() < muon_lepton0.Pt())
+						{
+							maxPt_lepton3 = muon_lepton0.Pt();
+							leptonpair = muon_lepton0 + muon_lepton1;
+							if(electron_lepton0.Pt()>muon_lepton1.Pt())
+							{
+								minPt_lepton3 = muon_lepton1.Pt();
+							}
+							else
+							{
+								minPt_lepton3 = electron_lepton1.Pt();
+							}
+						}
+					}
+					else if(looseElectrons.size()==3 && looseMuons.size() == 1)
+					{
+						leptonpair = electron_lepton0 + electron_lepton1;
+						if(muon_lepton0.Pt()>electron_lepton0.Pt())
+						{ 
+							maxPt_lepton3 = muon_lepton0.Pt(); 
+							minPt_lepton3 = electron_lepton2.Pt();
+						}
+						else if(muon_lepton0.Pt() > electron_lepton1.Pt())
+						{ 
+							maxPt_lepton3 = electron_lepton0.Pt();
+							minPt_lepton3 = electron_lepton2.Pt();
+						}
+						else if(muon_lepton0.Pt() < electron_lepton2.Pt())
+						{
+							maxPt_lepton3 = electron_lepton0.Pt();
+							minPt_lepton3 = muon_lepton0.Pt();
+						}
+						else
+						{
+							maxPt_lepton3 = electron_lepton0.Pt();
+							minPt_lepton3 = electron_lepton2.Pt();
+						}
+						
+					}
 				}
 
+				
 				mll_z = -leptonpair.M();
 				if(debug)	cout << "[INFO]	mll = " << mll_z << endl;
 				
@@ -993,6 +1138,7 @@ int main(int argc, char *argv[]){
 					histo1D["njets_B"]->Fill(selectedJets.size(),Luminosity*scaleFactor);
 					histo1D["njets_btagged_B"]->Fill(selectedBJets.size(),Luminosity*scaleFactor);
 					histo1D["njets_light_B"]->Fill(selectedLightJets.size(),Luminosity*scaleFactor); 
+					histo1D["nleptons_B"]->Fill(looseMuons.size()+looseElectrons.size(),Luminosity*scaleFactor); 
 					histo1D["mll_z_B"]->Fill(mll_z,Luminosity*scaleFactor); 
 					histo1D["pt_lepton_max_B"]->Fill(maxPt_lepton3,Luminosity*scaleFactor);
 					histo1D["pt_lepton_min_B"]->Fill(minPt_lepton3,Luminosity*scaleFactor);
@@ -1003,6 +1149,7 @@ int main(int argc, char *argv[]){
 					histo1D["njets_S"]->Fill(selectedJets.size(),Luminosity*scaleFactor);
 					histo1D["njets_btagged_S"]->Fill(selectedBJets.size(),Luminosity*scaleFactor);
 					histo1D["njets_light_S"]->Fill(selectedLightJets.size(),Luminosity*scaleFactor); 
+					histo1D["nleptons_S"]->Fill(looseMuons.size()+looseElectrons.size(),Luminosity*scaleFactor); 
 					histo1D["mll_z_S"]->Fill(mll_z,Luminosity*scaleFactor); 
 					histo1D["pt_lepton_max_S"]->Fill(maxPt_lepton3,Luminosity*scaleFactor);
 					histo1D["pt_lepton_min_S"]->Fill(minPt_lepton3,Luminosity*scaleFactor);
