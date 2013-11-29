@@ -40,7 +40,6 @@ void FCNC_CutEfficiencies(string channel = "SSdilepton"){
 	Vector_SampleName.push_back("zz");
 	Vector_SampleName.push_back("ttz");
 	Vector_SampleName.push_back("Zjets");
-	Vector_SampleName.push_back("zz");
 	Vector_SampleName.push_back("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");
 	Vector_SampleName.push_back("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL");
 	Vector_SampleName.push_back("TTJetsTocHbW_HToWW_WToLNuL_HctL");
