@@ -112,7 +112,7 @@ int main(int argc, char *argv[]){
 			cout << "--OSdilepton: use the opposite sign dilepton channel" << endl;
 			cout << "--3L: use the 3 lepton channel (exactly 3)" << endl;
 			cout << "--4L: use the 4 lepton channel (at least 4)" << endl;
-			cout << "--Bigxml: use the xml file containing all samples (not channel dependent)" << endl; 
+			cout << "--Bigxml: use the xml file containing all samples (NOT CHANNEL DEPENDENT!!)" << endl; 
                 	return 0;
         	}		
 		if (argval=="--btag") {
@@ -264,8 +264,9 @@ int main(int argc, char *argv[]){
 	MSPlot["pt_lepton_min"] = new MultiSamplePlot(datasets,"pt_lepton_min",50,0,100,"Pt lepton lowest Pt");
 	MSPlot["pt_jet_max"] = new MultiSamplePlot(datasets,"pt_jet_max",100,0,200,"Pt jet highest Pt"); 
 	MSPlot["NbOfSelectedLeptons"] = new MultiSamplePlot(datasets, "NbOfSelectedLeptons", 6, 0., 6., "Nb. of leptons");
+	MSPlot["Mbb_H"] = new MultiSamplePlot(datasets, "Mbb_H", 50, 0., 160., "Mbb");
 
-	//////////////////  Cut flow histograms	/////////////////////////////
+	//////////////////  Cut flow histograms	added BACKGROUND samples/////////////////////////////
 	char plotTitle_total_B[900];
 	sprintf(plotTitle_total_B,"The total cutflow for %s channel (B)",channelchar); 
 	histo1D["cutflow_total_B"] = new TH1F("cutflow_total_B", plotTitle_total_B, 6, -0.5,5.5);
@@ -304,7 +305,11 @@ int main(int argc, char *argv[]){
 	histo1D["pt_jet_max_B"] = new TH1F("pt_jet_max_B", plotTitle_total_B, 100,0,200);
 	histo1D["pt_jet_max_B"]->Sumw2();
 
+	sprintf(plotTitle_total_B,"The invariant mass of bb system (TROOT-level) %s channel (B)",channelchar);
+	histo1D["Mbb_H_B"] = new TH1F("Mbb_H_B", plotTitle_total_B, 100,0,200);
+	histo1D["Mbb_H_B"]->Sumw2();
 
+	//////////////////  Cut flow histograms	added SIGNAL samples/////////////////////////////
 	char plotTitle_total_S[900];
 	sprintf(plotTitle_total_S,"The total cutflow for %s channel (S)",channelchar); 
 	histo1D["cutflow_total_S"] = new TH1F("cutflow_total_S", plotTitle_total_S, 6, -0.5,5.5);
@@ -344,7 +349,10 @@ int main(int argc, char *argv[]){
 	histo1D["pt_jet_max_S"] = new TH1F("pt_jet_max_S", plotTitle_total_S, 100,0,200);
 	histo1D["pt_jet_max_S"]->Sumw2();
 	
-
+	sprintf(plotTitle_total_S,"The invariant mass of bb system (TROOT-level) %s channel (S)",channelchar);
+	histo1D["Mbb_H_S"] = new TH1F("Mbb_H_S", plotTitle_total_S, 100,0,200);
+	histo1D["Mbb_H_S"]->Sumw2();
+	
 	// Define different cutflow plots for each channel and dataset	
 	for(unsigned int d = 0; d < datasets.size();d++){ 
 		//Load datasets
@@ -555,6 +563,7 @@ int main(int argc, char *argv[]){
 			vector<TRootElectron*> looseElectrons = selection.GetSelectedLooseDiElectrons();
 			vector<TRootJet*> selectedBJets; // B-Jets, to be filled after b-tagging
     			vector<TRootJet*> selectedLightJets; // light-Jets, to be filled afer b-tagging
+			vector<TRootMCParticle*> mcParticles_flav;
 			// vector<TRootPhoton*> selectedPhotons = selection.GetSelecetedPhotons(); Photons not yet included in the selection class!!!!
 			
 			
@@ -562,6 +571,15 @@ int main(int argc, char *argv[]){
 			sort(selectedJets.begin(),selectedJets.end(),HighestPt());   
 			sort(looseElectrons.begin(),looseElectrons.end(),HighestPt());
 			sort(looseMuons.begin(),looseMuons.end(),HighestPt());
+			
+			
+			TRootGenEvent* genEvt_flav = 0;
+    			genEvt_flav = treeLoader.LoadGenEvent(ievent,false);
+
+    			//load the MC particles of the TopTree into a vector
+    			treeLoader.LoadMCEvent(ievent, genEvt_flav, 0, mcParticles_flav,false); 
+			
+			
 			
 			//Start btagging 
 			int nTags = 0;
@@ -763,7 +781,7 @@ int main(int argc, char *argv[]){
 						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, "2 SS L");
 						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, "2 SS L");
 						
-						if(selectedJets.size()>=1)
+						if(selectedJets.size()>=2)
 						{
 							//fill histograms
 							if(!is_signal)histo1D["cutflow_total_B"]->Fill(4);
@@ -773,7 +791,7 @@ int main(int argc, char *argv[]){
 							//set labels
 							if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5, ">1j");
 							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5, ">1j");		
-							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">=1j");
+							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">=2j");
 							Passed_selection = true;
 						}						
 					}
@@ -827,7 +845,7 @@ int main(int argc, char *argv[]){
 						
 						Passed_selection = true;
 					}
-						if(selectedJets.size()>=1)
+						if(selectedJets.size()>=2)
 						{
 							//fill histograms
 							if(!is_signal)histo1D["cutflow_total_B"]->Fill(4);
@@ -837,7 +855,7 @@ int main(int argc, char *argv[]){
 							//set labels
 							if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5, ">1j");
 							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5, ">1j");		
-							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">=1j");
+							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">=2j");
 							Passed_selection = true;
 						}		
 					if(debug) cout << "out fill OS dilepton " << endl;
@@ -900,7 +918,7 @@ int main(int argc, char *argv[]){
 					MSPlot["JetEta"]->Fill(selectedJets[seljet1]->Eta() , datasets[d], true, Luminosity*scaleFactor);
                  			MSPlot["JetPhi"]->Fill(selectedJets[seljet1]->Phi() , datasets[d], true, Luminosity*scaleFactor);
 				}
-			}
+			
 			
 			//variable definition
 			double mll_z = 0;
@@ -927,7 +945,7 @@ int main(int argc, char *argv[]){
 			muon_lepton3.Clear();
 			leptonpair.Clear();
 					
-			if(Passed_selection && (channel.find("3L")!=string::npos || channel.find("4L")!=string::npos ||channel.find("SSdilepton")!=string::npos|| channel.find("OSdilepton")!=string::npos ))
+			if(channel.find("3L")!=string::npos || channel.find("4L")!=string::npos ||channel.find("SSdilepton")!=string::npos|| channel.find("OSdilepton")!=string::npos )
 			{
 				//in this loop are at least 2 leptons	 
 			        if(debug) cout << "[PROCES]	In kinematic plots loop" << endl; 
@@ -1155,7 +1173,49 @@ int main(int argc, char *argv[]){
 					histo1D["pt_lepton_min_S"]->Fill(minPt_lepton3,Luminosity*scaleFactor);
 					histo1D["pt_jet_max_S"]->Fill(selectedJets[0]->Pt(),Luminosity*scaleFactor);
 				}
-			}
+			}//end SS, OS, 4L, 3L
+			if(channel.find("1L3B")!=string::npos){
+				if(debug) cout << "In Passed_selection 1L3B statement" << endl;
+			
+				TLorentzVector b_NoTopMother0;
+				TLorentzVector b_NoTopMother1;
+				TLorentzVector bb_NoTopMother_combination;
+				b_NoTopMother0.Clear();
+				b_NoTopMother1.Clear();
+				bb_NoTopMother_combination.Clear();
+				
+				bool firstnonB = false;
+				int bNoTopCounter = 0;
+
+				for(unsigned int iJet=0; iJet<mcParticles_flav.size(); iJet++){
+                                	int pdgID = mcParticles_flav[iJet]->type();
+					int motherID = mcParticles_flav[iJet]->motherType();
+				
+				
+                                      	if(fabs(pdgID) == 5 && fabs(motherID) != 6){
+						bNoTopCounter++;
+                                		if(!firstnonB){
+							b_NoTopMother0 = (mcParticles_flav[iJet]->Px(),mcParticles_flav[iJet]->Py(),mcParticles_flav[iJet]->Pz(),mcParticles_flav[iJet]->Energy()); 
+							firstnonB = true;
+						}
+						if(firstnonB) b_NoTopMother1 = (mcParticles_flav[iJet]->Px(),mcParticles_flav[iJet]->Py(),mcParticles_flav[iJet]->Pz(),mcParticles_flav[iJet]->Energy());
+                                	}
+				}
+				//cout << bNoTopCounter << endl;
+				if(bNoTopCounter >= 2){
+					bb_NoTopMother_combination = b_NoTopMother0 + b_NoTopMother1;
+					
+					if (debug) cout << "Inv mass 2b" << fabs(bb_NoTopMother_combination.M()) << endl;
+					
+					MSPlot["Mbb_H"]->Fill(fabs(bb_NoTopMother_combination.M()), datasets[d], true, Luminosity*scaleFactor);
+					if(!is_signal) histo1D["Mbb_H_B"]->Fill(fabs(bb_NoTopMother_combination.M()),Luminosity*scaleFactor);
+					else histo1D["Mbb_H_S"]->Fill(fabs(bb_NoTopMother_combination.M()),Luminosity*scaleFactor);
+				}
+				
+			}//end of 1L3B
+			
+			
+			}//end of Passed_selection
 	
 		}
 		
