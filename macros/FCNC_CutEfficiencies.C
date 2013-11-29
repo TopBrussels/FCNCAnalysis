@@ -62,7 +62,7 @@ void FCNC_CutEfficiencies(string channel = "SSdilepton"){
 	//loop over all TH1F in the input rootfile and check if the corresponding samples are present in them
 	for(int j = 0; j < Vector_SampleName.size(); j++){
 
-		string Path_To_Histo = "Histos1D_cutflows/cutflow_";
+		string Path_To_Histo = "Histos1D/cutflow_";
 		Path_To_Histo += Vector_SampleName[j];
 		
 		TH1F *Histo( (TH1F*) file->Get(Path_To_Histo.c_str()) );
@@ -76,7 +76,7 @@ void FCNC_CutEfficiencies(string channel = "SSdilepton"){
 	TFile *outputFile = new TFile(outputName.c_str(),"RECREATE"); 
 	
 	for( int i = 0; i < Efficiency_cutflows.size(); i++){
-		int NbOfEvents = Efficiency_cutflows[i]->GetBinContent(2);
+		double NbOfEvents = Efficiency_cutflows[i]->GetBinContent(2);
 		
 		Efficiency_cutflows[i]->Scale(1./NbOfEvents);
 		Efficiency_cutflows[i]->Write();
@@ -87,18 +87,20 @@ void FCNC_CutEfficiencies(string channel = "SSdilepton"){
 	{
 		TH1F *histogram = (TH1F*) Efficiency_cutflows[k]; 
 		//cout << "Histogram: " << k << " with name " << histogram->GetName() << " and title " << histogram->GetTitle() << endl;
-		int NbOfbins = histogram->GetNbinsX(); 
-		cout <<  histogram->GetTitle() << " : " << endl;
+		double NbOfbins = histogram->GetNbinsX(); 
+		string HistoTitle = histogram->GetTitle();
+		
+		cout << HistoTitle  << " : " << endl;
 		for(int i = 1; i < NbOfbins; i ++)
 		{
-			float icontent = histogram->GetBinContent(i); 
-			float icontent_prev = 1;
-			if(i>2) icontent_prev=histogram->GetBinContent(i-1);
-			if(icontent_prev != 0)
+			string binlabel = histogram->GetXaxis()->GetBinLabel(i);
+			double icontent = histogram->GetBinContent(i); 
+			if(!binlabel.empty())
 			{
-				cout << " bincontent bin " << i << " : " << icontent << endl;
-			} 
+				cout << binlabel << " : " << icontent << " efficiency -- " << icontent*100 <<" % efficiency"<< endl;
+			}
 		}
+				
 	}
 
 
