@@ -264,6 +264,7 @@ int main(int argc, char *argv[]){
         MSPlot["pt_lepton_min"] = new MultiSamplePlot(datasets,"pt_lepton_min",50,0,100,"Pt lepton lowest Pt");
         MSPlot["pt_jet_max"] = new MultiSamplePlot(datasets,"pt_jet_max",100,0,200,"Pt jet highest Pt");
         MSPlot["NbOfSelectedLeptons"] = new MultiSamplePlot(datasets, "NbOfSelectedLeptons", 6, 0., 6., "Nb. of leptons");
+	MSPlot["Mbb_H"] = new MultiSamplePlot(datasets, "Mbb_H", 50, 0., 160., "Mbb");
 
         ////////////////// Cut flow histograms        /////////////////////////////
         char plotTitle_total_B[900];
@@ -304,6 +305,12 @@ int main(int argc, char *argv[]){
         histo1D["pt_jet_max_B"] = new TH1F("pt_jet_max_B", plotTitle_total_B, 100,0,200);
         histo1D["pt_jet_max_B"]->Sumw2();
 
+	sprintf(plotTitle_total_B,"The invariant mass of bb system (TROOT-level) %s channel (B)",channelchar);
+	histo1D["Mbb_H_B"] = new TH1F("Mbb_H_B", plotTitle_total_B, 100,0,200);
+	histo1D["Mbb_H_B"]->Sumw2();
+	
+	
+	
 
         char plotTitle_total_S[900];
         sprintf(plotTitle_total_S,"The total cutflow for %s channel (S)",channelchar);
@@ -344,7 +351,12 @@ int main(int argc, char *argv[]){
         histo1D["pt_jet_max_S"] = new TH1F("pt_jet_max_S", plotTitle_total_S, 100,0,200);
         histo1D["pt_jet_max_S"]->Sumw2();
         
-
+	sprintf(plotTitle_total_S,"The invariant mass of bb system (TROOT-level) %s channel (S)",channelchar);
+	histo1D["Mbb_H_S"] = new TH1F("Mbb_H_S", plotTitle_total_S, 100,0,200);
+	histo1D["Mbb_H_S"]->Sumw2();
+	
+	
+	
         // Define different cutflow plots for each channel and dataset        
         for(unsigned int d = 0; d < datasets.size();d++){
                 //Load datasets
@@ -554,7 +566,8 @@ int main(int argc, char *argv[]){
                         vector<TRootMuon*> looseMuons = selection.GetSelectedLooseMuons();
                         vector<TRootElectron*> looseElectrons = selection.GetSelectedLooseDiElectrons();
                         vector<TRootJet*> selectedBJets; // B-Jets, to be filled after b-tagging
-                            vector<TRootJet*> selectedLightJets; // light-Jets, to be filled afer b-tagging
+                        vector<TRootJet*> selectedLightJets; // light-Jets, to be filled afer b-tagging
+			vector<TRootMCParticle*> mcParticles_flav;
                         // vector<TRootPhoton*> selectedPhotons = selection.GetSelecetedPhotons(); Photons not yet included in the selection class!!!!
                         
                         
@@ -562,7 +575,16 @@ int main(int argc, char *argv[]){
                         sort(selectedJets.begin(),selectedJets.end(),HighestPt());
                         sort(looseElectrons.begin(),looseElectrons.end(),HighestPt());
                         sort(looseMuons.begin(),looseMuons.end(),HighestPt());
-                        
+
+
+			TRootGenEvent* genEvt_flav = 0;
+    			genEvt_flav = treeLoader.LoadGenEvent(ievent,false);
+
+    			//load the MC particles of the TopTree into a vector
+    			treeLoader.LoadMCEvent(ievent, genEvt_flav, 0, mcParticles_flav,false); 
+
+
+
                         //Start btagging
                         int nTags = 0;
                         bool Passed_selection = false;
@@ -1214,8 +1236,48 @@ int main(int argc, char *argv[]){
                         
                         }
                         
+                        if(Passed_selection && channel.find("1L3B")!=string::npos){
+				if(debug) cout << "In Passed_selection 1L3B statement" << endl;
+			
+				TLorentzVector b_NoTopMother0;
+				TLorentzVector b_NoTopMother1;
+				TLorentzVector bb_NoTopMother_combination;
+				b_NoTopMother0.Clear();
+				b_NoTopMother1.Clear();
+				bb_NoTopMother_combination.Clear();
+				
+				bool firstnonB = false;
+				int bNoTopCounter = 0;
+
+				for(unsigned int iJet=0; iJet<mcParticles_flav.size(); iJet++){
+                                	int pdgID = mcParticles_flav[iJet]->type();
+					int motherID = mcParticles_flav[iJet]->motherType();
+				
+				
+                                      	if(fabs(pdgID) == 5 && fabs(motherID) != 6){
+						bNoTopCounter++;
+                                		if(!firstnonB){
+							b_NoTopMother0 = (mcParticles_flav[iJet]->Px(),mcParticles_flav[iJet]->Py(),mcParticles_flav[iJet]->Pz(),mcParticles_flav[iJet]->Energy()); 
+							firstnonB = true;
+						}
+						if(firstnonB) b_NoTopMother1 = (mcParticles_flav[iJet]->Px(),mcParticles_flav[iJet]->Py(),mcParticles_flav[iJet]->Pz(),mcParticles_flav[iJet]->Energy());
+                                	}
+				}
+				//cout << bNoTopCounter << endl;
+				if(bNoTopCounter >= 2){
+					bb_NoTopMother_combination = b_NoTopMother0 + b_NoTopMother1;
+					
+					if (debug) cout << "Inv mass 2b" << fabs(bb_NoTopMother_combination.M()) << endl;
+					
+					MSPlot["Mbb_H"]->Fill(fabs(bb_NoTopMother_combination.M()), datasets[d], true, Luminosity*scaleFactor);
+					if(!is_signal) histo1D["Mbb_H_B"]->Fill(fabs(bb_NoTopMother_combination.M()),Luminosity*scaleFactor);
+					else histo1D["Mbb_H_S"]->Fill(fabs(bb_NoTopMother_combination.M()),Luminosity*scaleFactor);
+				}
+				
+			}//end of 1L3B
                         
-                        
+			
+			
                         if(Passed_selection && _dilepton )
                         {
                                 if(selectedJets.size()>2)
