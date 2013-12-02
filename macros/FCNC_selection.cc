@@ -355,13 +355,13 @@ int main(int argc, char *argv[]){
 		if(datasetName.find("ttbar")!=string::npos) {sprintf(datasetNamechar,"ttbar");}
 		if(datasetName.find("ttbar_fullLept")!=string::npos) {sprintf(datasetNamechar,"ttbar_fullLept");}
 		if(datasetName.find("ttbar_semiLept")!=string::npos) {sprintf(datasetNamechar,"ttbar_semiLept");}
-		if(datasetName.find("Wjets")!=string::npos) {sprintf(datasetNamechar,"wjets");}
+		if(datasetName.find("Wjets")!=string::npos || datasetName.find("wjets")!=string::npos) {sprintf(datasetNamechar,"wjets");}
 		if(datasetName.find("ttt")!=string::npos) {sprintf(datasetNamechar,"ttt");}
 		if(datasetName.find("ttW")!=string::npos) {sprintf(datasetNamechar,"ttw");}
-		if(datasetName.find("WZ")!=string::npos) {sprintf(datasetNamechar,"wz");}
-		if(datasetName.find("ZZ")!=string::npos) {sprintf(datasetNamechar,"zz");}
-		if(datasetName.find("ttZ")!=string::npos) {sprintf(datasetNamechar,"ttz");}
-		if(datasetName.find("Zjets")!=string::npos) {sprintf(datasetNamechar,"Zjets");}
+		if(datasetName.find("WZ")!=string::npos || datasetName.find("wz")!=string::npos) {sprintf(datasetNamechar,"wz");}
+		if(datasetName.find("ZZ")!=string::npos || datasetName.find("zz")!=string::npos) {sprintf(datasetNamechar,"zz");}
+		if(datasetName.find("ttZ")!=string::npos || datasetName.find("ttz")!=string::npos) {sprintf(datasetNamechar,"ttz");}
+		if(datasetName.find("Zjets")!=string::npos || datasetName.find("zjets")!=string::npos) {sprintf(datasetNamechar,"Zjets");}
 		
 		if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");}
 		if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL");}
@@ -421,13 +421,14 @@ int main(int argc, char *argv[]){
 		if(datasetName.find("ttbar")!=string::npos) {sprintf(datasetNamechar,"ttbar");}
 		if(datasetName.find("ttbar_fullLept")!=string::npos) {sprintf(datasetNamechar,"ttbar_fullLept");}
 		if(datasetName.find("ttbar_semiLept")!=string::npos) {sprintf(datasetNamechar,"ttbar_semiLept");}
-		if(datasetName.find("Wjets")!=string::npos) {sprintf(datasetNamechar,"wjets");}
+		if(datasetName.find("Wjets")!=string::npos || datasetName.find("wjets")!=string::npos) {sprintf(datasetNamechar,"wjets");}
 		if(datasetName.find("ttt")!=string::npos) {sprintf(datasetNamechar,"ttt");}
 		if(datasetName.find("ttW")!=string::npos) {sprintf(datasetNamechar,"ttw");}
-		if(datasetName.find("WZ")!=string::npos) {sprintf(datasetNamechar,"wz");}
-		if(datasetName.find("ZZ")!=string::npos) {sprintf(datasetNamechar,"zz");}
-		if(datasetName.find("ttZ")!=string::npos) {sprintf(datasetNamechar,"ttz");}
-		if(datasetName.find("Zjets")!=string::npos) {sprintf(datasetNamechar,"Zjets");}
+		if(datasetName.find("WZ")!=string::npos || datasetName.find("wz")!=string::npos) {sprintf(datasetNamechar,"wz");}
+		if(datasetName.find("ZZ")!=string::npos || datasetName.find("zz")!=string::npos) {sprintf(datasetNamechar,"zz");}
+		if(datasetName.find("ttZ")!=string::npos || datasetName.find("ttz")!=string::npos) {sprintf(datasetNamechar,"ttz");}
+		if(datasetName.find("Zjets")!=string::npos || datasetName.find("zjets")!=string::npos) {sprintf(datasetNamechar,"Zjets");}
+		
 		if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");
 			is_signal = true;
@@ -581,8 +582,8 @@ int main(int argc, char *argv[]){
 			} 
 
 			
-			if(debug) cout << "looseElectrons.size() = " << looseElectrons.size() << endl; 
-			if(debug) cout << "looseMuons.size() = " << looseMuons.size() << endl; 
+			if(debug) cout << "[INFO]	looseElectrons.size() = " << looseElectrons.size() << endl; 
+			if(debug) cout << "[INFO]	looseMuons.size() = " << looseMuons.size() << endl; 
 			
 			
 			
@@ -614,8 +615,8 @@ int main(int argc, char *argv[]){
 						histo1D[Process_cutflow]->Fill(3);
 					
 						//set labels
-						if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, ">1j");
-						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, ">1j");		
+						if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, ">=1j");
+						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, ">=1j");		
 						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, ">=1j");
 						
 						
@@ -652,8 +653,8 @@ int main(int argc, char *argv[]){
 						histo1D[Process_cutflow]->Fill(3);
 					
 						//set labels
-						if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, ">1j");
-						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, ">1j");		
+						if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, ">=1j");
+						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, ">=1j");		
 						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, ">=1j");
 						Passed_selection = true;
 					}					
@@ -771,8 +772,8 @@ int main(int argc, char *argv[]){
 							histo1D[Process_cutflow]->Fill(4);
 					
 							//set labels
-							if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5, ">1j");
-							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5, ">1j");		
+							if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5,">=1j");
+							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5,">=1j");		
 							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">=1j");
 							Passed_selection = true;
 						}						
@@ -1170,7 +1171,7 @@ int main(int argc, char *argv[]){
 			if(channel.find("SSdilepton")!=string::npos || channel.find("OSdilepton")!=string::npos) _dilepton = true; 
 			if(Passed_selection && _3L4L )
 			{
-				if(selectedJets.size()>=1)
+				if(selectedJets.size()>1)
 				{
 					//fill histograms
 					if(!is_signal)histo1D["cutflow_total_B"]->Fill(4);
@@ -1178,8 +1179,8 @@ int main(int argc, char *argv[]){
 					histo1D[Process_cutflow]->Fill(4);
 					
 					//set labels
-					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5, ">2j");
-					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5, ">2j");		
+					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5, ">=2j");
+					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5, ">=2j");		
 					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">=2j");
 					
 					if(nTags > 0)
@@ -1218,7 +1219,7 @@ int main(int argc, char *argv[]){
 			
 			if(Passed_selection && _dilepton )
 			{
-				if(selectedJets.size()>2)
+				if(selectedJets.size()>1)
 				{
 					//fill histograms
 					if(!is_signal)histo1D["cutflow_total_B"]->Fill(5);
@@ -1226,8 +1227,8 @@ int main(int argc, char *argv[]){
 					histo1D[Process_cutflow]->Fill(5);
 					
 					//set labels
-					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(6, ">2j");
-					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(6, ">2j");		
+					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(6, ">=2j");
+					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(6, ">=2j");		
 					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(6, ">=2j");
 					
 					if(nTags > 0)
