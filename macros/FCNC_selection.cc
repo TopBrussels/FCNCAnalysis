@@ -392,6 +392,10 @@ int main(int argc, char *argv[]){
 		histo1D[Process_cutflow] = new TH1F(NamePlot, plotTitle, 11, -0.5,10.5);
 		//histo1D[Process_cutflow]->Sumw2();
 		histo1D[Process_cutflow]->GetYaxis()->SetTitle("Eff.");
+
+                //jet pt spectrum
+                histo1D[Form("jet_Pt_%s",datasetNamechar)] = new TH1F(Form("jet_Pt_%s",datasetNamechar), Form("jet pt distribution for %s",datasetNamechar), 400, 0, 400);
+                histo1D[Form("jet_Pt_%s",datasetNamechar)]->GetYaxis()->SetTitle("Number of First Leading Jet");
 	}
 	
 	
@@ -901,6 +905,9 @@ int main(int argc, char *argv[]){
 					MSPlot["JetEta"]->Fill(selectedJets[seljet1]->Eta() , datasets[d], true, Luminosity*scaleFactor);
                  			MSPlot["JetPhi"]->Fill(selectedJets[seljet1]->Phi() , datasets[d], true, Luminosity*scaleFactor);
 				}
+                                if( selectedJets.size() > 0) {
+                                  histo1D[Form("jet_Pt_%s",datasetNamechar)]->Fill(selectedJets[0]->Pt());
+                                }
 			}
 			
 			//variable definition
