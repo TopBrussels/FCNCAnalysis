@@ -627,10 +627,10 @@ int main(int argc, char *argv[]){
 			//exactly 3 leptons
 			if(channel.find("3L")!=string::npos)
 			{
-				if(debug) cout << "[PROCESS]	in 3L channel" << endl;
+				if(debug) cout << "[PROCES]	in 3L channel" << endl;
 				if(looseElectrons.size() + looseMuons.size() ==3)
 				{ 
-					if(debug) cout << "[PROCESS]	fill 3L" << endl;
+					if(debug) cout << "[PROCES]	fill 3L" << endl;
 					
 					//fill histograms
 					if(!is_signal)histo1D["cutflow_total_B"]->Fill(2);
@@ -645,20 +645,20 @@ int main(int argc, char *argv[]){
 					Passed_selection = true;
 					
 					
-					if(debug) cout << "[PROCESS]	filled 3L" << endl;
+					if(debug) cout << "[PROCES]	filled 3L" << endl;
 					
 					
 				}
-				if(debug)	cout << "[PROCESS]	out fill 3L loop" << endl; 
+				if(debug)	cout << "[PROCES]	out fill 3L loop" << endl; 
 			}
 			//more than 4 leptons
 			if(channel.find("4L")!=string::npos)
 			{
-				if(debug) cout << "[PROCESS]	in 4L channel" << endl;
+				if(debug) cout << "[PROCES]	in 4L channel" << endl;
 				
 				if(looseElectrons.size() + looseMuons.size() > 3)
 				{ 
-					if(debug) cout << "[PROCESS]	fill 4L" << endl;
+					if(debug) cout << "[PROCES]	fill 4L" << endl;
 					
 					//fill histograms
 					if(!is_signal)	histo1D["cutflow_total_B"]->Fill(2);
@@ -670,11 +670,11 @@ int main(int argc, char *argv[]){
 					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(3, "4L");
 					Passed_selection = true;
 									
-					if(debug) cout << "[PROCESS]	filled 4L" << endl;
+					if(debug) cout << "[PROCES]	filled 4L" << endl;
 					
 					
 				}
-				if(debug)	cout << "[PROCESS]	out fill 4L loop" << endl; 
+				if(debug)	cout << "[PROCES]	out fill 4L loop" << endl; 
 			}
 			//1 lepton + 3 b-jets
 			if(channel.find("1L3B")!=string::npos)
@@ -946,16 +946,31 @@ int main(int argc, char *argv[]){
 				if(looseElectrons.size()==0)
 				{
 					if(debug) cout << "[PROCES]	in looseElectrons.size()==0" << endl; 
-					lepton0 = (looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
-					lepton1 = (looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
-					leptonpair_mll = lepton0+lepton1; 
+					if(looseMuons.size()!=0)
+					{
+						lepton0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+						
+						if(looseMuons.size()>1 )
+						{
+							lepton1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
+							leptonpair_mll = lepton0+lepton1;
+						}
+					}
+					 
 				}
 				else if (looseMuons.size()==0)
 				{
 					if(debug) cout << "[PROCES]	in looseMuons.size()==0" << endl; 
-					lepton0 = (looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
-					lepton1 = (looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
-					leptonpair_mll = lepton0+lepton1; 
+					if(looseElectrons.size()!=0)
+					{
+						lepton0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+						
+						if(looseElectrons.size()>1 )
+						{
+							lepton1.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
+							leptonpair_mll = lepton0+lepton1;
+						}
+					}
 				}
 				else if(looseMuons.size()>1 && looseElectrons.size()>1)
 				{
@@ -973,34 +988,34 @@ int main(int argc, char *argv[]){
 					if(pt_electron0 > pt_muon0)
 					{
 						if(debug) cout << "[PROCES]	in pt_electron0 > pt_muon0" << endl; 
-						lepton0 = (looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+						lepton0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
 						if(pt_muon0 >= pt_electron1)
 						{
-							lepton1 = (looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+							lepton1.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
 						}
 						else if(pt_muon0 < pt_electron1)
 						{
-							lepton1 = (looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
+							lepton1.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
 						}
 						
 					}
 					else if (pt_muon0 > pt_electron0)
 					{
-						lepton0 = (looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+						lepton0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
 						if(pt_electron0 > pt_muon1)
 						{
-							lepton1 = (looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+							lepton1.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
 						}
 						else if (pt_electron0 < pt_muon1)
 						{
-							lepton1 = (looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
+							lepton1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
 						
 						}
 					
 					}
 					leptonpair_mll = lepton0+lepton1;
 				}
-				/*else if(looseMuons.size() == 1 && looseElectrons.size()>1)
+				else if(looseMuons.size() == 1 && looseElectrons.size()>1)
 				{
 					if(debug) cout << "[PROCES]	in looseMuons.size() == 1 && looseElectrons.size()>1" << endl; 
 					double px12 = (looseElectrons[1]->Px())*(looseElectrons[1]->Px());
@@ -1009,42 +1024,77 @@ int main(int argc, char *argv[]){
 					if(debug) cout << "[INFO]	pt_electron1 = " << pt_electron1 << endl; 
 					double pt_electron0=TMath::Sqrt((looseElectrons[0]->Px())*(looseElectrons[0]->Px())+(looseElectrons[0]->Py())*(looseElectrons[0]->Py()));
 					if(debug) cout << "[INFO]	pt_electron0 = " << pt_electron0 << endl;
-					double pt_muon1=TMath::Sqrt((looseMuons[1]->Px())*(looseMuons[1]->Px())+(looseMuons[1]->Py())*(looseMuons[1]->Py()));
-					if(debug) cout << "[INFO]	pt_muon1 = " << pt_muon1 << endl;
 					double pt_muon0=TMath::Sqrt((looseMuons[0]->Px())*(looseMuons[0]->Px())+(looseMuons[0]->Py())*(looseMuons[0]->Py()));
 					if(debug) cout << "[INFO]	pt_muon0 = " << pt_muon0 << endl;
 					if(pt_electron0 > pt_muon0)
 					{
 						if(debug) cout << "[PROCES]	in pt_electron0 > pt_muon0" << endl; 
-						lepton0 = (looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+						lepton0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
 						if(pt_muon0 >= pt_electron1)
 						{
-							lepton1 = (looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+							lepton1.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
 						}
 						else if(pt_muon0 < pt_electron1)
 						{
-							lepton1 = (looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
+							lepton1.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
 						}
 						
 					}
 					else if (pt_muon0 > pt_electron0)
 					{
-						lepton0 = (looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+						lepton0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+						lepton1.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+					}
+					leptonpair_mll = lepton0+lepton1;
+				}
+				else if(looseMuons.size() > 1 && looseElectrons.size() == 1)
+				{
+					if(debug) cout << "[PROCES]	in looseMuons.size() > 1 && looseElectrons.size() == 1" << endl; 
+					double pt_electron0=TMath::Sqrt((looseElectrons[0]->Px())*(looseElectrons[0]->Px())+(looseElectrons[0]->Py())*(looseElectrons[0]->Py()));
+					if(debug) cout << "[INFO]	pt_electron0 = " << pt_electron0 << endl;
+					double pt_muon0=TMath::Sqrt((looseMuons[0]->Px())*(looseMuons[0]->Px())+(looseMuons[0]->Py())*(looseMuons[0]->Py()));
+					if(debug) cout << "[INFO]	pt_muon0 = " << pt_muon0 << endl;
+					double pt_muon1=TMath::Sqrt((looseMuons[1]->Px())*(looseMuons[1]->Px())+(looseMuons[1]->Py())*(looseMuons[1]->Py()));
+					if(debug) cout << "[INFO]	pt_muon1 = " << pt_muon1 << endl;
+					if(pt_electron0 > pt_muon0)
+					{
+						if(debug) cout << "[PROCES]	in pt_electron0 > pt_muon0" << endl; 
+						lepton0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+						lepton1.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+					}
+					else if (pt_muon0 > pt_electron0)
+					{
+						lepton0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
 						if(pt_electron0 > pt_muon1)
 						{
-							lepton1 = (looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+							lepton1.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
 						}
 						else if (pt_electron0 < pt_muon1)
 						{
-							lepton1 = (looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
+							lepton1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
 						
 						}
 					
 					}
 					leptonpair_mll = lepton0+lepton1;
-				}*/
-				mll = leptonpair_mll.M();
-				histo1D[Form("mll_%s",datasetNamechar)]->Fill(mll);
+				}
+				else if(looseMuons.size() == 1 && looseElectrons.size() == 1)
+				{
+					if(debug) cout << "[PROCES]	in looseMuons.size() == 1 && looseElectrons.size() == 1" << endl; 
+					lepton0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+					lepton1.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+					leptonpair_mll = lepton0+lepton1;
+				}
+				bool empty = false; 
+				if(looseMuons.size() == 0 && looseElectrons.size() == 0) empty = true; 
+				if(looseMuons.size() == 0 && looseElectrons.size() == 1) empty = true; 
+				if(looseMuons.size() == 1 && looseElectrons.size() == 0) empty = true; 
+				if(!empty && (leptonpair_mll!=(0,0,0,0)))
+				{
+					mll = leptonpair_mll.M();
+					if(debug) cout << "[INFO]	mll = 	" << mll << endl; 
+					histo1D[Form("mll_%s",datasetNamechar)]->Fill(mll);
+				}
 			}
 			
 			
@@ -1088,32 +1138,32 @@ int main(int argc, char *argv[]){
 				//define leptons
 				if(looseElectrons.size() > 0)
 				{
-					electron_lepton0 =(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+					electron_lepton0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
 					if(looseElectrons.size() > 1)
 					{
-						electron_lepton1 =(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy()); 
+						electron_lepton1.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy()); 
 						if(looseElectrons.size() > 2)
 						{
-							electron_lepton2 =(looseElectrons[2]->Px(),looseElectrons[2]->Py(),looseElectrons[2]->Pz(),looseElectrons[2]->Energy()); 
+							electron_lepton2.SetPxPyPzE(looseElectrons[2]->Px(),looseElectrons[2]->Py(),looseElectrons[2]->Pz(),looseElectrons[2]->Energy()); 
 							if(looseElectrons.size() == 4)
 							{
-								electron_lepton3 =(looseElectrons[3]->Px(),looseElectrons[3]->Py(),looseElectrons[3]->Pz(),looseElectrons[3]->Energy()); 
+								electron_lepton3.SetPxPyPzE(looseElectrons[3]->Px(),looseElectrons[3]->Py(),looseElectrons[3]->Pz(),looseElectrons[3]->Energy()); 
 							}
 						}
 					}
 				}
 				if(looseMuons.size() > 0)
 				{
-					muon_lepton0 =(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+					muon_lepton0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
 					if(looseMuons.size() > 1)
 					{
-						muon_lepton1 =(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy()); 
+						muon_lepton1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy()); 
 						if(looseMuons.size() == 3)
 						{
-							muon_lepton2 =(looseMuons[2]->Px(),looseMuons[2]->Py(),looseMuons[2]->Pz(),looseMuons[2]->Energy()); 
+							muon_lepton2.SetPxPyPzE(looseMuons[2]->Px(),looseMuons[2]->Py(),looseMuons[2]->Pz(),looseMuons[2]->Energy()); 
 							if(looseMuons.size() == 4)
 							{
-								muon_lepton3 =(looseMuons[3]->Px(),looseMuons[3]->Py(),looseMuons[3]->Pz(),looseMuons[3]->Energy()); 
+								muon_lepton3.SetPxPyPzE(looseMuons[3]->Px(),looseMuons[3]->Py(),looseMuons[3]->Pz(),looseMuons[3]->Energy()); 
 							}
 						}
 					}
@@ -1284,8 +1334,8 @@ int main(int argc, char *argv[]){
 				}
 
 				
-				mll_z = leptonpair.M();
-				if(debug)	cout << "[INFO]	mll = " << mll_z << endl;
+				if(leptonpair != (0,0,0,0) ){ mll_z = leptonpair.M();}
+				if(debug)	cout << "[INFO]	mll_z = " << mll_z << endl;
 				
 				
 				
@@ -1497,6 +1547,7 @@ int main(int argc, char *argv[]){
 	
 	TDirectory* th1dir = fout->mkdir("Histos1D");
   	th1dir->cd();
+	if(information) cout << "[PROCES]	Looping over 1D plots" << endl; 
   	for(map<std::string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
   	{
         	TH1F *temp = it->second;
@@ -1504,6 +1555,8 @@ int main(int argc, char *argv[]){
         	//TCanvas* tempCanvas = TCanvasCreator(temp, it->first);
         	//tempCanvas->SaveAs( (pathPNG+it->first+".png").c_str() );
   	}
+	
+	
 	
 	std::cout << "******************************************"<<std::endl; 
 	std::cout << " End of the program for the FCNC selection " << std::endl; 
