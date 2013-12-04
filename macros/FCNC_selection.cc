@@ -72,11 +72,11 @@ int main(int argc, char *argv[]){
 	std::cout << "******************************************"<<std::endl; 
 
 	// bool for debugging
-	bool debug = false; 
-	bool warnings = true; 
-	bool information = true; 
+	bool debug = false;  // can be set to true using the options for executing
+	bool warnings = true; // can be set to false using the options for executing
+	bool information = true; // can be set to false using the options for executing
 
-        //set the xml file
+        //set the xml file: default is bigxml
 	string xmlfile = "../config/FCNC_config.xml";     //place of the xml file 
 	
 	//set the channel 
@@ -97,7 +97,7 @@ int main(int argc, char *argv[]){
 	string tempbtagger;
 	bool foundxml = false;
 	bool foundbtag = false;
-	bool Big_xml = false;  //don't change these booleanse hardcoded! They can be changed by options !
+	bool Big_xml = false;  //Can be set to true with the options
     
     	for(int iarg = 0; iarg < argc && argc>1 ; iarg++)
 	{
@@ -105,6 +105,8 @@ int main(int argc, char *argv[]){
 		
         	if(argval=="--help" || argval =="--h")
 		{
+			cout << "--NoWarnings: put warnings off " << endl; 
+			cout << "--NoInfo: put information off " << endl; 
 			cout << "--debug: put debug output on" << endl; 
 			cout << "--xml myxml.xml: change Xml file" << endl;
 			cout << "--btag CSVM: change btag algorithm" << endl; 
@@ -116,6 +118,14 @@ int main(int argc, char *argv[]){
 			cout << "--Bigxml: use the xml file containing all samples (not channel dependent)" << endl; 
                 	return 0;
         	}
+		if (argval=="--NoInfo") {
+			iarg++;
+			information = false;  
+		}
+		if (argval=="--NoWarnings") {
+			iarg++;
+			warnings = false;  
+		}
 		if (argval=="--debug") {
 			iarg++;
 			debug = true;  
@@ -425,6 +435,10 @@ int main(int argc, char *argv[]){
 		//invariant mass
                 histo1D[Form("mll_%s",datasetNamechar)] = new TH1F(Form("mll_%s",datasetNamechar), Form("Mll of leading and second leading lepton for %s",datasetNamechar), 400, 0, 400);
                 histo1D[Form("mll_%s",datasetNamechar)]->GetXaxis()->SetTitle("Mll of leading and second leading lepton");
+		
+		//invariant mass: same flavour leptons (should give z mass)
+                histo1D[Form("mllz_%s",datasetNamechar)] = new TH1F(Form("mllz_%s",datasetNamechar), Form("Mll (Z) of leading and second leading lepton for %s",datasetNamechar), 400, 0, 400);
+                histo1D[Form("mllz_%s",datasetNamechar)]->GetXaxis()->SetTitle("Mll (Z) of leading and second leading lepton");
 	
 	
 	}
@@ -537,22 +551,10 @@ int main(int argc, char *argv[]){
 		//                START LOOPING OVER THE EVENTS          //
 		///////////////////////////////////////////////////////////
 
-		int NofEvts = 100000;
-		int NofRuns = 0; 
 		
-		//set the maximal number of events to NofEvts
-		if( NofEvts > datasets[d]->NofEvtsToRunOver()) 
-		{
-			NofRuns = datasets[d]->NofEvtsToRunOver(); 
-		}
-		else
-		{
-			NofRuns = NofEvts; 
-		} 
+		if(information) cout << "[PROCES]	looping over " << datasets[d]->NofEvtsToRunOver() <<" events "<< endl;
 		
-		if(information) cout << "[PROCES]	looping over " << NofRuns <<" events "<< endl;
-		
-		for(int ievent = 0; ievent <NofRuns; ievent++)
+		for(int ievent = 0; ievent <datasets[d]->NofEvtsToRunOver(); ievent++)
 		{
 			if(ievent%1000 == 0 && information)
 			{
@@ -581,14 +583,15 @@ int main(int argc, char *argv[]){
 				// 	void Selection::setJetCuts(float Pt, float Eta, float EMF, float n90Hits, float fHPD, float dRJetElectron, float dRJetMuon) 
 				//	void Selection::setLooseDiElectronCuts(float ptt, float Eta, float RelIso, MVAid)  
 				// 	void Selection::setLooseMuonCuts(float Pt, float Eta, float RelIso) 
-			selection.setJetCuts(20.,5.,0.01,1.,0.98,0.3,0.1); 
-			selection.setLooseMuonCuts(10.,2.5,0.2);
-			selection.setLooseDiElectronCuts(15.0,2.5,0.2,0.5); 
-			
+			selection.setJetCuts(20.,2.4,0.01,1.,0.98,0.3,0.1); 
+			selection.setDiMuonCuts(10.,2.5,0.2);
+			selection.setDiElectronCuts(15.0,2.4,0.15,0.04,0.5,1,0.3,1); 
+			//void Selection::setDiElectronCuts(float Et, float Eta, float RelIso, float d0, float MVAId, float DistVzPVz, float DRJets, int MaxMissingHits)
 			//select the right objects and put them in a vector
 			vector<TRootJet*> selectedJets = selection.GetSelectedJets(true);
-			vector<TRootMuon*> looseMuons = selection.GetSelectedLooseMuons();
-			vector<TRootElectron*> looseElectrons = selection.GetSelectedLooseDiElectrons();
+			vector<TRootMuon*> looseMuons = selection.GetSelectedDiMuons();
+			vector<TRootElectron*> looseElectrons = selection.GetSelectedDiElectrons();
+			
 			vector<TRootJet*> selectedBJets; // B-Jets, to be filled after b-tagging
     			vector<TRootJet*> selectedLightJets; // light-Jets, to be filled afer b-tagging
 			// vector<TRootPhoton*> selectedPhotons = selection.GetSelecetedPhotons(); Photons not yet included in the selection class!!!!
@@ -1338,7 +1341,7 @@ int main(int argc, char *argv[]){
 				if(debug)	cout << "[INFO]	mll_z = " << mll_z << endl;
 				
 				
-				
+				histo1D[Form("mllz_%s",datasetNamechar)]->Fill(mll_z);
 				if(!is_signal)
 				{
 					if(debug) cout << "[PROCES]	in !is_signal" << endl; 
@@ -1436,8 +1439,13 @@ int main(int argc, char *argv[]){
 								histo1D[Process_cutflow]->Fill(6);
 						
 								//set labels
-								if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(7,"PtJet>50.0");
-								if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(7,"PtJet>50.0");		
+								if(!is_signal) {
+									histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(7,"PtJet>40.0");
+								}
+								if(is_signal)
+								{
+									histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(7,"PtJet>40.0");		
+								}
 								histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(7, "PtJet>40.0");
 								
 								if(selectedJets[0]->Pt()>50.0)
