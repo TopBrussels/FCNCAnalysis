@@ -268,19 +268,43 @@ int main(int argc, char *argv[]){
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////// MultiSample plots: convenient class which combines multiple MC and DATA histograms into single plots. //////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	MSPlot["NbOfSelectedJets"] = new MultiSamplePlot(datasets, "NbOfSelectedJets", 15, 0., 15., "Nb. of jets");
-    	MSPlot["NbOfSelectedLightJets"] = new MultiSamplePlot(datasets, "NbOfSelectedLightJets", 15, 0., 15, "Nb. of jets");
-    	MSPlot["NbOfSelectedBJets"] = new MultiSamplePlot(datasets, "NbOfSelectedBJets", 8, 0., 8., "Nb. of jets");
+	MSPlot["NbOfSelectedJets"] = new MultiSamplePlot(datasets, "NbOfSelectedJets", 15, -0.5, 14.5, "Nb. of jets");
+    	MSPlot["NbOfSelectedLightJets"] = new MultiSamplePlot(datasets, "NbOfSelectedLightJets", 15, -0.5, 14.5, "Nb. of jets");
+	MSPlot["NbOfSelectedLeptons"] = new MultiSamplePlot(datasets, "NbOfSelectedLeptons", 10, -0.5, 9.5, "Nb. of leptons");
+    	MSPlot["NbOfSelectedBJets"] = new MultiSamplePlot(datasets, "NbOfSelectedBJets", 15, -0.5, 14.5, "Nb. of jets");
     	MSPlot["JetEta"] = new MultiSamplePlot(datasets, "JetEta", 30,-3., 3., "Jet #eta");
     	MSPlot["JetPhi"] = new MultiSamplePlot(datasets, "JetPhi", 50, -4., 4., "Jet #phi");
 	MSPlot["MET"] = new MultiSamplePlot(datasets, "MET", 40, 0., 700., "MET");
-	MSPlot["mll_z"] = new MultiSamplePlot(datasets,"mll_z",50,0,100,"MLL leptons with same flavour");
-	MSPlot["pt_lepton_max"] = new MultiSamplePlot(datasets,"pt_lepton_max",50,0,100,"Pt lepton highest Pt");
-	MSPlot["pt_lepton_min"] = new MultiSamplePlot(datasets,"pt_lepton_min",50,0,100,"Pt lepton lowest Pt");
-	MSPlot["pt_jet_max"] = new MultiSamplePlot(datasets,"pt_jet_max",100,0,200,"Pt jet highest Pt"); 
-	MSPlot["NbOfSelectedLeptons"] = new MultiSamplePlot(datasets, "NbOfSelectedLeptons", 6, 0., 6., "Nb. of leptons");
-
+	MSPlot["mll_z"] = new MultiSamplePlot(datasets,"mll_z",50,0,100,"Invariant mass of the leptons that make the Z boson");
+	MSPlot["Pt_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_leading_lepton",50,0,100,"Pt leading lepton");
+	MSPlot["Pt_2nd_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_lepton",50,0,100,"Pt 2nd leading lepton");
+	MSPlot["Pt_3d_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_3d_leading_lepton",50,0,100,"Pt third leading lepton");
+	MSPlot["Pt_4th_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_4th_leading_lepton",50,0,100,"Pt fourth leading lepton");
+	MSPlot["Pt_5th_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_5th_leading_lepton",50,0,100,"Pt fifth leading lepton");
+	MSPlot["Pt_leading_jet"] = new MultiSamplePlot(datasets,"Pt_leading_jet",100,0,200,"Pt leading jet"); 
+	MSPlot["Pt_2nd_leading_jet"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_jet",100,0,200,"Pt 2nd leading jet"); 
+	MSPlot["Pt_3d_leading_jet"] = new MultiSamplePlot(datasets,"Pt_3d_leading_jet",100,0,200,"Pt third leading jet"); 
+	MSPlot["Pt_4th_leading_jet"] = new MultiSamplePlot(datasets,"Pt_4th_leading_jet",100,0,200,"Pt fourth leading jet"); 
+	MSPlot["Pt_5th_leading_jet"] = new MultiSamplePlot(datasets,"Pt_5th_leading_jet",100,0,200,"Pt fifth leading jet"); 
+	MSPlot["Pt_6th_leading_jet"] = new MultiSamplePlot(datasets,"Pt_6th_leading_jet",100,0,200,"Pt sixth leading jet");
+	MSPlot["Pt_leading_Bjet"] = new MultiSamplePlot(datasets,"Pt_leading_Bjet",100,0,200,"Pt leading Bjet"); 
+	MSPlot["Pt_2nd_leading_Bjet"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_Bjet",100,0,200,"Pt 2nd leading Bjet"); 
+	MSPlot["Pt_3d_leading_Bjet"] = new MultiSamplePlot(datasets,"Pt_3d_leading_Bjet",100,0,200,"Pt third leading Bjet"); 
+	MSPlot["Pt_4th_leading_Bjet"] = new MultiSamplePlot(datasets,"Pt_4th_leading_Bjet",100,0,200,"Pt fourth leading Bjet"); 
+	MSPlot["Pt_5th_leading_Bjet"] = new MultiSamplePlot(datasets,"Pt_5th_leading_Bjet",100,0,200,"Pt fifth leading Bjet"); 
+	MSPlot["Pt_6th_leading_Bjet"] = new MultiSamplePlot(datasets,"Pt_6th_leading_Bjet",100,0,200,"Pt sixth leading Bjet"); 
+	MSPlot["Mll"] = new MultiSamplePlot(datasets,"Mll",50,0,100,"Mll of leading and second leading lepton");
+	MSPlot["Mllq"] = new MultiSamplePlot(datasets,"Mllq",50,0,100,"Invariant mass of llq ~ mtop");
+	MSPlot["Mllll"] = new MultiSamplePlot(datasets,"Mllll",50,0,100,"Invariant mass of llll ~ 2mZ");
+	MSPlot["DR_toplepton_MET"] = new MultiSamplePlot(datasets,"DR_toplepton_MET",50,0,100,"DR between toplepton and neutrino");
+	MSPlot["DR_toplepton_bjet"] = new MultiSamplePlot(datasets,"DR_toplepton_MET",50,0,100,"DR between toplepton and bjet");
+	MSPlot["Mt_toplepton_MET"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET",50,0,100,"Transverse mass of toplepton and neutrino");
+	MSPlot["Mt_toplepton_MET_bjet"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET_bjet",50,0,100,"Transverse mass of toplepton, bjet and neutrino");
+	MSPlot["Mbqq"] = new MultiSamplePlot(datasets,"Mbqq",50,0,100,"Invariant mass of bqq ~ mtop");
+	MSPlot["Mllqq"] = new MultiSamplePlot(datasets,"Mllqq",50,0,100,"Invariant mass of llqq ~ mH");
+	MSPlot["Mllqqq"] = new MultiSamplePlot(datasets,"Mllqqq",50,0,100,"Invariant mass of llqqq ~ mtop");
 	//////////////////  Cut flow histograms	/////////////////////////////
+
 	char plotTitle_total_B[900];
 	sprintf(plotTitle_total_B,"The total cutflow for %s channel (B)",channelchar); 
 	histo1D["cutflow_total_B"] = new TH1F("cutflow_total_B", plotTitle_total_B, 11, -0.5,10.5);
@@ -408,38 +432,7 @@ int main(int argc, char *argv[]){
 		//histo1D[Process_cutflow]->Sumw2();
 		histo1D[Process_cutflow]->GetYaxis()->SetTitle("Eff.");
 
-                //jet pt spectrum
-                histo1D[Form("jet_Pt_leading_%s",datasetNamechar)] = new TH1F(Form("jet_Pt_leading_%s",datasetNamechar), Form("jet pt distribution for %s",datasetNamechar), 400, 0, 400);
-                histo1D[Form("jet_Pt_leading_%s",datasetNamechar)]->GetXaxis()->SetTitle("Number of First Leading Jet");
-		
-		//jet pt spectrum
-                histo1D[Form("jet_Pt_2nd_leading_%s",datasetNamechar)] = new TH1F(Form("jet_Pt_2nd_leading_%s",datasetNamechar), Form("jet pt distribution for %s",datasetNamechar), 400, 0, 400);
-                histo1D[Form("jet_Pt_2nd_leading_%s",datasetNamechar)]->GetXaxis()->SetTitle("Number of Second Leading Jet");
-		
-		//jet pt spectrum
-                histo1D[Form("jet_Pt_3d_leading_%s",datasetNamechar)] = new TH1F(Form("jet_Pt_3d_leading_%s",datasetNamechar), Form("jet pt distribution for %s",datasetNamechar), 400, 0, 400);
-                histo1D[Form("jet_Pt_3d_leading_%s",datasetNamechar)]->GetXaxis()->SetTitle("Number of Third Leading Jet");
-		
-		//Bjet pt spectrum
-                histo1D[Form("Bjet_Pt_leading_%s",datasetNamechar)] = new TH1F(Form("Bjet_Pt_leading_%s",datasetNamechar), Form("Bjet pt distribution for %s",datasetNamechar), 400, 0, 400);
-                histo1D[Form("Bjet_Pt_leading_%s",datasetNamechar)]->GetXaxis()->SetTitle("Number of First Leading B-Jet");
-		
-		//Bjet pt spectrum
-                histo1D[Form("Bjet_Pt_2nd_leading_%s",datasetNamechar)] = new TH1F(Form("Bjet_Pt_2nd_leading_%s",datasetNamechar), Form("Bjet pt distribution for %s",datasetNamechar), 400, 0, 400);
-                histo1D[Form("Bjet_Pt_2nd_leading_%s",datasetNamechar)]->GetXaxis()->SetTitle("Number of Second Leading B-Jet");
-		
-		//Bjet pt spectrum
-                histo1D[Form("Bjet_Pt_3d_leading_%s",datasetNamechar)] = new TH1F(Form("Bjet_Pt_3d_leading_%s",datasetNamechar), Form("Bjet pt distribution for %s",datasetNamechar), 400, 0, 400);
-                histo1D[Form("Bjet_Pt_3d_leading_%s",datasetNamechar)]->GetXaxis()->SetTitle("Number of Third Leading B-Jet");
-	
-		//invariant mass
-                histo1D[Form("mll_%s",datasetNamechar)] = new TH1F(Form("mll_%s",datasetNamechar), Form("Mll of leading and second leading lepton for %s",datasetNamechar), 400, 0, 400);
-                histo1D[Form("mll_%s",datasetNamechar)]->GetXaxis()->SetTitle("Mll of leading and second leading lepton");
-		
-		//invariant mass: same flavour leptons (should give z mass)
-                histo1D[Form("mllz_%s",datasetNamechar)] = new TH1F(Form("mllz_%s",datasetNamechar), Form("Mll (Z) of leading and second leading lepton for %s",datasetNamechar), 400, 0, 400);
-                histo1D[Form("mllz_%s",datasetNamechar)]->GetXaxis()->SetTitle("Mll (Z) of leading and second leading lepton");
-	
+               
 	
 	}
 	
@@ -584,7 +577,7 @@ int main(int argc, char *argv[]){
 				//	void Selection::setLooseDiElectronCuts(float ptt, float Eta, float RelIso, MVAid)  
 				// 	void Selection::setLooseMuonCuts(float Pt, float Eta, float RelIso) 
 			selection.setJetCuts(20.,2.4,0.01,1.,0.98,0.3,0.1); 
-			selection.setDiMuonCuts(10.,2.5,0.2);
+			selection.setDiMuonCuts(10.,2.5,0.2,0.04);
 			selection.setDiElectronCuts(15.0,2.4,0.15,0.04,0.5,1,0.3,1); 
 			//void Selection::setDiElectronCuts(float Et, float Eta, float RelIso, float d0, float MVAId, float DistVzPVz, float DRJets, int MaxMissingHits)
 			//select the right objects and put them in a vector
@@ -605,7 +598,7 @@ int main(int argc, char *argv[]){
 			//Start btagging 
 			int nTags = 0;
 			bool Passed_selection = false;
-			bool Passed_selection2 = false; 
+			 
 			
 			// scale factor for the event
         		float scaleFactor = 1.;
@@ -908,8 +901,8 @@ int main(int argc, char *argv[]){
 				MSPlot["NbOfSelectedJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
 				MSPlot["NbOfSelectedLightJets"]->Fill(selectedLightJets.size(), datasets[d], true, Luminosity*scaleFactor);
 		        	MSPlot["NbOfSelectedBJets"]->Fill(selectedBJets.size(), datasets[d], true, Luminosity*scaleFactor);
+				MSPlot["NbOfSelectedLeptons"]->Fill(looseMuons.size()+looseElectrons.size(),datasets[d],true,Luminosity*scaleFactor);
 				MSPlot["MET"]->Fill(mets[0]->E(), datasets[d], true, Luminosity*scaleFactor);
-		
 
 				for (Int_t seljet1 =0; seljet1 < selectedJets.size(); seljet1++ ){
 
@@ -917,15 +910,50 @@ int main(int argc, char *argv[]){
                  			MSPlot["JetPhi"]->Fill(selectedJets[seljet1]->Phi() , datasets[d], true, Luminosity*scaleFactor);
 				}
                                 if( selectedJets.size() > 0) {
-                                	histo1D[Form("jet_Pt_leading_%s",datasetNamechar)]->Fill(selectedJets[0]->Pt());
+                                	MSPlot["Pt_leading_jet"]->Fill(selectedJets[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
                                 }
 				if( selectedJets.size() > 1)
 				{
-				  	histo1D[Form("jet_Pt_2nd_leading_%s",datasetNamechar)]->Fill(selectedJets[1]->Pt());
+				  	MSPlot["Pt_2nd_leading_jet"]->Fill(selectedJets[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
 				if( selectedJets.size() > 2)
 				{
-				  	histo1D[Form("jet_Pt_3d_leading_%s",datasetNamechar)]->Fill(selectedJets[2]->Pt());
+				  	MSPlot["Pt_3d_leading_jet"]->Fill(selectedJets[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				}
+				if( selectedJets.size() > 3)
+				{
+				  	MSPlot["Pt_4th_leading_jet"]->Fill(selectedJets[3]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				}
+				if( selectedJets.size() > 4)
+				{
+				  	MSPlot["Pt_5th_leading_jet"]->Fill(selectedJets[4]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				}
+				if( selectedJets.size() > 5)
+				{
+				  	MSPlot["Pt_6th_leading_jet"]->Fill(selectedJets[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				}
+				if( selectedJets.size() > 0) {
+                                	MSPlot["Pt_leading_jet"]->Fill(selectedJets[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+                                }
+				if( selectedJets.size() > 1)
+				{
+				  	MSPlot["Pt_2nd_leading_jet"]->Fill(selectedJets[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				}
+				if( selectedJets.size() > 2)
+				{
+				  	MSPlot["Pt_3d_leading_jet"]->Fill(selectedJets[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				}
+				if( selectedJets.size() > 3)
+				{
+				  	MSPlot["Pt_4th_leading_jet"]->Fill(selectedJets[3]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				}
+				if( selectedBJets.size() > 4)
+				{
+				  	MSPlot["Pt_5th_leading_Bjet"]->Fill(selectedBJets[4]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				}
+				if( selectedBJets.size() > 5)
+				{
+				  	MSPlot["Pt_6th_leading_Bjet"]->Fill(selectedBJets[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
 				if( selectedBJets.size() > 0) {
                                 	histo1D[Form("Bjet_Pt_leading_%s",datasetNamechar)]->Fill(selectedBJets[0]->Pt());
@@ -1096,7 +1124,8 @@ int main(int argc, char *argv[]){
 				{
 					mll = leptonpair_mll.M();
 					if(debug) cout << "[INFO]	mll = 	" << mll << endl; 
-					histo1D[Form("mll_%s",datasetNamechar)]->Fill(mll);
+					MSPlot["Mll"]->Fill(mll,datasets[d],true,Luminosity*scaleFactor);
+					
 				}
 			}
 			
@@ -1337,11 +1366,14 @@ int main(int argc, char *argv[]){
 				}
 
 				
-				if(leptonpair != (0,0,0,0) ){ mll_z = leptonpair.M();}
+				if(leptonpair != (0,0,0,0) ){ 
+					mll_z = leptonpair.M();
+					MSPlot["mll_z"]->Fill(mll_z,datasets[d],true,Luminosity*scaleFactor);
+				}
 				if(debug)	cout << "[INFO]	mll_z = " << mll_z << endl;
 				
 				
-				histo1D[Form("mllz_%s",datasetNamechar)]->Fill(mll_z);
+				
 				if(!is_signal)
 				{
 					if(debug) cout << "[PROCES]	in !is_signal" << endl; 
@@ -1499,7 +1531,7 @@ int main(int argc, char *argv[]){
 						
 						if(selectedJets[0]->Pt()>50.0)
 						{
-							Passed_selection2 = true;
+							
 							//fill histograms
 							if(!is_signal)histo1D["cutflow_total_B"]->Fill(7);
 							if(is_signal) histo1D["cutflow_total_S"]->Fill(7);
