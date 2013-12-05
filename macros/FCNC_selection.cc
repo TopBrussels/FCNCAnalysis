@@ -297,7 +297,7 @@ int main(int argc, char *argv[]){
 	MSPlot["Mllq"] = new MultiSamplePlot(datasets,"Mllq",50,0,100,"Invariant mass of llq ~ mtop");
 	MSPlot["Mllll"] = new MultiSamplePlot(datasets,"Mllll",50,0,100,"Invariant mass of llll ~ 2mZ");
 	MSPlot["DR_toplepton_MET"] = new MultiSamplePlot(datasets,"DR_toplepton_MET",50,0,100,"DR between toplepton and neutrino");
-	MSPlot["DR_toplepton_bjet"] = new MultiSamplePlot(datasets,"DR_toplepton_MET",50,0,100,"DR between toplepton and bjet");
+	MSPlot["DR_toplepton_bjet"] = new MultiSamplePlot(datasets,"DR_toplepton_bjet",50,0,100,"DR between toplepton and bjet");
 	MSPlot["Mt_toplepton_MET"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET",50,0,100,"Transverse mass of toplepton and neutrino");
 	MSPlot["Mt_toplepton_MET_bjet"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET_bjet",50,0,100,"Transverse mass of toplepton, bjet and neutrino");
 	MSPlot["Mbqq"] = new MultiSamplePlot(datasets,"Mbqq",50,0,100,"Invariant mass of bqq ~ mtop");
@@ -955,17 +955,7 @@ int main(int argc, char *argv[]){
 				{
 				  	MSPlot["Pt_6th_leading_Bjet"]->Fill(selectedBJets[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
-				if( selectedBJets.size() > 0) {
-                                	histo1D[Form("Bjet_Pt_leading_%s",datasetNamechar)]->Fill(selectedBJets[0]->Pt());
-                                }
-				if( selectedBJets.size() > 1)
-				{
-				  	histo1D[Form("Bjet_Pt_2nd_leading_%s",datasetNamechar)]->Fill(selectedBJets[1]->Pt());
-				}
-				if( selectedBJets.size() > 2)
-				{
-				  	histo1D[Form("Bjet_Pt_3d_leading_%s",datasetNamechar)]->Fill(selectedBJets[2]->Pt());
-				}
+				
 				
 				double mll = 0; 
 				TLorentzVector leptonpair_mll;
@@ -1531,7 +1521,6 @@ int main(int argc, char *argv[]){
 						
 						if(selectedJets[0]->Pt()>50.0)
 						{
-							
 							//fill histograms
 							if(!is_signal)histo1D["cutflow_total_B"]->Fill(7);
 							if(is_signal) histo1D["cutflow_total_S"]->Fill(7);
