@@ -998,20 +998,20 @@ int main(int argc, char *argv[]){
 				{
 				  	MSPlot["Pt_6th_leading_jet"]->Fill(selectedJets[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
-				if( selectedJets.size() > 0) {
-                                	MSPlot["Pt_leading_jet"]->Fill(selectedJets[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				if( selectedBJets.size() > 0) {
+                                	MSPlot["Pt_leading_Bjet"]->Fill(selectedBJets[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
                                 }
-				if( selectedJets.size() > 1)
+				if( selectedBJets.size() > 1)
 				{
-				  	MSPlot["Pt_2nd_leading_jet"]->Fill(selectedJets[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				  	MSPlot["Pt_2nd_leading_Bjet"]->Fill(selectedBJets[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
-				if( selectedJets.size() > 2)
+				if( selectedBJets.size() > 2)
 				{
-				  	MSPlot["Pt_3d_leading_jet"]->Fill(selectedJets[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				  	MSPlot["Pt_3d_leading_Bjet"]->Fill(selectedBJets[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
-				if( selectedJets.size() > 3)
+				if( selectedBJets.size() > 3)
 				{
-				  	MSPlot["Pt_4th_leading_jet"]->Fill(selectedJets[3]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				  	MSPlot["Pt_4th_leading_Bjet"]->Fill(selectedBJets[3]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
 				if( selectedBJets.size() > 4)
 				{
@@ -1188,420 +1188,98 @@ int main(int argc, char *argv[]){
 			
 			
 			
-			//variable definition
-			double mll_z = 0;
-			double maxPt_lepton3 = 0;
-			double minPt_lepton3 = 0;
-			
-			TLorentzVector electron_lepton0;
-			TLorentzVector electron_lepton1;
-			TLorentzVector electron_lepton2;
-			TLorentzVector electron_lepton3;
-			TLorentzVector muon_lepton0;
-			TLorentzVector muon_lepton1;
-			TLorentzVector muon_lepton2;
-			TLorentzVector muon_lepton3;
-			TLorentzVector leptonpair; 
-			
-			electron_lepton0.Clear(); 
-			electron_lepton1.Clear();
-			electron_lepton2.Clear();
-			electron_lepton3.Clear();
-			muon_lepton0.Clear(); 
-			muon_lepton1.Clear();
-			muon_lepton2.Clear();
-			muon_lepton3.Clear();
-			leptonpair.Clear();
-			
-			bool passed_2leptons = false; 
-			if(Passed_selection && channel.find("3L")!=string::npos) passed_2leptons = true; 
-			if( Passed_selection && channel.find("4L")!=string::npos) passed_2leptons = true; 
-			if( Passed_selection && channel.find("SSdilepton")!=string::npos) passed_2leptons = true;
-			if( Passed_selection && channel.find("OSdilepton")!=string::npos) passed_2leptons = true;
-					
-			if(passed_2leptons)
-			{
-				//in this loop are at least 2 leptons	 
-			        if(debug) cout << "[PROCES]	In kinematic var loop" << endl; 
-				//define leptons
-				if(looseElectrons.size() > 0)
-				{
-					electron_lepton0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
-					if(looseElectrons.size() > 1)
-					{
-						electron_lepton1.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy()); 
-						if(looseElectrons.size() > 2)
-						{
-							electron_lepton2.SetPxPyPzE(looseElectrons[2]->Px(),looseElectrons[2]->Py(),looseElectrons[2]->Pz(),looseElectrons[2]->Energy()); 
-							if(looseElectrons.size() == 4)
-							{
-								electron_lepton3.SetPxPyPzE(looseElectrons[3]->Px(),looseElectrons[3]->Py(),looseElectrons[3]->Pz(),looseElectrons[3]->Energy()); 
-							}
-						}
-					}
-				}
-				if(looseMuons.size() > 0)
-				{
-					muon_lepton0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
-					if(looseMuons.size() > 1)
-					{
-						muon_lepton1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy()); 
-						if(looseMuons.size() == 3)
-						{
-							muon_lepton2.SetPxPyPzE(looseMuons[2]->Px(),looseMuons[2]->Py(),looseMuons[2]->Pz(),looseMuons[2]->Energy()); 
-							if(looseMuons.size() == 4)
-							{
-								muon_lepton3.SetPxPyPzE(looseMuons[3]->Px(),looseMuons[3]->Py(),looseMuons[3]->Pz(),looseMuons[3]->Energy()); 
-							}
-						}
-					}
-				}
-				
-				//Start declaring the variables
-				if(looseMuons.size()==0)
-				{ 
-					//no muons present
-					leptonpair = electron_lepton0 + electron_lepton1; 
-					maxPt_lepton3 = electron_lepton0.Pt();
-					if(looseElectrons.size()==4) minPt_lepton3 = electron_lepton3.Pt();
-					else if (looseElectrons.size()==3) minPt_lepton3 = electron_lepton2.Pt();
-					else if (looseElectrons.size()==2) minPt_lepton3 = electron_lepton1.Pt();
-				}
-				else if(looseElectrons.size()==0) 
-				{
-					//no electrons present
-					maxPt_lepton3 = muon_lepton0.Pt();
-					if(looseMuons.size()==4) minPt_lepton3 = muon_lepton3.Pt();
-					else if (looseMuons.size()==3) minPt_lepton3 = muon_lepton2.Pt();
-					else if (looseMuons.size()==2) minPt_lepton3 = muon_lepton1.Pt();
-				}
-				else 
-				{	
-					if(looseElectrons.size() == 1 && looseMuons.size() ==1)
-					{
-						if(electron_lepton0.Pt()>muon_lepton0.Pt())
-						{
-						 	maxPt_lepton3 = electron_lepton0.Pt(); 
-							minPt_lepton3 = muon_lepton0.Pt();
-						}
-						else if(electron_lepton0.Pt()< muon_lepton0.Pt())
-						{
-							minPt_lepton3 = electron_lepton0.Pt(); 
-							maxPt_lepton3 = muon_lepton0.Pt();
-						}
-					}
-					else if(looseElectrons.size() == 1 && looseMuons.size() == 2)
-					{
-						leptonpair = muon_lepton0 + muon_lepton1;
-						if(electron_lepton0.Pt()>muon_lepton0.Pt())
-						{
-						 	maxPt_lepton3 = electron_lepton0.Pt(); 
-							minPt_lepton3 = muon_lepton1.Pt();
-						}
-						else if(electron_lepton0.Pt() > muon_lepton1.Pt())
-						{
-						 	maxPt_lepton3 = muon_lepton0.Pt(); 
-							minPt_lepton3 = muon_lepton1.Pt();
-						}
-						else 
-						{
-						 	maxPt_lepton3 = muon_lepton0.Pt(); 
-							minPt_lepton3 = electron_lepton0.Pt();
-						}
-					}
-					else if(looseElectrons.size() == 1 && looseMuons.size() == 3)
-					{
-						leptonpair = muon_lepton0 + muon_lepton1;
-						if(electron_lepton0.Pt()>muon_lepton0.Pt())
-						{
-						 	maxPt_lepton3 = electron_lepton0.Pt(); 
-							minPt_lepton3 = muon_lepton2.Pt();
-						}
-						else if(electron_lepton0.Pt() > muon_lepton1.Pt())
-						{
-						 	maxPt_lepton3 = muon_lepton0.Pt(); 
-							minPt_lepton3 = muon_lepton2.Pt();
-						}
-						else if(electron_lepton0.Pt() < muon_lepton2.Pt())
-						{
-						 	maxPt_lepton3 = muon_lepton0.Pt(); 
-							minPt_lepton3 = electron_lepton0.Pt();
-						}
-						else 
-						{
-						 	maxPt_lepton3 = muon_lepton0.Pt(); 
-							minPt_lepton3 = muon_lepton2.Pt();
-						}
-					}
-					else if(looseElectrons.size()==2 && looseMuons.size() == 1)
-					{
-						leptonpair = electron_lepton0 + electron_lepton1;
-						
-						if(muon_lepton0.Pt()>electron_lepton0.Pt())
-						{ 
-							maxPt_lepton3 = muon_lepton0.Pt(); 
-							minPt_lepton3 = electron_lepton1.Pt();
-						}
-						else if(muon_lepton0.Pt() > electron_lepton1.Pt())
-						{ 
-							maxPt_lepton3 = electron_lepton0.Pt();
-							minPt_lepton3 = electron_lepton1.Pt();
-						}
-						else
-						{
-							maxPt_lepton3 = electron_lepton0.Pt();
-							minPt_lepton3 = muon_lepton0.Pt();
-						}
-					}
-					else if(looseElectrons.size()==2 && looseMuons.size() == 2)
-					{
-						if(muon_lepton1.Pt()>electron_lepton0.Pt())
-						{
-							leptonpair = muon_lepton0 + muon_lepton1;
-							maxPt_lepton3 = muon_lepton0.Pt(); 
-							minPt_lepton3 = electron_lepton1.Pt();
-						}
-						else if(electron_lepton1.Pt()>muon_lepton0.Pt())
-						{
-							leptonpair = electron_lepton0 + electron_lepton1;
-							maxPt_lepton3 = electron_lepton0.Pt(); 
-							minPt_lepton3 = muon_lepton1.Pt();
-						}
-						else if(electron_lepton0.Pt() > muon_lepton0.Pt())
-						{
-							leptonpair = electron_lepton0 + electron_lepton1;
-							maxPt_lepton3 = electron_lepton0.Pt();
-							if (muon_lepton0.Pt() > electron_lepton1.Pt())
-							{
-								minPt_lepton3 = electron_lepton1.Pt();
-							}
-							else
-							{
-								minPt_lepton3 = muon_lepton1.Pt();
-							}
-						}
-						else if(electron_lepton0.Pt() < muon_lepton0.Pt())
-						{
-							maxPt_lepton3 = muon_lepton0.Pt();
-							leptonpair = muon_lepton0 + muon_lepton1;
-							if(electron_lepton0.Pt()>muon_lepton1.Pt())
-							{
-								minPt_lepton3 = muon_lepton1.Pt();
-							}
-							else
-							{
-								minPt_lepton3 = electron_lepton1.Pt();
-							}
-						}
-					}
-					else if(looseElectrons.size()==3 && looseMuons.size() == 1)
-					{
-						leptonpair = electron_lepton0 + electron_lepton1;
-						if(muon_lepton0.Pt()>electron_lepton0.Pt())
-						{ 
-							maxPt_lepton3 = muon_lepton0.Pt(); 
-							minPt_lepton3 = electron_lepton2.Pt();
-						}
-						else if(muon_lepton0.Pt() > electron_lepton1.Pt())
-						{ 
-							maxPt_lepton3 = electron_lepton0.Pt();
-							minPt_lepton3 = electron_lepton2.Pt();
-						}
-						else if(muon_lepton0.Pt() < electron_lepton2.Pt())
-						{
-							maxPt_lepton3 = electron_lepton0.Pt();
-							minPt_lepton3 = muon_lepton0.Pt();
-						}
-						else
-						{
-							maxPt_lepton3 = electron_lepton0.Pt();
-							minPt_lepton3 = electron_lepton2.Pt();
-						}
-						
-					}
-				}
 
-				
-				if(leptonpair != (0,0,0,0) ){ 
-					mll_z = leptonpair.M();
-					MSPlot["mll_z"]->Fill(mll_z,datasets[d],true,Luminosity*scaleFactor);
-				}
-				if(debug)	cout << "[INFO]	mll_z = " << mll_z << endl;
-				
-				
-				
-				if(!is_signal)
-				{
-					if(debug) cout << "[PROCES]	in !is_signal" << endl; 
-					histo1D["njets_B"]->Fill(selectedJets.size(),Luminosity*scaleFactor);
-					histo1D["njets_btagged_B"]->Fill(selectedBJets.size(),Luminosity*scaleFactor);
-					histo1D["njets_light_B"]->Fill(selectedLightJets.size(),Luminosity*scaleFactor); 
-					histo1D["nleptons_B"]->Fill(looseMuons.size()+looseElectrons.size(),Luminosity*scaleFactor); 
-					histo1D["mll_z_B"]->Fill(mll_z,Luminosity*scaleFactor); 
-					histo1D["pt_lepton_max_B"]->Fill(maxPt_lepton3,Luminosity*scaleFactor);
-					histo1D["pt_lepton_min_B"]->Fill(minPt_lepton3,Luminosity*scaleFactor);
-					if(debug&& (selectedJets.size()>0)) cout << "[INFO]	selectedJets[0]->Pt() = " << selectedJets[0]->Pt() <<endl; 
-					if(debug) cout << "[INFO]	selectedJets.size() = " << selectedJets.size() <<endl; 
-					if(selectedJets.size()>0) histo1D["pt_jet_max_B"]->Fill(selectedJets[0]->Pt(),Luminosity*scaleFactor); 
-				}
-				else
-				{	
-					if(debug) cout << "[PROCES]	in is_signal" << endl;
-					histo1D["njets_S"]->Fill(selectedJets.size(),Luminosity*scaleFactor);
-					if(debug) cout << "[PROCES]	filled njets_S" << endl;
-					histo1D["njets_btagged_S"]->Fill(selectedBJets.size(),Luminosity*scaleFactor);
-					if(debug) cout << "[PROCES]	filled njets_btagged_S" << endl;
-					histo1D["njets_light_S"]->Fill(selectedLightJets.size(),Luminosity*scaleFactor); 
-					if(debug) cout << "[PROCES]	filled njets_light_S" << endl;
-					histo1D["nleptons_S"]->Fill(looseMuons.size()+looseElectrons.size(),Luminosity*scaleFactor); 
-					if(debug) cout << "[PROCES]	filled nleptons_S" << endl;
-					histo1D["mll_z_S"]->Fill(mll_z,Luminosity*scaleFactor); 
-					if(debug) cout << "[PROCES]	filled mll_Z_S" << endl;
-					histo1D["pt_lepton_max_S"]->Fill(maxPt_lepton3,Luminosity*scaleFactor);
-					if(debug) cout << "[PROCES]	filled pt_lepton_max_S" << endl;
-					histo1D["pt_lepton_min_S"]->Fill(minPt_lepton3,Luminosity*scaleFactor);
-					if(debug) cout << "[PROCES]	filled pt_lepton_min_S" << endl;
-					if(debug && (selectedJets.size()>0)) cout << "[INFO]	selectedJets[0]->Pt() = " << selectedJets[0]->Pt() <<endl; 
-					if(debug) cout << "[INFO]	selectedJets.size() = " << selectedJets.size() <<endl; 
-					if(selectedJets.size()>0) histo1D["pt_jet_max_S"]->Fill(selectedJets[0]->Pt(),Luminosity*scaleFactor);
-					if(debug) cout << "[PROCES]	filled pt_jet_max_S" << endl;
-					
-					
-				}
-				if(debug) cout << "[PROCES]	Out kinematic var loop" << endl;
-			}
 			
 			// adding additional cuts
-			bool _3L4L = false; 
-			bool _dilepton = false; 
-			if(channel.find("3L")!=string::npos || channel.find("4L")!=string::npos) _3L4L = true; 
-			if(channel.find("SSdilepton")!=string::npos || channel.find("OSdilepton")!=string::npos) _dilepton = true; 
-			if(Passed_selection && _3L4L )
-			{
-				if(debug) cout << "[PROCES]	In kinematic cuts loop" << endl;
-				if(selectedJets.size()>0)
+			bool chan3L4L = false; 
+			bool NofJets_1 = false; 
+			bool NofJets_2 = false; 
+			bool NofBJets_1 = false; 
+			bool NofBJets_ex1 = false; 
+			if(channel.find("3L")!=string::npos || channel.find("4L")!=string::npos) chan3L4L = true; 
+			if(Passed_selection && chan3L4L )
+			{ 
+				/*if(selectedJets.size()>0)
 				{
-					if(debug) cout << "[PROCES]	In jets > 0" << endl;
-					//fill histograms
-					if(!is_signal)histo1D["cutflow_total_B"]->Fill(3);
-					if(is_signal) histo1D["cutflow_total_S"]->Fill(3);
-					histo1D[Process_cutflow]->Fill(3);
-					
-					//set labels
-					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, ">=1j");
-					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, ">=1j");		
-					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, ">=1j");
-						
-					if(selectedJets.size()>1)
-					{
-						if(debug) cout << "[PROCES]	In jets > 1" << endl;
-						//fill histograms
-						if(!is_signal)histo1D["cutflow_total_B"]->Fill(4);
-						if(is_signal) histo1D["cutflow_total_S"]->Fill(4);
-						histo1D[Process_cutflow]->Fill(4);
-					
-						//set labels
-						if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5, ">=2j");
-						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5, ">=2j");		
-						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">=2j");
-					
-						if(nTags > 0)
-						{
-							if(debug) cout << "[PROCES]	In bjets > 0" << endl;
-							//fill histograms
-							if(!is_signal)histo1D["cutflow_total_B"]->Fill(5);
-							if(is_signal) histo1D["cutflow_total_S"]->Fill(5);
-							histo1D[Process_cutflow]->Fill(5);
-					
-							//set labels
-							if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(6, ">=1bjet");
-							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(6,">=1bjet");		
-							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(6, ">=1bjet");
-						
-							if(selectedJets[0]->Pt()>40.0)
-							{
-								if(debug) cout << "[PROCES]	In jet pt > 40" << endl;
-								//fill histograms
-								if(!is_signal)histo1D["cutflow_total_B"]->Fill(6);
-								if(is_signal) histo1D["cutflow_total_S"]->Fill(6);
-								histo1D[Process_cutflow]->Fill(6);
-						
-								//set labels
-								if(!is_signal) {
-									histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(7,"PtJet>40.0");
-								}
-								if(is_signal)
-								{
-									histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(7,"PtJet>40.0");		
-								}
-								histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(7, "PtJet>40.0");
-								
-								if(selectedJets[0]->Pt()>50.0)
-								{
-									if(debug) cout << "[PROCES]	In jet pt > 50" << endl;
-									//fill histograms
-									if(!is_signal)histo1D["cutflow_total_B"]->Fill(7);
-									if(is_signal) histo1D["cutflow_total_S"]->Fill(7);
-									histo1D[Process_cutflow]->Fill(7);
-						
-									//set labels
-									if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(8,"PtJet>50.0");
-									if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(8,"PtJet>50.0");		
-									histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(8, "PtJet>50.0");
-								}
-							}
-						}
+					MSPlot["NbOfSelectedJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
+					MSPlot["NbOfSelectedLightJets"]->Fill(selectedLightJets.size(), datasets[d], true, Luminosity*scaleFactor);
+					MSPlot["NbOfSelectedBJets"]->Fill(selectedBJets.size(), datasets[d], true, Luminosity*scaleFactor);
+					MSPlot["MET"]->Fill(mets[0]->E(), datasets[d], true, Luminosity*scaleFactor);
+
+					for (Int_t seljet1 =0; seljet1 < selectedJets.size(); seljet1++ ){
+
+						MSPlot["JetEta"]->Fill(selectedJets[seljet1]->Eta() , datasets[d], true, Luminosity*scaleFactor);
+						MSPlot["JetPhi"]->Fill(selectedJets[seljet1]->Phi() , datasets[d], true, Luminosity*scaleFactor);
 					}
+
+				
 				}
-			
-			
-			}
-			
-			
-			
-			if(Passed_selection && _dilepton )
-			{
 				if(selectedJets.size()>1)
 				{
-					//fill histograms
-					if(!is_signal)histo1D["cutflow_total_B"]->Fill(5);
-					if(is_signal) histo1D["cutflow_total_S"]->Fill(5);
-					histo1D[Process_cutflow]->Fill(5);
-					
-					//set labels
-					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(6, ">=2j");
-					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(6, ">=2j");		
-					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(6, ">=2j");
-					
-					if(nTags > 0)
-					{
-						//fill histograms
-						if(!is_signal)histo1D["cutflow_total_B"]->Fill(6);
-						if(is_signal) histo1D["cutflow_total_S"]->Fill(6);
-						histo1D[Process_cutflow]->Fill(6);
-					
-						//set labels
-						if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(7, ">=1bjet");
-						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(7,">=1bjet");		
-						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(7, ">=1bjet");
-						
-						if(selectedJets[0]->Pt()>50.0)
-						{
-							//fill histograms
-							if(!is_signal)histo1D["cutflow_total_B"]->Fill(7);
-							if(is_signal) histo1D["cutflow_total_S"]->Fill(7);
-							histo1D[Process_cutflow]->Fill(7);
-					
-							//set labels
-							if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(8,"PtJet>50.0");
-							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(8,"PtJet>50.0");		
-							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(8, "PtJet>50.0");
-						}
+					MSPlot["NbOfSelectedJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
+					MSPlot["NbOfSelectedLightJets"]->Fill(selectedLightJets.size(), datasets[d], true, Luminosity*scaleFactor);
+					MSPlot["NbOfSelectedBJets"]->Fill(selectedBJets.size(), datasets[d], true, Luminosity*scaleFactor);
+					MSPlot["MET"]->Fill(mets[0]->E(), datasets[d], true, Luminosity*scaleFactor);
+
+					for (Int_t seljet1 =0; seljet1 < selectedJets.size(); seljet1++ ){
+
+						MSPlot["JetEta"]->Fill(selectedJets[seljet1]->Eta() , datasets[d], true, Luminosity*scaleFactor);
+						MSPlot["JetPhi"]->Fill(selectedJets[seljet1]->Phi() , datasets[d], true, Luminosity*scaleFactor);
 					}
+					
+					MSPlot["Pt_leading_jet"]->Fill(selectedJets[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				  	MSPlot["Pt_2nd_leading_jet"]->Fill(selectedJets[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
+
+					if( selectedJets.size() > 2)
+					{
+					  	MSPlot["Pt_3d_leading_jet"]->Fill(selectedJets[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
+					}
+					if( selectedJets.size() > 3)
+					{
+					  	MSPlot["Pt_4th_leading_jet"]->Fill(selectedJets[3]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
+					}
+					if( selectedJets.size() > 4)
+					{
+					  	MSPlot["Pt_5th_leading_jet"]->Fill(selectedJets[4]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
+					}
+					if( selectedJets.size() > 5)
+					{
+					  	MSPlot["Pt_6th_leading_jet"]->Fill(selectedJets[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
+					}
+					if( selectedBJets.size() > 0) {
+						MSPlot["Pt_leading_Bjet"]->Fill(selectedBJets[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+					}
+					if( selectedBJets.size() > 1)
+					{
+ 					 	MSPlot["Pt_2nd_leading_Bjet"]->Fill(selectedBJets[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
+					}
+					if( selectedBJets.size() > 2)
+					{
+					  	MSPlot["Pt_3d_leading_Bjet"]->Fill(selectedBJets[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
+					}
+					if( selectedBJets.size() > 3)
+					{
+					  	MSPlot["Pt_4th_leading_Bjet"]->Fill(selectedBJets[3]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
+					}
+					if( selectedBJets.size() > 4)
+					{
+ 					 	MSPlot["Pt_5th_leading_Bjet"]->Fill(selectedBJets[4]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
+					}
+					if( selectedBJets.size() > 5)
+					{
+					  	MSPlot["Pt_6th_leading_Bjet"]->Fill(selectedBJets[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
+					}
+*/
+				
 				}
-			
-			
-			
+				
+				
+				
+				
+
+
+
+						
 			}
 	
 		}
