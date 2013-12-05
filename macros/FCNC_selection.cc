@@ -420,6 +420,17 @@ int main(int argc, char *argv[]){
 		if(datasetName.find("Z_4Jets")!=string::npos) {sprintf(datasetNamechar,"Z_4Jets");}
 		if(datasetName.find("TTZ")!=string::npos) {sprintf(datasetNamechar,"TTZ");}
 		if(datasetName.find("TTW")!=string::npos) {sprintf(datasetNamechar,"TTW");}
+		if(datasetName.find("ttbar")!=string::npos) {sprintf(datasetNamechar,"ttbar");}
+                if(datasetName.find("ttbar_fullLept")!=string::npos) {sprintf(datasetNamechar,"ttbar_fullLept");}
+                if(datasetName.find("ttbar_semiLept")!=string::npos) {sprintf(datasetNamechar,"ttbar_semiLept");}
+                if(datasetName.find("Wjets")!=string::npos || datasetName.find("wjets")!=string::npos) {sprintf(datasetNamechar,"wjets");}
+                if(datasetName.find("ttt")!=string::npos) {sprintf(datasetNamechar,"ttt");}
+                if(datasetName.find("ttW")!=string::npos) {sprintf(datasetNamechar,"ttw");}
+                if(datasetName.find("WZ")!=string::npos || datasetName.find("wz")!=string::npos) {sprintf(datasetNamechar,"wz");}
+                if(datasetName.find("ZZ")!=string::npos || datasetName.find("zz")!=string::npos) {sprintf(datasetNamechar,"zz");}
+                if(datasetName.find("ttZ")!=string::npos || datasetName.find("ttz")!=string::npos) {sprintf(datasetNamechar,"ttz");}
+                if(datasetName.find("Zjets")!=string::npos || datasetName.find("zjets")!=string::npos) {sprintf(datasetNamechar,"Zjets");}
+
 
 		
 		if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");}
@@ -509,6 +520,17 @@ int main(int argc, char *argv[]){
 		if(datasetName.find("Z_4Jets")!=string::npos) {sprintf(datasetNamechar,"Z_4Jets");}
 		if(datasetName.find("TTZ")!=string::npos) {sprintf(datasetNamechar,"TTZ");}
 		if(datasetName.find("TTW")!=string::npos) {sprintf(datasetNamechar,"TTW");}
+		if(datasetName.find("ttbar")!=string::npos) {sprintf(datasetNamechar,"ttbar");}
+                if(datasetName.find("ttbar_fullLept")!=string::npos) {sprintf(datasetNamechar,"ttbar_fullLept");}
+                if(datasetName.find("ttbar_semiLept")!=string::npos) {sprintf(datasetNamechar,"ttbar_semiLept");}
+                if(datasetName.find("Wjets")!=string::npos || datasetName.find("wjets")!=string::npos) {sprintf(datasetNamechar,"wjets");}
+                if(datasetName.find("ttt")!=string::npos) {sprintf(datasetNamechar,"ttt");}
+                if(datasetName.find("ttW")!=string::npos) {sprintf(datasetNamechar,"ttw");}
+                if(datasetName.find("WZ")!=string::npos || datasetName.find("wz")!=string::npos) {sprintf(datasetNamechar,"wz");}
+                if(datasetName.find("ZZ")!=string::npos || datasetName.find("zz")!=string::npos) {sprintf(datasetNamechar,"zz");}
+                if(datasetName.find("ttZ")!=string::npos || datasetName.find("ttz")!=string::npos) {sprintf(datasetNamechar,"ttz");}
+                if(datasetName.find("Zjets")!=string::npos || datasetName.find("zjets")!=string::npos) {sprintf(datasetNamechar,"Zjets");}
+
 		
 		if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");
