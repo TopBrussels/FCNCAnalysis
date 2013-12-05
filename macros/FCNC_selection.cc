@@ -72,11 +72,11 @@ int main(int argc, char *argv[]){
 	std::cout << "******************************************"<<std::endl; 
 
 	// bool for debugging
-	bool debug = false; 
-	bool warnings = true; 
-	bool information = true; 
+	bool debug = false;  // can be set to true using the options for executing
+	bool warnings = true; // can be set to false using the options for executing
+	bool information = true; // can be set to false using the options for executing
 
-        //set the xml file
+        //set the xml file: default is bigxml
 	string xmlfile = "../config/FCNC_config.xml";     //place of the xml file 
 	
 	//set the channel 
@@ -97,7 +97,7 @@ int main(int argc, char *argv[]){
 	string tempbtagger;
 	bool foundxml = false;
 	bool foundbtag = false;
-	bool Big_xml = false;  //don't change these booleanse hardcoded! They can be changed by options !
+	bool Big_xml = false;  //Can be set to true with the options
     
     	for(int iarg = 0; iarg < argc && argc>1 ; iarg++)
 	{
@@ -105,6 +105,8 @@ int main(int argc, char *argv[]){
 		
         	if(argval=="--help" || argval =="--h")
 		{
+			cout << "--NoWarnings: put warnings off " << endl; 
+			cout << "--NoInfo: put information off " << endl; 
 			cout << "--debug: put debug output on" << endl; 
 			cout << "--xml myxml.xml: change Xml file" << endl;
 			cout << "--btag CSVM: change btag algorithm" << endl; 
@@ -116,6 +118,14 @@ int main(int argc, char *argv[]){
 			cout << "--Bigxml: use the xml file containing all samples (not channel dependent)" << endl; 
                 	return 0;
         	}
+		if (argval=="--NoInfo") {
+			iarg++;
+			information = false;  
+		}
+		if (argval=="--NoWarnings") {
+			iarg++;
+			warnings = false;  
+		}
 		if (argval=="--debug") {
 			iarg++;
 			debug = true;  
@@ -258,19 +268,43 @@ int main(int argc, char *argv[]){
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////// MultiSample plots: convenient class which combines multiple MC and DATA histograms into single plots. //////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	MSPlot["NbOfSelectedJets"] = new MultiSamplePlot(datasets, "NbOfSelectedJets", 15, 0., 15., "Nb. of jets");
-    	MSPlot["NbOfSelectedLightJets"] = new MultiSamplePlot(datasets, "NbOfSelectedLightJets", 15, 0., 15, "Nb. of jets");
-    	MSPlot["NbOfSelectedBJets"] = new MultiSamplePlot(datasets, "NbOfSelectedBJets", 8, 0., 8., "Nb. of jets");
+	MSPlot["NbOfSelectedJets"] = new MultiSamplePlot(datasets, "NbOfSelectedJets", 15, -0.5, 14.5, "Nb. of jets");
+    	MSPlot["NbOfSelectedLightJets"] = new MultiSamplePlot(datasets, "NbOfSelectedLightJets", 15, -0.5, 14.5, "Nb. of jets");
+	MSPlot["NbOfSelectedLeptons"] = new MultiSamplePlot(datasets, "NbOfSelectedLeptons", 10, -0.5, 9.5, "Nb. of leptons");
+    	MSPlot["NbOfSelectedBJets"] = new MultiSamplePlot(datasets, "NbOfSelectedBJets", 15, -0.5, 14.5, "Nb. of jets");
     	MSPlot["JetEta"] = new MultiSamplePlot(datasets, "JetEta", 30,-3., 3., "Jet #eta");
     	MSPlot["JetPhi"] = new MultiSamplePlot(datasets, "JetPhi", 50, -4., 4., "Jet #phi");
 	MSPlot["MET"] = new MultiSamplePlot(datasets, "MET", 40, 0., 700., "MET");
-	MSPlot["mll_z"] = new MultiSamplePlot(datasets,"mll_z",50,0,100,"MLL leptons with same flavour");
-	MSPlot["pt_lepton_max"] = new MultiSamplePlot(datasets,"pt_lepton_max",50,0,100,"Pt lepton highest Pt");
-	MSPlot["pt_lepton_min"] = new MultiSamplePlot(datasets,"pt_lepton_min",50,0,100,"Pt lepton lowest Pt");
-	MSPlot["pt_jet_max"] = new MultiSamplePlot(datasets,"pt_jet_max",100,0,200,"Pt jet highest Pt"); 
-	MSPlot["NbOfSelectedLeptons"] = new MultiSamplePlot(datasets, "NbOfSelectedLeptons", 6, 0., 6., "Nb. of leptons");
-
+	MSPlot["mll_z"] = new MultiSamplePlot(datasets,"mll_z",50,0,100,"Invariant mass of the leptons that make the Z boson");
+	MSPlot["Pt_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_leading_lepton",50,0,100,"Pt leading lepton");
+	MSPlot["Pt_2nd_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_lepton",50,0,100,"Pt 2nd leading lepton");
+	MSPlot["Pt_3d_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_3d_leading_lepton",50,0,100,"Pt third leading lepton");
+	MSPlot["Pt_4th_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_4th_leading_lepton",50,0,100,"Pt fourth leading lepton");
+	MSPlot["Pt_5th_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_5th_leading_lepton",50,0,100,"Pt fifth leading lepton");
+	MSPlot["Pt_leading_jet"] = new MultiSamplePlot(datasets,"Pt_leading_jet",100,0,200,"Pt leading jet"); 
+	MSPlot["Pt_2nd_leading_jet"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_jet",100,0,200,"Pt 2nd leading jet"); 
+	MSPlot["Pt_3d_leading_jet"] = new MultiSamplePlot(datasets,"Pt_3d_leading_jet",100,0,200,"Pt third leading jet"); 
+	MSPlot["Pt_4th_leading_jet"] = new MultiSamplePlot(datasets,"Pt_4th_leading_jet",100,0,200,"Pt fourth leading jet"); 
+	MSPlot["Pt_5th_leading_jet"] = new MultiSamplePlot(datasets,"Pt_5th_leading_jet",100,0,200,"Pt fifth leading jet"); 
+	MSPlot["Pt_6th_leading_jet"] = new MultiSamplePlot(datasets,"Pt_6th_leading_jet",100,0,200,"Pt sixth leading jet");
+	MSPlot["Pt_leading_Bjet"] = new MultiSamplePlot(datasets,"Pt_leading_Bjet",100,0,200,"Pt leading Bjet"); 
+	MSPlot["Pt_2nd_leading_Bjet"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_Bjet",100,0,200,"Pt 2nd leading Bjet"); 
+	MSPlot["Pt_3d_leading_Bjet"] = new MultiSamplePlot(datasets,"Pt_3d_leading_Bjet",100,0,200,"Pt third leading Bjet"); 
+	MSPlot["Pt_4th_leading_Bjet"] = new MultiSamplePlot(datasets,"Pt_4th_leading_Bjet",100,0,200,"Pt fourth leading Bjet"); 
+	MSPlot["Pt_5th_leading_Bjet"] = new MultiSamplePlot(datasets,"Pt_5th_leading_Bjet",100,0,200,"Pt fifth leading Bjet"); 
+	MSPlot["Pt_6th_leading_Bjet"] = new MultiSamplePlot(datasets,"Pt_6th_leading_Bjet",100,0,200,"Pt sixth leading Bjet"); 
+	MSPlot["Mll"] = new MultiSamplePlot(datasets,"Mll",50,0,100,"Mll of leading and second leading lepton");
+	MSPlot["Mllq"] = new MultiSamplePlot(datasets,"Mllq",50,0,100,"Invariant mass of llq ~ mtop");
+	MSPlot["Mllll"] = new MultiSamplePlot(datasets,"Mllll",50,0,100,"Invariant mass of llll ~ 2mZ");
+	MSPlot["DR_toplepton_MET"] = new MultiSamplePlot(datasets,"DR_toplepton_MET",50,0,100,"DR between toplepton and neutrino");
+	MSPlot["DR_toplepton_bjet"] = new MultiSamplePlot(datasets,"DR_toplepton_bjet",50,0,100,"DR between toplepton and bjet");
+	MSPlot["Mt_toplepton_MET"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET",50,0,100,"Transverse mass of toplepton and neutrino");
+	MSPlot["Mt_toplepton_MET_bjet"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET_bjet",50,0,100,"Transverse mass of toplepton, bjet and neutrino");
+	MSPlot["Mbqq"] = new MultiSamplePlot(datasets,"Mbqq",50,0,100,"Invariant mass of bqq ~ mtop");
+	MSPlot["Mllqq"] = new MultiSamplePlot(datasets,"Mllqq",50,0,100,"Invariant mass of llqq ~ mH");
+	MSPlot["Mllqqq"] = new MultiSamplePlot(datasets,"Mllqqq",50,0,100,"Invariant mass of llqqq ~ mtop");
 	//////////////////  Cut flow histograms	/////////////////////////////
+
 	char plotTitle_total_B[900];
 	sprintf(plotTitle_total_B,"The total cutflow for %s channel (B)",channelchar); 
 	histo1D["cutflow_total_B"] = new TH1F("cutflow_total_B", plotTitle_total_B, 11, -0.5,10.5);
@@ -398,34 +432,7 @@ int main(int argc, char *argv[]){
 		//histo1D[Process_cutflow]->Sumw2();
 		histo1D[Process_cutflow]->GetYaxis()->SetTitle("Eff.");
 
-                //jet pt spectrum
-                histo1D[Form("jet_Pt_leading_%s",datasetNamechar)] = new TH1F(Form("jet_Pt_leading_%s",datasetNamechar), Form("jet pt distribution for %s",datasetNamechar), 400, 0, 400);
-                histo1D[Form("jet_Pt_leading_%s",datasetNamechar)]->GetXaxis()->SetTitle("Number of First Leading Jet");
-		
-		//jet pt spectrum
-                histo1D[Form("jet_Pt_2nd_leading_%s",datasetNamechar)] = new TH1F(Form("jet_Pt_2nd_leading_%s",datasetNamechar), Form("jet pt distribution for %s",datasetNamechar), 400, 0, 400);
-                histo1D[Form("jet_Pt_2nd_leading_%s",datasetNamechar)]->GetXaxis()->SetTitle("Number of Second Leading Jet");
-		
-		//jet pt spectrum
-                histo1D[Form("jet_Pt_3d_leading_%s",datasetNamechar)] = new TH1F(Form("jet_Pt_3d_leading_%s",datasetNamechar), Form("jet pt distribution for %s",datasetNamechar), 400, 0, 400);
-                histo1D[Form("jet_Pt_3d_leading_%s",datasetNamechar)]->GetXaxis()->SetTitle("Number of Third Leading Jet");
-		
-		//Bjet pt spectrum
-                histo1D[Form("Bjet_Pt_leading_%s",datasetNamechar)] = new TH1F(Form("Bjet_Pt_leading_%s",datasetNamechar), Form("Bjet pt distribution for %s",datasetNamechar), 400, 0, 400);
-                histo1D[Form("Bjet_Pt_leading_%s",datasetNamechar)]->GetXaxis()->SetTitle("Number of First Leading B-Jet");
-		
-		//Bjet pt spectrum
-                histo1D[Form("Bjet_Pt_2nd_leading_%s",datasetNamechar)] = new TH1F(Form("Bjet_Pt_2nd_leading_%s",datasetNamechar), Form("Bjet pt distribution for %s",datasetNamechar), 400, 0, 400);
-                histo1D[Form("Bjet_Pt_2nd_leading_%s",datasetNamechar)]->GetXaxis()->SetTitle("Number of Second Leading B-Jet");
-		
-		//Bjet pt spectrum
-                histo1D[Form("Bjet_Pt_3d_leading_%s",datasetNamechar)] = new TH1F(Form("Bjet_Pt_3d_leading_%s",datasetNamechar), Form("Bjet pt distribution for %s",datasetNamechar), 400, 0, 400);
-                histo1D[Form("Bjet_Pt_3d_leading_%s",datasetNamechar)]->GetXaxis()->SetTitle("Number of Third Leading B-Jet");
-	
-		//invariant mass
-                histo1D[Form("mll_%s",datasetNamechar)] = new TH1F(Form("mll_%s",datasetNamechar), Form("Mll of leading and second leading lepton for %s",datasetNamechar), 400, 0, 400);
-                histo1D[Form("mll_%s",datasetNamechar)]->GetXaxis()->SetTitle("Mll of leading and second leading lepton");
-	
+               
 	
 	}
 	
@@ -537,22 +544,10 @@ int main(int argc, char *argv[]){
 		//                START LOOPING OVER THE EVENTS          //
 		///////////////////////////////////////////////////////////
 
-		int NofEvts = 100000;
-		int NofRuns = 0; 
 		
-		//set the maximal number of events to NofEvts
-		if( NofEvts > datasets[d]->NofEvtsToRunOver()) 
-		{
-			NofRuns = datasets[d]->NofEvtsToRunOver(); 
-		}
-		else
-		{
-			NofRuns = NofEvts; 
-		} 
+		if(information) cout << "[PROCES]	looping over " << datasets[d]->NofEvtsToRunOver() <<" events "<< endl;
 		
-		if(information) cout << "[PROCES]	looping over " << NofRuns <<" events "<< endl;
-		
-		for(int ievent = 0; ievent <NofRuns; ievent++)
+		for(int ievent = 0; ievent <datasets[d]->NofEvtsToRunOver(); ievent++)
 		{
 			if(ievent%1000 == 0 && information)
 			{
@@ -581,14 +576,15 @@ int main(int argc, char *argv[]){
 				// 	void Selection::setJetCuts(float Pt, float Eta, float EMF, float n90Hits, float fHPD, float dRJetElectron, float dRJetMuon) 
 				//	void Selection::setLooseDiElectronCuts(float ptt, float Eta, float RelIso, MVAid)  
 				// 	void Selection::setLooseMuonCuts(float Pt, float Eta, float RelIso) 
-			selection.setJetCuts(20.,5.,0.01,1.,0.98,0.3,0.1); 
-			selection.setLooseMuonCuts(10.,2.5,0.2);
-			selection.setLooseDiElectronCuts(15.0,2.5,0.2,0.5); 
-			
+			selection.setJetCuts(20.,2.4,0.01,1.,0.98,0.3,0.1); 
+			selection.setDiMuonCuts(10.,2.5,0.2,0.04);
+			selection.setDiElectronCuts(15.0,2.4,0.15,0.04,0.5,1,0.3,1); 
+			//void Selection::setDiElectronCuts(float Et, float Eta, float RelIso, float d0, float MVAId, float DistVzPVz, float DRJets, int MaxMissingHits)
 			//select the right objects and put them in a vector
 			vector<TRootJet*> selectedJets = selection.GetSelectedJets(true);
-			vector<TRootMuon*> looseMuons = selection.GetSelectedLooseMuons();
-			vector<TRootElectron*> looseElectrons = selection.GetSelectedLooseDiElectrons();
+			vector<TRootMuon*> looseMuons = selection.GetSelectedDiMuons();
+			vector<TRootElectron*> looseElectrons = selection.GetSelectedDiElectrons();
+			
 			vector<TRootJet*> selectedBJets; // B-Jets, to be filled after b-tagging
     			vector<TRootJet*> selectedLightJets; // light-Jets, to be filled afer b-tagging
 			// vector<TRootPhoton*> selectedPhotons = selection.GetSelecetedPhotons(); Photons not yet included in the selection class!!!!
@@ -602,7 +598,7 @@ int main(int argc, char *argv[]){
 			//Start btagging 
 			int nTags = 0;
 			bool Passed_selection = false;
-			bool Passed_selection2 = false; 
+			 
 			
 			// scale factor for the event
         		float scaleFactor = 1.;
@@ -627,10 +623,10 @@ int main(int argc, char *argv[]){
 			//exactly 3 leptons
 			if(channel.find("3L")!=string::npos)
 			{
-				if(debug) cout << "[PROCESS]	in 3L channel" << endl;
+				if(debug) cout << "[PROCES]	in 3L channel" << endl;
 				if(looseElectrons.size() + looseMuons.size() ==3)
 				{ 
-					if(debug) cout << "[PROCESS]	fill 3L" << endl;
+					if(debug) cout << "[PROCES]	fill 3L" << endl;
 					
 					//fill histograms
 					if(!is_signal)histo1D["cutflow_total_B"]->Fill(2);
@@ -645,20 +641,20 @@ int main(int argc, char *argv[]){
 					Passed_selection = true;
 					
 					
-					if(debug) cout << "[PROCESS]	filled 3L" << endl;
+					if(debug) cout << "[PROCES]	filled 3L" << endl;
 					
 					
 				}
-				if(debug)	cout << "[PROCESS]	out fill 3L loop" << endl; 
+				if(debug)	cout << "[PROCES]	out fill 3L loop" << endl; 
 			}
 			//more than 4 leptons
 			if(channel.find("4L")!=string::npos)
 			{
-				if(debug) cout << "[PROCESS]	in 4L channel" << endl;
+				if(debug) cout << "[PROCES]	in 4L channel" << endl;
 				
 				if(looseElectrons.size() + looseMuons.size() > 3)
 				{ 
-					if(debug) cout << "[PROCESS]	fill 4L" << endl;
+					if(debug) cout << "[PROCES]	fill 4L" << endl;
 					
 					//fill histograms
 					if(!is_signal)	histo1D["cutflow_total_B"]->Fill(2);
@@ -670,11 +666,11 @@ int main(int argc, char *argv[]){
 					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(3, "4L");
 					Passed_selection = true;
 									
-					if(debug) cout << "[PROCESS]	filled 4L" << endl;
+					if(debug) cout << "[PROCES]	filled 4L" << endl;
 					
 					
 				}
-				if(debug)	cout << "[PROCESS]	out fill 4L loop" << endl; 
+				if(debug)	cout << "[PROCES]	out fill 4L loop" << endl; 
 			}
 			//1 lepton + 3 b-jets
 			if(channel.find("1L3B")!=string::npos)
@@ -905,8 +901,8 @@ int main(int argc, char *argv[]){
 				MSPlot["NbOfSelectedJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
 				MSPlot["NbOfSelectedLightJets"]->Fill(selectedLightJets.size(), datasets[d], true, Luminosity*scaleFactor);
 		        	MSPlot["NbOfSelectedBJets"]->Fill(selectedBJets.size(), datasets[d], true, Luminosity*scaleFactor);
+				MSPlot["NbOfSelectedLeptons"]->Fill(looseMuons.size()+looseElectrons.size(),datasets[d],true,Luminosity*scaleFactor);
 				MSPlot["MET"]->Fill(mets[0]->E(), datasets[d], true, Luminosity*scaleFactor);
-		
 
 				for (Int_t seljet1 =0; seljet1 < selectedJets.size(); seljet1++ ){
 
@@ -914,27 +910,52 @@ int main(int argc, char *argv[]){
                  			MSPlot["JetPhi"]->Fill(selectedJets[seljet1]->Phi() , datasets[d], true, Luminosity*scaleFactor);
 				}
                                 if( selectedJets.size() > 0) {
-                                	histo1D[Form("jet_Pt_leading_%s",datasetNamechar)]->Fill(selectedJets[0]->Pt());
+                                	MSPlot["Pt_leading_jet"]->Fill(selectedJets[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
                                 }
 				if( selectedJets.size() > 1)
 				{
-				  	histo1D[Form("jet_Pt_2nd_leading_%s",datasetNamechar)]->Fill(selectedJets[1]->Pt());
+				  	MSPlot["Pt_2nd_leading_jet"]->Fill(selectedJets[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
 				if( selectedJets.size() > 2)
 				{
-				  	histo1D[Form("jet_Pt_3d_leading_%s",datasetNamechar)]->Fill(selectedJets[2]->Pt());
+				  	MSPlot["Pt_3d_leading_jet"]->Fill(selectedJets[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
-				if( selectedBJets.size() > 0) {
-                                	histo1D[Form("Bjet_Pt_leading_%s",datasetNamechar)]->Fill(selectedBJets[0]->Pt());
+				if( selectedJets.size() > 3)
+				{
+				  	MSPlot["Pt_4th_leading_jet"]->Fill(selectedJets[3]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				}
+				if( selectedJets.size() > 4)
+				{
+				  	MSPlot["Pt_5th_leading_jet"]->Fill(selectedJets[4]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				}
+				if( selectedJets.size() > 5)
+				{
+				  	MSPlot["Pt_6th_leading_jet"]->Fill(selectedJets[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				}
+				if( selectedJets.size() > 0) {
+                                	MSPlot["Pt_leading_jet"]->Fill(selectedJets[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
                                 }
-				if( selectedBJets.size() > 1)
+				if( selectedJets.size() > 1)
 				{
-				  	histo1D[Form("Bjet_Pt_2nd_leading_%s",datasetNamechar)]->Fill(selectedBJets[1]->Pt());
+				  	MSPlot["Pt_2nd_leading_jet"]->Fill(selectedJets[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
-				if( selectedBJets.size() > 2)
+				if( selectedJets.size() > 2)
 				{
-				  	histo1D[Form("Bjet_Pt_3d_leading_%s",datasetNamechar)]->Fill(selectedBJets[2]->Pt());
+				  	MSPlot["Pt_3d_leading_jet"]->Fill(selectedJets[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
+				if( selectedJets.size() > 3)
+				{
+				  	MSPlot["Pt_4th_leading_jet"]->Fill(selectedJets[3]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				}
+				if( selectedBJets.size() > 4)
+				{
+				  	MSPlot["Pt_5th_leading_Bjet"]->Fill(selectedBJets[4]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				}
+				if( selectedBJets.size() > 5)
+				{
+				  	MSPlot["Pt_6th_leading_Bjet"]->Fill(selectedBJets[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				}
+				
 				
 				double mll = 0; 
 				TLorentzVector leptonpair_mll;
@@ -946,16 +967,31 @@ int main(int argc, char *argv[]){
 				if(looseElectrons.size()==0)
 				{
 					if(debug) cout << "[PROCES]	in looseElectrons.size()==0" << endl; 
-					lepton0 = (looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
-					lepton1 = (looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
-					leptonpair_mll = lepton0+lepton1; 
+					if(looseMuons.size()!=0)
+					{
+						lepton0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+						
+						if(looseMuons.size()>1 )
+						{
+							lepton1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
+							leptonpair_mll = lepton0+lepton1;
+						}
+					}
+					 
 				}
 				else if (looseMuons.size()==0)
 				{
 					if(debug) cout << "[PROCES]	in looseMuons.size()==0" << endl; 
-					lepton0 = (looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
-					lepton1 = (looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
-					leptonpair_mll = lepton0+lepton1; 
+					if(looseElectrons.size()!=0)
+					{
+						lepton0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+						
+						if(looseElectrons.size()>1 )
+						{
+							lepton1.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
+							leptonpair_mll = lepton0+lepton1;
+						}
+					}
 				}
 				else if(looseMuons.size()>1 && looseElectrons.size()>1)
 				{
@@ -973,34 +1009,34 @@ int main(int argc, char *argv[]){
 					if(pt_electron0 > pt_muon0)
 					{
 						if(debug) cout << "[PROCES]	in pt_electron0 > pt_muon0" << endl; 
-						lepton0 = (looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+						lepton0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
 						if(pt_muon0 >= pt_electron1)
 						{
-							lepton1 = (looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+							lepton1.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
 						}
 						else if(pt_muon0 < pt_electron1)
 						{
-							lepton1 = (looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
+							lepton1.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
 						}
 						
 					}
 					else if (pt_muon0 > pt_electron0)
 					{
-						lepton0 = (looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+						lepton0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
 						if(pt_electron0 > pt_muon1)
 						{
-							lepton1 = (looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+							lepton1.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
 						}
 						else if (pt_electron0 < pt_muon1)
 						{
-							lepton1 = (looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
+							lepton1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
 						
 						}
 					
 					}
 					leptonpair_mll = lepton0+lepton1;
 				}
-				/*else if(looseMuons.size() == 1 && looseElectrons.size()>1)
+				else if(looseMuons.size() == 1 && looseElectrons.size()>1)
 				{
 					if(debug) cout << "[PROCES]	in looseMuons.size() == 1 && looseElectrons.size()>1" << endl; 
 					double px12 = (looseElectrons[1]->Px())*(looseElectrons[1]->Px());
@@ -1009,42 +1045,78 @@ int main(int argc, char *argv[]){
 					if(debug) cout << "[INFO]	pt_electron1 = " << pt_electron1 << endl; 
 					double pt_electron0=TMath::Sqrt((looseElectrons[0]->Px())*(looseElectrons[0]->Px())+(looseElectrons[0]->Py())*(looseElectrons[0]->Py()));
 					if(debug) cout << "[INFO]	pt_electron0 = " << pt_electron0 << endl;
-					double pt_muon1=TMath::Sqrt((looseMuons[1]->Px())*(looseMuons[1]->Px())+(looseMuons[1]->Py())*(looseMuons[1]->Py()));
-					if(debug) cout << "[INFO]	pt_muon1 = " << pt_muon1 << endl;
 					double pt_muon0=TMath::Sqrt((looseMuons[0]->Px())*(looseMuons[0]->Px())+(looseMuons[0]->Py())*(looseMuons[0]->Py()));
 					if(debug) cout << "[INFO]	pt_muon0 = " << pt_muon0 << endl;
 					if(pt_electron0 > pt_muon0)
 					{
 						if(debug) cout << "[PROCES]	in pt_electron0 > pt_muon0" << endl; 
-						lepton0 = (looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+						lepton0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
 						if(pt_muon0 >= pt_electron1)
 						{
-							lepton1 = (looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+							lepton1.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
 						}
 						else if(pt_muon0 < pt_electron1)
 						{
-							lepton1 = (looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
+							lepton1.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
 						}
 						
 					}
 					else if (pt_muon0 > pt_electron0)
 					{
-						lepton0 = (looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+						lepton0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+						lepton1.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+					}
+					leptonpair_mll = lepton0+lepton1;
+				}
+				else if(looseMuons.size() > 1 && looseElectrons.size() == 1)
+				{
+					if(debug) cout << "[PROCES]	in looseMuons.size() > 1 && looseElectrons.size() == 1" << endl; 
+					double pt_electron0=TMath::Sqrt((looseElectrons[0]->Px())*(looseElectrons[0]->Px())+(looseElectrons[0]->Py())*(looseElectrons[0]->Py()));
+					if(debug) cout << "[INFO]	pt_electron0 = " << pt_electron0 << endl;
+					double pt_muon0=TMath::Sqrt((looseMuons[0]->Px())*(looseMuons[0]->Px())+(looseMuons[0]->Py())*(looseMuons[0]->Py()));
+					if(debug) cout << "[INFO]	pt_muon0 = " << pt_muon0 << endl;
+					double pt_muon1=TMath::Sqrt((looseMuons[1]->Px())*(looseMuons[1]->Px())+(looseMuons[1]->Py())*(looseMuons[1]->Py()));
+					if(debug) cout << "[INFO]	pt_muon1 = " << pt_muon1 << endl;
+					if(pt_electron0 > pt_muon0)
+					{
+						if(debug) cout << "[PROCES]	in pt_electron0 > pt_muon0" << endl; 
+						lepton0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+						lepton1.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+					}
+					else if (pt_muon0 > pt_electron0)
+					{
+						lepton0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
 						if(pt_electron0 > pt_muon1)
 						{
-							lepton1 = (looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+							lepton1.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
 						}
 						else if (pt_electron0 < pt_muon1)
 						{
-							lepton1 = (looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
+							lepton1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
 						
 						}
 					
 					}
 					leptonpair_mll = lepton0+lepton1;
-				}*/
-				mll = leptonpair_mll.M();
-				histo1D[Form("mll_%s",datasetNamechar)]->Fill(mll);
+				}
+				else if(looseMuons.size() == 1 && looseElectrons.size() == 1)
+				{
+					if(debug) cout << "[PROCES]	in looseMuons.size() == 1 && looseElectrons.size() == 1" << endl; 
+					lepton0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+					lepton1.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+					leptonpair_mll = lepton0+lepton1;
+				}
+				bool empty = false; 
+				if(looseMuons.size() == 0 && looseElectrons.size() == 0) empty = true; 
+				if(looseMuons.size() == 0 && looseElectrons.size() == 1) empty = true; 
+				if(looseMuons.size() == 1 && looseElectrons.size() == 0) empty = true; 
+				if(!empty && (leptonpair_mll!=(0,0,0,0)))
+				{
+					mll = leptonpair_mll.M();
+					if(debug) cout << "[INFO]	mll = 	" << mll << endl; 
+					MSPlot["Mll"]->Fill(mll,datasets[d],true,Luminosity*scaleFactor);
+					
+				}
 			}
 			
 			
@@ -1088,32 +1160,32 @@ int main(int argc, char *argv[]){
 				//define leptons
 				if(looseElectrons.size() > 0)
 				{
-					electron_lepton0 =(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+					electron_lepton0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
 					if(looseElectrons.size() > 1)
 					{
-						electron_lepton1 =(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy()); 
+						electron_lepton1.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy()); 
 						if(looseElectrons.size() > 2)
 						{
-							electron_lepton2 =(looseElectrons[2]->Px(),looseElectrons[2]->Py(),looseElectrons[2]->Pz(),looseElectrons[2]->Energy()); 
+							electron_lepton2.SetPxPyPzE(looseElectrons[2]->Px(),looseElectrons[2]->Py(),looseElectrons[2]->Pz(),looseElectrons[2]->Energy()); 
 							if(looseElectrons.size() == 4)
 							{
-								electron_lepton3 =(looseElectrons[3]->Px(),looseElectrons[3]->Py(),looseElectrons[3]->Pz(),looseElectrons[3]->Energy()); 
+								electron_lepton3.SetPxPyPzE(looseElectrons[3]->Px(),looseElectrons[3]->Py(),looseElectrons[3]->Pz(),looseElectrons[3]->Energy()); 
 							}
 						}
 					}
 				}
 				if(looseMuons.size() > 0)
 				{
-					muon_lepton0 =(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+					muon_lepton0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
 					if(looseMuons.size() > 1)
 					{
-						muon_lepton1 =(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy()); 
+						muon_lepton1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy()); 
 						if(looseMuons.size() == 3)
 						{
-							muon_lepton2 =(looseMuons[2]->Px(),looseMuons[2]->Py(),looseMuons[2]->Pz(),looseMuons[2]->Energy()); 
+							muon_lepton2.SetPxPyPzE(looseMuons[2]->Px(),looseMuons[2]->Py(),looseMuons[2]->Pz(),looseMuons[2]->Energy()); 
 							if(looseMuons.size() == 4)
 							{
-								muon_lepton3 =(looseMuons[3]->Px(),looseMuons[3]->Py(),looseMuons[3]->Pz(),looseMuons[3]->Energy()); 
+								muon_lepton3.SetPxPyPzE(looseMuons[3]->Px(),looseMuons[3]->Py(),looseMuons[3]->Pz(),looseMuons[3]->Energy()); 
 							}
 						}
 					}
@@ -1284,8 +1356,11 @@ int main(int argc, char *argv[]){
 				}
 
 				
-				mll_z = leptonpair.M();
-				if(debug)	cout << "[INFO]	mll = " << mll_z << endl;
+				if(leptonpair != (0,0,0,0) ){ 
+					mll_z = leptonpair.M();
+					MSPlot["mll_z"]->Fill(mll_z,datasets[d],true,Luminosity*scaleFactor);
+				}
+				if(debug)	cout << "[INFO]	mll_z = " << mll_z << endl;
 				
 				
 				
@@ -1386,8 +1461,13 @@ int main(int argc, char *argv[]){
 								histo1D[Process_cutflow]->Fill(6);
 						
 								//set labels
-								if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(7,"PtJet>50.0");
-								if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(7,"PtJet>50.0");		
+								if(!is_signal) {
+									histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(7,"PtJet>40.0");
+								}
+								if(is_signal)
+								{
+									histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(7,"PtJet>40.0");		
+								}
 								histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(7, "PtJet>40.0");
 								
 								if(selectedJets[0]->Pt()>50.0)
@@ -1441,7 +1521,6 @@ int main(int argc, char *argv[]){
 						
 						if(selectedJets[0]->Pt()>50.0)
 						{
-							Passed_selection2 = true;
 							//fill histograms
 							if(!is_signal)histo1D["cutflow_total_B"]->Fill(7);
 							if(is_signal) histo1D["cutflow_total_S"]->Fill(7);
@@ -1497,6 +1576,7 @@ int main(int argc, char *argv[]){
 	
 	TDirectory* th1dir = fout->mkdir("Histos1D");
   	th1dir->cd();
+	if(information) cout << "[PROCES]	Looping over 1D plots" << endl; 
   	for(map<std::string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
   	{
         	TH1F *temp = it->second;
@@ -1504,6 +1584,8 @@ int main(int argc, char *argv[]){
         	//TCanvas* tempCanvas = TCanvasCreator(temp, it->first);
         	//tempCanvas->SaveAs( (pathPNG+it->first+".png").c_str() );
   	}
+	
+	
 	
 	std::cout << "******************************************"<<std::endl; 
 	std::cout << " End of the program for the FCNC selection " << std::endl; 
