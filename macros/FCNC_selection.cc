@@ -742,6 +742,48 @@ int main(int argc, char *argv[]){
 							
 							Passed_selection = true;
 						}
+						if(nTags > 0)
+						{
+							if(debug) cout << "in fill 1l3b loop: 3bjets" << endl;
+							//fill histograms
+							if(!is_signal) histo1D["cutflow_total_B"]->Fill(4);
+							if(is_signal) histo1D["cutflow_total_S"]->Fill(4);
+							histo1D[Process_cutflow]->Fill(4);
+							//label histograms
+							if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5, ">= 1 bjets");
+							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5, ">= 1 bjets");
+							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">= 1 bjets");
+							
+							Passed_selection = true;
+						}
+						if(nTags > 1)
+						{
+							if(debug) cout << "in fill 1l3b loop: 3bjets" << endl;
+							//fill histograms
+							if(!is_signal) histo1D["cutflow_total_B"]->Fill(4);
+							if(is_signal) histo1D["cutflow_total_S"]->Fill(4);
+							histo1D[Process_cutflow]->Fill(4);
+							//label histograms
+							if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5, ">= 2 bjets");
+							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5, ">= 2 bjets");
+							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">= 2 bjets");
+							
+							Passed_selection = true;
+						}
+						if(nTags > 2)
+						{
+							if(debug) cout << "in fill 1l3b loop: 3bjets" << endl;
+							//fill histograms
+							if(!is_signal) histo1D["cutflow_total_B"]->Fill(4);
+							if(is_signal) histo1D["cutflow_total_S"]->Fill(4);
+							histo1D[Process_cutflow]->Fill(4);
+							//label histograms
+							if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5, ">= 3 bjets");
+							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5, ">= 3 bjets");
+							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">= 3 bjets");
+							
+							Passed_selection = true;
+						}
 					}
 				
 					if(debug) cout << "out fill 1l3b loop" << endl;
