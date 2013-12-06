@@ -299,12 +299,16 @@ int main(int argc, char *argv[]){
 	//MSPlot["Mllq"] = new MultiSamplePlot(datasets,"Mllq",50,0,100,"Invariant mass of llq ~ mtop");
 	MSPlot["Mllll"] = new MultiSamplePlot(datasets,"Mllll",50,0,250,"Invariant mass of llll ~ 2mZ");
 	//MSPlot["DR_toplepton_MET"] = new MultiSamplePlot(datasets,"DR_toplepton_MET",50,0,100,"DR between toplepton and neutrino");
-	//MSPlot["DR_toplepton_bjet"] = new MultiSamplePlot(datasets,"DR_toplepton_bjet",50,0,100,"DR between toplepton and bjet");
+	MSPlot["DR_toplepton_bjet"] = new MultiSamplePlot(datasets,"DR_toplepton_bjet",30,0,5,"DR between toplepton and bjet");
+	MSPlot["DR_bb"] = new MultiSamplePlot(datasets,"DR_bb",30,0,5,"Min DR between bb");
 	//MSPlot["Mt_toplepton_MET"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET",50,0,100,"Transverse mass of toplepton and neutrino");
 	//MSPlot["Mt_toplepton_MET_bjet"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET_bjet",50,0,100,"Transverse mass of toplepton, bjet and neutrino");
 	//MSPlot["Mbqq"] = new MultiSamplePlot(datasets,"Mbqq",50,0,100,"Invariant mass of bqq ~ mtop");
 	//MSPlot["Mllqq"] = new MultiSamplePlot(datasets,"Mllqq",50,0,100,"Invariant mass of llqq ~ mH");
 	//MSPlot["Mllqqq"] = new MultiSamplePlot(datasets,"Mllqqq",50,0,100,"Invariant mass of llqqq ~ mtop");
+	MSPlot["Mbb"] = new MultiSamplePlot(datasets,"Mbb",50,0,200,"Invariant mass of bb ~ Higgs");
+	MSPlot["DeltaPhi_bb"] = new MultiSamplePlot(datasets,"DeltaPhi_bb",50,0,5,"DeltaPhi bb ~ Higgs");
+	
 	//////////////////  Cut flow histograms	/////////////////////////////
 	MSPlot["cutflow"] = new MultiSamplePlot(datasets,"cutflow",11,-0.5,10.5, "cutflow"); 
 
@@ -567,7 +571,10 @@ int main(int argc, char *argv[]){
 			
 			//Load the event 
 			event = treeLoader.LoadEvent(ievent, vertex, init_muons, init_electrons, init_jets, mets);
-
+			
+			// scale factor for the event
+        		float scaleFactor = 1.;
+			
 			MSPlot["cutflow"]->Fill(1, datasets[d], true, Luminosity*scaleFactor);
 			histo1D[Process_cutflow]->Fill(1);
 			if(!is_signal) histo1D["cutflow_total_B"]->Fill(1);
@@ -610,8 +617,7 @@ int main(int argc, char *argv[]){
 			bool Passed_selection = false;
 			 
 			
-			// scale factor for the event
-        		float scaleFactor = 1.;
+
 	
 			//implement btagging	
       			for(unsigned int iJet=0; iJet<selectedJets.size(); iJet++){
@@ -718,9 +724,9 @@ int main(int argc, char *argv[]){
 						if(is_signal) histo1D["cutflow_total_S"]->Fill(3);
 						histo1D[Process_cutflow]->Fill(3);
 						//label histograms
-						if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, ">= 3jets");
-						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, ">= 3jets");
-						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, ">=3jets");
+						if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, ">= 4jets");
+						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, ">= 4jets");
+						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, ">=4jets");
 						
 						if(nTags == 3)
 						{
@@ -1169,10 +1175,78 @@ int main(int argc, char *argv[]){
 				
 				}
 
+				if(channel.find("1L3B")!=string::npos && Passed_selection){
+					TLorentzVector* Lepton;
+					TLorentzVector* bb_cand;
 
+					Lepton->Clear();
+					bb_cand->Clear();
+					
+					vector <float> frac_b_topcandidate;
+					if (looseElectrons.size() == 1) Lepton->SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->E());
+					if (looseMuons.size() == 1) Lepton->SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->E());
 
+				
+					float TransvM_lept_MET = 0;
+					float TransvM_lept_MET_b = 0;
+					float InvM_bb = 0;
+					float DeltaR_lepton_b_min = 9999; //The b which is closest to the lepton is more probable to come from the SM top decay
+					float DeltaR_bb_min = 9999; 
+					float DeltaR_bb_max = -9999; //The bigger DeltaR_bb, the more probable those 2 b-jets do not come from H->bb (and therefore the max is a good handle to determine which of the 3 b-jets comes from SM top decay
+					float dR_lb_temp = 9999;
+					float dR_bb_temp = 9999;
+					int index_BTopcandidate = 9999; // based on the minimal DeltaR_lepton_b + DeltaR_bb
+					
+					//Determine the minimal Delta R
+					for(int iBjet = 0; iBjet < selectedBJets_CSVM.size(); iBjet++){
 						
-			}
+						dR_lb_temp = sqrt(pow(Lepton->Eta() - selectedBJets_CSVM[iBjet]->Eta(),2)+pow(Lepton->Phi() - selectedBJets_CSVM[iBjet]->Phi(),2));
+						if(DeltaR_lepton_b_min>dR_lb_temp){
+							DeltaR_lepton_b_min = dR_lb_temp;
+							//index_BTopcandidate = iBjet;
+						}
+						
+						for(int iBjet2 = 0; iBjet2 < selectedBJets_CSVM.size(); iBjet2++){
+							if(iBjet != iBjet2) dR_bb_temp = sqrt(pow(selectedBJets_CSVM[iBjet]->Eta() - selectedBJets_CSVM[iBjet2]->Eta(),2)+pow(selectedBJets_CSVM[iBjet]->Phi() - selectedBJets_CSVM[iBjet2]->Phi(),2));
+							if(DeltaR_bb_min>dR_bb_temp) DeltaR_bb_min = dR_bb_temp;
+							if(DeltaR_bb_max<dR_bb_temp) DeltaR_bb_max = dR_bb_temp;
+						}
+						
+						frac_b_topcandidate.push_back(DeltaR_lepton_b_min/DeltaR_bb_max);
+					}
+					
+					//Get the index of the b-jet which most probably comes from the top quark through the fraction DeltaR_lepton_b_min/DeltaR_bb_max
+					float min_frac = 999999;
+					for(int iBjet = 0; iBjet < frac_b_topcandidate.size(); iBjet++){
+						if(min_frac > frac_b_topcandidate[iBjet]){
+							min_frac = frac_b_topcandidate[iBjet];
+							index_BTopcandidate = iBjet;
+						}
+					}
+					
+					
+					
+					
+					float DeltaPhi_bb = 0;
+					float InvMass_bb = 0;
+					for(int iBjet = 0; iBjet < selectedBJets_CSVM.size(); iBjet++){
+						for(int iBjet2 = 0; iBjet2 < selectedBJets_CSVM.size(); iBjet2++){
+							if((iBjet != index_BTopcandidate) && (iBjet2 != index_BTopcandidate) && (iBjet != iBjet2)){
+								
+								bb_cand->SetPxPyPzE(selectedBJets_CSVM[iBjet]->Px()+selectedBJets_CSVM[iBjet2]->Px(),selectedBJets_CSVM[iBjet]->Py()+selectedBJets_CSVM[iBjet2]->Py(),selectedBJets_CSVM[iBjet]->Pz()+selectedBJets_CSVM[iBjet2]->Pz(),selectedBJets_CSVM[iBjet]->E()+selectedBJets_CSVM[iBjet]->E());
+								
+								DeltaPhi_bb = sqrt( pow(( selectedBJets_CSVM[iBjet]->Phi() - selectedBJets_CSVM[iBjet2]->Phi() ), 2));
+								InvMass_bb = bb_cand->M();
+							}
+						}
+					}
+					
+				MSPlot["DR_toplepton_bjet"]->Fill(DeltaR_lepton_b_min, datasets[d],true,Luminosity*scaleFactor);
+				MSPlot["DR_bb"]->Fill(DeltaR_bb_min, datasets[d],true,Luminosity*scaleFactor);
+				MSPlot["Mbb"]->Fill(InvMass_bb, datasets[d],true,Luminosity*scaleFactor);
+				MSPlot["DeltaPhi_bb"]->Fill(DeltaPhi_bb, datasets[d],true,Luminosity*scaleFactor);
+				}
+
 	
 		}
 		
@@ -1205,12 +1279,13 @@ int main(int argc, char *argv[]){
         	//        temp->addText("CMS preliminary");
         	string name = it->first;
 		//temp->Draw( name, 0, false, false, false, 1);
-      		temp->Draw(false, name, true, true, true, true, true, 1, false);
+		temp->Draw( name, 0, false, false, false, 1);
 		
+				
       		if(debug) cout <<" looping MS plots..., name ... "<< name<<endl;
         
         	//temp->Write(fout, name, false);//, pathPNG, "pdf");
-		temp->Write(fout, name, true, pathPNG+"MSPlot/");
+        	temp->Write(fout, name, false);//, pathPNG, "pdf");
         	if(debug) cout <<" written MSplot " << name <<endl;
 
   	}
