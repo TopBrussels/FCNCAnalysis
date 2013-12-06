@@ -276,8 +276,8 @@ int main(int argc, char *argv[]){
     	MSPlot["NbOfSelectedBJets_CSVT"] = new MultiSamplePlot(datasets, "NbOfSelectedBJets_CSVT", 15, -0.5, 14.5, "Nb. of jets");
     	MSPlot["JetEta"] = new MultiSamplePlot(datasets, "JetEta", 30,-3., 3., "Jet #eta");
     	MSPlot["JetPhi"] = new MultiSamplePlot(datasets, "JetPhi", 50, -4., 4., "Jet #phi");
-	MSPlot["MET"] = new MultiSamplePlot(datasets, "MET", 40, 0., 700., "MET");
-	MSPlot["mll_z"] = new MultiSamplePlot(datasets,"mll_z",50,0,100,"Invariant mass of the leptons that make the Z boson");
+	//MSPlot["MET"] = new MultiSamplePlot(datasets, "MET", 40, 0., 700., "MET");
+	//MSPlot["mll_z"] = new MultiSamplePlot(datasets,"mll_z",50,0,100,"Invariant mass of the leptons that make the Z boson");
 	MSPlot["Pt_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_leading_lepton",50,0,100,"Pt leading lepton");
 	MSPlot["Pt_2nd_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_lepton",50,0,100,"Pt 2nd leading lepton");
 	MSPlot["Pt_3d_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_3d_leading_lepton",50,0,100,"Pt third leading lepton");
@@ -295,23 +295,25 @@ int main(int argc, char *argv[]){
 	MSPlot["Pt_4th_leading_Bjet"] = new MultiSamplePlot(datasets,"Pt_4th_leading_Bjet",100,0,200,"Pt fourth leading Bjet"); 
 	MSPlot["Pt_5th_leading_Bjet"] = new MultiSamplePlot(datasets,"Pt_5th_leading_Bjet",100,0,200,"Pt fifth leading Bjet"); 
 	MSPlot["Pt_6th_leading_Bjet"] = new MultiSamplePlot(datasets,"Pt_6th_leading_Bjet",100,0,200,"Pt sixth leading Bjet"); 
-	MSPlot["Mll"] = new MultiSamplePlot(datasets,"Mll",50,0,100,"Mll of leading and second leading lepton");
-	MSPlot["Mllq"] = new MultiSamplePlot(datasets,"Mllq",50,0,100,"Invariant mass of llq ~ mtop");
-	MSPlot["Mllll"] = new MultiSamplePlot(datasets,"Mllll",50,0,100,"Invariant mass of llll ~ 2mZ");
-	MSPlot["DR_toplepton_MET"] = new MultiSamplePlot(datasets,"DR_toplepton_MET",50,0,100,"DR between toplepton and neutrino");
-	MSPlot["DR_toplepton_bjet"] = new MultiSamplePlot(datasets,"DR_toplepton_bjet",50,0,100,"DR between toplepton and bjet");
-	MSPlot["Mt_toplepton_MET"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET",50,0,100,"Transverse mass of toplepton and neutrino");
-	MSPlot["Mt_toplepton_MET_bjet"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET_bjet",50,0,100,"Transverse mass of toplepton, bjet and neutrino");
-	MSPlot["Mbqq"] = new MultiSamplePlot(datasets,"Mbqq",50,0,100,"Invariant mass of bqq ~ mtop");
-	MSPlot["Mllqq"] = new MultiSamplePlot(datasets,"Mllqq",50,0,100,"Invariant mass of llqq ~ mH");
-	MSPlot["Mllqqq"] = new MultiSamplePlot(datasets,"Mllqqq",50,0,100,"Invariant mass of llqqq ~ mtop");
+	MSPlot["Mll"] = new MultiSamplePlot(datasets,"Mll",50,0,200,"Mll of leading and second leading lepton");
+	//MSPlot["Mllq"] = new MultiSamplePlot(datasets,"Mllq",50,0,100,"Invariant mass of llq ~ mtop");
+	MSPlot["Mllll"] = new MultiSamplePlot(datasets,"Mllll",50,0,250,"Invariant mass of llll ~ 2mZ");
+	//MSPlot["DR_toplepton_MET"] = new MultiSamplePlot(datasets,"DR_toplepton_MET",50,0,100,"DR between toplepton and neutrino");
+	//MSPlot["DR_toplepton_bjet"] = new MultiSamplePlot(datasets,"DR_toplepton_bjet",50,0,100,"DR between toplepton and bjet");
+	//MSPlot["Mt_toplepton_MET"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET",50,0,100,"Transverse mass of toplepton and neutrino");
+	//MSPlot["Mt_toplepton_MET_bjet"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET_bjet",50,0,100,"Transverse mass of toplepton, bjet and neutrino");
+	//MSPlot["Mbqq"] = new MultiSamplePlot(datasets,"Mbqq",50,0,100,"Invariant mass of bqq ~ mtop");
+	//MSPlot["Mllqq"] = new MultiSamplePlot(datasets,"Mllqq",50,0,100,"Invariant mass of llqq ~ mH");
+	//MSPlot["Mllqqq"] = new MultiSamplePlot(datasets,"Mllqqq",50,0,100,"Invariant mass of llqqq ~ mtop");
 	//////////////////  Cut flow histograms	/////////////////////////////
+	MSPlot["cutflow"] = new MultiSamplePlot(datasets,"cutflow",11,-0.5,10.5, "cutflow"); 
+
 
 	char plotTitle_total_B[900];
 	sprintf(plotTitle_total_B,"The total cutflow for %s channel (B)",channelchar); 
 	histo1D["cutflow_total_B"] = new TH1F("cutflow_total_B", plotTitle_total_B, 11, -0.5,10.5);
 	histo1D["cutflow_total_B"]->Sumw2();
-	histo1D["cutflow_total_B"]->GetYaxis()->SetTitle("Eff.");
+	histo1D["cutflow_total_B"]->GetYaxis()->SetTitle("#evts.");
 
 
 	char plotTitle_total_S[900];
@@ -403,7 +405,7 @@ int main(int argc, char *argv[]){
 		
 		histo1D[Process_cutflow] = new TH1F(NamePlot, plotTitle, 15, -0.5,14.5);
 		//histo1D[Process_cutflow]->Sumw2();
-		histo1D[Process_cutflow]->GetYaxis()->SetTitle("Eff.");
+		histo1D[Process_cutflow]->GetYaxis()->SetTitle("#evts.");
 
                
 	
@@ -475,7 +477,8 @@ int main(int argc, char *argv[]){
                 if(datasetName.find("Zjets")!=string::npos || datasetName.find("zjets")!=string::npos) {sprintf(datasetNamechar,"Zjets");}
                 if(datasetName.find("ST_T_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_T_tW-ch");}
                 if(datasetName.find("ST_TBar_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBar_tW-ch");}
-
+		if(datasetName.find("ST_T_s-ch")!=string::npos) {sprintf(datasetNamechar,"ST_T_s-ch");}
+                if(datasetName.find("ST_TBar_s-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBar_s-ch");}
 		
 		if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");
@@ -565,7 +568,7 @@ int main(int argc, char *argv[]){
 			//Load the event 
 			event = treeLoader.LoadEvent(ievent, vertex, init_muons, init_electrons, init_jets, mets);
 
-			
+			MSPlot["cutflow"]->Fill(1, datasets[d], true, Luminosity*scaleFactor);
 			histo1D[Process_cutflow]->Fill(1);
 			if(!is_signal) histo1D["cutflow_total_B"]->Fill(1);
 			if(is_signal) histo1D["cutflow_total_S"]->Fill(1);
@@ -629,17 +632,19 @@ int main(int argc, char *argv[]){
 			
 			
 			bool OneLepton_4Jets = false;
-
+			bool chan3L4L = false; 
 			
 			//exactly 3 leptons
 			if(channel.find("3L")!=string::npos)
 			{
+				chan3L4L = true;
 				if(debug) cout << "[PROCES]	in 3L channel" << endl;
 				if(looseElectrons.size() + looseMuons.size() ==3)
 				{ 
 					if(debug) cout << "[PROCES]	fill 3L" << endl;
 					
 					//fill histograms
+					MSPlot["cutflow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor);
 					if(!is_signal)histo1D["cutflow_total_B"]->Fill(2);
 					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
 					histo1D[Process_cutflow]->Fill(2);
@@ -661,12 +666,13 @@ int main(int argc, char *argv[]){
 			//more than 4 leptons
 			if(channel.find("4L")!=string::npos)
 			{
+				chan3L4L = true;
 				if(debug) cout << "[PROCES]	in 4L channel" << endl;
 				
 				if(looseElectrons.size() + looseMuons.size() > 3)
 				{ 
 					if(debug) cout << "[PROCES]	fill 4L" << endl;
-					
+					MSPlot["cutflow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor);
 					//fill histograms
 					if(!is_signal)	histo1D["cutflow_total_B"]->Fill(2);
 					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
@@ -928,49 +934,61 @@ int main(int argc, char *argv[]){
                  			MSPlot["JetPhi"]->Fill(selectedJets[seljet1]->Phi() , datasets[d], true, Luminosity*scaleFactor);
 				}
                                 if( selectedJets.size() > 0) {
+					if(chan3L4L) MSPlot["cutflow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor);
                                 	MSPlot["Pt_leading_jet"]->Fill(selectedJets[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
                                 }
 				if( selectedJets.size() > 1)
 				{
+					if(chan3L4L) MSPlot["cutflow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor);
 				  	MSPlot["Pt_2nd_leading_jet"]->Fill(selectedJets[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
 				if( selectedJets.size() > 2)
 				{
+					if(chan3L4L) MSPlot["cutflow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor);
 				  	MSPlot["Pt_3d_leading_jet"]->Fill(selectedJets[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
 				if( selectedJets.size() > 3)
 				{
+					if(chan3L4L) MSPlot["cutflow"]->Fill(6, datasets[d], true, Luminosity*scaleFactor);
 				  	MSPlot["Pt_4th_leading_jet"]->Fill(selectedJets[3]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
 				if( selectedJets.size() > 4)
 				{
+					if(chan3L4L) MSPlot["cutflow"]->Fill(7, datasets[d], true, Luminosity*scaleFactor);
 				  	MSPlot["Pt_5th_leading_jet"]->Fill(selectedJets[4]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
 				if( selectedJets.size() > 5)
 				{
+					if(chan3L4L) MSPlot["cutflow"]->Fill(8, datasets[d], true, Luminosity*scaleFactor);
 				  	MSPlot["Pt_6th_leading_jet"]->Fill(selectedJets[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
 				if( selectedBJets_CSVM.size() > 0) {
+					if(chan3L4L) MSPlot["cutflow"]->Fill(9, datasets[d], true, Luminosity*scaleFactor);
                                 	MSPlot["Pt_leading_Bjet"]->Fill(selectedBJets_CSVM[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
                                 }
 				if( selectedBJets_CSVM.size() > 1)
 				{
+					if(chan3L4L) MSPlot["cutflow"]->Fill(10, datasets[d], true, Luminosity*scaleFactor);
 				  	MSPlot["Pt_2nd_leading_Bjet"]->Fill(selectedBJets_CSVM[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
 				if( selectedBJets_CSVM.size() > 2)
 				{
+					if(chan3L4L) MSPlot["cutflow"]->Fill(11, datasets[d], true, Luminosity*scaleFactor);
 				  	MSPlot["Pt_3d_leading_Bjet"]->Fill(selectedBJets_CSVM[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
 				if( selectedBJets_CSVM.size() > 3)
 				{
+					if(chan3L4L) MSPlot["cutflow"]->Fill(12, datasets[d], true, Luminosity*scaleFactor);
 				  	MSPlot["Pt_4th_leading_Bjet"]->Fill(selectedBJets_CSVM[3]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
 				if( selectedBJets_CSVM.size() > 4)
 				{
+					if(chan3L4L) MSPlot["cutflow"]->Fill(13, datasets[d], true, Luminosity*scaleFactor);
 				  	MSPlot["Pt_5th_leading_Bjet"]->Fill(selectedBJets_CSVM[4]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
 				if( selectedBJets_CSVM.size() > 5)
 				{
+					if(chan3L4L) MSPlot["cutflow"]->Fill(14, datasets[d], true, Luminosity*scaleFactor);
 				  	MSPlot["Pt_6th_leading_Bjet"]->Fill(selectedBJets_CSVM[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
 				
@@ -1143,89 +1161,8 @@ int main(int argc, char *argv[]){
 
 			
 			// adding additional cuts
-			bool chan3L4L = false; 
-			bool NofJets_1 = false; 
-			bool NofJets_2 = false; 
-			bool NofBJets_1 = false; 
-			bool NofBJets_ex1 = false; 
-			if(channel.find("3L")!=string::npos || channel.find("4L")!=string::npos) chan3L4L = true; 
-			if(Passed_selection && chan3L4L )
-			{ 
-				/*if(selectedJets.size()>0)
-				{
-					MSPlot["NbOfSelectedJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
-					MSPlot["NbOfSelectedLightJets"]->Fill(selectedLightJets.size(), datasets[d], true, Luminosity*scaleFactor);
-					MSPlot["NbOfSelectedBJets_CSVM"]->Fill(selectedBJets_CSVM.size(), datasets[d], true, Luminosity*scaleFactor);
-					MSPlot["MET"]->Fill(mets[0]->E(), datasets[d], true, Luminosity*scaleFactor);
-
-					for (Int_t seljet1 =0; seljet1 < selectedJets.size(); seljet1++ ){
-
-						MSPlot["JetEta"]->Fill(selectedJets[seljet1]->Eta() , datasets[d], true, Luminosity*scaleFactor);
-						MSPlot["JetPhi"]->Fill(selectedJets[seljet1]->Phi() , datasets[d], true, Luminosity*scaleFactor);
-					}
-
-				
-				}
-				if(selectedJets.size()>1)
-				{
-					MSPlot["NbOfSelectedJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
-					MSPlot["NbOfSelectedLightJets"]->Fill(selectedLightJets.size(), datasets[d], true, Luminosity*scaleFactor);
-					MSPlot["NbOfSelectedBJets_CSVM"]->Fill(selectedBJets_CSVM.size(), datasets[d], true, Luminosity*scaleFactor);
-					MSPlot["MET"]->Fill(mets[0]->E(), datasets[d], true, Luminosity*scaleFactor);
-
-					for (Int_t seljet1 =0; seljet1 < selectedJets.size(); seljet1++ ){
-
-						MSPlot["JetEta"]->Fill(selectedJets[seljet1]->Eta() , datasets[d], true, Luminosity*scaleFactor);
-						MSPlot["JetPhi"]->Fill(selectedJets[seljet1]->Phi() , datasets[d], true, Luminosity*scaleFactor);
-					}
-					
-					MSPlot["Pt_leading_jet"]->Fill(selectedJets[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
-				  	MSPlot["Pt_2nd_leading_jet"]->Fill(selectedJets[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
-
-					if( selectedJets.size() > 2)
-					{
-					  	MSPlot["Pt_3d_leading_jet"]->Fill(selectedJets[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
-					}
-					if( selectedJets.size() > 3)
-					{
-					  	MSPlot["Pt_4th_leading_jet"]->Fill(selectedJets[3]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
-					}
-					if( selectedJets.size() > 4)
-					{
-					  	MSPlot["Pt_5th_leading_jet"]->Fill(selectedJets[4]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
-					}
-					if( selectedJets.size() > 5)
-					{
-					  	MSPlot["Pt_6th_leading_jet"]->Fill(selectedJets[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
-					}
-					if( selectedBJets_CSVM.size() > 0) {
-						MSPlot["Pt_leading_Bjet"]->Fill(selectedBJets_CSVM[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
-					}
-					if( selectedBJets_CSVM.size() > 1)
-					{
- 					 	MSPlot["Pt_2nd_leading_Bjet"]->Fill(selectedBJets_CSVM[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
-					}
-					if( selectedBJets_CSVM.size() > 2)
-					{
-					  	MSPlot["Pt_3d_leading_Bjet"]->Fill(selectedBJets_CSVM[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
-					}
-					if( selectedBJets_CSVM.size() > 3)
-					{
-					  	MSPlot["Pt_4th_leading_Bjet"]->Fill(selectedBJets_CSVM[3]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
-					}
-					if( selectedBJets_CSVM.size() > 4)
-					{
- 					 	MSPlot["Pt_5th_leading_Bjet"]->Fill(selectedBJets_CSVM[4]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
-					}
-					if( selectedBJets_CSVM.size() > 5)
-					{
-					  	MSPlot["Pt_6th_leading_Bjet"]->Fill(selectedBJets_CSVM[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
-					}
-
-				
-				}
-				*/
-				
+			 
+			
 				
 				if(channel.find("1L3B")!=string::npos && Passed_selection){
 				
@@ -1259,16 +1196,21 @@ int main(int argc, char *argv[]){
 	for(map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
     	{
   
+  
+   
+               
         	MultiSamplePlot *temp = it->second;
         	TH1F *tempHisto_data;
         	TH1F *tempHisto_back;
         	//        temp->addText("CMS preliminary");
         	string name = it->first;
-		temp->Draw( name, 0, false, false, false, 1);
-      
+		//temp->Draw( name, 0, false, false, false, 1);
+      		temp->Draw(false, name, true, true, true, true, true, 1, false);
+		
       		if(debug) cout <<" looping MS plots..., name ... "<< name<<endl;
         
-        	temp->Write(fout, name, false);//, pathPNG, "pdf");
+        	//temp->Write(fout, name, false);//, pathPNG, "pdf");
+		temp->Write(fout, name, true, pathPNG+"MSPlot/");
         	if(debug) cout <<" written MSplot " << name <<endl;
 
   	}
