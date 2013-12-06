@@ -200,6 +200,7 @@ int main(int argc, char *argv[]){
 	///////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////
 	float workingpointvalue = 9999; //working points updated to 2012 BTV-POG recommendations.
+	float Tightworkingpoint = 0.898;
  
   	if(btagger == "TCHPM" || btagger == "TCHET" || btagger == "SSV" ){
     		cout<<"This tagger ("<< btagger <<")is not commisioned in 2012, please use CSV, TCHP or JetProb"<<endl;
@@ -271,7 +272,8 @@ int main(int argc, char *argv[]){
 	MSPlot["NbOfSelectedJets"] = new MultiSamplePlot(datasets, "NbOfSelectedJets", 15, -0.5, 14.5, "Nb. of jets");
     	MSPlot["NbOfSelectedLightJets"] = new MultiSamplePlot(datasets, "NbOfSelectedLightJets", 15, -0.5, 14.5, "Nb. of jets");
 	MSPlot["NbOfSelectedLeptons"] = new MultiSamplePlot(datasets, "NbOfSelectedLeptons", 10, -0.5, 9.5, "Nb. of leptons");
-    	MSPlot["NbOfSelectedBJets"] = new MultiSamplePlot(datasets, "NbOfSelectedBJets", 15, -0.5, 14.5, "Nb. of jets");
+    	MSPlot["NbOfSelectedBJets_CSVM"] = new MultiSamplePlot(datasets, "NbOfSelectedBJets_CSVM", 15, -0.5, 14.5, "Nb. of jets");
+    	MSPlot["NbOfSelectedBJets_CSVT"] = new MultiSamplePlot(datasets, "NbOfSelectedBJets_CSVT", 15, -0.5, 14.5, "Nb. of jets");
     	MSPlot["JetEta"] = new MultiSamplePlot(datasets, "JetEta", 30,-3., 3., "Jet #eta");
     	MSPlot["JetPhi"] = new MultiSamplePlot(datasets, "JetPhi", 50, -4., 4., "Jet #phi");
 	MSPlot["MET"] = new MultiSamplePlot(datasets, "MET", 40, 0., 700., "MET");
@@ -310,38 +312,6 @@ int main(int argc, char *argv[]){
 	histo1D["cutflow_total_B"] = new TH1F("cutflow_total_B", plotTitle_total_B, 11, -0.5,10.5);
 	histo1D["cutflow_total_B"]->Sumw2();
 	histo1D["cutflow_total_B"]->GetYaxis()->SetTitle("Eff.");
-	
-	sprintf(plotTitle_total_B,"The njets %s channel (B)",channelchar);
-	histo1D["njets_B"] = new TH1F("njets_B", plotTitle_total_B, 10,0,10);
-	histo1D["njets_B"]->Sumw2();
-	
-	sprintf(plotTitle_total_B,"The nb of leptons %s channel (B)",channelchar);
-	histo1D["nleptons_B"]= new TH1F("nleptons_B", plotTitle_total_B, 6,0,6);
-	histo1D["nleptons_B"]->Sumw2();
-	
-	sprintf(plotTitle_total_B,"The njets btagged %s channel (B)",channelchar);
-	histo1D["njets_btagged_B"] = new TH1F("njets_btagged_B", plotTitle_total_B, 10,0,10);
-	histo1D["njets_btagged_B"]->Sumw2();
-	
-	sprintf(plotTitle_total_B,"The njets light %s channel (B)",channelchar);
-	histo1D["njets_light_B"] = new TH1F("njets_light_B", plotTitle_total_B, 10,0,10);
-	histo1D["njets_light_B"]->Sumw2();
-
-	sprintf(plotTitle_total_B,"The invariant mass of same kind of leptons %s channel (B)",channelchar);
-	histo1D["mll_z_B"] = new TH1F("mll_z_B", plotTitle_total_B, 50,0,100);
-	histo1D["mll_z_B"]->Sumw2();
-	
-	sprintf(plotTitle_total_B,"The pt of lepton with largest pt %s channel (B)",channelchar);
-	histo1D["pt_lepton_max_B"] = new TH1F("pt_lepton_max_B", plotTitle_total_B, 50,0,100);
-	histo1D["pt_lepton_max_B"]->Sumw2();
-	
-	sprintf(plotTitle_total_B,"The pt of lepton with smallest pt %s channel (B)",channelchar);
-	histo1D["pt_lepton_min_B"] = new TH1F("pt_lepton_min_B", plotTitle_total_B, 50,0,100);
-	histo1D["pt_lepton_min_B"]->Sumw2();
-	
-	sprintf(plotTitle_total_B,"The pt of jet with largest pt %s channel (B)",channelchar);
-	histo1D["pt_jet_max_B"] = new TH1F("pt_jet_max_B", plotTitle_total_B, 100,0,200);
-	histo1D["pt_jet_max_B"]->Sumw2();
 
 
 	char plotTitle_total_S[900];
@@ -350,38 +320,6 @@ int main(int argc, char *argv[]){
 	histo1D["cutflow_total_S"]->Sumw2();
 	histo1D["cutflow_total_S"]->GetYaxis()->SetTitle("Eff.");
 
-	sprintf(plotTitle_total_S,"The njets %s channel (S)",channelchar);
-	histo1D["njets_S"] = new TH1F("njets_S", plotTitle_total_S, 10,0,10);
-	histo1D["njets_S"]->Sumw2();
-	
-	sprintf(plotTitle_total_S,"The nb of leptons %s channel (S)",channelchar);
-	histo1D["nleptons_S"]= new TH1F("nleptons_S", plotTitle_total_S, 6,0,6);
-	histo1D["nleptons_S"]->Sumw2();
-	
-	sprintf(plotTitle_total_S,"The njets btagged %s channel (S)",channelchar);
-	histo1D["njets_btagged_S"] = new TH1F("njets_btagged_S", plotTitle_total_S, 10,0,10);
-	histo1D["njets_btagged_S"]->Sumw2();
-	
-	sprintf(plotTitle_total_S,"The njets light %s channel (S)",channelchar);
-	histo1D["njets_light_S"] = new TH1F("njets_light_S", plotTitle_total_S, 10,0,10);
-	histo1D["njets_light_S"]->Sumw2();
-
-	sprintf(plotTitle_total_S,"The invariant mass of same kind of leptons %s channel (S)",channelchar);
-	histo1D["mll_z_S"] = new TH1F("mll_z_S", plotTitle_total_S, 50,0,100);
-	histo1D["mll_z_S"]->Sumw2();
-	
-	
-	sprintf(plotTitle_total_S,"The pt of lepton with largest pt %s channel (S)",channelchar);
-	histo1D["pt_lepton_max_S"] = new TH1F("pt_lepton_max_S", plotTitle_total_S, 50,0,100);
-	histo1D["pt_lepton_max_S"]->Sumw2();
-	
-	sprintf(plotTitle_total_S,"The pt of lepton with smallest pt %s channel (S)",channelchar);
-	histo1D["pt_lepton_min_S"] = new TH1F("pt_lepton_min_S", plotTitle_total_S, 50,0,100);
-	histo1D["pt_lepton_min_S"]->Sumw2();
-	
-	sprintf(plotTitle_total_S,"The pt of the leading jet %s channel (S)",channelchar);
-	histo1D["pt_jet_max_S"] = new TH1F("pt_jet_max_S", plotTitle_total_S, 100,0,200);
-	histo1D["pt_jet_max_S"]->Sumw2();
 	
 
 	// Define different cutflow plots for each channel and dataset	
@@ -651,8 +589,9 @@ int main(int argc, char *argv[]){
 			vector<TRootMuon*> looseMuons = selection.GetSelectedDiMuons();
 			vector<TRootElectron*> looseElectrons = selection.GetSelectedDiElectrons();
 			
-			vector<TRootJet*> selectedBJets; // B-Jets, to be filled after b-tagging
-    			vector<TRootJet*> selectedLightJets; // light-Jets, to be filled afer b-tagging
+			vector<TRootJet*> selectedBJets_CSVM; // B-Jets, to be filled after b-tagging
+    			vector<TRootJet*> selectedBJets_CSVT; // B-jets at the Tight working point
+			vector<TRootJet*> selectedLightJets; // light-Jets, to be filled afer b-tagging
 			// vector<TRootPhoton*> selectedPhotons = selection.GetSelecetedPhotons(); Photons not yet included in the selection class!!!!
 			
 			
@@ -673,9 +612,13 @@ int main(int argc, char *argv[]){
       			for(unsigned int iJet=0; iJet<selectedJets.size(); iJet++){
 				if (selectedJets[iJet]->btag_combinedSecondaryVertexBJetTags() > workingpointvalue){
 					nTags++;
-					selectedBJets.push_back(selectedJets[iJet]);
+					selectedBJets_CSVM.push_back(selectedJets[iJet]);
 				}
 				else selectedLightJets.push_back(selectedJets[iJet]);
+				
+				if (selectedJets[iJet]->btag_combinedSecondaryVertexBJetTags() > Tightworkingpoint){
+					selectedBJets_CSVT.push_back(selectedJets[iJet]);
+				}
 			} 
 
 			
@@ -683,7 +626,7 @@ int main(int argc, char *argv[]){
 			if(debug) cout << "[INFO]	looseMuons.size() = " << looseMuons.size() << endl; 
 			
 			
-			
+			bool OneLepton_4Jets = false;
 
 			
 			//exactly 3 leptons
@@ -758,8 +701,9 @@ int main(int argc, char *argv[]){
 					
 					if(debug) cout << "selectedJets.size() = " << selectedJets.size() << endl;
 					
-					if(selectedJets.size() >= 3)
+					if(selectedJets.size() >= 4)
 					{
+						OneLepton_4Jets = true;
 						if(debug) cout << "in fill 1l3b loop: 3jets" << endl;
 						//fill histograms
 						if(!is_signal) histo1D["cutflow_total_B"]->Fill(3);
@@ -963,10 +907,16 @@ int main(int argc, char *argv[]){
 			//////////////////////////////////////////////////////////////////////////////////
 			// Filling histograms 							//////////
 			//////////////////////////////////////////////////////////////////////////////////
+			if(OneLepton_4Jets){
+				MSPlot["NbOfSelectedBJets_CSVM"]->Fill(selectedBJets_CSVM.size(), datasets[d], true, Luminosity*scaleFactor);
+				MSPlot["NbOfSelectedBJets_CSVT"]->Fill(selectedBJets_CSVT.size(), datasets[d], true, Luminosity*scaleFactor);
+			}
+	
 			if(Passed_selection){
 				MSPlot["NbOfSelectedJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
 				MSPlot["NbOfSelectedLightJets"]->Fill(selectedLightJets.size(), datasets[d], true, Luminosity*scaleFactor);
-		        	MSPlot["NbOfSelectedBJets"]->Fill(selectedBJets.size(), datasets[d], true, Luminosity*scaleFactor);
+		        	if(!OneLepton_4Jets) MSPlot["NbOfSelectedBJets_CSVM"]->Fill(selectedBJets_CSVM.size(), datasets[d], true, Luminosity*scaleFactor);
+		        	if(!OneLepton_4Jets) MSPlot["NbOfSelectedBJets_CSVT"]->Fill(selectedBJets_CSVT.size(), datasets[d], true, Luminosity*scaleFactor);
 				MSPlot["NbOfSelectedLeptons"]->Fill(looseMuons.size()+looseElectrons.size(),datasets[d],true,Luminosity*scaleFactor);
 				MSPlot["MET"]->Fill(mets[0]->E(), datasets[d], true, Luminosity*scaleFactor);
 
@@ -998,28 +948,28 @@ int main(int argc, char *argv[]){
 				{
 				  	MSPlot["Pt_6th_leading_jet"]->Fill(selectedJets[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
-				if( selectedBJets.size() > 0) {
-                                	MSPlot["Pt_leading_Bjet"]->Fill(selectedBJets[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				if( selectedBJets_CSVM.size() > 0) {
+                                	MSPlot["Pt_leading_Bjet"]->Fill(selectedBJets_CSVM[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
                                 }
-				if( selectedBJets.size() > 1)
+				if( selectedBJets_CSVM.size() > 1)
 				{
-				  	MSPlot["Pt_2nd_leading_Bjet"]->Fill(selectedBJets[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				  	MSPlot["Pt_2nd_leading_Bjet"]->Fill(selectedBJets_CSVM[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
-				if( selectedBJets.size() > 2)
+				if( selectedBJets_CSVM.size() > 2)
 				{
-				  	MSPlot["Pt_3d_leading_Bjet"]->Fill(selectedBJets[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				  	MSPlot["Pt_3d_leading_Bjet"]->Fill(selectedBJets_CSVM[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
-				if( selectedBJets.size() > 3)
+				if( selectedBJets_CSVM.size() > 3)
 				{
-				  	MSPlot["Pt_4th_leading_Bjet"]->Fill(selectedBJets[3]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				  	MSPlot["Pt_4th_leading_Bjet"]->Fill(selectedBJets_CSVM[3]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
-				if( selectedBJets.size() > 4)
+				if( selectedBJets_CSVM.size() > 4)
 				{
-				  	MSPlot["Pt_5th_leading_Bjet"]->Fill(selectedBJets[4]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				  	MSPlot["Pt_5th_leading_Bjet"]->Fill(selectedBJets_CSVM[4]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
-				if( selectedBJets.size() > 5)
+				if( selectedBJets_CSVM.size() > 5)
 				{
-				  	MSPlot["Pt_6th_leading_Bjet"]->Fill(selectedBJets[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				  	MSPlot["Pt_6th_leading_Bjet"]->Fill(selectedBJets_CSVM[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
 				
 				
@@ -1203,7 +1153,7 @@ int main(int argc, char *argv[]){
 				{
 					MSPlot["NbOfSelectedJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
 					MSPlot["NbOfSelectedLightJets"]->Fill(selectedLightJets.size(), datasets[d], true, Luminosity*scaleFactor);
-					MSPlot["NbOfSelectedBJets"]->Fill(selectedBJets.size(), datasets[d], true, Luminosity*scaleFactor);
+					MSPlot["NbOfSelectedBJets_CSVM"]->Fill(selectedBJets_CSVM.size(), datasets[d], true, Luminosity*scaleFactor);
 					MSPlot["MET"]->Fill(mets[0]->E(), datasets[d], true, Luminosity*scaleFactor);
 
 					for (Int_t seljet1 =0; seljet1 < selectedJets.size(); seljet1++ ){
@@ -1218,7 +1168,7 @@ int main(int argc, char *argv[]){
 				{
 					MSPlot["NbOfSelectedJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
 					MSPlot["NbOfSelectedLightJets"]->Fill(selectedLightJets.size(), datasets[d], true, Luminosity*scaleFactor);
-					MSPlot["NbOfSelectedBJets"]->Fill(selectedBJets.size(), datasets[d], true, Luminosity*scaleFactor);
+					MSPlot["NbOfSelectedBJets_CSVM"]->Fill(selectedBJets_CSVM.size(), datasets[d], true, Luminosity*scaleFactor);
 					MSPlot["MET"]->Fill(mets[0]->E(), datasets[d], true, Luminosity*scaleFactor);
 
 					for (Int_t seljet1 =0; seljet1 < selectedJets.size(); seljet1++ ){
@@ -1246,28 +1196,28 @@ int main(int argc, char *argv[]){
 					{
 					  	MSPlot["Pt_6th_leading_jet"]->Fill(selectedJets[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
 					}
-					if( selectedBJets.size() > 0) {
-						MSPlot["Pt_leading_Bjet"]->Fill(selectedBJets[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+					if( selectedBJets_CSVM.size() > 0) {
+						MSPlot["Pt_leading_Bjet"]->Fill(selectedBJets_CSVM[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 					}
-					if( selectedBJets.size() > 1)
+					if( selectedBJets_CSVM.size() > 1)
 					{
- 					 	MSPlot["Pt_2nd_leading_Bjet"]->Fill(selectedBJets[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
+ 					 	MSPlot["Pt_2nd_leading_Bjet"]->Fill(selectedBJets_CSVM[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
 					}
-					if( selectedBJets.size() > 2)
+					if( selectedBJets_CSVM.size() > 2)
 					{
-					  	MSPlot["Pt_3d_leading_Bjet"]->Fill(selectedBJets[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
+					  	MSPlot["Pt_3d_leading_Bjet"]->Fill(selectedBJets_CSVM[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
 					}
-					if( selectedBJets.size() > 3)
+					if( selectedBJets_CSVM.size() > 3)
 					{
-					  	MSPlot["Pt_4th_leading_Bjet"]->Fill(selectedBJets[3]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
+					  	MSPlot["Pt_4th_leading_Bjet"]->Fill(selectedBJets_CSVM[3]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
 					}
-					if( selectedBJets.size() > 4)
+					if( selectedBJets_CSVM.size() > 4)
 					{
- 					 	MSPlot["Pt_5th_leading_Bjet"]->Fill(selectedBJets[4]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
+ 					 	MSPlot["Pt_5th_leading_Bjet"]->Fill(selectedBJets_CSVM[4]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
 					}
-					if( selectedBJets.size() > 5)
+					if( selectedBJets_CSVM.size() > 5)
 					{
-					  	MSPlot["Pt_6th_leading_Bjet"]->Fill(selectedBJets[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
+					  	MSPlot["Pt_6th_leading_Bjet"]->Fill(selectedBJets_CSVM[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor)
 					}
 
 				
@@ -1275,7 +1225,10 @@ int main(int argc, char *argv[]){
 				*/
 				
 				
+				if(channel.find("1L3B")!=string::npos && Passed_selection){
 				
+				
+				}
 
 
 
