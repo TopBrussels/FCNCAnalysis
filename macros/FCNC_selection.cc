@@ -974,7 +974,7 @@ int main(int argc, char *argv[]){
 		        	if(!OneLepton_4Jets) MSPlot["NbOfSelectedBJets_CSVM"]->Fill(selectedBJets_CSVM.size(), datasets[d], true, Luminosity*scaleFactor);
 		        	if(!OneLepton_4Jets) MSPlot["NbOfSelectedBJets_CSVT"]->Fill(selectedBJets_CSVT.size(), datasets[d], true, Luminosity*scaleFactor);
 				MSPlot["NbOfSelectedLeptons"]->Fill(looseMuons.size()+looseElectrons.size(),datasets[d],true,Luminosity*scaleFactor);
-				MSPlot["MET"]->Fill(mets[0]->E(), datasets[d], true, Luminosity*scaleFactor);
+//				MSPlot["MET"]->Fill(mets[0]->E(), datasets[d], true, Luminosity*scaleFactor);
 
 				for (Int_t seljet1 =0; seljet1 < selectedJets.size(); seljet1++ ){
 
@@ -1218,15 +1218,15 @@ int main(int argc, char *argv[]){
 				}
 
 				if(channel.find("1L3B")!=string::npos && Passed_selection){
-					TLorentzVector* Lepton;
-					TLorentzVector* bb_cand;
+					TLorentzVector Lepton;
+					TLorentzVector bb_cand;
 
-					Lepton->Clear();
-					bb_cand->Clear();
+					Lepton.Clear();
+					bb_cand.Clear();
 					
 					vector <float> frac_b_topcandidate;
-					if (looseElectrons.size() == 1) Lepton->SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->E());
-					if (looseMuons.size() == 1) Lepton->SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->E());
+					if (looseElectrons.size() == 1) Lepton.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->E());
+					if (looseMuons.size() == 1) Lepton.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->E());
 
 				
 					float TransvM_lept_MET = 0;
@@ -1242,7 +1242,7 @@ int main(int argc, char *argv[]){
 					//Determine the minimal Delta R
 					for(int iBjet = 0; iBjet < selectedBJets_CSVM.size(); iBjet++){
 						
-						dR_lb_temp = sqrt(pow(Lepton->Eta() - selectedBJets_CSVM[iBjet]->Eta(),2)+pow(Lepton->Phi() - selectedBJets_CSVM[iBjet]->Phi(),2));
+						dR_lb_temp = sqrt(pow(Lepton.Eta() - selectedBJets_CSVM[iBjet]->Eta(),2)+pow(Lepton.Phi() - selectedBJets_CSVM[iBjet]->Phi(),2));
 						if(DeltaR_lepton_b_min>dR_lb_temp){
 							DeltaR_lepton_b_min = dR_lb_temp;
 							//index_BTopcandidate = iBjet;
@@ -1275,10 +1275,10 @@ int main(int argc, char *argv[]){
 						for(int iBjet2 = 0; iBjet2 < selectedBJets_CSVM.size(); iBjet2++){
 							if((iBjet != index_BTopcandidate) && (iBjet2 != index_BTopcandidate) && (iBjet != iBjet2)){
 								
-								bb_cand->SetPxPyPzE(selectedBJets_CSVM[iBjet]->Px()+selectedBJets_CSVM[iBjet2]->Px(),selectedBJets_CSVM[iBjet]->Py()+selectedBJets_CSVM[iBjet2]->Py(),selectedBJets_CSVM[iBjet]->Pz()+selectedBJets_CSVM[iBjet2]->Pz(),selectedBJets_CSVM[iBjet]->E()+selectedBJets_CSVM[iBjet]->E());
+								bb_cand.SetPxPyPzE(selectedBJets_CSVM[iBjet]->Px()+selectedBJets_CSVM[iBjet2]->Px(),selectedBJets_CSVM[iBjet]->Py()+selectedBJets_CSVM[iBjet2]->Py(),selectedBJets_CSVM[iBjet]->Pz()+selectedBJets_CSVM[iBjet2]->Pz(),selectedBJets_CSVM[iBjet]->E()+selectedBJets_CSVM[iBjet]->E());
 								
 								DeltaPhi_bb = sqrt( pow(( selectedBJets_CSVM[iBjet]->Phi() - selectedBJets_CSVM[iBjet2]->Phi() ), 2));
-								InvMass_bb = bb_cand->M();
+								InvMass_bb = bb_cand.M();
 							}
 						}
 					}
