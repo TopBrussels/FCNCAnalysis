@@ -789,6 +789,7 @@ int main(int argc, char *argv[]){
 					if(debug) cout << "out fill 1l3b loop" << endl;
 				}
 			}
+			// SSdilepton
 			if(channel.find("SSdilepton")!=string::npos)
 			{
 				if(debug) cout << "in SSdilepton channel" << endl;
@@ -855,6 +856,7 @@ int main(int argc, char *argv[]){
 					if(debug) cout << "out fill SS dilepton " << endl;
 				}
 			}
+			// OSdileppton
 			if(channel.find("OSdilepton")!=string::npos)
 			{
 				if(debug) cout << "in OSdilepton channel" << endl;
@@ -902,7 +904,7 @@ int main(int argc, char *argv[]){
 						
 						Passed_selection = true;
 					}
-						if(selectedJets.size()>=1)
+						if(selectedJets.size()>=1  && Passed_selection)
 						{
 							//fill histograms
 							if(!is_signal)histo1D["cutflow_total_B"]->Fill(4);
