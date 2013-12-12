@@ -816,10 +816,159 @@ int main(int argc, char *argv[]){
 			}
 			if(channel.find("SSdilepton")!=string::npos)
 			{
+			if(debug) cout << "in SSdilepton channel" << endl;
+				
+				if(looseElectrons.size() + looseMuons.size() == 2)
+				{
+					if(debug) cout << "in fill SS dilepton " << endl; 
+					
+					if(!is_signal)histo1D["cutflow_total_B"]->Fill(2);
+					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
+					histo1D[Process_cutflow]->Fill(2);
+					
+					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "2L");
+					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "2L");
+					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(3, "2L");
+					
+					bool electron = false; 
+					bool muon = false; 
+					bool EMu = false;
+
+					if(looseElectrons.size() == 2)
+					{
+						if(looseElectrons[0]->charge() == looseElectrons[1]->charge()) electron = true; 
+						if(debug) cout << "Electron boolean defined" << endl;
+					}
+				
+					if(looseMuons.size() == 2)
+					{
+						if(looseMuons[0]->charge() == looseMuons[1]->charge()) muon = true; 
+						if(debug) cout << "Muon boolean defined" << endl;
+					}
+					if(looseMuons.size() == 1 && looseElectrons.size() == 1)
+					{
+						if(looseMuons[0]->charge() == looseElectrons[0]->charge()) EMu = true; 
+						if(debug) cout << "EMu boolean defined" << endl;
+					}
+				
+					if(muon || electron || EMu)
+					{
+						if(debug) cout << "in fill SS dilepton: same sign " << endl;
+						
+						if(!is_signal)histo1D["cutflow_total_B"]->Fill(3);
+						if(is_signal) histo1D["cutflow_total_S"]->Fill(3);
+						histo1D[Process_cutflow]->Fill(3);
+						
+						if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, "2 SS L");
+						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, "2 SS L");
+						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, "2 SS L");
+						
+						if(selectedJets.size()>=1)
+						{
+							//fill histograms
+							if(!is_signal)histo1D["cutflow_total_B"]->Fill(4);
+							if(is_signal) histo1D["cutflow_total_S"]->Fill(4);
+							histo1D[Process_cutflow]->Fill(4);
+					
+							//set labels
+							if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5,">=1j");
+							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5,">=1j");		
+							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">=1j");
+							Passed_selection = true;
+						}						
+					}
+					if(debug) cout << "out fill SS dilepton " << endl;
+				}
 
 			}
 			if(channel.find("OSdilepton")!=string::npos)
 			{
+			float Zmass = 91.1876;  // ref-> pdg
+		                float massDiff = 9999;
+		                TLorentzVector leptonPairMass;
+	                	bool mll = false;
+				if(debug) cout << "in OSdilepton channel" << endl;
+				if(looseElectrons.size() + looseMuons.size() == 2)
+				{
+					if(debug) cout << "in fill OS dilepton " << endl; 
+					if(!is_signal)histo1D["cutflow_total_B"]->Fill(2);
+					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
+					histo1D[Process_cutflow]->Fill(2);
+					
+					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "2L");
+					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "2L");
+					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(3, "2L");
+					
+					bool electron = false; 
+					bool muon = false; 
+					bool EMu = false;
+
+					if(looseElectrons.size() == 2)
+					{
+						if(looseElectrons[0]->charge() != looseElectrons[1]->charge()) electron = true; 
+						if(debug) cout << "Electron boolean defined" << endl;
+					}
+				
+					if(looseMuons.size() == 2)
+					{
+						if(looseMuons[0]->charge() != looseMuons[1]->charge()) muon = true; 
+						if(debug) cout << "Muon boolean defined" << endl; 
+					}
+					if(looseMuons.size() == 1 && looseElectrons.size() == 1)
+					{
+						if(looseMuons[0]->charge() != looseElectrons[0]->charge()) EMu = true; 
+						if(debug) cout << "EMu boolean defined" << endl; 
+					}
+				
+					if(muon || electron || EMu)
+					{
+						if(debug) cout << "in fill OS dilepton: same sign " << endl;
+						if(!is_signal) histo1D["cutflow_total_B"]->Fill(3);
+						if(is_signal) histo1D["cutflow_total_S"]->Fill(3);
+						histo1D[Process_cutflow]->Fill(3);
+						if (!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, "2 OS L");
+						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, "2 OS L");
+						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, "2 OS L");
+						
+						Passed_selection = true;
+						// Additional cuts
+						if (selectedJets.size()>=4){
+						
+						if (electron) {
+						leptonPairMass = looseElectrons[0]->M() + looseElectrons[1]->M();
+						mll = true;}
+						if (muon){
+						leptonPairMass = looseMuons[0]->M() + looseMuons[1]->M();
+						mll =true;}
+						if (EMu){      
+						leptonPairMass = looseMuons[0]->M() + looseElectrons[0]->M();
+						mll = true;
+						}
+						if (mll){
+						massDiff = leptonPairMass.M() - Zmass ;
+						if (massDiff > 15)
+						{
+						MSPlot["massDiff"]->Fill(massDiff, datasets[d],true,Luminosity*scaleFactor);
+						}
+						}}
+						 	
+					}
+					
+						if(selectedJets.size()>=1  && Passed_selection)
+						{
+							//fill histograms
+							if(!is_signal)histo1D["cutflow_total_B"]->Fill(4);
+							if(is_signal) histo1D["cutflow_total_S"]->Fill(4);
+							histo1D[Process_cutflow]->Fill(4);
+					
+							//set labels
+							if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5, ">1j");
+							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5, ">1j");		
+							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">=1j");
+							Passed_selection = true;
+						}		
+					if(debug) cout << "out fill OS dilepton " << endl;
+				}
 
 			}
 
