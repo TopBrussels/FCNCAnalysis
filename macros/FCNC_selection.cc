@@ -730,6 +730,7 @@ int main(int argc, char *argv[]){
 					if(debug) cout << "in fill 1l3b loop" << endl;
 					
 					//fill histograms
+					MSPlot["MScutflow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor);
 					if(!is_signal) histo1D["cutflow_total_B"]->Fill(2);
 					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
 					histo1D[Process_cutflow]->Fill(2);
@@ -745,6 +746,7 @@ int main(int argc, char *argv[]){
 						OneLepton_4Jets = true;
 						if(debug) cout << "in fill 1l3b loop: 3jets" << endl;
 						//fill histograms
+						MSPlot["MScutflow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor);
 						if(!is_signal) histo1D["cutflow_total_B"]->Fill(3);
 						if(is_signal) histo1D["cutflow_total_S"]->Fill(3);
 						histo1D[Process_cutflow]->Fill(3);
@@ -757,6 +759,7 @@ int main(int argc, char *argv[]){
 						{
 							if(debug) cout << "in fill 1l3b loop: 3bjets" << endl;
 							//fill histograms
+							MSPlot["MScutflow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor);
 							if(!is_signal) histo1D["cutflow_total_B"]->Fill(4);
 							if(is_signal) histo1D["cutflow_total_S"]->Fill(4);
 							histo1D[Process_cutflow]->Fill(4);
@@ -771,6 +774,7 @@ int main(int argc, char *argv[]){
 						{
 							if(debug) cout << "in fill 1l3b loop: 3bjets" << endl;
 							//fill histograms
+							MSPlot["MScutflow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor);
 							if(!is_signal) histo1D["cutflow_total_B"]->Fill(5);
 							if(is_signal) histo1D["cutflow_total_S"]->Fill(5);
 							histo1D[Process_cutflow]->Fill(5);
@@ -785,6 +789,7 @@ int main(int argc, char *argv[]){
 						{
 							if(debug) cout << "in fill 1l3b loop: 3bjets" << endl;
 							//fill histograms
+							MSPlot["MScutflow"]->Fill(6, datasets[d], true, Luminosity*scaleFactor);
 							if(!is_signal) histo1D["cutflow_total_B"]->Fill(6);
 							if(is_signal) histo1D["cutflow_total_S"]->Fill(6);
 							histo1D[Process_cutflow]->Fill(6);
@@ -799,6 +804,7 @@ int main(int argc, char *argv[]){
 						{
 							if(debug) cout << "in fill 1l3b loop: 3bjets" << endl;
 							//fill histograms
+							MSPlot["MScutflow"]->Fill(7, datasets[d], true, Luminosity*scaleFactor);
 							if(!is_signal) histo1D["cutflow_total_B"]->Fill(7);
 							if(is_signal) histo1D["cutflow_total_S"]->Fill(7);
 							histo1D[Process_cutflow]->Fill(7);
