@@ -56,7 +56,11 @@ map<string,MultiSamplePlot*> MSPlot;
 /// Normal Plots (TH1F* and TH2F*)
 map<string,TH1F*> histo1D;
 
-
+struct HighestCVSBtag{
+    bool operator()( TRootJet* j1, TRootJet* j2 ) const{
+            return j1->btag_combinedSecondaryVertexBJetTags() > j2->btag_combinedSecondaryVertexBJetTags();
+    }
+};
 
 
 int main(int argc, char *argv[]){
@@ -200,7 +204,7 @@ int main(int argc, char *argv[]){
 	///////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////
 	float workingpointvalue = 9999; //working points updated to 2012 BTV-POG recommendations.
-	float Tightworkingpoint = 0.898;
+	float Tightworkingpoint = .898;
  
   	if(btagger == "TCHPM" || btagger == "TCHET" || btagger == "SSV" ){
     		cout<<"This tagger ("<< btagger <<")is not commisioned in 2012, please use CSV, TCHP or JetProb"<<endl;
@@ -647,13 +651,16 @@ int main(int argc, char *argv[]){
 					nTags++;
 					selectedBJets_CSVM.push_back(selectedJets[iJet]);
 				}
-				else if (selectedJets[iJet]->btag_combinedSecondaryVertexBJetTags() > Tightworkingpoint)
+				else selectedLightJets.push_back(selectedJets[iJet]);
+				
+				if (selectedJets[iJet]->btag_combinedSecondaryVertexBJetTags() > Tightworkingpoint)
 				{
 					selectedBJets_CSVT.push_back(selectedJets[iJet]);
 				}
-				else selectedLightJets.push_back(selectedJets[iJet]);
 				
-			} 
+			}
+
+		sort(selectedBJets_CSVM.begin(), selectedBJets_CSVM.end(), HighestCVSBtag());
 
 			
 			if(debug) cout << "[INFO]	looseElectrons.size() = " << looseElectrons.size() << endl; 
@@ -768,7 +775,7 @@ int main(int argc, char *argv[]){
 							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5, "== 3 bjets");
 							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, "== 3 bjets");
 							
-							Passed_selection = true;
+							
 						}
 						if(nTags > 0)
 						{
@@ -783,7 +790,6 @@ int main(int argc, char *argv[]){
 							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(6, ">= 1 bjets");
 							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(6, ">= 1 bjets");
 							
-							Passed_selection = true;
 						}
 						if(nTags > 1)
 						{
@@ -798,7 +804,6 @@ int main(int argc, char *argv[]){
 							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(7, ">= 2 bjets");
 							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(7, ">= 2 bjets");
 							
-							Passed_selection = true;
 						}
 						if(nTags > 2)
 						{
@@ -997,6 +1002,7 @@ int main(int argc, char *argv[]){
 				MSPlot["NbOfSelectedBJets_CSVT"]->Fill(selectedBJets_CSVT.size(), datasets[d], true, Luminosity*scaleFactor);
 				
 			}
+			if(!Passed_selection) continue;
 			if(Passed_selection){
 				if(debug) cout << "[PROCES]	In passed_selection loop" << endl; 
 				
