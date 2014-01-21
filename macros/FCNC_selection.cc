@@ -138,7 +138,7 @@ int main(int argc, char *argv[]){
 		}
 		if (argval=="--xml") {
 			iarg++;
-			xmlfile = argv[iarg];
+			tempxml = argv[iarg];
 			foundxml = true; 
 		}
 		if (argval=="--1gamma") {
@@ -186,7 +186,7 @@ int main(int argc, char *argv[]){
 
     	if (Big_xml)	xmlfile = "../config/FCNC_config.xml"; 
 	if (foundbtag) btagger = tempbtagger;
-	
+	if (foundxml)  xmlfile = tempxml;
 	if(information)	std::cout << "[INFO]	Used configuration file: " << xmlfile << endl;
 	if(information)	std::cout << "[INFO]	Used channel: " << channel << endl;
 	if(information) std::cout << "[INFO]	Used btag algorithm: " << btagger << endl; 
@@ -655,18 +655,18 @@ int main(int argc, char *argv[]){
 				}
 				if( selectedBJets_CSVM.size() > 2)
 				{
-				  	MSPlot["Pt_3d_leading_Bjet"]->Fill(selectedBJets_CSVM[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				  	MSPlot["Pt_3d_leading_Bjet_CSVM"]->Fill(selectedBJets_CSVM[2]->Pt(), datasets[d],true,Luminosity*scaleFactor);
 				}
 				if( selectedBJets_CSVT.size() > 2)
 				{	
-				  	MSPlot["Pt_3d_leading_Bjet"]->Fill(selectedBJets_CSVT[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+				  	MSPlot["Pt_3d_leading_Bjet_CSVT"]->Fill(selectedBJets_CSVT[2]->Pt(), datasets[d],true,Luminosity*scaleFactor);
 				}
 				if( selectedBJets_CSVM.size() > 0 && selectedJets.size()>0) {
-					if(chan3L4L) MSPlot["MScutflow"]->Fill(7, datasets[d], true, Luminosity*scaleFactor);
+					MSPlot["MScutflow"]->Fill(7, datasets[d], true, Luminosity*scaleFactor);
                                 }
 				if( selectedBJets_CSVT.size() > 0 && selectedJets.size()>0)
 				{
-					if(chan3L4L) MSPlot["MScutflow"]->Fill(8, datasets[d], true, Luminosity*scaleFactor);
+					MSPlot["MScutflow"]->Fill(8, datasets[d], true, Luminosity*scaleFactor);
 				}
 				
 				double mll = 0; 
@@ -850,9 +850,16 @@ int main(int argc, char *argv[]){
 			
 			
 			
-
+			
 			
 			// adding additional cuts
+			if(passed_selection)
+			{
+			     if(met_pt>40){
+			     	MSPlot["MScutflow"]->Fill(9, datasets[d], true, Luminosity*scaleFactor);
+			     }
+			
+			}
 			
 	
 		}
