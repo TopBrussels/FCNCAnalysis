@@ -12,11 +12,14 @@
 using namespace std;
 
 void FCNC_CutEfficiencies(string channel = "4L"){
-
+	cout << "------------------------------------------------------------------" << endl;
+	cout << "         [LOOPING OVER " << channel << " CHANNEL]" << endl; 
 	
+	//string Vector_cutflow_4L[19] = {"","initial",">3L",">3L & >0 jets",">3L & >1 jets",">3L & >2 jets",">3L & >3 jets",">3L & >4 jets",">3L & >5 jets",">3L & >0 Bjets",">3L & >1 Bjets",">3L & >2 Bjets",">3L & >3 Bjets",">3L & >4 Bjets",">3L & >5 Bjets","4-5 leptons","4 leptons", "5 leptons",""};
+	string	Vector_cutflow_3L[19] = {"","initial","=3L","=3L & >0 jets","=3L & >1 jets","=3L & >2 jets","=3L & >3 jets","=3L & >4 jets","=3L & >5 jets","=3L & >0 Bjets","=3L & >1 Bjets","=3L & >2 Bjets","=3L & >3 Bjets","=3L & >4 Bjets","=3L & >5 Bjets","=3L & 1 Bjet","", "",""};
+	string Vector_cutflow_4L[19] = {"","initial",">3L",">3L & >0 jets",">3L & >1 jets",">3L & >0 Bjets",">3L & >1 Bjets",">3L & >0 Bjets T",">3L & >1 Bjets T",">3L & >0 Ljets",">3L & not 2 Bjets",">3L & >0 Lj & not 2 Bj","","","","","","",""};
+	string Vector_cutflow_3L4L[19] = {"","initial",">2L",">3L & >0 jets",">2L & >1 jets",">2L & >0 Bjets M",">2L & >0 Bjets T",">2L & >0 Bjets M & >1jets",">2L & >0 Bjets T & >1jets","","","","","","","","","",""};
 	
-	string	Vector_cutflow_4L[19] = {"","initial",">3L",">0 jets",">1 jets",">2 jets",">3 jets",">4 jets",">5 jets",">0 Bjets",">1 Bjets",">2 Bjets",">3 Bjets",">4 Bjets",">5 Bjets","4-5 leptons","4 leptons", "5 leptons",""};
-	string	Vector_cutflow_3L[19] = {"","initial","=3L",">0 jets",">1 jets",">2 jets",">3 jets",">4 jets",">5 jets",">0 Bjets",">1 Bjets",">2 Bjets",">3 Bjets",">4 Bjets",">5 Bjets","","", "",""};
 	
 	
 
@@ -146,13 +149,18 @@ void FCNC_CutEfficiencies(string channel = "4L"){
 			int iBin = i; 
 			char *BinName;
 			
-			if(channel.find("4L")!=string::npos)
+			/*if(channel.find("4L")!=string::npos)
 			{
 				BinName = (char*)Vector_cutflow_4L[i-1].c_str();	
 			}
 			if(channel.find("3L")!=string::npos)
 			{
 				BinName = (char*)Vector_cutflow_3L[i-1].c_str();
+			}
+			*/
+			if(channel.find("3L4L")!=string::npos)
+			{
+				BinName = (char*)Vector_cutflow_3L4L[i-1].c_str();
 			}
 			histogram->GetXaxis()->SetBinLabel(iBin, BinName);
 			
