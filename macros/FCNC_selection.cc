@@ -1355,7 +1355,7 @@ int main(int argc, char *argv[]){
 			 }
 			
 				
-				if(channel.find("1L3B")!=string::npos && Passed_selection){
+			if(channel.find("1L3B")!=string::npos && Passed_selection){
 					TLorentzVector Lepton;
 					TLorentzVector bb_cand;
 
@@ -1426,6 +1426,7 @@ int main(int argc, char *argv[]){
 				MSPlot["DR_bb"]->Fill(DeltaR_bb_min, datasets[d],true,Luminosity*scaleFactor);
 				MSPlot["Mbb"]->Fill(InvMass_bb, datasets[d],true,Luminosity*scaleFactor);
 				MSPlot["DeltaPhi_bb"]->Fill(DeltaPhi_bb, datasets[d],true,Luminosity*scaleFactor);
+				MSPlot["Pt_leading_lepton"]->Fill(Lepton.Pt(), datasets[d], true, Luminosity*scaleFactor);
 				}
 	
 		}
