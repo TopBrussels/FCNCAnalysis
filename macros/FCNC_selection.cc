@@ -281,7 +281,7 @@ int main(int argc, char *argv[]){
     	MSPlot["NbOfSelectedBJets_CSVT"] = new MultiSamplePlot(datasets,"NbOfSelectedBJets_CSVT", 4, -0.5, 3.5, "Nb. of tight Bjets");
 	MSPlot["NbOfSelectedLeptons"] = new MultiSamplePlot(datasets,"NbOfSelectedLeptons", 2, 0.5, 2.5, "Nb. of leptons");
     	MSPlot["MET"] = new MultiSamplePlot(datasets, "MET", 40, 0., 160., "MET");
-	MSPlot["JetEta"] = new MultiSamplePlot(datasets, "JetEta", 15,-3., 3., "Jet #eta");
+/*	MSPlot["JetEta"] = new MultiSamplePlot(datasets, "JetEta", 15,-3., 3., "Jet #eta");
     	MSPlot["JetPhi"] = new MultiSamplePlot(datasets, "JetPhi", 25, -4., 4., "Jet #phi");
 	MSPlot["Mll"] = new MultiSamplePlot(datasets,"Mll",25,60,240,"Mll of leading and second leading lepton");
 	MSPlot["Pt_2nd_leading_Bjet_CSVM"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_Bjet_CSVM",10,30,120,"Pt 2nd leading Bjet M"); 
@@ -293,8 +293,6 @@ int main(int argc, char *argv[]){
 	MSPlot["Pt_leading_jet"] = new MultiSamplePlot(datasets,"Pt_leading_jet",20,20,160,"Pt leading jet"); 
 	MSPlot["Pt_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_leading_lepton",25,30,140,"Pt leading lepton");
 
-	
-	
 	MSPlot["Pt_3d_leading_jet"] = new MultiSamplePlot(datasets,"Pt_3d_leading_jet",100,0,200,"Pt third leading jet"); 
 	MSPlot["Pt_4th_leading_jet"] = new MultiSamplePlot(datasets,"Pt_4th_leading_jet",100,0,200,"Pt fourth leading jet"); 
 	
@@ -302,6 +300,10 @@ int main(int argc, char *argv[]){
 	MSPlot["Pt_4th_leading_Bjet_CSVM"] = new MultiSamplePlot(datasets,"Pt_4th_leading_Bjet_CSVM",100,0,200,"Pt fourth leading Bjet_CSVM"); 
 	MSPlot["Pt_3d_leading_Bjet_CSVT"] = new MultiSamplePlot(datasets,"Pt_3d_leading_Bjet_CSVT",100,0,200,"Pt third leading Bjet_CSVT"); 
 	MSPlot["Pt_4th_leading_Bjet_CSVT"] = new MultiSamplePlot(datasets,"Pt_4th_leading_Bjet_CSVT",100,0,200,"Pt fourth leading Bjet_CSVT"); 
+*/	
+	
+	MSPlot["Mllll"] = new MultiSamplePlot(datasets,"M_{llll}",100,80,180,"Mllll ~ m_{H}");
+	
 	
 	//////////////////  Cut flow histograms	/////////////////////////////
 	MSPlot["MScutflow"] = new MultiSamplePlot(datasets,"MScutflow",20,-0.5,19.5, "cutflow"); 
@@ -550,21 +552,19 @@ int main(int argc, char *argv[]){
 			} 
 
 			
-			//if(debug) cout << "[INFO]	looseElectrons.size() = " << looseElectrons.size() << endl; 
-			//if(debug) cout << "[INFO]	looseMuons.size() = " << looseMuons.size() << endl; 
+			if(debug) cout << "[INFO]	looseElectrons.size() = " << looseElectrons.size() << endl; 
+			if(debug) cout << "[INFO]	looseMuons.size() = " << looseMuons.size() << endl; 
 			
 			
-			bool OneLepton_4Jets = false;
-			bool chan3L4L = false; 
-			
-			//at least 3 leptons
-			if(channel.find("5")!=string::npos)
+
+    			//exactly 3 leptons
+			if(channel.find("3L")!=string::npos)
 			{
-				chan3L4L = true;
-				if(debug) cout << "[PROCES]	in 3L4L channel" << endl;
-				if(looseElectrons.size() + looseMuons.size() >2)
+				
+				if(debug) cout << "[PROCES]	in 3L channel" << endl;
+				if(looseElectrons.size() + looseMuons.size() ==3)
 				{ 
-					if(debug) cout << "[PROCES]	fill >2L" << endl;
+					if(debug) cout << "[PROCES]	fill 3L" << endl;
 					
 					//fill histograms
 					MSPlot["MScutflow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor);
@@ -573,28 +573,167 @@ int main(int argc, char *argv[]){
 					
 					
 					//set labels
-					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, ">2L");
-					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, ">2L");		
+					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "3L");
+					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "3L");		
 					
 					
 					Passed_selection = true;
 					
 					
-					if(debug) cout << "[PROCES]	filled >2L" << endl;
+					if(debug) cout << "[PROCES]	filled 3L" << endl;
 					
 					
 				}
-				if(debug)	cout << "[PROCES]	out fill 3L4L loop" << endl; 
+				if(debug)	cout << "[PROCES]	out fill 3L loop" << endl; 
 			}
-    			
+			
+			//exactly 4 leptons
+			if(channel.find("4L")!=string::npos)
+			{
+				
+				if(debug) cout << "[PROCES]	in 4L channel" << endl;
+				
+				if(looseElectrons.size() + looseMuons.size() == 4)
+				{ 
+					if(debug) cout << "[PROCES]	fill 4L" << endl;
+					
+					//fill histograms
+					if(!is_signal)	histo1D["cutflow_total_B"]->Fill(2);
+					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
+					
+					MSPlot["MScutflow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor);
+					//label histograms
+					if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "4L");
+					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "4L");
+					
+					Passed_selection = true;
+									
+					if(debug) cout << "[PROCES]	filled 4L" << endl;
+					
+					
+				}
+				if(debug)	cout << "[PROCES]	out fill 4L loop" << endl; 
+			}
 	
+
+			// adding additional cuts
+			bool additional = false; 
+			bool leptonFromZcut = false; 
+			double mllll =0; 
+			double mH = 125; //GeV
+			TLorentzVector leptonpair_4L_mll_1;
+			TLorentzVector leptonpair_4L_mll_2;
+			TLorentzVector leptonpair_4L_mllll;
+			TLorentzVector lepton_4L_0;
+			TLorentzVector lepton_4L_1;
+			TLorentzVector lepton_4L_2;
+			TLorentzVector lepton_4L_3;
+			lepton_4L_0.Clear(); 
+			lepton_4L_1.Clear();
+			lepton_4L_2.Clear();
+			lepton_4L_3.Clear();
+			leptonpair_4L_mll_1.Clear();
+			leptonpair_4L_mll_2.Clear();
+			leptonpair_4L_mllll.Clear();
+
+			if(channel.find("4L")!=string::npos && Passed_selection)
+			 {
+			   //select ZZ events, muon flavours come in pairs
+			   if( (looseMuons.size()/2) == 2 || (looseMuons.size()/2) == 0)
+			   {
+			   	if( (looseElectrons.size()/2) == 2 || (looseElectrons.size()/2) == 0)
+			   	{
+					MSPlot["MScutflow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor);
+					leptonFromZcut = true;
+				}
+				  	
+			   }
+			   
+			}
+			
+			//define mllll
+			if(leptonFromZcut)
+			{   
+			   bool leptonsFound = false; 
+			    //form higgs mass sample 
+			   if(looseMuons.size() == 0)
+			   {
+			     lepton_4L_0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+			     lepton_4L_1.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
+			     lepton_4L_2.SetPxPyPzE(looseElectrons[2]->Px(),looseElectrons[2]->Py(),looseElectrons[2]->Pz(),looseElectrons[2]->Energy());
+			     lepton_4L_3.SetPxPyPzE(looseElectrons[3]->Px(),looseElectrons[3]->Py(),looseElectrons[3]->Pz(),looseElectrons[3]->Energy());
+			   
+			     leptonpair_4L_mll_1 = lepton_4L_0 + lepton_4L_1; 
+			     leptonpair_4L_mll_2 = lepton_4L_2 + lepton_4L_3;
+			     leptonpair_4L_mllll = leptonpair_4L_mll_1 + leptonpair_4L_mll_2;
+			     leptonsFound = true; 
+			   }
+			   if(looseElectrons.size() == 0)
+			   {
+			     lepton_4L_0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+			     lepton_4L_1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
+			     lepton_4L_2.SetPxPyPzE(looseMuons[2]->Px(),looseMuons[2]->Py(),looseMuons[2]->Pz(),looseMuons[2]->Energy());
+			     lepton_4L_3.SetPxPyPzE(looseMuons[3]->Px(),looseMuons[3]->Py(),looseMuons[3]->Pz(),looseMuons[3]->Energy());
+			   
+			     leptonpair_4L_mll_1 = lepton_4L_0 + lepton_4L_1; 
+			     leptonpair_4L_mll_2 = lepton_4L_2 + lepton_4L_3;
+			     leptonpair_4L_mllll = leptonpair_4L_mll_1 + leptonpair_4L_mll_2;
+			     leptonsFound = true;
+			   
+			   }
+			   if(looseElectrons.size() == 2)
+			   {
+			     lepton_4L_0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+			     lepton_4L_1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
+			     lepton_4L_2.SetPxPyPzE(looseElectrons[2]->Px(),looseElectrons[2]->Py(),looseElectrons[2]->Pz(),looseElectrons[2]->Energy());
+			     lepton_4L_3.SetPxPyPzE(looseElectrons[3]->Px(),looseElectrons[3]->Py(),looseElectrons[3]->Pz(),looseElectrons[3]->Energy());
+			   
+			     leptonpair_4L_mll_1 = lepton_4L_0 + lepton_4L_1; 
+			     leptonpair_4L_mll_2 = lepton_4L_2 + lepton_4L_3;
+			     leptonpair_4L_mllll = leptonpair_4L_mll_1 + leptonpair_4L_mll_2;
+			     leptonsFound = true;
+			   
+			   }
+			   
+			   if(leptonsFound)
+			   {
+			    
+			   	mllll = leptonpair_4L_mllll.M();
+			  	MSPlot["Mllll"]->Fill(mllll, datasets[d], true, Luminosity*scaleFactor);
+				
+				if(fabs(mllll-mH)<10)
+				{
+					MSPlot["MScutflow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor);
+					
+					
+					if(selectedJets.size()>3)
+					{
+					    MSPlot["MScutflow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor);
+					    additional = true;
+					}
+				}
+		           }	
+			   	 
+			 	
+			   			 	
+			 
+			}
+			
+			
+			
+
+
 
 			//////////////////////////////////////////////////////////////////////////////////
 			// Filling histograms 							//////////
 			//////////////////////////////////////////////////////////////////////////////////
 
-	
-			if(Passed_selection){
+
+
+
+
+			
+			if(additional){
 				if(debug) cout << "[PROCES]	In passed_selection loop" << endl; 
 				
 				MSPlot["NbOfSelectedJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
@@ -610,7 +749,7 @@ int main(int argc, char *argv[]){
 				if(debug) cout << "[PROCES]	Filling MET with " << (float) met_pt << endl;
 				MSPlot["MET"]->Fill((float) met_pt, datasets[d], true, Luminosity*scaleFactor);
 				if(debug) cout << "[PROCES]	Filled MET" << endl; 
-				
+				/*
 				for (Int_t seljet1 =0; seljet1 < selectedJets.size(); seljet1++ ){
 
 					MSPlot["JetEta"]->Fill(selectedJets[seljet1]->Eta() , datasets[d], true, Luminosity*scaleFactor);
@@ -619,13 +758,11 @@ int main(int argc, char *argv[]){
                                 if( selectedJets.size() > 0) {
 					if(debug) cout << "[PROCES]	In selectedJets.size() > 0" << endl; 
 					MSPlot["Pt_leading_jet"]->Fill(selectedJets[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
-                                	if(chan3L4L) MSPlot["MScutflow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor);
-					if(debug) cout << "[PROCES]	Out selectedJets.size() > 0" << endl; 
+                                	if(debug) cout << "[PROCES]	Out selectedJets.size() > 0" << endl; 
 				}
 				if( selectedJets.size() > 1)
 				{
-					if(chan3L4L) MSPlot["MScutflow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor);
-				  	MSPlot["Pt_2nd_leading_jet"]->Fill(selectedJets[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+					MSPlot["Pt_2nd_leading_jet"]->Fill(selectedJets[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
 				if( selectedJets.size() > 2) {
 					MSPlot["Pt_3d_leading_jet"]->Fill(selectedJets[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
@@ -642,8 +779,7 @@ int main(int argc, char *argv[]){
                                 }
 				if( selectedBJets_CSVT.size() > 0)
 				{
-					if(chan3L4L) MSPlot["MScutflow"]->Fill(6, datasets[d], true, Luminosity*scaleFactor);
-				  	MSPlot["Pt_leading_Bjet_CSVT"]->Fill(selectedBJets_CSVM[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+					MSPlot["Pt_leading_Bjet_CSVT"]->Fill(selectedBJets_CSVM[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
 				}
 				if( selectedBJets_CSVM.size() > 1)
 				{
@@ -661,10 +797,10 @@ int main(int argc, char *argv[]){
 				{	
 				  	MSPlot["Pt_3d_leading_Bjet_CSVT"]->Fill(selectedBJets_CSVT[2]->Pt(), datasets[d],true,Luminosity*scaleFactor);
 				}
-				if( selectedBJets_CSVM.size() > 0 && selectedJets.size()>0) {
+				if( selectedBJets_CSVM.size() > 0 && selectedJets.size()>1) {
 					MSPlot["MScutflow"]->Fill(7, datasets[d], true, Luminosity*scaleFactor);
                                 }
-				if( selectedBJets_CSVT.size() > 0 && selectedJets.size()>0)
+				if( selectedBJets_CSVT.size() > 0 && selectedJets.size()>1)
 				{
 					MSPlot["MScutflow"]->Fill(8, datasets[d], true, Luminosity*scaleFactor);
 				}
@@ -842,24 +978,17 @@ int main(int argc, char *argv[]){
 					MSPlot["Mll"]->Fill(mll,datasets[d],true,Luminosity*scaleFactor);
 				}
 				
-				
+				*/
 				
 			}
+			
 			//end passed selection loop
 			
 			
 			
 			
 			
-			
-			// adding additional cuts
-			if(passed_selection)
-			{
-			     if(met_pt>40){
-			     	MSPlot["MScutflow"]->Fill(9, datasets[d], true, Luminosity*scaleFactor);
-			     }
-			
-			}
+
 			
 	
 		}
