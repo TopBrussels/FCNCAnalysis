@@ -114,7 +114,8 @@ int main(int argc, char *argv[]){
 			cout << "--SSdilepton: use the same sign dilepton channel" << endl;
 			cout << "--OSdilepton: use the opposite sign dilepton channel" << endl;
 			cout << "--3L: use the 3 lepton channel (exactly 3)" << endl;
-			cout << "--4L: use the 4 lepton channel (at least 4)" << endl;
+			cout << "--4L: use the 4 lepton channel (exactly 4)" << endl;
+			cout << "--5L: use the 5 lepton channel (at least 5)" << endl;
 			cout << "--3L4L: use the 3 and 4 lepton channel (at least 3)" << endl;
 			cout << "--Bigxml: use the xml file containing all samples (not channel dependent)" << endl; 
                 	return 0;
@@ -172,6 +173,10 @@ int main(int argc, char *argv[]){
 		if (argval=="--4L") {
                 	channel = "4L";
 			xmlfile = "../config/FCNC_4L_config.xml";
+        	}
+		if (argval=="--5L") {
+                	channel = "5L";
+			xmlfile = "../config/FCNC_5L_config.xml";
         	}
 		if (argval=="--Bigxml"){
 			Big_xml= true; 
@@ -244,13 +249,14 @@ int main(int argc, char *argv[]){
 	if(channel.find("2gamma")!=string::npos)	sprintf(channelchar, "2gamma");
 	if(channel.find("3L")!=string::npos)		sprintf(channelchar, "3L");	
 	if(channel.find("4L")!=string::npos)		sprintf(channelchar, "4L");
-	if(channel.find("5")!=string::npos)		sprintf(channelchar, "3L4L");
+	if(channel.find("5L")!=string::npos)		sprintf(channelchar, "5L");
 	if(channel.find("1L3B")!=string::npos)		sprintf(channelchar, "1L3B");
 	if(channel.find("SSdilepton")!=string::npos)	sprintf(channelchar, "SSdilepton");
 	if(channel.find("OSdilepton")!=string::npos)	sprintf(channelchar, "OSdilepton");
 	
 	sprintf(rootFileName,"../data/FCNC_selection_%s.root",channelchar);
 	TFile *fout = new TFile (rootFileName, "RECREATE");
+	if(information) std::cout << "[INFO]	Made output rootfile: " << rootFileName << endl; 
 	if(debug) cout << "[PROCES]	Declared output rootfiles  "<< endl;
 	
 	///////////////////////////////////////////////////////////
@@ -281,9 +287,9 @@ int main(int argc, char *argv[]){
     	MSPlot["NbOfSelectedBJets_CSVT"] = new MultiSamplePlot(datasets,"NbOfSelectedBJets_CSVT", 4, -0.5, 3.5, "Nb. of tight Bjets");
 	MSPlot["NbOfSelectedLeptons"] = new MultiSamplePlot(datasets,"NbOfSelectedLeptons", 2, 0.5, 2.5, "Nb. of leptons");
     	MSPlot["MET"] = new MultiSamplePlot(datasets, "MET", 40, 0., 160., "MET");
-/*	MSPlot["JetEta"] = new MultiSamplePlot(datasets, "JetEta", 15,-3., 3., "Jet #eta");
+	MSPlot["JetEta"] = new MultiSamplePlot(datasets, "JetEta", 15,-3., 3., "Jet #eta");
     	MSPlot["JetPhi"] = new MultiSamplePlot(datasets, "JetPhi", 25, -4., 4., "Jet #phi");
-	MSPlot["Mll"] = new MultiSamplePlot(datasets,"Mll",25,60,240,"Mll of leading and second leading lepton");
+	//MSPlot["Mll"] = new MultiSamplePlot(datasets,"Mll",25,60,240,"Mll of leading and second leading lepton");
 	MSPlot["Pt_2nd_leading_Bjet_CSVM"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_Bjet_CSVM",10,30,120,"Pt 2nd leading Bjet M"); 
 	MSPlot["Pt_2nd_leading_Bjet_CSVT"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_Bjet_CSVT",10,30,120,"Pt 2nd leading Bjet T"); 
 	MSPlot["Pt_2nd_leading_jet"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_jet",10,20,100,"Pt 2nd leading jet");
@@ -300,9 +306,9 @@ int main(int argc, char *argv[]){
 	MSPlot["Pt_4th_leading_Bjet_CSVM"] = new MultiSamplePlot(datasets,"Pt_4th_leading_Bjet_CSVM",100,0,200,"Pt fourth leading Bjet_CSVM"); 
 	MSPlot["Pt_3d_leading_Bjet_CSVT"] = new MultiSamplePlot(datasets,"Pt_3d_leading_Bjet_CSVT",100,0,200,"Pt third leading Bjet_CSVT"); 
 	MSPlot["Pt_4th_leading_Bjet_CSVT"] = new MultiSamplePlot(datasets,"Pt_4th_leading_Bjet_CSVT",100,0,200,"Pt fourth leading Bjet_CSVT"); 
-*/	
+
 	
-	MSPlot["Mllll"] = new MultiSamplePlot(datasets,"M_{llll}",100,80,180,"Mllll ~ m_{H}");
+	if(channel.find("4L")!=string::npos) MSPlot["Mllll"] = new MultiSamplePlot(datasets,"M_{llll}",100,80,180,"Mllll ~ m_{H}");
 	
 	
 	//////////////////  Cut flow histograms	/////////////////////////////
@@ -350,51 +356,51 @@ int main(int argc, char *argv[]){
 		string datasetName = datasets[d]->Name(); 
 		
 		char datasetNamechar[900];
+		if(datasetName.find("GluGluHiggs4lep")!=string::npos) {sprintf(datasetNamechar,"GluGluHiggs4lep");}
+		if(datasetName.find("Wjets")!=string::npos || datasetName.find("wjets")!=string::npos) {sprintf(datasetNamechar,"Wjets");}
 		if(datasetName.find("W_1Jets")!=string::npos) {sprintf(datasetNamechar,"W_1Jets");}
 		if(datasetName.find("W_2Jets")!=string::npos) {sprintf(datasetNamechar,"W_2Jets");}
 		if(datasetName.find("W_3Jets")!=string::npos) {sprintf(datasetNamechar,"W_3Jets");}
 		if(datasetName.find("W_4Jets")!=string::npos) {sprintf(datasetNamechar,"W_4Jets");}
+		
+		if(datasetName.find("WW")!=string::npos || datasetName.find("ww")!=string::npos) {sprintf(datasetNamechar,"WW");}
+                if(datasetName.find("WZ")!=string::npos || datasetName.find("wz")!=string::npos) {sprintf(datasetNamechar,"WZ");}
+                if(datasetName.find("ZZ")!=string::npos || datasetName.find("zz")!=string::npos) {sprintf(datasetNamechar,"ZZ");}
 		if(datasetName.find("WW_To2L2Nu")!=string::npos) {sprintf(datasetNamechar,"WW_To2L2Nu");}
 		if(datasetName.find("WZ_To2L2Q")!=string::npos) {sprintf(datasetNamechar,"WZ_To2L2Q");}
 		if(datasetName.find("WZ_To3LNu")!=string::npos) {sprintf(datasetNamechar,"WZ_To3LNu");}
 		if(datasetName.find("ZZ_To2L2Nu")!=string::npos) {sprintf(datasetNamechar,"ZZ_To2L2Nu");}
 		if(datasetName.find("ZZ_To2L2Q")!=string::npos) {sprintf(datasetNamechar,"ZZ_To2L2Q");}
 		if(datasetName.find("ZZ_To4L")!=string::npos) {sprintf(datasetNamechar,"ZZ_To4L");}
+		
+		if(datasetName.find("ST_T_s-ch")!=string::npos) {sprintf(datasetNamechar,"ST_T_s-ch");}
+                if(datasetName.find("ST_TBar_s-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBar_s-ch");}
 		if(datasetName.find("ST_T_t-ch")!=string::npos) {sprintf(datasetNamechar,"ST_T_t-ch");}
 		if(datasetName.find("ST_Tbar_t-ch")!=string::npos) {sprintf(datasetNamechar,"ST_Tbar_t-ch");}
+		if(datasetName.find("ST_T_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_T_tW-ch");}
+                if(datasetName.find("ST_TBar_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBar_tW-ch");}
 		if(datasetName.find("ST_TToDilepton_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TToDilepton_tW-ch");}
 		if(datasetName.find("ST_TToTlepWhad_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TToTlepWhad_tW-ch");}
 		if(datasetName.find("ST_TToThadWlep_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TToThadWlep_tW-ch");}
 		if(datasetName.find("ST_TBarToDilepton_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBarToDilepton_tW-ch");}
 		if(datasetName.find("ST_TBarToTlepWhad_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBarToTlepWhad_tW-ch");}
 		if(datasetName.find("ST_TBarToThadWlep_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBarToThadWlep_tW-ch");}
+		
 		if(datasetName.find("TT_SemiLeptMGDecays")!=string::npos) {sprintf(datasetNamechar,"TT_SemiLeptMGDecays");}
 		if(datasetName.find("TT_FullLeptMGDecays")!=string::npos) {sprintf(datasetNamechar,"TT_FullLeptMGDecays");}
 		if(datasetName.find("TT_HadronicMGDecays")!=string::npos) {sprintf(datasetNamechar,"TT_HadronicMGDecays");}
+		if(datasetName.find("TTJets")!=string::npos) {sprintf(datasetNamechar,"TTJets");}
+		
+		if(datasetName.find("TTZ")!=string::npos) {sprintf(datasetNamechar,"TTZ");}
+		if(datasetName.find("TTW")!=string::npos) {sprintf(datasetNamechar,"TTW");}
+		
 		if(datasetName.find("Z_M-10To50")!=string::npos) {sprintf(datasetNamechar,"Z_M-10To50");}
 		if(datasetName.find("Z_M-50")!=string::npos) {sprintf(datasetNamechar,"Z_M-50");}
 		if(datasetName.find("Z_1Jets")!=string::npos) {sprintf(datasetNamechar,"Z_1Jets");}
 		if(datasetName.find("Z_2Jets")!=string::npos) {sprintf(datasetNamechar,"Z_2Jets");}
 		if(datasetName.find("Z_3Jets")!=string::npos) {sprintf(datasetNamechar,"Z_3Jets");}
 		if(datasetName.find("Z_4Jets")!=string::npos) {sprintf(datasetNamechar,"Z_4Jets");}
-		if(datasetName.find("TTZ")!=string::npos) {sprintf(datasetNamechar,"TTZ");}
-		if(datasetName.find("TTW")!=string::npos) {sprintf(datasetNamechar,"TTW");}
-		if(datasetName.find("ttbar")!=string::npos) {sprintf(datasetNamechar,"ttbar");}
-                if(datasetName.find("ttbar_fullLept")!=string::npos) {sprintf(datasetNamechar,"ttbar_fullLept");}
-                if(datasetName.find("ttbar_semiLept")!=string::npos) {sprintf(datasetNamechar,"ttbar_semiLept");}
-                if(datasetName.find("Wjets")!=string::npos || datasetName.find("wjets")!=string::npos) {sprintf(datasetNamechar,"wjets");}
-                if(datasetName.find("ttt")!=string::npos) {sprintf(datasetNamechar,"ttt");}
-                if(datasetName.find("ttW")!=string::npos) {sprintf(datasetNamechar,"ttw");}
-                if(datasetName.find("WW")!=string::npos || datasetName.find("ww")!=string::npos) {sprintf(datasetNamechar,"ww");}
-                if(datasetName.find("WZ")!=string::npos || datasetName.find("wz")!=string::npos) {sprintf(datasetNamechar,"wz");}
-                if(datasetName.find("ZZ")!=string::npos || datasetName.find("zz")!=string::npos) {sprintf(datasetNamechar,"zz");}
-                if(datasetName.find("ttZ")!=string::npos || datasetName.find("ttz")!=string::npos) {sprintf(datasetNamechar,"ttz");}
-                if(datasetName.find("Zjets")!=string::npos || datasetName.find("zjets")!=string::npos) {sprintf(datasetNamechar,"Zjets");}
-                if(datasetName.find("ST_T_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_T_tW-ch");}
-                if(datasetName.find("ST_TBar_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBar_tW-ch");}
-		if(datasetName.find("ST_T_s-ch")!=string::npos) {sprintf(datasetNamechar,"ST_T_s-ch");}
-                if(datasetName.find("ST_TBar_s-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBar_s-ch");}
-		
+			
 		if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");
 			is_signal = true;
@@ -615,7 +621,7 @@ int main(int argc, char *argv[]){
 				if(debug)	cout << "[PROCES]	out fill 4L loop" << endl; 
 			}
 	
-
+		
 			// adding additional cuts
 			bool additional = false; 
 			bool leptonFromZcut = false; 
@@ -712,6 +718,17 @@ int main(int argc, char *argv[]){
 					    additional = true;
 					}
 				}
+				if(fabs(mllll-mH)<5)
+				{
+					MSPlot["MScutflow"]->Fill(6, datasets[d], true, Luminosity*scaleFactor);
+					
+					
+					if(selectedJets.size()>3)
+					{
+					    MSPlot["MScutflow"]->Fill(7, datasets[d], true, Luminosity*scaleFactor);
+					    additional = true;
+					}
+				}
 		           }	
 			   	 
 			 	
@@ -719,6 +736,50 @@ int main(int argc, char *argv[]){
 			 
 			}
 			
+			
+			if(channel.find("5L")!=string::npos)
+			{
+				
+				if(debug) cout << "[PROCES]	in 5L channel" << endl;
+				
+				if(looseElectrons.size() + looseMuons.size() == 5)
+				{ 
+					if(debug) cout << "[PROCES]	fill 5L" << endl;
+					
+					//fill histograms
+					if(!is_signal)	histo1D["cutflow_total_B"]->Fill(2);
+					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
+					
+					MSPlot["MScutflow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor);
+					//label histograms
+					if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "5L");
+					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "5L");
+					
+					Passed_selection = true;
+									
+					if(debug) cout << "[PROCES]	filled 5L" << endl;
+					
+					
+				}
+				if(debug)	cout << "[PROCES]	out fill 5L loop" << endl; 
+			}
+			
+			
+			//additional cuts
+			if(channel.find("5L")!=string::npos && Passed_selection)
+			{
+				if(selectedJets.size()>1)
+				{
+			           MSPlot["MScutflow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor);
+				  
+				  if(selectedBJets_CSVM.size()>0)
+				  {
+				    MSPlot["MScutflow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor);
+				    additional = true; 
+				  }
+			        }
+			   
+			}
 			
 			
 
@@ -749,7 +810,7 @@ int main(int argc, char *argv[]){
 				if(debug) cout << "[PROCES]	Filling MET with " << (float) met_pt << endl;
 				MSPlot["MET"]->Fill((float) met_pt, datasets[d], true, Luminosity*scaleFactor);
 				if(debug) cout << "[PROCES]	Filled MET" << endl; 
-				/*
+				
 				for (Int_t seljet1 =0; seljet1 < selectedJets.size(); seljet1++ ){
 
 					MSPlot["JetEta"]->Fill(selectedJets[seljet1]->Eta() , datasets[d], true, Luminosity*scaleFactor);
@@ -774,8 +835,7 @@ int main(int argc, char *argv[]){
 				}
 				
 				if( selectedBJets_CSVM.size() > 0) {
-					if(chan3L4L) MSPlot["MScutflow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor);
-                                	MSPlot["Pt_leading_Bjet_CSVM"]->Fill(selectedBJets_CSVM[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+					MSPlot["Pt_leading_Bjet_CSVM"]->Fill(selectedBJets_CSVM[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
                                 }
 				if( selectedBJets_CSVT.size() > 0)
 				{
@@ -804,7 +864,7 @@ int main(int argc, char *argv[]){
 				{
 					MSPlot["MScutflow"]->Fill(8, datasets[d], true, Luminosity*scaleFactor);
 				}
-				
+				/*
 				double mll = 0; 
 				TLorentzVector leptonpair_mll;
 				TLorentzVector lepton0;
