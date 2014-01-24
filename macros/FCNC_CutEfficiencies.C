@@ -15,10 +15,9 @@ void FCNC_CutEfficiencies(string channel = "4L"){
 	cout << "------------------------------------------------------------------" << endl;
 	cout << "         [LOOPING OVER " << channel << " CHANNEL]" << endl; 
 	
-	//string Vector_cutflow_4L[19] = {"","initial",">3L",">3L & >0 jets",">3L & >1 jets",">3L & >2 jets",">3L & >3 jets",">3L & >4 jets",">3L & >5 jets",">3L & >0 Bjets",">3L & >1 Bjets",">3L & >2 Bjets",">3L & >3 Bjets",">3L & >4 Bjets",">3L & >5 Bjets","4-5 leptons","4 leptons", "5 leptons",""};
-	string	Vector_cutflow_3L[19] = {"","initial","=3L","=3L & >0 jets","=3L & >1 jets","=3L & >2 jets","=3L & >3 jets","=3L & >4 jets","=3L & >5 jets","=3L & >0 Bjets","=3L & >1 Bjets","=3L & >2 Bjets","=3L & >3 Bjets","=3L & >4 Bjets","=3L & >5 Bjets","=3L & 1 Bjet","", "",""};
-	string Vector_cutflow_4L[19] = {"","initial",">3L",">3L & >0 jets",">3L & >1 jets",">3L & >0 Bjets",">3L & >1 Bjets",">3L & >0 Bjets T",">3L & >1 Bjets T",">3L & >0 Ljets",">3L & not 2 Bjets",">3L & >0 Lj & not 2 Bj","","","","","","",""};
-	string Vector_cutflow_3L4L[19] = {"","initial",">2L",">3L & >0 jets",">2L & >1 jets",">2L & >0 Bjets M",">2L & >0 Bjets T",">2L & >0 Bjets M & >1jets",">2L & >0 Bjets T & >1jets","","","","","","","","","",""};
+	string	Vector_cutflow_3L[19] = {"","initial","=3L","=3L & >0 jets","=3L & >1 jets","=3L & >0 Bjet M","=3L & >0 Bjet T","=3L & >0 B jet M & >1 jet","=3L & >0 B jet T & >1 jets","=3L & =1 Bjet M","=3L & >1 Bjet M ","=3L & >1 B jet & >5 jets","=3L & =1 & MET < 80","=3L & =1 Bjets & MET > 80","=3L & >0 Bjets & MET > 80","","", "",""};
+	string Vector_cutflow_4L[19] = {"","initial",">2L",">3L & >0 jets",">2L & >1 jets",">2L & >0 Bjets M",">2L & >0 Bjets T",">2L & >0 Bjets M & >1jets",">2L & >0 Bjets T & >1jets",">3L & >0 Ljets",">3L & not 2 Bjets",">3L & >0 Lj & not 2 Bj","","","","","","",""};
+	string Vector_cutflow_5L[19] = {"","initial",">2L",">3L & >0 jets",">2L & >1 jets",">2L & >0 Bjets M",">2L & >0 Bjets T",">2L & >0 Bjets M & >1jets",">2L & >0 Bjets T & >1jets",">2L & MET > 40 GeV",">2L & >0 Bjets M & >1jets & MET > 40 GeV","","","","","","","",""};
 	
 	
 	
@@ -39,55 +38,50 @@ void FCNC_CutEfficiencies(string channel = "4L"){
 	Vector_SampleName.push_back("total_S");
 	
 	//Put in the individual samples
-	
+	Vector_SampleName.push_back("GluGluHiggs4lep");
+	Vector_SampleName.push_back("Wjets");
 	Vector_SampleName.push_back("W_1Jets");
 	Vector_SampleName.push_back("W_2Jets");
 	Vector_SampleName.push_back("W_3Jets");
 	Vector_SampleName.push_back("W_4Jets");
+	
+	Vector_SampleName.push_back("WW");
+        Vector_SampleName.push_back("WZ");
+        Vector_SampleName.push_back("ZZ");
 	Vector_SampleName.push_back("WW_To2L2Nu");
 	Vector_SampleName.push_back("WZ_To2L2Q");
 	Vector_SampleName.push_back("WZ_To3LNu");
 	Vector_SampleName.push_back("ZZ_To2L2Nu");
 	Vector_SampleName.push_back("ZZ_To2L2Q");
 	Vector_SampleName.push_back("ZZ_To4L");
+	
+	Vector_SampleName.push_back("ST_T_s-ch");
+        Vector_SampleName.push_back("ST_TBar_s-ch");
+	Vector_SampleName.push_back("ST_T_t-ch");
+	Vector_SampleName.push_back("ST_Tbar_t-ch");
+	Vector_SampleName.push_back("ST_T_tW-ch");
+        Vector_SampleName.push_back("ST_TBar_tW-ch");
 	Vector_SampleName.push_back("ST_TToDilepton_tW-ch");
 	Vector_SampleName.push_back("ST_TToTlepWhad_tW-ch");
 	Vector_SampleName.push_back("ST_TToThadWlep_tW-ch");
 	Vector_SampleName.push_back("ST_TBarToDilepton_tW-ch");
 	Vector_SampleName.push_back("ST_TBarToTlepWhad_tW-ch");
 	Vector_SampleName.push_back("ST_TBarToThadWlep_tW-ch");
+	
 	Vector_SampleName.push_back("TT_SemiLeptMGDecays");
 	Vector_SampleName.push_back("TT_FullLeptMGDecays");
 	Vector_SampleName.push_back("TT_HadronicMGDecays");
+	Vector_SampleName.push_back("TTJets");
+	
+	Vector_SampleName.push_back("TTZ");
+	Vector_SampleName.push_back("TTW");
+	
 	Vector_SampleName.push_back("Z_M-10To50");
 	Vector_SampleName.push_back("Z_M-50");
 	Vector_SampleName.push_back("Z_1Jets");
 	Vector_SampleName.push_back("Z_2Jets");
 	Vector_SampleName.push_back("Z_3Jets");
 	Vector_SampleName.push_back("Z_4Jets");
-	Vector_SampleName.push_back("TTZ");
-	Vector_SampleName.push_back("TTW");
-	Vector_SampleName.push_back("ttbar");
-        Vector_SampleName.push_back("ttbar_fullLept");
-        Vector_SampleName.push_back("ttbar_semiLept");
-        Vector_SampleName.push_back("wjets");
-        Vector_SampleName.push_back("ttt");
-        Vector_SampleName.push_back("ttw");
-        Vector_SampleName.push_back("ww");
-        Vector_SampleName.push_back("wz");
-        Vector_SampleName.push_back("zz");
-        Vector_SampleName.push_back("ttz");
-        Vector_SampleName.push_back("Zjets");
-        Vector_SampleName.push_back("ST_T_tW-ch");
-        Vector_SampleName.push_back("ST_TBar_tW-ch");
-	Vector_SampleName.push_back("ST_T_s-ch");
-	Vector_SampleName.push_back("ST_Tbar_s-ch");
-	Vector_SampleName.push_back("ST_T_t-ch");
-	Vector_SampleName.push_back("ST_Tbar_t-ch");
-		
-	
-	
-	
 	
 	Vector_SampleName.push_back("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");
 	Vector_SampleName.push_back("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL");
@@ -149,7 +143,7 @@ void FCNC_CutEfficiencies(string channel = "4L"){
 			int iBin = i; 
 			char *BinName;
 			
-			/*if(channel.find("4L")!=string::npos)
+			if(channel.find("4L")!=string::npos)
 			{
 				BinName = (char*)Vector_cutflow_4L[i-1].c_str();	
 			}
@@ -157,10 +151,9 @@ void FCNC_CutEfficiencies(string channel = "4L"){
 			{
 				BinName = (char*)Vector_cutflow_3L[i-1].c_str();
 			}
-			*/
-			if(channel.find("3L4L")!=string::npos)
+			if(channel.find("5L")!=string::npos)
 			{
-				BinName = (char*)Vector_cutflow_3L4L[i-1].c_str();
+				BinName = (char*)Vector_cutflow_5L[i-1].c_str();
 			}
 			histogram->GetXaxis()->SetBinLabel(iBin, BinName);
 			
