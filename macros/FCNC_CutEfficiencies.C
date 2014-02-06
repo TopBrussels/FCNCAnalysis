@@ -11,20 +11,27 @@
 
 using namespace std;
 
-void FCNC_CutEfficiencies(string channel = "4L"){
+void FCNC_CutEfficiencies(string channel = "45"){
 	cout << "------------------------------------------------------------------" << endl;
 	cout << "         [LOOPING OVER " << channel << " CHANNEL]" << endl; 
 	
-	string	Vector_cutflow_3L[19] = {"","initial","=3L","=3L & >0 jets","=3L & >1 jets","=3L & >0 Bjet M","=3L & >0 Bjet T","=3L & >0 B jet M & >1 jet","=3L & >0 B jet T & >1 jets","=3L & =1 Bjet M","=3L & >1 Bjet M ","=3L & >1 B jet & >5 jets","=3L & =1 & MET < 80","=3L & =1 Bjets & MET > 80","=3L & >0 Bjets & MET > 80","","", "",""};
-	string Vector_cutflow_4L[19] = {"","initial",">2L",">3L & >0 jets",">2L & >1 jets",">2L & >0 Bjets M",">2L & >0 Bjets T",">2L & >0 Bjets M & >1jets",">2L & >0 Bjets T & >1jets",">3L & >0 Ljets",">3L & not 2 Bjets",">3L & >0 Lj & not 2 Bj","","","","","","",""};
-	string Vector_cutflow_5L[19] = {"","initial",">2L",">3L & >0 jets",">2L & >1 jets",">2L & >0 Bjets M",">2L & >0 Bjets T",">2L & >0 Bjets M & >1jets",">2L & >0 Bjets T & >1jets",">2L & MET > 40 GeV",">2L & >0 Bjets M & >1jets & MET > 40 GeV","","","","","","","",""};
+	string	Vector_cutflow_3L[19] = {"","initial","3L","3L & MET>45 GeV","3L & MET < 45 GeV","3L & >3 jets","3L & <4 jets","","","","","","","","","","", "",""};
+	string Vector_cutflow_4L[19] = {"","initial","4L","4L & Z(e/mu)","4L & Z(e/mu) & |mllll - mh|<10GeV","4L & Z(e/mu) &|mllll - mh|<10GeV & >3 jets","4L & Z(e/mu) & |mllll - mh|<5 GeV","4L & Z(e/mu) & |mllll - mh|<5 GeV & >3jets","","","","","","","","","","",""};
+	string Vector_cutflow_5L[19] = {"","initial","5L","5L & >1 jets","5L & >1 jets & >0 bjets","","","","","","","","","","","","","",""};
+	string Vector_cutflow_45[19] = {"","initial",">3L",">3L & >0 jets",">3L & >0 jets & >0 bjets","","","","","","","","","","","","","",""};
 	
 	
 	
 
 	string rootFileName = "../data/FCNC_selection_";
-	rootFileName += channel;
-	rootFileName += ".root";
+        if(channel.find("45")!=string::npos)
+        { rootFileName += "4L5L";
+        }
+        else
+        {	
+           rootFileName += channel;
+	}
+        rootFileName += ".root";
 	
 	
 	TFile *file = new TFile(rootFileName.c_str(),"read");
@@ -154,6 +161,10 @@ void FCNC_CutEfficiencies(string channel = "4L"){
 			if(channel.find("5L")!=string::npos)
 			{
 				BinName = (char*)Vector_cutflow_5L[i-1].c_str();
+			}
+			if(channel.find("45")!=string::npos)
+			{
+				BinName = (char*)Vector_cutflow_45[i-1].c_str();
 			}
 			histogram->GetXaxis()->SetBinLabel(iBin, BinName);
 			

@@ -96,7 +96,6 @@ int main(int argc, char *argv[]){
 	std::string tempxml;
 	string tempbtagger;
 	bool foundxml = false;
-	bool signal_xml = false; 
 	bool foundbtag = false;
 	bool Big_xml = false;  //Can be set to true with the options
     
@@ -115,9 +114,7 @@ int main(int argc, char *argv[]){
 			cout << "--SSdilepton: use the same sign dilepton channel" << endl;
 			cout << "--OSdilepton: use the opposite sign dilepton channel" << endl;
 			cout << "--3L: use the 3 lepton channel (exactly 3)" << endl;
-			cout << "--4L: use the 4 lepton channel (exactly 4)" << endl;
-			cout << "--5L: use the 5 lepton channel (at least 5)" << endl;
-			cout << "--45: at least 4 leptons " << endl; 
+			cout << "--4L: use the 4 lepton channel (at least 4)" << endl;
 			cout << "--3L4L: use the 3 and 4 lepton channel (at least 3)" << endl;
 			cout << "--Bigxml: use the xml file containing all samples (not channel dependent)" << endl; 
                 	return 0;
@@ -176,22 +173,9 @@ int main(int argc, char *argv[]){
                 	channel = "4L";
 			xmlfile = "../config/FCNC_4L_config.xml";
         	}
-		if (argval=="--45") {
-                	channel = "45";
-			xmlfile = "../config/FCNC_45_config.xml";
-        	}
-		if (argval=="--5L") {
-                	channel = "5L";
-			xmlfile = "../config/FCNC_5L_config.xml";
-        	}
 		if (argval=="--Bigxml"){
 			Big_xml= true; 
 			xmlfile = "../config/FCNC_config.xml";
-		
-		}
-		if (argval=="--signal"){
-			signal_xml= true; 
-			
 		
 		}
 		
@@ -199,9 +183,6 @@ int main(int argc, char *argv[]){
 
     	} 
 	
-	double mH = 125; //GeV - higgs mass
-	double mW = 80; //GeV - W mass
-	double mZ = 90; //GeV - Z mass
 
     	if (Big_xml)	xmlfile = "../config/FCNC_config.xml"; 
 	if (foundbtag) btagger = tempbtagger;
@@ -209,7 +190,6 @@ int main(int argc, char *argv[]){
 	if(information)	std::cout << "[INFO]	Used configuration file: " << xmlfile << endl;
 	if(information)	std::cout << "[INFO]	Used channel: " << channel << endl;
 	if(information) std::cout << "[INFO]	Used btag algorithm: " << btagger << endl; 
-	if(information) std::cout << "[INFO]	Assumed masses: mH = " << mH << " GeV - mW = " << mW << " GeV - mZ = " << mZ <<" GeV"<< endl;
 	if(channel.find("undefined")!=string::npos && warnings) std:cout << "[WARNING]	No channel was defined" << endl; 
 	if(Big_xml && warnings) std::cout << "[WARNING]   Using the big xml file" << endl;
 	///////////////////////////////////////////////////////////
@@ -264,21 +244,13 @@ int main(int argc, char *argv[]){
 	if(channel.find("2gamma")!=string::npos)	sprintf(channelchar, "2gamma");
 	if(channel.find("3L")!=string::npos)		sprintf(channelchar, "3L");	
 	if(channel.find("4L")!=string::npos)		sprintf(channelchar, "4L");
-	if(channel.find("5L")!=string::npos)		sprintf(channelchar, "5L");
-	if(channel.find("45")!=string::npos)		sprintf(channelchar, "4L5L");
+	if(channel.find("5")!=string::npos)		sprintf(channelchar, "3L4L");
 	if(channel.find("1L3B")!=string::npos)		sprintf(channelchar, "1L3B");
 	if(channel.find("SSdilepton")!=string::npos)	sprintf(channelchar, "SSdilepton");
 	if(channel.find("OSdilepton")!=string::npos)	sprintf(channelchar, "OSdilepton");
 	
-	if(signal_xml)
-	{
-	   sprintf(rootFileName,"../data/FCNC_selection_%s_signal.root",channelchar);
-	}
-	else{
-	   sprintf(rootFileName,"../data/FCNC_selection_%s.root",channelchar);
-	}
+	sprintf(rootFileName,"../data/FCNC_selection_%s.root",channelchar);
 	TFile *fout = new TFile (rootFileName, "RECREATE");
-	if(information) std::cout << "[INFO]	Made output rootfile: " << rootFileName << endl; 
 	if(debug) cout << "[PROCES]	Declared output rootfiles  "<< endl;
 	
 	///////////////////////////////////////////////////////////
@@ -307,11 +279,11 @@ int main(int argc, char *argv[]){
 	MSPlot["NbOfSelectedLightJets"] = new MultiSamplePlot(datasets,"NbOfSelectedLightJets", 8, -0.5, 7.5, "Nb. of light jets");
 	MSPlot["NbOfSelectedBJets_CSVM"] = new MultiSamplePlot(datasets,"NbOfSelectedBJets_CSVM", 5, -0.5, 4.5, "Nb. of medium Bjets");
     	MSPlot["NbOfSelectedBJets_CSVT"] = new MultiSamplePlot(datasets,"NbOfSelectedBJets_CSVT", 4, -0.5, 3.5, "Nb. of tight Bjets");
-	MSPlot["NbOfSelectedLeptons"] = new MultiSamplePlot(datasets,"NbOfSelectedLeptons", 3, -0.5, 2.5, "Nb. of leptons");
+	MSPlot["NbOfSelectedLeptons"] = new MultiSamplePlot(datasets,"NbOfSelectedLeptons", 2, 0.5, 2.5, "Nb. of leptons");
     	MSPlot["MET"] = new MultiSamplePlot(datasets, "MET", 40, 0., 160., "MET");
 	MSPlot["JetEta"] = new MultiSamplePlot(datasets, "JetEta", 15,-3., 3., "Jet #eta");
     	MSPlot["JetPhi"] = new MultiSamplePlot(datasets, "JetPhi", 25, -4., 4., "Jet #phi");
-	//MSPlot["Mll"] = new MultiSamplePlot(datasets,"Mll",25,60,240,"Mll of leading and second leading lepton");
+	MSPlot["Mll"] = new MultiSamplePlot(datasets,"Mll",25,60,240,"Mll of leading and second leading lepton");
 	MSPlot["Pt_2nd_leading_Bjet_CSVM"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_Bjet_CSVM",10,30,120,"Pt 2nd leading Bjet M"); 
 	MSPlot["Pt_2nd_leading_Bjet_CSVT"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_Bjet_CSVT",10,30,120,"Pt 2nd leading Bjet T"); 
 	MSPlot["Pt_2nd_leading_jet"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_jet",10,20,100,"Pt 2nd leading jet");
@@ -321,6 +293,8 @@ int main(int argc, char *argv[]){
 	MSPlot["Pt_leading_jet"] = new MultiSamplePlot(datasets,"Pt_leading_jet",20,20,160,"Pt leading jet"); 
 	MSPlot["Pt_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_leading_lepton",25,30,140,"Pt leading lepton");
 
+	
+	
 	MSPlot["Pt_3d_leading_jet"] = new MultiSamplePlot(datasets,"Pt_3d_leading_jet",100,0,200,"Pt third leading jet"); 
 	MSPlot["Pt_4th_leading_jet"] = new MultiSamplePlot(datasets,"Pt_4th_leading_jet",100,0,200,"Pt fourth leading jet"); 
 	
@@ -328,16 +302,9 @@ int main(int argc, char *argv[]){
 	MSPlot["Pt_4th_leading_Bjet_CSVM"] = new MultiSamplePlot(datasets,"Pt_4th_leading_Bjet_CSVM",100,0,200,"Pt fourth leading Bjet_CSVM"); 
 	MSPlot["Pt_3d_leading_Bjet_CSVT"] = new MultiSamplePlot(datasets,"Pt_3d_leading_Bjet_CSVT",100,0,200,"Pt third leading Bjet_CSVT"); 
 	MSPlot["Pt_4th_leading_Bjet_CSVT"] = new MultiSamplePlot(datasets,"Pt_4th_leading_Bjet_CSVT",100,0,200,"Pt fourth leading Bjet_CSVT"); 
-
 	
-	if(channel.find("4L")!=string::npos)
-	{
-		 MSPlot["Mllll"] = new MultiSamplePlot(datasets,"M_{llll}",100,80,180,"Mllll ~ m_{H}");
-		 MSPlot["NofElectrons_bf"]=new MultiSamplePlot(datasets,"NofElectrons_bf",7, -0.5, 6.5,"Nb of electrons");
-		MSPlot["NofMuons_bf"]=new MultiSamplePlot(datasets,"NofMuons_bf",7, -0.5, 6.5,"Nb of muons");
-		MSPlot["NofElectrons_af"]=new MultiSamplePlot(datasets,"NofElectrons_af",7, -0.5, 6.5,"Nb of electrons");
-		MSPlot["NofMuons_af"]=new MultiSamplePlot(datasets,"NofMuons_af",7, -0.5, 6.5,"Nb of muons");
-	}
+	
+	
 	
 	
 	//////////////////  Cut flow histograms	/////////////////////////////
@@ -385,51 +352,51 @@ int main(int argc, char *argv[]){
 		string datasetName = datasets[d]->Name(); 
 		
 		char datasetNamechar[900];
-		if(datasetName.find("GluGluHiggs4lep")!=string::npos) {sprintf(datasetNamechar,"GluGluHiggs4lep");}
-		if(datasetName.find("Wjets")!=string::npos || datasetName.find("wjets")!=string::npos) {sprintf(datasetNamechar,"Wjets");}
 		if(datasetName.find("W_1Jets")!=string::npos) {sprintf(datasetNamechar,"W_1Jets");}
 		if(datasetName.find("W_2Jets")!=string::npos) {sprintf(datasetNamechar,"W_2Jets");}
 		if(datasetName.find("W_3Jets")!=string::npos) {sprintf(datasetNamechar,"W_3Jets");}
 		if(datasetName.find("W_4Jets")!=string::npos) {sprintf(datasetNamechar,"W_4Jets");}
-		
-		if(datasetName.find("WW")!=string::npos || datasetName.find("ww")!=string::npos) {sprintf(datasetNamechar,"WW");}
-                if(datasetName.find("WZ")!=string::npos || datasetName.find("wz")!=string::npos) {sprintf(datasetNamechar,"WZ");}
-                if(datasetName.find("ZZ")!=string::npos || datasetName.find("zz")!=string::npos) {sprintf(datasetNamechar,"ZZ");}
 		if(datasetName.find("WW_To2L2Nu")!=string::npos) {sprintf(datasetNamechar,"WW_To2L2Nu");}
 		if(datasetName.find("WZ_To2L2Q")!=string::npos) {sprintf(datasetNamechar,"WZ_To2L2Q");}
 		if(datasetName.find("WZ_To3LNu")!=string::npos) {sprintf(datasetNamechar,"WZ_To3LNu");}
 		if(datasetName.find("ZZ_To2L2Nu")!=string::npos) {sprintf(datasetNamechar,"ZZ_To2L2Nu");}
 		if(datasetName.find("ZZ_To2L2Q")!=string::npos) {sprintf(datasetNamechar,"ZZ_To2L2Q");}
 		if(datasetName.find("ZZ_To4L")!=string::npos) {sprintf(datasetNamechar,"ZZ_To4L");}
-		
-		if(datasetName.find("ST_T_s-ch")!=string::npos) {sprintf(datasetNamechar,"ST_T_s-ch");}
-                if(datasetName.find("ST_TBar_s-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBar_s-ch");}
 		if(datasetName.find("ST_T_t-ch")!=string::npos) {sprintf(datasetNamechar,"ST_T_t-ch");}
 		if(datasetName.find("ST_Tbar_t-ch")!=string::npos) {sprintf(datasetNamechar,"ST_Tbar_t-ch");}
-		if(datasetName.find("ST_T_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_T_tW-ch");}
-                if(datasetName.find("ST_TBar_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBar_tW-ch");}
 		if(datasetName.find("ST_TToDilepton_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TToDilepton_tW-ch");}
 		if(datasetName.find("ST_TToTlepWhad_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TToTlepWhad_tW-ch");}
 		if(datasetName.find("ST_TToThadWlep_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TToThadWlep_tW-ch");}
 		if(datasetName.find("ST_TBarToDilepton_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBarToDilepton_tW-ch");}
 		if(datasetName.find("ST_TBarToTlepWhad_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBarToTlepWhad_tW-ch");}
 		if(datasetName.find("ST_TBarToThadWlep_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBarToThadWlep_tW-ch");}
-		
 		if(datasetName.find("TT_SemiLeptMGDecays")!=string::npos) {sprintf(datasetNamechar,"TT_SemiLeptMGDecays");}
 		if(datasetName.find("TT_FullLeptMGDecays")!=string::npos) {sprintf(datasetNamechar,"TT_FullLeptMGDecays");}
 		if(datasetName.find("TT_HadronicMGDecays")!=string::npos) {sprintf(datasetNamechar,"TT_HadronicMGDecays");}
-		if(datasetName.find("TTJets")!=string::npos) {sprintf(datasetNamechar,"TTJets");}
-		
-		if(datasetName.find("TTZ")!=string::npos) {sprintf(datasetNamechar,"TTZ");}
-		if(datasetName.find("TTW")!=string::npos) {sprintf(datasetNamechar,"TTW");}
-		
 		if(datasetName.find("Z_M-10To50")!=string::npos) {sprintf(datasetNamechar,"Z_M-10To50");}
 		if(datasetName.find("Z_M-50")!=string::npos) {sprintf(datasetNamechar,"Z_M-50");}
 		if(datasetName.find("Z_1Jets")!=string::npos) {sprintf(datasetNamechar,"Z_1Jets");}
 		if(datasetName.find("Z_2Jets")!=string::npos) {sprintf(datasetNamechar,"Z_2Jets");}
 		if(datasetName.find("Z_3Jets")!=string::npos) {sprintf(datasetNamechar,"Z_3Jets");}
 		if(datasetName.find("Z_4Jets")!=string::npos) {sprintf(datasetNamechar,"Z_4Jets");}
-			
+		if(datasetName.find("TTZ")!=string::npos) {sprintf(datasetNamechar,"TTZ");}
+		if(datasetName.find("TTW")!=string::npos) {sprintf(datasetNamechar,"TTW");}
+		if(datasetName.find("ttbar")!=string::npos) {sprintf(datasetNamechar,"ttbar");}
+                if(datasetName.find("ttbar_fullLept")!=string::npos) {sprintf(datasetNamechar,"ttbar_fullLept");}
+                if(datasetName.find("ttbar_semiLept")!=string::npos) {sprintf(datasetNamechar,"ttbar_semiLept");}
+                if(datasetName.find("Wjets")!=string::npos || datasetName.find("wjets")!=string::npos) {sprintf(datasetNamechar,"wjets");}
+                if(datasetName.find("ttt")!=string::npos) {sprintf(datasetNamechar,"ttt");}
+                if(datasetName.find("ttW")!=string::npos) {sprintf(datasetNamechar,"ttw");}
+                if(datasetName.find("WW")!=string::npos || datasetName.find("ww")!=string::npos) {sprintf(datasetNamechar,"ww");}
+                if(datasetName.find("WZ")!=string::npos || datasetName.find("wz")!=string::npos) {sprintf(datasetNamechar,"wz");}
+                if(datasetName.find("ZZ")!=string::npos || datasetName.find("zz")!=string::npos) {sprintf(datasetNamechar,"zz");}
+                if(datasetName.find("ttZ")!=string::npos || datasetName.find("ttz")!=string::npos) {sprintf(datasetNamechar,"ttz");}
+                if(datasetName.find("Zjets")!=string::npos || datasetName.find("zjets")!=string::npos) {sprintf(datasetNamechar,"Zjets");}
+                if(datasetName.find("ST_T_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_T_tW-ch");}
+                if(datasetName.find("ST_TBar_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBar_tW-ch");}
+		if(datasetName.find("ST_T_s-ch")!=string::npos) {sprintf(datasetNamechar,"ST_T_s-ch");}
+                if(datasetName.find("ST_TBar_s-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBar_s-ch");}
+		
 		if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");
 			is_signal = true;
@@ -622,57 +589,10 @@ int main(int argc, char *argv[]){
 				if(debug)	cout << "[PROCES]	out fill 3L loop" << endl; 
 			}
 			
-			bool additional_3L = false; 
-			
-			if(channel.find("3L")!=string::npos && Passed_selection)
-			{
-				
-				if(met_pt>45)
-				{
-					MSPlot["MScutflow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor);
-							
-				}
-				else
-				{
-					
-				    
-				      MSPlot["MScutflow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor);
-				
-				}
-			     
-			        if(selectedJets.size()>3)
-				{
-					// in t(bW)t(qH) --> b vl qZ(ll)Z(qq)  loop
-				  	MSPlot["MScutflow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor);
-				
-				
-				}	
-				else 
-				{
-					 MSPlot["MScutflow"]->Fill(6, datasets[d], true, Luminosity*scaleFactor);
-				
-				}
-				
-				
-				additional_3L = true; 
-			
-			
-			
-			
-			}
-			
-			
-			
-			
-			
-			
-			
-			
-			
 			//exactly 4 leptons
 			if(channel.find("4L")!=string::npos)
 			{
-				
+				chan3L4L = true;
 				if(debug) cout << "[PROCES]	in 4L channel" << endl;
 				
 				if(looseElectrons.size() + looseMuons.size() == 4)
@@ -697,227 +617,13 @@ int main(int argc, char *argv[]){
 				if(debug)	cout << "[PROCES]	out fill 4L loop" << endl; 
 			}
 	
-		
-			// adding additional cuts
-			bool additional_4L = false; 
-			bool leptonFromZcut_4L = false; 
-			double mllll =0; 
-			
-			TLorentzVector leptonpair_4L_mll_1;
-			TLorentzVector leptonpair_4L_mll_2;
-			TLorentzVector leptonpair_4L_mllll;
-			TLorentzVector lepton_4L_0;
-			TLorentzVector lepton_4L_1;
-			TLorentzVector lepton_4L_2;
-			TLorentzVector lepton_4L_3;
-			lepton_4L_0.Clear(); 
-			lepton_4L_1.Clear();
-			lepton_4L_2.Clear();
-			lepton_4L_3.Clear();
-			leptonpair_4L_mll_1.Clear();
-			leptonpair_4L_mll_2.Clear();
-			leptonpair_4L_mllll.Clear();
-
-			if(channel.find("4L")!=string::npos && Passed_selection)
-			 {
-			    MSPlot["NofElectrons_bf"]->Fill(looseElectrons.size(), datasets[d], true, Luminosity*scaleFactor);
-			    MSPlot["NofMuons_bf"]->Fill(looseMuons.size(), datasets[d], true, Luminosity*scaleFactor);
-			   //select ZZ events, muon flavours come in pairs
-			   if( looseMuons.size() == 2 || looseMuons.size() == 0 || looseMuons.size() == 4)
-			   {
-			        
-			   	
-					MSPlot["MScutflow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor);
-					leptonFromZcut_4L = true;
-					MSPlot["NofElectrons_af"]->Fill(looseElectrons.size(), datasets[d], true, Luminosity*scaleFactor);
-			   	        MSPlot["NofMuons_af"]->Fill(looseMuons.size(), datasets[d], true, Luminosity*scaleFactor);
-				
-				  	
-			   }
-			   
-			}
-			
-			//define mllll
-			if(leptonFromZcut_4L)
-			{   
-			   bool leptonsFound = false; 
-			    //form higgs mass sample 
-			   if(looseMuons.size() == 0)
-			   {
-			     lepton_4L_0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
-			     lepton_4L_1.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
-			     lepton_4L_2.SetPxPyPzE(looseElectrons[2]->Px(),looseElectrons[2]->Py(),looseElectrons[2]->Pz(),looseElectrons[2]->Energy());
-			     lepton_4L_3.SetPxPyPzE(looseElectrons[3]->Px(),looseElectrons[3]->Py(),looseElectrons[3]->Pz(),looseElectrons[3]->Energy());
-			   
-			     leptonpair_4L_mll_1 = lepton_4L_0 + lepton_4L_1; 
-			     leptonpair_4L_mll_2 = lepton_4L_2 + lepton_4L_3;
-			     leptonpair_4L_mllll = leptonpair_4L_mll_1 + leptonpair_4L_mll_2;
-			     leptonsFound = true; 
-			   }
-			   if(looseElectrons.size() == 0)
-			   {
-			     lepton_4L_0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
-			     lepton_4L_1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
-			     lepton_4L_2.SetPxPyPzE(looseMuons[2]->Px(),looseMuons[2]->Py(),looseMuons[2]->Pz(),looseMuons[2]->Energy());
-			     lepton_4L_3.SetPxPyPzE(looseMuons[3]->Px(),looseMuons[3]->Py(),looseMuons[3]->Pz(),looseMuons[3]->Energy());
-			   
-			     leptonpair_4L_mll_1 = lepton_4L_0 + lepton_4L_1; 
-			     leptonpair_4L_mll_2 = lepton_4L_2 + lepton_4L_3;
-			     leptonpair_4L_mllll = leptonpair_4L_mll_1 + leptonpair_4L_mll_2;
-			     leptonsFound = true;
-			   
-			   }
-			   if(looseElectrons.size() == 2)
-			   {
-			     lepton_4L_0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
-			     lepton_4L_1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
-			     lepton_4L_2.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
-			     lepton_4L_3.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
-			   
-			     leptonpair_4L_mll_1 = lepton_4L_0 + lepton_4L_1; 
-			     leptonpair_4L_mll_2 = lepton_4L_2 + lepton_4L_3;
-			     leptonpair_4L_mllll = leptonpair_4L_mll_1 + leptonpair_4L_mll_2;
-			     leptonsFound = true;
-			   
-			   }
-			   
-			   if(leptonsFound)
-			   {
-			    
-			   	mllll = leptonpair_4L_mllll.M();
-			  	MSPlot["Mllll"]->Fill(mllll, datasets[d], true, Luminosity*scaleFactor);
-				
-				if(fabs(mllll-mH)<10)
-				{
-					MSPlot["MScutflow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor);
-					
-					
-					if(selectedJets.size()>3)
-					{
-					    MSPlot["MScutflow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor);
-					    additional_4L = true;
-					}
-				}
-				if(fabs(mllll-mH)<5)
-				{
-					MSPlot["MScutflow"]->Fill(6, datasets[d], true, Luminosity*scaleFactor);
-					
-					
-					if(selectedJets.size()>3)
-					{
-					    MSPlot["MScutflow"]->Fill(7, datasets[d], true, Luminosity*scaleFactor);
-					   // additional_4L = true;
-					}
-				}
-		           }	
-			   	 
-			 	
-			   			 	
-			 
-			}
-			
-			if(channel.find("45")!=string::npos)
-			{
-				
-				if(debug) cout << "[PROCES]	in 45 channel" << endl;
-				
-				if(looseElectrons.size() + looseMuons.size() > 3)
-				{ 
-					if(debug) cout << "[PROCES]	fill 45" << endl;
-					
-					//fill histograms
-					if(!is_signal)	histo1D["cutflow_total_B"]->Fill(2);
-					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
-					
-					MSPlot["MScutflow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor);
-					//label histograms
-					if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, ">3L");
-					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, ">3L");
-					
-					Passed_selection = true;
-									
-					if(debug) cout << "[PROCES]	filled 45" << endl;
-					
-					
-				}
-				if(debug)	cout << "[PROCES]	out fill 45 loop" << endl; 
-			}
-			
-			bool additional_45 = true;
-			if(channel.find("45")!=string::npos && Passed_selection)
-			{
-			   if(selectedJets.size()>0)
-			   {
-			        MSPlot["MScutflow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor);
-			       if(selectedBJets_CSVM.size()>0)
-			       {
-			          MSPlot["MScutflow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor);
-			         
-			       }
-			   
-			   }
-			  
-			}  
-			if(channel.find("5L")!=string::npos)
-			{
-				
-				if(debug) cout << "[PROCES]	in 5L channel" << endl;
-				
-				if(looseElectrons.size() + looseMuons.size() == 5)
-				{ 
-					if(debug) cout << "[PROCES]	fill 5L" << endl;
-					
-					//fill histograms
-					if(!is_signal)	histo1D["cutflow_total_B"]->Fill(2);
-					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
-					
-					MSPlot["MScutflow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor);
-					//label histograms
-					if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "5L");
-					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "5L");
-					
-					Passed_selection = true;
-									
-					if(debug) cout << "[PROCES]	filled 5L" << endl;
-					
-					
-				}
-				if(debug)	cout << "[PROCES]	out fill 5L loop" << endl; 
-			}
-			
-			
-			//additional cuts
-			bool additional_5L = false; 
-			if(channel.find("5L")!=string::npos && Passed_selection)
-			{
-				if(selectedJets.size()>1)
-				{
-			           MSPlot["MScutflow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor);
-				   additional_5L = true;
-				  if(selectedBJets_CSVM.size()>0)
-				  {
-				    MSPlot["MScutflow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor);
-				     
-				  }
-			        }
-			   
-			}
-			
-			
-
-
 
 			//////////////////////////////////////////////////////////////////////////////////
 			// Filling histograms 							//////////
 			//////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-			
-			if(additional_4L || additional_5L || additional_3L ||additional_45)
-			{
+	
+			if(Passed_selection){
 				if(debug) cout << "[PROCES]	In passed_selection loop" << endl; 
 				
 				MSPlot["NbOfSelectedJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
@@ -958,7 +664,8 @@ int main(int argc, char *argv[]){
 				}
 				
 				if( selectedBJets_CSVM.size() > 0) {
-					MSPlot["Pt_leading_Bjet_CSVM"]->Fill(selectedBJets_CSVM[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+					if(chan3L4L) MSPlot["MScutflow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor);
+                                	MSPlot["Pt_leading_Bjet_CSVM"]->Fill(selectedBJets_CSVM[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
                                 }
 				if( selectedBJets_CSVT.size() > 0)
 				{
@@ -980,8 +687,14 @@ int main(int argc, char *argv[]){
 				{	
 				  	MSPlot["Pt_3d_leading_Bjet_CSVT"]->Fill(selectedBJets_CSVT[2]->Pt(), datasets[d],true,Luminosity*scaleFactor);
 				}
+				if( selectedBJets_CSVM.size() > 0 && selectedJets.size()>1) {
+					MSPlot["MScutflow"]->Fill(7, datasets[d], true, Luminosity*scaleFactor);
+                                }
+				if( selectedBJets_CSVT.size() > 0 && selectedJets.size()>1)
+				{
+					MSPlot["MScutflow"]->Fill(8, datasets[d], true, Luminosity*scaleFactor);
+				}
 				
-				/*
 				double mll = 0; 
 				TLorentzVector leptonpair_mll;
 				TLorentzVector lepton0;
@@ -1050,7 +763,7 @@ int main(int argc, char *argv[]){
 						}
 						
 					}
-					elsoe if (pt_muon0 > pt_electron0)
+					else if (pt_muon0 > pt_electron0)
 					{
 						lepton0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
 						if(pt_electron0 > pt_muon1)
@@ -1140,7 +853,7 @@ int main(int argc, char *argv[]){
 					if(debug) cout << "[PROCES]	in looseMuons.size() == 1 && looseElectrons.size() == 1" << endl; 
 					lepton0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
 					lepton1.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
-					lepotonpair_mll = lepton0+lepton1;
+					leptonpair_mll = lepton0+lepton1;
 					MSPlot["Pt_leading_lepton"]->Fill(lepton0.Pt(),datasets[d], true, Luminosity*scaleFactor);
 					MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
 				}
@@ -1155,17 +868,113 @@ int main(int argc, char *argv[]){
 					MSPlot["Mll"]->Fill(mll,datasets[d],true,Luminosity*scaleFactor);
 				}
 				
-				*/
+				
 				
 			}
-			
 			//end passed selection loop
 			
 			
 			
 			
 			
-
+			
+			// adding additional cuts
+			if(Passed_selection && chan3L4L )
+			{
+			     if(met_pt>40){
+			     	MSPlot["MScutflow"]->Fill(9, datasets[d], true, Luminosity*scaleFactor);
+				
+				if(selectedBJets_CSVM.size() > 0 && selectedJets.size()>1)
+				{
+				     MSPlot["MScutflow"]->Fill(10, datasets[d], true, Luminosity*scaleFactor);
+				}
+			     }
+			
+			}
+			if(Passed_selection && channel.find("3L")!=string::npos )
+			{
+			     bool cH = false; 
+			     if(selectedBJets_CSVM.size() == 1)
+				{
+					MSPlot["MScutflow"]->Fill(9, datasets[d], true, Luminosity*scaleFactor);
+					//gives cZ + cH
+				}
+			     if(selectedBJets_CSVM.size() > 1)
+				{
+					cH = true;
+					MSPlot["MScutflow"]->Fill(10, datasets[d], true, Luminosity*scaleFactor);
+					//gives cH
+				}
+			     if(selectedBJets_CSVM.size() > 1 && selectedJets.size()>5)
+				{
+					MSPlot["MScutflow"]->Fill(11, datasets[d], true, Luminosity*scaleFactor);
+					//gives cH
+				}
+				if(selectedBJets_CSVM.size() == 1 && met_pt < 80)
+				{
+					MSPlot["MScutflow"]->Fill(12, datasets[d], true, Luminosity*scaleFactor);
+					//gives cZ 
+				}
+				if(selectedBJets_CSVM.size() == 1 && met_pt > 80)
+				{
+					cH = true; 
+					MSPlot["MScutflow"]->Fill(13, datasets[d], true, Luminosity*scaleFactor);
+					//gives cH
+				}
+				if(cH)
+				{
+				    MSPlot["MScutflow"]->Fill(14, datasets[d], true, Luminosity*scaleFactor);
+				
+				}
+			
+			}
+			if(channel.find("4L")!=string::npos && Passed_selection)
+			 {
+			 	
+			 	if(selectedLightJets.size() > 0)
+				{
+					MSPlot["MScutflow"]->Fill(9, datasets[d], true, Luminosity*scaleFactor);
+				
+				}
+				if(selectedBJets_CSVM.size() != 2)
+				{
+				   	MSPlot["MScutflow"]->Fill(10, datasets[d], true, Luminosity*scaleFactor);
+				
+				}
+				if(selectedBJets_CSVM.size() != 2 && selectedLightJets.size() > 0)
+				{
+				   	MSPlot["MScutflow"]->Fill(11, datasets[d], true, Luminosity*scaleFactor);
+				
+				}
+				
+				if(looseMuons.size()+looseElectrons.size() < 5)
+				{
+					// #lepons = 4
+					
+					MSPlot["NbOfBJets_4L4_CSVM"]->Fill(selectedBJets_CSVM.size(),datasets[d],true,Luminosity*scaleFactor);
+					MSPlot["NbOfBJets_4L4_CSVT"]->Fill(selectedBJets_CSVT.size(),datasets[d],true,Luminosity*scaleFactor);
+					// #bjets should be 1 + Z(bb) = 3
+					MSPlot["NbOfJets_4L4"]->Fill(selectedJets.size(),datasets[d],true,Luminosity*scaleFactor);  
+					// #jets should be 4
+					MSPlot["MET_4L4"]->Fill((float) met_pt, datasets[d], true, Luminosity*scaleFactor);
+					// MET should be zero
+				}
+				if(looseMuons.size()+looseElectrons.size() == 5)
+				{
+					// #leptons = 5
+					
+					MSPlot["NbOfBJets_4L5_CSVM"]->Fill(selectedBJets_CSVM.size(),datasets[d],true,Luminosity*scaleFactor);
+					MSPlot["NbOfBJets_4L5_CSVT"]->Fill(selectedBJets_CSVT.size(),datasets[d],true,Luminosity*scaleFactor);
+					// #bjets should be 1 
+					MSPlot["NbOfJets_4L5"]->Fill(selectedJets.size(),datasets[d],true,Luminosity*scaleFactor);  
+					// #jets should be 2
+					MSPlot["MET_4L5"]->Fill((float) met_pt, datasets[d], true, Luminosity*scaleFactor);
+					// MET should be half the mass of a W boson
+				
+				}
+			 	
+			 
+			 }
 			
 	
 		}
