@@ -307,11 +307,18 @@ int main(int argc, char *argv[]){
 	MSPlot["NbOfSelectedLightJets"] = new MultiSamplePlot(datasets,"NbOfSelectedLightJets", 8, -0.5, 7.5, "Nb. of light jets");
 	MSPlot["NbOfSelectedBJets_CSVM"] = new MultiSamplePlot(datasets,"NbOfSelectedBJets_CSVM", 5, -0.5, 4.5, "Nb. of medium Bjets");
     	MSPlot["NbOfSelectedBJets_CSVT"] = new MultiSamplePlot(datasets,"NbOfSelectedBJets_CSVT", 4, -0.5, 3.5, "Nb. of tight Bjets");
-	MSPlot["NbOfSelectedLeptons"] = new MultiSamplePlot(datasets,"NbOfSelectedLeptons", 3, -0.5, 2.5, "Nb. of leptons");
+	MSPlot["NbOfSelectedLeptons"] = new MultiSamplePlot(datasets,"NbOfSelectedLeptons", 7, 0.5, 7.5, "Nb. of leptons");
     	MSPlot["MET"] = new MultiSamplePlot(datasets, "MET", 40, 0., 160., "MET");
 	MSPlot["JetEta"] = new MultiSamplePlot(datasets, "JetEta", 15,-3., 3., "Jet #eta");
     	MSPlot["JetPhi"] = new MultiSamplePlot(datasets, "JetPhi", 25, -4., 4., "Jet #phi");
-	//MSPlot["Mll"] = new MultiSamplePlot(datasets,"Mll",25,60,240,"Mll of leading and second leading lepton");
+	MSPlot["JetHt"] = new MultiSamplePlot(datasets, "JetHt", 125, 0., 500, "Sum of Jet Pt");
+	MSPlot["LepHt"] = new MultiSamplePlot(datasets, "LepHt", 125, 0., 500, "Sum of Lep Pt");
+	MSPlot["JetPx"] = new MultiSamplePlot(datasets, "JetPx", 100, -200, 200, "Sum of Jet Px");
+	MSPlot["LepPx"] = new MultiSamplePlot(datasets, "LepPx", 100, -200, 200, "Sum of Lep Px");
+	MSPlot["JetPy"] = new MultiSamplePlot(datasets, "JetPy", 100, -200, 200, "Sum of Jet Py");
+	MSPlot["LepPy"] = new MultiSamplePlot(datasets, "LepPy", 100, -200, 200, "Sum of Lep Py");
+	MSPlot["DeltaPhi_LJ"]= new MultiSamplePlot(datasets, "DeltaPhi_LJ", 50,0, 6, "DeltaPhi Jets-Leptons");
+	
 	MSPlot["Pt_2nd_leading_Bjet_CSVM"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_Bjet_CSVM",10,30,120,"Pt 2nd leading Bjet M"); 
 	MSPlot["Pt_2nd_leading_Bjet_CSVT"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_Bjet_CSVT",10,30,120,"Pt 2nd leading Bjet T"); 
 	MSPlot["Pt_2nd_leading_jet"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_jet",10,20,100,"Pt 2nd leading jet");
@@ -330,13 +337,22 @@ int main(int argc, char *argv[]){
 	MSPlot["Pt_4th_leading_Bjet_CSVT"] = new MultiSamplePlot(datasets,"Pt_4th_leading_Bjet_CSVT",100,0,200,"Pt fourth leading Bjet_CSVT"); 
 
 	
-	if(channel.find("4L")!=string::npos)
+	if(channel.find("4L")!=string::npos || channel.find("45")!=string::npos)
 	{
+		MSPlot["MllW"] = new MultiSamplePlot(datasets,"M_{l#nu}",100,80,180,"M_{l#nu} ~ m_{W}");
 		 MSPlot["Mllll"] = new MultiSamplePlot(datasets,"M_{llll}",100,80,180,"Mllll ~ m_{H}");
 		 MSPlot["NofElectrons_bf"]=new MultiSamplePlot(datasets,"NofElectrons_bf",7, -0.5, 6.5,"Nb of electrons");
 		MSPlot["NofMuons_bf"]=new MultiSamplePlot(datasets,"NofMuons_bf",7, -0.5, 6.5,"Nb of muons");
 		MSPlot["NofElectrons_af"]=new MultiSamplePlot(datasets,"NofElectrons_af",7, -0.5, 6.5,"Nb of electrons");
 		MSPlot["NofMuons_af"]=new MultiSamplePlot(datasets,"NofMuons_af",7, -0.5, 6.5,"Nb of muons");
+		MSPlot["NofElectrons_bf_4L"]=new MultiSamplePlot(datasets,"NofElectrons_bf_4L",7, -0.5, 6.5,"Nb of electrons");
+		MSPlot["NofMuons_bf_4L"]=new MultiSamplePlot(datasets,"NofMuons_bf_4L",7, -0.5, 6.5,"Nb of muons");
+		MSPlot["NofElectrons_af_4L"]=new MultiSamplePlot(datasets,"NofElectrons_af_4L",7, -0.5, 6.5,"Nb of electrons");
+		MSPlot["NofMuons_af_4L"]=new MultiSamplePlot(datasets,"NofMuons_af_4L",7, -0.5, 6.5,"Nb of muons");
+		MSPlot["NofElectrons_bf_5L"]=new MultiSamplePlot(datasets,"NofElectrons_bf_5L",7, -0.5, 6.5,"Nb of electrons");
+		MSPlot["NofMuons_bf_5L"]=new MultiSamplePlot(datasets,"NofMuons_bf_5L",7, -0.5, 6.5,"Nb of muons");
+		MSPlot["NofElectrons_af_5L"]=new MultiSamplePlot(datasets,"NofElectrons_af_5L",7, -0.5, 6.5,"Nb of electrons");
+		MSPlot["NofMuons_af_5L"]=new MultiSamplePlot(datasets,"NofMuons_af_5L",7, -0.5, 6.5,"Nb of muons");
 	}
 	
 	
@@ -669,152 +685,7 @@ int main(int argc, char *argv[]){
 			
 			
 			
-			//exactly 4 leptons
-			if(channel.find("4L")!=string::npos)
-			{
-				
-				if(debug) cout << "[PROCES]	in 4L channel" << endl;
-				
-				if(looseElectrons.size() + looseMuons.size() == 4)
-				{ 
-					if(debug) cout << "[PROCES]	fill 4L" << endl;
-					
-					//fill histograms
-					if(!is_signal)	histo1D["cutflow_total_B"]->Fill(2);
-					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
-					
-					MSPlot["MScutflow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor);
-					//label histograms
-					if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "4L");
-					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "4L");
-					
-					Passed_selection = true;
-									
-					if(debug) cout << "[PROCES]	filled 4L" << endl;
-					
-					
-				}
-				if(debug)	cout << "[PROCES]	out fill 4L loop" << endl; 
-			}
-	
-		
-			// adding additional cuts
-			bool additional_4L = false; 
-			bool leptonFromZcut_4L = false; 
-			double mllll =0; 
 			
-			TLorentzVector leptonpair_4L_mll_1;
-			TLorentzVector leptonpair_4L_mll_2;
-			TLorentzVector leptonpair_4L_mllll;
-			TLorentzVector lepton_4L_0;
-			TLorentzVector lepton_4L_1;
-			TLorentzVector lepton_4L_2;
-			TLorentzVector lepton_4L_3;
-			lepton_4L_0.Clear(); 
-			lepton_4L_1.Clear();
-			lepton_4L_2.Clear();
-			lepton_4L_3.Clear();
-			leptonpair_4L_mll_1.Clear();
-			leptonpair_4L_mll_2.Clear();
-			leptonpair_4L_mllll.Clear();
-
-			if(channel.find("4L")!=string::npos && Passed_selection)
-			 {
-			    MSPlot["NofElectrons_bf"]->Fill(looseElectrons.size(), datasets[d], true, Luminosity*scaleFactor);
-			    MSPlot["NofMuons_bf"]->Fill(looseMuons.size(), datasets[d], true, Luminosity*scaleFactor);
-			   //select ZZ events, muon flavours come in pairs
-			   if( looseMuons.size() == 2 || looseMuons.size() == 0 || looseMuons.size() == 4)
-			   {
-			        
-			   	
-					MSPlot["MScutflow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor);
-					leptonFromZcut_4L = true;
-					MSPlot["NofElectrons_af"]->Fill(looseElectrons.size(), datasets[d], true, Luminosity*scaleFactor);
-			   	        MSPlot["NofMuons_af"]->Fill(looseMuons.size(), datasets[d], true, Luminosity*scaleFactor);
-				
-				  	
-			   }
-			   
-			}
-			
-			//define mllll
-			if(leptonFromZcut_4L)
-			{   
-			   bool leptonsFound = false; 
-			    //form higgs mass sample 
-			   if(looseMuons.size() == 0)
-			   {
-			     lepton_4L_0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
-			     lepton_4L_1.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
-			     lepton_4L_2.SetPxPyPzE(looseElectrons[2]->Px(),looseElectrons[2]->Py(),looseElectrons[2]->Pz(),looseElectrons[2]->Energy());
-			     lepton_4L_3.SetPxPyPzE(looseElectrons[3]->Px(),looseElectrons[3]->Py(),looseElectrons[3]->Pz(),looseElectrons[3]->Energy());
-			   
-			     leptonpair_4L_mll_1 = lepton_4L_0 + lepton_4L_1; 
-			     leptonpair_4L_mll_2 = lepton_4L_2 + lepton_4L_3;
-			     leptonpair_4L_mllll = leptonpair_4L_mll_1 + leptonpair_4L_mll_2;
-			     leptonsFound = true; 
-			   }
-			   if(looseElectrons.size() == 0)
-			   {
-			     lepton_4L_0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
-			     lepton_4L_1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
-			     lepton_4L_2.SetPxPyPzE(looseMuons[2]->Px(),looseMuons[2]->Py(),looseMuons[2]->Pz(),looseMuons[2]->Energy());
-			     lepton_4L_3.SetPxPyPzE(looseMuons[3]->Px(),looseMuons[3]->Py(),looseMuons[3]->Pz(),looseMuons[3]->Energy());
-			   
-			     leptonpair_4L_mll_1 = lepton_4L_0 + lepton_4L_1; 
-			     leptonpair_4L_mll_2 = lepton_4L_2 + lepton_4L_3;
-			     leptonpair_4L_mllll = leptonpair_4L_mll_1 + leptonpair_4L_mll_2;
-			     leptonsFound = true;
-			   
-			   }
-			   if(looseElectrons.size() == 2)
-			   {
-			     lepton_4L_0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
-			     lepton_4L_1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
-			     lepton_4L_2.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
-			     lepton_4L_3.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
-			   
-			     leptonpair_4L_mll_1 = lepton_4L_0 + lepton_4L_1; 
-			     leptonpair_4L_mll_2 = lepton_4L_2 + lepton_4L_3;
-			     leptonpair_4L_mllll = leptonpair_4L_mll_1 + leptonpair_4L_mll_2;
-			     leptonsFound = true;
-			   
-			   }
-			   
-			   if(leptonsFound)
-			   {
-			    
-			   	mllll = leptonpair_4L_mllll.M();
-			  	MSPlot["Mllll"]->Fill(mllll, datasets[d], true, Luminosity*scaleFactor);
-				
-				if(fabs(mllll-mH)<10)
-				{
-					MSPlot["MScutflow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor);
-					
-					
-					if(selectedJets.size()>3)
-					{
-					    MSPlot["MScutflow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor);
-					    additional_4L = true;
-					}
-				}
-				if(fabs(mllll-mH)<5)
-				{
-					MSPlot["MScutflow"]->Fill(6, datasets[d], true, Luminosity*scaleFactor);
-					
-					
-					if(selectedJets.size()>3)
-					{
-					    MSPlot["MScutflow"]->Fill(7, datasets[d], true, Luminosity*scaleFactor);
-					   // additional_4L = true;
-					}
-				}
-		           }	
-			   	 
-			 	
-			   			 	
-			 
-			}
 			
 			if(channel.find("45")!=string::npos)
 			{
@@ -828,11 +699,12 @@ int main(int argc, char *argv[]){
 					//fill histograms
 					if(!is_signal)	histo1D["cutflow_total_B"]->Fill(2);
 					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
+					if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, ">3L");
+					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, ">3L");
 					
 					MSPlot["MScutflow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor);
 					//label histograms
-					if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, ">3L");
-					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, ">3L");
+					
 					
 					Passed_selection = true;
 									
@@ -843,69 +715,335 @@ int main(int argc, char *argv[]){
 				if(debug)	cout << "[PROCES]	out fill 45 loop" << endl; 
 			}
 			
-			bool additional_45 = true;
+			bool additional_45 = false;
+			
+			bool leptons_45 = false; 
+			
+			double mllll_45 =0; 
+			double mllW_45=0;
+			
+			TLorentzVector leptonpair_45_mll_1;
+			TLorentzVector leptonpair_45_mll_2;
+			TLorentzVector leptonpair_45_mllll;
+			TLorentzVector leptonpair_45_mllW;
+			TLorentzVector lepton_45_0;
+			TLorentzVector lepton_45_1;
+			TLorentzVector lepton_45_2;
+			TLorentzVector lepton_45_3;
+			TLorentzVector lepton_45_4;
+			TLorentzVector Met_W; 
+			Met_W.Clear();
+			lepton_45_0.Clear(); 
+			lepton_45_1.Clear();
+			lepton_45_2.Clear();
+			lepton_45_3.Clear();
+			lepton_45_4.Clear();
+			leptonpair_45_mll_1.Clear();
+			leptonpair_45_mll_2.Clear();
+			leptonpair_45_mllll.Clear();
+
 			if(channel.find("45")!=string::npos && Passed_selection)
 			{
-			   if(selectedJets.size()>0)
-			   {
-			        MSPlot["MScutflow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor);
-			       if(selectedBJets_CSVM.size()>0)
-			       {
-			          MSPlot["MScutflow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor);
-			         
-			       }
-			   
+			    if(debug) cout << "in leptoncounting" << endl; 
+			    MSPlot["NofElectrons_bf"]->Fill(looseElectrons.size(), datasets[d], true, Luminosity*scaleFactor);
+			    MSPlot["NofMuons_bf"]->Fill(looseMuons.size(), datasets[d], true, Luminosity*scaleFactor);
+			   if(looseMuons.size()+looseElectrons.size() == 4){
+				 	MSPlot["NofElectrons_bf_4L"]->Fill(looseElectrons.size(), datasets[d], true, Luminosity*scaleFactor);
+			   	 	MSPlot["NofMuons_bf_4L"]->Fill(looseMuons.size(), datasets[d], true, Luminosity*scaleFactor);
 			   }
+			   if(looseMuons.size()+looseElectrons.size() == 5){
+				 	MSPlot["NofElectrons_bf_5L"]->Fill(looseElectrons.size(), datasets[d], true, Luminosity*scaleFactor);
+			   	 	MSPlot["NofMuons_bf_5L"]->Fill(looseMuons.size(), datasets[d], true, Luminosity*scaleFactor);
+			   }
+			   
+			   //select ZZ events, muon flavours come in pairs
+			   if(looseMuons.size()+ looseElectrons.size() == 5)
+			   {
+			   	Met_W.SetPxPyPzE(met_px,met_py,mets[0]->Pz(),mets[0]->Energy());
+				if(debug) cout << "defined met" << endl;
+				
+			   	if( looseMuons.size() == 2 & looseElectrons.size() == 3){ 
+			   		leptons_45=true; 
+				
+					lepton_45_0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+			     		lepton_45_1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
+			     		lepton_45_4.SetPxPyPzE(looseElectrons[2]->Px(),looseElectrons[2]->Py(),looseElectrons[2]->Pz(),looseElectrons[2]->Energy());
+			     		lepton_45_2.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+			       		lepton_45_3.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
+			   
+			       		leptonpair_45_mll_1 = lepton_45_0 + lepton_45_1; 
+			     		leptonpair_45_mll_2 = lepton_45_2 + lepton_45_3;
+			     		leptonpair_45_mllll = leptonpair_45_mll_1 + leptonpair_45_mll_2;
+					leptonpair_45_mllW = lepton_45_4 + Met_W;
+				
+			   	} 
+			   	if( looseMuons.size() == 3 & looseElectrons.size() == 2)
+			   	{
+			   		leptons_45=true; 
+				
+					lepton_45_3.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+			     		lepton_45_4.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
+			     		lepton_45_2.SetPxPyPzE(looseMuons[2]->Px(),looseMuons[2]->Py(),looseMuons[2]->Pz(),looseMuons[2]->Energy());
+			     		lepton_45_0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+			        	lepton_45_1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
+			   
+			       		leptonpair_45_mll_1 = lepton_45_0 + lepton_45_1; 
+			     		leptonpair_45_mll_2 = lepton_45_4 + lepton_45_3;
+			     		leptonpair_45_mllll = leptonpair_45_mll_1 + leptonpair_45_mll_2;
+					leptonpair_45_mllW = lepton_45_2 + Met_W;
+				
+			   	}
+			   	if( looseMuons.size() == 5 & looseElectrons.size() == 0)
+			   	{
+			   		leptons_45=true; 
+				
+					lepton_45_3.SetPxPyPzE(looseMuons[3]->Px(),looseMuons[3]->Py(),looseMuons[3]->Pz(),looseMuons[3]->Energy());
+			     		lepton_45_4.SetPxPyPzE(looseMuons[4]->Px(),looseMuons[4]->Py(),looseMuons[4]->Pz(),looseMuons[4]->Energy());
+			     		lepton_45_2.SetPxPyPzE(looseMuons[2]->Px(),looseMuons[2]->Py(),looseMuons[2]->Pz(),looseMuons[2]->Energy());
+			     		lepton_45_0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+			        	lepton_45_1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
+			   
+			                leptonpair_45_mll_1 = lepton_45_0 + lepton_45_1; 
+			     		leptonpair_45_mll_2 = lepton_45_2 + lepton_45_3;
+			     		leptonpair_45_mllll = leptonpair_45_mll_1 + leptonpair_45_mll_2;
+					leptonpair_45_mllW = lepton_45_4 + Met_W;
+			       
+				
+			   	}
+			   	if( looseMuons.size() == 0 & looseElectrons.size() == 5)
+			   	{
+			   		leptons_45=true; 
+				
+					lepton_45_3.SetPxPyPzE(looseElectrons[3]->Px(),looseElectrons[3]->Py(),looseElectrons[3]->Pz(),looseElectrons[3]->Energy());
+			     		lepton_45_4.SetPxPyPzE(looseElectrons[4]->Px(),looseElectrons[4]->Py(),looseElectrons[4]->Pz(),looseElectrons[4]->Energy());
+			     		lepton_45_2.SetPxPyPzE(looseElectrons[2]->Px(),looseElectrons[2]->Py(),looseElectrons[2]->Pz(),looseElectrons[2]->Energy());
+			     		lepton_45_0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+			        	lepton_45_1.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
+			   
+			                leptonpair_45_mll_1 = lepton_45_0 + lepton_45_1; 
+			     		leptonpair_45_mll_2 = lepton_45_2 + lepton_45_3;
+			     		leptonpair_45_mllll = leptonpair_45_mll_1 + leptonpair_45_mll_2;
+					leptonpair_45_mllW = lepton_45_4 + Met_W;
+			       
+				
+			   	}
+			   	if( looseMuons.size() == 4 & looseElectrons.size() == 1)
+			   	{
+			   		leptons_45=true; 
+				
+					lepton_45_3.SetPxPyPzE(looseMuons[3]->Px(),looseMuons[3]->Py(),looseMuons[3]->Pz(),looseMuons[3]->Energy());
+			     		lepton_45_4.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+			     		lepton_45_2.SetPxPyPzE(looseMuons[2]->Px(),looseMuons[2]->Py(),looseMuons[2]->Pz(),looseMuons[2]->Energy());
+			     		lepton_45_0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+			        	lepton_45_1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
+			   
+			   		leptonpair_45_mll_1 = lepton_45_0 + lepton_45_1; 
+			     		leptonpair_45_mll_2 = lepton_45_2 + lepton_45_3;
+			     		leptonpair_45_mllll = leptonpair_45_mll_1 + leptonpair_45_mll_2;
+			        	leptonpair_45_mllW = lepton_45_4 + Met_W;
+			       
+				
+			   	}
+			   	if( looseMuons.size() == 1 & looseElectrons.size() == 4)
+			   	{
+			   		leptons_45=true; 
+				
+					lepton_45_3.SetPxPyPzE(looseElectrons[2]->Px(),looseElectrons[2]->Py(),looseElectrons[2]->Pz(),looseElectrons[2]->Energy());
+			     		lepton_45_4.SetPxPyPzE(looseElectrons[3]->Px(),looseElectrons[3]->Py(),looseElectrons[3]->Pz(),looseElectrons[3]->Energy());
+			     		lepton_45_2.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
+			     		lepton_45_0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+			        	lepton_45_1.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+			   
+			        	leptonpair_45_mll_1 = lepton_45_2 + lepton_45_1; 
+			     		leptonpair_45_mll_2 = lepton_45_4 + lepton_45_3;
+			     		leptonpair_45_mllll = leptonpair_45_mll_1 + leptonpair_45_mll_2;
+			       		leptonpair_45_mllW = lepton_45_0 + Met_W;
+				
+			   	}
 			  
-			}  
-			if(channel.find("5L")!=string::npos)
+			   
+			   
+			}
+			else if(looseMuons.size()+ looseElectrons.size() == 4)
 			{
+		            if(debug) cout << "in 45 4L loop" << endl; 
+			   if( looseMuons.size() == 2 || looseMuons.size() == 0 || looseMuons.size() == 4)
+			   {
+			        
+				leptons_45= true;
+				if(looseMuons.size() == 0)
+			   	{
+			     		lepton_45_0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+			     		lepton_45_1.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
+			     		lepton_45_2.SetPxPyPzE(looseElectrons[2]->Px(),looseElectrons[2]->Py(),looseElectrons[2]->Pz(),looseElectrons[2]->Energy());
+			     		lepton_45_3.SetPxPyPzE(looseElectrons[3]->Px(),looseElectrons[3]->Py(),looseElectrons[3]->Pz(),looseElectrons[3]->Energy());
+			   
+			    	 	leptonpair_45_mll_1 = lepton_45_0 + lepton_45_1; 
+			     		leptonpair_45_mll_2 = lepton_45_2 + lepton_45_3;
+			     		leptonpair_45_mllll = leptonpair_45_mll_1 + leptonpair_45_mll_2;
+			   	}
+			   	if(looseElectrons.size() == 0)
+			   	{
+			     		lepton_45_0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+			     		lepton_45_1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
+			     		lepton_45_2.SetPxPyPzE(looseMuons[2]->Px(),looseMuons[2]->Py(),looseMuons[2]->Pz(),looseMuons[2]->Energy());
+			     		lepton_45_3.SetPxPyPzE(looseMuons[3]->Px(),looseMuons[3]->Py(),looseMuons[3]->Pz(),looseMuons[3]->Energy());
+			   
+			   		leptonpair_45_mll_1 = lepton_45_0 + lepton_45_1; 
+			     		leptonpair_45_mll_2 = lepton_45_2 + lepton_45_3;
+			     		leptonpair_45_mllll = leptonpair_45_mll_1 + leptonpair_45_mll_2;
+			   	}
+			   	if(looseElectrons.size() == 2)
+			   	{
+			     		lepton_45_0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+			     		lepton_45_1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
+			     		lepton_45_2.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+			     		lepton_45_3.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
+			      	
+					leptonpair_45_mll_1 = lepton_45_0 + lepton_45_1; 
+			     		leptonpair_45_mll_2 = lepton_45_2 + lepton_45_3;
+			     		leptonpair_45_mllll = leptonpair_45_mll_1 + leptonpair_45_mll_2;
+				}
+					
+				  	
+			   }
+			
+			
+			 }
+			}
+			
+			if(leptons_45)
+			{	
+				if(debug) cout << "in cutflow" << endl; 
+				 MSPlot["MScutflow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor);
+				 if(!is_signal)	histo1D["cutflow_total_B"]->Fill(3);
+				  if(is_signal) histo1D["cutflow_total_S"]->Fill(3);
+				  if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, "Zdecay");
+				  if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, "Zdecay");
+				 
+				 MSPlot["NofElectrons_af"]->Fill(looseElectrons.size(), datasets[d], true, Luminosity*scaleFactor);
+			   	 MSPlot["NofMuons_af"]->Fill(looseMuons.size(), datasets[d], true, Luminosity*scaleFactor);
+				 if(looseMuons.size()+looseElectrons.size() == 4){
+				 	MSPlot["NofElectrons_af_4L"]->Fill(looseElectrons.size(), datasets[d], true, Luminosity*scaleFactor);
+			   	 	MSPlot["NofMuons_af_4L"]->Fill(looseMuons.size(), datasets[d], true, Luminosity*scaleFactor);
+				}
+				if(looseMuons.size()+looseElectrons.size() == 5){
+				 	MSPlot["NofElectrons_af_5L"]->Fill(looseElectrons.size(), datasets[d], true, Luminosity*scaleFactor);
+			   	 	MSPlot["NofMuons_af_5L"]->Fill(looseMuons.size(), datasets[d], true, Luminosity*scaleFactor);
+				}
 				
-				if(debug) cout << "[PROCES]	in 5L channel" << endl;
+				mllll_45 = leptonpair_45_mllll.M();
+				mllW_45 = leptonpair_45_mllW.M();
+			  	MSPlot["Mllll"]->Fill(mllll_45, datasets[d], true, Luminosity*scaleFactor);
+				MSPlot["MllW"]->Fill(mllW_45, datasets[d], true, Luminosity*scaleFactor);
+				 	
+			}
+			if(fabs(mllll_45-mH) < 10 & leptons_45)
+			{
+				MSPlot["MScutflow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor);
+				if(!is_signal)	histo1D["cutflow_total_B"]->Fill(4);
+				if(is_signal) histo1D["cutflow_total_S"]->Fill(4);
+				if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5, "M_{H}^{reco}");
+				if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5, "M_{H}^{reco}");
+				 
+			}
+			
+			if(channel.find("45")!=string::npos && Passed_selection)
+			{
+				if(debug) cout << "In pt px py loop" << endl; 
+				TLorentzVector Leptons; 
+				TLorentzVector Jets;
+				Leptons.Clear();
+				Jets.Clear(); 
+				double Ht_jet = 0; 
+				double Ht_lep = 0; 
+				double Px_jet = 0;
+				double Px_lep = 0;
+				double Py_jet = 0;
+				double Py_lep = 0; 
+				double DeltaPhi = 0; 
+				for (Int_t seljet1 =0; seljet1 < selectedJets.size(); seljet1++ ){
+				     if(debug) cout << "in jets" << endl; 
+			             Ht_jet += selectedJets[seljet1]->Pt();
+				     TLorentzVector tempJet; 
+				     tempJet.Clear();
+				     tempJet.SetPxPyPzE(selectedJets[seljet1]->Px(),selectedJets[seljet1]->Py(),selectedJets[seljet1]->Pz(),selectedJets[seljet1]->Energy());
+				     Jets += tempJet; 
+			        }
+				for (Int_t selLep =0; selLep < looseMuons.size(); selLep++ ){
+				     if(debug) cout << "in muons" << endl; 
+			             Ht_lep += looseMuons[selLep]->Pt();
+				     TLorentzVector tempLep; 
+				     tempLep.Clear();
+				     tempLep.SetPxPyPzE(looseMuons[selLep]->Px(),looseMuons[selLep]->Py(),looseMuons[selLep]->Pz(),looseMuons[selLep]->Energy());
+				    
+				     Leptons += tempLep; 
+			        }
+				if(debug) cout << "looseElectrons.size() " << looseElectrons.size() << endl; 
+				for (Int_t selLep =0; selLep < looseElectrons.size(); selLep++ ){
+				     if(debug) cout << "in electrons" << endl; 
+			             Ht_lep += looseElectrons[selLep]->Pt();
+				     TLorentzVector tempLep1; 
+				     tempLep1.Clear();
+				     tempLep1.SetPxPyPzE(looseElectrons[selLep]->Px(),looseElectrons[selLep]->Py(),looseElectrons[selLep]->Pz(),looseElectrons[selLep]->Energy());
+				    
+				     Leptons += tempLep1; 
+			        }
 				
-				if(looseElectrons.size() + looseMuons.size() == 5)
-				{ 
-					if(debug) cout << "[PROCES]	fill 5L" << endl;
-					
-					//fill histograms
-					if(!is_signal)	histo1D["cutflow_total_B"]->Fill(2);
-					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
-					
-					MSPlot["MScutflow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor);
-					//label histograms
-					if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "5L");
-					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "5L");
-					
-					Passed_selection = true;
-									
-					if(debug) cout << "[PROCES]	filled 5L" << endl;
-					
+				Px_jet = Jets.Px(); 
+				Py_jet = Jets.Py(); 
+				Px_lep = Leptons.Px(); 
+				Py_lep = Leptons.Py(); 
+				 
+				DeltaPhi = fabs(Jets.Phi() - Leptons.Phi());
+				if(debug){
+					cout << "ht lep " << Ht_lep << endl; 
+					cout << "ht jet " << Ht_jet << endl; 
+					cout << "Px lep " << Px_lep << endl; 
+					cout << "Px jet " << Px_jet << endl;
+					cout << "Py lep " << Py_lep << endl; 
+					cout << "Py jet " << Py_jet << endl;
+					cout << "delta phi " << DeltaPhi << endl; 
+				}
+				
+				MSPlot["JetHt"]->Fill(Ht_jet , datasets[d], true, Luminosity*scaleFactor);
+				if(debug) cout << "jetht filled " << endl; 
+				MSPlot["LepHt"]->Fill(Ht_lep , datasets[d], true, Luminosity*scaleFactor);
+				if(debug) cout << "lepht filled " << endl; 
+				MSPlot["JetPx"]->Fill(Px_jet , datasets[d], true, Luminosity*scaleFactor);
+				if(debug) cout << "jetpx filled " << endl; 
+				MSPlot["LepPx"]->Fill(Px_lep , datasets[d], true, Luminosity*scaleFactor);
+				if(debug) cout << "leppx filled " << endl; 
+				MSPlot["JetPy"]->Fill(Py_jet , datasets[d], true, Luminosity*scaleFactor);
+				if(debug) cout << "jetpy filled " << endl; 
+				MSPlot["LepPy"]->Fill(Py_lep , datasets[d], true, Luminosity*scaleFactor);
+				if(debug) cout << "leppy filled " << endl; 
+                 		MSPlot["DeltaPhi_LJ"]->Fill(DeltaPhi , datasets[d], true, Luminosity*scaleFactor);
+				if(debug) cout << "dphi filled " << endl; 
+				
+			}
+			
+			if(channel.find("45")!=string::npos && Passed_selection)
+			{
+			    additional_45 = true;
+			    if(selectedJets.size()>1)
+			    {
+			        MSPlot["MScutflow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor);
+				if(selectedBJets_CSVM.size() == 1)
+				{
+					MSPlot["MScutflow"]->Fill(6, datasets[d], true, Luminosity*scaleFactor);
 					
 				}
-				if(debug)	cout << "[PROCES]	out fill 5L loop" << endl; 
-			}
-			
-			
-			//additional cuts
-			bool additional_5L = false; 
-			if(channel.find("5L")!=string::npos && Passed_selection)
-			{
-				if(selectedJets.size()>1)
-				{
-			           MSPlot["MScutflow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor);
-				   additional_5L = true;
-				  if(selectedBJets_CSVM.size()>0)
-				  {
-				    MSPlot["MScutflow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor);
-				     
-				  }
-			        }
+			    }
+			    
+			}   
 			   
-			}
 			
 			
-
-
+			
+			
+			
+			
 
 			//////////////////////////////////////////////////////////////////////////////////
 			// Filling histograms 							//////////
@@ -916,7 +1054,7 @@ int main(int argc, char *argv[]){
 
 
 			
-			if(additional_4L || additional_5L || additional_3L ||additional_45)
+			if(additional_3L ||additional_45)
 			{
 				if(debug) cout << "[PROCES]	In passed_selection loop" << endl; 
 				
@@ -935,7 +1073,7 @@ int main(int argc, char *argv[]){
 				if(debug) cout << "[PROCES]	Filled MET" << endl; 
 				
 				for (Int_t seljet1 =0; seljet1 < selectedJets.size(); seljet1++ ){
-
+					
 					MSPlot["JetEta"]->Fill(selectedJets[seljet1]->Eta() , datasets[d], true, Luminosity*scaleFactor);
                  			MSPlot["JetPhi"]->Fill(selectedJets[seljet1]->Phi() , datasets[d], true, Luminosity*scaleFactor);
 				}
@@ -981,17 +1119,14 @@ int main(int argc, char *argv[]){
 				  	MSPlot["Pt_3d_leading_Bjet_CSVT"]->Fill(selectedBJets_CSVT[2]->Pt(), datasets[d],true,Luminosity*scaleFactor);
 				}
 				
-				/*
-				double mll = 0; 
-				TLorentzVector leptonpair_mll;
+				
 				TLorentzVector lepton0;
 				TLorentzVector lepton1;
-				leptonpair_mll.Clear(); 
+				
 				lepton0.Clear(); 
 				lepton1.Clear(); 
 				if(looseElectrons.size()==0)
 				{
-					if(debug) cout << "[PROCES]	in looseElectrons.size()==0" << endl; 
 					if(looseMuons.size()!=0)
 					{
 						lepton0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
@@ -1000,7 +1135,7 @@ int main(int argc, char *argv[]){
 						if(looseMuons.size()>1 )
 						{
 							lepton1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
-							leptonpair_mll = lepton0+lepton1;
+							
 							MSPlot["Pt_leading_lepton"]->Fill(lepton0.Pt(),datasets[d], true, Luminosity*scaleFactor);
 							MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
 						}
@@ -1017,7 +1152,7 @@ int main(int argc, char *argv[]){
 						if(looseElectrons.size()>1 )
 						{
 							lepton1.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
-							leptonpair_mll = lepton0+lepton1;
+							
 							MSPlot["Pt_leading_lepton"]->Fill(lepton0.Pt(),datasets[d], true, Luminosity*scaleFactor);
 							MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
 						}
@@ -1050,7 +1185,7 @@ int main(int argc, char *argv[]){
 						}
 						
 					}
-					elsoe if (pt_muon0 > pt_electron0)
+					else if (pt_muon0 > pt_electron0)
 					{
 						lepton0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
 						if(pt_electron0 > pt_muon1)
@@ -1064,7 +1199,7 @@ int main(int argc, char *argv[]){
 						}
 					
 					}
-					leptonpair_mll = lepton0+lepton1;
+					
 					MSPlot["Pt_leading_lepton"]->Fill(lepton0.Pt(),datasets[d], true, Luminosity*scaleFactor);
 					MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
 				}
@@ -1098,7 +1233,7 @@ int main(int argc, char *argv[]){
 						lepton0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
 						lepton1.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
 					}
-					leptonpair_mll = lepton0+lepton1;
+					
 					MSPlot["Pt_leading_lepton"]->Fill(lepton0.Pt(),datasets[d], true, Luminosity*scaleFactor);
 					MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
 				}
@@ -1131,7 +1266,7 @@ int main(int argc, char *argv[]){
 						}
 					
 					}
-					leptonpair_mll = lepton0+lepton1;
+					
 					MSPlot["Pt_leading_lepton"]->Fill(lepton0.Pt(),datasets[d], true, Luminosity*scaleFactor);
 					MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
 				}
@@ -1140,22 +1275,13 @@ int main(int argc, char *argv[]){
 					if(debug) cout << "[PROCES]	in looseMuons.size() == 1 && looseElectrons.size() == 1" << endl; 
 					lepton0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
 					lepton1.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
-					lepotonpair_mll = lepton0+lepton1;
+					
 					MSPlot["Pt_leading_lepton"]->Fill(lepton0.Pt(),datasets[d], true, Luminosity*scaleFactor);
 					MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
 				}
-				bool empty = false; 
-				if(looseMuons.size() == 0 && looseElectrons.size() == 0) empty = true; 
-				if(looseMuons.size() == 0 && looseElectrons.size() == 1) empty = true; 
-				if(looseMuons.size() == 1 && looseElectrons.size() == 0) empty = true; 
-				if(!empty && (leptonpair_mll!=(0,0,0,0)))
-				{
-					mll = leptonpair_mll.M();
-					if(debug) cout << "[INFO]	mll = 	" << mll << endl; 
-					MSPlot["Mll"]->Fill(mll,datasets[d],true,Luminosity*scaleFactor);
-				}
 				
-				*/
+				
+				
 				
 			}
 			

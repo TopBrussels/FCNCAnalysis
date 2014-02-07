@@ -28,11 +28,26 @@ void Optimal_cut(){
 		
 	Variables.push_back("NbOfSelectedJets");
 	Variables.push_back("NbOfSelectedBJets_CSVM");
-	Variables.push_back("NbOfSelectedBJets_CSVT");
 	Variables.push_back("Pt_leading_jet");
 	Variables.push_back("Pt_leading_Bjet_CSVM");
 	Variables.push_back("Pt_leading_lepton");
+	Variables.push_back("Pt_2nd_leading_jet");
+	Variables.push_back("Pt_2nd_leading_Bjet_CSVM");
+	Variables.push_back("Pt_2nd_leading_lepton");
 	Variables.push_back("MET");
+	Variables.push_back("Mllll");
+	Variables.push_back("MllW");
+	Variables.push_back("JetHt");
+	Variables.push_back("LepHt");
+	Variables.push_back("JetPx");
+	Variables.push_back("LepPx");
+	Variables.push_back("JetPy");
+	Variables.push_back("LepPy");
+	Variables.push_back("DeltaPhi");
+	Variables.push_back("NofElectrons_af");
+	Variables.push_back("NofMuons_af");
+	
+	
 
 
 	
