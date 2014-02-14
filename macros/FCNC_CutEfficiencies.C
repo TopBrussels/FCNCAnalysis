@@ -11,14 +11,14 @@
 
 using namespace std;
 
-void FCNC_CutEfficiencies(string channel = "45"){
+void FCNC_CutEfficiencies(string channel = "3L"){
 	cout << "------------------------------------------------------------------" << endl;
 	cout << "         [LOOPING OVER " << channel << " CHANNEL]" << endl; 
 	
-	string	Vector_cutflow_3L[19] = {"","initial","3L","3L & MET>45 GeV","3L & MET < 45 GeV","3L & >3 jets","3L & <4 jets","","","","","","","","","","", "",""};
+	string	Vector_cutflow_3L[19] = {"","initial","3L","3L & OSSF","","","","","","","","","","","","","", "",""};
 	string Vector_cutflow_4L[19] = {"","initial","4L","4L & Z(e/mu)","4L & Z(e/mu) & |mllll - mh|<10GeV","4L & Z(e/mu) &|mllll - mh|<10GeV & >3 jets","4L & Z(e/mu) & |mllll - mh|<5 GeV","4L & Z(e/mu) & |mllll - mh|<5 GeV & >3jets","","","","","","","","","","",""};
 	string Vector_cutflow_5L[19] = {"","initial","5L","5L & >1 jets","5L & >1 jets & >0 bjets","","","","","","","","","","","","","",""};
-	string Vector_cutflow_45[19] = {"","initial",">3L",">3L & >0 jets",">3L & >0 jets & >0 bjets","","","","","","","","","","","","","",""};
+	string Vector_cutflow_45[19] = {"","initial",">3L",">3L & Zdecay",">3L & Zdecay & Mh",">3L & #jets>1",">3L & #jets>1 & 1 Bj",">3L & #jets>1 & 1 Bj & Pt bjet >30GeV","","","","","","","","","","",""};
 	
 	
 	
@@ -45,6 +45,7 @@ void FCNC_CutEfficiencies(string channel = "45"){
 	Vector_SampleName.push_back("total_S");
 	
 	//Put in the individual samples
+	Vector_SampleName.push_back("TBZ_ToLL_4F");
 	Vector_SampleName.push_back("GluGluHiggs4lep");
 	Vector_SampleName.push_back("Wjets");
 	Vector_SampleName.push_back("W_1Jets");

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<datasets>
+
+   
+  <!-- S I G N A L -->
+  
+
+
+<d name="NP_overlay_TTJetsTocZbW" title="tcZ"	add="1"   color="2"  ls="1"  lw="2" normf="1"  NofEvts="100000" xsection="0.1575"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocZbW_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v1/21062013_162346/TOPTREE/*.root"/>
+  
+  <d name="GluGluHiggs4lep" title="gg\rightarrow H \rightarrow ZZ \rightarrow llll" add="1" color="41"  ls="1"  lw="2" normf="1" xsection="19.27" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/GluGluToHToZZTo4L_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/23012014_142102/TOPTREE/*_1_*.root"/>
+
+</datasets>
+
+<analysis>
+
+<a type="Collections" PVCollection="PrimaryVertex" JetType="2" JetCollection="PFJets_selectedPatJetsPF2PAT" METType="2" METCollection="PFMET_patType1CorrectedPFMetPF2PAT" MuonCollection="Muons_selectedPatMuonsPF2PAT" ElectronCollection="Electrons_selectedPatElectronsPF2PAT" loadGenJetCollection="1" GenJetCollection="GenJets_ak5GenJetsNoNu" loadGenEventCollection="0" GenEventCollection="GenEvent" loadNPGenEventCollection="0" NPGenEventCollection="NPGenEvent" loadMCParticles="0" MCParticlesCollection="MCParticles" TrackMETCollection="" loadTrackMET="0"/>
+
+
+</analysis>

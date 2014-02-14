@@ -6,9 +6,9 @@
   
 
   
-  <d name="TTJetsTocHbW_HToZZ_ZToLL_HctL" title="tcH (H->ZZ)"	add="1"   color="14"  ls="1"  lw="2" normf="1"  xsection="0.00016516"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170416/TOPTREE/*.root"/> 
+  <d name="NP_overlay_TTJetsTocHbW_HToZZ_ZToLL_HctL" title="tcH (H->ZZ)"	add="1"   color="14"  ls="1"  lw="2" normf="1"  xsection="0.00016516"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170416/TOPTREE/*.root"/> 
 
-<!--  <d name="TTJetsTocHbW_HToZZ_ZToLL_HctR" title="tcH (H->ZZ)"	add="1"   color="14"  ls="1"  lw="2" normf="1"   xsection="0.00016516"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170431/TOPTREE/*.root"/> 
+<!--  <d name="NP_overlay_TTJetsTocHbW_HToZZ_ZToLL_HctR" title="tcH (H->ZZ)"	add="1"   color="14"  ls="1"  lw="2" normf="1"   xsection="0.00016516"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170431/TOPTREE/*.root"/> 
 -->
    <!-- SM Higgs -->
     <d name="GluGluHiggs4lep" title="gg\rightarrow H \rightarrow ZZ \rightarrow llll" add="1" color="412"  ls="1"  lw="2" normf="1" xsection="19.27" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/GluGluToHToZZTo4L_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/23012014_142102/TOPTREE/*_1_*.root"/>

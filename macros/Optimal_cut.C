@@ -12,7 +12,8 @@
 
 using namespace std;
 
-string infile = "../data/FCNC_selection_4L5L.root";
+string infile = "../data/FCNC_selection_3L.root";
+//string infile = "../data/FCNC_selection_4L5L_full.root";
 string eclusiveinfile = "";
 bool debug = false;
 int jetcut = 5 + 1; //+1 for getting the right binnumber
@@ -22,7 +23,8 @@ void Optimal_cut(){
 
 	TFile *file = new TFile(infile.c_str(),"read");
 	//TFile *exclusiveFile = new TFile(eclusiveinfile.c_str(),"read");
-	TFile *outputfile = new TFile("../data/OptCut/OptimalCuts_4L5L.root","RECREATE");
+	//TFile *outputfile = new TFile("../data/OptCut/OptimalCuts_4L5L.root","RECREATE");
+        TFile *outputfile = new TFile("../data/OptCut/OptimalCuts_3L.root","RECREATE");
 	
 	vector <string> Variables;
 		
@@ -35,17 +37,17 @@ void Optimal_cut(){
 	Variables.push_back("Pt_2nd_leading_Bjet_CSVM");
 	Variables.push_back("Pt_2nd_leading_lepton");
 	Variables.push_back("MET");
-	Variables.push_back("Mllll");
-	Variables.push_back("MllW");
-	Variables.push_back("JetHt");
-	Variables.push_back("LepHt");
-	Variables.push_back("JetPx");
-	Variables.push_back("LepPx");
-	Variables.push_back("JetPy");
-	Variables.push_back("LepPy");
-	Variables.push_back("DeltaPhi");
-	Variables.push_back("NofElectrons_af");
-	Variables.push_back("NofMuons_af");
+//	Variables.push_back("Mllll");
+//	Variables.push_back("MllW");
+//	Variables.push_back("JetHt");
+//	Variables.push_back("LepHt");
+//	Variables.push_back("JetPx");
+//	Variables.push_back("LepPx");
+//	Variables.push_back("JetPy");
+//	Variables.push_back("LepPy");
+//	Variables.push_back("DeltaPhi_LJ");
+//	Variables.push_back("NofElectrons_af");
+//	Variables.push_back("NofMuons_af");
 	
 	
 
@@ -53,19 +55,20 @@ void Optimal_cut(){
 	
 	vector <string> signalname;
 	vector <string> backgroundnames;
-		
+	
+	backgroundnames.push_back("TBZ_ToLL_4F");	
 	backgroundnames.push_back("GluGluHiggs4lep");	
-/*	backgroundnames.push_back("W_1Jets");
+	backgroundnames.push_back("W_1Jets");
 	backgroundnames.push_back("W_2Jets");
 	backgroundnames.push_back("W_3Jets");
 	backgroundnames.push_back("W_4Jets");
 	backgroundnames.push_back("WW_To2L2Nu");
 	backgroundnames.push_back("WZ_To2L2Q");
-*/	backgroundnames.push_back("WZ_To3LNu");
-/*	backgroundnames.push_back("ZZ_To2L2Nu");
+	backgroundnames.push_back("WZ_To3LNu");
+	backgroundnames.push_back("ZZ_To2L2Nu");
 	backgroundnames.push_back("ZZ_To2L2Q");
-*/	backgroundnames.push_back("ZZ_To4L");
-/*	backgroundnames.push_back("ST_TToDilepton_tW-ch");
+	backgroundnames.push_back("ZZ_To4L");
+	backgroundnames.push_back("ST_TToDilepton_tW-ch");
 	backgroundnames.push_back("ST_TToTlepWhad_tW-ch");
 	backgroundnames.push_back("ST_TToThadWlep_tW-ch");
 	backgroundnames.push_back("ST_TBarToDilepton_tW-ch");
@@ -80,9 +83,9 @@ void Optimal_cut(){
 	backgroundnames.push_back("Z_2Jets");
 	backgroundnames.push_back("Z_3Jets");
 	backgroundnames.push_back("Z_4Jets");
-*/	backgroundnames.push_back("TTZ");
+	backgroundnames.push_back("TTZ");
 	backgroundnames.push_back("TTW");
-/*	backgroundnames.push_back("ttbar");
+	backgroundnames.push_back("ttbar");
 	backgroundnames.push_back("ttbar_fullLept");
       	backgroundnames.push_back("ttbar_semiLept");
        	backgroundnames.push_back("wjets");
@@ -99,22 +102,22 @@ void Optimal_cut(){
 	backgroundnames.push_back("ST_Tbar_s-ch");
 	backgroundnames.push_back("ST_T_t-ch");
 	backgroundnames.push_back("ST_Tbar_t-ch");
-*/
-//	signalname.push_back("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");
-	signalname.push_back("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL");
-	signalname.push_back("TTJetsTocHbW_HToWW_WToLNuL_HctL");
-//	signalname.push_back("TTJetsTocHbW_HToWW_WToLNuL_HctR");
-	signalname.push_back("TTJetsTocHbW_HToBB_HctL");
-//	signalname.push_back("TTJetsTocHbW_HToBB_HctR");
-	signalname.push_back("TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL");
-//	signalname.push_back("TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctR");
-	signalname.push_back("TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL");
-//	signalname.push_back("TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctR");
-	signalname.push_back("TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL");
-//	signalname.push_back("TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR");
-	signalname.push_back("TTJetsTocHbW_HToZZ_ZToLL_HctL");
-//	signalname.push_back("TTJetsTocHbW_HToZZ_ZToLL_HctR");
-	signalname.push_back("TTJetsTocZbW");
+
+//	signalname.push_back("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_HctL");
+//	signalname.push_back("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_HctR");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToBB_HctL");
+//	signalname.push_back("NP_overlay_TTJetsTocHbW_HToBB_HctR");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL");
+//	signalname.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctR");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL");
+//	signalname.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctR");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL");
+//	signalname.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToLL_HctL");
+//	signalname.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToLL_HctR");
+	signalname.push_back("NP_overlay_TTJetsTocZbW");
 	
 	for(unsigned int iVar = 0; iVar<Variables.size(); iVar++){
 	
@@ -142,7 +145,7 @@ void Optimal_cut(){
 			string histoName = Path_To_Histo;
 			cout << "Path_To_Histo: " << Path_To_Histo << endl; 
 			histoName += signalname[iSignal];
-			cout << "histoName; " << histoName << endl; 
+			cout << "histoName: " << histoName << endl; 
 			TH1F *histo( (TH1F*) file->Get(histoName.c_str()) );
 			//TH1F *histo_exclusive( (TH1F*) exclusiveFile->Get(histoName.c_str()) );
 			
@@ -278,16 +281,16 @@ void Optimal_cut(){
 
 			string histoName = Path_To_Histo;
 			histoName += backgroundnames[iBackgr];
-			TH1F *histo( (TH1F*) file->Get(histoName.c_str()) );
+			TH1F *histo_1( (TH1F*) file->Get(histoName.c_str()) );
 			//OTH1F *histo_exclusive((TH1F*) exclusiveFile->Get(histoName.c_str()));
-
-			if(histo){
-				HistoBackground->Add( histo );
-				Histo_samples.push_back(histo);
+			cout << "before if statement" << endl; 
+			if(histo_1){
+				HistoBackground->Add(histo_1);
+				Histo_samples.push_back(histo_1);
 				Name_samples.push_back(backgroundnames[iBackgr]);
 
 				if(debug){
-				cout << histo->Integral(6,15) << endl;
+				cout << histo_1->Integral(6,15) << endl;
 				cout << Histo_samples.back()->Integral(6,15) << endl;
 				cout << " " << endl;
 				}
@@ -312,6 +315,7 @@ void Optimal_cut(){
 		//// Now we get into the real part where we find the optimal cut, where the significance is the highest
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		cout << "end" << endl; 
+		cout << "HistoSignal defined? " << HistoSignal << endl;
 		cout << HistoSignal->GetNbinsX() << endl; 
 		int end = HistoSignal->GetNbinsX();
 		cout << "end" << end << endl; 
