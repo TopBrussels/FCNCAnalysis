@@ -1,0 +1,114 @@
+
+Processing FCNC_CutEfficiencies.C...
+------------------------------------------------------------------
+         [LOOPING OVER 4L CHANNEL]
+------------------------------------------------------------------
+*** MScutflow_GluGluHiggs4lep : ***
+
+initial : 1 efficiency -- 100 % efficiency
+4L : 0.0428806 efficiency -- 4.28806 % efficiency
+4L & Z(e/mu) : 0.0426156 efficiency -- 4.26156 % efficiency
+4L & Z(e/mu) & |mllll - mh|<10GeV : 0.0411396 efficiency -- 4.11396 % efficiency
+4L & Z(e/mu) &|mllll - mh|<10GeV & >3 jets : 0.000791258 efficiency -- 0.0791258 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV : 0.0387966 efficiency -- 3.87966 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV & >3jets : 0.000727156 efficiency -- 0.0727156 % efficiency
+------------------------------------------------------------------
+*** MScutflow_WZ_To3LNu : ***
+
+initial : 1 efficiency -- 100 % efficiency
+4L : 0.000209841 efficiency -- 0.0209841 % efficiency
+4L & Z(e/mu) : 7.67709e-05 efficiency -- 0.00767709 % efficiency
+4L & Z(e/mu) & |mllll - mh|<10GeV : 6.25541e-06 efficiency -- 0.000625541 % efficiency
+4L & Z(e/mu) &|mllll - mh|<10GeV & >3 jets : 0 efficiency -- 0 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV : 1.70602e-06 efficiency -- 0.000170602 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV & >3jets : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_ZZ_To4L : ***
+
+initial : 1 efficiency -- 100 % efficiency
+4L : 0.0724066 efficiency -- 7.24066 % efficiency
+4L & Z(e/mu) : 0.0713337 efficiency -- 7.13337 % efficiency
+4L & Z(e/mu) & |mllll - mh|<10GeV : 0.000739316 efficiency -- 0.0739316 % efficiency
+4L & Z(e/mu) &|mllll - mh|<10GeV & >3 jets : 5.7124e-06 efficiency -- 0.00057124 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV : 0.000363177 efficiency -- 0.0363177 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV & >3jets : 1.53795e-06 efficiency -- 0.000153795 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTZ : ***
+
+initial : 1 efficiency -- 100 % efficiency
+4L : 0.00156927 efficiency -- 0.156927 % efficiency
+4L & Z(e/mu) : 0.000716179 efficiency -- 0.0716179 % efficiency
+4L & Z(e/mu) & |mllll - mh|<10GeV : 1.0532e-05 efficiency -- 0.0010532 % efficiency
+4L & Z(e/mu) &|mllll - mh|<10GeV & >3 jets : 5.26602e-06 efficiency -- 0.000526602 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV : 5.26602e-06 efficiency -- 0.000526602 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV & >3jets : 5.26602e-06 efficiency -- 0.000526602 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTW : ***
+
+initial : 1 efficiency -- 100 % efficiency
+4L : 2.7655e-05 efficiency -- 0.0027655 % efficiency
+4L & Z(e/mu) : 1.1062e-05 efficiency -- 0.0011062 % efficiency
+4L & Z(e/mu) & |mllll - mh|<10GeV : 5.531e-06 efficiency -- 0.0005531 % efficiency
+4L & Z(e/mu) &|mllll - mh|<10GeV & >3 jets : 0 efficiency -- 0 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV : 5.531e-06 efficiency -- 0.0005531 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV & >3jets : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToWW_WToLNuL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+4L : 0.000502513 efficiency -- 0.0502513 % efficiency
+4L & Z(e/mu) : 0.000502513 efficiency -- 0.0502513 % efficiency
+4L & Z(e/mu) & |mllll - mh|<10GeV : 0.000251256 efficiency -- 0.0251256 % efficiency
+4L & Z(e/mu) &|mllll - mh|<10GeV & >3 jets : 0.000251256 efficiency -- 0.0251256 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV : 0 efficiency -- 0 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV & >3jets : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+4L : 0.000649098 efficiency -- 0.0649098 % efficiency
+4L & Z(e/mu) : 0.000259639 efficiency -- 0.0259639 % efficiency
+4L & Z(e/mu) & |mllll - mh|<10GeV : 0.00012982 efficiency -- 0.012982 % efficiency
+4L & Z(e/mu) &|mllll - mh|<10GeV & >3 jets : 0.00012982 efficiency -- 0.012982 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV : 0.00012982 efficiency -- 0.012982 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV & >3jets : 0.00012982 efficiency -- 0.012982 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+4L : 0.000271555 efficiency -- 0.0271555 % efficiency
+4L & Z(e/mu) : 0.000135777 efficiency -- 0.0135777 % efficiency
+4L & Z(e/mu) & |mllll - mh|<10GeV : 0 efficiency -- 0 % efficiency
+4L & Z(e/mu) &|mllll - mh|<10GeV & >3 jets : 0 efficiency -- 0 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV : 0 efficiency -- 0 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV & >3jets : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+4L : 6.9633e-05 efficiency -- 0.0069633 % efficiency
+4L & Z(e/mu) : 6.9633e-05 efficiency -- 0.0069633 % efficiency
+4L & Z(e/mu) & |mllll - mh|<10GeV : 0 efficiency -- 0 % efficiency
+4L & Z(e/mu) &|mllll - mh|<10GeV & >3 jets : 0 efficiency -- 0 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV : 0 efficiency -- 0 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV & >3jets : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToZZ_ZToLL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+4L : 0.147727 efficiency -- 14.7727 % efficiency
+4L & Z(e/mu) : 0.114382 efficiency -- 11.4382 % efficiency
+4L & Z(e/mu) & |mllll - mh|<10GeV : 0.0847616 efficiency -- 8.47616 % efficiency
+4L & Z(e/mu) &|mllll - mh|<10GeV & >3 jets : 0.0460134 efficiency -- 4.60134 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV : 0.079918 efficiency -- 7.9918 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV & >3jets : 0.0435917 efficiency -- 4.35917 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocZbW : ***
+
+initial : 1 efficiency -- 100 % efficiency
+4L : 0.000212421 efficiency -- 0.0212421 % efficiency
+4L & Z(e/mu) : 9.70192e-05 efficiency -- 0.00970192 % efficiency
+4L & Z(e/mu) & |mllll - mh|<10GeV : 5.10627e-06 efficiency -- 0.000510627 % efficiency
+4L & Z(e/mu) &|mllll - mh|<10GeV & >3 jets : 1.02125e-06 efficiency -- 0.000102125 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV : 5.10627e-06 efficiency -- 0.000510627 % efficiency
+4L & Z(e/mu) & |mllll - mh|<5 GeV & >3jets : 1.02125e-06 efficiency -- 0.000102125 % efficiency

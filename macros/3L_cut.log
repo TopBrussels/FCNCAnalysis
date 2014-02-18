@@ -1,0 +1,251 @@
+
+Processing FCNC_CutEfficiencies.C++...
+------------------------------------------------------------------
+         [LOOPING OVER 3L CHANNEL]
+------------------------------------------------------------------
+*** MScutflow_TBZ_ToLL_4F : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.0634 efficiency -- 6.34 % efficiency
+3L & OSSF : 0.0628 efficiency -- 6.28 % efficiency
+3L & OSOF : 0.0314 efficiency -- 3.14 % efficiency
+3L & OSSF & >0 bjet : 0.0412 efficiency -- 4.12 % efficiency
+3L & OSOF & >0 bjet : 0.0214 efficiency -- 2.14 % efficiency
+3L & >0 bjet : 0.0418 efficiency -- 4.18 % efficiency
+3L & OSSF & >30 MET : 0.0522 efficiency -- 5.22 % efficiency
+3L & OSOF & >30 MET : 0.0268 efficiency -- 2.68 % efficiency
+3L & >30 MET : 0.0526 efficiency -- 5.26 % efficiency
+------------------------------------------------------------------
+*** MScutflow_VBHiggs4lep : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.184003 efficiency -- 18.4003 % efficiency
+3L & OSSF : 0.182834 efficiency -- 18.2834 % efficiency
+3L & OSOF : 0.0921599 efficiency -- 9.21599 % efficiency
+3L & OSSF & >0 bjet : 0.00971862 efficiency -- 0.971862 % efficiency
+3L & OSOF & >0 bjet : 0.00479252 efficiency -- 0.479252 % efficiency
+3L & >0 bjet : 0.00985221 efficiency -- 0.985221 % efficiency
+3L & OSSF & >30 MET : 0.0538031 efficiency -- 5.38031 % efficiency
+3L & OSOF & >30 MET : 0.0268013 efficiency -- 2.68013 % efficiency
+3L & >30 MET : 0.0543541 efficiency -- 5.43541 % efficiency
+------------------------------------------------------------------
+*** MScutflow_ttH : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.00446119 efficiency -- 0.446119 % efficiency
+3L & OSSF : 0.00347182 efficiency -- 0.347182 % efficiency
+3L & OSOF : 0.00318656 efficiency -- 0.318656 % efficiency
+3L & OSSF & >0 bjet : 0.00286339 efficiency -- 0.286339 % efficiency
+3L & OSOF & >0 bjet : 0.00263952 efficiency -- 0.263952 % efficiency
+3L & >0 bjet : 0.00368125 efficiency -- 0.368125 % efficiency
+3L & OSSF & >30 MET : 0.00311615 efficiency -- 0.311615 % efficiency
+3L & OSOF & >30 MET : 0.00287062 efficiency -- 0.287062 % efficiency
+3L & >30 MET : 0.00400622 efficiency -- 0.400622 % efficiency
+------------------------------------------------------------------
+*** MScutflow_GluGluHiggs4lep : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.152802 efficiency -- 15.2802 % efficiency
+3L & OSSF : 0.152103 efficiency -- 15.2103 % efficiency
+3L & OSOF : 0.0760752 efficiency -- 7.60752 % efficiency
+3L & OSSF & >0 bjet : 0.00376999 efficiency -- 0.376999 % efficiency
+3L & OSOF & >0 bjet : 0.00186597 efficiency -- 0.186597 % efficiency
+3L & >0 bjet : 0.00378902 efficiency -- 0.378902 % efficiency
+3L & OSSF & >30 MET : 0.0360346 efficiency -- 3.60346 % efficiency
+3L & OSOF & >30 MET : 0.0176521 efficiency -- 1.76521 % efficiency
+3L & >30 MET : 0.0362756 efficiency -- 3.62756 % efficiency
+------------------------------------------------------------------
+*** MScutflow_WZ_To3LNu : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.124823 efficiency -- 12.4823 % efficiency
+3L & OSSF : 0.123872 efficiency -- 12.3872 % efficiency
+3L & OSOF : 0.0609114 efficiency -- 6.09114 % efficiency
+3L & OSSF & >0 bjet : 0.00305605 efficiency -- 0.305605 % efficiency
+3L & OSOF & >0 bjet : 0.00153883 efficiency -- 0.153883 % efficiency
+3L & >0 bjet : 0.00308164 efficiency -- 0.308164 % efficiency
+3L & OSSF & >30 MET : 0.0924291 efficiency -- 9.24291 % efficiency
+3L & OSOF & >30 MET : 0.0454512 efficiency -- 4.54512 % efficiency
+3L & >30 MET : 0.0931604 efficiency -- 9.31604 % efficiency
+------------------------------------------------------------------
+*** MScutflow_ZZ_To4L : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.144852 efficiency -- 14.4852 % efficiency
+3L & OSSF : 0.143907 efficiency -- 14.3907 % efficiency
+3L & OSOF : 0.0707279 efficiency -- 7.07279 % efficiency
+3L & OSSF & >0 bjet : 0.00420081 efficiency -- 0.420081 % efficiency
+3L & OSOF & >0 bjet : 0.00208876 efficiency -- 0.208876 % efficiency
+3L & >0 bjet : 0.00423113 efficiency -- 0.423113 % efficiency
+3L & OSSF & >30 MET : 0.0516895 efficiency -- 5.16895 % efficiency
+3L & OSOF & >30 MET : 0.0248715 efficiency -- 2.48715 % efficiency
+3L & >30 MET : 0.0521738 efficiency -- 5.21738 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TT_FullLeptMGDecays : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.0010854 efficiency -- 0.10854 % efficiency
+3L & OSSF : 0.000884599 efficiency -- 0.0884599 % efficiency
+3L & OSOF : 0.000850394 efficiency -- 0.0850394 % efficiency
+3L & OSSF & >0 bjet : 0.000635338 efficiency -- 0.0635338 % efficiency
+3L & OSOF & >0 bjet : 0.000614894 efficiency -- 0.0614894 % efficiency
+3L & >0 bjet : 0.000772844 efficiency -- 0.0772844 % efficiency
+3L & OSSF & >30 MET : 0.000767635 efficiency -- 0.0767635 % efficiency
+3L & OSOF & >30 MET : 0.00073805 efficiency -- 0.073805 % efficiency
+3L & >30 MET : 0.000943277 efficiency -- 0.0943277 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTZ : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.013797 efficiency -- 1.3797 % efficiency
+3L & OSSF : 0.0132967 efficiency -- 1.32967 % efficiency
+3L & OSOF : 0.00720918 efficiency -- 0.720918 % efficiency
+3L & OSSF & >0 bjet : 0.0107585 efficiency -- 1.07585 % efficiency
+3L & OSOF & >0 bjet : 0.00584528 efficiency -- 0.584528 % efficiency
+3L & >0 bjet : 0.0111903 efficiency -- 1.11903 % efficiency
+3L & OSSF & >30 MET : 0.0115273 efficiency -- 1.15273 % efficiency
+3L & OSOF & >30 MET : 0.00625603 efficiency -- 0.625603 % efficiency
+3L & >30 MET : 0.0119697 efficiency -- 1.19697 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTW : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.00554759 efficiency -- 0.554759 % efficiency
+3L & OSSF : 0.00409847 efficiency -- 0.409847 % efficiency
+3L & OSOF : 0.00402656 efficiency -- 0.402656 % efficiency
+3L & OSSF & >0 bjet : 0.00326329 efficiency -- 0.326329 % efficiency
+3L & OSOF & >0 bjet : 0.0032301 efficiency -- 0.32301 % efficiency
+3L & >0 bjet : 0.00444139 efficiency -- 0.444139 % efficiency
+3L & OSSF & >30 MET : 0.00376108 efficiency -- 0.376108 % efficiency
+3L & OSOF & >30 MET : 0.0037113 efficiency -- 0.37113 % efficiency
+3L & >30 MET : 0.00509405 efficiency -- 0.509405 % efficiency
+------------------------------------------------------------------
+*** MScutflow_Z_1Jets : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.000237847 efficiency -- 0.0237847 % efficiency
+3L & OSSF : 0.000237326 efficiency -- 0.0237326 % efficiency
+3L & OSOF : 0.000177474 efficiency -- 0.0177474 % efficiency
+3L & OSSF & >0 bjet : 1.97772e-05 efficiency -- 0.00197772 % efficiency
+3L & OSOF & >0 bjet : 1.04091e-05 efficiency -- 0.00104091 % efficiency
+3L & >0 bjet : 1.97772e-05 efficiency -- 0.00197772 % efficiency
+3L & OSSF & >30 MET : 8.7436e-05 efficiency -- 0.0087436 % efficiency
+3L & OSOF & >30 MET : 7.23429e-05 efficiency -- 0.00723429 % efficiency
+3L & >30 MET : 8.79565e-05 efficiency -- 0.00879565 % efficiency
+------------------------------------------------------------------
+*** MScutflow_Z_2Jets : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.000403587 efficiency -- 0.0403587 % efficiency
+3L & OSSF : 0.000402331 efficiency -- 0.0402331 % efficiency
+3L & OSOF : 0.000310882 efficiency -- 0.0310882 % efficiency
+3L & OSSF & >0 bjet : 4.71518e-05 efficiency -- 0.00471518 % efficiency
+3L & OSOF & >0 bjet : 3.19673e-05 efficiency -- 0.00319673 % efficiency
+3L & >0 bjet : 4.73801e-05 efficiency -- 0.00473801 % efficiency
+3L & OSSF & >30 MET : 0.000172167 efficiency -- 0.0172167 % efficiency
+3L & OSOF & >30 MET : 0.000143853 efficiency -- 0.0143853 % efficiency
+3L & >30 MET : 0.000172738 efficiency -- 0.0172738 % efficiency
+------------------------------------------------------------------
+*** MScutflow_Z_3Jets : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.000539105 efficiency -- 0.0539105 % efficiency
+3L & OSSF : 0.000537101 efficiency -- 0.0537101 % efficiency
+3L & OSOF : 0.000422266 efficiency -- 0.0422266 % efficiency
+3L & OSSF & >0 bjet : 8.41725e-05 efficiency -- 0.00841725 % efficiency
+3L & OSOF & >0 bjet : 6.01232e-05 efficiency -- 0.00601232 % efficiency
+3L & >0 bjet : 8.47738e-05 efficiency -- 0.00847738 % efficiency
+3L & OSSF & >30 MET : 0.000266346 efficiency -- 0.0266346 % efficiency
+3L & OSOF & >30 MET : 0.00022446 efficiency -- 0.022446 % efficiency
+3L & >30 MET : 0.00026815 efficiency -- 0.026815 % efficiency
+------------------------------------------------------------------
+*** MScutflow_NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.000606183 efficiency -- 0.0606183 % efficiency
+3L & OSSF : 0.000505153 efficiency -- 0.0505153 % efficiency
+3L & OSOF : 0.000505153 efficiency -- 0.0505153 % efficiency
+3L & OSSF & >0 bjet : 0.000202061 efficiency -- 0.0202061 % efficiency
+3L & OSOF & >0 bjet : 0.000202061 efficiency -- 0.0202061 % efficiency
+3L & >0 bjet : 0.000202061 efficiency -- 0.0202061 % efficiency
+3L & OSSF & >30 MET : 0.000404122 efficiency -- 0.0404122 % efficiency
+3L & OSOF & >30 MET : 0.000404122 efficiency -- 0.0404122 % efficiency
+3L & >30 MET : 0.000404122 efficiency -- 0.0404122 % efficiency
+------------------------------------------------------------------
+*** MScutflow_NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.078392 efficiency -- 7.8392 % efficiency
+3L & OSSF : 0.0565327 efficiency -- 5.65327 % efficiency
+3L & OSOF : 0.0595477 efficiency -- 5.95477 % efficiency
+3L & OSSF & >0 bjet : 0.0346734 efficiency -- 3.46734 % efficiency
+3L & OSOF & >0 bjet : 0.0371859 efficiency -- 3.71859 % efficiency
+3L & >0 bjet : 0.0492462 efficiency -- 4.92462 % efficiency
+3L & OSSF & >30 MET : 0.0472362 efficiency -- 4.72362 % efficiency
+3L & OSOF & >30 MET : 0.0474874 efficiency -- 4.74874 % efficiency
+3L & >30 MET : 0.0653266 efficiency -- 6.53266 % efficiency
+------------------------------------------------------------------
+*** MScutflow_NP_overlay_TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.0588083 efficiency -- 5.88083 % efficiency
+3L & OSSF : 0.0585486 efficiency -- 5.85486 % efficiency
+3L & OSOF : 0.0310269 efficiency -- 3.10269 % efficiency
+3L & OSSF & >0 bjet : 0.0455667 efficiency -- 4.55667 % efficiency
+3L & OSOF & >0 bjet : 0.0244061 efficiency -- 2.44061 % efficiency
+3L & >0 bjet : 0.0456965 efficiency -- 4.56965 % efficiency
+3L & OSSF & >30 MET : 0.0468649 efficiency -- 4.68649 % efficiency
+3L & OSOF & >30 MET : 0.0250552 efficiency -- 2.50552 % efficiency
+3L & >30 MET : 0.0469947 efficiency -- 4.69947 % efficiency
+------------------------------------------------------------------
+*** MScutflow_NP_overlay_TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.0577054 efficiency -- 5.77054 % efficiency
+3L & OSSF : 0.0577054 efficiency -- 5.77054 % efficiency
+3L & OSOF : 0.0278344 efficiency -- 2.78344 % efficiency
+3L & OSSF & >0 bjet : 0.037203 efficiency -- 3.7203 % efficiency
+3L & OSOF & >0 bjet : 0.0177868 efficiency -- 1.77868 % efficiency
+3L & >0 bjet : 0.037203 efficiency -- 3.7203 % efficiency
+3L & OSSF & >30 MET : 0.044535 efficiency -- 4.4535 % efficiency
+3L & OSOF & >30 MET : 0.0219959 efficiency -- 2.19959 % efficiency
+3L & >30 MET : 0.044535 efficiency -- 4.4535 % efficiency
+------------------------------------------------------------------
+*** MScutflow_NP_overlay_TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.0731147 efficiency -- 7.31147 % efficiency
+3L & OSSF : 0.0729058 efficiency -- 7.29058 % efficiency
+3L & OSOF : 0.0371144 efficiency -- 3.71144 % efficiency
+3L & OSSF & >0 bjet : 0.0460971 efficiency -- 4.60971 % efficiency
+3L & OSOF & >0 bjet : 0.0233271 efficiency -- 2.33271 % efficiency
+3L & >0 bjet : 0.046306 efficiency -- 4.6306 % efficiency
+3L & OSSF & >30 MET : 0.0596059 efficiency -- 5.96059 % efficiency
+3L & OSOF & >30 MET : 0.0305689 efficiency -- 3.05689 % efficiency
+3L & >30 MET : 0.0597451 efficiency -- 5.97451 % efficiency
+------------------------------------------------------------------
+*** MScutflow_NP_overlay_TTJetsTocHbW_HToZZ_ZToLL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.347243 efficiency -- 34.7243 % efficiency
+3L & OSSF : 0.333458 efficiency -- 33.3458 % efficiency
+3L & OSOF : 0.175671 efficiency -- 17.5671 % efficiency
+3L & OSSF & >0 bjet : 0.218703 efficiency -- 21.8703 % efficiency
+3L & OSOF & >0 bjet : 0.117362 efficiency -- 11.7362 % efficiency
+3L & >0 bjet : 0.226714 efficiency -- 22.6714 % efficiency
+3L & OSSF & >30 MET : 0.152757 efficiency -- 15.2757 % efficiency
+3L & OSOF & >30 MET : 0.0858793 efficiency -- 8.58793 % efficiency
+3L & >30 MET : 0.163189 efficiency -- 16.3189 % efficiency
+------------------------------------------------------------------
+*** MScutflow_NP_overlay_TTJetsTocZbW : ***
+
+initial : 1 efficiency -- 100 % efficiency
+3L : 0.0710033 efficiency -- 7.10033 % efficiency
+3L & OSSF : 0.0704129 efficiency -- 7.04129 % efficiency
+3L & OSOF : 0.0357438 efficiency -- 3.57438 % efficiency
+3L & OSSF & >0 bjet : 0.0424387 efficiency -- 4.24387 % efficiency
+3L & OSOF & >0 bjet : 0.0215097 efficiency -- 2.15097 % efficiency
+3L & >0 bjet : 0.042767 efficiency -- 4.2767 % efficiency
+3L & OSSF & >30 MET : 0.0571732 efficiency -- 5.71732 % efficiency
+3L & OSOF & >30 MET : 0.0289837 efficiency -- 2.89837 % efficiency
+3L & >30 MET : 0.0576728 efficiency -- 5.76728 % efficiency

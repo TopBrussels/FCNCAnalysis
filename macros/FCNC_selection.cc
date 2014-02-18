@@ -56,7 +56,7 @@ map<string,MultiSamplePlot*> MSPlot;
 /// Normal Plots (TH1F* and TH2F*)
 map<string,TH1F*> histo1D;
 
-
+bool cmp_big_first (pair<int,int> i, pair<int,int> j) { return i.second > j.second; }
 
 
 int main(int argc, char *argv[]){
@@ -808,7 +808,7 @@ int main(int argc, char *argv[]){
 				
 				MSPlot["Nb_OSSF"]->Fill(Nb_OSSF_3L, datasets[d], true, Luminosity*scaleFactor);
 				MSPlot["Nb_OSOF"]->Fill(Nb_OSOF_3L, datasets[d], true, Luminosity*scaleFactor);
-				if(OSSF_3L)
+/*				if(OSSF_3L)
 				{
 					MSPlot["MScutflow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor);
 				}
@@ -816,18 +816,29 @@ int main(int argc, char *argv[]){
 				{
 					MSPlot["MScutflow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor);
 				}
-				if(selectedBJets_CSVM.size()>0)
-				{
-				 	if(OSSF_3L) MSPlot["MScutflow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor);
-					if(OSOF_3L) MSPlot["MScutflow"]->Fill(6, datasets[d], true, Luminosity*scaleFactor);
-					MSPlot["MScutflow"]->Fill(7, datasets[d], true, Luminosity*scaleFactor);
-				}
+*/				
+				
 				if(met_pt>30)
 				{
-				 	if(OSSF_3L) MSPlot["MScutflow"]->Fill(8, datasets[d], true, Luminosity*scaleFactor);
+				 	if(OSSF_3L) MSPlot["MScutflow"]->Fill(6, datasets[d], true, Luminosity*scaleFactor);
 					if(OSOF_3L) MSPlot["MScutflow"]->Fill(9, datasets[d], true, Luminosity*scaleFactor);
-					MSPlot["MScutflow"]->Fill(10, datasets[d], true, Luminosity*scaleFactor);
-					additional_3L = true; 
+					MSPlot["MScutflow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor);
+					
+					
+					if(selectedJets.size()>1)
+					{
+						if(OSSF_3L) MSPlot["MScutflow"]->Fill(7, datasets[d], true, Luminosity*scaleFactor);
+						if(OSOF_3L) MSPlot["MScutflow"]->Fill(10, datasets[d], true, Luminosity*scaleFactor);
+						MSPlot["MScutflow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor);
+						
+						if(selectedBJets_CSVM.size()>0)
+						{
+							if(OSSF_3L) MSPlot["MScutflow"]->Fill(8, datasets[d], true, Luminosity*scaleFactor);
+							if(OSOF_3L) MSPlot["MScutflow"]->Fill(11, datasets[d], true, Luminosity*scaleFactor);
+							MSPlot["MScutflow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor);
+							additional_3L = true; 
+						}
+					}
 					
 					
 				}
@@ -898,7 +909,68 @@ int main(int argc, char *argv[]){
 			leptonpair_45_mll_1.Clear();
 			leptonpair_45_mll_2.Clear();
 			leptonpair_45_mllll.Clear();
+		
+			vector<pair<int,int> >  HighestPtLept;
+			
+			
+			if(channel.find("45")!=string::npos && Passed_selection)
+			{
+				for(int leptonIt = 0; leptonIt < looseElectrons.size(); leptonIt++)
+				{
+					HighestPtLept.push_back(make_pair(leptonIt, looseElectrons[leptonIt]->Pt()));
+				}
+				for(int k =0; k < looseMuons.size() ; k++)
+				{
+					HighestPtLept.push_back(make_pair(20+k, looseMuons[k]->Pt()));
+					
+				}	    
+				
+			   	sort(HighestPtLept.begin(), HighestPtLept.end(),cmp_big_first);
+				
+				for(int j = 0; j <5 ; j++)
+				{
+				   pair<int,int> aPair = HighestPtLept[j]; 
+				   if(aPair.first>19)
+				   {
+				   	int number = aPair.first-20;
+				   	if(j == 0) lepton_45_0.SetPxPyPzE(looseMuons[number]->Px(),looseMuons[number]->Py(),looseMuons[number]->Pz(),looseMuons[number]->Energy());
+					if(j == 1) lepton_45_1.SetPxPyPzE(looseMuons[number]->Px(),looseMuons[number]->Py(),looseMuons[number]->Pz(),looseMuons[number]->Energy());
+					if(j == 2) lepton_45_2.SetPxPyPzE(looseMuons[number]->Px(),looseMuons[number]->Py(),looseMuons[number]->Pz(),looseMuons[number]->Energy());
+					if(j == 3) lepton_45_3.SetPxPyPzE(looseMuons[number]->Px(),looseMuons[number]->Py(),looseMuons[number]->Pz(),looseMuons[number]->Energy());
+				   
+				   }
+				   else
+				   {
+				   	int number = aPair.first;
+				   	if(j == 0) lepton_45_0.SetPxPyPzE(looseElectrons[number]->Px(),looseElectrons[number]->Py(),looseElectrons[number]->Pz(),looseElectrons[number]->Energy());
+					if(j == 1) lepton_45_1.SetPxPyPzE(looseElectrons[number]->Px(),looseElectrons[number]->Py(),looseElectrons[number]->Pz(),looseElectrons[number]->Energy());
+					if(j == 2) lepton_45_2.SetPxPyPzE(looseElectrons[number]->Px(),looseElectrons[number]->Py(),looseElectrons[number]->Pz(),looseElectrons[number]->Energy());
+					if(j == 3) lepton_45_3.SetPxPyPzE(looseElectrons[number]->Px(),looseElectrons[number]->Py(),looseElectrons[number]->Pz(),looseElectrons[number]->Energy());
+				   
+				   
+				   }	
+				
+				}
+				
+				leptonpair_45_mll_1 = lepton_45_0 + lepton_45_1; 
+				leptonpair_45_mll_2 = lepton_45_2 + lepton_45_3;
+				leptonpair_45_mllll = leptonpair_45_mll_1 + leptonpair_45_mll_2;
+				mllll_45 = leptonpair_45_mllll.M();
+				
+			  	MSPlot["Mllll"]->Fill(mllll_45, datasets[d], true, Luminosity*scaleFactor);
+				
+				
+					
+				  	
+			}
+			
+			
+			 
+			
+			
+			
 
+/*
 			if(channel.find("45")!=string::npos && Passed_selection)
 			{
 			    if(debug) cout << "in leptoncounting" << endl; 
@@ -1095,6 +1167,8 @@ int main(int argc, char *argv[]){
 				MSPlot["MllW"]->Fill(mllW_45, datasets[d], true, Luminosity*scaleFactor);
 				 	
 			}
+*/			leptons_45 = true; 
+
 			if(fabs(mllll_45-mH) < 10 & leptons_45)
 			{
 				MSPlot["MScutflow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor);

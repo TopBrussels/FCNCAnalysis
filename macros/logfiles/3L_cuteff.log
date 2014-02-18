@@ -1,0 +1,382 @@
+
+Processing FCNC_CutEfficiencies.C++...
+------------------------------------------------------------------
+         [LOOPING OVER 3L CHANNEL
+------------------------------------------------------------------
+*** MScutflow_TT_SemiLeptMGDecays : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 2.00216e-05 efficiency -- 0.00200216 % efficiency
+=3L & >0 jets : 2.00216e-05 efficiency -- 0.00200216 % efficiency
+=3L & >1 jets : 2.00216e-05 efficiency -- 0.00200216 % efficiency
+=3L & >2 jets : 2.00216e-05 efficiency -- 0.00200216 % efficiency
+=3L & >3 jets : 2.00216e-05 efficiency -- 0.00200216 % efficiency
+=3L & >4 jets : 0 efficiency -- 0 % efficiency
+=3L & >5 jets : 0 efficiency -- 0 % efficiency
+=3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TT_FullLeptMGDecays : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 0.00102041 efficiency -- 0.102041 % efficiency
+=3L & >0 jets : 0.000990398 efficiency -- 0.0990398 % efficiency
+=3L & >1 jets : 0.000780314 efficiency -- 0.0780314 % efficiency
+=3L & >2 jets : 0.000460185 efficiency -- 0.0460185 % efficiency
+=3L & >3 jets : 0.000280113 efficiency -- 0.0280113 % efficiency
+=3L & >4 jets : 8.00322e-05 efficiency -- 0.00800322 % efficiency
+=3L & >5 jets : 1.0004e-05 efficiency -- 0.0010004 % efficiency
+=3L & >0 Bjets : 0.000750302 efficiency -- 0.0750302 % efficiency
+=3L & >1 Bjets : 0.000180073 efficiency -- 0.0180073 % efficiency
+=3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 0.000570229 efficiency -- 0.0570229 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TT_HadronicMGDecays : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 0 efficiency -- 0 % efficiency
+=3L & >0 jets : 0 efficiency -- 0 % efficiency
+=3L & >1 jets : 0 efficiency -- 0 % efficiency
+=3L & >2 jets : 0 efficiency -- 0 % efficiency
+=3L & >3 jets : 0 efficiency -- 0 % efficiency
+=3L & >4 jets : 0 efficiency -- 0 % efficiency
+=3L & >5 jets : 0 efficiency -- 0 % efficiency
+=3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_Z_M-10To50 : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 0.00014007 efficiency -- 0.014007 % efficiency
+=3L & >0 jets : 0.000110055 efficiency -- 0.0110055 % efficiency
+=3L & >1 jets : 2.001e-05 efficiency -- 0.002001 % efficiency
+=3L & >2 jets : 1.0005e-05 efficiency -- 0.0010005 % efficiency
+=3L & >3 jets : 0 efficiency -- 0 % efficiency
+=3L & >4 jets : 0 efficiency -- 0 % efficiency
+=3L & >5 jets : 0 efficiency -- 0 % efficiency
+=3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTZ : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 0.0140822 efficiency -- 1.40822 % efficiency
+=3L & >0 jets : 0.0140822 efficiency -- 1.40822 % efficiency
+=3L & >1 jets : 0.0137824 efficiency -- 1.37824 % efficiency
+=3L & >2 jets : 0.0121533 efficiency -- 1.21533 % efficiency
+=3L & >3 jets : 0.00894503 efficiency -- 0.894503 % efficiency
+=3L & >4 jets : 0.00499717 efficiency -- 0.499717 % efficiency
+=3L & >5 jets : 0.00215877 efficiency -- 0.215877 % efficiency
+=3L & >0 Bjets : 0.0112238 efficiency -- 1.12238 % efficiency
+=3L & >1 Bjets : 0.00465735 efficiency -- 0.465735 % efficiency
+=3L & >2 Bjets : 0.000379784 efficiency -- 0.0379784 % efficiency
+=3L & >3 Bjets : 3.99773e-05 efficiency -- 0.00399773 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 0.00656632 efficiency -- 0.656632 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTW : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 0.00537897 efficiency -- 0.537897 % efficiency
+=3L & >0 jets : 0.00534898 efficiency -- 0.534898 % efficiency
+=3L & >1 jets : 0.00471911 efficiency -- 0.471911 % efficiency
+=3L & >2 jets : 0.00278948 efficiency -- 0.278948 % efficiency
+=3L & >3 jets : 0.00141974 efficiency -- 0.141974 % efficiency
+=3L & >4 jets : 0.000659876 efficiency -- 0.0659876 % efficiency
+=3L & >5 jets : 0.000239955 efficiency -- 0.0239955 % efficiency
+=3L & >0 Bjets : 0.00418922 efficiency -- 0.418922 % efficiency
+=3L & >1 Bjets : 0.00171968 efficiency -- 0.171968 % efficiency
+=3L & >2 Bjets : 7.9985e-05 efficiency -- 0.0079985 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 0.00246954 efficiency -- 0.246954 % efficiency
+------------------------------------------------------------------
+*** MScutflow_Zjets : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 7.00381e-05 efficiency -- 0.00700381 % efficiency
+=3L & >0 jets : 7.00381e-05 efficiency -- 0.00700381 % efficiency
+=3L & >1 jets : 1.00054e-05 efficiency -- 0.00100054 % efficiency
+=3L & >2 jets : 0 efficiency -- 0 % efficiency
+=3L & >3 jets : 0 efficiency -- 0 % efficiency
+=3L & >4 jets : 0 efficiency -- 0 % efficiency
+=3L & >5 jets : 0 efficiency -- 0 % efficiency
+=3L & >0 Bjets : 1.00054e-05 efficiency -- 0.00100054 % efficiency
+=3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 1.00054e-05 efficiency -- 0.00100054 % efficiency
+------------------------------------------------------------------
+*** MScutflow_ST_T_tW-ch : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 0.000170078 efficiency -- 0.0170078 % efficiency
+=3L & >0 jets : 0.000160074 efficiency -- 0.0160074 % efficiency
+=3L & >1 jets : 8.00368e-05 efficiency -- 0.00800368 % efficiency
+=3L & >2 jets : 1.00046e-05 efficiency -- 0.00100046 % efficiency
+=3L & >3 jets : 0 efficiency -- 0 % efficiency
+=3L & >4 jets : 0 efficiency -- 0 % efficiency
+=3L & >5 jets : 0 efficiency -- 0 % efficiency
+=3L & >0 Bjets : 7.00322e-05 efficiency -- 0.00700322 % efficiency
+=3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 7.00322e-05 efficiency -- 0.00700322 % efficiency
+------------------------------------------------------------------
+*** MScutflow_ST_TBar_tW-ch : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 8.00368e-05 efficiency -- 0.00800368 % efficiency
+=3L & >0 jets : 7.00322e-05 efficiency -- 0.00700322 % efficiency
+=3L & >1 jets : 6.00276e-05 efficiency -- 0.00600276 % efficiency
+=3L & >2 jets : 2.00092e-05 efficiency -- 0.00200092 % efficiency
+=3L & >3 jets : 2.00092e-05 efficiency -- 0.00200092 % efficiency
+=3L & >4 jets : 0 efficiency -- 0 % efficiency
+=3L & >5 jets : 0 efficiency -- 0 % efficiency
+=3L & >0 Bjets : 5.0023e-05 efficiency -- 0.0050023 % efficiency
+=3L & >1 Bjets : 2.00092e-05 efficiency -- 0.00200092 % efficiency
+=3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 3.00138e-05 efficiency -- 0.00300138 % efficiency
+------------------------------------------------------------------
+*** MScutflow_ST_T_s-ch : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 1.00023e-05 efficiency -- 0.00100023 % efficiency
+=3L & >0 jets : 1.00023e-05 efficiency -- 0.00100023 % efficiency
+=3L & >1 jets : 0 efficiency -- 0 % efficiency
+=3L & >2 jets : 0 efficiency -- 0 % efficiency
+=3L & >3 jets : 0 efficiency -- 0 % efficiency
+=3L & >4 jets : 0 efficiency -- 0 % efficiency
+=3L & >5 jets : 0 efficiency -- 0 % efficiency
+=3L & >0 Bjets : 1.00023e-05 efficiency -- 0.00100023 % efficiency
+=3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 1.00023e-05 efficiency -- 0.00100023 % efficiency
+------------------------------------------------------------------
+*** MScutflow_ST_Tbar_s-ch : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 0 efficiency -- 0 % efficiency
+=3L & >0 jets : 0 efficiency -- 0 % efficiency
+=3L & >1 jets : 0 efficiency -- 0 % efficiency
+=3L & >2 jets : 0 efficiency -- 0 % efficiency
+=3L & >3 jets : 0 efficiency -- 0 % efficiency
+=3L & >4 jets : 0 efficiency -- 0 % efficiency
+=3L & >5 jets : 0 efficiency -- 0 % efficiency
+=3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_ST_T_t-ch : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 0 efficiency -- 0 % efficiency
+=3L & >0 jets : 0 efficiency -- 0 % efficiency
+=3L & >1 jets : 0 efficiency -- 0 % efficiency
+=3L & >2 jets : 0 efficiency -- 0 % efficiency
+=3L & >3 jets : 0 efficiency -- 0 % efficiency
+=3L & >4 jets : 0 efficiency -- 0 % efficiency
+=3L & >5 jets : 0 efficiency -- 0 % efficiency
+=3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_ST_Tbar_t-ch : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 0 efficiency -- 0 % efficiency
+=3L & >0 jets : 0 efficiency -- 0 % efficiency
+=3L & >1 jets : 0 efficiency -- 0 % efficiency
+=3L & >2 jets : 0 efficiency -- 0 % efficiency
+=3L & >3 jets : 0 efficiency -- 0 % efficiency
+=3L & >4 jets : 0 efficiency -- 0 % efficiency
+=3L & >5 jets : 0 efficiency -- 0 % efficiency
+=3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 0.000606211 efficiency -- 0.0606211 % efficiency
+=3L & >0 jets : 0.000606211 efficiency -- 0.0606211 % efficiency
+=3L & >1 jets : 0.000606211 efficiency -- 0.0606211 % efficiency
+=3L & >2 jets : 0.000606211 efficiency -- 0.0606211 % efficiency
+=3L & >3 jets : 0.000303105 efficiency -- 0.0303105 % efficiency
+=3L & >4 jets : 0.000303105 efficiency -- 0.0303105 % efficiency
+=3L & >5 jets : 0.000101035 efficiency -- 0.0101035 % efficiency
+=3L & >0 Bjets : 0.00020207 efficiency -- 0.020207 % efficiency
+=3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 0.00020207 efficiency -- 0.020207 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToWW_WToLNuL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 0.078394 efficiency -- 7.8394 % efficiency
+=3L & >0 jets : 0.0776402 efficiency -- 7.76402 % efficiency
+=3L & >1 jets : 0.064072 efficiency -- 6.4072 % efficiency
+=3L & >2 jets : 0.0356792 efficiency -- 3.56792 % efficiency
+=3L & >3 jets : 0.0145732 efficiency -- 1.45732 % efficiency
+=3L & >4 jets : 0.00753787 efficiency -- 0.753787 % efficiency
+=3L & >5 jets : 0.00226136 efficiency -- 0.226136 % efficiency
+=3L & >0 Bjets : 0.0492474 efficiency -- 4.92474 % efficiency
+=3L & >1 Bjets : 0.0080404 efficiency -- 0.80404 % efficiency
+=3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 0.041207 efficiency -- 4.1207 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToBB_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 0 efficiency -- 0 % efficiency
+=3L & >0 jets : 0 efficiency -- 0 % efficiency
+=3L & >1 jets : 0 efficiency -- 0 % efficiency
+=3L & >2 jets : 0 efficiency -- 0 % efficiency
+=3L & >3 jets : 0 efficiency -- 0 % efficiency
+=3L & >4 jets : 0 efficiency -- 0 % efficiency
+=3L & >5 jets : 0 efficiency -- 0 % efficiency
+=3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 0.0588085 efficiency -- 5.88085 % efficiency
+=3L & >0 jets : 0.0585488 efficiency -- 5.85488 % efficiency
+=3L & >1 jets : 0.0546542 efficiency -- 5.46542 % efficiency
+=3L & >2 jets : 0.0399846 efficiency -- 3.99846 % efficiency
+=3L & >3 jets : 0.0231081 efficiency -- 2.31081 % efficiency
+=3L & >4 jets : 0.0109049 efficiency -- 1.09049 % efficiency
+=3L & >5 jets : 0.00428408 efficiency -- 0.428408 % efficiency
+=3L & >0 Bjets : 0.0456967 efficiency -- 4.56967 % efficiency
+=3L & >1 Bjets : 0.0172661 efficiency -- 1.72661 % efficiency
+=3L & >2 Bjets : 0.00363497 efficiency -- 0.363497 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 0.0284307 efficiency -- 2.84307 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 0.057707 efficiency -- 5.7707 % efficiency
+=3L & >0 jets : 0.0574355 efficiency -- 5.74355 % efficiency
+=3L & >1 jets : 0.0549915 efficiency -- 5.49915 % efficiency
+=3L & >2 jets : 0.0410059 efficiency -- 4.10059 % efficiency
+=3L & >3 jets : 0.0215892 efficiency -- 2.15892 % efficiency
+=3L & >4 jets : 0.00868999 efficiency -- 0.868999 % efficiency
+=3L & >5 jets : 0.00353031 efficiency -- 0.353031 % efficiency
+=3L & >0 Bjets : 0.037204 efficiency -- 3.7204 % efficiency
+=3L & >1 Bjets : 0.00706061 efficiency -- 0.706061 % efficiency
+=3L & >2 Bjets : 0.000271562 efficiency -- 0.0271562 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 0.0301434 efficiency -- 3.01434 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 0.0731137 efficiency -- 7.31137 % efficiency
+=3L & >0 jets : 0.0723477 efficiency -- 7.23477 % efficiency
+=3L & >1 jets : 0.0603012 efficiency -- 6.03012 % efficiency
+=3L & >2 jets : 0.0319607 efficiency -- 3.19607 % efficiency
+=3L & >3 jets : 0.0139262 efficiency -- 1.39262 % efficiency
+=3L & >4 jets : 0.00501345 efficiency -- 0.501345 % efficiency
+=3L & >5 jets : 0.00167115 efficiency -- 0.167115 % efficiency
+=3L & >0 Bjets : 0.0463049 efficiency -- 4.63049 % efficiency
+=3L & >1 Bjets : 0.00550087 efficiency -- 0.550087 % efficiency
+=3L & >2 Bjets : 6.96313e-05 efficiency -- 0.00696313 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 0.0408039 efficiency -- 4.08039 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToZZ_ZToLL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 0.347242 efficiency -- 34.7242 % efficiency
+=3L & >0 jets : 0.346124 efficiency -- 34.6124 % efficiency
+=3L & >1 jets : 0.333457 efficiency -- 33.3457 % efficiency
+=3L & >2 jets : 0.287443 efficiency -- 28.7443 % efficiency
+=3L & >3 jets : 0.198956 efficiency -- 19.8956 % efficiency
+=3L & >4 jets : 0.105997 efficiency -- 10.5997 % efficiency
+=3L & >5 jets : 0.0422871 efficiency -- 4.22871 % efficiency
+=3L & >0 Bjets : 0.226713 efficiency -- 22.6713 % efficiency
+=3L & >1 Bjets : 0.0463854 efficiency -- 4.63854 % efficiency
+=3L & >2 Bjets : 0.00167658 efficiency -- 0.167658 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 0.180327 efficiency -- 18.0327 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocZbW : ***
+
+initial : 1 efficiency -- 100 % efficiency
+=3L : 0.0698286 efficiency -- 6.98286 % efficiency
+=3L & >0 jets : 0.0693686 efficiency -- 6.93686 % efficiency
+=3L & >1 jets : 0.0629587 efficiency -- 6.29587 % efficiency
+=3L & >2 jets : 0.0395986 efficiency -- 3.95986 % efficiency
+=3L & >3 jets : 0.0192239 efficiency -- 1.92239 % efficiency
+=3L & >4 jets : 0.00772134 efficiency -- 0.772134 % efficiency
+=3L & >5 jets : 0.00263046 efficiency -- 0.263046 % efficiency
+=3L & >0 Bjets : 0.0422588 efficiency -- 4.22588 % efficiency
+=3L & >1 Bjets : 0.00438076 efficiency -- 0.438076 % efficiency
+=3L & >2 Bjets : 0.000150027 efficiency -- 0.0150027 % efficiency
+=3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+=3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+=3L & 1 Bjet : 0.0378782 efficiency -- 3.78782 % efficiency

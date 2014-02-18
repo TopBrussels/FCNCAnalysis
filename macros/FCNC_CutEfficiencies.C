@@ -11,19 +11,19 @@
 
 using namespace std;
 
-void FCNC_CutEfficiencies(string channel = "3L"){
+void FCNC_CutEfficiencies(string channel = "45"){
 	cout << "------------------------------------------------------------------" << endl;
 	cout << "         [LOOPING OVER " << channel << " CHANNEL]" << endl; 
 	
-	string	Vector_cutflow_3L[19] = {"","initial","3L","3L & OSSF","","","","","","","","","","","","","", "",""};
+	string Vector_cutflow_3L[19] = {"","initial","3L","3L & OSSF","3L & OSOF","3L & OSSF & >0 bjet","3L & OSOF & >0 bjet","3L & >0 bjet","3L & OSSF & >30 MET","3L & OSOF & >30 MET","3L & >30 MET","","","","","","", "",""};
 	string Vector_cutflow_4L[19] = {"","initial","4L","4L & Z(e/mu)","4L & Z(e/mu) & |mllll - mh|<10GeV","4L & Z(e/mu) &|mllll - mh|<10GeV & >3 jets","4L & Z(e/mu) & |mllll - mh|<5 GeV","4L & Z(e/mu) & |mllll - mh|<5 GeV & >3jets","","","","","","","","","","",""};
 	string Vector_cutflow_5L[19] = {"","initial","5L","5L & >1 jets","5L & >1 jets & >0 bjets","","","","","","","","","","","","","",""};
-	string Vector_cutflow_45[19] = {"","initial",">3L",">3L & Zdecay",">3L & Zdecay & Mh",">3L & #jets>1",">3L & #jets>1 & 1 Bj",">3L & #jets>1 & 1 Bj & Pt bjet >30GeV","","","","","","","","","","",""};
+	string Vector_cutflow_45[19] = {"_","initial",">3L",">3L & Mh",">3L& Mh & #jets>1",">3L & Mh& #jets>1 & 1 Bj","5","","","","","","","","","","","",""};
 	
 	
 	
 
-	string rootFileName = "../data/FCNC_selection_";
+	string rootFileName = "FCNC_selection_";
         if(channel.find("45")!=string::npos)
         { rootFileName += "4L5L";
         }
@@ -31,7 +31,7 @@ void FCNC_CutEfficiencies(string channel = "3L"){
         {	
            rootFileName += channel;
 	}
-        rootFileName += ".root";
+        rootFileName += "_signal.root";
 	
 	
 	TFile *file = new TFile(rootFileName.c_str(),"read");
@@ -46,6 +46,8 @@ void FCNC_CutEfficiencies(string channel = "3L"){
 	
 	//Put in the individual samples
 	Vector_SampleName.push_back("TBZ_ToLL_4F");
+	Vector_SampleName.push_back("VBHiggs4lep");
+	Vector_SampleName.push_back("ttH");
 	Vector_SampleName.push_back("GluGluHiggs4lep");
 	Vector_SampleName.push_back("Wjets");
 	Vector_SampleName.push_back("W_1Jets");
@@ -90,6 +92,23 @@ void FCNC_CutEfficiencies(string channel = "3L"){
 	Vector_SampleName.push_back("Z_2Jets");
 	Vector_SampleName.push_back("Z_3Jets");
 	Vector_SampleName.push_back("Z_4Jets");
+	
+	Vector_SampleName.push_back("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");
+	Vector_SampleName.push_back("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL");
+	Vector_SampleName.push_back("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_HctL");
+	Vector_SampleName.push_back("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_HctR");
+	Vector_SampleName.push_back("NP_overlay_TTJetsTocHbW_HToBB_HctL");
+	Vector_SampleName.push_back("NP_overlay_TTJetsTocHbW_HToBB_HctR");
+	
+	Vector_SampleName.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL");
+	Vector_SampleName.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctR");
+	Vector_SampleName.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL");
+	Vector_SampleName.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctR");
+	Vector_SampleName.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL");
+	Vector_SampleName.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR");
+	Vector_SampleName.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToLL_HctL");
+	Vector_SampleName.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToLL_HctR");
+	Vector_SampleName.push_back("NP_overlay_TTJetsTocZbW");
 	
 	Vector_SampleName.push_back("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");
 	Vector_SampleName.push_back("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL");

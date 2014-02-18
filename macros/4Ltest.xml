@@ -12,7 +12,7 @@
 
 
    
-  <d name="NP_overlay_TTJetsTocHbW_HToZZ_ZToLL_HctL" title="tcH (H->ZZ)"	add="1"   color="14"  ls="1"  lw="2" normf="1"   xsection="0.00016516"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170416/TOPTREE/*.root"/> 
+  <d name="TTJetsTocHbW_HToZZ_ZToLL_HctL" title="tcH (H->ZZ)" add="1"   color="14"  ls="1"  lw="2" normf="1"   xsection="0.00016516"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170416/TOPTREE/*.root"/> 
 
 
   

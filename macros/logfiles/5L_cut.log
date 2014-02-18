@@ -1,0 +1,25 @@
+
+Processing FCNC_CutEfficiencies.C...
+------------------------------------------------------------------
+         [LOOPING OVER 5L CHANNEL]
+------------------------------------------------------------------
+*** MScutflow_GluGluHiggs4lep : ***
+
+initial : 1 efficiency -- 100 % efficiency
+5L : 3.50557e-05 efficiency -- 0.00350557 % efficiency
+5L & >1 jets : 1.10175e-05 efficiency -- 0.00110175 % efficiency
+5L & >1 jets & >0 bjets : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_ZZ_To4L : ***
+
+initial : 1 efficiency -- 100 % efficiency
+5L : 0.000143908 efficiency -- 0.0143908 % efficiency
+5L & >1 jets : 3.99868e-05 efficiency -- 0.00399868 % efficiency
+5L & >1 jets & >0 bjets : 3.95474e-06 efficiency -- 0.000395474 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToZZ_ZToLL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+5L : 0.0217958 efficiency -- 2.17958 % efficiency
+5L & >1 jets : 0.0169523 efficiency -- 1.69523 % efficiency
+5L & >1 jets & >0 bjets : 0.00968703 efficiency -- 0.968703 % efficiency

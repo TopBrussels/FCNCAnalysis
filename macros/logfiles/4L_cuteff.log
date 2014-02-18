@@ -1,0 +1,424 @@
+
+Processing FCNC_CutEfficiencies.C++...
+------------------------------------------------------------------
+         [LOOPING OVER 4L CHANNEL
+------------------------------------------------------------------
+*** MScutflow_TT_SemiLeptMGDecays : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0 efficiency -- 0 % efficiency
+>3L & >0 jets : 0 efficiency -- 0 % efficiency
+>3L & >1 jets : 0 efficiency -- 0 % efficiency
+>3L & >2 jets : 0 efficiency -- 0 % efficiency
+>3L & >3 jets : 0 efficiency -- 0 % efficiency
+>3L & >4 jets : 0 efficiency -- 0 % efficiency
+>3L & >5 jets : 0 efficiency -- 0 % efficiency
+>3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0 efficiency -- 0 % efficiency
+4 leptons : 0 efficiency -- 0 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TT_FullLeptMGDecays : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0 efficiency -- 0 % efficiency
+>3L & >0 jets : 0 efficiency -- 0 % efficiency
+>3L & >1 jets : 0 efficiency -- 0 % efficiency
+>3L & >2 jets : 0 efficiency -- 0 % efficiency
+>3L & >3 jets : 0 efficiency -- 0 % efficiency
+>3L & >4 jets : 0 efficiency -- 0 % efficiency
+>3L & >5 jets : 0 efficiency -- 0 % efficiency
+>3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0 efficiency -- 0 % efficiency
+4 leptons : 0 efficiency -- 0 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TT_HadronicMGDecays : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0 efficiency -- 0 % efficiency
+>3L & >0 jets : 0 efficiency -- 0 % efficiency
+>3L & >1 jets : 0 efficiency -- 0 % efficiency
+>3L & >2 jets : 0 efficiency -- 0 % efficiency
+>3L & >3 jets : 0 efficiency -- 0 % efficiency
+>3L & >4 jets : 0 efficiency -- 0 % efficiency
+>3L & >5 jets : 0 efficiency -- 0 % efficiency
+>3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0 efficiency -- 0 % efficiency
+4 leptons : 0 efficiency -- 0 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_Z_M-10To50 : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0 efficiency -- 0 % efficiency
+>3L & >0 jets : 0 efficiency -- 0 % efficiency
+>3L & >1 jets : 0 efficiency -- 0 % efficiency
+>3L & >2 jets : 0 efficiency -- 0 % efficiency
+>3L & >3 jets : 0 efficiency -- 0 % efficiency
+>3L & >4 jets : 0 efficiency -- 0 % efficiency
+>3L & >5 jets : 0 efficiency -- 0 % efficiency
+>3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0 efficiency -- 0 % efficiency
+4 leptons : 0 efficiency -- 0 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTZ : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0.00149915 efficiency -- 0.149915 % efficiency
+>3L & >0 jets : 0.00149915 efficiency -- 0.149915 % efficiency
+>3L & >1 jets : 0.0013992 efficiency -- 0.13992 % efficiency
+>3L & >2 jets : 0.000889494 efficiency -- 0.0889494 % efficiency
+>3L & >3 jets : 0.000399773 efficiency -- 0.0399773 % efficiency
+>3L & >4 jets : 0.000129926 efficiency -- 0.0129926 % efficiency
+>3L & >5 jets : 2.99829e-05 efficiency -- 0.00299829 % efficiency
+>3L & >0 Bjets : 0.00120931 efficiency -- 0.120931 % efficiency
+>3L & >1 Bjets : 0.000539693 efficiency -- 0.0539693 % efficiency
+>3L & >2 Bjets : 1.99886e-05 efficiency -- 0.00199886 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0.00149915 efficiency -- 0.149915 % efficiency
+4 leptons : 0.00149915 efficiency -- 0.149915 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTW : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 1.99962e-05 efficiency -- 0.00199962 % efficiency
+>3L & >0 jets : 1.99962e-05 efficiency -- 0.00199962 % efficiency
+>3L & >1 jets : 1.99962e-05 efficiency -- 0.00199962 % efficiency
+>3L & >2 jets : 1.99962e-05 efficiency -- 0.00199962 % efficiency
+>3L & >3 jets : 0 efficiency -- 0 % efficiency
+>3L & >4 jets : 0 efficiency -- 0 % efficiency
+>3L & >5 jets : 0 efficiency -- 0 % efficiency
+>3L & >0 Bjets : 1.99962e-05 efficiency -- 0.00199962 % efficiency
+>3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 1.99962e-05 efficiency -- 0.00199962 % efficiency
+4 leptons : 1.99962e-05 efficiency -- 0.00199962 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_Zjets : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0 efficiency -- 0 % efficiency
+>3L & >0 jets : 0 efficiency -- 0 % efficiency
+>3L & >1 jets : 0 efficiency -- 0 % efficiency
+>3L & >2 jets : 0 efficiency -- 0 % efficiency
+>3L & >3 jets : 0 efficiency -- 0 % efficiency
+>3L & >4 jets : 0 efficiency -- 0 % efficiency
+>3L & >5 jets : 0 efficiency -- 0 % efficiency
+>3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0 efficiency -- 0 % efficiency
+4 leptons : 0 efficiency -- 0 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_ST_T_tW-ch : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0 efficiency -- 0 % efficiency
+>3L & >0 jets : 0 efficiency -- 0 % efficiency
+>3L & >1 jets : 0 efficiency -- 0 % efficiency
+>3L & >2 jets : 0 efficiency -- 0 % efficiency
+>3L & >3 jets : 0 efficiency -- 0 % efficiency
+>3L & >4 jets : 0 efficiency -- 0 % efficiency
+>3L & >5 jets : 0 efficiency -- 0 % efficiency
+>3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0 efficiency -- 0 % efficiency
+4 leptons : 0 efficiency -- 0 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_ST_TBar_tW-ch : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0 efficiency -- 0 % efficiency
+>3L & >0 jets : 0 efficiency -- 0 % efficiency
+>3L & >1 jets : 0 efficiency -- 0 % efficiency
+>3L & >2 jets : 0 efficiency -- 0 % efficiency
+>3L & >3 jets : 0 efficiency -- 0 % efficiency
+>3L & >4 jets : 0 efficiency -- 0 % efficiency
+>3L & >5 jets : 0 efficiency -- 0 % efficiency
+>3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0 efficiency -- 0 % efficiency
+4 leptons : 0 efficiency -- 0 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_ST_T_s-ch : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0 efficiency -- 0 % efficiency
+>3L & >0 jets : 0 efficiency -- 0 % efficiency
+>3L & >1 jets : 0 efficiency -- 0 % efficiency
+>3L & >2 jets : 0 efficiency -- 0 % efficiency
+>3L & >3 jets : 0 efficiency -- 0 % efficiency
+>3L & >4 jets : 0 efficiency -- 0 % efficiency
+>3L & >5 jets : 0 efficiency -- 0 % efficiency
+>3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0 efficiency -- 0 % efficiency
+4 leptons : 0 efficiency -- 0 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_ST_Tbar_s-ch : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0 efficiency -- 0 % efficiency
+>3L & >0 jets : 0 efficiency -- 0 % efficiency
+>3L & >1 jets : 0 efficiency -- 0 % efficiency
+>3L & >2 jets : 0 efficiency -- 0 % efficiency
+>3L & >3 jets : 0 efficiency -- 0 % efficiency
+>3L & >4 jets : 0 efficiency -- 0 % efficiency
+>3L & >5 jets : 0 efficiency -- 0 % efficiency
+>3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0 efficiency -- 0 % efficiency
+4 leptons : 0 efficiency -- 0 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_ST_T_t-ch : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0 efficiency -- 0 % efficiency
+>3L & >0 jets : 0 efficiency -- 0 % efficiency
+>3L & >1 jets : 0 efficiency -- 0 % efficiency
+>3L & >2 jets : 0 efficiency -- 0 % efficiency
+>3L & >3 jets : 0 efficiency -- 0 % efficiency
+>3L & >4 jets : 0 efficiency -- 0 % efficiency
+>3L & >5 jets : 0 efficiency -- 0 % efficiency
+>3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0 efficiency -- 0 % efficiency
+4 leptons : 0 efficiency -- 0 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_ST_Tbar_t-ch : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0 efficiency -- 0 % efficiency
+>3L & >0 jets : 0 efficiency -- 0 % efficiency
+>3L & >1 jets : 0 efficiency -- 0 % efficiency
+>3L & >2 jets : 0 efficiency -- 0 % efficiency
+>3L & >3 jets : 0 efficiency -- 0 % efficiency
+>3L & >4 jets : 0 efficiency -- 0 % efficiency
+>3L & >5 jets : 0 efficiency -- 0 % efficiency
+>3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0 efficiency -- 0 % efficiency
+4 leptons : 0 efficiency -- 0 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0 efficiency -- 0 % efficiency
+>3L & >0 jets : 0 efficiency -- 0 % efficiency
+>3L & >1 jets : 0 efficiency -- 0 % efficiency
+>3L & >2 jets : 0 efficiency -- 0 % efficiency
+>3L & >3 jets : 0 efficiency -- 0 % efficiency
+>3L & >4 jets : 0 efficiency -- 0 % efficiency
+>3L & >5 jets : 0 efficiency -- 0 % efficiency
+>3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0 efficiency -- 0 % efficiency
+4 leptons : 0 efficiency -- 0 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToWW_WToLNuL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0.000502525 efficiency -- 0.0502525 % efficiency
+>3L & >0 jets : 0.000502525 efficiency -- 0.0502525 % efficiency
+>3L & >1 jets : 0.000251262 efficiency -- 0.0251262 % efficiency
+>3L & >2 jets : 0.000251262 efficiency -- 0.0251262 % efficiency
+>3L & >3 jets : 0.000251262 efficiency -- 0.0251262 % efficiency
+>3L & >4 jets : 0.000251262 efficiency -- 0.0251262 % efficiency
+>3L & >5 jets : 0 efficiency -- 0 % efficiency
+>3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0.000502525 efficiency -- 0.0502525 % efficiency
+4 leptons : 0.000502525 efficiency -- 0.0502525 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToBB_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0 efficiency -- 0 % efficiency
+>3L & >0 jets : 0 efficiency -- 0 % efficiency
+>3L & >1 jets : 0 efficiency -- 0 % efficiency
+>3L & >2 jets : 0 efficiency -- 0 % efficiency
+>3L & >3 jets : 0 efficiency -- 0 % efficiency
+>3L & >4 jets : 0 efficiency -- 0 % efficiency
+>3L & >5 jets : 0 efficiency -- 0 % efficiency
+>3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0 efficiency -- 0 % efficiency
+4 leptons : 0 efficiency -- 0 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0.000649102 efficiency -- 0.0649102 % efficiency
+>3L & >0 jets : 0.000649102 efficiency -- 0.0649102 % efficiency
+>3L & >1 jets : 0.000519282 efficiency -- 0.0519282 % efficiency
+>3L & >2 jets : 0.000259641 efficiency -- 0.0259641 % efficiency
+>3L & >3 jets : 0.00012982 efficiency -- 0.012982 % efficiency
+>3L & >4 jets : 0.00012982 efficiency -- 0.012982 % efficiency
+>3L & >5 jets : 0 efficiency -- 0 % efficiency
+>3L & >0 Bjets : 0.000519282 efficiency -- 0.0519282 % efficiency
+>3L & >1 Bjets : 0.000259641 efficiency -- 0.0259641 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0.000649102 efficiency -- 0.0649102 % efficiency
+4 leptons : 0.000649102 efficiency -- 0.0649102 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0.000271562 efficiency -- 0.0271562 % efficiency
+>3L & >0 jets : 0.000271562 efficiency -- 0.0271562 % efficiency
+>3L & >1 jets : 0.000271562 efficiency -- 0.0271562 % efficiency
+>3L & >2 jets : 0.000135781 efficiency -- 0.0135781 % efficiency
+>3L & >3 jets : 0.000135781 efficiency -- 0.0135781 % efficiency
+>3L & >4 jets : 0 efficiency -- 0 % efficiency
+>3L & >5 jets : 0 efficiency -- 0 % efficiency
+>3L & >0 Bjets : 0.000135781 efficiency -- 0.0135781 % efficiency
+>3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0.000271562 efficiency -- 0.0271562 % efficiency
+4 leptons : 0.000271562 efficiency -- 0.0271562 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 6.96313e-05 efficiency -- 0.00696313 % efficiency
+>3L & >0 jets : 6.96313e-05 efficiency -- 0.00696313 % efficiency
+>3L & >1 jets : 6.96313e-05 efficiency -- 0.00696313 % efficiency
+>3L & >2 jets : 6.96313e-05 efficiency -- 0.00696313 % efficiency
+>3L & >3 jets : 0 efficiency -- 0 % efficiency
+>3L & >4 jets : 0 efficiency -- 0 % efficiency
+>3L & >5 jets : 0 efficiency -- 0 % efficiency
+>3L & >0 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >1 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 6.96313e-05 efficiency -- 0.00696313 % efficiency
+4 leptons : 6.96313e-05 efficiency -- 0.00696313 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocHbW_HToZZ_ZToLL_HctL : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0.169522 efficiency -- 16.9522 % efficiency
+>3L & >0 jets : 0.168218 efficiency -- 16.8218 % efficiency
+>3L & >1 jets : 0.15406 efficiency -- 15.406 % efficiency
+>3L & >2 jets : 0.108419 efficiency -- 10.8419 % efficiency
+>3L & >3 jets : 0.0668767 efficiency -- 6.68767 % efficiency
+>3L & >4 jets : 0.0299922 efficiency -- 2.99922 % efficiency
+>3L & >5 jets : 0.0122949 efficiency -- 1.22949 % efficiency
+>3L & >0 Bjets : 0.108233 efficiency -- 10.8233 % efficiency
+>3L & >1 Bjets : 0.0167658 efficiency -- 1.67658 % efficiency
+>3L & >2 Bjets : 0.000745148 efficiency -- 0.0745148 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0.169522 efficiency -- 16.9522 % efficiency
+4 leptons : 0.147726 efficiency -- 14.7726 % efficiency
+5 leptons : 0.0217956 efficiency -- 2.17956 % efficiency
+------------------------------------------------------------------
+*** MScutflow_TTJetsTocZbW : ***
+
+initial : 1 efficiency -- 100 % efficiency
+>3L : 0.000260046 efficiency -- 0.0260046 % efficiency
+>3L & >0 jets : 0.000260046 efficiency -- 0.0260046 % efficiency
+>3L & >1 jets : 0.000220039 efficiency -- 0.0220039 % efficiency
+>3L & >2 jets : 0.000150027 efficiency -- 0.0150027 % efficiency
+>3L & >3 jets : 8.00141e-05 efficiency -- 0.00800141 % efficiency
+>3L & >4 jets : 4.00071e-05 efficiency -- 0.00400071 % efficiency
+>3L & >5 jets : 1.00018e-05 efficiency -- 0.00100018 % efficiency
+>3L & >0 Bjets : 0.000190034 efficiency -- 0.0190034 % efficiency
+>3L & >1 Bjets : 1.00018e-05 efficiency -- 0.00100018 % efficiency
+>3L & >2 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >3 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >4 Bjets : 0 efficiency -- 0 % efficiency
+>3L & >5 Bjets : 0 efficiency -- 0 % efficiency
+4-5 leptons : 0.000260046 efficiency -- 0.0260046 % efficiency
+4 leptons : 0.000260046 efficiency -- 0.0260046 % efficiency
+5 leptons : 0 efficiency -- 0 % efficiency
