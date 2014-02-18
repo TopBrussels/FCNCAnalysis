@@ -108,8 +108,8 @@
   <!-- D Y + J E T S -->
   
   
-  <d name="Z_M-10To50" title="Z/\gamma^{*}\rightarrow ll" add="1" color="858"  ls="1"  lw="2" normf="1" xsection="860.5"  NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DY1JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/22042013_162605/TOPTREE/*_1_*.root"/>
-  <d name="Z_M-50" title="Z/\gamma^{*}\rightarrow ll" add="1" color="858"  ls="1"  lw="2" normf="1" xsection="3503.71"  NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/05072013_232727/TOPTREE/*_1_*.root"/>
+  <d name="Z_M-10To50" title="Z/\gamma^{*}\rightarrow ll" add="1" color="9"  ls="1"  lw="2" normf="1" xsection="860.5"  NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DY1JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/22042013_162605/TOPTREE/*_1_*.root"/>
+  <d name="Z_M-50" title="Z/\gamma^{*}\rightarrow ll" add="1" color="9"  ls="1"  lw="2" normf="1" xsection="3503.71"  NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/05072013_232727/TOPTREE/*_1_*.root"/>
 
   
 <!-- EXCLUSIVE SAMPLES

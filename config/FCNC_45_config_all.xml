@@ -30,15 +30,15 @@
   <d name="ZZ_To4L" title="ZZ\to 4l" add="1" color="94"  ls="1"  lw="2" normf="1" xsection="0.180"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/ZZJetsTo4L_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/21062013_132341/TOPTREE/*_1_*.root"/>
 
   <!-- extra -->
- <d name="TBZ_ToLL_4F" title="TBZ\to 4f" add="1" color="9" ls="1" lw="2" normf="1" xsection="0.0114" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TBZToLL_4F_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v1//07022014_094225/TOPTREE/*_1_*.root"/>
- <d name="VBHiggs4lep" title="VBF\rightarrow H \rightarrow ZZ \rightarrow llll" add="1" color="51"  ls="1"  lw="2" normf="1" xsection="0.00414341777"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/VBF_HToZZTo4L_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/07022014_094220/TOPTREE/*_1_*.root"/>
- <d name="ttH" title="t\bar{t}H" add="1" color="130"  ls="1"  lw="2" normf="1" xsection="0.1293"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTH_Inclusive_M-125_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/07022014_094215/TOPTREE/*_1_*.root"/>
+  <d name="VBHiggs4lep" title="VBF\rightarrow H \rightarrow ZZ \rightarrow llll" add="1" color="51"  ls="1"  lw="2" normf="1" xsection="0.00414341777"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/VBF_HToZZTo4L_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/07022014_094220/TOPTREE/*_1_*.root"/>
+ 
+ <d name="ttH" title="t\bar{t}H" add="1" color="3"  ls="1"  lw="2" normf="1" xsection="0.1293"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTH_Inclusive_M-125_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/07022014_094215/TOPTREE/*_1_*.root"/>
 
 
   <!-- T T + Boson -->
 
-  <d name="TTZ" title="ttbar + Z" 	add="1"   color="141"  ls="1"  lw="2" normf="1"  xsection="0.172"       filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTZJets_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/06062013_144733/TOPTREE/*_1_*.root"/>
-  <d name="TTW" title="ttbar + W"	add="1"   color="65"  ls="1"  lw="2" normf="1"  xsection="0.2148"    filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTWJets_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/06062013_131723/TOPTREE/*_1_*.root"/> 
+  <d name="TTZ" title="t\bar{t} + Z" 	add="1"   color="1"  ls="1"  lw="2" normf="1"  xsection="0.172"       filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTZJets_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/06062013_144733/TOPTREE/*_1_*.root"/>
+  <d name="TTW" title="t\bar{t} + W"	add="1"   color="65"  ls="1"  lw="2" normf="1"  xsection="0.2148"    filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTWJets_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/06062013_131723/TOPTREE/*_1_*.root"/> 
 
    
 <!-- EXCLUSIVE SAMPLES
