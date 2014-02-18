@@ -56,7 +56,11 @@ map<string,MultiSamplePlot*> MSPlot;
 /// Normal Plots (TH1F* and TH2F*)
 map<string,TH1F*> histo1D;
 
-
+struct HighestCVSBtag{
+    bool operator()( TRootJet* j1, TRootJet* j2 ) const{
+            return j1->btag_combinedSecondaryVertexBJetTags() > j2->btag_combinedSecondaryVertexBJetTags();
+    }
+};
 
 
 int main(int argc, char *argv[]){
@@ -200,7 +204,7 @@ int main(int argc, char *argv[]){
 	///////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////
 	float workingpointvalue = 9999; //working points updated to 2012 BTV-POG recommendations.
-	float Tightworkingpoint = 0.898;
+	float Tightworkingpoint = .898;
  
   	if(btagger == "TCHPM" || btagger == "TCHET" || btagger == "SSV" ){
     		cout<<"This tagger ("<< btagger <<")is not commisioned in 2012, please use CSV, TCHP or JetProb"<<endl;
@@ -300,13 +304,16 @@ int main(int argc, char *argv[]){
 	if(channel.find("3L")!=string::npos) MSPlot["Mll_3LcH"]= new MultiSamplePlot(datasets,"Mll_3LcH",50,0,200,"Mll of leading and second leading lepton 3LcH");
 	//MSPlot["Mllq"] = new MultiSamplePlot(datasets,"Mllq",50,0,100,"Invariant mass of llq ~ mtop");
 	//if(channel.find("4L")!=string::npos) MSPlot["Mllll"] = new MultiSamplePlot(datasets,"Mllll",50,0,250,"Invariant mass of llll ~ 2mZ");
-	//MSPlot["DR_toplepton_MET"] = new MultiSamplePlot(datasets,"DR_toplepton_MET",50,0,100,"DR between toplepton and neutrino");
-	//MSPlot["DR_toplepton_bjet"] = new MultiSamplePlot(datasets,"DR_toplepton_bjet",50,0,100,"DR between toplepton and bjet");
-	//MSPlot["Mt_toplepton_MET"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET",50,0,100,"Transverse mass of toplepton and neutrino");
-	//MSPlot["Mt_toplepton_MET_bjet"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET_bjet",50,0,100,"Transverse mass of toplepton, bjet and neutrino");
-	//MSPlot["Mbqq"] = new MultiSamplePlot(datasets,"Mbqq",50,0,100,"Invariant mass of bqq ~ mtop");
-	//MSPlot["Mllqq"] = new MultiSamplePlot(datasets,"Mllqq",50,0,100,"Invariant mass of llqq ~ mH");
-	//MSPlot["Mllqqq"] = new MultiSamplePlot(datasets,"Mllqqq",50,0,100,"Invariant mass of llqqq ~ mtop");
+	MSPlot["DR_toplepton_MET"] = new MultiSamplePlot(datasets,"DR_toplepton_MET",50,0,100,"DR between toplepton and neutrino");
+	MSPlot["DR_toplepton_bjet"] = new MultiSamplePlot(datasets,"DR_toplepton_bjet",50,0,100,"DR between toplepton and bjet");
+	MSPlot["Mt_toplepton_MET"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET",50,0,100,"Transverse mass of toplepton and neutrino");
+	MSPlot["Mt_toplepton_MET_bjet"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET_bjet",50,0,100,"Transverse mass of toplepton, bjet and neutrino");
+	MSPlot["Mbqq"] = new MultiSamplePlot(datasets,"Mbqq",50,0,100,"Invariant mass of bqq ~ mtop");
+	MSPlot["Mllqq"] = new MultiSamplePlot(datasets,"Mllqq",50,0,100,"Invariant mass of llqq ~ mH");
+	MSPlot["Mllqqq"] = new MultiSamplePlot(datasets,"Mllqqq",50,0,100,"Invariant mass of llqqq ~ mtop");
+	MSPlot["Mbb"]= new MultiSamplePlot(datasets,"Mbb",50,0,200,"Invariant mass of bb ~ Higgs");
+	MSPlot["DeltaPhi_bb"]= new MultiSamplePlot(datasets,"DeltaPhi_bb",30,0,5,"DeltaPhi_bb");
+	MSPlot["DR_bb"]= new MultiSamplePlot(datasets,"DR_bb",30,0,5,"DR_bb");
 	//////////////////  Cut flow histograms	/////////////////////////////
 	MSPlot["MScutflow"] = new MultiSamplePlot(datasets,"MScutflow",20,-0.5,19.5, "cutflow"); 
 	if(channel.find("4L")!=string::npos) MSPlot["NbOfJets_4L4"]= new MultiSamplePlot(datasets,"NbOfJets_4L4",50,0,250,"#jets for exactly 4 leptons");
@@ -644,13 +651,16 @@ int main(int argc, char *argv[]){
 					nTags++;
 					selectedBJets_CSVM.push_back(selectedJets[iJet]);
 				}
-				else if (selectedJets[iJet]->btag_combinedSecondaryVertexBJetTags() > Tightworkingpoint)
+				else selectedLightJets.push_back(selectedJets[iJet]);
+				
+				if (selectedJets[iJet]->btag_combinedSecondaryVertexBJetTags() > Tightworkingpoint)
 				{
 					selectedBJets_CSVT.push_back(selectedJets[iJet]);
 				}
-				else selectedLightJets.push_back(selectedJets[iJet]);
 				
-			} 
+			}
+
+		sort(selectedBJets_CSVM.begin(), selectedBJets_CSVM.end(), HighestCVSBtag());
 
 			
 			if(debug) cout << "[INFO]	looseElectrons.size() = " << looseElectrons.size() << endl; 
@@ -720,14 +730,256 @@ int main(int argc, char *argv[]){
 			//1 lepton + 3 b-jets
 			if(channel.find("1L3B")!=string::npos)
 			{
+				if(debug) cout << "in 1L3B channel" << endl;
 				
+				if(looseElectrons.size() +  looseMuons.size() == 1)
+				{
+					if(debug) cout << "in fill 1l3b loop" << endl;
+					
+					//fill histograms
+					MSPlot["MScutflow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor);
+					if(!is_signal) histo1D["cutflow_total_B"]->Fill(2);
+					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
+					histo1D[Process_cutflow]->Fill(2);
+					//label histograms
+					if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "1L");
+					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "1L");
+					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(3, "1L");
+					
+					if(debug) cout << "selectedJets.size() = " << selectedJets.size() << endl;
+					
+					if(selectedJets.size() >= 4)
+					{
+						OneLepton_4Jets = true;
+						if(debug) cout << "in fill 1l3b loop: 3jets" << endl;
+						//fill histograms
+						MSPlot["MScutflow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor);
+						if(!is_signal) histo1D["cutflow_total_B"]->Fill(3);
+						if(is_signal) histo1D["cutflow_total_S"]->Fill(3);
+						histo1D[Process_cutflow]->Fill(3);
+						//label histograms
+						if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, ">= 4jets");
+						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, ">= 4jets");
+						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, ">=4jets");
+						
+						if(nTags == 3)
+						{
+							if(debug) cout << "in fill 1l3b loop: 3bjets" << endl;
+							//fill histograms
+							MSPlot["MScutflow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor);
+							if(!is_signal) histo1D["cutflow_total_B"]->Fill(4);
+							if(is_signal) histo1D["cutflow_total_S"]->Fill(4);
+							histo1D[Process_cutflow]->Fill(4);
+							//label histograms
+							if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5, "== 3 bjets");
+							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5, "== 3 bjets");
+							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, "== 3 bjets");
+							
+							
+						}
+						if(nTags > 0)
+						{
+							if(debug) cout << "in fill 1l3b loop: 3bjets" << endl;
+							//fill histograms
+							MSPlot["MScutflow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor);
+							if(!is_signal) histo1D["cutflow_total_B"]->Fill(5);
+							if(is_signal) histo1D["cutflow_total_S"]->Fill(5);
+							histo1D[Process_cutflow]->Fill(5);
+							//label histograms
+							if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(6, ">= 1 bjets");
+							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(6, ">= 1 bjets");
+							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(6, ">= 1 bjets");
+							
+						}
+						if(nTags > 1)
+						{
+							if(debug) cout << "in fill 1l3b loop: 3bjets" << endl;
+							//fill histograms
+							MSPlot["MScutflow"]->Fill(6, datasets[d], true, Luminosity*scaleFactor);
+							if(!is_signal) histo1D["cutflow_total_B"]->Fill(6);
+							if(is_signal) histo1D["cutflow_total_S"]->Fill(6);
+							histo1D[Process_cutflow]->Fill(6);
+							//label histograms
+							if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(7, ">= 2 bjets");
+							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(7, ">= 2 bjets");
+							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(7, ">= 2 bjets");
+							
+						}
+						if(nTags > 2)
+						{
+							if(debug) cout << "in fill 1l3b loop: 3bjets" << endl;
+							//fill histograms
+							MSPlot["MScutflow"]->Fill(7, datasets[d], true, Luminosity*scaleFactor);
+							if(!is_signal) histo1D["cutflow_total_B"]->Fill(7);
+							if(is_signal) histo1D["cutflow_total_S"]->Fill(7);
+							histo1D[Process_cutflow]->Fill(7);
+							//label histograms
+							if(!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(8, ">= 3 bjets");
+							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(8, ">= 3 bjets");
+							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(8, ">= 3 bjets");
+							
+							Passed_selection = true;
+						}
+					}
+				
+					if(debug) cout << "out fill 1l3b loop" << endl;
+				}
 			}
 			if(channel.find("SSdilepton")!=string::npos)
 			{
+			if(debug) cout << "in SSdilepton channel" << endl;
+				
+				if(looseElectrons.size() + looseMuons.size() == 2)
+				{
+					if(debug) cout << "in fill SS dilepton " << endl; 
+					
+					if(!is_signal)histo1D["cutflow_total_B"]->Fill(2);
+					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
+					histo1D[Process_cutflow]->Fill(2);
+					
+					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "2L");
+					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "2L");
+					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(3, "2L");
+					
+					bool electron = false; 
+					bool muon = false; 
+					bool EMu = false;
+
+					if(looseElectrons.size() == 2)
+					{
+						if(looseElectrons[0]->charge() == looseElectrons[1]->charge()) electron = true; 
+						if(debug) cout << "Electron boolean defined" << endl;
+					}
+				
+					if(looseMuons.size() == 2)
+					{
+						if(looseMuons[0]->charge() == looseMuons[1]->charge()) muon = true; 
+						if(debug) cout << "Muon boolean defined" << endl;
+					}
+					if(looseMuons.size() == 1 && looseElectrons.size() == 1)
+					{
+						if(looseMuons[0]->charge() == looseElectrons[0]->charge()) EMu = true; 
+						if(debug) cout << "EMu boolean defined" << endl;
+					}
+				
+					if(muon || electron || EMu)
+					{
+						if(debug) cout << "in fill SS dilepton: same sign " << endl;
+						
+						if(!is_signal)histo1D["cutflow_total_B"]->Fill(3);
+						if(is_signal) histo1D["cutflow_total_S"]->Fill(3);
+						histo1D[Process_cutflow]->Fill(3);
+						
+						if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, "2 SS L");
+						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, "2 SS L");
+						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, "2 SS L");
+						
+						if(selectedJets.size()>=1)
+						{
+							//fill histograms
+							if(!is_signal)histo1D["cutflow_total_B"]->Fill(4);
+							if(is_signal) histo1D["cutflow_total_S"]->Fill(4);
+							histo1D[Process_cutflow]->Fill(4);
+					
+							//set labels
+							if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5,">=1j");
+							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5,">=1j");		
+							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">=1j");
+							Passed_selection = true;
+						}						
+					}
+					if(debug) cout << "out fill SS dilepton " << endl;
+				}
 
 			}
 			if(channel.find("OSdilepton")!=string::npos)
 			{
+			float Zmass = 91.1876;  // ref-> pdg
+		                float massDiff = 9999;
+		                TLorentzVector leptonPairMass;
+	                	bool mll = false;
+				if(debug) cout << "in OSdilepton channel" << endl;
+				if(looseElectrons.size() + looseMuons.size() == 2)
+				{
+					if(debug) cout << "in fill OS dilepton " << endl; 
+					if(!is_signal)histo1D["cutflow_total_B"]->Fill(2);
+					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
+					histo1D[Process_cutflow]->Fill(2);
+					
+					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "2L");
+					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "2L");
+					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(3, "2L");
+					
+					bool electron = false; 
+					bool muon = false; 
+					bool EMu = false;
+
+					if(looseElectrons.size() == 2)
+					{
+						if(looseElectrons[0]->charge() != looseElectrons[1]->charge()) electron = true; 
+						if(debug) cout << "Electron boolean defined" << endl;
+					}
+				
+					if(looseMuons.size() == 2)
+					{
+						if(looseMuons[0]->charge() != looseMuons[1]->charge()) muon = true; 
+						if(debug) cout << "Muon boolean defined" << endl; 
+					}
+					if(looseMuons.size() == 1 && looseElectrons.size() == 1)
+					{
+						if(looseMuons[0]->charge() != looseElectrons[0]->charge()) EMu = true; 
+						if(debug) cout << "EMu boolean defined" << endl; 
+					}
+				
+					if(muon || electron || EMu)
+					{
+						if(debug) cout << "in fill OS dilepton: same sign " << endl;
+						if(!is_signal) histo1D["cutflow_total_B"]->Fill(3);
+						if(is_signal) histo1D["cutflow_total_S"]->Fill(3);
+						histo1D[Process_cutflow]->Fill(3);
+						if (!is_signal) histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, "2 OS L");
+						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, "2 OS L");
+						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, "2 OS L");
+						
+						Passed_selection = true;
+						// Additional cuts
+						if (selectedJets.size()>=4){
+						
+						if (electron) {
+						leptonPairMass = looseElectrons[0]->M() + looseElectrons[1]->M();
+						mll = true;}
+						if (muon){
+						leptonPairMass = looseMuons[0]->M() + looseMuons[1]->M();
+						mll =true;}
+						if (EMu){      
+						leptonPairMass = looseMuons[0]->M() + looseElectrons[0]->M();
+						mll = true;
+						}
+						if (mll){
+						massDiff = leptonPairMass.M() - Zmass ;
+						if (massDiff > 15)
+						{
+						MSPlot["massDiff"]->Fill(massDiff, datasets[d],true,Luminosity*scaleFactor);
+						}
+						}}
+						 	
+					}
+					
+						if(selectedJets.size()>=1  && Passed_selection)
+						{
+							//fill histograms
+							if(!is_signal)histo1D["cutflow_total_B"]->Fill(4);
+							if(is_signal) histo1D["cutflow_total_S"]->Fill(4);
+							histo1D[Process_cutflow]->Fill(4);
+					
+							//set labels
+							if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5, ">1j");
+							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5, ">1j");		
+							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">=1j");
+							Passed_selection = true;
+						}		
+					if(debug) cout << "out fill OS dilepton " << endl;
+				}
 
 			}
 
@@ -743,18 +995,24 @@ int main(int argc, char *argv[]){
 			//////////////////////////////////////////////////////////////////////////////////
 			// Filling histograms 							//////////
 			//////////////////////////////////////////////////////////////////////////////////
-
-	
+			int nLeptons = looseElectrons.size() +  looseMuons.size();
+			if(nLeptons == 1){
+				MSPlot["NbOfSelectedJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
+				MSPlot["NbOfSelectedBJets_CSVM"]->Fill(selectedBJets_CSVM.size(), datasets[d], true, Luminosity*scaleFactor);
+				MSPlot["NbOfSelectedBJets_CSVT"]->Fill(selectedBJets_CSVT.size(), datasets[d], true, Luminosity*scaleFactor);
+				
+			}
+			if(!Passed_selection) continue;
 			if(Passed_selection){
 				if(debug) cout << "[PROCES]	In passed_selection loop" << endl; 
 				
-				MSPlot["NbOfSelectedJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
+				if(nLeptons != 1) MSPlot["NbOfSelectedJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
 				if(debug) cout << "[PROCES]	Filled NbOfSelectedJets" << endl; 
 				MSPlot["NbOfSelectedLightJets"]->Fill(selectedLightJets.size(), datasets[d], true, Luminosity*scaleFactor);
 		        	if(debug) cout << "[PROCES]	Filled NbOfSelectedLightJets" << endl; 
-				MSPlot["NbOfSelectedBJets_CSVM"]->Fill(selectedBJets_CSVM.size(), datasets[d], true, Luminosity*scaleFactor);
+				if(nLeptons != 1) MSPlot["NbOfSelectedBJets_CSVM"]->Fill(selectedBJets_CSVM.size(), datasets[d], true, Luminosity*scaleFactor);
 		        	if(debug) cout << "[PROCES]	Filled NbOfSelectedBJets_CSVM" << endl; 
-				MSPlot["NbOfSelectedBJets_CSVT"]->Fill(selectedBJets_CSVT.size(), datasets[d], true, Luminosity*scaleFactor);
+				if(nLeptons != 1) MSPlot["NbOfSelectedBJets_CSVT"]->Fill(selectedBJets_CSVT.size(), datasets[d], true, Luminosity*scaleFactor);
 				if(debug) cout << "[PROCES]	Filled NbOfSelectedJets_CSVT" << endl; 
 				MSPlot["NbOfSelectedLeptons"]->Fill(looseMuons.size()+looseElectrons.size(),datasets[d],true,Luminosity*scaleFactor);
 				if(debug) cout << "[PROCES]	Filled NbOfSelectedLeptons" << endl; 
@@ -1097,7 +1355,79 @@ int main(int argc, char *argv[]){
 			 }
 			
 				
-			
+			if(channel.find("1L3B")!=string::npos && Passed_selection){
+					TLorentzVector Lepton;
+					TLorentzVector bb_cand;
+
+					Lepton.Clear();
+					bb_cand.Clear();
+					
+					vector <float> frac_b_topcandidate;
+					if (looseElectrons.size() == 1) Lepton.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->E());
+					if (looseMuons.size() == 1) Lepton.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->E());
+
+				
+					float TransvM_lept_MET = 0;
+					float TransvM_lept_MET_b = 0;
+					float InvM_bb = 0;
+					float DeltaR_lepton_b_min = 9999; //The b which is closest to the lepton is more probable to come from the SM top decay
+					float DeltaR_bb_min = 9999; 
+					float DeltaR_bb_max = -9999; //The bigger DeltaR_bb, the more probable those 2 b-jets do not come from H->bb (and therefore the max is a good handle to determine which of the 3 b-jets comes from SM top decay
+					float dR_lb_temp = 9999;
+					float dR_bb_temp = 9999;
+					int index_BTopcandidate = 9999; // based on the minimal DeltaR_lepton_b + DeltaR_bb
+					
+					//Determine the minimal Delta R
+					for(int iBjet = 0; iBjet < selectedBJets_CSVM.size(); iBjet++){
+						
+						dR_lb_temp = sqrt(pow(Lepton.Eta() - selectedBJets_CSVM[iBjet]->Eta(),2)+pow(Lepton.Phi() - selectedBJets_CSVM[iBjet]->Phi(),2));
+						if(DeltaR_lepton_b_min>dR_lb_temp){
+							DeltaR_lepton_b_min = dR_lb_temp;
+							//index_BTopcandidate = iBjet;
+						}
+						
+						for(int iBjet2 = 0; iBjet2 < selectedBJets_CSVM.size(); iBjet2++){
+							if(iBjet != iBjet2) dR_bb_temp = sqrt(pow(selectedBJets_CSVM[iBjet]->Eta() - selectedBJets_CSVM[iBjet2]->Eta(),2)+pow(selectedBJets_CSVM[iBjet]->Phi() - selectedBJets_CSVM[iBjet2]->Phi(),2));
+							if(DeltaR_bb_min>dR_bb_temp) DeltaR_bb_min = dR_bb_temp;
+							if(DeltaR_bb_max<dR_bb_temp) DeltaR_bb_max = dR_bb_temp;
+						}
+						
+						frac_b_topcandidate.push_back(DeltaR_lepton_b_min/DeltaR_bb_max);
+					}
+					
+					//Get the index of the b-jet which most probably comes from the top quark through the fraction DeltaR_lepton_b_min/DeltaR_bb_max
+					float min_frac = 999999;
+					for(int iBjet = 0; iBjet < frac_b_topcandidate.size(); iBjet++){
+						if(min_frac > frac_b_topcandidate[iBjet]){
+							min_frac = frac_b_topcandidate[iBjet];
+							index_BTopcandidate = iBjet;
+						}
+					}
+					
+					
+					
+					
+					float DeltaPhi_bb = 0;
+					float InvMass_bb = 0;
+					for(int iBjet = 0; iBjet < selectedBJets_CSVM.size(); iBjet++){
+						for(int iBjet2 = 0; iBjet2 < selectedBJets_CSVM.size(); iBjet2++){
+							if((iBjet != index_BTopcandidate) && (iBjet2 != index_BTopcandidate) && (iBjet != iBjet2)){
+								
+								bb_cand.SetPxPyPzE(selectedBJets_CSVM[iBjet]->Px()+selectedBJets_CSVM[iBjet2]->Px(),selectedBJets_CSVM[iBjet]->Py()+selectedBJets_CSVM[iBjet2]->Py(),selectedBJets_CSVM[iBjet]->Pz()+selectedBJets_CSVM[iBjet2]->Pz(),selectedBJets_CSVM[iBjet]->E()+selectedBJets_CSVM[iBjet]->E());
+								
+								DeltaPhi_bb = sqrt( pow(( selectedBJets_CSVM[iBjet]->Phi() - selectedBJets_CSVM[iBjet2]->Phi() ), 2));
+								InvMass_bb = bb_cand.M();
+							}
+						}
+					}
+					
+					
+				MSPlot["DR_toplepton_bjet"]->Fill(DeltaR_lepton_b_min, datasets[d], true, Luminosity*scaleFactor);
+				MSPlot["DR_bb"]->Fill(DeltaR_bb_min, datasets[d],true,Luminosity*scaleFactor);
+				MSPlot["Mbb"]->Fill(InvMass_bb, datasets[d],true,Luminosity*scaleFactor);
+				MSPlot["DeltaPhi_bb"]->Fill(DeltaPhi_bb, datasets[d],true,Luminosity*scaleFactor);
+				MSPlot["Pt_leading_lepton"]->Fill(Lepton.Pt(), datasets[d], true, Luminosity*scaleFactor);
+				}
 	
 		}
 		

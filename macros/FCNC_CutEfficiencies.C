@@ -11,10 +11,10 @@
 
 using namespace std;
 
-void FCNC_CutEfficiencies(string channel = "4L"){
+void FCNC_CutEfficiencies(string channel = "1L3B"){
 
 	
-	
+	string	Vector_cutflow_1L3B[18] = {"","initial","1L",">=4jets","== 3 bjets",">= 1 bjets",">= 2 bjets",">= 3 bjets","","","","","","","","","","",""};
 	string	Vector_cutflow_4L[19] = {"","initial",">3L",">0 jets",">1 jets",">2 jets",">3 jets",">4 jets",">5 jets",">0 Bjets",">1 Bjets",">2 Bjets",">3 Bjets",">4 Bjets",">5 Bjets","4-5 leptons","4 leptons", "5 leptons",""};
 	string	Vector_cutflow_3L[19] = {"","initial","=3L",">0 jets",">1 jets",">2 jets",">3 jets",">4 jets",">5 jets",">0 Bjets",">1 Bjets",">2 Bjets",">3 Bjets",">4 Bjets",">5 Bjets","","", "",""};
 	
@@ -72,7 +72,10 @@ void FCNC_CutEfficiencies(string channel = "4L"){
         Vector_SampleName.push_back("ttw");
         Vector_SampleName.push_back("ww");
         Vector_SampleName.push_back("wz");
+        Vector_SampleName.push_back("WW");
+        Vector_SampleName.push_back("WZ");
         Vector_SampleName.push_back("zz");
+        Vector_SampleName.push_back("ZZ");
         Vector_SampleName.push_back("ttz");
         Vector_SampleName.push_back("Zjets");
         Vector_SampleName.push_back("ST_T_tW-ch");
@@ -154,13 +157,17 @@ void FCNC_CutEfficiencies(string channel = "4L"){
 			{
 				BinName = (char*)Vector_cutflow_3L[i-1].c_str();
 			}
+			if(channel.find("1L3B")!=string::npos)
+			{
+				BinName = (char*)Vector_cutflow_1L3B[i-1].c_str();
+			}
 			histogram->GetXaxis()->SetBinLabel(iBin, BinName);
 			
 			string binlabel = histogram->GetXaxis()->GetBinLabel(i);
 			double icontent = histogram->GetBinContent(i); 
 			if(!binlabel.empty())
 			{
-				cout << binlabel << " : " << icontent << " efficiency -- " << icontent*100 <<" % efficiency"<< endl;
+				cout << binlabel << " : " << icontent << " efficiency -- " << icontent*100 <<"% efficiency"<< endl;
 			}
 		}
 		 

@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include "TDCacheFile.h"
+#include "TH1.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TChain.h"
@@ -10,8 +11,10 @@
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "TopBrussels/TopTreeProducer/interface/TRootRun.h"
 #include "TopBrussels/TopTreeProducer/interface/TRootEvent.h"
+#include "TopBrussels/TopTreeProducer/interface/TRootLepton.h"
 #include "TopBrussels/TopTreeProducer/interface/TRootMuon.h"
 #include "TopBrussels/TopTreeProducer/interface/TRootElectron.h"
+#include "TopBrussels/TopTreeProducer/interface/TRootPhoton.h"
 #include "TopBrussels/TopTreeProducer/interface/TRootJet.h"
 #include "TopBrussels/TopTreeProducer/interface/TRootPFJet.h"
 #include "TopBrussels/TopTreeProducer/interface/TRootMET.h"
@@ -27,7 +30,7 @@ struct HighestCSVBtag{
 
 int main (int argc, char *argv[])
 {
-  gSystem->Load("libTopBrusselsTopTreeProducer.so");
+  gSystem->Load("pluginTopBrusselsTopTreeProducer.so");
   AutoLibraryLoader::enable();
 
   double nevents = 0;
@@ -77,6 +80,23 @@ int main (int argc, char *argv[])
   double emu2_phi;
   double emu_mass;
 
+  double photon1_pt;
+  double photon1_eta;
+  double photon1_phi;
+  double photon1_chIso;
+  double photon1_phIso;
+  double photon1_nhIso;
+  double photon1_relIso;
+  double photon2_pt;
+  double photon2_eta;
+  double photon2_phi;
+  double photon2_chIso;
+  double photon2_phIso;
+  double photon2_nhIso;
+  double photon2_relIso;
+  double diphoton_mass;
+  int nphotons;
+
   double jet1_pt;
   double jet1_eta;
   double jet1_phi;
@@ -98,7 +118,10 @@ int main (int argc, char *argv[])
   double met;
   
   TTree* myTree = new TTree("tree","tree");
+  
   myTree->Branch("prePathCounter", &prePathCounter, "prePathCounter/I");
+
+  //dileptons
   myTree->Branch("diel1_pt", &diel1_pt, "diel1_pt/D");
   myTree->Branch("diel1_eta", &diel1_eta, "diel1_eta/D");
   myTree->Branch("diel1_phi", &diel1_phi, "diel1_phi/D");
@@ -120,6 +143,26 @@ int main (int argc, char *argv[])
   myTree->Branch("emu2_eta", &emu2_eta, "emu2_eta/D");
   myTree->Branch("emu2_phi", &emu2_phi, "emu2_phi/D");
   myTree->Branch("emu_mass", &emu_mass, "emu_mass/D");
+
+  //photon
+  myTree->Branch("nphotons", &nphotons, "nphotons/I");
+  myTree->Branch("photon1_pt", &photon1_pt, "photon1_pt/D");
+  myTree->Branch("photon1_eta", &photon1_eta, "photon1_eta/D");
+  myTree->Branch("photon1_phi", &photon1_phi, "photon1_phi/D");
+  myTree->Branch("photon1_chIso", &photon1_chIso, "photon1_chIso/D");
+  myTree->Branch("photon1_phIso", &photon1_phIso, "photon1_phIso/D");
+  myTree->Branch("photon1_nhIso", &photon1_nhIso, "photon1_nhIso/D");
+  myTree->Branch("photon1_relIso", &photon1_relIso, "photon1_relIso/D");   
+  myTree->Branch("photon2_pt", &photon2_pt, "photon2_pt/D");
+  myTree->Branch("photon2_eta", &photon2_eta, "photon2_eta/D");
+  myTree->Branch("photon2_phi", &photon2_phi, "photon2_phi/D");
+  myTree->Branch("photon2_chIso", &photon2_chIso, "photon2_chIso/D");
+  myTree->Branch("photon2_phIso", &photon2_phIso, "photon2_phIso/D");
+  myTree->Branch("photon2_nhIso", &photon2_nhIso, "photon2_nhIso/D");
+  myTree->Branch("photon2_relIso", &photon2_relIso, "photon2_relIso/D");
+  myTree->Branch("diphoton_mass", &diphoton_mass, "diphoton_mass/D");
+
+  //jets
   myTree->Branch("jet1_pt", &jet1_pt, "jet1_pt/D");
   myTree->Branch("jet1_eta", &jet1_eta, "jet1_eta/D");
   myTree->Branch("jet1_phi", &jet1_phi, "jet1_phi/D");
@@ -137,18 +180,25 @@ int main (int argc, char *argv[])
   myTree->Branch("jet4_phi", &jet4_phi, "jet4_phi/D");
   myTree->Branch("jet4_csv", &jet4_csv, "jet4_csv/D");
   myTree->Branch("njets", &njets, "njets/I");
+  
+  //met
   myTree->Branch("met", &met, "met/D");
 
   TClonesArray *tcmuons = new TClonesArray ("TopTree::TRootMuon", 0);
   t->SetBranchAddress("Muons_selectedPatMuonsPF2PAT",&tcmuons);
   TClonesArray *tcelectrons = new TClonesArray ("TopTree::TRootElectron", 0);
   t->SetBranchAddress("Electrons_selectedPatElectronsPF2PAT",&tcelectrons);
+  TClonesArray *tcphotons = new TClonesArray ("TopTree::TRootPhoton", 0);
+  t->SetBranchAddress("Photons_selectedPatPhotons",&tcphotons);
   TClonesArray *tcjets = new TClonesArray ("TopTree::TRootPFJet", 0);
   t->SetBranchAddress("PFJets_selectedPatJetsPF2PAT",&tcjets);
   TClonesArray *tcmets = new TClonesArray ("TopTree::TRootPFMET", 0);
   t->SetBranchAddress("PFMET_patType1CorrectedPFMetPF2PAT",&tcmets);
 
+  TH1F * EventSummary = new TH1F("EventSummary","EventSummary",2,0,2);
+ 
   prePathCounter = ntotal; 
+  EventSummary->SetBinContent(1, nevt);
   ////////////////////////////////////
   //	Loop on events
   ////////////////////////////////////
@@ -157,6 +207,7 @@ int main (int argc, char *argv[])
   {
     vector < TRootMuon* > muons;
     vector < TRootElectron* > electrons;
+    vector < TRootPhoton* > photons;
     vector < TRootPFJet* > jets;
     vector < TRootMET* > mets;
       
@@ -168,6 +219,7 @@ int main (int argc, char *argv[])
     t->GetEntry(ievt);
 
     //init
+    //dileptons
     diel1_pt = -999;
     diel1_eta = -999;
     diel1_phi = -999;
@@ -189,6 +241,24 @@ int main (int argc, char *argv[])
     emu2_eta = -999;
     emu2_phi = -999;
     emu_mass = -999;
+    //photons
+    photon1_pt = -999;
+    photon1_eta = -999;
+    photon1_phi = -999;
+    photon1_chIso = -999;
+    photon1_phIso = -999;
+    photon1_nhIso = -999;
+    photon1_relIso = -999;
+    photon2_pt = -999;
+    photon2_eta = -999;
+    photon2_phi = -999;
+    photon2_chIso = -999;
+    photon2_phIso = -999;
+    photon2_nhIso = -999;
+    photon2_relIso = -999;
+    diphoton_mass = -999;
+    nphotons = -999;
+    //jets
     jet1_pt = -999;
     jet1_eta = -999;
     jet1_phi = -999;
@@ -205,22 +275,62 @@ int main (int argc, char *argv[])
     jet4_eta = -999;
     jet4_phi = -999;
     jet4_csv = -999;
-  
     njets = -999;
+    //met
     met = -999;
 
     //clear vectors   
     muons.clear();
     electrons.clear();
+    photons.clear();
     jets.clear();
 
     for (int i = 0; i < tcmuons->GetEntriesFast(); i++)
       muons.push_back ((TRootMuon *) tcmuons->At(i));
     for (int i = 0; i < tcelectrons->GetEntriesFast(); i++){
-      electrons.push_back ((TRootElectron *) tcelectrons->At(i));
+
+      TRootElectron * tcelectron = (TRootElectron *) tcelectrons->At(i);
+
+      bool pass = tcelectron->Pt() > 20 && tcelectron->mvaTrigId() > 0.5 && tcelectron->relPfIso(3,0.5) < 0.15;
+      if( pass ) {
+        electrons.push_back ((TRootElectron *) tcelectrons->At(i));
+      }
     }
+
+    for (int i = 0; i < tcphotons->GetEntriesFast(); i++){
+
+     TRootPhoton * tcphoton = (TRootPhoton *) tcphotons->At(i);
+ 
+      bool pass = false;
+
+      if( abs(tcphoton->Eta()) < 1.479 ){
+        pass = tcphoton->sigmaIetaIeta() < 0.011 && tcphoton->hadronicOverEm() < 0.05 && tcphoton->passelectronveto();
+      }else{
+        pass = tcphoton->sigmaIetaIeta() < 0.033 && tcphoton->hadronicOverEm() < 0.05 && tcphoton->passelectronveto();
+      }
+
+      if( pass ){
+        photons.push_back ((TRootPhoton *) tcphotons->At(i));
+      }
+    }
+
     for (int i = 0; i < tcjets->GetEntriesFast(); i++){
-      jets.push_back ((TRootPFJet *) tcjets->At(i));
+      TRootPFJet * tcjet = (TRootPFJet *) tcjets->At(i);
+      bool pass = true;
+ 
+      if( tcjet->Pt() <= 20 ) continue;
+
+      for(int j=0; j < (int) electrons.size()-1; j++){
+        double dR = sqrt( (electrons[j]->Eta()-tcjet->Eta())*(electrons[j]->Eta()-tcjet->Eta()) + (electrons[j]->Phi()-tcjet->Phi())*(electrons[j]->Phi()-tcjet->Phi()) );
+        if( dR < 0.5 ) {
+          pass = false; 
+          break;
+        }
+      }
+      
+      if( pass ){
+        jets.push_back ((TRootPFJet *) tcjets->At(i));
+      }
     }
     //------------------------------//
     // re-arrange jets in CSV order //
@@ -298,8 +408,55 @@ int main (int argc, char *argv[])
       } 
     }
 
-    if( dimu_mass <= 0 && diel_mass <= 0 && emu_mass <= 0) continue;
+    //if( dimu_mass <= 0 && diel_mass <= 0 && emu_mass <= 0) continue;
   
+    if( photons.size() > 1){
+      for(int i=0; i < (int) photons.size()-1; i++){
+        for(int j=i+1; j < (int) photons.size(); j++){
+     
+          bool photon1_pass = false;
+          bool photon2_pass = false;
+          //not recommended but useful to keep as it is reported to be very efficient cut
+          bool photon1_hasPixelSeed_pass =false; 
+          bool photon2_hasPixelSeed_pass =false; 
+
+          if( abs(photons[i]->Eta()) < 1.479 ){
+            photon1_pass = photons[i]->sigmaIetaIeta() < 0.011 && photons[i]->hadronicOverEm() < 0.05 && photons[i]->passelectronveto();
+          }else{
+            photon1_pass = photons[i]->sigmaIetaIeta() < 0.033 && photons[i]->hadronicOverEm() < 0.05 && photons[i]->passelectronveto();
+          }  
+
+          if( abs(photons[j]->Eta()) < 1.479 ){
+            photon2_pass = photons[j]->sigmaIetaIeta() < 0.011 && photons[j]->hadronicOverEm() < 0.05 && photons[j]->passelectronveto();
+          }else{
+            photon2_pass = photons[j]->sigmaIetaIeta() < 0.033 && photons[j]->hadronicOverEm() < 0.05 && photons[j]->passelectronveto();
+          }
+          
+          if( photon1_pass && photon2_pass){
+            photon1_pt = photons[i]->Pt();
+            photon1_eta = photons[i]->Eta();
+            photon1_phi = photons[i]->Phi();
+            photon1_chIso = photons[i]->chargedHadronIso();
+            photon1_nhIso = photons[i]->neutralHadronIso();
+            photon1_phIso = photons[i]->photonIso();
+            photon1_relIso = photons[i]->relPfIso();
+            photon2_pt = photons[j]->Pt();
+            photon2_eta = photons[j]->Eta();
+            photon2_phi = photons[j]->Phi();
+            photon2_chIso = photons[j]->chargedHadronIso();
+            photon2_nhIso = photons[j]->neutralHadronIso();
+            photon2_phIso = photons[j]->photonIso();
+            photon2_relIso = photons[j]->relPfIso();
+            TLorentzVector v1(photons[i]->Px(), photons[i]->Py(), photons[i]->Pz(), photons[i]->Energy());
+            TLorentzVector v2(photons[j]->Px(), photons[j]->Py(), photons[j]->Pz(), photons[j]->Energy());
+            diphoton_mass = (v1+v2).M();
+          }
+        }
+      }
+    }
+
+    nphotons = photons.size();
+ 
     if( jets.size() > 0){
       jet1_pt = jets[0]->Pt();
       jet1_eta = jets[0]->Eta();
@@ -331,6 +488,7 @@ int main (int argc, char *argv[])
     myTree->Fill();
 
   }			//loop on events
+  cout << "nevents= " << nevents << endl;
 
   fout->Write();
 

@@ -1,25 +1,114 @@
 <?xml version="1.0"?>
 <datasets>
 
+ 
+  <!-- W + J E T S -->
+  
+<!--  <d name="Wjets" title="W\rightarrow l\nu" add="1" color="413"  ls="1"  lw="2" normf="1" xsection="37509" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/05072013_232722/TOPTREE/*_1_*.root"/>
+-->
+  <d name="W_1Jets" title="W\rightarrow l\nu" add="0" color="413"  ls="1"  lw="2" normf="1" xsection="6662.78" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/W1JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/22042013_144852/TOPTREE/*_1_*.root"/>
+  <d name="W_2Jets" title="W\rightarrow l\nu" add="0" color="413"  ls="1"  lw="2" normf="1" xsection="2159.24" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/W2JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/22042013_165827/TOPTREE/*_1_*.root"/>
+  <d name="W_3Jets" title="W\rightarrow l\nu" add="0" color="413"  ls="1"  lw="2" normf="1" xsection="640.37" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/W3JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/22042013_144857/TOPTREE/*_1_*.root"/>
+  <d name="W_4Jets" title="W\rightarrow l\nu" add="0" color="413"  ls="1"  lw="2" normf="1" xsection="264.04" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/W4JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/22042013_145232/TOPTREE/*_1_*.root"/>
 
   
+  <!-- D I B O S O N -->
+
+  <d name="WW" title="WW\to ll+MET" add="0" color="920"  ls="1"  lw="2" normf="1" xsection="54.838" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/WW_TuneZ2star_8TeV_pythia6_tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/04062013_201708/TOPTREE/*_1_*.root"/>
+  <d name="WZ" title="WZ\to ll+jets" add="0" color="793"  ls="1"  lw="2" normf="1" xsection="33.21" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/WZ_TuneZ2star_8TeV_pythia6_tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/04062013_201713/TOPTREE/*_1_*.root"/>
+  <d name="ZZ" title="ZZ\to ll+jets" add="0" color="900"  ls="1"  lw="2" normf="1" xsection="17.654" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/ZZ_TuneZ2star_8TeV_pythia6_tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/04062013_194703/TOPTREE/*_1_*.root"/>
+
+
+<!-- EXCLUSIVE SAMPLES
+  <d name="WW_To2L2Nu" title="WW\to ll+MET" add="1" color="920"  ls="1"  lw="2" normf="1" xsection="5.757" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/WWJetsTo2L2Nu_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/21062013_132316/TOPTREE/*_1_*.root"/>
+  <d name="WZ_To2L2Q" title="WZ\to ll+jets" add="1" color="793"  ls="1"  lw="2" normf="1" xsection="2.267" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/WZJetsTo2L2Q_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/21062013_132321/TOPTREE/*_1_*.root"/>
+  <d name="WZ_To3LNu" title="WZ\to 3l" add="1" color="793"  ls="1"  lw="2" normf="1" xsection="1.087" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/WZJetsTo3LNu_TuneZ2_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/23062013_152453/TOPTREE/*_1_*.root"/>
+  <d name="ZZ_To2L2Nu" title="ZZ\to ll+MET" add="1" color="900"  ls="1"  lw="2" normf="1" xsection="0.713" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/ZZJetsTo2L2Nu_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v3/21062013_132331/TOPTREE/*_1_*.root"/>
+  <d name="ZZ_To2L2Q" title="ZZ\to ll+jets" add="1" color="900"  ls="1"  lw="2" normf="1" xsection="2.492" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/ZZJetsTo2L2Q_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/21062013_132336/TOPTREE/*_1_*.root"/>
+  <d name="ZZ_To4L" title="ZZ\to 4l" add="1" color="900"  ls="1"  lw="2" normf="1" xsection="0.180" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/ZZJetsTo4L_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/21062013_132341/TOPTREE/*_1_*.root"/>
+-->
+  <!-- S I N G L E - T O P -->
+
+
+
+  <d name="ST_T_s-ch" title="t+jets" add="0" color="620"  ls="1"  lw="2" normf="1" xsection="3.79" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/T_s-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/23042013_083042/TOPTREE/*_1_*.root"/>
+  <d name="ST_Tbar_s-ch" title="t+jets" add="0" color="620"  ls="1"  lw="2" normf="1" xsection="1.76" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/23042013_085222/TOPTREE/*_1_*.root"/>
+  <d name="ST_T_t-ch" title="t+jets" add="0" color="620"  ls="1"  lw="2" normf="1" xsection="56.4" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/T_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/22042013_165837/TOPTREE/*_1_*.root"/>
+  <d name="ST_Tbar_t-ch" title="t+jets" add="0" color="620"  ls="1"  lw="2" normf="1" xsection="30.7" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/22042013_165847/TOPTREE/*_1_*.root"/>
+
+  <d name="ST_T_tW-ch" title="tW\to ll" add="0" color="620"  ls="1"  lw="2" normf="1" xsection="11.1" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/22042013_165842/TOPTREE/*_1_*.root"/>
+  <d name="ST_TBar_tW-ch" title="tW\to ll" add="0" color="620"  ls="1"  lw="2" normf="1" xsection="11.1" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/22042013_204222/TOPTREE/*_1_*.root"/>
+
+
+<!-- EXCLUSIVE SAMPLES
+  <d name="ST_TToDilepton_tW-ch" title="tW\to ll" add="1" color="620"  ls="1"  lw="2" normf="1" xsection="1.17" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TToDilepton_tW-channel-DR_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/07062013_162058/TOPTREE/*_1_*.root"/>
+  <d name="ST_TToTlepWhad_tW-ch" title="tW (t\to bl\nu, W\to qq)" add="1" color="620"  ls="1"  lw="2" normf="1" xsection="2.43" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TToTlepWhad_tW-channel-DR_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/07062013_162108/TOPTREE/*_1_*.root"/>
+  <d name="ST_TToThadWlep_tW-ch" title="tW (t\to bqq, W\to l\nu)" add="1" color="620"  ls="1"  lw="2" normf="1" xsection="2.43"  NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TToThadWlep_tW-channel-DR_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/07062013_165118/TOPTREE/*_1_*.root"/>
+  <d name="ST_TBarToDilepton_tW-ch" title="#bar{t}W\to ll" add="1" color="620"  ls="1"  lw="2" normf="1" xsection="1.17" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TBarToDilepton_tW-channel-DR_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/07062013_162048/TOPTREE/*_1_*.root"/>
+  <d name="ST_TBarToTlepWhad_tW-ch" title="#bar{t}W (t\to bl\nu, W\to qq)" add="1" color="620"  ls="1"  lw="2" normf="1" xsection="2.43"  NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TBarToTlepWhad_tW-channel-DR_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/07062013_165113/TOPTREE/*_1_*.root"/>
+  <d name="ST_TBarToThadWlep_tW-ch" title="#bar{t}W (t\to bqq, W\to l\nu)" add="1" color="620"  ls="1"  lw="2" normf="1" xsection="2.43"  NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TBarToThadWlep_tW-channel-DR_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/07062013_162042/TOPTREE/*_1_*.root"/>
+-->
+  <!-- T O P  P A I R S -->
+  
+<!--
+  <d name="TTJets" title="t#bar{t}" add="1" color="633"  ls="1"  lw="2" normf="1" xsection="251.7" NofEvts="10000" filenames="dcap://*.root"/>
+-->
+  <d name="TT_SemiLeptMGDecays" title="t\bar{t}\to l+jets" add="0" color="633"  ls="1"  lw="2" normf="1" xsection="110.26" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJets_SemiLeptMGDecays_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v1/22042013_211038/TOPTREE/*_1_*.root"/>
+  <d name="TT_FullLeptMGDecays" title="t\bar{t}\to ll" add="0" color="633"  ls="1"  lw="2" normf="1" xsection="26.42" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJets_FullLeptMGDecays_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v2/22042013_211043/TOPTREE/*_1_*.root"/>
+  <d name="TT_HadronicMGDecays" title="t\bar{t}\to jets" add="0" color="633"  ls="1"  lw="2" normf="1" xsection="115.02" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJets_HadronicMGDecays_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A_ext-v1/22042013_211033/TOPTREE/*_1_*.root"/>
+
+
+
+  <!-- T T + Boson -->
+
+  <d name="TTZ" title="ttbar + Z" 	add="0"   color="6"  ls="1"  lw="2" normf="1"  xsection="0.172"   NofEvts="100000"    filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTZJets_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/06062013_144733/TOPTREE/*_1_*.root"/>
+  <d name="TTW" title="ttbar + W"	add="0"   color="46"  ls="1"  lw="2" normf="1"  xsection="0.2148"   NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTWJets_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/06062013_131723/TOPTREE/*_1_*.root"/> 
+
+  <!-- D Y + J E T S -->
+  
+  
+  <d name="Z_M-10To50" title="Z/\gamma^{*}\rightarrow ll" add="0" color="858"  ls="1"  lw="2" normf="1" xsection="860.5"  NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DY1JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/22042013_162605/TOPTREE/*_1_*.root"/>
+<!--  <d name="Zjets" title="Z/\gamma^{*}\rightarrow ll" add="1" color="858"  ls="1"  lw="2" normf="1" xsection="3503.71"  NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/05072013_232727/TOPTREE/*_1_*.root"/>
+-->
+  
+
+  <d name="Z_1Jets" title="Z/\gamma^{*}\rightarrow ll" add="0" color="858"  ls="1"  lw="2" normf="1" xsection="671.83" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/22042013_162610/TOPTREE/*_1_*.root"/>
+  <d name="Z_2Jets" title="Z/\gamma^{*}\rightarrow ll" add="0" color="858"  ls="1"  lw="2" normf="1" xsection="216.76" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DY3JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/22042013_162615/TOPTREE/*_1_*.root"/>
+  <d name="Z_3Jets" title="Z/\gamma^{*}\rightarrow ll" add="0" color="858"  ls="1"  lw="2" normf="1" xsection="61.20" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DY4JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/22042013_162620/TOPTREE/*_1_*.root"/>
+  <d name="Z_4Jets" title="Z/\gamma^{*}\rightarrow ll" add="0" color="858"  ls="1"  lw="2" normf="1" xsection="27.59"  NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DYJetsToLL_M-10To50filter_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/06062013_144738/TOPTREE/*_1_*.root"/>
+
+  <!-- S I G N A L -->
+  
+
+  <d name="TTJetsTocHbW_HToBB_HctL" title="tcH (H->bb)"	add="1"   color="14"  ls="1"  lw="2" normf="1"  NofEvts="100000" xsection="0.5632"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToBB_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToBB_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/12112013_110534/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToBB_HctR" title="tcH (H->bb)"	add="0"   color="2"  ls="1"  lw="2" normf="1" NofEvts="100000" xsection="0.5632"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToBB_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToBB_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170451/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR" title="tcH (H->WW)"	add="0"   color="14"  ls="1"  lw="2" normf="1"  NofEvts="100000" xsection="0.090636"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170501/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL" title="tcH (H->WW)"	add="0"   color="14"  ls="1"  lw="2" normf="1"  NofEvts="100000" xsection="0.090636"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/12112013_173636/TOPTREE/*.root"/> 
+  
+  <d name="TTJetsTocHbW_HToWW_WToLNuL_HctL" title="tcH (H->WW)"	add="0"   color="14"  ls="1"  lw="2" normf="1"  NofEvts="100000" xsection="0.022659"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToWW_WToLNuL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToWW_WToLNuL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_173512/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToWW_WToLNuL_HctR" title="tcH (H->WW)"	add="0"   color="14"  ls="1"  lw="2" normf="1"  NofEvts="100000" xsection="0.022659"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToWW_WToLNuL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToWW_WToLNuL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_180517/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL" title="tcH (H->ZZ)"	add="0"   color="14"  ls="1"  lw="2" normf="1"  NofEvts="100000" xsection="0.0005135"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/13112013_080643/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctR" title="tcH (H->ZZ)"	add="0"   color="14"  ls="1"  lw="2" normf="1"  NofEvts="100000" xsection="0.0005135"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170411/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL" title="tcH (H->ZZ)"	add="0"   color="14"  ls="1"  lw="2" normf="1"  NofEvts="100000" xsection="0.0018609"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170345/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctR" title="tcH (H->ZZ)"	add="0"   color="14"  ls="1"  lw="2" normf="1"  NofEvts="100000" xsection="0.0018609"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/12112013_173631/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL" title="tcH (H->ZZ)"	add="0"   color="14"  ls="1"  lw="2" normf="1"  NofEvts="100000" xsection="0.00067929"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170506/TOPTREE/*.root"/> 
+
+  <d name="TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR" title="tcH (H->ZZ)"	add="0"   color="14"  ls="1"  lw="2" normf="1"  NofEvts="100000" xsection="0.00067929"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170421/TOPTREE/*.root"/> 
    
-  <d name="TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR" title="tcH (H->WW)"	add="1"   color="14"  ls="1"  lw="2" normf="1"  EqLumi="78037.42" xsection="0.090636"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170501/TOPTREE/*.root"/> 
+  <d name="TTJetsTocHbW_HToZZ_ZToLL_HctL" title="tcH (H->ZZ)"	add="0"   color="14"  ls="1"  lw="2" normf="1"  NofEvts="100000" xsection="0.00016516"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170416/TOPTREE/*.root"/> 
 
-  <d name="TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL" title="tcH (H->WW)"	add="1"   color="14"  ls="1"  lw="2" normf="1"  EqLumi="109206.05" xsection="0.090636"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/12112013_173636/TOPTREE/*.root"/> 
+  <d name="TTJetsTocHbW_HToZZ_ZToLL_HctR" title="tcH (H->ZZ)"	add="0"   color="14"  ls="1"  lw="2" normf="1"  NofEvts="100000" xsection="0.00016516"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToLL_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170431/TOPTREE/*.root"/> 
 
-  <d name="TTJetsTocHbW_HToBB_HctL" title="tcH (H->bb)"	add="1"   color="14"  ls="1"  lw="2" normf="1"  EqLumi="19918.32" xsection="0.5632"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToBB_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToBB_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/12112013_110534/TOPTREE/*.root"/> 
-
-  <d name="TTJetsTocHbW_HToBB_HctR" title="tcH (H->bb)"	add="1"   color="2"  ls="1"  lw="2" normf="1"  EqLumi="12226.56" xsection="0.5632"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToBB_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToBB_HctR_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170451/TOPTREE/*.root"/> 
-
-  <d name="TTJetsTocZbW" title="tcZ"	add="1"   color="2"  ls="1"  lw="2" normf="1"  EqLumi="6139365" xsection="0.1575"   PreselEff="0.0"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocZbW_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v1/21062013_162346/TOPTREE/*.root"/> 
- 
- 
-  <d name="ttbar" title="ttbar" 		add="1"   color="46"  ls="1"  lw="2" normf="1"  EqLumi="76141.56" xsection="157.5"   PreselEff="0.0" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJets_SemiLeptMGDecays_TuneP11_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V19-v1/04072013_095642/TOPTREE/*.root"/> 
-  
-  <d name="Wjets" title="W(l,nu) + 2 b-jets" 	add="1"   color="46"  ls="1"  lw="2" normf="1"  EqLumi="11691.11" xsection="1750"   PreselEff="0.0" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/WbbJetsToLNu_Massive_TuneZ2star_8TeV-madgraph-pythia6_tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/03072013_005623/TOPTREE/*.root"/> 
-  <!-- WATCH OUT, NOT SURE ABOUT THIS CROSS SECTION, because I didn't find any for Wbb specific, so I took W + 2 jets -->
- 
+<d name="TTJetsTocZbW" title="tcZ"	add="0"   color="2"  ls="1"  lw="2" normf="1"  NofEvts="100000" xsection="0.1575"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocZbW_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v1/21062013_162346/TOPTREE/*.root"/>
   
 </datasets>
 
@@ -29,4 +118,3 @@
 
 
 </analysis>
-
