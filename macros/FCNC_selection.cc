@@ -396,21 +396,21 @@ int main(int argc, char *argv[]){
                 if(datasetName.find("ST_TBar_s-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBar_s-ch");}
 
 		
-		if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");}
-		if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL");}
-		if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL_HctL")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_HctL");}
-		if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL_HctR")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_HctR");}
-		if(datasetName.find("TTJetsTocHbW_HToBB_HctL")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToBB_HctL");}
-		if(datasetName.find("TTJetsTocHbW_HToBB_HctR")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToBB_HctR");}
-		if(datasetName.find("TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL");}
-		if(datasetName.find("TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctR")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctR");}
-		if(datasetName.find("TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL");}
-		if(datasetName.find("TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctR")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctR");}
-		if(datasetName.find("TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL");}
-		if(datasetName.find("TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR");}
-		if(datasetName.find("TTJetsTocHbW_HToZZ_ZToLL_HctL")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToLL_HctL");}
-		if(datasetName.find("TTJetsTocHbW_HToZZ_ZToLL_HctR")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToLL_HctR");}
-		if(datasetName.find("TTJetsTocZbW")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocZbW");}
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");}
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL");}
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_HctL")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_HctL");}
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_HctR")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_HctR");}
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToBB_HctL")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToBB_HctL");}
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToBB_HctR")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToBB_HctR");}
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL");}
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctR")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctR");}
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL");}
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctR")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctR");}
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL");}
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR");}
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToZZ_ZToLL_HctL")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToLL_HctL");}
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToZZ_ZToLL_HctR")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToLL_HctR");}
+		if(datasetName.find("NP_overlay_TTJetsTocZbW")!=string::npos) {sprintf(datasetNamechar,"TTJetsTocZbW");}
 
 
 		// Define different plots for each channel and dataset
@@ -499,63 +499,63 @@ int main(int argc, char *argv[]){
 		if(datasetName.find("ST_T_s-ch")!=string::npos) {sprintf(datasetNamechar,"ST_T_s-ch");}
                 if(datasetName.find("ST_TBar_s-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBar_s-ch");}
 		
-		if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR")!=string::npos) {
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");
 			is_signal = true;
 		}
-		if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL")!=string::npos) {
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL");
 			is_signal = true;
 		}
-		if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL_HctL")!=string::npos) {
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_HctL")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_HctL");
 			is_signal = true;
 		}
-		if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL_HctR")!=string::npos) {
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_HctR")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToWW_WToLNuL_HctR");
 			is_signal = true;
 		}
-		if(datasetName.find("TTJetsTocHbW_HToBB_HctL")!=string::npos) {
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToBB_HctL")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToBB_HctL");
 			is_signal = true;
 		}
-		if(datasetName.find("TTJetsTocHbW_HToBB_HctR")!=string::npos) {
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToBB_HctR")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToBB_HctR");
 			is_signal = true;
 		}		
-		if(datasetName.find("TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL")!=string::npos) {
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL");
 			is_signal = true;
 		}
-		if(datasetName.find("TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctR")!=string::npos) {
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctR")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctR");
 			is_signal = true;
 		}		
-		if(datasetName.find("TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL")!=string::npos) {
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL");
 			is_signal = true;
 		}
-		if(datasetName.find("TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctR")!=string::npos) {
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctR")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctR");
 			is_signal = true;
 		}		
-		if(datasetName.find("TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL")!=string::npos) {
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL");
 			is_signal = true;
 		}
-		if(datasetName.find("TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR")!=string::npos) {
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR");
 			is_signal = true;
 		}		
-		if(datasetName.find("TTJetsTocHbW_HToZZ_ZToLL_HctL")!=string::npos) {
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToZZ_ZToLL_HctL")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToLL_HctL");
 			is_signal = true;
 		}
-		if(datasetName.find("TTJetsTocHbW_HToZZ_ZToLL_HctR")!=string::npos) {
+		if(datasetName.find("NP_overlay_TTJetsTocHbW_HToZZ_ZToLL_HctR")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocHbW_HToZZ_ZToLL_HctR");
 			is_signal = true;
 		}
-		if(datasetName.find("TTJetsTocZbW")!=string::npos) {
+		if(datasetName.find("NP_overlay_TTJetsTocZbW")!=string::npos) {
 			sprintf(datasetNamechar,"TTJetsTocZbW");
 			is_signal = true;
 		}
@@ -1459,7 +1459,7 @@ int main(int argc, char *argv[]){
         	TH1F *tempHisto_back;
         	temp->addText("CMS simulation");
         	string name = it->first;
-		temp->Draw( name, 0, false, false, false, 1);
+		temp->Draw( name, 0, false, false, false, 5);
       		
 		
       		if(debug) cout <<" looping MS plots..., name ... "<< name<<endl;

@@ -12,7 +12,7 @@
 
 using namespace std;
 
-string infile = "../data/FCNC_1L3B_SelectedSamples_NoJetPtCuts.root";
+string infile = "/user/ivanpari/FCNC_analysis/TopBrussels/FCNCAnalysis/macros/FCNC_selection_4L5L.root";
 string eclusiveinfile = "";
 bool debug = false;
 int jetcut = 5 + 1; //+1 for getting the right binnumber
@@ -22,7 +22,7 @@ void Optimal_cut(){
 
 	TFile *file = new TFile(infile.c_str(),"read");
 	TFile *exclusiveFile = new TFile(eclusiveinfile.c_str(),"read");
-	TFile *outputfile = new TFile("../data/OptimalCuts_1L3B.root","RECREATE");
+	TFile *outputfile = new TFile("../data/OptimalCuts_IsisTest.root","RECREATE");
 	
 	vector <string> Variables;
 		
@@ -33,6 +33,7 @@ void Optimal_cut(){
 	Variables.push_back("Pt_2nd_leading_jet");
 	Variables.push_back("Pt_3d_leading_jet");
 	Variables.push_back("Pt_4th_leading_jet");
+	Variables.push_back("Pt_leading_lepton");
 
 
 	
@@ -83,7 +84,25 @@ void Optimal_cut(){
 	backgroundnames.push_back("ST_Tbar_s-ch");
 	backgroundnames.push_back("ST_T_t-ch");
 	backgroundnames.push_back("ST_Tbar_t-ch");
+	backgroundnames.push_back("GluGluHiggs4lep");
+	
 
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_HctL");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_HctR");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToBB_HctL");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToBB_HctR");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctR");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctR");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToLL_HctL");
+	signalname.push_back("NP_overlay_TTJetsTocHbW_HToZZ_ZToLL_HctR");
+	signalname.push_back("NP_overlay_TTJetsTocZbW");
+	
 	signalname.push_back("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctR");
 	signalname.push_back("TTJetsTocHbW_HToWW_WToLNuL_WToJets_HctL");
 	signalname.push_back("TTJetsTocHbW_HToWW_WToLNuL_HctL");
@@ -98,8 +117,7 @@ void Optimal_cut(){
 	signalname.push_back("TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctR");
 	signalname.push_back("TTJetsTocHbW_HToZZ_ZToLL_HctL");
 	signalname.push_back("TTJetsTocHbW_HToZZ_ZToLL_HctR");
-	signalname.push_back("TTJetsTocZbW");
-	
+	signalname.push_back("TTJetsTocZbW");	
 	for(unsigned int iVar = 0; iVar<Variables.size(); iVar++){
 	
 		TDirectory* th1dir = outputfile->mkdir(Variables[iVar].c_str());
@@ -120,12 +138,16 @@ void Optimal_cut(){
 		
 		TH1F *HistoSignal = 0;
 		for(unsigned int iSignal = 0; iSignal < signalname.size(); iSignal++){
+
+//cout << iSignal << endl;
+
 			if(HistoSignal) continue; //We only want to go further if the HistoSignal isn't filled yet
 			
 			string histoName = Path_To_Histo;
 			histoName += signalname[iSignal];
 			TH1F *histo( (TH1F*) file->Get(histoName.c_str()) );
 			TH1F *histo_exclusive( (TH1F*) exclusiveFile->Get(histoName.c_str()) );
+
 
 			if(histo){
 				histo->Clone("Hist");
@@ -158,6 +180,8 @@ void Optimal_cut(){
 		}		
 		TH1F *HistoBackground = 0;
 		for(unsigned int iBackgr = 0; iBackgr < backgroundnames.size(); iBackgr++){
+//cout << iBackgr << endl;			
+			
 			if(HistoBackground) continue; //We only want to go further if the HistoBackground isn't filled yet
 			string histoName = Path_To_Histo;
 			histoName += backgroundnames[iBackgr];
@@ -194,11 +218,11 @@ void Optimal_cut(){
 		}
 	
 
-
+//cout << "HERE" << endl;
 		//Add the histograms into 1 for S and B seperately
 		for(unsigned int iSignal = first_index_S+1; iSignal < signalname.size(); iSignal++){
 			
-			
+//cout << iSignal << endl;			
 			string histoName = Path_To_Histo;
 			histoName += signalname[iSignal];
 			TH1F *histo( (TH1F*) file->Get(histoName.c_str()) );
@@ -232,7 +256,7 @@ void Optimal_cut(){
 		
 		for(unsigned int iBackgr = first_index_B+1; iBackgr < backgroundnames.size(); iBackgr++){
 			
-
+//cout << iBackgr << endl;
 			string histoName = Path_To_Histo;
 			histoName += backgroundnames[iBackgr];
 			TH1F *histo( (TH1F*) file->Get(histoName.c_str()) );
@@ -248,7 +272,7 @@ void Optimal_cut(){
 				cout << Histo_samples.back()->Integral(6,15) << endl;
 				cout << " " << endl;
 				}
-				continue;			
+				continue;	
 			}
 			if(histo_exclusive){
 				HistoBackground->Add( histo_exclusive );
@@ -263,12 +287,14 @@ void Optimal_cut(){
 			}
 		}
 	
-		
+//cout << "HERE" << endl;		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		//// Now we get into the real part where we find the optimal cut, where the significance is the highest
 		////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//cout << HistoSignal << endl;
 		int end = HistoSignal->GetNbinsX();
-	
+//cout << "HERE 3" << endl;	
 		//Efficiencies calculating as #events_passing_cut/#Total_events
 		double Total_signal = 0;
 		double Total_background = 0;
@@ -283,7 +309,7 @@ void Optimal_cut(){
 		for(unsigned int i = 0; i< end; i++){
 			double s = 0;
 			double b = 0;
-		
+//cout << i << endl;		
 			s = (HistoSignal->Integral(i , end));
 			b = (HistoBackground->Integral(i,end));
 		

@@ -219,22 +219,52 @@ int main(int argc, char *argv[]){
   	MVAComputer* Eventcomputer_ =0; 
   	MVATrainer* Eventtrainer_ =0;  
 
-  	if (trainEventMVA)  Eventtrainer_ = new MVATrainer("BDT","../data/MVA/EventMVA", "EventMVA.root");
+  	if (trainEventMVA)  Eventtrainer_ = new MVATrainer("BDT","../data/MVA/EventMVA", "../data/MVA/EventMVA.root");
 
   	//Now fill the objects with variable names (need to replace with your chosen variables
   	//and the two lists need to be identical )
   	if(trainEventMVA){
         	cout<<"instantiating trainer..."<<endl;
 
-		Eventtrainer_->bookInputVar("Pt_Jet5");
+		Eventtrainer_->bookInputVar("Pt_leading_jet");
+		Eventtrainer_->bookInputVar("Pt_2nd_leading_jet");
+		Eventtrainer_->bookInputVar("Pt_3d_leading_jet");
+		Eventtrainer_->bookInputVar("Pt_4th_leading_jet");
+		Eventtrainer_->bookInputVar("MET");
+		Eventtrainer_->bookInputVar("CSV_discr_1stBjet");
+		Eventtrainer_->bookInputVar("CSV_discr_2ndBjet");
+		Eventtrainer_->bookInputVar("CSV_discr_3rdBjet");
+		Eventtrainer_->bookInputVar("Pt_leading_Bjet");
+		Eventtrainer_->bookInputVar("Pt_2nd_leading_Bjet");
+		Eventtrainer_->bookInputVar("Pt_3d_leading_Bjet");
+		Eventtrainer_->bookInputVar("Mt_toplepton_MET_b1jet");
+		Eventtrainer_->bookInputVar("Mt_toplepton_MET_b2jet");
+		Eventtrainer_->bookInputVar("Mt_toplepton_MET_b3jet");
+		Eventtrainer_->bookInputVar("DR_bb");
+		Eventtrainer_->bookInputVar("DR_toplepton_MET");
 
   	}
 	else if (computeEventMVA){
 		
-		MVAvars.push_back("Pt_Jet1");
+		MVAvars.push_back("Pt_leading_jet");
+		MVAvars.push_back("Pt_2nd_leading_jet");
+		MVAvars.push_back("Pt_3d_leading_jet");
+		MVAvars.push_back("Pt_4th_leading_jet");
+		MVAvars.push_back("MET");
+		MVAvars.push_back("CSV_discr_1stBjet");
+		MVAvars.push_back("CSV_discr_2ndBjet");
+		MVAvars.push_back("CSV_discr_3rdBjet");
+		MVAvars.push_back("Pt_leading_Bjet");
+		MVAvars.push_back("Pt_2nd_leading_Bjet");
+		MVAvars.push_back("Pt_3d_leading_Bjet");
+		MVAvars.push_back("Mt_toplepton_MET_b1jet");
+		MVAvars.push_back("Mt_toplepton_MET_b2jet");
+		MVAvars.push_back("Mt_toplepton_MET_b3jet");
+		MVAvars.push_back("DR_bb");
+		MVAvars.push_back("DR_toplepton_MET");
 
 		cout << " Initialized Eventcomputer_" << endl;
-    		Eventcomputer_ = new MVAComputer("BDT","../data/MVA/EventMVA.root","EventMVA",MVAvars, "test");
+    		Eventcomputer_ = new MVAComputer("BDT","../data/MVA/EventMVA.root","../data/MVA/EventMVA",MVAvars, "test");
   	}
 	// Further on the number of events to loop over is reduced to half for both MVA Computing and Training
   	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -315,21 +345,22 @@ int main(int argc, char *argv[]){
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////// MultiSample plots: convenient class which combines multiple MC and DATA histograms into single plots. //////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Object kinematics
 	MSPlot["NbOfSelectedJets"] = new MultiSamplePlot(datasets, "NbOfSelectedJets", 15, -0.5, 14.5, "Nb. of jets");
     	MSPlot["NbOfSelectedLightJets"] = new MultiSamplePlot(datasets, "NbOfSelectedLightJets", 15, -0.5, 14.5, "Nb. of jets");
-	MSPlot["NbOfSelectedLeptons"] = new MultiSamplePlot(datasets, "NbOfSelectedLeptons", 10, -0.5, 9.5, "Nb. of leptons");
+//	MSPlot["NbOfSelectedLeptons"] = new MultiSamplePlot(datasets, "NbOfSelectedLeptons", 10, -0.5, 9.5, "Nb. of leptons");
     	MSPlot["NbOfSelectedBJets_CSVM"] = new MultiSamplePlot(datasets, "NbOfSelectedBJets_CSVM", 15, -0.5, 14.5, "Nb. of jets");
     	MSPlot["NbOfSelectedBJets_CSVT"] = new MultiSamplePlot(datasets, "NbOfSelectedBJets_CSVT", 15, -0.5, 14.5, "Nb. of jets");
     	MSPlot["JetEta"] = new MultiSamplePlot(datasets, "JetEta", 30,-3., 3., "Jet #eta");
     	MSPlot["JetPhi"] = new MultiSamplePlot(datasets, "JetPhi", 50, -4., 4., "Jet #phi");
 	MSPlot["MET"] = new MultiSamplePlot(datasets, "MET", 40, 0., 700., "MET");
-	if(channel.find("3L")!=string::npos) MSPlot["MET_3LcH"]= new MultiSamplePlot(datasets, "MET_3LcH", 40, 0., 700., "MET");
+//	if(channel.find("3L")!=string::npos) MSPlot["MET_3LcH"]= new MultiSamplePlot(datasets, "MET_3LcH", 40, 0., 700., "MET");
 	//MSPlot["mll_z"] = new MultiSamplePlot(datasets,"mll_z",50,0,100,"Invariant mass of the leptons that make the Z boson");
 	MSPlot["Pt_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_leading_lepton",50,0,100,"Pt leading lepton");
-	MSPlot["Pt_2nd_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_lepton",50,0,100,"Pt 2nd leading lepton");
-	MSPlot["Pt_3d_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_3d_leading_lepton",50,0,100,"Pt third leading lepton");
-	MSPlot["Pt_4th_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_4th_leading_lepton",50,0,100,"Pt fourth leading lepton");
-	MSPlot["Pt_5th_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_5th_leading_lepton",50,0,100,"Pt fifth leading lepton");
+//	MSPlot["Pt_2nd_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_lepton",50,0,100,"Pt 2nd leading lepton");
+//	MSPlot["Pt_3d_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_3d_leading_lepton",50,0,100,"Pt third leading lepton");
+//	MSPlot["Pt_4th_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_4th_leading_lepton",50,0,100,"Pt fourth leading lepton");
+//	MSPlot["Pt_5th_leading_lepton"] = new MultiSamplePlot(datasets,"Pt_5th_leading_lepton",50,0,100,"Pt fifth leading lepton");
 	MSPlot["Pt_leading_jet"] = new MultiSamplePlot(datasets,"Pt_leading_jet",100,0,200,"Pt leading jet"); 
 	MSPlot["Pt_2nd_leading_jet"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_jet",100,0,200,"Pt 2nd leading jet"); 
 	MSPlot["Pt_3d_leading_jet"] = new MultiSamplePlot(datasets,"Pt_3d_leading_jet",100,0,200,"Pt third leading jet"); 
@@ -342,31 +373,42 @@ int main(int argc, char *argv[]){
 	MSPlot["Pt_4th_leading_Bjet"] = new MultiSamplePlot(datasets,"Pt_4th_leading_Bjet",100,0,200,"Pt fourth leading Bjet"); 
 	MSPlot["Pt_5th_leading_Bjet"] = new MultiSamplePlot(datasets,"Pt_5th_leading_Bjet",100,0,200,"Pt fifth leading Bjet"); 
 	MSPlot["Pt_6th_leading_Bjet"] = new MultiSamplePlot(datasets,"Pt_6th_leading_Bjet",100,0,200,"Pt sixth leading Bjet"); 
-	MSPlot["Mll"] = new MultiSamplePlot(datasets,"Mll",50,0,200,"Mll of leading and second leading lepton");
+	MSPlot["CSV_discr_6thBjet"] = new MultiSamplePlot(datasets,"CSV_discr_6thBjet",25,0.5,1,"CSV_discr(6th bjet)");
+	MSPlot["CSV_discr_5thBjet"] = new MultiSamplePlot(datasets,"CSV_discr_5thBjet",25,0.5,1,"CSV_discr(5th bjet)");
+	MSPlot["CSV_discr_4thBjet"] = new MultiSamplePlot(datasets,"CSV_discr_4thBjet",25,0.5,1,"CSV_discr(4th bjet)");
+	MSPlot["CSV_discr_3rdBjet"] = new MultiSamplePlot(datasets,"CSV_discr_3rdBjet",25,0.5,1,"CSV_discr(3rd bjet)");
+	MSPlot["CSV_discr_2ndBjet"] = new MultiSamplePlot(datasets,"CSV_discr_2ndBjet",25,0.5,1,"CSV_discr(2nd bjet)");
+	MSPlot["CSV_discr_1stBjet"] = new MultiSamplePlot(datasets,"CSV_discr_1stBjet",25,0.5,1,"CSV_discr(1st bjet)");
+	//	MSPlot["Mll"] = new MultiSamplePlot(datasets,"Mll",50,0,200,"Mll of leading and second leading lepton");
 	if(channel.find("3L")!=string::npos) MSPlot["Mll_3LcH"]= new MultiSamplePlot(datasets,"Mll_3LcH",50,0,200,"Mll of leading and second leading lepton 3LcH");
 	//MSPlot["Mllq"] = new MultiSamplePlot(datasets,"Mllq",50,0,100,"Invariant mass of llq ~ mtop");
 	//if(channel.find("4L")!=string::npos) MSPlot["Mllll"] = new MultiSamplePlot(datasets,"Mllll",50,0,250,"Invariant mass of llll ~ 2mZ");
-	MSPlot["DR_toplepton_MET"] = new MultiSamplePlot(datasets,"DR_toplepton_MET",50,0,100,"DR between toplepton and neutrino");
-	MSPlot["DR_toplepton_bjet"] = new MultiSamplePlot(datasets,"DR_toplepton_bjet",50,0,100,"DR between toplepton and bjet");
-	MSPlot["Mt_toplepton_MET"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET",50,0,100,"Transverse mass of toplepton and neutrino");
-	MSPlot["Mt_toplepton_MET_bjet"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET_bjet",50,0,100,"Transverse mass of toplepton, bjet and neutrino");
-	MSPlot["Mbqq"] = new MultiSamplePlot(datasets,"Mbqq",50,0,100,"Invariant mass of bqq ~ mtop");
-	MSPlot["Mllqq"] = new MultiSamplePlot(datasets,"Mllqq",50,0,100,"Invariant mass of llqq ~ mH");
-	MSPlot["Mllqqq"] = new MultiSamplePlot(datasets,"Mllqqq",50,0,100,"Invariant mass of llqqq ~ mtop");
-	MSPlot["Mbb"]= new MultiSamplePlot(datasets,"Mbb",50,0,200,"Invariant mass of bb ~ Higgs");
-	MSPlot["DeltaPhi_bb"]= new MultiSamplePlot(datasets,"DeltaPhi_bb",30,0,5,"DeltaPhi_bb");
-	MSPlot["DR_bb"]= new MultiSamplePlot(datasets,"DR_bb",30,0,5,"DR_bb");
+
+	// Complexer variables
+	MSPlot["DR_toplepton_MET"] = new MultiSamplePlot(datasets,"DR_toplepton_MET",50,0,100,"DR(lv)");
+	MSPlot["DR_toplepton_bjet"] = new MultiSamplePlot(datasets,"DR_toplepton_bjet",50,0,100,"DR(lb)");
+	MSPlot["Mt_toplepton_MET"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET",50,0,100,"Mt(lv)");
+	MSPlot["Mt_toplepton_MET_b1jet"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET_b1jet",50,0,250,"Mt(lvb1 ~top)");
+	MSPlot["Mt_toplepton_MET_b2jet"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET_b2jet",50,0,250,"Mt(lvb2 ~top)");
+	MSPlot["Mt_toplepton_MET_b3jet"] = new MultiSamplePlot(datasets,"Mt_toplepton_MET_b3jet",50,0,250,"Mt(lvb3 ~top)");
+	MSPlot["Mbqq"] = new MultiSamplePlot(datasets,"Mbqq",50,0,100,"M(bqq) ~ top");
+//	MSPlot["Mllqq"] = new MultiSamplePlot(datasets,"Mllqq",50,0,100,"Invariant mass of llqq ~ mH");
+//	MSPlot["Mllqqq"] = new MultiSamplePlot(datasets,"Mllqqq",50,0,100,"Invariant mass of llqqq ~ mtop");
+	MSPlot["Mbb"]= new MultiSamplePlot(datasets,"Mbb",50,0,200,"M(bb) ~ H");
+	MSPlot["DeltaPhi_bb"]= new MultiSamplePlot(datasets,"DeltaPhi_bb",30,0,5,"DeltaPhi(bb)");
+	MSPlot["DR_bb"]= new MultiSamplePlot(datasets,"DR_bb",30,0,5,"DR(bb)");
 	//////////////////  Cut flow histograms	/////////////////////////////
 	MSPlot["MScutflow"] = new MultiSamplePlot(datasets,"MScutflow",20,-0.5,19.5, "cutflow"); 
 	if(channel.find("4L")!=string::npos) MSPlot["NbOfJets_4L4"]= new MultiSamplePlot(datasets,"NbOfJets_4L4",50,0,250,"#jets for exactly 4 leptons");
 	if(channel.find("4L")!=string::npos) MSPlot["NbOfBJets_4L4_CSVM"]= new MultiSamplePlot(datasets,"NbOfBJets_4L4_CSVM",50,0,250,"#Bjets for exactly 4 leptons");
 	if(channel.find("4L")!=string::npos) MSPlot["NbOfBJets_4L4_CSVT"]= new MultiSamplePlot(datasets,"NbOfBJets_4L4_CSVT",50,0,250,"#Bjets for exactly 4 leptons");
-	if(channel.find("4L")!=string::npos) MSPlot["MET_4L4"]= new MultiSamplePlot(datasets, "MET_4L4", 40, 0., 700., "MET");
+//	if(channel.find("4L")!=string::npos) MSPlot["MET_4L4"]= new MultiSamplePlot(datasets, "MET_4L4", 40, 0., 700., "MET");
 	if(channel.find("4L")!=string::npos) MSPlot["NbOfJets_4L5"]= new MultiSamplePlot(datasets,"NbOfJets_4L5",50,0,250,"#jets for exactly 4 leptons");
 	if(channel.find("4L")!=string::npos) MSPlot["NbOfBJets_4L5_CSVM"]= new MultiSamplePlot(datasets,"NbOfBJets_4L5_CSVM",50,0,250,"#Bjets for exactly 4 leptons");
 	if(channel.find("4L")!=string::npos) MSPlot["NbOfBJets_4L5_CSVT"]= new MultiSamplePlot(datasets,"NbOfBJets_4L5_CSVT",50,0,250,"#Bjets for exactly 4 leptons");
-	if(channel.find("4L")!=string::npos) MSPlot["MET_4L5"] = new MultiSamplePlot(datasets, "MET_4L5", 40, 0., 700., "MET");
+//	if(channel.find("4L")!=string::npos) MSPlot["MET_4L5"] = new MultiSamplePlot(datasets, "MET_4L5", 40, 0., 700., "MET");
 	
+    	MSPlot["MVA"] = new MultiSamplePlot(datasets, "MVA", 25, 0, 1, "Likelihood Disciminator");
 	
 	if(debug) cout << "[PROCES]	Declared MS histograms  "<< endl;
 
@@ -490,13 +532,13 @@ int main(int argc, char *argv[]){
 	for (unsigned int d = 0; d < datasets.size (); d++){
      		string dataSetName = datasets[d]->Name();
  
- 		cout <<"Prescaled number of events "<<  datasets[d]->NofEvtsToRunOver() <<endl;
+ 		if(debug) cout <<"Prescaled number of events "<<  datasets[d]->NofEvtsToRunOver() <<endl;
      		//Rescaling the number of events from your xml file if you're doing MVA, because we do MVA on only half the size of MC samples (for both training and computing) in order to not bias your MVA
      		if( (dataSetName == "Data") || (dataSetName == "data") || (dataSetName == "DATA")) continue;
       		if((trainEventMVA) || (computeEventMVA) || !(computeEventMVA)){
 			datasets[d]->SetOriginalNumberOfEvents((datasets[d]->NofEvtsToRunOver())/2);
 		}
-		cout <<"Rescaled number of events "<<  datasets[d]->NofEvtsToRunOver() <<endl;
+		if(debug) cout <<"Rescaled number of events "<<  datasets[d]->NofEvtsToRunOver() <<endl;
    	}
 	
 	///////////////////////////////////////////////////////////
@@ -1063,6 +1105,23 @@ int main(int argc, char *argv[]){
 				
 			}
 			if(!Passed_selection) continue;
+				// These vectors will be used later on to define the transverse masses
+				TLorentzVector Mt_lepb1MET(0.,0.,0.,0.);
+				TLorentzVector Mt_lepb2MET(0.,0.,0.,0.);
+				TLorentzVector Mt_lepb3MET(0.,0.,0.,0.);
+				TLorentzVector transvLep(0.,0.,0.,0.);
+				Mt_lepb1MET.Clear();
+				Mt_lepb2MET.Clear();
+				Mt_lepb3MET.Clear();
+				transvLep.Clear();
+					if (looseElectrons.size() == 1) transvLep.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),0.,looseElectrons[0]->Et());
+					if (looseMuons.size() == 1) transvLep.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),0.,looseMuons[0]->Et());
+					
+					
+								
+			/////////////////////////////////////////////////////////////////////////////////
+			//// FILLING THE MSP FOR THE MAIN VARIABLES /////////////////////////////////////
+			/////////////////////////////////////////////////////////////////////////////////
 			if(Passed_selection){
 				if(debug) cout << "[PROCES]	In passed_selection loop" << endl; 
 				
@@ -1074,11 +1133,14 @@ int main(int argc, char *argv[]){
 		        	if(debug) cout << "[PROCES]	Filled NbOfSelectedBJets_CSVM" << endl; 
 				if(nLeptons != 1) MSPlot["NbOfSelectedBJets_CSVT"]->Fill(selectedBJets_CSVT.size(), datasets[d], true, Luminosity*scaleFactor);
 				if(debug) cout << "[PROCES]	Filled NbOfSelectedJets_CSVT" << endl; 
-				MSPlot["NbOfSelectedLeptons"]->Fill(looseMuons.size()+looseElectrons.size(),datasets[d],true,Luminosity*scaleFactor);
-				if(debug) cout << "[PROCES]	Filled NbOfSelectedLeptons" << endl; 
-				if(debug) cout << "[PROCES]	Filling MET with " << (float) met_pt << endl;
+//				MSPlot["NbOfSelectedLeptons"]->Fill(looseMuons.size()+looseElectrons.size(),datasets[d],true,Luminosity*scaleFactor);
+//				if(debug) cout << "[PROCES]	Filled NbOfSelectedLeptons" << endl; 
+//				if(debug) cout << "[PROCES]	Filling MET with " << (float) met_pt << endl;
 				MSPlot["MET"]->Fill((float) met_pt, datasets[d], true, Luminosity*scaleFactor);
 				if(debug) cout << "[PROCES]	Filled MET" << endl; 
+
+
+
 				
 				for (Int_t seljet1 =0; seljet1 < selectedJets.size(); seljet1++ ){
 
@@ -1118,32 +1180,47 @@ int main(int argc, char *argv[]){
 				}
 				if( selectedBJets_CSVM.size() > 0) {
 					if(chan3L4L) MSPlot["MScutflow"]->Fill(9, datasets[d], true, Luminosity*scaleFactor);
-                                	MSPlot["Pt_leading_Bjet"]->Fill(selectedBJets_CSVM[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+                                	MSPlot["Pt_leading_Bjet"]->Fill(selectedBJets_CSVM[0]->Pt(), datasets[d],true, Luminosity*scaleFactor);
+                                	MSPlot["CSV_discr_1stBjet"]->Fill(selectedBJets_CSVM[0]->btag_combinedSecondaryVertexBJetTags(), datasets[d],true, Luminosity*scaleFactor);
+					
+					Mt_lepb1MET.SetPxPyPzE(selectedBJets_CSVM[0]->Px() + transvLep.Px() + mets[0]->Px(), selectedBJets_CSVM[0]->Py() + transvLep.Py() + mets[0]->Py(),0.,selectedBJets_CSVM[0]->Et() + transvLep.Et() + mets[0]->Et());
+                                	MSPlot["Mt_toplepton_MET_b1jet"]->Fill(Mt_lepb1MET.M(), datasets[d],true, Luminosity*scaleFactor);
                                 }
 				if( selectedBJets_CSVM.size() > 1)
 				{
 					if(chan3L4L) MSPlot["MScutflow"]->Fill(10, datasets[d], true, Luminosity*scaleFactor);
 				  	MSPlot["Pt_2nd_leading_Bjet"]->Fill(selectedBJets_CSVM[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+                                	MSPlot["CSV_discr_2ndBjet"]->Fill(selectedBJets_CSVM[1]->btag_combinedSecondaryVertexBJetTags(), datasets[d],true, Luminosity*scaleFactor);				
+					
+					Mt_lepb2MET.SetPxPyPzE(selectedBJets_CSVM[1]->Px() + transvLep.Px() + mets[0]->Px(), selectedBJets_CSVM[1]->Py() + transvLep.Py() + mets[0]->Py(),0.,selectedBJets_CSVM[1]->Et() + transvLep.Et() + mets[0]->Et());
+                                	MSPlot["Mt_toplepton_MET_b2jet"]->Fill(Mt_lepb2MET.M(), datasets[d],true, Luminosity*scaleFactor);
 				}
 				if( selectedBJets_CSVM.size() > 2)
 				{
 					if(chan3L4L) MSPlot["MScutflow"]->Fill(11, datasets[d], true, Luminosity*scaleFactor);
 				  	MSPlot["Pt_3d_leading_Bjet"]->Fill(selectedBJets_CSVM[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+                                	MSPlot["CSV_discr_3rdBjet"]->Fill(selectedBJets_CSVM[2]->btag_combinedSecondaryVertexBJetTags(), datasets[d],true, Luminosity*scaleFactor);				
+					
+					Mt_lepb3MET.SetPxPyPzE(selectedBJets_CSVM[2]->Px() + transvLep.Px() + mets[0]->Px(), selectedBJets_CSVM[2]->Py() + transvLep.Py() + mets[0]->Py(),0.,selectedBJets_CSVM[2]->Et() + transvLep.Et() + mets[0]->Et());				
+                                	MSPlot["Mt_toplepton_MET_b3jet"]->Fill(Mt_lepb3MET.M(), datasets[d],true, Luminosity*scaleFactor);
 				}
 				if( selectedBJets_CSVM.size() > 3)
 				{
 					if(chan3L4L) MSPlot["MScutflow"]->Fill(12, datasets[d], true, Luminosity*scaleFactor);
 				  	MSPlot["Pt_4th_leading_Bjet"]->Fill(selectedBJets_CSVM[3]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+                                	MSPlot["CSV_discr_4thBjet"]->Fill(selectedBJets_CSVM[3]->btag_combinedSecondaryVertexBJetTags(), datasets[d],true, Luminosity*scaleFactor);				
 				}
 				if( selectedBJets_CSVM.size() > 4)
 				{
 					if(chan3L4L) MSPlot["MScutflow"]->Fill(13, datasets[d], true, Luminosity*scaleFactor);
 				  	MSPlot["Pt_5th_leading_Bjet"]->Fill(selectedBJets_CSVM[4]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+                                	MSPlot["CSV_discr_5thBjet"]->Fill(selectedBJets_CSVM[4]->btag_combinedSecondaryVertexBJetTags(), datasets[d],true, Luminosity*scaleFactor);				
 				}
 				if( selectedBJets_CSVM.size() > 5)
 				{
 					if(chan3L4L) MSPlot["MScutflow"]->Fill(14, datasets[d], true, Luminosity*scaleFactor);
 				  	MSPlot["Pt_6th_leading_Bjet"]->Fill(selectedBJets_CSVM[5]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+                                	MSPlot["CSV_discr_6thBjet"]->Fill(selectedBJets_CSVM[5]->btag_combinedSecondaryVertexBJetTags(), datasets[d],true, Luminosity*scaleFactor);				
 				}
 				
 				
@@ -1167,7 +1244,7 @@ int main(int argc, char *argv[]){
 							lepton1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
 							leptonpair_mll = lepton0+lepton1;
 							MSPlot["Pt_leading_lepton"]->Fill(lepton0.Pt(),datasets[d], true, Luminosity*scaleFactor);
-							MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
+//							MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
 						}
 					}
 					 
@@ -1184,7 +1261,7 @@ int main(int argc, char *argv[]){
 							lepton1.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
 							leptonpair_mll = lepton0+lepton1;
 							MSPlot["Pt_leading_lepton"]->Fill(lepton0.Pt(),datasets[d], true, Luminosity*scaleFactor);
-							MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
+//							MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
 						}
 					}
 				}
@@ -1231,7 +1308,7 @@ int main(int argc, char *argv[]){
 					}
 					leptonpair_mll = lepton0+lepton1;
 					MSPlot["Pt_leading_lepton"]->Fill(lepton0.Pt(),datasets[d], true, Luminosity*scaleFactor);
-					MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
+//					MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
 				}
 				else if(looseMuons.size() == 1 && looseElectrons.size()>1)
 				{
@@ -1265,7 +1342,7 @@ int main(int argc, char *argv[]){
 					}
 					leptonpair_mll = lepton0+lepton1;
 					MSPlot["Pt_leading_lepton"]->Fill(lepton0.Pt(),datasets[d], true, Luminosity*scaleFactor);
-					MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
+//					MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
 				}
 				else if(looseMuons.size() > 1 && looseElectrons.size() == 1)
 				{
@@ -1298,7 +1375,7 @@ int main(int argc, char *argv[]){
 					}
 					leptonpair_mll = lepton0+lepton1;
 					MSPlot["Pt_leading_lepton"]->Fill(lepton0.Pt(),datasets[d], true, Luminosity*scaleFactor);
-					MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
+//					MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
 				}
 				else if(looseMuons.size() == 1 && looseElectrons.size() == 1)
 				{
@@ -1307,7 +1384,7 @@ int main(int argc, char *argv[]){
 					lepton1.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
 					leptonpair_mll = lepton0+lepton1;
 					MSPlot["Pt_leading_lepton"]->Fill(lepton0.Pt(),datasets[d], true, Luminosity*scaleFactor);
-					MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
+//					MSPlot["Pt_2nd_leading_lepton"]->Fill(lepton1.Pt(),datasets[d], true, Luminosity*scaleFactor);
 				}
 				bool empty = false; 
 				if(looseMuons.size() == 0 && looseElectrons.size() == 0) empty = true; 
@@ -1317,51 +1394,20 @@ int main(int argc, char *argv[]){
 				{
 					mll = leptonpair_mll.M();
 					if(debug) cout << "[INFO]	mll = 	" << mll << endl; 
-					MSPlot["Mll"]->Fill(mll,datasets[d],true,Luminosity*scaleFactor);
+//					MSPlot["Mll"]->Fill(mll,datasets[d],true,Luminosity*scaleFactor);
 					if(channel.find("3L")!=string::npos)
 			 		{
 			 			if(selectedBJets_CSVM.size()>1)
 						{
 							if(debug) cout << "[PROCES]	In 3L (#bjets > 1)" <<  endl; 
 							MSPlot["Mll_3LcH"]->Fill(mll,datasets[d],true,Luminosity*scaleFactor);
-							MSPlot["MET_3LcH"]->Fill((float) met_pt, datasets[d], true, Luminosity*scaleFactor);
+//							MSPlot["MET_3LcH"]->Fill((float) met_pt, datasets[d], true, Luminosity*scaleFactor);
 						}
 			 		}
 					
 				}
 				
-				
-				
-				/*
-				double mllll = 0; 
-				TLorentzVector leptonpair_mllll;
-				TLorentzVector lepton2;
-				TLorentzVector lepton3;
-				leptonpair_mllll.Clear(); 
-				lepton2.Clear(); 
-				lepton3.Clear(); 
-				if(looseMuons.size()>3 && looseElectrons.size() == 0)
-				{
-					lepton2.SetPxPyPzE(looseMuons[2]->Px(),looseMuons[2]->Py(),looseMuons[2]->Pz(),looseMuons[2]->Energy());
-					lepton3.SetPxPyPzE(looseMuons[3]->Px(),looseMuons[3]->Py(),looseMuons[3]->Pz(),looseMuons[3]->Energy());
-					leptonpair_mllll = leptonpair_mll + lepton2 + lepton3;
-					mllll = leptonpair_mllll.M(); 
-				}
-				if(looseMuons.size()==0&& looseElectrons.size() > 3)
-				{
-					lepton2.SetPxPyPzE(looseElectrons[2]->Px(),looseElectrons[2]->Py(),looseElectrons[2]->Pz(),looseElectrons[2]->Energy());
-					lepton3.SetPxPyPzE(looseElectrons[3]->Px(),looseElectrons[3]->Py(),looseElectrons[3]->Pz(),looseElectrons[3]->Energy());
-					leptonpair_mllll = leptonpair_mll + lepton2 + lepton3;
-					mllll = leptonpair_mllll.M(); 
-				}
-				
-				
-				
-				
-				
-				
-				if(mllll != 0 && channel.find("4L")!=string::npos ) MSPlot["Mllll"]->Fill(mllll,datasets[d],true,Luminosity*scaleFactor);
-				*/
+
 				
 			}
 			
@@ -1390,7 +1436,7 @@ int main(int argc, char *argv[]){
 					// #bjets should be 1 + Z(bb) = 3
 					MSPlot["NbOfJets_4L4"]->Fill(selectedJets.size(),datasets[d],true,Luminosity*scaleFactor);  
 					// #jets should be 4
-					MSPlot["MET_4L4"]->Fill((float) met_pt, datasets[d], true, Luminosity*scaleFactor);
+//					MSPlot["MET_4L4"]->Fill((float) met_pt, datasets[d], true, Luminosity*scaleFactor);
 					// MET should be zero
 				}
 				if(looseMuons.size()+looseElectrons.size() == 5)
@@ -1402,7 +1448,7 @@ int main(int argc, char *argv[]){
 					// #bjets should be 1 
 					MSPlot["NbOfJets_4L5"]->Fill(selectedJets.size(),datasets[d],true,Luminosity*scaleFactor);  
 					// #jets should be 2
-					MSPlot["MET_4L5"]->Fill((float) met_pt, datasets[d], true, Luminosity*scaleFactor);
+//					MSPlot["MET_4L5"]->Fill((float) met_pt, datasets[d], true, Luminosity*scaleFactor);
 					// MET should be half the mass of a W boson
 				
 				}
@@ -1414,6 +1460,10 @@ int main(int argc, char *argv[]){
 			 		
 			 }
 			
+			
+			float DeltaR_lepton_b_min = 9999; //The b which is closest to the lepton is more probable to come from the SM top decay
+			float DeltaR_bb_min = 9999; 
+
 				
 			if(channel.find("1L3B")!=string::npos && Passed_selection){
 					TLorentzVector Lepton;
@@ -1430,8 +1480,6 @@ int main(int argc, char *argv[]){
 					float TransvM_lept_MET = 0;
 					float TransvM_lept_MET_b = 0;
 					float InvM_bb = 0;
-					float DeltaR_lepton_b_min = 9999; //The b which is closest to the lepton is more probable to come from the SM top decay
-					float DeltaR_bb_min = 9999; 
 					float DeltaR_bb_max = -9999; //The bigger DeltaR_bb, the more probable those 2 b-jets do not come from H->bb (and therefore the max is a good handle to determine which of the 3 b-jets comes from SM top decay
 					float dR_lb_temp = 9999;
 					float dR_bb_temp = 9999;
@@ -1493,24 +1541,68 @@ int main(int argc, char *argv[]){
 	 
 	 			/////////////////////////////////////////////////////////////////
 	 			//  Filling MVA Signal and Background trees with variable values.
-				/////////////////////////////////////////////////////////////////
-          
+				///////////////////////////////////////////////////////////////// 
         			if(trainEventMVA){
         
         				if(is_signal){
 	  					if(debug) cout <<"filling event trainer .... " << endl;
-						Eventtrainer_->Fill("S","2ndW_mass", second_w_mass_chosen_g);
+						Eventtrainer_->Fill("S","Pt_leading_jet", selectedJets[0]->Pt());
+						Eventtrainer_->Fill("S","Pt_2nd_leading_jet", selectedJets[1]->Pt());
+						Eventtrainer_->Fill("S","Pt_3d_leading_jet", selectedJets[2]->Pt());
+						Eventtrainer_->Fill("S","Pt_4th_leading_jet", selectedJets[3]->Pt());
+						Eventtrainer_->Fill("S","MET", mets[0]->Et());
+						Eventtrainer_->Fill("S","CSV_discr_1stBjet", selectedBJets_CSVM[0]->btag_combinedSecondaryVertexBJetTags());
+						Eventtrainer_->Fill("S","CSV_discr_2ndBjet", selectedBJets_CSVM[1]->btag_combinedSecondaryVertexBJetTags());
+						Eventtrainer_->Fill("S","CSV_discr_3rdBjet", selectedBJets_CSVM[2]->btag_combinedSecondaryVertexBJetTags());
+						Eventtrainer_->Fill("S","Pt_leading_Bjet", selectedBJets_CSVM[0]->Pt());
+						Eventtrainer_->Fill("S","Pt_2nd_leading_Bjet", selectedBJets_CSVM[1]->Pt());
+						Eventtrainer_->Fill("S","Pt_3d_leading_Bjet", selectedBJets_CSVM[2]->Pt());
+						Eventtrainer_->Fill("S","Mt_toplepton_MET_b1jet", Mt_lepb1MET.M());
+						Eventtrainer_->Fill("S","Mt_toplepton_MET_b2jet", Mt_lepb2MET.M());
+						Eventtrainer_->Fill("S","Mt_toplepton_MET_b3jet", Mt_lepb3MET.M());
+						Eventtrainer_->Fill("S","DR_bb", DeltaR_bb_min);
+						Eventtrainer_->Fill("S","DR_toplepton_MET", DeltaR_lepton_b_min);
         				}
         				else{
 
-						Eventtrainer_->Fill("B","2ndW_mass", second_w_mass_chosen_g);
+						Eventtrainer_->Fill("B","Pt_leading_jet", selectedJets[0]->Pt());
+						Eventtrainer_->Fill("B","Pt_2nd_leading_jet", selectedJets[1]->Pt());
+						Eventtrainer_->Fill("B","Pt_3d_leading_jet", selectedJets[2]->Pt());
+						Eventtrainer_->Fill("B","Pt_4th_leading_jet", selectedJets[3]->Pt());
+						Eventtrainer_->Fill("B","MET", mets[0]->Et());
+						Eventtrainer_->Fill("B","CSV_discr_1stBjet", selectedBJets_CSVM[0]->btag_combinedSecondaryVertexBJetTags());
+						Eventtrainer_->Fill("B","CSV_discr_2ndBjet", selectedBJets_CSVM[1]->btag_combinedSecondaryVertexBJetTags());
+						Eventtrainer_->Fill("B","CSV_discr_3rdBjet", selectedBJets_CSVM[2]->btag_combinedSecondaryVertexBJetTags());
+						Eventtrainer_->Fill("B","Pt_leading_Bjet", selectedBJets_CSVM[0]->Pt());
+						Eventtrainer_->Fill("B","Pt_2nd_leading_Bjet", selectedBJets_CSVM[1]->Pt());
+						Eventtrainer_->Fill("B","Pt_3d_leading_Bjet", selectedBJets_CSVM[2]->Pt());
+						Eventtrainer_->Fill("B","Mt_toplepton_MET_b1jet", Mt_lepb1MET.M());
+						Eventtrainer_->Fill("B","Mt_toplepton_MET_b2jet", Mt_lepb2MET.M());
+						Eventtrainer_->Fill("B","Mt_toplepton_MET_b3jet", Mt_lepb3MET.M());
+						Eventtrainer_->Fill("B","DR_bb", DeltaR_bb_min);
+						Eventtrainer_->Fill("B","DR_toplepton_MET", DeltaR_lepton_b_min);
 					}
         			}
         			else if (computeEventMVA){
             				if (debug) cout <<"filling computer...."<<endl;
             				if (Eventcomputer_ == 0) cout <<"null computer...." <<endl;
 
-					Eventcomputer_->FillVar("2ndW_mass", second_w_mass_chosen_g);
+					Eventcomputer_->FillVar("Pt_leading_jet", selectedJets[0]->Pt());
+					Eventcomputer_->FillVar("Pt_2nd_leading_jet", selectedJets[1]->Pt());
+					Eventcomputer_->FillVar("Pt_3d_leading_jet", selectedJets[2]->Pt());
+					Eventcomputer_->FillVar("Pt_4th_leading_jet", selectedJets[3]->Pt());
+					Eventcomputer_->FillVar("MET", mets[0]->Et());
+					Eventcomputer_->FillVar("CSV_discr_1stBjet", selectedBJets_CSVM[0]->btag_combinedSecondaryVertexBJetTags());
+					Eventcomputer_->FillVar("CSV_discr_2ndBjet", selectedBJets_CSVM[1]->btag_combinedSecondaryVertexBJetTags());
+					Eventcomputer_->FillVar("CSV_discr_3rdBjet", selectedBJets_CSVM[2]->btag_combinedSecondaryVertexBJetTags());
+					Eventcomputer_->FillVar("Pt_leading_Bjet", selectedBJets_CSVM[0]->Pt());
+					Eventcomputer_->FillVar("Pt_2nd_leading_Bjet", selectedBJets_CSVM[1]->Pt());
+					Eventcomputer_->FillVar("Pt_3d_leading_Bjet", selectedBJets_CSVM[2]->Pt());
+					Eventcomputer_->FillVar("Mt_toplepton_MET_b1jet", Mt_lepb1MET.M());
+					Eventcomputer_->FillVar("Mt_toplepton_MET_b2jet", Mt_lepb2MET.M());
+					Eventcomputer_->FillVar("Mt_toplepton_MET_b3jet", Mt_lepb3MET.M());
+					Eventcomputer_->FillVar("DR_bb", DeltaR_bb_min);
+					Eventcomputer_->FillVar("DR_toplepton_MET", DeltaR_lepton_b_min);
             			}
         			if (debug) cout <<"computer filled...."<<endl;
         
