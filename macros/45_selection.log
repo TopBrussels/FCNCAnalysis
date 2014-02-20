@@ -1,19 +1,0 @@
-
-[1mRooFit v3.52 -- Developed by Wouter Verkerke and David Kirkby[0m 
-                Copyright (C) 2000-2012 NIKHEF, University of California & Stanford University
-                All rights reserved, please read http://roofit.sourceforge.net/license.txt
-
-******************************************
- Starting clock
-******************************************
- Beginning of the program for the FCNC selection 
-******************************************
-[INFO]	Used configuration file: ../config/FCNC_45_config_all.xml
-[INFO]	Used channel: 45
-[INFO]	Used btag algorithm: CSVM
-[INFO]	Assumed masses: mH = 125 GeV - mW = 80 GeV - mZ = 90 GeV
-[INFO]	Made output rootfile: ../data/FCNC_selection_4L5L.root
-[PROCES]	Looping over the datasets:  13 datasets
-[INFO]	Dataset 0 name : NP_overlay_TTJetsTocHbW_HToWW_WToLNuL_HctL / title : tcH (H->WW)
-[PROCES]	looping over 3980 events 
-[PROCES]	Processing the 0th event[PROCES]	Processing the 1000th event[PROCES]	Processing the 2000th event[PROCES]	Processing the 3000th event[INFO]	Dataset 1 name : NP_overlay_TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL / title : tcH (H->ZZ)
