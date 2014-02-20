@@ -38,6 +38,10 @@ using namespace TopTree;
 //for ordering the leptons
 bool cmp_big_first (pair<int,int> i, pair<int,int> j) { return i.second > j.second; }
 
+
+
+
+
 int main (int argc, char *argv[])
 {
     
@@ -292,12 +296,11 @@ int main (int argc, char *argv[])
 	Double_t missingEt_pX;
 	Double_t missingEt_pY;
 	
-	Double_t InvMass_4lept_HighPt; 
+
 	Double_t InvMass_4lept_Zdecay;
 	Double_t Reco_FCNC_top_Zdecay; 
-	Double_t Reco_FCNC_top_HighPt;
-	//Double_t Reco_SM_top; 
-	//Double_t Reco_SM_W; 
+	Double_t InvMass_SM_lb; 
+	Double_t TrMass_W; 
 	
 	Double_t Phi_Higgs; 
 	Double_t Eta_Higgs; 
@@ -350,12 +353,11 @@ int main (int argc, char *argv[])
 	myTree->Branch("missingEt_pY",&missingEt_pY,"missingEt_pY/D");
         myTree->Branch("pu_weight",&pu_weight,"pu_weight/D");
 	
-	myTree->Branch("InvMass_4lept_HighPt",&InvMass_4lept_HighPt,"InvMass_4lept_HighPt/D");
-        myTree->Branch("InvMass_4lept_Zdecay",&InvMass_4lept_Zdecay,"InvMass_4lept_Zdecay/D");
+	myTree->Branch("InvMass_4lept_Zdecay",&InvMass_4lept_Zdecay,"InvMass_4lept_Zdecay/D");
 	myTree->Branch("Reco_FCNC_top_Zdecay",&Reco_FCNC_top_Zdecay,"Reco_FCNC_top_Zdecay/D");
-	myTree->Branch("Reco_FCNC_top_HighPt",&Reco_FCNC_top_HighPt,"Reco_FCNC_top_HighPT/D");
-	//myTree->Branch("Reco_SM_top",&Reco_SM_top,"Reco_SM_top/D");
-	//myTree->Branch("Reco_SM_W",&Reco_SM_W,"Reco_SM_W/D");
+	myTree->Branch("InvMass_SM_lb",&InvMass_SM_lb,"InvMass_SM_lb/D");
+	myTree->Branch("TrMass_W",&TrMass_W,"TrMass_W/D");
+	
 	
 	myTree->Branch("Phi_Higgs",&Phi_Higgs,"Phi_Higgs/D"); 
 	myTree->Branch("Eta_Higgs",&Eta_Higgs,"Eta_Higgs/D"); 
@@ -654,101 +656,17 @@ int main (int argc, char *argv[])
 	   
 	    
 	    
+
 	    TLorentzVector Reco_FCNC_top_combi; 
-	    TLorentzVector leptonpair_1;
-	    TLorentzVector leptonpair_2;
-	    TLorentzVector leptonpair_3;
-	    TLorentzVector leptonfour;
+	    TLorentzVector leptonpair_1; // two OSSF with highest pt
+	    TLorentzVector leptonpair_2; // two OSSF with 2nd highest pt
+	    TLorentzVector leptonfour; // decay of Z
 	    TLorentzVector lepton_0;
 	    TLorentzVector lepton_1;
 	    TLorentzVector lepton_2;
 	    TLorentzVector lepton_3;
 	    TLorentzVector lepton_4;
-	    lepton_0.Clear(); 
-	    lepton_1.Clear();
-	    lepton_2.Clear();
-	    lepton_3.Clear();
-	    lepton_4.Clear();
-	    leptonpair_1.Clear();
-	    leptonpair_2.Clear();
-	    leptonpair_3.Clear();
-	    leptonfour.Clear();
-	    
-	    
-	
-	    
-	    InvMass_4lept_HighPt =-10;
-	    if(nElectrons+nMuons>3)
-	    { 
-	    	for(int j = 0; j <HighestPtLept.size() ; j++)
-	    	{
-	       	    pair<int,int> aPair = HighestPtLept[j]; 
-	       	    if(aPair.first>19)
-	       	    {
-	    	    	int number = aPair.first-20;
-	    	    	if(j == 0) lepton_0.SetPxPyPzE(selectedMuons[number]->Px(),selectedMuons[number]->Py(),selectedMuons[number]->Pz(),selectedMuons[number]->Energy());
-	    	    	if(j == 1) lepton_1.SetPxPyPzE(selectedMuons[number]->Px(),selectedMuons[number]->Py(),selectedMuons[number]->Pz(),selectedMuons[number]->Energy());
-	    	    	if(j == 2) lepton_2.SetPxPyPzE(selectedMuons[number]->Px(),selectedMuons[number]->Py(),selectedMuons[number]->Pz(),selectedMuons[number]->Energy());
-	    	    	if(j == 3) lepton_3.SetPxPyPzE(selectedMuons[number]->Px(),selectedMuons[number]->Py(),selectedMuons[number]->Pz(),selectedMuons[number]->Energy());
-	       
-	       	    }
-	       	    else
-	       	    {
-	    	    	int number = aPair.first;
-	    	    	if(j == 0) lepton_0.SetPxPyPzE(selectedElectrons[number]->Px(),selectedElectrons[number]->Py(),selectedElectrons[number]->Pz(),selectedElectrons[number]->Energy());
-	    	    	if(j == 1) lepton_1.SetPxPyPzE(selectedElectrons[number]->Px(),selectedElectrons[number]->Py(),selectedElectrons[number]->Pz(),selectedElectrons[number]->Energy());
-	    	    	if(j == 2) lepton_2.SetPxPyPzE(selectedElectrons[number]->Px(),selectedElectrons[number]->Py(),selectedElectrons[number]->Pz(),selectedElectrons[number]->Energy());
-	    	    	if(j == 3) lepton_3.SetPxPyPzE(selectedElectrons[number]->Px(),selectedElectrons[number]->Py(),selectedElectrons[number]->Pz(),selectedElectrons[number]->Energy());
-	       
-	       
-	       	    }    
-	    
-	    	}
-	    
-	    	leptonpair_1 = lepton_0 + lepton_1; 
-	    	leptonpair_2 = lepton_2 + lepton_3;
-	    	leptonfour = leptonpair_1 + leptonpair_2;
-	    	if(debug) cout << "leptonfour.M()= " << leptonfour.M() << endl; 
-	    	InvMass_4lept_HighPt = leptonfour.M();
-		 
-		
-		
-	    }
-	    
-	    
-	    Double_t DeltaR_LightJet_Higgs = 1000; 
-	    Reco_FCNC_top_combi.Clear();
-	    Reco_FCNC_top_HighPt= -10;
-	    if(nElectrons+nMuons>3 & nLJets>0)
-	    { 
-	    	if(debug) cout << "In nElectrons + nMuons > 3" << endl; 
-		for( int i = 0; i <selectedLightJets.size(); i++)
-		{
-			TLorentzVector LightJet;
-			LightJet.SetPxPyPzE(selectedLightJets[i]->Px(),selectedLightJets[i]->Py(),selectedLightJets[i]->Pz(), selectedLightJets[i]->Energy());
-			Double_t Phi = selectedLightJets[i]->Phi(); 
-			Double_t Eta = selectedLightJets[i]->Phi();
-			
-			Double_t Phi_H = leptonfour.Phi(); 
-			Double_t Theta_H = leptonfour.Theta(); 
-			Double_t Eta_H = -TMath::Log(TMath::Tan(Theta_H/2)); 
-			
-			Double_t Delta_Eta = fabs(Eta_H - Eta); 
-			Double_t Delta_Phi = fabs(Phi_H - Phi); 
-			Double_t Delta_R = TMath::Sqrt(Delta_Eta*Delta_Eta + Delta_Phi*Delta_Phi);
-			if(Delta_R < DeltaR_LightJet_Higgs) 
-			{
-				DeltaR_LightJet_Higgs = Delta_R; 
-				Reco_FCNC_top_combi = leptonfour + LightJet; 
-				Reco_FCNC_top_HighPt = Reco_FCNC_top_combi.M();
-			}
-				
-			  
-	    	}
-	    }
-	    if(debug) cout << "Out nElectrons + nMuons > 3" << endl; 	   
-	    
-	   
+	    TLorentzVector leptonT; // Transverse lepton of the lepton coming from Wboson
 	    lepton_0.Clear(); 
 	    lepton_1.Clear();
 	    lepton_2.Clear();
@@ -757,10 +675,11 @@ int main (int argc, char *argv[])
 	    leptonpair_1.Clear();
 	    leptonpair_2.Clear();
 	    leptonfour.Clear();
-	    
+	    leptonT.Clear(); 
+
+	    //Calculate invariant mass of the leptons coming from Z
 	    InvMass_4lept_Zdecay =-10;
-	    Double_t leptonPhi = -100; 
-	    Double_t leptonPt = -10;
+	    
 	    if(nElectrons+nMuons>3)
 	    { 		
 	    	    if(debug) cout << "In nElectrons + nMuons > 3" << endl; 
@@ -778,7 +697,8 @@ int main (int argc, char *argv[])
 		    
 		    
 		    //select ZZ events, muon flavours come in pairs and OS
-		    if( nMuons == 2 & nElectrons == 2){ 
+		    if( nMuons == 2 & nElectrons == 2)
+		    { 
 		         if(selectedMuons[0]->charge()!=selectedMuons[1]->charge())   chargereq1 = true; 
 			 if(selectedElectrons[0]->charge()!=selectedElectrons[1]->charge())   chargereq2 = true;
 			
@@ -851,10 +771,7 @@ int main (int argc, char *argv[])
 			  
 			 leptonpair_1 = lepton_0 + lepton_1; 
 		 	 leptonpair_2 = lepton_2 + lepton_3;
-			 leptonPhi = lepton_4.Phi(); 
-			 if(debug) cout << "leptonPhi = " << leptonPhi << endl; 
-			 leptonPt = lepton_4.Pt(); 
-			 if(debug) cout << "leptonPt = " << leptonPt << endl;
+			 leptonT.SetPxPyPzE(lepton_4.Px(),lepton_4.Py(), lepton_4.Pz(),(lepton_4.Energy()*TMath::Sin(lepton_4.Theta())));
 			 leptonfour = leptonpair_1 + leptonpair_2;
 			 
 			 
@@ -905,8 +822,7 @@ int main (int argc, char *argv[])
 			 leptonpair_1 = lepton_0 + lepton_1; 
 		 	 leptonpair_2 = lepton_2 + lepton_3;
 		 	 leptonfour = leptonpair_1 + leptonpair_2;
-		 	 leptonPhi = lepton_4.Phi(); 
-			 leptonPt = lepton_4.Pt();
+		 	 leptonT.SetPxPyPzE(lepton_4.Px(),lepton_4.Py(), lepton_4.Pz(),lepton_4.Energy()*sin(lepton_4.Theta()));
 		 
 		 }
 		 if( nMuons == 5 )
@@ -1048,8 +964,7 @@ int main (int argc, char *argv[])
 		 	 leptonpair_1 = lepton_0 + lepton_1; 
 		 	 leptonpair_2 = lepton_2 + lepton_3;
 		 	 leptonfour = leptonpair_1 + leptonpair_2;
-		 	 leptonPhi = lepton_4.Phi(); 
-			 leptonPt = lepton_4.Pt();
+		 	 leptonT.SetPxPyPzE(lepton_4.Px(),lepton_4.Py(), lepton_4.Pz(),lepton_4.Energy()*sin(lepton_4.Theta()));
 		 	
 		 	 
 		 }
@@ -1193,8 +1108,7 @@ int main (int argc, char *argv[])
 		 	leptonpair_1 = lepton_0 + lepton_1; 
 		 	leptonpair_2 = lepton_2 + lepton_3;
 		 	leptonfour = leptonpair_1 + leptonpair_2;
-		 	leptonPhi = lepton_4.Phi(); 
-			leptonPt = lepton_4.Pt();
+		 	leptonT.SetPxPyPzE(lepton_4.Px(),lepton_4.Py(), lepton_4.Pz(),lepton_4.Energy()*sin(lepton_4.Theta()));
 		 	
 		 }
 		 if( nMuons == 4)
@@ -1292,116 +1206,141 @@ int main (int argc, char *argv[])
 	    	if(debug) cout << "Zdecay leptonfour.M()= " << leptonfour.M() << endl; 
 	    	InvMass_4lept_Zdecay = leptonfour.M();
 		
+		vector<pair<int,bool> >  LightJets_Paired;
+	    	LightJets_Paired.clear();
+	
+	    
+	    	for(int It = 0; It < selectedLightJets.size(); It++)
+	    	{
+	    	    LightJets_Paired.push_back(make_pair(It, false));
+	    	}
+		
+		Double_t DeltaR_LightJet_Higgs = 1000; 
+	    	Reco_FCNC_top_combi.Clear();
+	    	Reco_FCNC_top_Zdecay= -10;
+	    	if(nLJets>0)
+	    	{ 
+	    		for( int i = 0; i <selectedLightJets.size(); i++)
+			{
+				pair<int,int> aPair = LightJets_Paired[i];
+				pair<int,int> pPair; 
+				if(i == 0) pPair = LightJets_Paired[i];
+				else pPair = LightJets_Paired[i-1];
+			
+				TLorentzVector LightJet;
+				LightJet.SetPxPyPzE(selectedLightJets[i]->Px(),selectedLightJets[i]->Py(),selectedLightJets[i]->Pz(), selectedLightJets[i]->Energy());
+				Double_t Phi = selectedLightJets[i]->Phi(); 
+				Double_t Eta = -TMath::Log(TMath::Tan(selectedLightJets[i]->Theta()/2)); 
+			
+				Double_t Phi_H = leptonfour.Phi(); 
+				Double_t Theta_H = leptonfour.Theta(); 
+				Double_t Eta_H = -TMath::Log(TMath::Tan(Theta_H/2)); 
+			
+				Double_t Delta_Eta = fabs(Eta_H - Eta); 
+				Double_t Delta_Phi = fabs(Phi_H - Phi); 
+				Double_t Delta_R = TMath::Sqrt(Delta_Eta*Delta_Eta + Delta_Phi*Delta_Phi);
+				if(Delta_R < DeltaR_LightJet_Higgs) 
+				{
+					DeltaR_LightJet_Higgs = Delta_R; 
+					Reco_FCNC_top_combi = leptonfour + LightJet; 
+					Reco_FCNC_top_Zdecay = Reco_FCNC_top_combi.M();
+					Phi_Higgs = Phi_H; 
+					Eta_Higgs = Eta_H;
+				
+					aPair.second = true; 
+					if(i != 0) pPair.second = false; 
+				}
+				
+			  
+	    		}
+	    	}
+		
+		TrMass_W = -10;
+	    	TLorentzVector jetT;
+	    	jetT.Clear();  
+	    	if(nElectrons+nMuons > 4)
+	    	{
+	    		TLorentzVector sumT; 
+			sumT = leptonT+missingEt;
+	    		TrMass_W = TMath::Sqrt(sumT.M2());
+		
+	    	}
+	    	else if(nLJets > 2)
+	    	{
+	    		float counter = 0; 
+			for(int iJet = 0; iJet < selectedLightJets.size(); iJet++)
+			{
+		    		pair<int,int> aPair = LightJets_Paired[iJet];
+		    
+		    		if(!aPair.second && counter < 2)
+		    		{	
+		    			counter++;
+			
+		    			TLorentzVector LightJet;
+		        		LightJet.SetPxPyPzE(selectedLightJets[iJet]->Px(),selectedLightJets[iJet]->Py(),selectedLightJets[iJet]->Pz(),selectedLightJets[iJet]->Energy()*selectedLightJets[iJet]->Theta());
+					jetT += LightJet;
+		    
+		    		}
+			}
+	    		TrMass_W = TMath::Sqrt(jetT.M2());
+		
+	    
+	    	}
+		InvMass_SM_lb = -10;
+	    	Double_t DeltaR_lb = 1000; 
+	    	if(selectedBJets_CSVM.size() >0)
+	    	{	
+	    	
+			TLorentzVector tempJet; 
+			for(int iJet = 0; iJet < selectedBJets_CSVM.size(); iJet++)
+			{
+		   		tempJet.SetPxPyPzE(selectedBJets_CSVM[iJet]->Px(),selectedBJets_CSVM[iJet]->Py(),selectedBJets_CSVM[iJet]->Pz(),selectedBJets_CSVM[iJet]->Energy());
+		   		Double_t Phi = tempJet.Phi(); 
+		  	 	Double_t Eta = -TMath::Log(TMath::Tan(tempJet.Theta()/2));
+		
+		   		Double_t Phi_H = leptonfour.Phi(); 
+		   		Double_t Theta_H = leptonfour.Theta(); 
+		   		Double_t Eta_H = -TMath::Log(TMath::Tan(Theta_H/2)); 
+		
+		   		Double_t Delta_Eta = fabs(Eta_H - Eta); 
+		   		Double_t Delta_Phi = fabs(Phi_H - Phi); 
+		   		Double_t Delta_R = TMath::Sqrt(Delta_Eta*Delta_Eta + Delta_Phi*Delta_Phi);
+		   		if(Delta_R < DeltaR_lb) 
+		   		{
+		   	   		DeltaR_lb = Delta_R; 
+		   	   		TLorentzVector combi; 
+			   		combi = lepton_4 + tempJet; 
+		   	   		InvMass_SM_lb =combi.M();
+		   	   
+		   		}
+		 	}	   
+	    
+	    
+	    	}
+		
+		if(channelName.find("45")!=string::npos ) myTree->Fill();
+		
 		
 	    }
 	    
-	    
-	    vector<pair<int,bool> >  LightJets_Paired;
-	    LightJets_Paired.clear();
-	
-	    
-	    for(int It = 0; It < selectedLightJets.size(); It++)
+	    if(nElectrons+nMuons == 3)
 	    {
-	    	    LightJets_Paired.push_back(make_pair(It, false));
+	    
+	    
+	    
+	    
+	    	if(channelName.find("3L")!=string::npos ) myTree->Fill();
 	    }
 	    
-	    DeltaR_LightJet_Higgs = 1000; 
-	    Reco_FCNC_top_combi.Clear();
-	    Reco_FCNC_top_Zdecay= -10;
-	    if(nElectrons+nMuons>3 & nLJets>0)
-	    { 
-	    	for( int i = 0; i <selectedLightJets.size(); i++)
-		{
-			pair<int,int> aPair = LightJets_Paired[i];
-			pair<int,int> pPair; 
-			if(i == 0) pPair = LightJets_Paired[i];
-			else pPair = LightJets_Paired[i-1];
-			
-			TLorentzVector LightJet;
-			LightJet.SetPxPyPzE(selectedLightJets[i]->Px(),selectedLightJets[i]->Py(),selectedLightJets[i]->Pz(), selectedLightJets[i]->Energy());
-			Double_t Phi = selectedLightJets[i]->Phi(); 
-			Double_t Eta = selectedLightJets[i]->Phi();
-			
-			Double_t Phi_H = leptonfour.Phi(); 
-			Double_t Theta_H = leptonfour.Theta(); 
-			Double_t Eta_H = -TMath::Log(TMath::Tan(Theta_H/2)); 
-			
-			Double_t Delta_Eta = fabs(Eta_H - Eta); 
-			Double_t Delta_Phi = fabs(Phi_H - Phi); 
-			Double_t Delta_R = TMath::Sqrt(Delta_Eta*Delta_Eta + Delta_Phi*Delta_Phi);
-			if(Delta_R < DeltaR_LightJet_Higgs) 
-			{
-				DeltaR_LightJet_Higgs = Delta_R; 
-				Reco_FCNC_top_combi = leptonfour + LightJet; 
-				Reco_FCNC_top_Zdecay = Reco_FCNC_top_combi.M();
-				Phi_Higgs = Phi_H; 
-				Eta_Higgs = Eta_H;
-				
-				aPair.second = true; 
-				if(i != 0) pPair.second = false; 
-			}
-				
-			  
-	    	}
-	    }
-	    
-	    /*
-	    Reco_SM_W = -10;
-	    bool SM_W = false; 
-	    if(nElectrons+nMuons > 4)
-	    {
-	    	Double_t angle = fabs(leptonPhi - missingEt_Phi); 
-	    	Reco_SM_W = TMath::Sqrt(2*leptonPt*missingEt*(1 - cos(angle)));
-		SM_W = true; 
-	    }
-	    else if(nElectrons+nMuons > 3 && nLJets > 2)
-	    {
-	    	float counter = 0; 
-		for(int iJet = 0; iJet < selectedLightJets.size(); iJet++)
-		{
-		    pair<int,int> aPair = LightJets_Paired[iJet];
-		    
-		    if(!aPair.second && counter < 2)
-		    {	
-		    	counter++;
-			
-		    	TLorentzVector LightJet;
-		        LightJet.SetPxPyPzE(selectedLightJets[iJet]->Px(),selectedLightJets[iJet]->Py(),selectedLightJets[iJet]->Pz(),selectedLightJets[iJet]->Energy());
-			leptonpair_3 += LightJet;
-		    
-		    }
-		}
-	    	Reco_SM_W = leptonpair_3.M();
-		SM_W = true; 
-	    
-	    }
-	    
-	    Reco_SM_top = -10;
-	    if(SM_W && selectedBJets_CSVM.size() >0)
-	    {
-	    	Reco_SM_top = Reco_SM_W
-	    
-	    
-	    }
-	    */	    
-	    	    
 	    
 	    
 	    
 
-            if(channelName.find("45")!=string::npos )
-	    {
-	    	if(nElectrons+nMuons > nb_Leptons ){
-                	myTree->Fill();
-                	if(debug) cout << "found " << nMuons << " muons and " << nElectrons << " electrons!" << endl;
-            	}
-	    }
-	    else{
-            	if(nElectrons+nMuons== nb_Leptons ){
-                	myTree->Fill();
-                	if(debug) cout << "found " << nMuons << " muons and " << nElectrons << " electrons!" << endl;
-            	}
-            }
+
+
+
+
+
         }			//loop on events
         
 	cout<<endl;
