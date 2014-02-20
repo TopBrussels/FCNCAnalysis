@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<datasets>
+
+
+  
+  <!-- D I B O S O N -->
+
+ 
+<d name="WW_To2L2Nu" title="WW\to ll+MET" add="1" color="920"  ls="1"  lw="2" normf="1" xsection="5.757"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/WWJetsTo2L2Nu_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/21062013_132316/TOPTREE/*_1_*.root"/>
+  <d name="WZ_To2L2Q" title="WZ\to ll+jets" add="1" color="793"  ls="1"  lw="2" normf="1" xsection="2.267"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/WZJetsTo2L2Q_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/21062013_132321/TOPTREE/*_1_*.root"/>
+
+<d name="WZ_To3LNu" title="WZ\to 3l" add="1" color="209"  ls="1"  lw="2" normf="1" xsection="1.087"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/WZJetsTo3LNu_TuneZ2_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/23062013_152453/TOPTREE/*_1_*.root"/>
+
+  <d name="ZZ_To2L2Nu" title="ZZ\to ll+MET" add="1" color="900"  ls="1"  lw="2" normf="1" xsection="0.713"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/ZZJetsTo2L2Nu_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v3/21062013_132331/TOPTREE/*_1_*.root"/>
+ <d name="ZZ_To2L2Q" title="ZZ\to ll+jets" add="1" color="900"  ls="1"  lw="2" normf="1" xsection="2.492"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/ZZJetsTo2L2Q_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/21062013_132336/TOPTREE/*_1_*.root"/>
+ 
+  <d name="ZZ_To4L" title="ZZ\to 4l" add="1" color="94"  ls="1"  lw="2" normf="1" xsection="0.180"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/ZZJetsTo4L_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/21062013_132341/TOPTREE/*_1_*.root"/>
+
+
+
+
+</datasets>
+
+<analysis>
+
+<a type="Collections" PVCollection="PrimaryVertex" JetType="2" JetCollection="PFJets_selectedPatJetsPF2PAT" METType="2" METCollection="PFMET_patType1CorrectedPFMetPF2PAT" MuonCollection="Muons_selectedPatMuonsPF2PAT" ElectronCollection="Electrons_selectedPatElectronsPF2PAT" loadGenJetCollection="1" GenJetCollection="GenJets_ak5GenJetsNoNu" loadGenEventCollection="0" GenEventCollection="GenEvent" loadNPGenEventCollection="0" NPGenEventCollection="NPGenEvent" loadMCParticles="0" MCParticlesCollection="MCParticles" TrackMETCollection="" loadTrackMET="0"/>
+
+
+</analysis>

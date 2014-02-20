@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<datasets>
+
+
+  <!-- T O P  P A I R S -->
+  
+<!--
+  <d name="TTJets" title="t#bar{t}" add="1" color="633"  ls="1"  lw="2" normf="1" xsection="251.7" NofEvts="10000" filenames="dcap://*.root"/>
+-->
+  <d name="TT_SemiLeptMGDecays" title="t\bar{t}\to l+jets" add="1" color="633"  ls="1"  lw="2" normf="1" xsection="110.26"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJets_SemiLeptMGDecays_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v1/22042013_211038/TOPTREE/*_1_*.root"/>
+
+  <d name="TT_FullLeptMGDecays" title="t\bar{t}\to ll" add="1" color="57"  ls="1"  lw="2" normf="1" xsection="26.42"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJets_FullLeptMGDecays_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v2/22042013_211043/TOPTREE/*_1_*.root"/>
+
+
+
+</datasets>
+
+<analysis>
+
+<a type="Collections" PVCollection="PrimaryVertex" JetType="2" JetCollection="PFJets_selectedPatJetsPF2PAT" METType="2" METCollection="PFMET_patType1CorrectedPFMetPF2PAT" MuonCollection="Muons_selectedPatMuonsPF2PAT" ElectronCollection="Electrons_selectedPatElectronsPF2PAT" loadGenJetCollection="1" GenJetCollection="GenJets_ak5GenJetsNoNu" loadGenEventCollection="0" GenEventCollection="GenEvent" loadNPGenEventCollection="0" NPGenEventCollection="NPGenEvent" loadMCParticles="0" MCParticlesCollection="MCParticles" TrackMETCollection="" loadTrackMET="0"/>
+
+
+</analysis>

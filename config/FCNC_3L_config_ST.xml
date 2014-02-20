@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<datasets>
+
+
+  <!-- S I N G L E - T O P -->
+
+
+
+  <d name="ST_T_s-ch" title="t+jets (s-ch.)" add="1" color="620"  ls="1"  lw="2" normf="1" xsection="3.79"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/T_s-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/23042013_083042/TOPTREE/*_1_*.root"/>
+  <d name="ST_Tbar_s-ch" title="#bar{t}+jets (s-ch.)" add="1" color="620"  ls="1"  lw="2" normf="1" xsection="1.76"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/23042013_085222/TOPTREE/*_1_*.root"/>
+ 
+  <d name="ST_T_tW-ch" title="tW\to ll" add="1" color="620"  ls="1"  lw="2" normf="1" xsection="11.1"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/22042013_165842/TOPTREE/*_1_*.root"/>
+  <d name="ST_TBar_tW-ch" title="tW\to ll" add="1" color="620"  ls="1"  lw="2" normf="1" xsection="11.1"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/22042013_204222/TOPTREE/*_1_*.root"/>
+
+<!-- EXCLUSIVE SAMPLES
+  <d name="ST_TToDilepton_tW-ch" title="tW\to ll" add="1" color="620"  ls="1"  lw="2" normf="1" xsection="1.17"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TToDilepton_tW-channel-DR_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/07062013_162058/TOPTREE/*_1_*.root"/>
+<!--  <d name="ST_TToTlepWhad_tW-ch" title="tW (t\to bl\nu, W\to qq)" add="1" color="620"  ls="1"  lw="2" normf="1" xsection="2.43"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TToTlepWhad_tW-channel-DR_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/07062013_162108/TOPTREE/*_1_*.root"/>
+<!--  <d name="ST_TToThadWlep_tW-ch" title="tW (t\to bqq, W\to l\nu)" add="1" color="620"  ls="1"  lw="2" normf="1" xsection="2.43"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TToThadWlep_tW-channel-DR_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/07062013_165118/TOPTREE/*_1_*.root"/>
+  <d name="ST_TBarToDilepton_tW-ch" title="#bar{t}W\to ll" add="1" color="620"  ls="1"  lw="2" normf="1" xsection="1.17"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TBarToDilepton_tW-channel-DR_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/07062013_162048/TOPTREE/*_1_*.root"/>
+  <d name="ST_TBarToTlepWhad_tW-ch" title="#bar{t}W (t\to bl\nu, W\to qq)" add="1" color="620"  ls="1"  lw="2" normf="1" xsection="2.43"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TBarToTlepWhad_tW-channel-DR_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/07062013_165113/TOPTREE/*_1_*.root"/>
+  <d name="ST_TBarToThadWlep_tW-ch" title="#bar{t}W (t\to bqq, W\to l\nu)" add="1" color="620"  ls="1"  lw="2" normf="1" xsection="2.43"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TBarToThadWlep_tW-channel-DR_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/07062013_162042/TOPTREE/*_1_*.root"/>
+-->
+ 
+</datasets>
+
+<analysis>
+
+<a type="Collections" PVCollection="PrimaryVertex" JetType="2" JetCollection="PFJets_selectedPatJetsPF2PAT" METType="2" METCollection="PFMET_patType1CorrectedPFMetPF2PAT" MuonCollection="Muons_selectedPatMuonsPF2PAT" ElectronCollection="Electrons_selectedPatElectronsPF2PAT" loadGenJetCollection="1" GenJetCollection="GenJets_ak5GenJetsNoNu" loadGenEventCollection="0" GenEventCollection="GenEvent" loadNPGenEventCollection="0" NPGenEventCollection="NPGenEvent" loadMCParticles="0" MCParticlesCollection="MCParticles" TrackMETCollection="" loadTrackMET="0"/>
+
+
+</analysis>

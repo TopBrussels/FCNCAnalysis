@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<datasets>
+
+
+  <!-- T T + Boson -->
+
+  <d name="TTZ" title="ttbar + Z" 	add="1"   color="1"  ls="1"  lw="2" normf="1"  xsection="0.172"       filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTZJets_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/06062013_144733/TOPTREE/*_1_*.root"/>
+  <d name="TTW" title="ttbar + W"	add="1"   color="65"  ls="1"  lw="2" normf="1"  xsection="0.2148"    filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTWJets_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/06062013_131723/TOPTREE/*_1_*.root"/> 
+
+   
+ <!-- extra -->
+ <d name="TBZ_ToLL_4F" title="TBZ\to 4f" add="1" color="9" ls="1" lw="2" normf="1" xsection="0.0114" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TBZToLL_4F_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v1//07022014_094225/TOPTREE/*_1_*.root"/>
+  <d name="ttH" title="t\bar{t}H" add="1" color="3"  ls="1"  lw="2" normf="1" xsection="0.1293"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTH_Inclusive_M-125_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/07022014_094215/TOPTREE/*_1_*.root"/>
+
+
+</datasets>
+
+<analysis>
+
+<a type="Collections" PVCollection="PrimaryVertex" JetType="2" JetCollection="PFJets_selectedPatJetsPF2PAT" METType="2" METCollection="PFMET_patType1CorrectedPFMetPF2PAT" MuonCollection="Muons_selectedPatMuonsPF2PAT" ElectronCollection="Electrons_selectedPatElectronsPF2PAT" loadGenJetCollection="1" GenJetCollection="GenJets_ak5GenJetsNoNu" loadGenEventCollection="0" GenEventCollection="GenEvent" loadNPGenEventCollection="0" NPGenEventCollection="NPGenEvent" loadMCParticles="0" MCParticlesCollection="MCParticles" TrackMETCollection="" loadTrackMET="0"/>
+
+
+</analysis>

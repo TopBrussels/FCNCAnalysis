@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<datasets>
+
+
+ 
+   <!-- SM Higgs -->
+    <d name="GluGluHiggs4lep" title="gg\rightarrow H \rightarrow ZZ \rightarrow llll" add="1" color="6"  ls="1"  lw="2" normf="1" xsection="19.27"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/GluGluToHToZZTo4L_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/23012014_142102/TOPTREE/*_1_*.root"/>
+
+
+ 
+ <d name="WZ_To3LNu" title="WZ\to 3l" add="1" color="209"  ls="1"  lw="2" normf="1" xsection="1.087"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/WZJetsTo3LNu_TuneZ2_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/23062013_152453/TOPTREE/*_1_*.root"/>
+  <d name="ZZ_To4L" title="ZZ\to 4l" add="1" color="94"  ls="1"  lw="2" normf="1" xsection="0.180"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/ZZJetsTo4L_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/21062013_132341/TOPTREE/*_1_*.root"/>
+
+  <!-- extra -->
+  <d name="VBHiggs4lep" title="VBF\rightarrow H \rightarrow ZZ \rightarrow llll" add="1" color="51"  ls="1"  lw="2" normf="1" xsection="0.00414341777"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/VBF_HToZZTo4L_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/07022014_094220/TOPTREE/*_1_*.root"/>
+ 
+ <d name="ttH" title="t\bar{t}H" add="1" color="3"  ls="1"  lw="2" normf="1" xsection="0.1293"  filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTH_Inclusive_M-125_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/07022014_094215/TOPTREE/*_1_*.root"/>
+
+
+  <!-- T T + Boson -->
+
+  <d name="TTZ" title="t\bar{t} + Z" 	add="1"   color="1"  ls="1"  lw="2" normf="1"  xsection="0.172"       filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTZJets_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/06062013_144733/TOPTREE/*_1_*.root"/>
+  <d name="TTW" title="t\bar{t} + W"	add="1"   color="65"  ls="1"  lw="2" normf="1"  xsection="0.2148"    filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTWJets_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/06062013_131723/TOPTREE/*_1_*.root"/> 
+
+ 
+</datasets>
+
+<analysis>
+
+<a type="Collections" PVCollection="PrimaryVertex" JetType="2" JetCollection="PFJets_selectedPatJetsPF2PAT" METType="2" METCollection="PFMET_patType1CorrectedPFMetPF2PAT" MuonCollection="Muons_selectedPatMuonsPF2PAT" ElectronCollection="Electrons_selectedPatElectronsPF2PAT" loadGenJetCollection="1" GenJetCollection="GenJets_ak5GenJetsNoNu" loadGenEventCollection="0" GenEventCollection="GenEvent" loadNPGenEventCollection="0" NPGenEventCollection="NPGenEvent" loadMCParticles="0" MCParticlesCollection="MCParticles" TrackMETCollection="" loadTrackMET="0"/>
+
+
+</analysis>
