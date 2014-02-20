@@ -115,6 +115,9 @@ int main (int argc, char *argv[])
   double jet4_csv;
 
   int njets;
+  int nbjets_CSVL;
+  int nbjets_CSVM;
+  int nbjets_CSVT;
   double met;
   
   TTree* myTree = new TTree("tree","tree");
@@ -180,6 +183,9 @@ int main (int argc, char *argv[])
   myTree->Branch("jet4_phi", &jet4_phi, "jet4_phi/D");
   myTree->Branch("jet4_csv", &jet4_csv, "jet4_csv/D");
   myTree->Branch("njets", &njets, "njets/I");
+  myTree->Branch("nbjets_CSVL", &nbjets_CSVL, "nbjets_CSVL/I");
+  myTree->Branch("nbjets_CSVM", &nbjets_CSVM, "nbjets_CSVM/I");
+  myTree->Branch("nbjets_CSVT", &nbjets_CSVT, "nbjets_CSVT/I");
   
   //met
   myTree->Branch("met", &met, "met/D");
@@ -205,6 +211,8 @@ int main (int argc, char *argv[])
  
   for (unsigned int ievt = 0; ievt < nevt; ievt++)
   {
+    if( ievt % 10000 == 0 ) cout << ievt << "/" << nevt << endl;
+
     vector < TRootMuon* > muons;
     vector < TRootElectron* > electrons;
     vector < TRootPhoton* > photons;
@@ -276,6 +284,10 @@ int main (int argc, char *argv[])
     jet4_phi = -999;
     jet4_csv = -999;
     njets = -999;
+    //b-jets
+    nbjets_CSVL = -999;
+    nbjets_CSVM = -999;
+    nbjets_CSVT = -999;
     //met
     met = -999;
 
@@ -304,15 +316,17 @@ int main (int argc, char *argv[])
       bool pass = false;
 
       if( abs(tcphoton->Eta()) < 1.479 ){
-        pass = tcphoton->sigmaIetaIeta() < 0.011 && tcphoton->hadronicOverEm() < 0.05 && tcphoton->passelectronveto();
+        pass = tcphoton->Pt() > 20 && tcphoton->sigmaIetaIeta() < 0.011 && tcphoton->hadronicOverEm() < 0.05 && tcphoton->passelectronveto();
       }else{
-        pass = tcphoton->sigmaIetaIeta() < 0.033 && tcphoton->hadronicOverEm() < 0.05 && tcphoton->passelectronveto();
+        pass = tcphoton->Pt() > 20 && tcphoton->sigmaIetaIeta() < 0.033 && tcphoton->hadronicOverEm() < 0.05 && tcphoton->passelectronveto();
       }
 
       if( pass ){
         photons.push_back ((TRootPhoton *) tcphotons->At(i));
       }
     }
+
+    if( photons.size() < 2 ) continue; 
 
     for (int i = 0; i < tcjets->GetEntriesFast(); i++){
       TRootPFJet * tcjet = (TRootPFJet *) tcjets->At(i);
@@ -456,7 +470,27 @@ int main (int argc, char *argv[])
     }
 
     nphotons = photons.size();
- 
+
+    int nb_CSVL = 0;
+    int nb_CSVM = 0;
+    int nb_CSVT = 0;
+
+    for(unsigned int i=0; i < jets.size() ; i++){
+      if( jets[i]->btag_combinedSecondaryVertexBJetTags() > 0.244 ){
+        nb_CSVL = nb_CSVL+1;
+      }
+      if( jets[i]->btag_combinedSecondaryVertexBJetTags() > 0.679 ){
+        nb_CSVM = nb_CSVM+1;
+      }
+      if( jets[i]->btag_combinedSecondaryVertexBJetTags() > 0.898 ){
+        nb_CSVT = nb_CSVT+1;
+      }
+    }
+
+    nbjets_CSVL = nb_CSVL;
+    nbjets_CSVM = nb_CSVM;
+    nbjets_CSVT = nb_CSVT;
+
     if( jets.size() > 0){
       jet1_pt = jets[0]->Pt();
       jet1_eta = jets[0]->Eta();
@@ -486,9 +520,8 @@ int main (int argc, char *argv[])
     met = mets[0]->Pt();
 
     myTree->Fill();
-
   }			//loop on events
-  cout << "nevents= " << nevents << endl;
+  //cout << "nevents= " << nevents << endl;
 
   fout->Write();
 
