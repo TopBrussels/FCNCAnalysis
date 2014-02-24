@@ -30,6 +30,7 @@
 #include "../../TopTreeAnalysisBase/Reconstruction/interface/JetCorrectorParameters.h"
 #include "../../TopTreeAnalysis/macros/Style.C"
 #include "../../TopTreeAnalysisBase/MCInformation/interface/LumiReWeighting.h"
+#include "../../TopTreeAnalysisBase/Reconstruction/src/MEzCalculator.cc"
 
 using namespace std;
 using namespace reweight;
@@ -38,7 +39,74 @@ using namespace TopTree;
 //for ordering the leptons
 bool cmp_big_first (pair<int,int> i, pair<int,int> j) { return i.second > j.second; }
 
-
+//Calculating MEz
+pair<double,double> MEzCalculator(TLorentzVector lepton_ , double missingEt_pX_, double missingEt_pY_, bool muon)
+{
+  double M_W = 80.4;
+  double M_mu = 0.10566; //105 MeV 
+  double M_e = 0.000511; //0.511 MeV 
+  double emu = lepton_.E();
+  double pxmu = lepton_.Px();
+  double pymu = lepton_.Py();
+  double pzmu = lepton_.Pz();
+  double pxnu = missingEt_pX_; //MET_.Px();
+  double pynu = missingEt_pY_; //MET_.Py();
+  double pznu = 0.;
+  double pznu1 = 0.;
+  double pznu2 = 0.;
+  double M_lep = 0.;
+  bool isComplex_ = false; 
+  
+  if(muon)   M_lep = M_mu; 
+  else M_lep = M_e;
+  
+  double a = M_W*M_W - M_lep*M_lep + 2.0*pxmu*pxnu + 2.0*pymu*pynu;
+  double A = 4.0*(emu*emu - pzmu*pzmu);
+  double B = -4.0*a*pzmu;
+  double C = 4.0*emu*emu*(pxnu*pxnu + pynu*pynu) - a*a;
+  
+  double tmproot = B*B - 4.0*A*C;
+  
+  if (tmproot<0) {
+    isComplex_= true;
+    pznu = - B/(2*A); // take real part of complex roots
+  }
+  else {
+    isComplex_ = false;
+    double tmpsol1 = (-B + TMath::Sqrt(tmproot))/(2.0*A);
+    double tmpsol2 = (-B - TMath::Sqrt(tmproot))/(2.0*A);
+    
+    pznu1 = tmpsol1; 
+    pznu2 = tmpsol2; 
+/*    if (type == 0 ) {
+      // two real roots, pick the one closest to pz of muon
+      if (TMath::Abs(tmpsol2-pzmu) < TMath::Abs(tmpsol1-pzmu)) { pznu = tmpsol2;}
+      else pznu = tmpsol1;
+      // if pznu is > 300 pick the most central root
+      if ( pznu > 300. ) {
+		if (TMath::Abs(tmpsol1)<TMath::Abs(tmpsol2) ) pznu = tmpsol1;
+		else pznu = tmpsol2;
+      }
+    }
+   if (type == 1 ) {
+     // two real roots, pick the one closest to pz of muon
+      if (TMath::Abs(tmpsol2-pzmu) < TMath::Abs(tmpsol1-pzmu)) { pznu = tmpsol2;}
+      else pznu = tmpsol1;
+    }
+    if (type == 2 ) {
+      // pick the most central root.
+      if (TMath::Abs(tmpsol1)<TMath::Abs(tmpsol2) ) pznu = tmpsol1;
+      else pznu = tmpsol2;
+    }
+*/  }
+  
+  //Particle neutrino;
+  //neutrino.setP4( LorentzVector(pxnu, pynu, pznu, TMath::Sqrt(pxnu*pxnu + pynu*pynu + pznu*pznu ))) ;
+    pair <double, double> tempPair; 
+    tempPair.first = pznu1; 
+    tempPair.second = pznu2;
+  return tempPair;
+}
 
 
 
@@ -211,7 +279,7 @@ int main (int argc, char *argv[])
     //nof selected events
     double NEvtsData = 0;
     Double_t *nEvents = new Double_t[datasets.size()];
-    
+    Double_t *nEvents_Selected = new Double_t[datasets.size()];
     
     ////////////////////////
     // PileUp Reweighting //
@@ -244,7 +312,7 @@ int main (int argc, char *argv[])
             std::cout<<"      -> This sample contains, " << datasets[d]->NofEvtsToRunOver() << " events." << endl;
         
 //      make root tree file name
-        string roottreename = "../data/ntuples/";
+        string roottreename = "../ntuples/";
 	roottreename+= channelName; 
 	roottreename+= "_"; 
 	roottreename+= datasets[d]->Name();
@@ -293,18 +361,29 @@ int main (int argc, char *argv[])
         
         Double_t missingEt;
 	Double_t missingEt_Phi;
+	Double_t missingEt_Theta;
 	Double_t missingEt_pX;
 	Double_t missingEt_pY;
+	Double_t missingEt_pZ;
 	
 
 	Double_t InvMass_4lept_Zdecay;
-	Double_t Reco_FCNC_top_Zdecay; 
+	Double_t InvMass_FCNC_top_Zdecay; 
 	Double_t InvMass_SM_lb; 
+	Double_t InvMass_SM_W_lv;
+	Double_t InvMass_SM_W_qq;
+	Double_t InvMass_SM_W;
+	Double_t InvMass_SM_top_blv;
+	Double_t InvMass_SM_top_bqq;
+	Double_t InvMass_SM_top;
 	Double_t TrMass_W; 
+	Double_t TrMass_W_qq; 
+	Double_t TrMass_W_lv; 
 	
 	Double_t Phi_Higgs; 
 	Double_t Eta_Higgs; 
         
+	Int_t nEvents_Tree; 
         Int_t isdata;
         // various weights
         Double_t pu_weight;
@@ -312,6 +391,7 @@ int main (int argc, char *argv[])
         
         TTree* myTree = new TTree("tree","tree");
         myTree->Branch("isdata",&isdata,"isdata/I");
+	myTree->Branch("nEvents_Tree",&nEvents_Tree,"nEvents_Tree/I");
         
         myTree->Branch("nElectrons",&nElectrons, "nElectrons/I");
         myTree->Branch("pX_electron",pX_electron,"pX_electron[nElectrons]/D");
@@ -349,14 +429,24 @@ int main (int argc, char *argv[])
         
         myTree->Branch("missingEt",&missingEt,"missingEt/D");
 	myTree->Branch("missingEt_Phi",&missingEt_Phi,"missingEt_Phi/D");
+	myTree->Branch("missingEt_Theta",&missingEt_Theta,"missingEt_Theta/D");
 	myTree->Branch("missingEt_pX",&missingEt_pX,"missingEt_pX/D");
 	myTree->Branch("missingEt_pY",&missingEt_pY,"missingEt_pY/D");
+	myTree->Branch("missingEt_pZ",&missingEt_pY,"missingEt_pZ/D");
         myTree->Branch("pu_weight",&pu_weight,"pu_weight/D");
 	
 	myTree->Branch("InvMass_4lept_Zdecay",&InvMass_4lept_Zdecay,"InvMass_4lept_Zdecay/D");
-	myTree->Branch("Reco_FCNC_top_Zdecay",&Reco_FCNC_top_Zdecay,"Reco_FCNC_top_Zdecay/D");
+	myTree->Branch("InvMass_FCNC_top_Zdecay",&InvMass_FCNC_top_Zdecay,"InvMass_FCNC_top_Zdecay/D");
 	myTree->Branch("InvMass_SM_lb",&InvMass_SM_lb,"InvMass_SM_lb/D");
+	myTree->Branch("InvMass_SM_W_lv",&InvMass_SM_W_lv,"InvMass_SM_W_lv/D");
+	myTree->Branch("InvMass_SM_W_qq",&InvMass_SM_W_qq,"InvMass_SM_W_qq/D");
+	myTree->Branch("InvMass_SM_W",&InvMass_SM_W,"InvMass_SM_W/D");
+	myTree->Branch("InvMass_SM_top_blv",&InvMass_SM_top_blv,"InvMass_SM_top_blv/D");
+	myTree->Branch("InvMass_SM_top_bqq",&InvMass_SM_top_bqq,"InvMass_SM_top_bqq/D");
+	myTree->Branch("InvMass_SM_top",&InvMass_SM_top,"InvMass_SM_top/D");
 	myTree->Branch("TrMass_W",&TrMass_W,"TrMass_W/D");
+	myTree->Branch("TrMass_W_qq",&TrMass_W_qq,"TrMass_W_qq/D");
+	myTree->Branch("TrMass_W_lv",&TrMass_W_lv,"TrMass_W_lv/D");
 	
 	
 	myTree->Branch("Phi_Higgs",&Phi_Higgs,"Phi_Higgs/D"); 
@@ -364,7 +454,7 @@ int main (int argc, char *argv[])
        
 	//        myTree->Print();
 
-        
+        TH1F * EventSummary = new TH1F("EventSummary","EventSummary",2,0,2);
         
         
         //open files and load
@@ -405,8 +495,12 @@ int main (int argc, char *argv[])
         ////////////////////////////////////
         
         nEvents[d] = 0;
+	nEvents_Selected[d] = 0; 
         int itriggerSemiMu = -1,itriggerSemiEl = -1, previousRun = -1;
-        
+	
+	// store number of events in ntuple 
+        nEvents_Tree = datasets[d]->NofEvtsToRunOver(); 
+	EventSummary->SetBinContent(1, datasets[d]->NofEvtsToRunOver());
         
         for (unsigned int ievt = 0; ievt < datasets[d]->NofEvtsToRunOver(); ievt++) // event loop
             //for (unsigned int ievt = 0; ievt < 20000; ievt++)
@@ -423,7 +517,7 @@ int main (int argc, char *argv[])
             nEvents[d]++;
             
             if(ievt%1000 == 0)
-                std::cout<<"Processing the "<<ievt<<"th event (" << ((double)ievt/(double)datasets[d]->NofEvtsToRunOver())*100  << "%)" << " +> # selected" << flush<<"\r";
+                std::cout<<"Processing the "<<ievt<<"th event (" << ((double)ievt/(double)datasets[d]->NofEvtsToRunOver())*100 <<"%)" << " +> "<<  (nEvents_Selected[d]/nEvents[d])*100 << "% selected" << flush<<"\r";
             
             ////////////////
             // LOAD EVENT //
@@ -517,6 +611,7 @@ int main (int argc, char *argv[])
 	    missingEt_pX=mets[0]->Px();
 	    missingEt_pY=mets[0]->Py();
 	    missingEt_Phi = mets[0]->Phi(); 
+	    missingEt_Theta = mets[0]->Theta();
 	    
             
             vector<TRootJet*> selectedJets= selection.GetSelectedJets(true);
@@ -676,9 +771,10 @@ int main (int argc, char *argv[])
 	    leptonpair_2.Clear();
 	    leptonfour.Clear();
 	    leptonT.Clear(); 
+	    
 
 	    //Calculate invariant mass of the leptons coming from Z
-	    InvMass_4lept_Zdecay =-10;
+	    //InvMass_4lept_Zdecay =-10;
 	    
 	    if(nElectrons+nMuons>3)
 	    { 		
@@ -695,6 +791,7 @@ int main (int argc, char *argv[])
 		    bool chargereq9=false;
 		    bool chargereq10=false;
 		    
+		    pair <double, double> missingEt_pZ_pair; 
 		    
 		    //select ZZ events, muon flavours come in pairs and OS
 		    if( nMuons == 2 & nElectrons == 2)
@@ -729,6 +826,7 @@ int main (int argc, char *argv[])
 			 if(selectedElectrons[0]->charge()!=selectedElectrons[1]->charge())   chargereq2 = true;
 			 if(selectedElectrons[0]->charge()!=selectedElectrons[2]->charge())   chargereq3 = true;  
 		 	 if(selectedElectrons[2]->charge()!=selectedElectrons[1]->charge())   chargereq4 = true; 
+			 bool isMuon = false; 
 			 
 			 if(chargereq1 && chargereq2 && !leptons) // Mu0 and Mu1    El0 and El1
 			 {
@@ -773,6 +871,7 @@ int main (int argc, char *argv[])
 		 	 leptonpair_2 = lepton_2 + lepton_3;
 			 leptonT.SetPxPyPzE(lepton_4.Px(),lepton_4.Py(), lepton_4.Pz(),(lepton_4.Energy()*TMath::Sin(lepton_4.Theta())));
 			 leptonfour = leptonpair_1 + leptonpair_2;
+			 missingEt_pZ_pair = MEzCalculator(lepton_4, missingEt_pX, missingEt_pY, isMuon); 
 			 
 			 
 		 } 
@@ -783,6 +882,7 @@ int main (int argc, char *argv[])
 			 if(selectedMuons[0]->charge()!=selectedMuons[1]->charge())   chargereq2 = true;
 			 if(selectedMuons[0]->charge()!=selectedMuons[2]->charge())   chargereq3 = true;  
 		 	 if(selectedMuons[2]->charge()!=selectedMuons[1]->charge())   chargereq4 = true; 
+			 bool isMuon = true; 
 			 
 			 if(chargereq1 && chargereq2 && !leptons) //El0 and El1 Mu0 and Mu1
 			 {
@@ -823,7 +923,7 @@ int main (int argc, char *argv[])
 		 	 leptonpair_2 = lepton_2 + lepton_3;
 		 	 leptonfour = leptonpair_1 + leptonpair_2;
 		 	 leptonT.SetPxPyPzE(lepton_4.Px(),lepton_4.Py(), lepton_4.Pz(),lepton_4.Energy()*sin(lepton_4.Theta()));
-		 
+		 	 missingEt_pZ_pair = MEzCalculator(lepton_4, missingEt_pX, missingEt_pY, isMuon);
 		 }
 		 if( nMuons == 5 )
 		 {
@@ -838,7 +938,8 @@ int main (int argc, char *argv[])
 			 if(selectedMuons[2]->charge()!=selectedMuons[3]->charge())   chargereq8 = true; 
 			 if(selectedMuons[2]->charge()!=selectedMuons[4]->charge())   chargereq9 = true;   
 			 if(selectedMuons[4]->charge()!=selectedMuons[3]->charge())   chargereq10 = true; 
-		 	 
+		 	 bool isMuon = true; 
+			 
 			 if(chargereq1 && chargereq8  && !leptons) //0 and 1     2 and 3
 			 {
 			 	leptons=true; 
@@ -965,7 +1066,7 @@ int main (int argc, char *argv[])
 		 	 leptonpair_2 = lepton_2 + lepton_3;
 		 	 leptonfour = leptonpair_1 + leptonpair_2;
 		 	 leptonT.SetPxPyPzE(lepton_4.Px(),lepton_4.Py(), lepton_4.Pz(),lepton_4.Energy()*sin(lepton_4.Theta()));
-		 	
+		 	 missingEt_pZ_pair = MEzCalculator(lepton_4, missingEt_pX, missingEt_pY, isMuon);
 		 	 
 		 }
 		  if( nElectrons == 5)
@@ -981,7 +1082,8 @@ int main (int argc, char *argv[])
 			if(selectedElectrons[2]->charge()!=selectedElectrons[3]->charge())   chargereq8 = true; 
 			if(selectedElectrons[2]->charge()!=selectedElectrons[4]->charge())   chargereq9 = true;   
 			if(selectedElectrons[4]->charge()!=selectedElectrons[3]->charge())   chargereq10 = true; 
-		 	
+		 	bool isMuon = false; 
+			
 			if(chargereq1 && chargereq8  && !leptons) //0 and 1	2 and 3
 			{
 			       leptons=true; 
@@ -1109,7 +1211,7 @@ int main (int argc, char *argv[])
 		 	leptonpair_2 = lepton_2 + lepton_3;
 		 	leptonfour = leptonpair_1 + leptonpair_2;
 		 	leptonT.SetPxPyPzE(lepton_4.Px(),lepton_4.Py(), lepton_4.Pz(),lepton_4.Energy()*sin(lepton_4.Theta()));
-		 	
+		 	missingEt_pZ_pair = MEzCalculator(lepton_4, missingEt_pX, missingEt_pY, isMuon);
 		 }
 		 if( nMuons == 4)
 		 {
@@ -1179,7 +1281,6 @@ int main (int argc, char *argv[])
 		        if(chargereq2 && chargereq5  && !leptons) //0 and 2	1 and 3
 		        {
 		               leptons=true; 
-		
 			       lepton_3.SetPxPyPzE(selectedElectrons[3]->Px(),selectedElectrons[3]->Py(),selectedElectrons[3]->Pz(),selectedElectrons[3]->Energy());
 			       lepton_1.SetPxPyPzE(selectedElectrons[2]->Px(),selectedElectrons[2]->Py(),selectedElectrons[2]->Pz(),selectedElectrons[2]->Energy());
 			       lepton_0.SetPxPyPzE(selectedElectrons[0]->Px(),selectedElectrons[0]->Py(),selectedElectrons[0]->Pz(),selectedElectrons[0]->Energy());
@@ -1217,7 +1318,7 @@ int main (int argc, char *argv[])
 		
 		Double_t DeltaR_LightJet_Higgs = 1000; 
 	    	Reco_FCNC_top_combi.Clear();
-	    	Reco_FCNC_top_Zdecay= -10;
+	    	//InvMass_FCNC_top_Zdecay= -10;
 	    	if(nLJets>0)
 	    	{ 
 	    		for( int i = 0; i <selectedLightJets.size(); i++)
@@ -1243,7 +1344,7 @@ int main (int argc, char *argv[])
 				{
 					DeltaR_LightJet_Higgs = Delta_R; 
 					Reco_FCNC_top_combi = leptonfour + LightJet; 
-					Reco_FCNC_top_Zdecay = Reco_FCNC_top_combi.M();
+					InvMass_FCNC_top_Zdecay = Reco_FCNC_top_combi.M();
 					Phi_Higgs = Phi_H; 
 					Eta_Higgs = Eta_H;
 				
@@ -1255,15 +1356,86 @@ int main (int argc, char *argv[])
 	    		}
 	    	}
 		
-		TrMass_W = -10;
+		//TrMass_W = -10;
+		//InvMass_SM_lb = -10;
+		//InvMass_SM_top_blv = -10; 
+		//InvMass_SM_W_lv = -10; 
+		//InvMass_SM_W_qq = -10; 
+		//InvMass_SM_W = -10; 
+	    	Double_t DeltaR_lb = 1000; 
 	    	TLorentzVector jetT;
 	    	jetT.Clear();  
+		TLorentzVector jet;
+	    	jet.Clear();
 	    	if(nElectrons+nMuons > 4)
 	    	{
 	    		TLorentzVector sumT; 
 			sumT = leptonT+missingEt;
-	    		TrMass_W = TMath::Sqrt(sumT.M2());
+	    		TrMass_W_lv = TMath::Sqrt(sumT.M2());
+			TrMass_W = TrMass_W_lv; 
+			
+			TLorentzVector missingEt_vector1; 
+			missingEt_vector1.SetPxPyPzE(missingEt_pX, missingEt_pY, missingEt_pZ_pair.first,missingEt*TMath::ASin(missingEt_Theta));
+			
+			TLorentzVector missingEt_vector2; 
+			missingEt_vector2.SetPxPyPzE(missingEt_pX, missingEt_pY, missingEt_pZ_pair.second,missingEt*TMath::ASin(missingEt_Theta));
+			
+			TLorentzVector missingEt_vector; 
+				
+			
+			TLorentzVector SumInv1; 
+			SumInv1 = missingEt_vector1 + lepton_4; 
+			
+			TLorentzVector SumInv2; 
+			SumInv2 = missingEt_vector2 + lepton_4;
+			
+			if(fabs(SumInv1.M() - 80.4) < fabs(SumInv2.M() - 80.4))
+			{
+				InvMass_SM_W_lv = SumInv1.M();
+				missingEt_vector = missingEt_vector1; 
+			}
+			else
+			{
+				InvMass_SM_W_lv = SumInv2.M(); 
+				missingEt_vector = missingEt_vector2; 
+			}
+			InvMass_SM_W = InvMass_SM_W_lv; 
+			
+	    		if(selectedBJets_CSVM.size() >0 )
+	    		{	
+	    			
+			
+				TLorentzVector tempJet; 
+				for(int iJet = 0; iJet < selectedBJets_CSVM.size(); iJet++)
+				{
+		   			tempJet.SetPxPyPzE(selectedBJets_CSVM[iJet]->Px(),selectedBJets_CSVM[iJet]->Py(),selectedBJets_CSVM[iJet]->Pz(),selectedBJets_CSVM[iJet]->Energy());
+		   			Double_t Phi = tempJet.Phi(); 
+		  	 		Double_t Eta = -TMath::Log(TMath::Tan(tempJet.Theta()/2));
 		
+		   			Double_t Phi_H = leptonfour.Phi(); 
+		   			Double_t Theta_H = leptonfour.Theta(); 
+		   			Double_t Eta_H = -TMath::Log(TMath::Tan(Theta_H/2)); 
+		
+		   			Double_t Delta_Eta = fabs(Eta_H - Eta); 
+		   			Double_t Delta_Phi = fabs(Phi_H - Phi); 
+		   			Double_t Delta_R = TMath::Sqrt(Delta_Eta*Delta_Eta + Delta_Phi*Delta_Phi);
+		   			if(Delta_R < DeltaR_lb) 
+		   			{
+		   	   			DeltaR_lb = Delta_R; 
+		   	   			TLorentzVector combi; 
+			   			combi = lepton_4 + tempJet; 
+		   	   			InvMass_SM_lb =combi.M();
+						TLorentzVector combi2;
+						combi2 = missingEt_vector + lepton_4 + tempJet; 
+						InvMass_SM_top_blv = combi2.M();
+						 
+		   	   
+		   			}
+		 		}	   
+	    			InvMass_SM_top = InvMass_SM_top_blv; 
+	    
+	    		}
+			
 	    	}
 	    	else if(nLJets > 2)
 	    	{
@@ -1276,50 +1448,60 @@ int main (int argc, char *argv[])
 		    		{	
 		    			counter++;
 			
-		    			TLorentzVector LightJet;
-		        		LightJet.SetPxPyPzE(selectedLightJets[iJet]->Px(),selectedLightJets[iJet]->Py(),selectedLightJets[iJet]->Pz(),selectedLightJets[iJet]->Energy()*selectedLightJets[iJet]->Theta());
-					jetT += LightJet;
+		    			TLorentzVector LightJet_T;
+		        		LightJet_T.SetPxPyPzE(selectedLightJets[iJet]->Px(),selectedLightJets[iJet]->Py(),selectedLightJets[iJet]->Pz(),selectedLightJets[iJet]->Energy()*selectedLightJets[iJet]->Theta());
+					jetT += LightJet_T;
+					
+					TLorentzVector LightJet;
+		        		LightJet.SetPxPyPzE(selectedLightJets[iJet]->Px(),selectedLightJets[iJet]->Py(),selectedLightJets[iJet]->Pz(),selectedLightJets[iJet]->Energy());
+					jet += LightJet;
+					
 		    
 		    		}
 			}
-	    		TrMass_W = TMath::Sqrt(jetT.M2());
+	    		TrMass_W_qq = TMath::Sqrt(jetT.M2());
+			TrMass_W = TrMass_W_qq; 
+			InvMass_SM_W_qq = jet.M(); 
+			InvMass_SM_W = InvMass_SM_W_qq; 
+			
+			if(selectedBJets_CSVM.size() >0 )
+	    		{	
+				TLorentzVector tempJet; 
+				for(int iJet = 0; iJet < selectedBJets_CSVM.size(); iJet++)
+				{
+		   			tempJet.SetPxPyPzE(selectedBJets_CSVM[iJet]->Px(),selectedBJets_CSVM[iJet]->Py(),selectedBJets_CSVM[iJet]->Pz(),selectedBJets_CSVM[iJet]->Energy());
+		   			Double_t Phi = tempJet.Phi(); 
+		  	 		Double_t Eta = -TMath::Log(TMath::Tan(tempJet.Theta()/2));
 		
-	    
-	    	}
-		InvMass_SM_lb = -10;
-	    	Double_t DeltaR_lb = 1000; 
-	    	if(selectedBJets_CSVM.size() >0)
-	    	{	
-	    	
-			TLorentzVector tempJet; 
-			for(int iJet = 0; iJet < selectedBJets_CSVM.size(); iJet++)
-			{
-		   		tempJet.SetPxPyPzE(selectedBJets_CSVM[iJet]->Px(),selectedBJets_CSVM[iJet]->Py(),selectedBJets_CSVM[iJet]->Pz(),selectedBJets_CSVM[iJet]->Energy());
-		   		Double_t Phi = tempJet.Phi(); 
-		  	 	Double_t Eta = -TMath::Log(TMath::Tan(tempJet.Theta()/2));
+		   			Double_t Phi_H = leptonfour.Phi(); 
+		   			Double_t Theta_H = leptonfour.Theta(); 
+		   			Double_t Eta_H = -TMath::Log(TMath::Tan(Theta_H/2)); 
 		
-		   		Double_t Phi_H = leptonfour.Phi(); 
-		   		Double_t Theta_H = leptonfour.Theta(); 
-		   		Double_t Eta_H = -TMath::Log(TMath::Tan(Theta_H/2)); 
-		
-		   		Double_t Delta_Eta = fabs(Eta_H - Eta); 
-		   		Double_t Delta_Phi = fabs(Phi_H - Phi); 
-		   		Double_t Delta_R = TMath::Sqrt(Delta_Eta*Delta_Eta + Delta_Phi*Delta_Phi);
-		   		if(Delta_R < DeltaR_lb) 
-		   		{
-		   	   		DeltaR_lb = Delta_R; 
-		   	   		TLorentzVector combi; 
-			   		combi = lepton_4 + tempJet; 
-		   	   		InvMass_SM_lb =combi.M();
+		   			Double_t Delta_Eta = fabs(Eta_H - Eta); 
+		   			Double_t Delta_Phi = fabs(Phi_H - Phi); 
+		   			Double_t Delta_R = TMath::Sqrt(Delta_Eta*Delta_Eta + Delta_Phi*Delta_Phi);
+		   			if(Delta_R < DeltaR_lb) 
+		   			{
+		   	   			DeltaR_lb = Delta_R; 
+		   	   			TLorentzVector combi; 
+			   			combi = jet + tempJet; 
+		   	   			InvMass_SM_top_bqq = combi.M();
+						 
 		   	   
-		   		}
-		 	}	   
+		   			}
+		 		}	   
+	    			InvMass_SM_top = InvMass_SM_top_bqq; 
 	    
+	    		}
 	    
 	    	}
 		
-		if(channelName.find("45")!=string::npos ) myTree->Fill();
 		
+		if(channelName.find("45")!=string::npos )
+		{
+			 myTree->Fill(); 
+			 nEvents_Selected[d]++;
+		}
 		
 	    }
 	    
@@ -1328,8 +1510,12 @@ int main (int argc, char *argv[])
 	    
 	    
 	    
-	    
-	    	if(channelName.find("3L")!=string::npos ) myTree->Fill();
+	    	
+	    	if(channelName.find("3L")!=string::npos )
+		{ 
+			myTree->Fill();
+			nEvents_Selected[d]++;
+		}
 	    }
 	    
 	    
@@ -1353,7 +1539,8 @@ int main (int argc, char *argv[])
         if (jecUnc) delete jecUnc;
         if (jetTools) delete jetTools;
         
-        myTree->Write();
+        //myTree->Write();
+	myTree->Write("", TObject::kOverwrite);
         fileout->Write();
         fileout->Close();
 	//        delete myTree;
