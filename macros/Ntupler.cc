@@ -270,6 +270,7 @@ Double_t pfIso_muon[10];
         Double_t pY_jet[10];
         Double_t pZ_jet[10];
         Double_t E_jet[10];
+        Double_t CSV_jet[10];
         
         Double_t missingEt;
         
@@ -302,6 +303,7 @@ Double_t pfIso_muon[10];
         myTree->Branch("pY_jet",pY_jet,"pY_jet[nJets]/D");
         myTree->Branch("pZ_jet",pZ_jet,"pZ_jet[nJets]/D");
         myTree->Branch("E_jet",E_jet,"E_jet[nJets]/D");
+	myTree->Branch("CSV_jet",CSV_jet,"CSV_jet[nJets]/D");
         
         myTree->Branch("missingEt",&missingEt,"missingEt/D");
         myTree->Branch("pu_weight",&pu_weight,"pu_weight/D");
@@ -515,6 +517,7 @@ vector<TRootElectron*> selectedElectrons = selection.GetSelectedDiElectrons();
                 pY_jet[nJets]=selectedJets[ijet]->Py();
                 pZ_jet[nJets]=selectedJets[ijet]->Pz();
                 E_jet[nJets]=selectedJets[ijet]->E();
+                CSV_jet[nJets]=selectedJets[ijet]->btag_combinedSecondaryVertexBJetTags();
                 nJets++;
             }
 
@@ -532,7 +535,13 @@ else{
              }
             }
         }	//loop on events
-        
+      
+      
+        if(channelName.find("1L3B")!=string::npos){
+                 myTree->Fill();
+                 if(debug) cout << "Filling 1L3B Tree" << endl;
+	}
+	
 cout<<endl;
         
         
