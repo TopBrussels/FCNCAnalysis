@@ -314,6 +314,41 @@ int main(int argc, char *argv[]){
 	MSPlot["Mbb"]= new MultiSamplePlot(datasets,"Mbb",50,0,200,"Invariant mass of bb ~ Higgs");
 	MSPlot["DeltaPhi_bb"]= new MultiSamplePlot(datasets,"DeltaPhi_bb",30,0,5,"DeltaPhi_bb");
 	MSPlot["DR_bb"]= new MultiSamplePlot(datasets,"DR_bb",30,0,5,"DR_bb");
+	if(channel.find("SSdilepton")!=string::npos) {
+	MSPlot["Mll_SSdilepton"]= new MultiSamplePlot(datasets,"Mll_SSdilepton",50,0,200,"Mll of SSdilepton");
+	MSPlot["NbofJets_SSdilepton"]= new MultiSamplePlot(datasets,"NbofJets_SSdilepton",15, -0.5, 14.5,"#jets for SSdilepton");
+	MSPlot["Nbof_b_Jets_SSdilepton"]= new MultiSamplePlot(datasets,"Nbof_b_Jets_SSdilepton",15, -0.5, 14.5,"# b_jets for SSdilepton");
+	MSPlot["Pt_leading_jet_2SSL"] = new MultiSamplePlot(datasets,"Pt_leading_jet_2SSL",100,0,200,"Pt leading jet"); 
+	MSPlot["Pt_2nd_leading_jet_2SSL"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_jet_2SSL",100,0,200,"Pt 2nd leading jet");
+	MSPlot["Pt_3rd_leading_jet_2SSL"] = new MultiSamplePlot(datasets,"Pt_3rd_leading_jet_2SSL",100,0,200,"Pt 3rd leading jet");
+	MSPlot["Pt_4th_leading_jet_2SSL"] = new MultiSamplePlot(datasets,"Pt_4th_leading_jet_2SSL",100,0,200,"Pt 4th leading jet"); 
+	
+	MSPlot["Met_pT_SSdilepton"]= new MultiSamplePlot(datasets,"Met_pT_SSdilepton",50,0,300," Met_p_{T} SSdilepton");
+	MSPlot["Met_pT_SSdilepton_bTag"]= new MultiSamplePlot(datasets,"Met_pT_SSdilepton_bTag",50,0,300," Met_p_{T} SSdilepton");
+	MSPlot["dPhi_2SSL"]= new MultiSamplePlot(datasets,"dPhi_2SSL",30,0,5,"DeltaPhi_2SSL");
+	MSPlot["dR_2SSL"]= new MultiSamplePlot(datasets,"dR_2SSL",30,0,5,"DR_2SSL");
+       
+	MSPlot["Mll_SSdiMuons"]= new MultiSamplePlot(datasets,"Mll_SSdiMuons",50,0,200,"Mll of SSdiMuon");
+	MSPlot["Met_pT_SSdiMuons"]= new MultiSamplePlot(datasets,"Met_pT_SSdiMuons",50,0,600," Met_p_{T} SSdiMuon");
+	MSPlot["Pt_leading_Muon"] = new MultiSamplePlot(datasets,"Pt_leading_Muon",50,0,100,"Pt leading Muon");
+	MSPlot["Pt_2nd_leading_Muon"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_Muon",50,0,100,"Pt 2nd leading Muon");
+       
+	MSPlot["Mll_SSdiElectrons"]= new MultiSamplePlot(datasets,"Mll_SSdiElectrons",50,0,200,"Mll of SSdiElectrons");
+	MSPlot["Pt_leading_Electron"] = new MultiSamplePlot(datasets,"Pt_leading_Electron",50,0,100,"Pt leading Electron");
+	MSPlot["Pt_2nd_leading_Electron"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_Electron",50,0,100,"Pt 2nd leading Electron");
+	MSPlot["Met_pT_SSdiElectrons"]= new MultiSamplePlot(datasets,"Met_pT_SSdiElectrons",50,0,600," Met_p_{T} SSdiElectrons");
+        
+	MSPlot["Mll_SSEMu"]= new MultiSamplePlot(datasets,"Mll_SSEMu",50,0,200,"Mll of SSEMu");
+	MSPlot["Met_pT_SSEMu"]= new MultiSamplePlot(datasets,"Met_pT_SSEMu",50,0,600," Met_p_{T} SSEMu");
+	MSPlot["Pt_leading_EMu_muon"] = new MultiSamplePlot(datasets,"Pt_leading_EMu_muon",50,0,100,"Pt leading EMu_Muon");
+	MSPlot["Pt_2nd_leading_EMu_electron"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_EMu_electron",50,0,100,"Pt 2nd leading Muon");
+	MSPlot["Pt_leading_EMu_electron"] = new MultiSamplePlot(datasets,"Pt_leading_EMu_electron",50,0,100,"Pt leading Muon");
+	MSPlot["Pt_2nd_leading_EMu_muon"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_EMu_muon",50,0,100,"Pt 2nd leading Muon");
+        MSPlot["Delta_R_min_Jet_lepton1"] = new MultiSamplePlot(datasets,"Delta_R_min_Jet_lepton1",50,0,10,"Delta_R_min_Jet_lepton1");
+	MSPlot["Delta_R_min_Jet_lepton0"] = new MultiSamplePlot(datasets,"Delta_R_min_Jet_lepton0",50,0,10,"Delta_R_min_Jet_lepton0");
+	MSPlot["M3_Jets"] = new MultiSamplePlot(datasets,"M3_Jets",50,0,300,"M3_Jets");
+	MSPlot["selected_W_Jets"] = new MultiSamplePlot(datasets,"selected_W_Jets",50,0,500,"mass of Jets for W");
+	}
 	//////////////////  Cut flow histograms	/////////////////////////////
 	MSPlot["MScutflow"] = new MultiSamplePlot(datasets,"MScutflow",20,-0.5,19.5, "cutflow"); 
 	if(channel.find("4L")!=string::npos) MSPlot["NbOfJets_4L4"]= new MultiSamplePlot(datasets,"NbOfJets_4L4",50,0,250,"#jets for exactly 4 leptons");
@@ -825,69 +860,201 @@ int main(int argc, char *argv[]){
 					if(debug) cout << "out fill 1l3b loop" << endl;
 				}
 			}
+				
+			// dilepton Channels 
+			
+			// SSdilepton Channel
+			
 			if(channel.find("SSdilepton")!=string::npos)
 			{
-			if(debug) cout << "in SSdilepton channel" << endl;
 				
-				if(looseElectrons.size() + looseMuons.size() == 2)
+				if(debug) cout << "in SSdilepton channel" << endl;
+				
+				if(looseElectrons.size() + looseMuons.size() == 2) //ask for dilepton
 				{
+					//cout << "after 2 leptons" << endl;
 					if(debug) cout << "in fill SS dilepton " << endl; 
-					
+					MSPlot["MScutflow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor);
 					if(!is_signal)histo1D["cutflow_total_B"]->Fill(2);
 					if(is_signal) histo1D["cutflow_total_S"]->Fill(2);
 					histo1D[Process_cutflow]->Fill(2);
 					
-					if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "2L");
-					if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "2L");
-					histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(3, "2L");
-					
 					bool electron = false; 
 					bool muon = false; 
 					bool EMu = false;
-
+				
+					
+					//cout << "start" << endl;
 					if(looseElectrons.size() == 2)
-					{
-						if(looseElectrons[0]->charge() == looseElectrons[1]->charge()) electron = true; 
+					{       
+						if(looseElectrons[0]->charge()==looseElectrons[1]->charge()) electron = true;
 						if(debug) cout << "Electron boolean defined" << endl;
+						
 					}
 				
 					if(looseMuons.size() == 2)
 					{
-						if(looseMuons[0]->charge() == looseMuons[1]->charge()) muon = true; 
-						if(debug) cout << "Muon boolean defined" << endl;
+						 if(looseMuons[0]->charge() == looseMuons[1]->charge()) muon = true;
+						 if(debug) cout << "Muon boolean defined" << endl;
 					}
 					if(looseMuons.size() == 1 && looseElectrons.size() == 1)
 					{
-						if(looseMuons[0]->charge() == looseElectrons[0]->charge()) EMu = true; 
+						if(looseMuons[0]->charge() == looseElectrons[0]->charge()) EMu = true;
 						if(debug) cout << "EMu boolean defined" << endl;
 					}
-				
+					
+					unsigned int nbofjets = selectedJets.size();
+					float dPhi_2SSL = 999;
+					float dR_2SSL = 999;
+					TLorentzVector Lepton0 ;
+					TLorentzVector Lepton1 ;
+					Lepton0.Clear();
+					Lepton1.Clear();
+					float Delta_R = 999;
+					float Delta_R_min_lepton0 = 999;
+					float Delta_R_min_lepton1 = 999;
+					
 					if(muon || electron || EMu)
-					{
+					{   
 						if(debug) cout << "in fill SS dilepton: same sign " << endl;
+						
+						MSPlot["MScutflow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor);
 						
 						if(!is_signal)histo1D["cutflow_total_B"]->Fill(3);
 						if(is_signal) histo1D["cutflow_total_S"]->Fill(3);
 						histo1D[Process_cutflow]->Fill(3);
 						
-						if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, "2 SS L");
-						if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, "2 SS L");
-						histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, "2 SS L");
-						
-						if(selectedJets.size()>=1)
+						MSPlot["NbofJets_SSdilepton"]->Fill(nbofjets, datasets[d],true,Luminosity*scaleFactor);
+					
+						if(nbofjets>=4)
 						{
+						MSPlot["MScutflow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor);
 							//fill histograms
 							if(!is_signal)histo1D["cutflow_total_B"]->Fill(4);
 							if(is_signal) histo1D["cutflow_total_S"]->Fill(4);
 							histo1D[Process_cutflow]->Fill(4);
-					
-							//set labels
-							if(!is_signal)histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5,">=1j");
-							if(is_signal) histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5,">=1j");		
-							histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">=1j");
+							
+							if(mets.size()>=0)MSPlot["Met_pT_SSdilepton"]->Fill(mets[0]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+							MSPlot["Nbof_b_Jets_SSdilepton"]->Fill(nTags , datasets[d],true,Luminosity*scaleFactor);
+							MSPlot["Pt_leading_jet_2SSL"]->Fill(selectedJets[0]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+							MSPlot["Pt_2nd_leading_jet_2SSL"]->Fill(selectedJets[1]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+							MSPlot["Pt_3rd_leading_jet_2SSL"]->Fill(selectedJets[2]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+							MSPlot["Pt_4th_leading_jet_2SSL"]->Fill(selectedJets[3]->Pt(), datasets[d],true,	Luminosity*scaleFactor);
+							
+							
+							if (nTags == 1)
+							{
+							MSPlot["MScutflow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor);
+							if(!is_signal)histo1D["cutflow_total_B"]->Fill(5);
+							if(is_signal) histo1D["cutflow_total_S"]->Fill(5);
+							histo1D[Process_cutflow]->Fill(5);
+							if(mets.size()>=0)MSPlot["Met_pT_SSdilepton_bTag"]->Fill(mets[0]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+							
+							float mll = -1;
+							if(electron)
+							{
+								mll = (*looseElectrons[0]+*looseElectrons[1]).M();
+								MSPlot["Pt_leading_Electron"]->Fill(looseElectrons[0]->Pt(),datasets[d], true, Luminosity*scaleFactor);
+								MSPlot["Pt_2nd_leading_Electron"]->Fill(looseElectrons[1]->Pt(),datasets[d], true, Luminosity*scaleFactor);
+								if(mets.size()>=0)MSPlot["Met_pT_SSdiElectrons"]->Fill(mets[0]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+								MSPlot["Mll_SSdiElectrons"]->Fill(mll, datasets[d],true,Luminosity*scaleFactor);
+								Lepton0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+								Lepton1.SetPxPyPzE(looseElectrons[1]->Px(),looseElectrons[1]->Py(),looseElectrons[1]->Pz(),looseElectrons[1]->Energy());
+								
+							}
+							else if(muon)
+							{
+								mll = (*looseMuons[0]+*looseMuons[1]).M();
+								MSPlot["Pt_leading_Muon"]->Fill(looseMuons[0]->Pt(),datasets[d], true, Luminosity*scaleFactor);
+								MSPlot["Pt_2nd_leading_Muon"]->Fill(looseMuons[1]->Pt(),datasets[d], true, Luminosity*scaleFactor);
+								if(mets.size()>=0) MSPlot["Met_pT_SSdiMuons"]->Fill(mets[0]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+								MSPlot["Mll_SSdiMuons"]->Fill(mll, datasets[d],true,Luminosity*scaleFactor);
+								Lepton0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+								Lepton1.SetPxPyPzE(looseMuons[1]->Px(),looseMuons[1]->Py(),looseMuons[1]->Pz(),looseMuons[1]->Energy());
+								
+							
+								
+							}	
+							else if(EMu)
+							{
+								mll = (*looseMuons[0]+*looseElectrons[0]).M();
+								if(looseMuons[0]->Pt() > looseElectrons[0]->Pt()){
+								Lepton0.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+								Lepton1.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+								MSPlot["Pt_leading_EMu_muon"]->Fill(looseMuons[0]->Pt(),datasets[d], true, Luminosity*scaleFactor);
+								MSPlot["Pt_2nd_leading_EMu_electron"]->Fill(looseElectrons[0]->Pt(),datasets[d], true, Luminosity*scaleFactor);}
+								else
+								{
+								Lepton1.SetPxPyPzE(looseMuons[0]->Px(),looseMuons[0]->Py(),looseMuons[0]->Pz(),looseMuons[0]->Energy());
+								Lepton0.SetPxPyPzE(looseElectrons[0]->Px(),looseElectrons[0]->Py(),looseElectrons[0]->Pz(),looseElectrons[0]->Energy());
+								MSPlot["Pt_leading_EMu_electron"]->Fill(looseElectrons[0]->Pt(),datasets[d], true, Luminosity*scaleFactor);
+								MSPlot["Pt_2nd_leading_EMu_muon"]->Fill(looseMuons[0]->Pt(),datasets[d], true, Luminosity*scaleFactor);
+								}  
+								if(mets.size()>=0) MSPlot["Met_pT_SSEMu"]->Fill(mets[0]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+								MSPlot["Mll_SSEMu"]->Fill(mll, datasets[d],true,Luminosity*scaleFactor);
+							}	
+							
+							MSPlot["Mll_SSdilepton"]->Fill(mll, datasets[d],true,Luminosity*scaleFactor);
+							dPhi_2SSL = sqrt(pow(Lepton0.Phi() - Lepton1.Phi(),2));
+							dR_2SSL = sqrt(pow(Lepton0.Eta() - Lepton1.Eta(),2)+pow(Lepton0.Phi() - Lepton1.Phi(),2));
+							MSPlot["dPhi_2SSL"]->Fill(dPhi_2SSL, datasets[d],true,Luminosity*scaleFactor);
+							MSPlot["dR_2SSL"]->Fill(dR_2SSL, datasets[d],true,Luminosity*scaleFactor);
+							
+							//detrmine deltaR between first lepton and nearest jet
+							for (unsigned ijet=0 ; ijet< nbofjets; ijet++){
+							Delta_R = sqrt(pow(Lepton0.Eta() - selectedJets[ijet]->Eta(),2)+pow(Lepton0.Phi() - selectedJets[ijet]->Phi(),2));
+							if (Delta_R_min_lepton0 > Delta_R)
+							{
+							Delta_R_min_lepton0 = Delta_R;
+							MSPlot["Delta_R_min_Jet_lepton0"]->Fill(Delta_R_min_lepton0, datasets[d],true,Luminosity*scaleFactor);
+							}}
+							
+							//detrmine deltaR between second lepton and nearest jet
+							for (unsigned ijet=0 ; ijet< nbofjets ; ijet++){
+							Delta_R = sqrt(pow(Lepton1.Eta() - selectedJets[ijet]->Eta(),2)+pow(Lepton1.Phi() - selectedJets[ijet]->Phi(),2));
+							if (Delta_R_min_lepton1 > Delta_R)
+							{
+							Delta_R_min_lepton1 = Delta_R;
+							MSPlot["Delta_R_min_Jet_lepton1"]->Fill(Delta_R_min_lepton1, datasets[d],true,Luminosity*scaleFactor);
+							}}
+							unsigned int sum =0;
+							unsigned int sum_W_Jets =0;
+							float selectedHighestPtJetsMass = 0.;
+							float selected_W_Jets = 999;
+							float M3Jets = 999;
+							float W_Jets_Mass = 999;
+							//float W_mass = 80.385;  //pdg ref
+							//float mjj = 999;
+							for (unsigned ijet=0 ; ijet< nbofjets ; ijet++)
+							{
+							if (selectedJets[ijet] != selectedBJets_CSVM[0])
+							{
+							selectedHighestPtJetsMass += selectedJets[ijet]->M();
+							sum += 1;
+							if (sum == 3){
+							M3Jets = selectedHighestPtJetsMass;
+							MSPlot["M3_Jets"]->Fill(M3Jets, datasets[d],true,Luminosity*scaleFactor);}}
+							}
+							for(unsigned ijet=0 ; ijet< nbofjets ; ijet++)
+							{
+							if (selectedJets[ijet] != selectedBJets_CSVM[0])
+							{ 
+							for(unsigned j=ijet+1 ; j< nbofjets ; j++){
+							selected_W_Jets += selectedJets[j]->M();
+							sum_W_Jets +=1;
+							if (sum_W_Jets ==2) {
+							W_Jets_Mass = selected_W_Jets;
+							MSPlot["selected_W_Jets"]->Fill(W_Jets_Mass, datasets[d],true,Luminosity*scaleFactor);
+							}}}}
 							Passed_selection = true;
-						}						
+							}
+						}
+											
+					
 					}
+
+					     
+					
 					if(debug) cout << "out fill SS dilepton " << endl;
 				}
 
@@ -1434,7 +1601,28 @@ int main(int argc, char *argv[]){
 		///////////////////////////////////////////////////////////
 		//                END LOOPING OVER THE EVENTS            //
 		///////////////////////////////////////////////////////////
+		if(channel.find("SSdilepton")!=string::npos)
+		{
+		if(!is_signal){
+			histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(3, "2L");
+			histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(4, "2L SS");
+			histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(5, ">=4j");
+			histo1D["cutflow_total_B"]->GetXaxis()->SetBinLabel(6, ">=4j1b");
+		}
+		else {if(is_signal){
+			histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(3, "2L");
+			histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(4, ">=2j");
+			histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(5, ">=4j");
+			histo1D["cutflow_total_S"]->GetXaxis()->SetBinLabel(6, ">=4j1b");
+		}}
+			histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(3, "2L");
+			histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(4, "2L SS");
+			histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(5, ">=4j");
+			histo1D[Process_cutflow]->GetXaxis()->SetBinLabel(6, ">=4j1b");
+
 		
+	
+	}
 		
 	
 	}
