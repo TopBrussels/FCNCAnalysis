@@ -1518,24 +1518,34 @@ int main (int argc, char *argv[])
 			TLorentzVector SumInv2; 
 			SumInv2 = missingEt_vector2 + lepton_4;
 			
-			if(fabs(SumInv1.M() - 80.4) < fabs(SumInv2.M() - 80.4))
+			
+			if(SumInv1.M() <0 && SumInv2.M()<0)
 			{
-				InvMass_SM_W_lv = SumInv1.M();
-				missingEt_vector = missingEt_vector1; 
-				if(InvMass_SM_W_lv <0) 
-				{
-					missingEt_vector = missingEt_vector2; 
-					InvMass_SM_W_lv = SumInv2.M(); 
-				}
+				//Maybe discard event? 
 			}
 			else
 			{
-				InvMass_SM_W_lv = SumInv2.M(); 
-				missingEt_vector = missingEt_vector2; 
-				if(InvMass_SM_W_lv <0)
+				if(fabs(SumInv1.M() - 80.4) < fabs(SumInv2.M() - 80.4))
 				{
-					missingEt_vector = missingEt_vector2;
-					InvMass_SM_W_lv = SumInv1.M(); 
+					InvMass_SM_W_lv = SumInv1.M();
+					missingEt_vector = missingEt_vector1; 
+					if(InvMass_SM_W_lv <0) 
+					{
+						missingEt_vector = missingEt_vector2; 
+						InvMass_SM_W_lv = SumInv2.M(); 
+					}
+					
+				}
+			
+				else
+				{
+					InvMass_SM_W_lv = SumInv2.M(); 
+					missingEt_vector = missingEt_vector2; 
+					if(InvMass_SM_W_lv <0)
+					{
+						missingEt_vector = missingEt_vector1; 
+						InvMass_SM_W_lv = SumInv1.M(); 
+					}
 				}
 			}
 			InvMass_SM_W = InvMass_SM_W_lv; 
