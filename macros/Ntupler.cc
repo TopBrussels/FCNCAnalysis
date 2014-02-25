@@ -112,7 +112,7 @@ pair<double,double> MEzCalculator(TLorentzVector lepton_ , double missingEt_pX_,
 //Leptons ordering according to Z decay for 45 channel
 vector <TLorentzVector> Channel_45_5leptons( bool _debug, vector <TRootElectron*> _Electrons, vector <TRootMuon*> _Muons,double _missingEt_pX, double _missingEt_pY, double _missingEt_Theta, double _missingEt)
 {
-       bool debug = _debug; 	     
+      bool debug = _debug; 	     
       TLorentzVector leptonpair_1; // two OSSF with highest pt
       TLorentzVector leptonpair_2; // two OSSF with 2nd highest pt
       TLorentzVector leptonfour; // decay of Z
@@ -748,8 +748,264 @@ vector <TLorentzVector> Channel_45_4leptons( bool _debug, vector <TRootElectron*
 
 }
 
+//Leptons ordering according to Z decay for 3L channel
+vector <TLorentzVector> Channel_3L_Zcandidate(bool _debug, vector <TRootElectron*> _Electrons, vector <TRootMuon*> _Muons)
+{
+	 
+	bool OSSF_3L = false; 
+	int Nb_OSSF_3L =0;
+	bool debug = _debug; 
+	
+	TLorentzVector leptonpair_3L_mll;
+	TLorentzVector lepton_3L1;
+	TLorentzVector lepton_3L2;
+	
+	leptonpair_3L_mll.Clear(); 
+	lepton_3L1.Clear();
+	lepton_3L2.Clear();
+	
+	
+	 if(_Electrons.size() == 3)
+	 {
+	 	 if(debug) cout << "_Electrons[0]->charge() " << _Electrons[0]->charge() << endl;  
+	 	 if(_Electrons[0]->charge()!=_Electrons[1]->charge())
+	 	 {
+	 		 OSSF_3L = true; 
+	 		 Nb_OSSF_3L =1;
+	 		 lepton_3L1.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(), _Electrons[0]->Energy());
+	 		 lepton_3L2.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(), _Electrons[1]->Energy());
+	 	 
+	 	 }
+	 	 else if(_Electrons[2]->charge()!=_Electrons[0]->charge()) 
+	 	 {
+	 		 OSSF_3L = true; 
+	 		 Nb_OSSF_3L =1;
+	 		 lepton_3L1.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(), _Electrons[0]->Energy());
+	 		 lepton_3L2.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(), _Electrons[2]->Energy());
+	 	 
+	 	 }
+	 	 else if(_Electrons[1]->charge()!=_Electrons[2]->charge())
+	 	 { 
+	 		 OSSF_3L = true; 
+	 		 Nb_OSSF_3L =1;
+	 		 lepton_3L1.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(), _Electrons[1]->Energy());
+	 		 lepton_3L2.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(), _Electrons[2]->Energy());
+	 	 
+	 	 }
+	 	 
+	 }
+	 if(_Electrons.size() ==2)
+	 {
+	 	 if(debug) cout << "_Electrons[0]->charge() " << _Electrons[0]->charge() << endl; 
+	 	 if(_Electrons[0]->charge()!=_Electrons[1]->charge())
+	 	 {
+	 		  OSSF_3L = true; 
+	 		  Nb_OSSF_3L =1;
+	 		  lepton_3L1.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(), _Electrons[0]->Energy());
+	 		  lepton_3L2.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(), _Electrons[1]->Energy());
+	 	 
+	 	 }
+	 	 
+	 	 
+	 }
+	 if(_Electrons.size() == 1)
+	 {
+	 	 if(debug) cout << "_Electrons[0]->charge() " << _Electrons[0]->charge() << endl; 
+	 	 if(_Muons[0]->charge()!=_Muons[1]->charge())
+	 	 {
+	 		 OSSF_3L = true; 
+	 		 Nb_OSSF_3L =1;
+	 		 lepton_3L1.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(), _Muons[0]->Energy());
+	 		 lepton_3L2.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(), _Muons[1]->Energy());
+	 	 
+	 	 }
+	 	 
+	 	
+	 }
+	 if(_Electrons.size() ==  0)
+	 {
+	 	 if(debug) cout << "_Muons[0]->charge() " << _Muons[0]->charge() << endl; 
+	 	 if(_Muons[0]->charge()!=_Muons[1]->charge())
+	 	 {
+	 		 OSSF_3L = true; 
+	 		 Nb_OSSF_3L =1;
+	 		 lepton_3L1.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(), _Muons[0]->Energy());
+	 		 lepton_3L2.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(), _Muons[1]->Energy());
+	 	 
+	 	 }
+	 	 else if(_Muons[0]->charge()!=_Muons[2]->charge())
+	 	 {
+	 		  OSSF_3L = true; 
+	 		  Nb_OSSF_3L =1;
+	 		  lepton_3L1.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(), _Muons[0]->Energy());
+	 		  lepton_3L2.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(), _Muons[2]->Energy());
+	 	 
+	 	 }
+	 	 else if(_Muons[1]->charge()!=_Muons[2]->charge())
+	 	 {
+	 		 OSSF_3L = true; 
+	 		 Nb_OSSF_3L =1;
+	 		 lepton_3L1.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(), _Muons[1]->Energy());
+	 		 lepton_3L2.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(), _Muons[2]->Energy());
+	 	 
+	 	 }
+	 }	 
+	 
+	   
+	 TLorentzVector boolVector; 
+	  if(OSSF_3L)
+	  {
+		 boolVector.SetPxPyPzE(1,1,1,1);
+		if(debug) cout << "OSSF_3L set to true"<< endl; 
+	  }
+	  else{ boolVector.SetPxPyPzE(0,0,0,0);}
+	 
+	 vector <TLorentzVector> TempVector; 
+	 TempVector.clear();
+	 TempVector.push_back(lepton_3L1); 
+	 TempVector.push_back(lepton_3L2); 
+	 TempVector.push_back(boolVector);
+	 
+	 return TempVector; 
+        
+
+}
+
+//Leptons ordering according to Z decay for 3L channel
+double Channel_3L_Zcandidate_Mll(bool _debug, vector <TLorentzVector> _leptons)
+{
+	if(_debug)  cout << "In Channel_3L_Zcandidate_Mll " << endl; 
+	double mll_3L = 0;
+	TLorentzVector leptonpair_3L_mll;
+	TLorentzVector lepton_3L1 = _leptons[0];
+	TLorentzVector lepton_3L2 = _leptons[1];
+	
+	TLorentzVector Sum = lepton_3L1 + lepton_3L2; 
+	mll_3L = Sum.M(); 
+	 
+	if(_debug)  cout << "Out Channel_3L_Zcandidate_Mll " << endl; 
+	
+	return mll_3L; 
+        
+
+}
+
+TLorentzVector Channel_3L_FCNC_top_candidate(bool _debug, TLorentzVector _Z_candidate, vector<TRootJet*> _LightJets)
+{
+	double DeltaR = 10000; 
+	TLorentzVector candidate; 
+	for(int i = 0; i< _LightJets.size(); i++)
+	{
+		TLorentzVector tempJet; 
+		tempJet.SetPxPyPzE(_LightJets[i]->Px(), _LightJets[i]->Py(), _LightJets[i]->Pz(), _LightJets[i]->Energy()); 
+		if(tempJet.DeltaR(_Z_candidate) < DeltaR)
+		{
+			DeltaR = tempJet.DeltaR(_Z_candidate); 
+			candidate = tempJet + _Z_candidate; 
+			if(_debug) cout << "DeltaR = " << DeltaR << endl; 
+		
+		}
+	
+	
+	}
 
 
+
+	return candidate; 
+}
+
+//calculate Higgs for tcH(ZZ(llqq))
+TLorentzVector Channel_3L_Higgs_candidate(bool _debug, TLorentzVector _Z_candidate,  vector<TRootJet*> _LightJets)
+{
+	double DeltaR = 10000; 
+	TLorentzVector candidate; 
+	for(int i = 0; i< _LightJets.size()-1; i++)
+	{
+		TLorentzVector tempJet; 
+		tempJet.SetPxPyPzE(_LightJets[i]->Px(), _LightJets[i]->Py(), _LightJets[i]->Pz(), _LightJets[i]->Energy()); 
+		
+		for(int k = 1; k < _LightJets.size(); k++)
+		{
+			TLorentzVector tempJet2; 
+			tempJet2.SetPxPyPzE(_LightJets[k]->Px(), _LightJets[k]->Py(), _LightJets[k]->Pz(), _LightJets[k]->Energy()); 
+			
+			TLorentzVector combi; 
+			combi = tempJet + tempJet2; 
+			
+			if(DeltaR > combi.DeltaR(_Z_candidate))
+			{
+				DeltaR = combi.DeltaR(_Z_candidate); 
+				candidate = combi + _Z_candidate; 
+			
+			}
+		
+		}
+	}
+	
+	return candidate; 
+}
+
+//calculate FCNC top for tcH(ZZ(llqq))
+TLorentzVector Channel_3L_FCNC_top_candidate2(bool _debug, TLorentzVector _Z_candidate,  vector<TRootJet*> _LightJets)
+{
+	double DeltaR = 10000; 
+	TLorentzVector candidate; 
+	for(int i = 0; i< _LightJets.size()-2; i++)
+	{
+		TLorentzVector tempJet; 
+		tempJet.SetPxPyPzE(_LightJets[i]->Px(), _LightJets[i]->Py(), _LightJets[i]->Pz(), _LightJets[i]->Energy()); 
+		
+		for(int k = 1; k < _LightJets.size()-1; k++)
+		{
+			TLorentzVector tempJet2; 
+			tempJet2.SetPxPyPzE(_LightJets[k]->Px(), _LightJets[k]->Py(), _LightJets[k]->Pz(), _LightJets[k]->Energy()); 
+			
+			for(int l = 2; l < _LightJets.size(); l++)
+			{
+				TLorentzVector tempJet3; 
+				tempJet3.SetPxPyPzE(_LightJets[k]->Px(), _LightJets[k]->Py(), _LightJets[k]->Pz(), _LightJets[k]->Energy()); 
+			
+			
+				TLorentzVector combi; 
+				combi = tempJet + tempJet2 + tempJet3; 
+			
+				if(DeltaR > combi.DeltaR(_Z_candidate))
+				{
+					DeltaR = combi.DeltaR(_Z_candidate); 
+					candidate = combi + _Z_candidate; 
+			
+				}
+			}		
+		}
+	}
+	
+	return candidate; 
+}
+
+//calculate the transverse mass of the Higss boson and SM W, by adding all MET and all leptons
+Double_t Channel_3L_TransverseMass_HiggsAndW(bool _debug, vector <TRootElectron*> _Electrons, vector <TRootMuon*> _Muons, double _missingEt)
+{
+    double m_3L_met = 0.; 
+    
+    vector <TLorentzVector> leptons; 
+    for(int i = 0; i < _Electrons.size(); i++)
+    {
+    	TLorentzVector tempLepton; 
+	tempLepton.SetPxPyPzE(_Electrons[i]->Px(),_Electrons[i]->Py(),_Electrons[i]->Pz(),_Electrons[i]->Energy()*TMath::Sin(_Electrons[i]->Theta())); 
+    	leptons.push_back(tempLepton); 
+    }
+    for(int i = 0; i < _Muons.size(); i++)
+    {
+    	TLorentzVector tempLepton; 
+	tempLepton.SetPxPyPzE(_Muons[i]->Px(),_Muons[i]->Py(),_Muons[i]->Pz(), _Muons[i]->Energy()*TMath::Sin(_Muons[i]->Theta())); 
+    	leptons.push_back(tempLepton); 
+    }
+
+    TLorentzVector combi; 
+    combi = leptons[0] + leptons[1] + leptons[2] + _missingEt;
+    m_3L_met = TMath::Sqrt(combi.M2()); 
+    return m_3L_met; 
+}			
 
 int main (int argc, char *argv[])
 {
@@ -924,6 +1180,7 @@ int main (int argc, char *argv[])
     
     ////////////////////////
     // PileUp Reweighting //
+
     ////////////////////////
     
     //cout << Luminosity << endl;
@@ -999,6 +1256,7 @@ int main (int argc, char *argv[])
         Double_t pZ_Ljet[10];
 	Double_t Phi_Ljet[10];
 	Double_t E_Ljet[10];
+
         
         Double_t missingEt;
 	Double_t missingEt_Phi;
@@ -1008,6 +1266,7 @@ int main (int argc, char *argv[])
 	Double_t missingEt_pZ;
 	
 
+        //45 channel variables
 	Double_t InvMass_4lept_Zdecay;
 	Double_t InvMass_FCNC_top_Zdecay; 
 	Double_t InvMass_SM_lb; 
@@ -1024,6 +1283,23 @@ int main (int argc, char *argv[])
 	Double_t Phi_Higgs; 
 	Double_t Eta_Higgs; 
         
+	//3L channel variables
+	Double_t InvMass_Z; 
+	Double_t InvMass_H;
+	Double_t Z_candidate_pT;
+	Double_t Z_candidate_Eta;
+	Double_t H_candidate_pT;
+	Double_t H_candidate_Eta;
+	
+	Double_t pT_FCNC_top_tcZ;
+	Double_t Eta_FCNC_top_tcZ; 
+	Double_t InvMass_FCNC_top_tcZ; 
+	
+	Double_t pT_FCNC_top_tcH_ZZ_llqq;
+	Double_t Eta_FCNC_top_tcH_ZZ_llqq; 
+	Double_t InvMass_FCNC_top_tcH_ZZ_llqq; 
+	Double_t TrMass_HandW; 
+	
 	Int_t nEvents_Tree; 
         Int_t isdata;
         // various weights
@@ -1076,22 +1352,43 @@ int main (int argc, char *argv[])
 	myTree->Branch("missingEt_pZ",&missingEt_pY,"missingEt_pZ/D");
         myTree->Branch("pu_weight",&pu_weight,"pu_weight/D");
 	
-	myTree->Branch("InvMass_4lept_Zdecay",&InvMass_4lept_Zdecay,"InvMass_4lept_Zdecay/D");
-	myTree->Branch("InvMass_FCNC_top_Zdecay",&InvMass_FCNC_top_Zdecay,"InvMass_FCNC_top_Zdecay/D");
-	myTree->Branch("InvMass_SM_lb",&InvMass_SM_lb,"InvMass_SM_lb/D");
-	myTree->Branch("InvMass_SM_W_lv",&InvMass_SM_W_lv,"InvMass_SM_W_lv/D");
-	myTree->Branch("InvMass_SM_W_qq",&InvMass_SM_W_qq,"InvMass_SM_W_qq/D");
-	myTree->Branch("InvMass_SM_W",&InvMass_SM_W,"InvMass_SM_W/D");
-	myTree->Branch("InvMass_SM_top_blv",&InvMass_SM_top_blv,"InvMass_SM_top_blv/D");
-	myTree->Branch("InvMass_SM_top_bqq",&InvMass_SM_top_bqq,"InvMass_SM_top_bqq/D");
-	myTree->Branch("InvMass_SM_top",&InvMass_SM_top,"InvMass_SM_top/D");
-	myTree->Branch("TrMass_W",&TrMass_W,"TrMass_W/D");
-	myTree->Branch("TrMass_W_qq",&TrMass_W_qq,"TrMass_W_qq/D");
-	myTree->Branch("TrMass_W_lv",&TrMass_W_lv,"TrMass_W_lv/D");
+	if(channelName.find("45")!=string::npos)
+	{
+		//45 channel variables
+		myTree->Branch("InvMass_4lepvector<TRootJet*> selectedLightJetst_Zdecay",&InvMass_4lept_Zdecay,"InvMass_4lept_Zdecay/D");
+		myTree->Branch("InvMass_FCNC_top_Zdecay",&InvMass_FCNC_top_Zdecay,"InvMass_FCNC_top_Zdecay/D");
+		myTree->Branch("InvMass_SM_lb",&InvMass_SM_lb,"InvMass_SM_lb/D");
+		myTree->Branch("InvMass_SM_W_lv",&InvMass_SM_W_lv,"InvMass_SM_W_lv/D");
+		myTree->Branch("InvMass_SM_W_qq",&InvMass_SM_W_qq,"InvMass_SM_W_qq/D");
+		myTree->Branch("InvMass_SM_W",&InvMass_SM_W,"InvMass_SM_W/D");
+		myTree->Branch("InvMass_SM_top_blv",&InvMass_SM_top_blv,"InvMass_SM_top_blv/D");
+		myTree->Branch("InvMass_SM_top_bqq",&InvMass_SM_top_bqq,"InvMass_SM_top_bqq/D");
+		myTree->Branch("InvMass_SM_top",&InvMass_SM_top,"InvMass_SM_top/D");
+		myTree->Branch("TrMass_W",&TrMass_W,"TrMass_W/D");
+		myTree->Branch("TrMass_W_qq",&TrMass_W_qq,"TrMass_W_qq/D");
+		myTree->Branch("TrMass_W_lv",&TrMass_W_lv,"TrMass_W_lv/D");
+
+		myTree->Branch("Phi_Higgs",&Phi_Higgs,"Phi_Higgs/D"); 
+		myTree->Branch("Eta_Higgs",&Eta_Higgs,"Eta_Higgs/D");
+	} 
+       	if(channelName.find("3L")!=string::npos)
+	{
+        	//3L channel variables
+        	myTree->Branch("InvMass_Z",&InvMass_Z,"InvMass_Z/D"); 
+		myTree->Branch("InvMass_H",&InvMass_H,"InvMass_H/D");
+		myTree->Branch("Z_candidate_pT",&Z_candidate_pT,"Z_candidate_pT/D");
+		myTree->Branch("Z_candidate_Eta",&Z_candidate_Eta,"Z_candidate_Eta/D");
+		myTree->Branch("H_candidate_pT",&H_candidate_pT,"H_candidate_pT/D");
+		myTree->Branch("H_candidate_Eta",&H_candidate_Eta,"H_candidate_Eta/D");
+		myTree->Branch("pT_FCNC_top_tcZ",&pT_FCNC_top_tcZ,"pT_FCNC_top_tcZ/D");
+		myTree->Branch("Eta_FCNC_top_tcZ",&Eta_FCNC_top_tcZ,"Eta_FCNC_top_tcZ/D");
+		myTree->Branch("InvMass_FCNC_top_tcZ",&InvMass_FCNC_top_tcZ,"InvMass_FCNC_top_tcZ/D");
+		myTree->Branch("pT_FCNC_top_tcH_ZZ_llqq",&pT_FCNC_top_tcH_ZZ_llqq,"pT_FCNC_top_tcH_ZZ_llqq/D");
+		myTree->Branch("Eta_FCNC_top_tcH_ZZ_llqq",&Eta_FCNC_top_tcH_ZZ_llqq,"Eta_FCNC_top_tcH_ZZ_llqq/D");
+		myTree->Branch("InvMass_FCNC_top_tcH_ZZ_llqq",&InvMass_FCNC_top_tcH_ZZ_llqq,"InvMass_FCNC_top_tcH_ZZ_llqq/D");
+		myTree->Branch("TrMass_HandW",&TrMass_HandW,"TrMass_HandW/D");
 	
-	
-	myTree->Branch("Phi_Higgs",&Phi_Higgs,"Phi_Higgs/D"); 
-	myTree->Branch("Eta_Higgs",&Eta_Higgs,"Eta_Higgs/D"); 
+	}
        
 	//        myTree->Print();
 
@@ -1119,7 +1416,7 @@ int main (int argc, char *argv[])
          vCorrParam.push_back(*L1JetPar);
          vCorrParam.push_back(*L2JetPar);
          vCorrParam.push_back(*L3JetPar);
-         
+         vector<TRootJet*> selectedLightJets
          if(dataSetName.find("Data") == 0 || dataSetName.find("data") == 0 || dataSetName.find("DATA") == 0) { // DATA!
          JetCorrectorParameters *ResJetCorPar = new JetCorrectorParameters("../../TopTreeAnalysisBase/Calibrations/JECFiles/Summer12_V3_DATA_L2L3Residual_AK5PFchs.txt");
          vCorrParam.push_back(*ResJetCorPar);
@@ -1158,7 +1455,8 @@ int main (int argc, char *argv[])
             nEvents[d]++;
             
             if(ievt%1000 == 0)
-                std::cout<<"Processing the "<<ievt<<"th event (" << ((double)ievt/(double)datasets[d]->NofEvtsToRunOver())*100 <<"%)" << " +> "<<  (nEvents_Selected[d]/nEvents[d])*100 << "% selected" << flush<<"\r";
+                std::cout<<"Processing the "<<ievt<<"th event (" <<
+		((double)ievt/(double)datasets[d]->NofEvtsToRunOver())*100 <<"%)" << " +> "<< (nEvents_Selected[d]/(double)datasets[d]->NofEvtsToRunOver())*100 << "% selected of the total events" << flush<<"\r";
             
             ////////////////
             // LOAD EVENT //
@@ -1643,14 +1941,65 @@ int main (int argc, char *argv[])
 	    
 	    if(nElectrons+nMuons == 3)
 	    {
-	    
-	    
-	    
-	    	
+	    	if(debug)cout << " In nleptons == 3 " << endl; 
+		
+		vector <TLorentzVector> Zcandidates =  Channel_3L_Zcandidate(debug, selectedElectrons, selectedMuons);
+		if(debug)cout << " defined Zcandidates " << endl; 
+		if(Zcandidates[2].Px() == 1)  //when candidates are found
+		{
+			InvMass_Z = Channel_3L_Zcandidate_Mll(debug, Zcandidates); 
+			if(debug)cout << " InvMass_Z " << endl; 
+			TLorentzVector Z_candidate = Zcandidates[0] + Zcandidates[1]; 
+			Z_candidate_pT = Z_candidate.Pt(); 
+			if(debug)cout << " pt Z " << endl; 
+			Z_candidate_Eta = Z_candidate.Eta(); 
+			if(debug)cout << " eta Z " << endl; 
+		
+		        if(selectedLightJets.size()<3 && selectedLightJets.size()>0)
+			{
+				// for tcZ this should give the top, for tcH, this should give top where energy is missing
+				TLorentzVector Top_FCNC_Candidate = Channel_3L_FCNC_top_candidate(debug, Z_candidate, selectedLightJets); 
+				
+				if(debug) cout << "Top_FCNC_ candidate defined" << endl; 
+				pT_FCNC_top_tcZ = Top_FCNC_Candidate.Pt(); 
+				if(debug) cout << "Top_FCNC_ candidate pt" << endl; 
+				Eta_FCNC_top_tcZ = Top_FCNC_Candidate.Eta();
+				if(debug) cout << "Top_FCNC_ candidate eta" << endl;  
+				InvMass_FCNC_top_tcZ = Top_FCNC_Candidate.M(); 
+				if(debug) cout << "Top_FCNC_ candidate invariant mass" << endl; 
+			}
+			if(selectedLightJets.size() >2)
+			{
+				//for tcH (ZZ -> ll qq)	
+				TLorentzVector HiggsCandidate = Channel_3L_Higgs_candidate(debug, Z_candidate, selectedLightJets); 
+				if(debug) cout << "Higgs candidate defined" << endl; 
+				H_candidate_pT = HiggsCandidate.Pt(); 
+				if(debug) cout << "Higgs candidate pt" << endl; 
+				H_candidate_Eta = HiggsCandidate.Eta();
+				if(debug) cout << "Higgs candidate eta" << endl;  
+				InvMass_H = HiggsCandidate.M(); 
+				if(debug) cout << "Higgs candidate invariant mass" << endl; 
+				
+				TLorentzVector Top_FCNC_Candidate = Channel_3L_FCNC_top_candidate2(debug, Z_candidate, selectedLightJets);
+				if(debug) cout << "Top_FCNC_ candidate defined" << endl; 
+				pT_FCNC_top_tcH_ZZ_llqq = Top_FCNC_Candidate.Pt(); 
+				if(debug) cout << "Top_FCNC_ candidate pt" << endl; 
+				Eta_FCNC_top_tcH_ZZ_llqq = Top_FCNC_Candidate.Eta();
+				if(debug) cout << "Top_FCNC_ candidate eta" << endl;  
+				InvMass_FCNC_top_tcH_ZZ_llqq = Top_FCNC_Candidate.M(); 
+				if(debug) cout << "Top_FCNC_ candidate invariant mass" << endl; 
+			}
+			TrMass_HandW = Channel_3L_TransverseMass_HiggsAndW(debug, selectedElectrons,selectedMuons, missingEt); 
+			
+				
+			
+			
+		}
 	    	if(channelName.find("3L")!=string::npos )
 		{ 
 			myTree->Fill();
 			nEvents_Selected[d]++;
+			if(debug) cout << "filled tree for 3l channel" << endl; 
 		}
 	    }
 	    
