@@ -1933,8 +1933,11 @@ int main (int argc, char *argv[])
 		
 		if(channelName.find("45")!=string::npos )
 		{
-			 myTree->Fill(); 
-			 nEvents_Selected[d]++;
+			if(leptons || nLJets > 2)
+			{
+			 	myTree->Fill(); 
+			 	nEvents_Selected[d]++;
+			}
 		}
 		
 	    }
