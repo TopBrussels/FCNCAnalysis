@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<datasets>
+
+
+  <!-- S I G N A L -->
+  
+  <d name="data_MuEG_RunA" title="data"	add="1"   color="1"  ls="1"  lw="2" normf="1"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/MuEG/Run2012A-22Jan2013-v1/15102013_231533/TOPTREE/*.root"/> <!-- /MuEG/Run2012A-22Jan2013-v1/AOD -- TT Id 3642 -->
+  <d name="data_MuEG_RunB" title="data"	add="1"   color="1"  ls="1"  lw="2" normf="1"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/MuEG/Run2012B-22Jan2013-v1/20102013_011650/TOPTREE/*.root"/> <!-- /MuEG/Run2012B-22Jan2013-v1/AOD -- TT Id 3650 -->
+  <d name="data_MuEG_RunC" title="data"	add="1"   color="1"  ls="1"  lw="2" normf="1"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/MuEG/Run2012C-22Jan2013-v1/20102013_171658/TOPTREE/*.root"/> <!-- /MuEG/Run2012C-22Jan2013-v1/AOD -- TT Id 3658 -->
+  <d name="data_MuEG_RunD" title="data"	add="1"   color="1"  ls="1"  lw="2" normf="1"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/MuEG/Run2012D-22Jan2013-v1/20102013_171703/TOPTREE/*.root"/> <!-- /MuEG/Run2012D-22Jan2013-v1/AOD -- TT Id 3652 -->
+  
+  <d name="data_DoubleMuParked_RunA" title="data"	add="1"   color="1"  ls="1"  lw="2" normf="1"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DoubleMuParked/Run2012A-22Jan2013-v1/14102013_141514/TOPTREE/*.root"/> <!-- /DoubleMuParked/Run2012A-22Jan2013-v1/AOD -- TT Id 3646 -->
+  <d name="data_DoubleMuParked_RunB" title="data"	add="1"   color="1"  ls="1"  lw="2" normf="1"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DoubleMuParked/Run2012B-22Jan2013-v1/14102013_141509/TOPTREE/*.root"/> <!-- /DoubleMuParked/Run2012B-22Jan2013-v1/AOD -- TT Id 3644 -->
+  <d name="data_DoubleMuParked_RunC" title="data"	add="1"   color="1"  ls="1"  lw="2" normf="1"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DoubleMuParked/Run2012C-22Jan2013-v1/14102013_141519/TOPTREE/*.root"/> <!-- /DoubleMuParked/Run2012C-22Jan2013-v1/AOD -- TT Id 3641 -->
+  <d name="data_DoubleMuParked_RunD" title="data"	add="1"   color="1"  ls="1"  lw="2" normf="1"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DoubleMuParked/Run2012D-22Jan2013-v1/15102013_001525/TOPTREE/*.root"/> <!-- /DoubleMuParked/Run2012D-22Jan2013-v1/AOD -- TT Id 3647 -->
+  
+  <d name="data_DoubleElectron_RunD" title="data"	add="1"   color="1"  ls="1"  lw="2" normf="1"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DoubleElectron/Run2012D-22Jan2013-v1/02102013_231438/TOPTREE/*.root"/> <!-- /DoubleElectron/Run2012D-22Jan2013-v1/AOD -- TT Id 3640 -->
+  <d name="data_DoubleElectron_RunA" title="data"	add="1"   color="1"  ls="1"  lw="2" normf="1"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DoubleElectron/Run2012A-22Jan2013-v1/02102013_151421/TOPTREE/*.root"/> <!-- /DoubleElectron/Run2012A-22Jan2013-v1/AOD -- TT Id 3639 -->
+  <d name="data_DoubleElectron_RunB" title="data"	add="1"   color="1"  ls="1"  lw="2" normf="1"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DoubleElectron/Run2012B-22Jan2013-v1/02102013_154427/TOPTREE/*.root"/> <!-- /DoubleElectron/Run2012B-22Jan2013-v1/AOD -- TT Id 3638 -->
+  <d name="data_DoubleElectron_RunC" title="data"	add="1"   color="1"  ls="1"  lw="2" normf="1"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/DoubleElectron/Run2012C-22Jan2013-v1/02102013_154432/TOPTREE/*.root"/> <!-- /DoubleElectron/Run2012C-22Jan2013-v1/AOD -- TT Id 3637 -->
+  
+
+</datasets>
+
+<analysis>
+
+<a type="Collections" PVCollection="PrimaryVertex" JetType="2" JetCollection="PFJets_selectedPatJetsPF2PAT" METType="2" METCollection="PFMET_patType1CorrectedPFMetPF2PAT" MuonCollection="Muons_selectedPatMuonsPF2PAT" ElectronCollection="Electrons_selectedPatElectronsPF2PAT" loadGenJetCollection="1" GenJetCollection="GenJets_ak5GenJetsNoNu" loadGenEventCollection="0" GenEventCollection="GenEvent" loadNPGenEventCollection="0" NPGenEventCollection="NPGenEvent" loadMCParticles="0" MCParticlesCollection="MCParticles" TrackMETCollection="" loadTrackMET="0"/>
+
+
+</analysis>
