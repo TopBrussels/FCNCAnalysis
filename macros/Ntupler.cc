@@ -942,7 +942,7 @@ double Channel_45_FCNC_top(bool _debug, vector<pair<int,bool> > _Pairs, TLorentz
 		 TLorentzVector LightJet;
 	 	 LightJet.SetPxPyPzE(_LightJets[i]->Px(),_LightJets[i]->Py(),_LightJets[i]->Pz(), _LightJets[i]->Energy());
 	 	 
-		 cout << aPair.second << endl; 
+		// cout << aPair.second << endl; 
 		 if(aPair.second)
 		 {
 		 	TLorentzVector temp; 
