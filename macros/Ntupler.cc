@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///// Ntuple.cc: This macro is intended to be an example analysis macro which works out of the box.           /////
+///// Ntupler.cc: This macro is intended to be an example analysis macro which works out of the box.           /////
 /////       It should serve as the first port of call for new users of the TopBrussels framework.             /////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -121,7 +121,7 @@ vector <TLorentzVector> Channel_45_5leptons( bool _debug, vector <TRootElectron*
       TLorentzVector lepton_2;
       TLorentzVector lepton_3;
       TLorentzVector lepton_4;
-      TLorentzVector leptonT; // Transverse lepton of the lepton coming from Wboson
+      
       lepton_0.Clear(); 
       lepton_1.Clear();
       lepton_2.Clear();
@@ -130,7 +130,7 @@ vector <TLorentzVector> Channel_45_5leptons( bool _debug, vector <TRootElectron*
       leptonpair_1.Clear();
       leptonpair_2.Clear();
       leptonfour.Clear();
-      leptonT.Clear(); 
+      
       
       
       bool leptons = false; 
@@ -201,7 +201,6 @@ vector <TLorentzVector> Channel_45_5leptons( bool _debug, vector <TRootElectron*
 	     
 	    leptonpair_1 = lepton_0 + lepton_1; 
 	    leptonpair_2 = lepton_2 + lepton_3;
-	    leptonT.SetPxPyPzE(lepton_4.Px(),lepton_4.Py(), lepton_4.Pz(),(lepton_4.Energy()*TMath::Sin(lepton_4.Theta())));
 	    leptonfour = leptonpair_1 + leptonpair_2;
 	    missingEt_pZ_pair = MEzCalculator(lepton_4, _missingEt_pX, _missingEt_pY, isMuon); 
 	 
@@ -254,7 +253,6 @@ vector <TLorentzVector> Channel_45_5leptons( bool _debug, vector <TRootElectron*
 	 	  leptonpair_1 = lepton_0 + lepton_1; 
 	 	  leptonpair_2 = lepton_2 + lepton_3;
 	 	  leptonfour = leptonpair_1 + leptonpair_2;
-	 	  leptonT.SetPxPyPzE(lepton_4.Px(),lepton_4.Py(), lepton_4.Pz(),lepton_4.Energy()*sin(lepton_4.Theta()));
 	 	  missingEt_pZ_pair = MEzCalculator(lepton_4, _missingEt_pX, _missingEt_pY, isMuon);
 	  }
 	  if( _nMuons == 5 )
@@ -397,7 +395,6 @@ vector <TLorentzVector> Channel_45_5leptons( bool _debug, vector <TRootElectron*
 	 	  leptonpair_1 = lepton_0 + lepton_1; 
 	 	  leptonpair_2 = lepton_2 + lepton_3;
 	 	  leptonfour = leptonpair_1 + leptonpair_2;
-	 	  leptonT.SetPxPyPzE(lepton_4.Px(),lepton_4.Py(), lepton_4.Pz(),lepton_4.Energy()*sin(lepton_4.Theta()));
 	 	  missingEt_pZ_pair = MEzCalculator(lepton_4, _missingEt_pX, _missingEt_pY, isMuon);
 	 	  
 	  }
@@ -542,7 +539,6 @@ vector <TLorentzVector> Channel_45_5leptons( bool _debug, vector <TRootElectron*
 	 	 leptonpair_1 = lepton_0 + lepton_1; 
 	 	 leptonpair_2 = lepton_2 + lepton_3;
 	 	 leptonfour = leptonpair_1 + leptonpair_2;
-	 	 leptonT.SetPxPyPzE(lepton_4.Px(),lepton_4.Py(), lepton_4.Pz(),lepton_4.Energy()*sin(lepton_4.Theta()));
 	 	 missingEt_pZ_pair = MEzCalculator(lepton_4, _missingEt_pX, _missingEt_pY, isMuon);
 	  }
 	  
@@ -564,7 +560,7 @@ vector <TLorentzVector> Channel_45_5leptons( bool _debug, vector <TRootElectron*
 	  vector <TLorentzVector> TempVector; 
 	  TempVector.push_back(leptonfour); 
 	  TempVector.push_back(lepton_4);
-	  TempVector.push_back(leptonT);
+	  
 	  TempVector.push_back(missingEt_vector1); 
 	  TempVector.push_back(missingEt_vector2); 
 	  TempVector.push_back(boolVector); 
@@ -869,6 +865,167 @@ vector <TLorentzVector> Channel_3L_Zcandidate(bool _debug, vector <TRootElectron
 	 return TempVector; 
         
 
+}
+
+vector<pair<int,bool> > Channel_45_FCNC_cjet(bool _debug, vector<pair<int,bool> > _LightJets_Paired,vector<TRootJet*> _LightJets, TLorentzVector _leptonfour)
+{
+	bool debug = _debug; 
+	if(debug) cout << "in FCNC top reconstruction" << endl; 
+	
+	
+	Double_t DeltaR_LightJet_Higgs = 1000; 
+	
+	
+	//take the jet closest to the higgs in delta R	
+	for( int i = 0; i <_LightJets.size(); i++)
+	 {
+	        
+	 	 if(debug) cout << "in for loop" << endl;
+	 	 pair<int,int> aPair = _LightJets_Paired[i];
+	 	 pair<int,int> pPair; 
+	 	 if(i == 0) pPair = _LightJets_Paired[i];
+	 	 else pPair = _LightJets_Paired[i-1];
+		 
+		// cout << "aPair: " << aPair.first << " " << aPair.second << endl; 
+		// cout << "pPair: " << pPair.first << " " << pPair.second << endl; 
+	
+	 	 if(debug) cout << "define lightjet" << endl;
+	 	 TLorentzVector LightJet;
+	 	 LightJet.SetPxPyPzE(_LightJets[i]->Px(),_LightJets[i]->Py(),_LightJets[i]->Pz(), _LightJets[i]->Energy());
+	 	 if(debug) cout << "defined lightjet" << endl; 
+		 
+	 	 Double_t Delta_R = LightJet.DeltaR(_leptonfour); 
+	 	 if(debug) cout << "DeltaR: " << Delta_R<< endl;
+	 	 
+	 	 if(Delta_R < DeltaR_LightJet_Higgs) 
+	 	 {
+	 		 DeltaR_LightJet_Higgs = Delta_R; 
+			 _LightJets_Paired[i].second = true;
+			 if(i != 0)  _LightJets_Paired[i-1].second = false; 
+	 		  
+			 if(debug) cout << "set aPair.second to true" << endl; 
+			 
+			 //cout << "aPair: " << aPair.first << " " << aPair.second << endl; 
+		 	 //cout << "pPair: " << pPair.first << " " << pPair.second << endl;
+	 		 
+	 	 }
+	 	 
+	   
+	 }
+	
+	 if(debug) cout << "out Ljets > 0" << endl;
+	 
+	/*
+	for(int ii = 0; ii< _LightJets_Paired.size(); ii++)
+			{
+				pair<int,bool> qaPair = _LightJets_Paired[ii]; 
+				cout << qaPair.first << " " << qaPair.second << endl;
+			
+			}
+
+        cout << "return" << endl;
+	*/
+	return _LightJets_Paired; 
+}
+
+double Channel_45_FCNC_top(bool _debug, vector<pair<int,bool> > _Pairs, TLorentzVector _leptonfour, vector<TRootJet*> _LightJets)
+{
+	double InvMass = 0; 
+	bool debug = _debug; 
+	if(debug) cout << "in top fcnc " << endl; 
+	
+	for( int i = 0; i <_LightJets.size(); i++)
+	 {
+	 	 if(debug) cout << "in for loop" << endl;
+	 	 pair<int,int> aPair = _Pairs[i];
+	 	 
+		 TLorentzVector LightJet;
+	 	 LightJet.SetPxPyPzE(_LightJets[i]->Px(),_LightJets[i]->Py(),_LightJets[i]->Pz(), _LightJets[i]->Energy());
+	 	 
+		 cout << aPair.second << endl; 
+		 if(aPair.second)
+		 {
+		 	TLorentzVector temp; 
+	             	temp = _leptonfour + LightJet; 
+			InvMass = temp.M(); 
+	 	 }
+	   
+	 }
+	return InvMass; 
+}
+
+
+// take b -jet with highest dicriminating value
+vector <TLorentzVector> Channel_45_SM_b(bool _debug, vector<TRootJet*> _BJets)
+{
+	if(_debug) cout << "in SM bjet detemination " << endl; 
+	vector <TLorentzVector> tempV; 
+	TLorentzVector TempJet; 
+	TempJet.Clear(); 
+	double tag = 0; 
+	for(int i = 0; i < _BJets.size(); i++)
+	{
+		
+	        double temptag = _BJets[i]->btag_combinedSecondaryVertexBJetTags(); 
+		if(temptag > tag)
+		{
+		  tag = temptag; 
+		  TempJet.SetPxPyPzE(_BJets[i]->Px(),_BJets[i]->Py(),_BJets[i]->Pz(), _BJets[i]->Energy());
+		}
+	
+	}
+        tempV.push_back(TempJet); 
+	
+	TLorentzVector tagV; 
+	tagV.SetPxPyPzE(tag,0,0,0);
+	tempV.push_back(tagV); 
+
+	return tempV; 
+}
+
+//find jets closest to the bjet with highest discr
+TLorentzVector Channel_45_SM_Wqq(bool _debug,TLorentzVector _Bjet, vector <pair<int,bool> > _Paired, vector <TRootJet*> _LightJets)
+{
+    
+    double dR = 10000; 
+    double Mass = 10000; 
+    TLorentzVector jets;
+    TLorentzVector Rjets; 
+    jets.Clear(); 
+    Rjets.Clear();
+    	     
+    for(int iJet = 0; iJet < _LightJets.size()-1; iJet++)
+    {
+    	    pair<int,int> aPair = _Paired[iJet];
+	    
+	    TLorentzVector LightJet;
+    	    LightJet.SetPxPyPzE(_LightJets[iJet]->Px(),_LightJets[iJet]->Py(),_LightJets[iJet]->Pz(),_LightJets[iJet]->Energy());
+    	    
+	    for(int i = 1; i < _LightJets.size(); i++)
+	    {    
+	        pair<int,int> bPair = _Paired[i];
+		TLorentzVector LightJet2;
+    	   	LightJet2.SetPxPyPzE(_LightJets[i]->Px(),_LightJets[i]->Py(),_LightJets[i]->Pz(),_LightJets[i]->Energy());
+    	    
+    	    	if(!aPair.second && !bPair.second )
+    	    	{	    
+    		    jets =  LightJet + LightJet2;
+		    if(fabs(jets.M() - 80.3) < fabs(Mass - 80.3) )
+		    {
+		    	Mass = jets.M(); 
+		    	double tempDeltaR = _Bjet.DeltaR(jets);
+    		    	if(tempDeltaR < dR)
+		    	{
+		    		dR = tempDeltaR;
+				Rjets = jets; 
+			 
+    		    	}
+		    }
+
+    	    	}
+	   }
+    }
+    return Rjets; 
 }
 
 //Leptons ordering according to Z decay for 3L channel
@@ -1283,6 +1440,7 @@ int main (int argc, char *argv[])
 	Double_t Phi_Higgs; 
 	Double_t Eta_Higgs; 
         
+	Double_t Bdiscr;
 	//3L channel variables
 	Double_t InvMass_Z; 
 	Double_t InvMass_H;
@@ -1355,7 +1513,7 @@ int main (int argc, char *argv[])
 	if(channelName.find("45")!=string::npos)
 	{
 		//45 channel variables
-		myTree->Branch("InvMass_4lepvector<TRootJet*> selectedLightJetst_Zdecay",&InvMass_4lept_Zdecay,"InvMass_4lept_Zdecay/D");
+		myTree->Branch("InvMass_4lept_Zdecay",&InvMass_4lept_Zdecay,"InvMass_4lept_Zdecay/D");
 		myTree->Branch("InvMass_FCNC_top_Zdecay",&InvMass_FCNC_top_Zdecay,"InvMass_FCNC_top_Zdecay/D");
 		myTree->Branch("InvMass_SM_lb",&InvMass_SM_lb,"InvMass_SM_lb/D");
 		myTree->Branch("InvMass_SM_W_lv",&InvMass_SM_W_lv,"InvMass_SM_W_lv/D");
@@ -1370,6 +1528,8 @@ int main (int argc, char *argv[])
 
 		myTree->Branch("Phi_Higgs",&Phi_Higgs,"Phi_Higgs/D"); 
 		myTree->Branch("Eta_Higgs",&Eta_Higgs,"Eta_Higgs/D");
+		
+		myTree->Branch("Bdiscr",&Bdiscr,"Bdiscr/D");
 	} 
        	if(channelName.find("3L")!=string::npos)
 	{
@@ -1473,6 +1633,7 @@ int main (int argc, char *argv[])
             }
             
             
+	    
             /////////////////////////////////
             // DETERMINE EVENT SCALEFACTOR //
             /////////////////////////////////
@@ -1510,8 +1671,30 @@ int main (int argc, char *argv[])
             if(previousRun != currentRun)
                 previousRun = currentRun;
             
-            
-            /////////////////////////////////////////////////////////////////////////////
+	    //triggering only for data, I only have events that either have at least 2 muons or 2 electrons so use double, 
+	    // otherwise include EMU trigger as well
+            /*bool triggered = false; 
+	    int trigger1; 
+	    int trigger2; 
+	    if(isdata == 1)
+	    {
+	    	cout << "isdata with currentRun " << currentRun << " iFile " << iFile << endl; 
+		trigger1 = treeLoader.iTrigger("HLT_Mu17_Mu8_v17",currentRun,iFile); //double muon
+		cout << "trigger1" << endl; 
+		trigger2 = treeLoader.iTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v18",currentRun,iFile); //double electron
+		cout << "trigger2" << endl; 
+		
+		triggered = (treeLoader.EventTrigged(trigger1) || treeLoader.EventTrigged(trigger2));
+		
+	 	cout << "triggered is true" << endl; 
+		
+	    }
+            else triggered = true; 
+	    
+	    
+	    if(!triggered) continue; //if the events isn't triggered go to the next event
+	    */
+	    /////////////////////////////////////////////////////////////////////////////
             // JES SYSTEMATICS && SMEAR JET RESOLUTION TO MIMIC THE RESOLUTION IN DATA //
             /////////////////////////////////////////////////////////////////////////////
             
@@ -1685,6 +1868,11 @@ int main (int argc, char *argv[])
 	    }
 	    
 	    
+	    
+	    //////////////////////////////////
+	    /// variables for 45          /////
+	    ///////////////////////////////////
+	    
 	    TLorentzVector Reco_FCNC_top_combi; 
 	    TLorentzVector leptonpair_1; // two OSSF with highest pt
 	    TLorentzVector leptonpair_2; // two OSSF with 2nd highest pt
@@ -1694,253 +1882,187 @@ int main (int argc, char *argv[])
 	    TLorentzVector lepton_2;
 	    TLorentzVector lepton_3;
 	    TLorentzVector lepton_4;
-	    TLorentzVector leptonT; // Transverse lepton of the lepton coming from Wboson
 	    TLorentzVector missingEt_vector1; 
 	    TLorentzVector missingEt_vector2; 
 	    
 
-	    //Calculate invariant mass of the leptons coming from Z
-	    //InvMass_4lept_Zdecay =-10;
+	    
 	    
 	    if(nElectrons+nMuons>3)
 	    { 		
 	    	 if(debug) cout << "In nElectrons + nMuons > 3" << endl; 
-		 bool leptons = false ; // defines if the leptons are coming from a Z decay  
+		 bool Zdecay = false ; // defines if the leptons are coming from a Z decay  
 		 
+		 //define all leptons
 		 if(nElectrons+nMuons > 4)
 		 {
 		     if(debug) cout << "In nElectrons + nMuons > 4" << endl; 
+		     //define all leptons
 		     vector <TLorentzVector> vectors_5leptons = Channel_45_5leptons( debug, selectedElectrons,selectedMuons,missingEt_pX,missingEt_pY, missingEt_Theta, missingEt);
 		     leptonfour = vectors_5leptons[0]; //vector of the four leptons voming from the Z ~higgs
 		     lepton_4 = vectors_5leptons[1];  // extra lepton from SM W decay
-		     leptonT = vectors_5leptons[2];  // ectra lepton from SM W decay in transverse mode
-		     missingEt_vector1 = vectors_5leptons[3];  // met candidate
-		     missingEt_vector2 = vectors_5leptons[4];  // met candidate
+		     missingEt_vector1 = vectors_5leptons[2];  // met candidate
+		     missingEt_vector2 = vectors_5leptons[3];  // met candidate
 		     
-		     TLorentzVector boolV = vectors_5leptons[5]; 
-		     if(boolV.Px() == 1) leptons = true; 
+		     TLorentzVector boolV = vectors_5leptons[4]; 
+		     if(boolV.Px() == 1) Zdecay = true; 
 		     
 		     if(debug) cout << "out nElectrons + nMuons > 4" << endl; 
 		 
 		 }
-		 if(nElectrons+nMuons == 4)
+		 else if(nElectrons+nMuons == 4)
 		 {
 		     if(debug) cout << "In nElectrons + nMuons = 4" << endl; 
 		     vector <TLorentzVector> vectors_4leptons = Channel_45_4leptons( debug, selectedElectrons, selectedMuons);
 		     leptonfour = vectors_4leptons[0]; // extra lepton from SM W decay
 		     
 		     TLorentzVector boolV = vectors_4leptons[1]; 
-		     if(boolV.Px() == 1) leptons = true; 
+		     if(boolV.Px() == 1) Zdecay = true; 
 		      
 		     if(debug) cout << "Out nElectrons + nMuons = 4" << endl; 
 		 }
-		    
-
-	    	if(debug) cout << "Zdecay leptonfour.M()= " << leptonfour.M() << endl; 
-	    	InvMass_4lept_Zdecay = leptonfour.M();
+		 
+		 bool requirements = false; 
+		 if(Zdecay) requirements = true; 
+		 
+		 //if the requirements aren't fullfilled , go to the next event
+		 if(channelName.find("45")!=string::npos && !requirements ) continue; 
+		 
+		 
+		 
+		 
+                 //define the higss invariant mass H -> ZZ* -> ll ll
+	    	 if(debug) cout << "Zdecay leptonfour.M()= " << leptonfour.M() << endl; 
+	    	 InvMass_4lept_Zdecay = leptonfour.M();
+		 Phi_Higgs = leptonfour.Phi(); 
+		 Eta_Higgs = leptonfour.Eta();
+		
+		 //make a pair of light jets with booleans such that I know which ones are matched
+		 vector<pair<int,bool> >  LightJets_Paired;
+	    	 LightJets_Paired.clear();
+	    	 for(int It = 0; It < selectedLightJets.size(); It++)
+	    	 {
+	    	 	 LightJets_Paired.push_back(make_pair(It, false));
+	    	 }
+		
+		 //Search fcnc c jet
+		 vector<pair<int,bool> > LightJets_Paired_c; 
+		 if(nLJets>0)
+		 {
+		 	
+		 	LightJets_Paired_c = Channel_45_FCNC_cjet(debug, LightJets_Paired, selectedLightJets, leptonfour); 
+		 
+		 	InvMass_FCNC_top_Zdecay = Channel_45_FCNC_top(debug, LightJets_Paired_c,leptonfour,selectedLightJets);
+		 	 
+		 }
 		
 		
-		//make a pair of light jets with booleans such that I know which ones are matched
-		vector<pair<int,bool> >  LightJets_Paired;
-	    	LightJets_Paired.clear();
-	    	for(int It = 0; It < selectedLightJets.size(); It++)
-	    	{
-	    	    LightJets_Paired.push_back(make_pair(It, false));
-	    	}
-		
-		
-		
-		//Calculate FCNC top
-		Double_t DeltaR_LightJet_Higgs = 1000; 
-	    	Reco_FCNC_top_combi.Clear();
-		
-		if(debug) cout << "leptons " << leptons << endl; 
-	    	
-	    	if(nLJets>0 && leptons)
-	    	{ 
-			if(debug) cout << "in Ljets > 0" << endl; 
-			
-	    		for( int i = 0; i <selectedLightJets.size(); i++)
-			{
-				if(debug) cout << "in for loop" << endl;
-				pair<int,int> aPair = LightJets_Paired[i];
-				pair<int,int> pPair; 
-				if(i == 0) pPair = LightJets_Paired[i];
-				else pPair = LightJets_Paired[i-1];
-			
-				if(debug) cout << "define lightjet" << endl;
-				TLorentzVector LightJet;
-				LightJet.SetPxPyPzE(selectedLightJets[i]->Px(),selectedLightJets[i]->Py(),selectedLightJets[i]->Pz(), selectedLightJets[i]->Energy());
-				if(debug) cout << "defined lightjet" << endl; 
-				Double_t Delta_R = LightJet.DeltaR(leptonfour); 
-				if(debug) cout << "DeltaR: " << Delta_R<< endl;
+		 TLorentzVector tempBjet ;		 
+		 if(nBJets > 0)
+		 {
+		 	 // tag b jet with highest discrimanting power as the SM one
+		 	 
+			 vector <TLorentzVector> highestDisc = Channel_45_SM_b(debug,selectedBJets_CSVM); 
+		         tempBjet = highestDisc[0];
+			 Bdiscr = highestDisc[1].Px(); 
+			 
+		 	 // W boson decays hadronically
+		 	 if(nLJets>2 && (nMuons + nElectrons == 4))
+		 	 {
+		 	  
+		 	 
+		 		 //find the two jets closest to this b 
+		 		 TLorentzVector Wjets = Channel_45_SM_Wqq(debug,tempBjet, LightJets_Paired_c, selectedLightJets);
+		 		 
+				 TrMass_W_qq = Wjets.Mt();
+		 		 TrMass_W = TrMass_W_qq; 
+		 		 
+		 		 InvMass_SM_W_qq = Wjets.M(); 
+				 InvMass_SM_W = InvMass_SM_W_qq; 
 				
-				if(Delta_R < DeltaR_LightJet_Higgs) 
-				{
-					DeltaR_LightJet_Higgs = Delta_R; 
-					Reco_FCNC_top_combi = leptonfour + LightJet; 
-					InvMass_FCNC_top_Zdecay = Reco_FCNC_top_combi.M();
-					Phi_Higgs = leptonfour.Phi(); 
-					Eta_Higgs = -TMath::Log(TMath::Tan(leptonfour.Theta()/2));
-				
-					aPair.second = true; 
-					if(i != 0) pPair.second = false; 
-				}
-				
-			  
-	    		}
-			
-			if(debug) cout << "out Ljets > 0" << endl;
-	    	}
+				 TLorentzVector TopJet = Wjets + tempBjet;  
+		 		 InvMass_SM_top_bqq = TopJet.M();
+		 		 InvMass_SM_top = InvMass_SM_top_bqq;
+		 		 	
+				 
+		 		 
+		 	 }
+		 	 // W boson decays leptonically 
+		 	 else if(nMuons + nElectrons > 4)
+		 	 {
+		 		 //define the missing et 
+		 		 TLorentzVector missingEt_vector; 
+		 	         bool NonNegMET = false; 
 		
+		 		 TLorentzVector SumInv1; 
+		 		 SumInv1 = missingEt_vector1 + lepton_4; 
 		
-	    	Double_t DeltaR_lb = 1000; 
-	    	TLorentzVector jetT;
-	    	jetT.Clear();  
-		TLorentzVector jet;
-	    	jet.Clear();
-	    	if(nElectrons+nMuons > 4 && leptons)
-	    	{
-	    		TLorentzVector sumT; 
-			sumT = leptonT+missingEt;
-	    		TrMass_W_lv = TMath::Sqrt(sumT.M2());
-			TrMass_W = TrMass_W_lv; 
-			
-			
-			TLorentzVector missingEt_vector; 
-				
-			
-			TLorentzVector SumInv1; 
-			SumInv1 = missingEt_vector1 + lepton_4; 
-			
-			TLorentzVector SumInv2; 
-			SumInv2 = missingEt_vector2 + lepton_4;
-			
-			
-			if(SumInv1.M() <0 && SumInv2.M()<0)
-			{
-				//Maybe discard event? 
-			}
-			else
-			{
-				if(fabs(SumInv1.M() - 80.4) < fabs(SumInv2.M() - 80.4))
-				{
-					InvMass_SM_W_lv = SumInv1.M();
+		 		 TLorentzVector SumInv2; 
+		 		 SumInv2 = missingEt_vector2 + lepton_4;
+		 	 
+		 		 if(SumInv1.M() <0 && SumInv2.M()> 0)
+		 		 {
+				    NonNegMET = true; 
+		 		    missingEt_vector = missingEt_vector2; 
+		 		    InvMass_SM_W_lv = SumInv2.M();
+		 		 }
+		 		 else if(SumInv1.M() >0 && SumInv2.M()< 0)
+				 {
+				 	NonNegMET = true;
 					missingEt_vector = missingEt_vector1; 
-					if(InvMass_SM_W_lv <0) 
-					{
-						missingEt_vector = missingEt_vector2; 
-						InvMass_SM_W_lv = SumInv2.M(); 
-					}
-					
+		 			InvMass_SM_W_lv = SumInv1.M();
+				 }
+				 else if(SumInv1.M() >0 && SumInv2.M() > 0)
+		 		 {
+		 			 NonNegMET = true;
+					 if(fabs(SumInv1.M() - 80.4) < fabs(SumInv2.M() - 80.4))
+		 			 {
+		 				 InvMass_SM_W_lv = SumInv1.M();
+		 				 missingEt_vector = missingEt_vector1;
+		 			 }
+		 			 else
+		 			 {
+		 				 InvMass_SM_W_lv = SumInv2.M(); 
+		 				 missingEt_vector = missingEt_vector2; 
+		 			 }
+		 		 }
+				 TLorentzVector combi; 
+		 		 combi = lepton_4 + tempBjet; 
+		 		 InvMass_SM_lb =combi.M();
+				 
+				 //when there is a good neutrino candidate found
+				 if(NonNegMET)
+				 {
+				 	InvMass_SM_W = InvMass_SM_W_lv;
+
+				 	TLorentzVector sum; 
+		 		 	sum = lepton_4+missingEt_vector;
+	    	 		 	TrMass_W_lv = sum.Mt();
+		 		 	TrMass_W = TrMass_W_lv; 
+
+		 		 	//make SM top from blv
+		 		 	TLorentzVector combi2;
+		 		 	combi2 = missingEt_vector + lepton_4 + tempBjet; 
+		 		 	InvMass_SM_top_blv = combi2.M();
+		 		 	InvMass_SM_top = InvMass_SM_top_blv;
 				}
-			
-				else
-				{
-					InvMass_SM_W_lv = SumInv2.M(); 
-					missingEt_vector = missingEt_vector2; 
-					if(InvMass_SM_W_lv <0)
-					{
-						missingEt_vector = missingEt_vector1; 
-						InvMass_SM_W_lv = SumInv1.M(); 
-					}
-				}
-			}
-			InvMass_SM_W = InvMass_SM_W_lv; 
-			
-	    		if(selectedBJets_CSVM.size() >0 )
-	    		{	
-	    			
-			
-				TLorentzVector tempJet; 
-				for(int iJet = 0; iJet < selectedBJets_CSVM.size(); iJet++)
-				{
-		   			tempJet.SetPxPyPzE(selectedBJets_CSVM[iJet]->Px(),selectedBJets_CSVM[iJet]->Py(),selectedBJets_CSVM[iJet]->Pz(),selectedBJets_CSVM[iJet]->Energy());
-		   			Double_t Delta_R= tempJet.DeltaR(lepton_4); 
-					
-		   			
-		   			if(Delta_R < DeltaR_lb) 
-		   			{
-		   	   			DeltaR_lb = Delta_R; 
-						//make lb 
-		   	   			TLorentzVector combi; 
-			   			combi = lepton_4 + tempJet; 
-		   	   			InvMass_SM_lb =combi.M();
-						//make SM top from blv
-						TLorentzVector combi2;
-						combi2 = missingEt_vector + lepton_4 + tempJet; 
-						InvMass_SM_top_blv = combi2.M();
-						 
-		   	   
-		   			}
-		 		}	   
-	    			InvMass_SM_top = InvMass_SM_top_blv; 
-	    
-	    		}
-			
-	    	}
-	    	else if(nLJets > 2)
-	    	{
-	    		float counter = 0; 
-			for(int iJet = 0; iJet < selectedLightJets.size(); iJet++)
-			{
-		    		pair<int,int> aPair = LightJets_Paired[iJet];
-		    
-		    		if(!aPair.second )
-		    		{	
-		    			counter++;
-			
-		    			TLorentzVector LightJet_T;
-		        		LightJet_T.SetPxPyPzE(selectedLightJets[iJet]->Px(),selectedLightJets[iJet]->Py(),selectedLightJets[iJet]->Pz(),selectedLightJets[iJet]->Energy()*selectedLightJets[iJet]->Theta());
-					jetT += LightJet_T;
-					
-					TLorentzVector LightJet;
-		        		LightJet.SetPxPyPzE(selectedLightJets[iJet]->Px(),selectedLightJets[iJet]->Py(),selectedLightJets[iJet]->Pz(),selectedLightJets[iJet]->Energy());
-					jet += LightJet;
-					
-		    
-		    		}
-			}
-	    		TrMass_W_qq = TMath::Sqrt(jetT.M2());
-			TrMass_W = TrMass_W_qq; 
-			InvMass_SM_W_qq = jet.M(); 
-			InvMass_SM_W = InvMass_SM_W_qq; 
-			
-			if(selectedBJets_CSVM.size() >0 )
-	    		{	
-				TLorentzVector tempJet; 
-				for(int iJet = 0; iJet < selectedBJets_CSVM.size(); iJet++)
-				{
-		   			tempJet.SetPxPyPzE(selectedBJets_CSVM[iJet]->Px(),selectedBJets_CSVM[iJet]->Py(),selectedBJets_CSVM[iJet]->Pz(),selectedBJets_CSVM[iJet]->Energy());
-		   			Double_t Delta_R = tempJet.DeltaR(jet); 
-					
-		   			if(Delta_R < DeltaR_lb) 
-		   			{
-		   	   			DeltaR_lb = Delta_R; 
-		   	   			TLorentzVector combi; 
-			   			combi = jet + tempJet; 
-		   	   			InvMass_SM_top_bqq = combi.M();
-						 
-		   	   
-		   			}
-		 		}	   
-	    			InvMass_SM_top = InvMass_SM_top_bqq; 
-	    
-	    		}
-	    
-	    	}
+		 	 } // leptonic W
+		
+		 }  // nbjets > 0
+		
+		 if(channelName.find("45")!=string::npos )
+		 {
+		
+		 	 myTree->Fill(); 
+		 	 nEvents_Selected[d]++;
+		
+		 }
+		
+
 		
 		
-		if(channelName.find("45")!=string::npos )
-		{
-			if(leptons || nLJets > 2)
-			{
-			 	myTree->Fill(); 
-			 	nEvents_Selected[d]++;
-			}
-		}
-		
-	    }
+
+	    } // > 3 leptons
 	    
 	    if(nElectrons+nMuons == 3)
 	    {
