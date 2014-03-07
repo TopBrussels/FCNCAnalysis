@@ -29,7 +29,7 @@ void FCNC_4L5L(){
   analyzer->addMCSig("HctL_HToZZ_ZToLL_ZToBB", "Hct", "../ntuples/45_TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL_tree.root", 0.0005135*scaler, -1, kRed, false);//cross section = 0.0005135
   analyzer->addMCSig("HctL_HToZZ_ZToLL_ZToUDC", "Hct", "../ntuples/45_TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL_tree.root", 0.0018609*scaler, -1, kRed, false);//cross section = 0.0018609 --> needs to be changed
   analyzer->addMCSig("HctL_HToWW_WToLNu", "Hct", "../ntuples/45_TTJetsTocHbW_HToWW_WToLNuL_HctL_tree.root", 0.022659*scaler, -1, kRed, false);//cross section = 0.022659
-  analyzer->addMCSig("ZctL", "Zct", "../ntuples/45_TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL_tree.root", 0.1575*scaler, -1, kRed+4, false);//cross section = 0.1575
+  analyzer->addMCSig("ZctL", "Zct", "../ntuples/45_TTJetsTocZbW_tree.root", 0.1575*scaler, -1, kRed+4, false);//cross section = 0.1575
   
   //analyzer->addMCSig("HctR", "Hct", "../ntuples/45_TTJetsTocHbW_HToZZ_ZToLL_HctL_tree.root", 5, -1, kRed, false);
   

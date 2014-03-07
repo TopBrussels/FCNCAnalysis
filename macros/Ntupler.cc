@@ -1648,7 +1648,7 @@ int main (int argc, char *argv[])
 	//        myTree->Print();
 
         TH1F * EventSummary = new TH1F("EventSummary","EventSummary",2,0,2);
-        
+        TH1F * Xsection = new TH1F("Xsection","Xsection",2,0,2);
         
         //open files and load
 	if(debug)       cout<<"LoadEvent"<<endl;
@@ -1694,6 +1694,87 @@ int main (int argc, char *argv[])
 	// store number of events in ntuple 
         nEvents_Tree = datasets[d]->NofEvtsToRunOver(); 
 	EventSummary->SetBinContent(1, datasets[d]->NofEvtsToRunOver());
+	
+	string datasetName = datasets[d]->Name(); 
+		
+	
+	if(datasetName.find("GluGluHiggs4lep")!=string::npos) {Xsection->SetBinContent(1,0.005109893);}
+	/*
+	if(datasetName.find("Wjets")!=string::npos || datasetName.find("wjets")!=string::npos) {}
+	if(datasetName.find("W_1Jets")!=string::npos) {}
+	if(datasetName.find("W_2Jets")!=string::npos) {}
+	if(datasetName.find("W_3Jets")!=string::npos) {}
+	if(datasetName.find("W_4Jets")!=string::npos) {}
+	
+	if(datasetName.find("WW")!=string::npos || datasetName.find("ww")!=string::npos) {}
+        if(datasetName.find("WZ")!=string::npos || datasetName.find("wz")!=string::npos) {}
+        if(datasetName.find("ZZ")!=string::npos || datasetName.find("zz")!=string::npos) {}
+	if(datasetName.find("WW_To2L2Nu")!=string::npos) {}
+	if(datasetName.find("WZ_To2L2Q")!=string::npos) {}
+	*/
+	if(datasetName.find("WZ_To3LNu")!=string::npos) {Xsection->SetBinContent(1,1.087);}
+	/*
+	if(datasetName.find("ZZ_To2L2Nu")!=string::npos) {}
+	if(datasetName.find("ZZ_To2L2Q")!=string::npos) {}
+	*/
+	if(datasetName.find("ZZ_To4L")!=string::npos) {Xsection->SetBinContent(1,0.18);}
+	
+	//if(datasetName.find("TBZ_ToLL_4F")!=string::npos) {}
+	if(datasetName.find("ttH")!=string::npos) {Xsection->SetBinContent(1,0.1293);}
+	if(datasetName.find("VBHiggs4lep")!=string::npos) {Xsection->SetBinContent(1,0.00414341777);}
+	/*
+	if(datasetName.find("ST_T_s-ch")!=string::npos) {sprintf(datasetNamechar,"ST_T_s-ch");}
+        if(datasetName.find("ST_TBar_s-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBar_s-ch");}
+	if(datasetName.find("ST_T_t-ch")!=string::npos) {sprintf(datasetNamechar,"ST_T_t-ch");}
+	if(datasetName.find("ST_Tbar_t-ch")!=string::npos) {sprintf(datasetNamechar,"ST_Tbar_t-ch");}
+	if(datasetName.find("ST_T_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_T_tW-ch");}
+        if(datasetName.find("ST_TBar_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBar_tW-ch");}
+	if(datasetName.find("ST_TToDilepton_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TToDilepton_tW-ch");}
+	if(datasetName.find("ST_TToTlepWhad_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TToTlepWhad_tW-ch");}
+	if(datasetName.find("ST_TToThadWlep_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TToThadWlep_tW-ch");}
+	if(datasetName.find("ST_TBarToDilepton_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBarToDilepton_tW-ch");}
+	if(datasetName.find("ST_TBarToTlepWhad_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBarToTlepWhad_tW-ch");}
+	if(datasetName.find("ST_TBarToThadWlep_tW-ch")!=string::npos) {sprintf(datasetNamechar,"ST_TBarToThadWlep_tW-ch");}
+	
+	if(datasetName.find("TT_SemiLeptMGDecays")!=string::npos) {sprintf(datasetNamechar,"TT_SemiLeptMGDecays");}
+	if(datasetName.find("TT_FullLeptMGDecays")!=string::npos) {sprintf(datasetNamechar,"TT_FullLeptMGDecays");}
+	if(datasetName.find("TT_HadronicMGDecays")!=string::npos) {sprintf(datasetNamechar,"TT_HadronicMGDecays");}
+	if(datasetName.find("TTJets")!=string::npos) {sprintf(datasetNamechar,"TTJets");}
+	*/
+	if(datasetName.find("TTZ")!=string::npos) {Xsection->SetBinContent(1,0.172);}
+	if(datasetName.find("TTW")!=string::npos) {Xsection->SetBinContent(1,0.2148);}
+	/*
+	if(datasetName.find("Z_M-10To50")!=string::npos) {sprintf(datasetNamechar,"Z_M-10To50");}
+	if(datasetName.find("Z_M-50")!=string::npos) {sprintf(datasetNamechar,"Z_M-50");}
+	if(datasetName.find("Z_1Jets")!=string::npos) {sprintf(datasetNamechar,"Z_1Jets");}
+	if(datasetName.find("Z_2Jets")!=string::npos) {sprintf(datasetNamechar,"Z_2Jets");}
+	if(datasetName.find("Z_3Jets")!=string::npos) {sprintf(datasetNamechar,"Z_3Jets");}
+	if(datasetName.find("Z_4Jets")!=string::npos) {sprintf(datasetNamechar,"Z_4Jets");}
+		
+	
+	if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL_WToJets")!=string::npos) {
+		
+	}
+	*/
+	if(datasetName.find("TTJetsTocHbW_HToWW_WToLNuL")!=string::npos) {
+		Xsection->SetBinContent(1,0.022659);
+	}
+	if(datasetName.find("TTJetsTocHbW_HToZZ_ZToBB_ZToLL")!=string::npos) {
+		Xsection->SetBinContent(1, 0.0005135);
+	}
+	if(datasetName.find("TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL")!=string::npos) {
+		Xsection->SetBinContent(1, 0.0018609);
+	}
+	if(datasetName.find("TTJetsTocHbW_HToZZ_ZToNuL_ZToLL")!=string::npos) {
+		Xsection->SetBinContent(1, 0.00067929);
+	}		
+	if(datasetName.find("TTJetsTocHbW_HToZZ_ZToLL")!=string::npos) {
+		Xsection->SetBinContent(1, 0.00016516);
+	}
+	if(datasetName.find("TTJetsTocZbW")!=string::npos) {
+		Xsection->SetBinContent(1, 0.1575);
+	}
+	
         
         for (unsigned int ievt = 0; ievt < datasets[d]->NofEvtsToRunOver(); ievt++) // event loop
             //for (unsigned int ievt = 0; ievt < 20000; ievt++)
@@ -2396,6 +2477,7 @@ int main (int argc, char *argv[])
         if (jetTools) delete jetTools;
         
         //myTree->Write();
+	configTree->Write("", TObject::kOverwrite);
 	myTree->Write("", TObject::kOverwrite);
         fileout->Write();
         fileout->Close();
