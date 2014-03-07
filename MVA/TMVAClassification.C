@@ -158,7 +158,19 @@ void TMVAClassification( TString myMethodList = "" )
 
    factory->AddVariable("missingEt", "MET","GeV",'F'); 
    factory->AddVariable("InvMass_FCNC_top_Zdecay", "InvMass_FCNC_top","GeV",'F'); 
-
+   factory->AddVariable("InvMass_SM_W", "InvMass_SM_W","GeV",'F'); 
+   factory->AddVariable("InvMass_SM_lb", "InvMass_SM_lb","GeV",'F'); 
+   factory->AddVariable("InvMass_SM_top", "InvMass_SM_top","GeV",'F'); 
+   factory->AddVariable("InvMass_4lept_Zdecay", "InvMass_FCNC_H","GeV",'F'); 
+   factory->AddVariable("Phi_Higgs", "Phi_Higgs","",'F');
+   factory->AddVariable("Eta_Higgs", "Eta_Higgs","",'F');
+   factory->AddVariable("nBJets", "nBJets","",'F'); 
+   factory->AddVariable("nLJets", "nLJets","",'F'); 
+   factory->AddVariable("nJets", "nJets","",'F'); 
+   factory->AddVariable("Bdiscr", "Bdiscr","",'F'); 
+   
+   
+   
   // You can add so-called "Spectator variables", which are not used in the MVA training,
   // but will appear in the final "TestTree" produced by TMVA. This TestTree will contain the
   // input variables, the response values of all trained MVAs, and the spectator variables
@@ -170,47 +182,70 @@ void TMVAClassification( TString myMethodList = "" )
     // load the signal and background event samples from ROOT trees
     const float Luminosity = 19700;
     //nb of bkg samples
-    const int nbckgd = 1;
-    TFile *input_s(0);
+    const int nbckgd = 1;//7;
+    const int nsignal = 6; //6;
+    TFile *input_s[nsignal]={0};
     TFile *input_b[nbckgd] = {0};
     vector<string> bckgdNames;
+    vector<string> signalNames;
     
+    signalNames.push_back("TTJetsTocHbW_HToZZ_ZToLL_HctL");
+    signalNames.push_back("TTJetsTocHbW_HToWW_WToLNuL_HctL");
+    signalNames.push_back("TTJetsTocHbW_HToZZ_ZToBB_ZToLL_HctL");
+    signalNames.push_back("TTJetsTocHbW_HToZZ_ZToJetsUDC_ZToLL_HctL");
+    signalNames.push_back("TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL");
+    signalNames.push_back("TTJetsTocZbW");
+     
      //bckgdNames.push_back("Data");
     
     bckgdNames.push_back("GluGluHiggs4lep");
+    bckgdNames.push_back("TTW"); 
+    bckgdNames.push_back("TTZ"); 
+    bckgdNames.push_back("VBHiggs4lep"); 
+    bckgdNames.push_back("WZ_To3LNu"); 
+    bckgdNames.push_back("ZZ_To4L"); 
+    bckgdNames.push_back("ttH"); 
+    bckgdNames.push_back("TTJetsTocHbW_HToZZ_ZToLL_HctL");
     
 
     // global event weights per tree (see below for setting event-wise weights)
-    Double_t signalWeight             = 1.;//signal_dataSet->NormFactor()*Luminosity;
     Double_t backgroundWeight[nbckgd] = {1.};
+    Double_t signalWeight[nsignal] = {1.};
+    Double_t signalW =1.; 
+    Double_t backgroundW =1.; 
 
-    // input MVA data tree
-    input_s = TFile::Open("../ntuples/45_TTJetsTocHbW_HToZZ_ZToLL_HctL_tree.root");
-    //input_s = TFile::Open("../ntuples/45_data_DoubleElectron_tree.root");
-    //input_s = TFile::Open("../ntuples/45_data_DoubleMuonParked_tree.root");
-    if (!input_s) {
-      std::cout << "ERROR: could not open data file" << std::endl;
-      exit(1);
+
+    TTree   *signal[nsignal]         = {0};
+    
+    //input MVA bkg tree
+    for(int i=0;i<nsignal;i++){
+      input_s[i] = TFile::Open(("../ntuples/45_"+signalNames[i]+"_tree.root").c_str());
+      if (!input_s[i]) {
+        std::cout << "ERROR: could not open data file" << std::endl;
+        exit(1);
+      }
+      std::cout << "--- TMVAClassification       : Using input file for signal: " << input_s[i]->GetName() << std::endl;
+    
+      signal[i]     = (TTree*)input_s[i]->Get("tree");
+      
+      // events (A) = lumi * xsec, now we have a fixed nb of events that should be equal to A, so
+      // they should be multiplied or divided by normweight, so signalW = lumi*xsec/N)
+      TH1* hEventSummary = (TH1*) input_s[i]->Get("EventSummary");
+      double nbOfevts = hEventSummary->GetBinContent(1);
+      
+      TH1* hXsection = (TH1*) input_s[i]->Get("Xsection");
+      double xsection = hXsection->GetBinContent(1);
+      
+      signalW = Luminosity*xsection / nbOfevts;
+      signalWeight[i] = signalW; 
+
+      
+
     }
-    std::cout << "--- TMVAClassification       : Using input file for signal: " << input_s->GetName() << std::endl;
-    
-    TTree *signal     = (TTree*)input_s->Get("tree");
-    /*TTree *signal_cfg = (TTree*)input_s->Get("tree");
-    TBranch* s_br = (TBranch*) signal_cfg->GetBranch("Dataset");
-    TClonesArray* tc_dataset = new TClonesArray("Dataset",0);
-    s_br->SetAddress(&tc_dataset);
-    signal_cfg->GetEvent(0);
-    
-    Dataset* signal_dataSet = (Dataset*) tc_dataset->At(0);
-    */
-    signalWeight = 1; //signal_dataSet->NormFactor()*Luminosity;
-   // delete tc_dataset;
-    //delete s_br;
+
 
 
     TTree   *background[nbckgd]         = {0};
-    TTree   *background_cfg[nbckgd]     = {0};
-    Dataset *background_dataSet[nbckgd] = {0};
      
     //input MVA bkg tree
     for(int i=0;i<nbckgd;i++){
@@ -222,19 +257,19 @@ void TMVAClassification( TString myMethodList = "" )
       std::cout << "--- TMVAClassification       : Using input file for bckgd: " << input_b[i]->GetName() << std::endl;
     
       background[i]     = (TTree*)input_b[i]->Get("tree");
-      background_cfg[i] = (TTree*)input_b[i]->Get("tree");
-  /*    
-      TBranch* b_br = (TBranch*) background_cfg[i]->GetBranch("Dataset");
-//      TClonesArray* tc_dataset = new TClonesArray("Dataset",0);
-      tc_dataset = new TClonesArray("Dataset",0);
-      b_br->SetAddress(&tc_dataset);
-      background_cfg[i]->GetEvent(0);
       
-      background_dataSet[i] = (Dataset*) tc_dataset->At(0);
-      */
-      backgroundWeight[i] = 1; //background_dataSet[i]->NormFactor()*Luminosity;
-      //delete tc_dataset;
-      //delete b_br;
+      // events (A) = lumi * xsec, now we have a fixed nb of events that should be equal to A, so
+      // they should be multiplied or divided by normweight, so signalW = lumi*xsec/N)
+      TH1* hEventSummary = (TH1*) input_b[i]->Get("EventSummary");
+      double nbOfevts = hEventSummary->GetBinContent(1);
+      
+      TH1* hXsection = (TH1*) input_b[i]->Get("Xsection");
+      double xsection = hXsection->GetBinContent(1);
+      
+      backgroundW = Luminosity*xsection / nbOfevts;
+      signalWeight[i] = signalW; 
+
+      backgroundWeight[i] = backgroundW; 
       
 
     }
@@ -243,8 +278,10 @@ void TMVAClassification( TString myMethodList = "" )
     //
     // the following method is the prefered one:
     // you can add an arbitrary number of signal or background trees
-    factory->AddSignalTree    ( signal,     signalWeight     );
-    std::cout << "--- TMVAClassification       : Global weight for signal: " << signalWeight << std::endl;
+    for(int i=0;i<nsignal;i++){
+      factory->AddSignalTree( signal[i], signalWeight[i] );
+      std::cout << "--- TMVAClassification       : Global weight for backgd ("+signalNames[i]+"): " << signalWeight[i] << std::endl;
+    }
     for(int i=0;i<nbckgd;i++){
       factory->AddBackgroundTree( background[i], backgroundWeight[i] );
       std::cout << "--- TMVAClassification       : Global weight for backgd ("+bckgdNames[i]+"): " << backgroundWeight[i] << std::endl;
