@@ -22,7 +22,7 @@
   
 
    <!-- SM Higgs -->
-    <d name="GluGluHiggs4lep" title="gg\rightarrow H \rightarrow ZZ \rightarrow llll" add="1" color="6"  ls="1"  lw="2" normf="1" xsection="19.27" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/GluGluToHToZZTo4L_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/23012014_142102/TOPTREE/*_1_*.root"/>
+    <d name="GluGluHiggs4lep" title="gg\rightarrow H \rightarrow ZZ \rightarrow llll" add="1" color="6"  ls="1"  lw="2" normf="1" xsection="0.005109893" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/GluGluToHToZZTo4L_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/23012014_142102/TOPTREE/*_1_*.root"/>
 
 
  

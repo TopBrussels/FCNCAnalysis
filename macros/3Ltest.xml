@@ -3,12 +3,8 @@
 
    
   <!-- S I G N A L -->
-  
-
-
-<d name="NP_overlay_TTJetsTocZbW" title="tcZ"	add="1"   color="2"  ls="1"  lw="2" normf="1"  NofEvts="100000" xsection="0.1575"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocZbW_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v1/21062013_162346/TOPTREE/*.root"/>
-  
-  <d name="GluGluHiggs4lep" title="gg\rightarrow H \rightarrow ZZ \rightarrow llll" add="1" color="41"  ls="1"  lw="2" normf="1" xsection="19.27" NofEvts="100000" filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/GluGluToHToZZTo4L_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/23012014_142102/TOPTREE/*_1_*.root"/>
+  <d name="TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL" title="tcH (H->ZZ)"    add="1"   color="14"  ls="1"  lw="2" normf="1"   xsection="0.00067929"   filenames="dcap:///pnfs/iihe/cms/store/user/dhondt/TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12/jdhondt-TTJetsTocHbW_HToZZ_ZToNuL_ZToLL_HctL_TuneZ2star_8TeV-madgraph-tauola_Summer12-8132d4a0c87c4982c80015223c5f35f5/07112013_170506/TOPTREE/*.root"/>
+    
 
 </datasets>
 

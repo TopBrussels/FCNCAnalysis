@@ -1,5 +1,5 @@
 rm ../ntuples/45_data_MuEG_tree.root
-hadd -f ../ntuples/45_data_MuEG_tree.root ../ntuples/45_data_MuEG_Run*_tree.root 
+hadd -f ../ntuples/45_data_MuEG_tree.root ../ntuples/45_data_MuEG_RunA_tree.root ../ntuples/45_data_MuEG_RunB_tree.root ../ntuples/45_data_MuEG_RunC_tree.root 
 
 
 rm ../ntuples/45_data_DoubleMuParked_tree.root

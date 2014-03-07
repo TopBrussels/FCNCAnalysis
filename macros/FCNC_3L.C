@@ -78,9 +78,16 @@ void FCNC_3L(){
   analyzer->addMonitorPlot("nLJets_CSVM", "nLJets", "Light Jet Multiplicity;Light Jet Multiplicity;Events", 15, -0.5, 14.5, 0., 1000, true);
   analyzer->addMonitorPlot("nBJets_CSVM", "nBJets", "B Jet Multiplicity;B Jet Multiplicity;Events", 15, -0.5, 14.5, 0., 1000, true);
   analyzer->addMonitorPlot("MET", "missingEt", "MET;missing Et;Events", 50, 0, 500, 0., 1000, true);
+  analyzer->addMonitorPlot("RecoZ", "InvMass_Z", "Reconstructed Z;Inv. Mass;Events", 50, 0, 500, 0., 1000, true);
+  analyzer->addMonitorPlot("RecoFCNCtop", "InvMass_FCNC_top_tcZ", "Reconstructed FCNC top;Inv. Mass;Events", 50, 0, 500, 0., 1000, true);
   
   //addCutStep("cuts", "histograms, histograms",scaling") ! no spaces
-  analyzer->addCutStep("","nJets,nLJets_CSVM,nBJets_CSVM,MET,OSSFpairs,FCNC_top,SM_lb,SM_W,SM_W_tr,SM_top",1);
+  analyzer->addCutStep("","RecoFCNCtop,RecoZ,nJets,nLJets_CSVM,nBJets_CSVM,MET,OSSFpairs,FCNC_top,SM_lb,SM_W,SM_W_tr,SM_top",1);
+  analyzer->addCutStep("InvMass_Z>60 && InvMass_Z<120","RecoFCNCtop,RecoZ,nJets,nLJets_CSVM,nBJets_CSVM,MET,OSSFpairs,FCNC_top,SM_lb,SM_W,SM_W_tr,SM_top",1);
+  //analyzer->addCutStep("InvMass_Z>60 && InvMass_Z<120","RecoFCNCtop,RecoZ,nJets,nLJets_CSVM,nBJets_CSVM,MET,OSSFpairs,FCNC_top,SM_lb,SM_W,SM_W_tr,SM_top",1);
+ 
+ // analyzer->addCutStep("RecoZ<60 || RecoZ>120","RecoZ,nJets,nLJets_CSVM,nBJets_CSVM,MET,OSSFpairs,FCNC_top,SM_lb,SM_W,SM_W_tr,SM_top",1);
+  
    //writing the plots 
   analyzer->applyCutSteps();
 

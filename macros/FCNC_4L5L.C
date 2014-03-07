@@ -14,14 +14,14 @@ void FCNC_4L5L(){
   //name of your tree
   string treeName = "tree";
   //where you store your information, plots.. 
-  //string imageOutDir = "../plots/FCNC_4L5L_MuEG_plot_";
-  string imageOutDir = "../plots/FCNC_4L5L_DoubleMuParked_plot_";
+  string imageOutDir = "../plots/FCNC_4L5L_MuEG_plot_";
+  //string imageOutDir = "../plots/FCNC_4L5L_DoubleMuParked_plot_";
   bool createPlots = true; 
   bool printStat = true; 
 
   TopAnalyzerLite* analyzer = new TopAnalyzerLite(treeName, imageOutDir, createPlots, printStat);
-  //analyzer->addRealData("../ntuples/45_data_MuEG_tree.root", 19700); //19.7 fb¯1
-  analyzer->addRealData("../ntuples/45_data_DoubleMuParked_tree.root", 19700); //19.7 fb¯1
+  analyzer->addRealData("../ntuples/45_data_MuEG_tree.root", 19700); //19.7 fb¯1
+  //analyzer->addRealData("../ntuples/45_data_DoubleMuParked_tree.root", 19700); //19.7 fb¯1
  
 
   analyzer->addMCSig("HctL_HToZZ_ZToLL", "Hct", "../ntuples/45_TTJetsTocHbW_HToZZ_ZToLL_HctL_tree.root", 0.00016516*scaler, -1, kRed, false);//cross section = 0.00016516
@@ -54,9 +54,12 @@ void FCNC_4L5L(){
   analyzer->addMonitorPlot("SM_W", "InvMass_SM_W", "SM W;Inv. Mass;Events", 100, 0, 800, 0., 0, true);
   analyzer->addMonitorPlot("SM_W_tr","TrMass_W", "SM W;Transverse Mass;Events", 100, 0, 1000, 0., 0, true); 
   analyzer->addMonitorPlot("SM_top", "InvMass_SM_top", "SM top;Inv. Mass;Events", 25, 0, 850, 0., 0, true);
+  analyzer->addMonitorPlot("Phi_Higgs", "Phi_Higgs", "Phi;Rad;Events", 25, -10,10, 0., 0, true);
+  analyzer->addMonitorPlot("Eta_Higgs", "Eta_Higgs", "Eta;Rad;Events", 50, -2.50,2.5, 0., 0, true);
+  analyzer->addMonitorPlot("Bdiscr", "Bdiscr", "Bdiscr;Bdiscr;Events", 15, 0,1.5, 0., 0, true);
   
   //addCutStep("cuts", "histograms, histograms",scaling") ! no spaces
-  analyzer->addCutStep("","nJets,nLJets_CSVM,nBJets_CSVM,MET,OSSFpairs,FCNC_top,SM_lb,SM_W,SM_W_tr,SM_top",1);
+  analyzer->addCutStep("","Phi_Higgs,Eta_Higgs,Bdiscr,nJets,nLJets_CSVM,nBJets_CSVM,MET,OSSFpairs,FCNC_top,SM_lb,SM_W,SM_W_tr,SM_top",1);
   // analyzer->addCutStep("InvMass_SM_lb > 0","nJets,nLJets_CSVM,nBJets_CSVM,MET,OSSFpairs,FCNC_top,SM_lb,SM_W,SM_W_tr,SM_top",1);
   
   //writing the plots 
