@@ -328,6 +328,8 @@ int main(int argc, char *argv[]){
 	MSPlot["Pt_2nd_leading_jet_2SSL"] = new MultiSamplePlot(datasets,"Pt_2nd_leading_jet_2SSL",100,0,200,"Pt 2nd leading jet");
 	MSPlot["Pt_3rd_leading_jet_2SSL"] = new MultiSamplePlot(datasets,"Pt_3rd_leading_jet_2SSL",100,0,200,"Pt 3rd leading jet");
 	MSPlot["Pt_4th_leading_jet_2SSL"] = new MultiSamplePlot(datasets,"Pt_4th_leading_jet_2SSL",100,0,200,"Pt 4th leading jet"); 
+	MSPlot["Mll_SSdilepton_dR>=0.2"]= new MultiSamplePlot(datasets,"Mll_SSdilepton_dR>=0.2",50,0,200,"Mll of SSdilepton dR>= 0.2");
+	MSPlot["Mll_SSdilepton_out_Zmass"]= new MultiSamplePlot(datasets,"Mll_SSdilepton_out_Zmass",50,0,200,"Mll of SSdilepton out Z");
 	
 	MSPlot["Met_pT_SSdilepton"]= new MultiSamplePlot(datasets,"Met_pT_SSdilepton",50,0,300," Met_p_{T} SSdilepton");
 	MSPlot["Met_pT_SSdilepton_bTag"]= new MultiSamplePlot(datasets,"Met_pT_SSdilepton_bTag",50,0,300," Met_p_{T} SSdilepton");
@@ -957,6 +959,7 @@ int main(int argc, char *argv[]){
 							if(mets.size()>=0)MSPlot["Met_pT_SSdilepton_bTag"]->Fill(mets[0]->Pt(), datasets[d], true, Luminosity*scaleFactor);
 							
 							float mll = -1;
+							float Zmass = 91.1876;  // ref-> pdg
 							if(electron)
 							{
 								mll = (*looseElectrons[0]+*looseElectrons[1]).M();
@@ -1006,6 +1009,9 @@ int main(int argc, char *argv[]){
 							dR_2SSL = Lepton0.DeltaR(Lepton1);
 							MSPlot["dPhi_2SSL"]->Fill(dPhi_2SSL, datasets[d],true,Luminosity*scaleFactor);
 							MSPlot["dR_2SSL"]->Fill(dR_2SSL, datasets[d],true,Luminosity*scaleFactor);
+							if (dR_2SSL >= 0.2) {MSPlot["Mll_SSdilepton_dR>=0.2"]->Fill(mll, datasets[d],true,Luminosity*scaleFactor);}
+							if (abs(Zmass - mll) > 15){
+							MSPlot["Mll_SSdilepton_out_Zmass"]->Fill(mll, datasets[d],true,Luminosity*scaleFactor);}
 							
 							//detrmine deltaR between first lepton and nearest jet
 							for (unsigned ijet=0 ; ijet< nbofjets; ijet++){
@@ -1028,7 +1034,7 @@ int main(int argc, char *argv[]){
 							unsigned int sum =0;
 							unsigned int sum_W_Jets =0;
 							float selectedHighestPtJetsMass = 0.;
-							float selected_W_Jets = 999;
+							float selected_W_Jets = 0.;
 							float M3Jets = 999;
 							float W_Jets_Mass = 999;
 							//float W_mass = 80.385;  //pdg ref
