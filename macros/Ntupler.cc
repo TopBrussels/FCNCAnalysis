@@ -963,6 +963,7 @@ vector <TLorentzVector> SM_b(bool _debug, vector<TRootJet*> _BJets)
 	TLorentzVector TempJet; 
 	TempJet.Clear(); 
 	double tag = 0; 
+	int ID = -1; 
 	for(int i = 0; i < _BJets.size(); i++)
 	{
 		
@@ -971,15 +972,21 @@ vector <TLorentzVector> SM_b(bool _debug, vector<TRootJet*> _BJets)
 		{
 		  tag = temptag; 
 		  TempJet.SetPxPyPzE(_BJets[i]->Px(),_BJets[i]->Py(),_BJets[i]->Pz(), _BJets[i]->Energy());
+		  ID = i; 
 		}
 	
 	}
+	
         tempV.push_back(TempJet); 
 	
 	TLorentzVector tagV; 
 	tagV.SetPxPyPzE(tag,0,0,0);
 	tempV.push_back(tagV); 
-
+        
+	TLorentzVector tempID; 
+	tempID.SetPxPyPzE(ID,0,0,0); 
+	tempV.push_back(tempID); 
+	if(_debug) cout << "out SM bjet detemination " << endl;
 	return tempV; 
 }
 
@@ -1218,6 +1225,7 @@ int main (int argc, char *argv[])
     bool debug = false; 
     int nb_Leptons = 0; 
     bool foundxml= false;
+    bool validate = false; 
 
     for(int iarg = 0; iarg < argc && argc>1 ; iarg++)
     {
@@ -1283,6 +1291,7 @@ int main (int argc, char *argv[])
 		    channelName = "45";
     		    if(!foundxml) tempxmlName = "../config/FCNC_45_config.xml";
 	    }
+	    
     	    
     	    
 
@@ -1460,6 +1469,7 @@ int main (int argc, char *argv[])
 	
 
         //45 channel variables
+	
 	Double_t InvMass_4lept_Zdecay;
 	Double_t InvMass_FCNC_top_Zdecay; 
 	Double_t InvMass_SM_lb; 
@@ -1477,7 +1487,9 @@ int main (int argc, char *argv[])
 	Double_t Eta_Higgs; 
         
 	Double_t Bdiscr;
+	
 	//3L channel variables
+	
 	Double_t InvMass_Z; 
 	Double_t InvMass_H;
 	Double_t Z_candidate_pT;
@@ -1504,6 +1516,7 @@ int main (int argc, char *argv[])
 	Double_t Bjet_Pt;
 	Double_t Bjet_Py;
 	Double_t Bjet_Pz;
+	
 	Double_t FCNC_ll_Eta; 
 	Double_t FCNC_ll_Phi; 
 	Double_t FCNC_ll_Px; 
@@ -1514,7 +1527,6 @@ int main (int argc, char *argv[])
 	Double_t InvMass_FCNC_ll; 
 	Double_t DeltaR_SMlb_FCNCll; 
 	Double_t DeltaPhi_SMlb_FCNCll;
-	
 	
 	
 	
@@ -1633,7 +1645,8 @@ int main (int argc, char *argv[])
 
         TH1F * EventSummary = new TH1F("EventSummary","EventSummary",2,0,2);
         TH1F * Xsection = new TH1F("Xsection","Xsection",2,0,2);
-        
+	TH1F * SM_b_selection_efficiency = new TH1F("SM_b_selection_efficiency","SM_b_selection_efficiency",2,0,2);
+	
         //open files and load
 	if(debug)       cout<<"LoadEvent"<<endl;
         treeLoader.LoadDataset (datasets[d], anaEnv);
@@ -1670,7 +1683,12 @@ int main (int argc, char *argv[])
         ////////////////////////////////////
         //	Loop on events
         ////////////////////////////////////
-        
+        double MatchedCounter = 0.; 
+	double EventsToMatch = 0.;
+	double MatchedCounter_cjets = 0.; 
+	double EventsToMatch_cjets = 0.; 
+	//double MatchedCounterSelection = 0.; 
+	//double EventsToMatchSelection = 0.; 
         nEvents[d] = 0;
 	nEvents_Selected[d] = 0; 
         int itriggerSemiMu = -1,itriggerSemiEl = -1, previousRun = -1;
@@ -1704,7 +1722,7 @@ int main (int argc, char *argv[])
 	if(datasetName.find("ST_T_tW-ch")!=string::npos) {Xsection->SetBinContent(1,11.1);}
         if(datasetName.find("ST_TBar_tW-ch")!=string::npos) {Xsection->SetBinContent(1,11.1);}
 	
-	if(datasetName.find("TT_SemiLeptMGDecays")!=string::npos) {Xsection->SetBinContent(1,110.26;}
+	if(datasetName.find("TT_SemiLeptMGDecays")!=string::npos) {Xsection->SetBinContent(1,110.26);}
 	if(datasetName.find("TT_FullLeptMGDecays")!=string::npos) {Xsection->SetBinContent(1,26.42);}
 		
 	if(datasetName.find("Z_1Jets")!=string::npos) {Xsection->SetBinContent(1,671.83);}
@@ -1733,6 +1751,20 @@ int main (int argc, char *argv[])
             vector < TRootJet* > init_jets;
             vector < TRootMET* > mets;
             vector < TRootGenJet* > genjets;
+	    vector<TRootMCParticle*> mcParticles; // to check mother, daughter,..
+	    
+	    
+	    if(datasetName.find("TTJetsTocHbW_HToZZ_ZToLL")!=string::npos )
+	    {
+	    	if(debug) cout << "Loading mc particles" << endl; 
+	    	treeLoader.LoadMCEvent(ievt,0,0,mcParticles,false); 
+		
+	    	sort(mcParticles.begin(),mcParticles.end(),HighestPt()); // HighestPt() is included from the Selection class
+	    	validate = true; 
+	    }
+	    
+	   
+	    
             
             nEvents[d]++;
             
@@ -1868,6 +1900,10 @@ int main (int argc, char *argv[])
 	    
 	    vector<TRootJet*> selectedBJets_CSVM; // B-jets at the Tight working point
 	    vector<TRootJet*> selectedLightJets; // light-Jets, to be filled afer b-tagging
+	    
+	     
+	   
+	    
 	     
             
             nElectrons=0;
@@ -1923,11 +1959,14 @@ int main (int argc, char *argv[])
                 nJets++;
             }
 	    
+	    vector<int> SelectedBjets_ID; 
+	    SelectedBjets_ID.clear(); 
 	    
 	    for(unsigned int iJet=0; iJet<selectedJets.size(); iJet++){
 		if (selectedJets[iJet]->btag_combinedSecondaryVertexBJetTags() > .679)
 		{
 			selectedBJets_CSVM.push_back(selectedJets[iJet]);
+			SelectedBjets_ID.push_back(iJet); 
 		}
 		else selectedLightJets.push_back(selectedJets[iJet]);
 		
@@ -1989,6 +2028,86 @@ int main (int argc, char *argv[])
 	    	}
 	    }
 	    
+	    /////////////////////////////
+	    /// Jet parton matching ////
+	    /////////////////////////////()
+	    std::vector<TLorentzVector> partons;
+	    std::vector<TLorentzVector> partons_cjet;
+	    std::vector<TLorentzVector> tljets;
+	    std::vector<int> MatchingId; 
+	    std::vector<int> MatchingId_cjet; 
+	    MatchingId.clear(); 
+	    MatchingId_cjet.clear();
+	    partons.clear(); 
+	    partons_cjet.clear(); 
+	    tljets.clear(); 
+	    
+	    
+	    if(validate)
+	    {
+	       for(unsigned int i=0;i<selectedJets.size();i++)
+	       {
+	            tljets.push_back((TLorentzVector)*selectedJets[i]);
+		
+	       }
+	    
+	       TLorentzVector bquark; 
+	       TLorentzVector cquark;
+	       for(unsigned int iMC = 0; iMC< mcParticles.size(); iMC++)
+	       {
+	       
+	    	    if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
+            	    if( mcParticles[iMC]->status() != 3) continue; 
+	      
+	    	    if(fabs(mcParticles[iMC]->type()) == 5 && fabs(mcParticles[iMC]->motherType()) == 6)  
+		    {
+		        bquark = *mcParticles[iMC]; 
+		        
+		        if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
+            	        partons.push_back(bquark); 
+		    }
+		    else if(fabs(mcParticles[iMC]->type()) == 4 && fabs(mcParticles[iMC]->motherType()) == 6)  
+		    {
+		        cquark = *mcParticles[iMC]; 
+		        
+		        if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
+            	        partons_cjet.push_back(cquark); 
+		    }
+		    
+	        }
+		if(debug) cout << "partons.size() " << partons.size() << endl; 
+		
+		if(partons.size() == 0 || partons_cjet.size() == 0) continue; 
+		const int TotalMinDist= JetPartonMatching::totalMinDist; 
+		
+		JetPartonMatching myJetPartonMatcher = JetPartonMatching(partons,tljets,TotalMinDist, true,true ,0.3);
+		JetPartonMatching myJetPartonMatcher_cjet = JetPartonMatching(partons_cjet,tljets,TotalMinDist, true,true ,0.3);
+		if(debug) myJetPartonMatcher.print();
+		if(debug) cout << endl; 
+			
+		
+		for(int iID = 0; iID < partons.size(); iID++)
+		{
+		    int ID = -1; 
+		    
+		    ID = myJetPartonMatcher.getMatchForParton(iID,0); 
+		    if(debug) cout << ID << endl; 
+		  
+		    MatchingId.push_back(ID); 
+		}
+		for(int iID = 0; iID < partons_cjet.size(); iID++)
+		{
+		    int ID = -1; 
+		    
+		    ID = myJetPartonMatcher_cjet.getMatchForParton(iID,0); 
+		    if(debug) cout << ID << endl; 
+		  
+		    MatchingId_cjet.push_back(ID); 
+		}
+		
+		
+		
+	    }
 	    
 	    
 	    //////////////////////////////////
@@ -2013,6 +2132,9 @@ int main (int argc, char *argv[])
 	    if(channelName.find("45")!=string::npos && (nElectrons+nMuons>3))
 	    { 		
 	    	 if(debug) cout << "In nElectrons + nMuons > 3" << endl; 
+		 
+		
+		 
 		 bool Zdecay = false ; // defines if the leptons are coming from a Z decay  
 		 
 		 //define all leptons
@@ -2027,7 +2149,10 @@ int main (int argc, char *argv[])
 		     missingEt_vector2 = vectors_5leptons[3];  // met candidate
 		     
 		     TLorentzVector boolV = vectors_5leptons[4]; 
-		     if(boolV.Px() == 1) Zdecay = true; 
+		     if(boolV.Px() == 1) {
+		     	Zdecay = true; 
+			
+		     }
 		     
 		     if(debug) cout << "out nElectrons + nMuons > 4" << endl; 
 		 
@@ -2039,10 +2164,15 @@ int main (int argc, char *argv[])
 		     leptonfour = vectors_4leptons[0]; // extra lepton from SM W decay
 		     
 		     TLorentzVector boolV = vectors_4leptons[1]; 
-		     if(boolV.Px() == 1) Zdecay = true; 
+		     if(boolV.Px() == 1){
+		     	 Zdecay = true; 
+			 
+		     }
 		      
 		     if(debug) cout << "Out nElectrons + nMuons = 4" << endl; 
 		 }
+		 
+		
 		 
 		 bool requirements = false; 
 		 if(Zdecay) requirements = true; 
@@ -2078,7 +2208,9 @@ int main (int argc, char *argv[])
 		 	 
 		 }
 		
-		
+		 bool Evts2Match = false ; 
+		 bool EvtsMatched = false; 
+		 
 		 TLorentzVector tempBjet ;		 
 		 if(nBJets > 0)
 		 {
@@ -2088,6 +2220,31 @@ int main (int argc, char *argv[])
 		         tempBjet = highestDisc[0];
 			 Bdiscr = highestDisc[1].Px(); 
 			 
+			 
+			 if(validate && MatchingId[0] != -1)
+			 {
+			 	if(debug) cout << "in validation" << endl; 
+				int Bjet_ID = highestDisc[2].Px();
+				if(debug)cout << "Place in bjets " << Bjet_ID << endl; 
+			 	int BjetPlace_in_selectedJets = SelectedBjets_ID[Bjet_ID]; 
+			 	if(debug)cout << "Place in jets " << BjetPlace_in_selectedJets << endl; 
+				if(debug)cout << "MatchingId size " << MatchingId.size() << endl; 
+				if(debug)cout << "MatchingId " << MatchingId[0] << endl; 
+				
+				EventsToMatch++;
+				Evts2Match = true; 
+				
+			 	if(BjetPlace_in_selectedJets == MatchingId[0] )
+				{
+				   if(debug) cout << "right match" << endl; 
+				   MatchedCounter++;
+				   EvtsMatched = true; 
+			 	}
+				else
+				{
+					if(debug) cout << "wrong match" << endl; 
+				}
+			 }
 		 	 // W boson decays hadronically
 		 	 if(nLJets>2 && (nMuons + nElectrons == 4))
 		 	 {
@@ -2174,7 +2331,8 @@ int main (int argc, char *argv[])
 		
 		 myTree->Fill(); 
 		 nEvents_Selected[d]++;
-		
+		 //if(Evts2Match) EventsToMatchSelection++;
+		// if(EvtsMatched) MatchedCounterSelection++; 
 
 	    } // > 3 leptons
 	    
@@ -2412,6 +2570,14 @@ int main (int argc, char *argv[])
 
         }			//loop on events
         
+	
+	
+	cout<<endl;
+	cout<<endl;	
+	if(validate) cout << "Bjet matching efficiency is " << (double) (MatchedCounter/EventsToMatch)*100 << " % or " << MatchedCounter << " of " << EventsToMatch  << " SM b jets" <<endl; 
+	//if(validate) cout << "Selection Bjet matching efficiency is " << (double) (MatchedCounterSelection/EventsToMatchSelection)*100 << " % or " << MatchedCounterSelection << " of" << EventsToMatchSelection  << " SM b jets" <<endl; 
+	if(validate) SM_b_selection_efficiency->SetBinContent(1,MatchedCounter/EventsToMatch); 
+	else SM_b_selection_efficiency->SetBinContent(1,-1);
 	cout<<endl;
         
         
