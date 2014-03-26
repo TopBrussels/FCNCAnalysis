@@ -874,41 +874,123 @@ vector<pair<int,bool> > Channel_45_FCNC_cjet(bool _debug, vector<pair<int,bool> 
 	
 	
 	Double_t DeltaR_LightJet_Higgs = 1000; 
-	
-	
+	Double_t DeltaPhi_LightJet_Higgs = 1000; 
+	Double_t Pt = 0.;
+	double tag = 0; 
+		
 	//take the jet closest to the higgs in delta R	
 	for( int i = 0; i <_LightJets.size(); i++)
 	 {
 	        
 	 	 if(debug) cout << "in for loop" << endl;
-	 	 pair<int,bool> aPair = _LightJets_Paired[i];
-	 	 pair<int,bool> pPair; 
-	 	 if(i == 0) pPair = _LightJets_Paired[i];
-	 	 else pPair = _LightJets_Paired[i-1];
-		 
-		// cout << "aPair: " << aPair.first << " " << aPair.second << endl; 
-		// cout << "pPair: " << pPair.first << " " << pPair.second << endl; 
-	
-	 	 if(debug) cout << "define lightjet" << endl;
+	 	
 	 	 TLorentzVector LightJet;
 	 	 LightJet.SetPxPyPzE(_LightJets[i]->Px(),_LightJets[i]->Py(),_LightJets[i]->Pz(), _LightJets[i]->Energy());
-	 	 if(debug) cout << "defined lightjet" << endl; 
+	 	 
+		 
+		 
+		 if(debug) cout << "defined lightjet" << endl; 
 		 
 	 	 Double_t Delta_R = LightJet.DeltaR(_leptonfour); 
+		 //Double_t Delta_R = LightJet.DrEtaPhi(_leptonfour); 
 	 	 if(debug) cout << "DeltaR: " << Delta_R<< endl;
+		 
+		 Double_t Delta_Phi = LightJet.DeltaPhi(_leptonfour); 
 	 	 
-	 	 if(Delta_R < DeltaR_LightJet_Higgs) 
+		 Double_t tempPt = LightJet.Pt(); 
+		 
+		 double temptag = _LightJets[i]->btag_combinedSecondaryVertexBJetTags(); 
+		 
+		 /*
+		 if(Delta_Phi < DeltaPhi_LightJet_Higgs)  // has 34% selection efficiency
+	 	 {
+	 		 DeltaPhi_LightJet_Higgs = Delta_Phi; 
+			 _LightJets_Paired[i].second = true;
+			 
+			 
+			 if(i != 0)
+			 {
+			    for(int k = 0; k<i; k++)
+			    {
+			       _LightJets_Paired[k].second = false; 
+			    }
+			    for(int k = i+1; k<_LightJets.size(); k++)
+			    {
+			       _LightJets_Paired[k].second = false; 
+			    }
+	 		 }
+			 if(debug) cout << "set aPair.second to true" << endl; 
+			 
+			
+	 	 }
+		 */
+		 /*
+		 if(temptag > tag)  // 37% selection efficiency 
+		 {
+		 	tag = temptag;
+			_LightJets_Paired[i].second = true;
+			 
+			 
+			 if(i != 0)
+			 {
+			    for(int k = 0; k<i; k++)
+			    {
+			       _LightJets_Paired[k].second = false; 
+			    }
+			    for(int k = i+1; k<_LightJets.size(); k++)
+			    {
+			       _LightJets_Paired[k].second = false; 
+			    }
+	 		 }
+			 if(debug) cout << "set aPair.second to true" << endl; 
+			
+		 }
+		 */
+		 
+	 	 if(Delta_R < DeltaR_LightJet_Higgs)  // has 52% selection efficiency
 	 	 {
 	 		 DeltaR_LightJet_Higgs = Delta_R; 
 			 _LightJets_Paired[i].second = true;
-			 if(i != 0)  _LightJets_Paired[i-1].second = false; 
-	 		  
+			 
+			 
+			 if(i != 0)
+			 {
+			    for(int k = 0; k<i; k++)
+			    {
+			       _LightJets_Paired[k].second = false; 
+			    }
+			    for(int k = i+1; k<_LightJets.size(); k++)
+			    {
+			       _LightJets_Paired[k].second = false; 
+			    }
+	 		 }
 			 if(debug) cout << "set aPair.second to true" << endl; 
 			 
-			 //cout << "aPair: " << aPair.first << " " << aPair.second << endl; 
-		 	 //cout << "pPair: " << pPair.first << " " << pPair.second << endl;
-	 		 
+			
 	 	 }
+		 
+		 /*
+		 if(tempPt > Pt)   // has 29% selection efficiency
+		 {
+		        Pt = tempPt; 
+		 	_LightJets_Paired[i].second = true;
+			 
+			 
+			 if(i != 0)
+			 {
+			    for(int k = 0; k<i; k++)
+			    {
+			       _LightJets_Paired[k].second = false; 
+			    }
+			    for(int k = i+1; k<_LightJets.size(); k++)
+			    {
+			       _LightJets_Paired[k].second = false; 
+			    }
+	 		 }
+			 if(debug) cout << "set aPair.second to true" << endl; 
+		 
+		 }
+		 */
 	 	 
 	   
 	 }
@@ -917,22 +999,24 @@ vector<pair<int,bool> > Channel_45_FCNC_cjet(bool _debug, vector<pair<int,bool> 
 	 
 	/*
 	for(int ii = 0; ii< _LightJets_Paired.size(); ii++)
-			{
-				pair<int,bool> qaPair = _LightJets_Paired[ii]; 
-				cout << qaPair.first << " " << qaPair.second << endl;
+	{
+	   pair<int,bool> qaPair = _LightJets_Paired[ii]; 
+	   cout << qaPair.first << " " << qaPair.second << endl;
 			
-			}
+	}
 
         cout << "return" << endl;
 	*/
 	return _LightJets_Paired; 
 }
 
-double Channel_45_FCNC_top(bool _debug, vector<pair<int,bool> > _Pairs, TLorentzVector _leptonfour, vector<TRootJet*> _LightJets)
+TLorentzVector Channel_45_FCNC_top(bool _debug, vector<pair<int,bool> > _Pairs, TLorentzVector _leptonfour, vector<TRootJet*> _LightJets)
 {
 	double InvMass = 0; 
 	bool debug = _debug; 
 	if(debug) cout << "in top fcnc " << endl; 
+	int counter = 0; 
+	TLorentzVector temp;
 	
 	for( int i = 0; i <_LightJets.size(); i++)
 	 {
@@ -945,13 +1029,15 @@ double Channel_45_FCNC_top(bool _debug, vector<pair<int,bool> > _Pairs, TLorentz
 		// cout << aPair.second << endl; 
 		 if(aPair.second)
 		 {
-		 	TLorentzVector temp; 
+		 	temp.Clear();  
 	             	temp = _leptonfour + LightJet; 
 			InvMass = temp.M(); 
+			counter++; 
 	 	 }
+		 if(counter>1) cout << "WARNING: something wrong with c-jet selection" << endl; 
 	   
 	 }
-	return InvMass; 
+	return temp; 
 }
 
 
@@ -1485,7 +1571,11 @@ int main (int argc, char *argv[])
 	
 	Double_t Phi_Higgs; 
 	Double_t Eta_Higgs; 
-        
+	
+	Double_t FCNC_top_eta; 
+	Double_t FCNC_top_phi; 
+        Double_t FCNC_top_Pt;
+	
 	Double_t Bdiscr;
 	
 	//3L channel variables
@@ -1601,6 +1691,10 @@ int main (int argc, char *argv[])
 		myTree->Branch("Phi_Higgs",&Phi_Higgs,"Phi_Higgs/D"); 
 		myTree->Branch("Eta_Higgs",&Eta_Higgs,"Eta_Higgs/D");
 		
+		myTree->Branch("FCNC_top_eta", &FCNC_top_eta, "FCNC_top_eta/D"); 
+		myTree->Branch("FCNC_top_phi", &FCNC_top_phi, "FCNC_top_phi/D"); 
+		myTree->Branch("FCNC_top_Pt", &FCNC_top_Pt, "FCNC_top_Pt/D");
+		
 		myTree->Branch("Bdiscr",&Bdiscr,"Bdiscr/D");
 	} 
        	if(channelName.find("3L")!=string::npos)
@@ -1646,6 +1740,11 @@ int main (int argc, char *argv[])
         TH1F * EventSummary = new TH1F("EventSummary","EventSummary",2,0,2);
         TH1F * Xsection = new TH1F("Xsection","Xsection",2,0,2);
 	TH1F * SM_b_selection_efficiency = new TH1F("SM_b_selection_efficiency","SM_b_selection_efficiency",2,0,2);
+	TH1F * FCNC_c_selection_efficiency = new TH1F("FCNC_c_selection_efficiency","FCNC_c_selection_efficiency",2,0,2);
+	TH1F * Selected_bjet_Pt = new TH1F("Selected_bjet_Pt","Selected_bjet_Pt",200,0,200); 
+	TH1F * True_bjet_Pt = new TH1F("True_bjet_Pt","True_bjet_Pt",200,0,200); 
+	TH1F * Selected_cjet_Pt = new TH1F("Selected_cjet_Pt","Selected_cjet_Pt",200,0,200); 
+	TH1F * True_cjet_Pt = new TH1F("True_cjet_Pt","True_cjet_Pt",200,0,200); 
 	
         //open files and load
 	if(debug)       cout<<"LoadEvent"<<endl;
@@ -1685,11 +1784,9 @@ int main (int argc, char *argv[])
         ////////////////////////////////////
         double MatchedCounter = 0.; 
 	double EventsToMatch = 0.;
-	double MatchedCounter_cjets = 0.; 
-	double EventsToMatch_cjets = 0.; 
-	//double MatchedCounterSelection = 0.; 
-	//double EventsToMatchSelection = 0.; 
-        nEvents[d] = 0;
+	double MatchedCounter_c = 0.; 
+	double EventsToMatch_c = 0.; 
+	nEvents[d] = 0;
 	nEvents_Selected[d] = 0; 
         int itriggerSemiMu = -1,itriggerSemiEl = -1, previousRun = -1;
 	
@@ -1960,7 +2057,9 @@ int main (int argc, char *argv[])
             }
 	    
 	    vector<int> SelectedBjets_ID; 
+	    vector<int> SelectedLightjets_ID; 
 	    SelectedBjets_ID.clear(); 
+	    SelectedLightjets_ID.clear(); 
 	    
 	    for(unsigned int iJet=0; iJet<selectedJets.size(); iJet++){
 		if (selectedJets[iJet]->btag_combinedSecondaryVertexBJetTags() > .679)
@@ -1968,8 +2067,11 @@ int main (int argc, char *argv[])
 			selectedBJets_CSVM.push_back(selectedJets[iJet]);
 			SelectedBjets_ID.push_back(iJet); 
 		}
-		else selectedLightJets.push_back(selectedJets[iJet]);
-		
+		else
+		{
+		 	selectedLightJets.push_back(selectedJets[iJet]);
+		 	SelectedLightjets_ID.push_back(iJet);
+		}
 			
 	     } 
 	     
@@ -2031,15 +2133,15 @@ int main (int argc, char *argv[])
 	    /////////////////////////////
 	    /// Jet parton matching ////
 	    /////////////////////////////()
-	    std::vector<TLorentzVector> partons;
-	    std::vector<TLorentzVector> partons_cjet;
+	    std::vector<TLorentzVector> B_partons;
+	    std::vector<TLorentzVector> C_partons;
 	    std::vector<TLorentzVector> tljets;
-	    std::vector<int> MatchingId; 
-	    std::vector<int> MatchingId_cjet; 
-	    MatchingId.clear(); 
-	    MatchingId_cjet.clear();
-	    partons.clear(); 
-	    partons_cjet.clear(); 
+	    std::vector<int> MatchingId_b; 
+	    std::vector<int> MatchingId_c; 
+	    MatchingId_b.clear(); 
+	    MatchingId_c.clear();
+	    B_partons.clear(); 
+	    C_partons.clear(); 
 	    tljets.clear(); 
 	    
 	    
@@ -2056,53 +2158,55 @@ int main (int argc, char *argv[])
 	       for(unsigned int iMC = 0; iMC< mcParticles.size(); iMC++)
 	       {
 	       
-	    	    if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
-            	    if( mcParticles[iMC]->status() != 3) continue; 
+	    	    //if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
+            	    if( mcParticles[iMC]->status() != 3) continue;    // only those from hard interaction
 	      
 	    	    if(fabs(mcParticles[iMC]->type()) == 5 && fabs(mcParticles[iMC]->motherType()) == 6)  
 		    {
 		        bquark = *mcParticles[iMC]; 
 		        
 		        if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
-            	        partons.push_back(bquark); 
+            	        B_partons.push_back(bquark); 
 		    }
 		    else if(fabs(mcParticles[iMC]->type()) == 4 && fabs(mcParticles[iMC]->motherType()) == 6)  
 		    {
 		        cquark = *mcParticles[iMC]; 
 		        
 		        if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
-            	        partons_cjet.push_back(cquark); 
+            	        C_partons.push_back(cquark); 
 		    }
 		    
 	        }
-		if(debug) cout << "partons.size() " << partons.size() << endl; 
 		
-		if(partons.size() == 0 || partons_cjet.size() == 0) continue; 
+		if(B_partons.size() == 0 || C_partons.size() == 0) continue;   //when no partons are found, dismiss event
+		
 		const int TotalMinDist= JetPartonMatching::totalMinDist; 
 		
-		JetPartonMatching myJetPartonMatcher = JetPartonMatching(partons,tljets,TotalMinDist, true,true ,0.3);
-		JetPartonMatching myJetPartonMatcher_cjet = JetPartonMatching(partons_cjet,tljets,TotalMinDist, true,true ,0.3);
-		if(debug) myJetPartonMatcher.print();
-		if(debug) cout << endl; 
-			
-		
-		for(int iID = 0; iID < partons.size(); iID++)
+		JetPartonMatching myJetPartonMatcher_b = JetPartonMatching(B_partons,tljets,TotalMinDist, true,true ,0.3);
+		JetPartonMatching myJetPartonMatcher_c = JetPartonMatching(C_partons,tljets,TotalMinDist, true,true ,0.3);
+		if(debug) 
 		{
-		    int ID = -1; 
-		    
-		    ID = myJetPartonMatcher.getMatchForParton(iID,0); 
-		    if(debug) cout << ID << endl; 
-		  
-		    MatchingId.push_back(ID); 
+			cout << "B PARTONS" << endl; 
+			myJetPartonMatcher_b.print();
+			cout << "C PARTONS" << endl; 
+			myJetPartonMatcher_c.print();
+		        cout << endl; 
 		}
-		for(int iID = 0; iID < partons_cjet.size(); iID++)
+			
+		// get the matching jet IDs
+		for(int iID = 0; iID < B_partons.size(); iID++)
 		{
 		    int ID = -1; 
 		    
-		    ID = myJetPartonMatcher_cjet.getMatchForParton(iID,0); 
-		    if(debug) cout << ID << endl; 
-		  
-		    MatchingId_cjet.push_back(ID); 
+		    ID = myJetPartonMatcher_b.getMatchForParton(iID,0); 
+		    MatchingId_b.push_back(ID); 
+		}
+		for(int iID = 0; iID < C_partons.size(); iID++)
+		{
+		    int ID = -1; 
+		    
+		    ID = myJetPartonMatcher_c.getMatchForParton(iID,0); 
+		    MatchingId_c.push_back(ID); 
 		}
 		
 		
@@ -2161,7 +2265,7 @@ int main (int argc, char *argv[])
 		 {
 		     if(debug) cout << "In nElectrons + nMuons = 4" << endl; 
 		     vector <TLorentzVector> vectors_4leptons = Channel_45_4leptons( debug, selectedElectrons, selectedMuons);
-		     leptonfour = vectors_4leptons[0]; // extra lepton from SM W decay
+		     leptonfour = vectors_4leptons[0]; // vector of the four leptons voming from the Z ~higgs
 		     
 		     TLorentzVector boolV = vectors_4leptons[1]; 
 		     if(boolV.Px() == 1){
@@ -2175,7 +2279,7 @@ int main (int argc, char *argv[])
 		
 		 
 		 bool requirements = false; 
-		 if(Zdecay) requirements = true; 
+		 if(Zdecay && (nLJets > 0) && (nBJets > 0)) requirements = true; 
 		 
 		 //if the requirements aren't fullfilled , go to the next event
 		 if(channelName.find("45")!=string::npos && !requirements ) continue; 
@@ -2194,22 +2298,70 @@ int main (int argc, char *argv[])
 	    	 LightJets_Paired.clear();
 	    	 for(int It = 0; It < selectedLightJets.size(); It++)
 	    	 {
-	    	 	 LightJets_Paired.push_back(make_pair(It, false));
+	    	 	 LightJets_Paired.push_back(make_pair(SelectedLightjets_ID[It], false));
 	    	 }
-		
+		 /*
+		 // check the pairing
+		 for(int It = 0; It < selectedLightJets.size(); It++)
+	    	 {
+	    	 	cout << "Iterator: " << It << " JetID: " <<  LightJets_Paired[It].first << " Bool: " << LightJets_Paired[It].second << endl; 
+		 }
+		 */
+		 
 		 //Search fcnc c jet
 		 vector<pair<int,bool> > LightJets_Paired_c; 
+		 
+		 
 		 if(nLJets>0)
 		 {
-		 	
+		 	//find the right c-jet from FCNC decay
 		 	LightJets_Paired_c = Channel_45_FCNC_cjet(debug, LightJets_Paired, selectedLightJets, leptonfour); 
-		 
-		 	InvMass_FCNC_top_Zdecay = Channel_45_FCNC_top(debug, LightJets_Paired_c,leptonfour,selectedLightJets);
-		 	 
+		 	/*
+			// check pairing
+			for(int It = 0; It < selectedLightJets.size(); It++)
+	    		{
+	    	 	    cout << "Iterator: " << It << " JetID: " <<  LightJets_Paired_c[It].first << " Bool: " << LightJets_Paired_c[It].second << endl; 
+		 	}
+			*/ 
+			
+			//Calculate FCNC top from the chosen c-jet and Higgs
+		 	TLorentzVector FCNC_top = Channel_45_FCNC_top(debug, LightJets_Paired_c,leptonfour,selectedLightJets);
+			InvMass_FCNC_top_Zdecay = FCNC_top.M(); 
+			FCNC_top_eta = FCNC_top.Eta(); 
+			FCNC_top_phi = FCNC_top.Phi(); 
+			FCNC_top_Pt = FCNC_top.Pt(); 
+			
+			if(validate && MatchingId_c[0] != -1 )
+			{
+			   EventsToMatch_c++;
+			   
+			   int ChosenID = -1; 
+			   
+			   for( int iJet = 0; iJet < LightJets_Paired_c.size(); iJet++)
+	 		   {
+	 	 		
+	 	 		pair<int,int> Pair = LightJets_Paired_c[iJet];
+	 	 	
+				if(Pair.second)
+		 		{	
+		 			ChosenID = Pair.first; 
+	 	 		}
+		 		
+	 		    }
+			    if(ChosenID == MatchingId_c[0])
+			    {
+			    	MatchedCounter_c++; 
+			    
+			    
+			    
+			    	//extra safety 
+			    	Selected_cjet_Pt -> Fill(selectedJets[ChosenID]->Pt()); 
+			    	True_cjet_Pt -> Fill(selectedJets[MatchingId_c[0]]->Pt()); 
+			    }
+		 	 }
+			 
 		 }
 		
-		 bool Evts2Match = false ; 
-		 bool EvtsMatched = false; 
 		 
 		 TLorentzVector tempBjet ;		 
 		 if(nBJets > 0)
@@ -2221,29 +2373,32 @@ int main (int argc, char *argv[])
 			 Bdiscr = highestDisc[1].Px(); 
 			 
 			 
-			 if(validate && MatchingId[0] != -1)
+			 if(validate && MatchingId_b[0] != -1)
 			 {
 			 	if(debug) cout << "in validation" << endl; 
 				int Bjet_ID = highestDisc[2].Px();
 				if(debug)cout << "Place in bjets " << Bjet_ID << endl; 
 			 	int BjetPlace_in_selectedJets = SelectedBjets_ID[Bjet_ID]; 
 			 	if(debug)cout << "Place in jets " << BjetPlace_in_selectedJets << endl; 
-				if(debug)cout << "MatchingId size " << MatchingId.size() << endl; 
-				if(debug)cout << "MatchingId " << MatchingId[0] << endl; 
+				if(debug)cout << "MatchingId size " << MatchingId_b.size() << endl; 
+				if(debug)cout << "MatchingId " << MatchingId_b[0] << endl; 
 				
 				EventsToMatch++;
-				Evts2Match = true; 
 				
-			 	if(BjetPlace_in_selectedJets == MatchingId[0] )
+			 	if(BjetPlace_in_selectedJets == MatchingId_b[0] )
 				{
 				   if(debug) cout << "right match" << endl; 
 				   MatchedCounter++;
-				   EvtsMatched = true; 
+				   //extra safety 
+					Selected_bjet_Pt -> Fill(selectedJets[BjetPlace_in_selectedJets]->Pt()); 
+					True_bjet_Pt -> Fill(selectedJets[MatchingId_b[0]]->Pt()); 
+				   
 			 	}
 				else
 				{
 					if(debug) cout << "wrong match" << endl; 
 				}
+				
 			 }
 		 	 // W boson decays hadronically
 		 	 if(nLJets>2 && (nMuons + nElectrons == 4))
@@ -2331,8 +2486,7 @@ int main (int argc, char *argv[])
 		
 		 myTree->Fill(); 
 		 nEvents_Selected[d]++;
-		 //if(Evts2Match) EventsToMatchSelection++;
-		// if(EvtsMatched) MatchedCounterSelection++; 
+		 
 
 	    } // > 3 leptons
 	    
@@ -2575,9 +2729,17 @@ int main (int argc, char *argv[])
 	cout<<endl;
 	cout<<endl;	
 	if(validate) cout << "Bjet matching efficiency is " << (double) (MatchedCounter/EventsToMatch)*100 << " % or " << MatchedCounter << " of " << EventsToMatch  << " SM b jets" <<endl; 
-	//if(validate) cout << "Selection Bjet matching efficiency is " << (double) (MatchedCounterSelection/EventsToMatchSelection)*100 << " % or " << MatchedCounterSelection << " of" << EventsToMatchSelection  << " SM b jets" <<endl; 
-	if(validate) SM_b_selection_efficiency->SetBinContent(1,MatchedCounter/EventsToMatch); 
-	else SM_b_selection_efficiency->SetBinContent(1,-1);
+	if(validate) cout << "Cjet matching efficiency is " << (double) (MatchedCounter_c/EventsToMatch_c)*100 << " % or " << MatchedCounter_c << " of " << EventsToMatch_c  << " FCNC c jets" <<endl; 
+	if(validate){
+	 SM_b_selection_efficiency->SetBinContent(1,MatchedCounter/EventsToMatch); 
+	 FCNC_c_selection_efficiency->SetBinContent(1,MatchedCounter_c/EventsToMatch_c);
+	}
+	else
+	{
+	 SM_b_selection_efficiency->SetBinContent(1,-1);
+	 FCNC_c_selection_efficiency->SetBinContent(1,-1);
+	}
+	
 	cout<<endl;
         
         
