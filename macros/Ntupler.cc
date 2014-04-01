@@ -755,6 +755,7 @@ vector <TLorentzVector> Channel_3L_Zcandidate(bool _debug, vector <TRootElectron
 	TLorentzVector leptonpair_3L_mll;
 	TLorentzVector lepton_3L1;
 	TLorentzVector lepton_3L2;
+	TLorentzVector lepton_3L3;
 	
 	leptonpair_3L_mll.Clear(); 
 	lepton_3L1.Clear();
@@ -770,6 +771,7 @@ vector <TLorentzVector> Channel_3L_Zcandidate(bool _debug, vector <TRootElectron
 	 		 Nb_OSSF_3L =1;
 	 		 lepton_3L1.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(), _Electrons[0]->Energy());
 	 		 lepton_3L2.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(), _Electrons[1]->Energy());
+			 lepton_3L3.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(), _Electrons[2]->Energy());
 	 	 
 	 	 }
 	 	 else if(_Electrons[2]->charge()!=_Electrons[0]->charge()) 
@@ -778,6 +780,7 @@ vector <TLorentzVector> Channel_3L_Zcandidate(bool _debug, vector <TRootElectron
 	 		 Nb_OSSF_3L =1;
 	 		 lepton_3L1.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(), _Electrons[0]->Energy());
 	 		 lepton_3L2.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(), _Electrons[2]->Energy());
+			 lepton_3L3.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(), _Electrons[1]->Energy());
 	 	 
 	 	 }
 	 	 else if(_Electrons[1]->charge()!=_Electrons[2]->charge())
@@ -786,6 +789,7 @@ vector <TLorentzVector> Channel_3L_Zcandidate(bool _debug, vector <TRootElectron
 	 		 Nb_OSSF_3L =1;
 	 		 lepton_3L1.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(), _Electrons[1]->Energy());
 	 		 lepton_3L2.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(), _Electrons[2]->Energy());
+			 lepton_3L3.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(), _Electrons[0]->Energy());
 	 	 
 	 	 }
 	 	 
@@ -802,7 +806,7 @@ vector <TLorentzVector> Channel_3L_Zcandidate(bool _debug, vector <TRootElectron
 	 	 
 	 	 }
 	 	 
-	 	 
+	 	 lepton_3L3.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(), _Muons[0]->Energy());
 	 }
 	 if(_Electrons.size() == 1)
 	 {
@@ -815,7 +819,7 @@ vector <TLorentzVector> Channel_3L_Zcandidate(bool _debug, vector <TRootElectron
 	 		 lepton_3L2.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(), _Muons[1]->Energy());
 	 	 
 	 	 }
-	 	 
+	 	 lepton_3L3.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(), _Electrons[0]->Energy());
 	 	
 	 }
 	 if(_Electrons.size() ==  0)
@@ -827,7 +831,7 @@ vector <TLorentzVector> Channel_3L_Zcandidate(bool _debug, vector <TRootElectron
 	 		 Nb_OSSF_3L =1;
 	 		 lepton_3L1.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(), _Muons[0]->Energy());
 	 		 lepton_3L2.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(), _Muons[1]->Energy());
-	 	 
+	 	 	 lepton_3L3.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(), _Muons[2]->Energy());
 	 	 }
 	 	 else if(_Muons[0]->charge()!=_Muons[2]->charge())
 	 	 {
@@ -835,6 +839,8 @@ vector <TLorentzVector> Channel_3L_Zcandidate(bool _debug, vector <TRootElectron
 	 		  Nb_OSSF_3L =1;
 	 		  lepton_3L1.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(), _Muons[0]->Energy());
 	 		  lepton_3L2.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(), _Muons[2]->Energy());
+			  lepton_3L3.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(), _Muons[1]->Energy());
+	 	 	 
 	 	 
 	 	 }
 	 	 else if(_Muons[1]->charge()!=_Muons[2]->charge())
@@ -843,7 +849,8 @@ vector <TLorentzVector> Channel_3L_Zcandidate(bool _debug, vector <TRootElectron
 	 		 Nb_OSSF_3L =1;
 	 		 lepton_3L1.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(), _Muons[1]->Energy());
 	 		 lepton_3L2.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(), _Muons[2]->Energy());
-	 	 
+	 	 	 lepton_3L3.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(), _Muons[0]->Energy());
+	 		  
 	 	 }
 	 }	 
 	 
@@ -860,6 +867,7 @@ vector <TLorentzVector> Channel_3L_Zcandidate(bool _debug, vector <TRootElectron
 	 TempVector.clear();
 	 TempVector.push_back(lepton_3L1); 
 	 TempVector.push_back(lepton_3L2); 
+	 TempVector.push_back(lepton_3L3); 
 	 TempVector.push_back(boolVector);
 	 
 	 return TempVector; 
@@ -1077,16 +1085,21 @@ vector <TLorentzVector> SM_b(bool _debug, vector<TRootJet*> _BJets)
 }
 
 //find jets closest to the bjet with highest discr
-TLorentzVector Channel_45_SM_Wqq(bool _debug,TLorentzVector _Bjet, vector <pair<int,bool> > _Paired, vector <TRootJet*> _LightJets)
+vector <TLorentzVector> Channel_45_SM_Wqq(bool _debug,TLorentzVector _Bjet, vector <pair<int,bool> > _Paired, vector <TRootJet*> _LightJets)
 {
-    
+    vector <TLorentzVector> tempV; 
+    tempV.clear();
     double dR = 10000; 
     double Mass = 10000; 
+    int JetID_1 = -1; 
+    int JetID_2 = -1; 
     TLorentzVector jets;
     TLorentzVector Rjets; 
     jets.Clear(); 
     Rjets.Clear();
     	     
+    	     
+    
     for(int iJet = 0; iJet < _LightJets.size()-1; iJet++)
     {
     	    pair<int,int> aPair = _Paired[iJet];
@@ -1094,6 +1107,7 @@ TLorentzVector Channel_45_SM_Wqq(bool _debug,TLorentzVector _Bjet, vector <pair<
 	    TLorentzVector LightJet;
     	    LightJet.SetPxPyPzE(_LightJets[iJet]->Px(),_LightJets[iJet]->Py(),_LightJets[iJet]->Pz(),_LightJets[iJet]->Energy());
     	    
+	    
 	    for(int i = 1; i < _LightJets.size(); i++)
 	    {    
 	        pair<int,int> bPair = _Paired[i];
@@ -1111,6 +1125,8 @@ TLorentzVector Channel_45_SM_Wqq(bool _debug,TLorentzVector _Bjet, vector <pair<
 		    	{
 		    		dR = tempDeltaR;
 				Rjets = jets; 
+				JetID_1 = aPair.first;  // place of the jet in selectedJets
+				JetID_2 = bPair.first; 
 			 
     		    	}
 		    }
@@ -1118,7 +1134,100 @@ TLorentzVector Channel_45_SM_Wqq(bool _debug,TLorentzVector _Bjet, vector <pair<
     	    	}
 	   }
     }
-    return Rjets; 
+    
+    /*
+    TLorentzVector firstJet; 
+    int lastSet = -1; 
+    for(int iJet = 0; iJet < _LightJets.size(); iJet++)
+    {
+    	    cout << "iJet : " << iJet << endl; 
+	    pair<int,int> aPair = _Paired[iJet];
+	    
+	    TLorentzVector LightJet;
+    	    LightJet.SetPxPyPzE(_LightJets[iJet]->Px(),_LightJets[iJet]->Py(),_LightJets[iJet]->Pz(),_LightJets[iJet]->Energy());
+    	    
+	   if(aPair.second) cout << "ID of true: " << iJet; 
+	    
+    	    if(!aPair.second)
+    	    {		
+    	    	
+	    	double tempDeltaR = _Bjet.DeltaR(LightJet);
+    	    	if(tempDeltaR < dR)
+	    	{
+			if(iJet!=0) 
+			{
+				//cout << "Pair with id " << lastSet << " set to false" << endl; 
+				
+				_Paired[lastSet].second = false; 
+			}
+			
+	    	    	dR = tempDeltaR;
+	    	       // Rjets = jets; 
+	    	    	JetID_1 = aPair.first;  // place of the jet in selectedJets
+	    	       // JetID_2 = bPair.first; 
+	    	 	firstJet = LightJet; 
+			_Paired[iJet].second = true; 
+			lastSet = iJet; 
+			//cout << "lastSet changed to " << lastSet << endl; 
+    	    	}
+	    	
+
+    	    }
+	   
+    }
+     
+    int counter = 0; 
+    for (int i = 0; i<_Paired.size(); i++)
+    {
+    	if(_Paired[i].second) counter++; 
+    
+    }
+    //cout << "Nb set to true: " << counter << endl; 
+    //cout << endl;
+    //cout << endl;
+    dR = 10000;
+    TLorentzVector secondJet; 
+    for(int iJet = 0; iJet < _LightJets.size(); iJet++)
+    {
+    	    pair<int,int> aPair = _Paired[iJet];
+	    
+	    TLorentzVector LightJet;
+    	    LightJet.SetPxPyPzE(_LightJets[iJet]->Px(),_LightJets[iJet]->Py(),_LightJets[iJet]->Pz(),_LightJets[iJet]->Energy());
+    	    
+	    
+	    
+    	    if(!aPair.second)
+    	    {		
+    	    	
+	    	double tempDeltaR = _Bjet.DeltaR(LightJet);
+    	    	if(tempDeltaR < dR)
+	    	{
+	    	    	dR = tempDeltaR;
+	    	       
+	    	    	//JetID_1 = aPair.first;  // place of the jet in selectedJets
+	    	        JetID_2 = aPair.first; 
+	    	 	secondJet = LightJet; 
+    	    	}
+	    	
+
+    	    }
+	   
+    }
+    
+    Rjets = firstJet + secondJet; 
+    */
+    TLorentzVector ID_1; 
+    ID_1.SetPxPyPzE(JetID_1,0,0,0); 
+    
+    TLorentzVector ID_2; 
+    ID_2.SetPxPyPzE(JetID_2,0,0,0); 
+    
+    
+    tempV.push_back(Rjets); 
+    tempV.push_back(ID_1); 
+    tempV.push_back(ID_2); 
+    
+    return tempV; 
 }
 
 //Leptons ordering according to Z decay for 3L channel
@@ -1377,6 +1486,10 @@ int main (int argc, char *argv[])
 		    channelName = "45";
     		    if(!foundxml) tempxmlName = "../config/FCNC_45_config.xml";
 	    }
+	    if(argval == "--validate"){
+	    	validate = true; 
+	    
+	    }
 	    
     	    
     	    
@@ -1579,7 +1692,7 @@ int main (int argc, char *argv[])
 	Double_t Bdiscr;
 	
 	//3L channel variables
-	
+	/*
 	Double_t InvMass_Z; 
 	Double_t InvMass_H;
 	Double_t Z_candidate_pT;
@@ -1591,9 +1704,7 @@ int main (int argc, char *argv[])
 	Double_t Eta_FCNC_top_tcZ; 
 	Double_t InvMass_FCNC_top_tcZ; 
 	
-	Double_t pT_FCNC_top_candidate;
-	Double_t Eta_FCNC_top_candidate; 
-	Double_t InvMass_FCNC_top_candidate;
+	
 	
 	Double_t pT_FCNC_top_tcH_ZZ_llqq;
 	Double_t Eta_FCNC_top_tcH_ZZ_llqq; 
@@ -1617,8 +1728,24 @@ int main (int argc, char *argv[])
 	Double_t InvMass_FCNC_ll; 
 	Double_t DeltaR_SMlb_FCNCll; 
 	Double_t DeltaPhi_SMlb_FCNCll;
-	
-	
+	*/
+	Double_t InvMass_Leptons;
+	Double_t Eta_SM_Lepton;
+	Double_t Pt_SM_Lepton; 
+	Double_t InvMass_SM_Lepton;
+	Double_t Eta_SM_top;
+	Double_t Pt_SM_top; 
+	//Double_t InvMass_SM_top;
+	Double_t pT_FCNC_top_candidate;
+	Double_t Eta_FCNC_top_candidate; 
+	Double_t InvMass_FCNC_top_candidate;
+	Double_t InvMass_FCNC_Leptons;
+	Double_t Theta_FCNC_Leptons;
+	Double_t Eta_FCNC_Leptons;
+	Double_t Phi_FCNC_Leptons;
+	Double_t Pt_FCNC_Leptons;
+	Double_t DeltaR; 
+	Double_t DeltaRmin; 
 	
 	Int_t nEvents_Tree; 
         Int_t isdata;
@@ -1700,6 +1827,7 @@ int main (int argc, char *argv[])
        	if(channelName.find("3L")!=string::npos)
 	{
         	//3L channel variables
+		/*
         	myTree->Branch("InvMass_Z",&InvMass_Z,"InvMass_Z/D"); 
 		myTree->Branch("InvMass_H",&InvMass_H,"InvMass_H/D");
 		myTree->Branch("Z_candidate_pT",&Z_candidate_pT,"Z_candidate_pT/D");
@@ -1709,9 +1837,7 @@ int main (int argc, char *argv[])
 		myTree->Branch("pT_FCNC_top_tcZ",&pT_FCNC_top_tcZ,"pT_FCNC_top_tcZ/D");
 		myTree->Branch("Eta_FCNC_top_tcZ",&Eta_FCNC_top_tcZ,"Eta_FCNC_top_tcZ/D");
 		myTree->Branch("InvMass_FCNC_top_tcZ",&InvMass_FCNC_top_tcZ,"InvMass_FCNC_top_tcZ/D");
-		myTree->Branch("pT_FCNC_top_candidate",&pT_FCNC_top_candidate,"pT_FCNC_top_candidate/D");
-		myTree->Branch("Eta_FCNC_top_candidate",&Eta_FCNC_top_candidate,"Eta_FCNC_top_candidate/D");
-		myTree->Branch("InvMass_FCNC_top_candidate",&InvMass_FCNC_top_candidate,"InvMass_FCNC_top_candidate/D");
+		
 		myTree->Branch("pT_FCNC_top_tcH_ZZ_llqq",&pT_FCNC_top_tcH_ZZ_llqq,"pT_FCNC_top_tcH_ZZ_llqq/D");
 		myTree->Branch("Eta_FCNC_top_tcH_ZZ_llqq",&Eta_FCNC_top_tcH_ZZ_llqq,"Eta_FCNC_top_tcH_ZZ_llqq/D");
 		myTree->Branch("InvMass_FCNC_top_tcH_ZZ_llqq",&InvMass_FCNC_top_tcH_ZZ_llqq,"InvMass_FCNC_top_tcH_ZZ_llqq/D");
@@ -1732,7 +1858,29 @@ int main (int argc, char *argv[])
 		myTree->Branch("DeltaR_SMlb_FCNCll",&DeltaR_SMlb_FCNCll, "DeltaR_SMlb_FCNCll/D"); 
 		myTree->Branch("DeltaPhi_SMlb_FCNCll",&DeltaPhi_SMlb_FCNCll, "DeltaPhi_SMlb_FCNCll/D");
 		myTree->Branch("Bdiscr",&Bdiscr,"Bdiscr/D");
-	
+		myTree->Branch("InvMass_Leptons", &InvMass_Leptons,"InvMass_Leptons/D"); 
+		*/
+		myTree->Branch("DeltaR", &DeltaR, "DeltaR/D"); 
+		myTree->Branch("DeltaRmin", &DeltaRmin, "DeltaRmin/D"); 
+		
+		myTree->Branch("Theta_FCNC_Leptons", &Theta_FCNC_Leptons,"Theta_FCNC_Leptons/D"); 
+		myTree->Branch("Phi_FCNC_Leptons", &Phi_FCNC_Leptons,"Phi_FCNC_Leptons/D"); 
+		myTree->Branch("Eta_FCNC_Leptons", &Eta_FCNC_Leptons,"Eta_FCNC_Leptons/D"); 
+		myTree->Branch("Pt_FCNC_Leptons", &Pt_FCNC_Leptons,"Pt_FCNC_Leptons/D"); 
+		myTree->Branch("InvMass_FCNC_Leptons", &InvMass_FCNC_Leptons,"InvMass_FCNC_Leptons/D"); 
+		
+		myTree->Branch("Eta_SM_Lepton",&Eta_SM_Lepton, "Eta_SM_Lepton/D"); 
+		myTree->Branch("Pt_SM_Lepton",&Pt_SM_Lepton,"Pt_SM_Lepton/D"); 
+		myTree->Branch("InvMass_SM_Lepton",&InvMass_SM_Lepton,"InvMass_SM_Lepton/D"); 
+		
+		myTree->Branch("Eta_SM_top",&Eta_SM_top, "Eta_SM_top/D"); 
+		myTree->Branch("Pt_SM_top",&Pt_SM_top,"Pt_SM_top/D"); 
+		myTree->Branch("InvMass_SM_top",&InvMass_SM_top,"InvMass_SM_top/D"); 
+		
+		
+		myTree->Branch("pT_FCNC_top_candidate",&pT_FCNC_top_candidate,"pT_FCNC_top_candidate/D");
+		myTree->Branch("Eta_FCNC_top_candidate",&Eta_FCNC_top_candidate,"Eta_FCNC_top_candidate/D");
+		myTree->Branch("InvMass_FCNC_top_candidate",&InvMass_FCNC_top_candidate,"InvMass_FCNC_top_candidate/D");
 	}
        
 	//        myTree->Print();
@@ -1740,6 +1888,7 @@ int main (int argc, char *argv[])
         TH1F * EventSummary = new TH1F("EventSummary","EventSummary",2,0,2);
         TH1F * Xsection = new TH1F("Xsection","Xsection",2,0,2);
 	TH1F * SM_b_selection_efficiency = new TH1F("SM_b_selection_efficiency","SM_b_selection_efficiency",2,0,2);
+	TH1F * SM_Wjet_selection_efficiency = new TH1F("SM_Wjet_selection_efficiency","SM_Wjet_selection_efficiency",2,0,2);
 	TH1F * FCNC_c_selection_efficiency = new TH1F("FCNC_c_selection_efficiency","FCNC_c_selection_efficiency",2,0,2);
 	TH1F * Selected_bjet_Pt = new TH1F("Selected_bjet_Pt","Selected_bjet_Pt",200,0,200); 
 	TH1F * True_bjet_Pt = new TH1F("True_bjet_Pt","True_bjet_Pt",200,0,200); 
@@ -1786,6 +1935,8 @@ int main (int argc, char *argv[])
 	double EventsToMatch = 0.;
 	double MatchedCounter_c = 0.; 
 	double EventsToMatch_c = 0.; 
+	double MatchedCounter_W = 0.; 
+	double EventsToMatch_W = 0.;
 	nEvents[d] = 0;
 	nEvents_Selected[d] = 0; 
         int itriggerSemiMu = -1,itriggerSemiEl = -1, previousRun = -1;
@@ -1851,13 +2002,21 @@ int main (int argc, char *argv[])
 	    vector<TRootMCParticle*> mcParticles; // to check mother, daughter,..
 	    
 	    
-	    if(datasetName.find("TTJetsTocHbW_HToZZ_ZToLL")!=string::npos )
+	    if(datasetName.find("TTJetsTocHbW_HToZZ_ZToLL")!=string::npos && channelName.find("45")!=string::npos && validate  )
 	    {
 	    	if(debug) cout << "Loading mc particles" << endl; 
 	    	treeLoader.LoadMCEvent(ievt,0,0,mcParticles,false); 
 		
 	    	sort(mcParticles.begin(),mcParticles.end(),HighestPt()); // HighestPt() is included from the Selection class
-	    	validate = true; 
+	    	
+	    }
+	    if(validate && (datasetName.find("TTJetsTocHbW_HToZZ_ZToJ")!=string::npos ||datasetName.find("TTJetsTocHbW_HToZZ_ZToB")!=string::npos ||datasetName.find("TTJetsTocHbW_HToZZ_ZToNuL")!=string::npos || datasetName.find("TTJetsTocZ")!=string::npos || datasetName.find("TTJetsTocHbW_HToWW_WToNuL")!=string::npos)  && channelName.find("3L")!=string::npos  )
+	    {
+	    	if(debug) cout << "Loading mc particles" << endl; 
+	    	treeLoader.LoadMCEvent(ievt,0,0,mcParticles,false); 
+		
+	    	sort(mcParticles.begin(),mcParticles.end(),HighestPt()); // HighestPt() is included from the Selection class
+	    	
 	    }
 	    
 	   
@@ -2133,15 +2292,20 @@ int main (int argc, char *argv[])
 	    /////////////////////////////
 	    /// Jet parton matching ////
 	    /////////////////////////////()
+	    
 	    std::vector<TLorentzVector> B_partons;
 	    std::vector<TLorentzVector> C_partons;
+	     std::vector<TLorentzVector> W_partons;
 	    std::vector<TLorentzVector> tljets;
 	    std::vector<int> MatchingId_b; 
 	    std::vector<int> MatchingId_c; 
+	    std::vector<int> MatchingId_W; 
 	    MatchingId_b.clear(); 
 	    MatchingId_c.clear();
+	    MatchingId_W.clear();
 	    B_partons.clear(); 
 	    C_partons.clear(); 
+	    W_partons.clear();
 	    tljets.clear(); 
 	    
 	    
@@ -2155,41 +2319,52 @@ int main (int argc, char *argv[])
 	    
 	       TLorentzVector bquark; 
 	       TLorentzVector cquark;
+	        TLorentzVector Wquark;
 	       for(unsigned int iMC = 0; iMC< mcParticles.size(); iMC++)
 	       {
 	       
 	    	    //if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
             	    if( mcParticles[iMC]->status() != 3) continue;    // only those from hard interaction
 	      
-	    	    if(fabs(mcParticles[iMC]->type()) == 5 && fabs(mcParticles[iMC]->motherType()) == 6)  
+	    	    if(fabs(mcParticles[iMC]->type()) == 5 && fabs(mcParticles[iMC]->motherType()) == 6 && channelName.find("45")!=string::npos)  
 		    {
 		        bquark = *mcParticles[iMC]; 
 		        
 		        if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
             	        B_partons.push_back(bquark); 
 		    }
-		    else if(fabs(mcParticles[iMC]->type()) == 4 && fabs(mcParticles[iMC]->motherType()) == 6)  
+		    else if(fabs(mcParticles[iMC]->type()) == 4 && fabs(mcParticles[iMC]->motherType()) == 6 )  
 		    {
 		        cquark = *mcParticles[iMC]; 
 		        
 		        if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
             	        C_partons.push_back(cquark); 
 		    }
-		    
+		    else if((fabs(mcParticles[iMC]->type()) == 4 || fabs(mcParticles[iMC]->type()) == 1 || fabs(mcParticles[iMC]->type()) == 2 || fabs(mcParticles[iMC]->type()) == 3 ) &&
+		    fabs(mcParticles[iMC]->motherType()) == 24 )  
+		    {
+		        Wquark = *mcParticles[iMC]; 
+		        
+		        if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
+            	        W_partons.push_back(Wquark); 
+		    }
 	        }
 		
-		if(B_partons.size() == 0 || C_partons.size() == 0) continue;   //when no partons are found, dismiss event
+		if(B_partons.size() == 0 || C_partons.size() == 0 || W_partons.size() == 0) continue;   //when no partons are found, dismiss event
 		
 		const int TotalMinDist= JetPartonMatching::totalMinDist; 
 		
 		JetPartonMatching myJetPartonMatcher_b = JetPartonMatching(B_partons,tljets,TotalMinDist, true,true ,0.3);
 		JetPartonMatching myJetPartonMatcher_c = JetPartonMatching(C_partons,tljets,TotalMinDist, true,true ,0.3);
+		JetPartonMatching myJetPartonMatcher_W = JetPartonMatching(W_partons,tljets,TotalMinDist, true,true ,0.3);
 		if(debug) 
 		{
 			cout << "B PARTONS" << endl; 
 			myJetPartonMatcher_b.print();
 			cout << "C PARTONS" << endl; 
 			myJetPartonMatcher_c.print();
+			cout << "PARTONS FROM W" << endl; 
+			myJetPartonMatcher_W.print();
 		        cout << endl; 
 		}
 			
@@ -2207,6 +2382,13 @@ int main (int argc, char *argv[])
 		    
 		    ID = myJetPartonMatcher_c.getMatchForParton(iID,0); 
 		    MatchingId_c.push_back(ID); 
+		}
+		for(int iID = 0; iID < W_partons.size(); iID++)
+		{
+		    int ID = -1; 
+		    
+		    ID = myJetPartonMatcher_W.getMatchForParton(iID,0); 
+		    MatchingId_W.push_back(ID); 
 		}
 		
 		
@@ -2279,7 +2461,7 @@ int main (int argc, char *argv[])
 		
 		 
 		 bool requirements = false; 
-		 if(Zdecay && (nLJets > 0) && (nBJets > 0)) requirements = true; 
+		 if(Zdecay ) requirements = true; 
 		 
 		 //if the requirements aren't fullfilled , go to the next event
 		 if(channelName.find("45")!=string::npos && !requirements ) continue; 
@@ -2406,8 +2588,41 @@ int main (int argc, char *argv[])
 		 	  
 		 	 
 		 		 //find the two jets closest to this b 
-		 		 TLorentzVector Wjets = Channel_45_SM_Wqq(debug,tempBjet, LightJets_Paired_c, selectedLightJets);
+				 vector <TLorentzVector> WjetCalc = Channel_45_SM_Wqq(debug,tempBjet, LightJets_Paired_c, selectedLightJets);
 		 		 
+		 		 TLorentzVector Wjets = WjetCalc[0]; 
+				 int Wjet_ID_1 = WjetCalc[1].Px();
+				 int Wjet_ID_2 = WjetCalc[2].Px();
+				 
+				 
+				 if(validate)
+				 { 
+				 	for(int i = 0; i < MatchingId_W.size(); i++)
+					{
+					    for(int k = 0; k < MatchingId_W.size(); k++)
+					    {
+					      if(k != i)
+					      {
+						if(MatchingId_W[i] != -1  && MatchingId_W[k] != -1)
+						{
+							EventsToMatch_W++;
+			   
+			   				
+			   
+			   				if(Wjet_ID_1 == MatchingId_W[i] && Wjet_ID_2 == MatchingId_W[k])
+			    				{
+			    					MatchedCounter_W++; 
+			    				}
+							else if(Wjet_ID_2 == MatchingId_W[i] && Wjet_ID_1 == MatchingId_W[k])
+			    				{
+			    					MatchedCounter_W++; 
+			    				}
+		 	 			}
+					      }
+					    }
+					}
+				}
+				 
 				 TrMass_W_qq = Wjets.Mt();
 		 		 TrMass_W = TrMass_W_qq; 
 		 		 
@@ -2494,11 +2709,325 @@ int main (int argc, char *argv[])
 	    {
 	    	if(debug)cout << " In nleptons == 3 " << endl; 
 		
+		TLorentzVector tempLeptons; 
+		tempLeptons.Clear(); 
 		
+		
+		
+		for(int i = 0; i < selectedElectrons.size(); i++)
+		{
+		 	TLorentzVector electron; 
+			electron.SetPxPyPzE(selectedElectrons[i]->Px(), selectedElectrons[i]->Py(), selectedElectrons[i]->Pz(), selectedElectrons[i]->Energy()); 
+			
+			tempLeptons = tempLeptons + electron; 
+			
+		
+		
+		}
+		for(int i = 0; i< selectedMuons.size(); i++)
+		{
+		 	 TLorentzVector Muon; 
+		 	 Muon.SetPxPyPzE(selectedMuons[i]->Px(), selectedMuons[i]->Py(), selectedMuons[i]->Pz(), selectedMuons[i]->Energy()); 
+		 	 tempLeptons = tempLeptons+Muon; 
+		}
+		InvMass_Leptons = tempLeptons.M(); 
+		
+		if(debug)cout << " determined invariant mass of all 3 leptons " << endl; 
+		
+		
+		Double_t temp_DR = 0.; 
+		Double_t temp_DRmin = 100000.; 
+		TLorentzVector FCNC_lepton1; 
+		TLorentzVector FCNC_lepton2; 
+		
+		bool FCNC_lepton1_isMuon = false; 
+		bool FCNC_lepton1_isElectron = false; 
+		bool FCNC_lepton2_isMuon = false; 
+		bool FCNC_lepton2_isElectron = false;
+		bool FCNC_lepton1_isM= false; 
+		bool FCNC_lepton1_isE = false; 
+		bool FCNC_lepton2_isM= false; 
+		bool FCNC_lepton2_isE = false; 
+		int Number_1 = -1; 
+		int Number_2 = -1; 
+		
+			
+	    	for(int i = 0; i<HighestPtLept.size(); i++)
+	    	{
+	         	pair<int,int> aPair = HighestPtLept[i];
+			
+			FCNC_lepton1_isM= false; 
+			FCNC_lepton1_isE = false; 
+			 
+			
+			TLorentzVector lepton1; 
+			TLorentzVector lepton2; 
+			
+			
+			 
+			
+			int number1 = -1;
+			int number2 = -1;
+	         	if(aPair.first>19) 
+		 	{
+		 		number1 = aPair.first-20;
+				//if(debug) cout << "selectedMuons[number1]->Pt: " << selectedMuons[number1]->Pt() << endl; 
+				lepton1.SetPxPyPzE(selectedMuons[number1]->Px(), selectedMuons[number1]->Py(), selectedMuons[number1]->Pz(), selectedMuons[number1]->Energy());
+		 		FCNC_lepton1_isM = true; 
+			}
+		 	else if(aPair.first <20)
+		 	{
+		 		number1 = aPair.first;
+				//if(debug) cout << "selectedElectrons[number1]->Pt: " << selectedElectrons[number1]->Pt() << endl; 
+		 		lepton1.SetPxPyPzE(selectedElectrons[number1]->Px(), selectedElectrons[number1]->Py(), selectedElectrons[number1]->Pz(), selectedElectrons[number1]->Energy());
+		 		FCNC_lepton1_isE = true; 
+			}
+			if(FCNC_lepton1_isM && FCNC_lepton1_isE) cout << "WARNING: something is wrong 1" << endl; 
+			
+			for(int k = 0; k < HighestPtLept.size(); k++)
+			{
+				FCNC_lepton2_isM= false; 
+			        FCNC_lepton2_isE = false;
+				if(k != i)
+				{
+				  pair<int,int> pPair = HighestPtLept[k];
+				  //cout << "k: " << k << " i: " << i << " pPair.first " << pPair.first << " aPair.first " << aPair.first <<endl; 
+				  if(pPair.first>19) 
+		 		  {
+		 			number2 = pPair.first-20;
+					//if(debug) cout << "selectedMuons[number2]->Pt: " << selectedMuons[number2]->Pt() << endl; 
+					lepton2.SetPxPyPzE(selectedMuons[number2]->Px(), selectedMuons[number2]->Py(), selectedMuons[number2]->Pz(), selectedMuons[number2]->Energy());
+		 			FCNC_lepton2_isM = true; 
+				  }
+		 		  else if(pPair.first <20)
+		 		  {
+		 			number2 = pPair.first;
+					//if(debug) cout << "selectedElectrons[number2]->Pt: " << selectedElectrons[number2]->Pt() << endl; 
+		 			lepton2.SetPxPyPzE(selectedElectrons[number2]->Px(), selectedElectrons[number2]->Py(), selectedElectrons[number2]->Pz(), selectedElectrons[number2]->Energy());
+		 			FCNC_lepton2_isE = true; 
+				  }
+				  if(FCNC_lepton2_isM && FCNC_lepton2_isE) cout << "WARNING: something is wrong 2" << endl; 
+			
+			
+				  double DR = lepton1.DeltaR(lepton2);
+				  if(DR>temp_DR)
+				  { 	temp_DR = DR;
+			        	if(debug) cout << "changed DR to " << temp_DR << endl; 
+				  }
+				  if(DR<temp_DRmin)
+				  { 
+					temp_DRmin = DR; 
+					if(debug) cout << "changed DRmin to " << temp_DRmin << endl; 
+					FCNC_lepton1 = lepton1; 
+					FCNC_lepton2 = lepton2; 
+					Number_1 = number1; 
+					Number_2 = number2; 
+					FCNC_lepton1_isMuon = FCNC_lepton1_isM;
+					FCNC_lepton1_isElectron = FCNC_lepton1_isE; 
+					FCNC_lepton2_isMuon = FCNC_lepton2_isM; 
+					FCNC_lepton2_isElectron = FCNC_lepton2_isE; 
+				  }
+				}
+			}
+	    	}
+	        if(debug)cout << " out DR " << endl; 
+		DeltaR = temp_DR; 
+		DeltaRmin = temp_DRmin; 
+		TLorentzVector tempFCNC = FCNC_lepton1 + FCNC_lepton2; 
+		InvMass_FCNC_Leptons = tempFCNC.M();
+		Eta_FCNC_Leptons = tempFCNC.Eta(); 
+		Pt_FCNC_Leptons = tempFCNC.Pt(); 
+		Phi_FCNC_Leptons = tempFCNC.Phi(); 
+		Theta_FCNC_Leptons = tempFCNC.Theta(); 
+		
+		
+		TLorentzVector SMLepton; 
+		
+		//define remaining lepton
+		if(selectedMuons.size() == 3)
+		{
+			if(Number_1 != 0 && Number_2 != 0) SMLepton.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(),selectedMuons[0]->Pz(), selectedMuons[0]->Energy()); 
+			if(Number_1 != 1 && Number_2 != 1) SMLepton.SetPxPyPzE(selectedMuons[1]->Px(), selectedMuons[1]->Py(),selectedMuons[1]->Pz(), selectedMuons[1]->Energy()); 
+			if(Number_1 != 2 && Number_2 != 2) SMLepton.SetPxPyPzE(selectedMuons[2]->Px(), selectedMuons[2]->Py(),selectedMuons[2]->Pz(), selectedMuons[2]->Energy()); 
+			
+		}
+		else if(selectedElectrons.size() == 3)
+		{
+			if(Number_1 != 0 && Number_2 != 0) SMLepton.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(),selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy()); 
+			if(Number_1 != 1 && Number_2 != 1) SMLepton.SetPxPyPzE(selectedElectrons[1]->Px(), selectedElectrons[1]->Py(),selectedElectrons[1]->Pz(), selectedElectrons[1]->Energy()); 
+			if(Number_1 != 2 && Number_2 != 2) SMLepton.SetPxPyPzE(selectedElectrons[2]->Px(), selectedElectrons[2]->Py(),selectedElectrons[2]->Pz(), selectedElectrons[2]->Energy()); 
+			
+		}
+		else if(selectedMuons.size()==1)
+		{
+			if(FCNC_lepton1_isMuon)
+			{
+				 
+				if(Number_2 != 0) SMLepton.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(),selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy()); 
+				if(Number_2 != 1) SMLepton.SetPxPyPzE(selectedElectrons[1]->Px(), selectedElectrons[1]->Py(),selectedElectrons[1]->Pz(), selectedElectrons[1]->Energy()); 
+			}
+			else if(FCNC_lepton2_isMuon)
+			{
+				if(Number_1 != 0 ) SMLepton.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(),selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy()); 
+				if(Number_1 != 1 ) SMLepton.SetPxPyPzE(selectedElectrons[1]->Px(), selectedElectrons[1]->Py(),selectedElectrons[1]->Pz(), selectedElectrons[1]->Energy()); 
+				
+			}
+			else
+			{
+				SMLepton.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(),selectedMuons[0]->Pz(), selectedMuons[0]->Energy()); 
+			}
+		}
+		else if(selectedElectrons.size()==1)
+		{
+			if(FCNC_lepton1_isElectron)
+			{
+				 
+				if(Number_2 != 0) SMLepton.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(),selectedMuons[0]->Pz(), selectedMuons[0]->Energy()); 
+				if(Number_2 != 1) SMLepton.SetPxPyPzE(selectedMuons[1]->Px(), selectedMuons[1]->Py(),selectedMuons[1]->Pz(), selectedMuons[1]->Energy()); 
+			}
+			else if(FCNC_lepton2_isElectron)
+			{
+				if(Number_1 != 0 ) SMLepton.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(),selectedMuons[0]->Pz(), selectedMuons[0]->Energy()); 
+				if(Number_1 != 1 ) SMLepton.SetPxPyPzE(selectedMuons[1]->Px(), selectedMuons[1]->Py(),selectedMuons[1]->Pz(), selectedMuons[1]->Energy()); 
+				
+			}
+			else
+			{
+				SMLepton.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(),selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy()); 
+			}
+		}
+		
+		Eta_SM_Lepton = SMLepton.Eta(); 
+		Pt_SM_Lepton = SMLepton.Pt(); 
+		InvMass_SM_Lepton = SMLepton.M(); 
+		
+		bool tcZcandidate = false; 
+		bool tcWW = false; 
+		bool tcZZcandidate = false; 
+		
+		
+		if(FCNC_lepton1_isMuon && FCNC_lepton2_isElectron) 
+		{
+				tcWW = true; 
+				if(debug) cout << "OF" << endl; 
+		}
+		else if(FCNC_lepton2_isMuon && FCNC_lepton1_isElectron)
+		{
+				tcWW = true; 
+				if(debug) cout << "OF" << endl;
+		}
+		else 
+		{
+			bool OS = false; 
+			bool SS = false; 
+			
+			if(FCNC_lepton1_isMuon && FCNC_lepton2_isMuon)
+			{
+				if(selectedMuons[Number_1]->charge() == selectedMuons[Number_2]->charge()) SS = true; 
+				else OS = true; 
+				//cout << Number_1 << " selectedMuons[Number_1]->charge() " << selectedMuons[Number_1]->charge() << endl; 
+				//cout << Number_2 << " selectedMuons[Number_2]->charge() " << selectedMuons[Number_2]->charge() << endl; 
+			}
+			if(FCNC_lepton1_isElectron && FCNC_lepton2_isElectron)
+			{
+				if(selectedElectrons[Number_1]->charge() == selectedElectrons[Number_2]->charge()) SS = true; 
+				else OS = true; 
+				//cout << Number_1 << " selectedElectrons[Number_1]->charge() " << selectedElectrons[Number_1]->charge() << endl; 
+				//cout << Number_2 <<" selectedElectrons[Number_2]->charge() " << selectedElectrons[Number_2]->charge() << endl; 
+			}
+			
+			if(OS)
+			{
+				tcZcandidate = true; 
+				tcZZcandidate = true; 
+				if(debug) cout << "OS" << endl; 
+			}
+			else if (SS)
+			{
+				tcWW = true; 
+				if(debug) cout << "SS" << endl; 
+			}
+		}
+		
+		if(debug)
+		{
+		  if(tcZcandidate) cout << "Classified as tcZcandidate" << endl; 
+		  if(tcZZcandidate) cout << "Classified as tcZZcandidate" << endl; 
+		  if(tcWW) cout << "Classified as tcWW" << endl; 
+		  cout << endl; 
+		}
+		
+		
+		//// add the c jet
+		if(tcWW && nLJets >0)
+		{
+		    TLorentzVector Top_FCNC_Candidate = Channel_3L_FCNC_top_candidate(debug, tempFCNC, selectedLightJets); 
+				
+		    if(debug) cout << "Top_FCNC_ candidate defined" << endl; 
+		    pT_FCNC_top_candidate = Top_FCNC_Candidate.Pt(); 
+		    Eta_FCNC_top_candidate = Top_FCNC_Candidate.Eta();
+		    InvMass_FCNC_top_candidate = Top_FCNC_Candidate.M(); 
+		}	    
+		
+		//add b jet 
+		if(tcWW && nBJets > 0)
+		{
+			vector <TLorentzVector> highestDisc = SM_b(debug,selectedBJets_CSVM); 
+		    	TLorentzVector tempBjet; 
+		    	tempBjet = highestDisc[0];
+		    	Bdiscr = highestDisc[1].Px(); 
+		    	
+			TLorentzVector SMtop; 
+			SMtop = tempBjet + SMLepton; 
+			InvMass_SM_top = SMtop.M(); 
+			Eta_SM_top = SMtop.Eta(); 
+			Pt_SM_top = SMtop.Pt(); 
+			
+		
+		}
+		bool tcZ = false; 
+		bool tcZZ = false; 
+		if((tcZcandidate || tcZZcandidate) && nLJets > 0)
+		{
+		    TLorentzVector Top_FCNC_Candidate = Channel_3L_FCNC_top_candidate(debug, tempFCNC, selectedLightJets); 
+				
+		    if(debug) cout << "Top_FCNC_ candidate defined" << endl; 
+		    pT_FCNC_top_candidate = Top_FCNC_Candidate.Pt(); 
+		    Eta_FCNC_top_candidate = Top_FCNC_Candidate.Eta();
+		    InvMass_FCNC_top_candidate = Top_FCNC_Candidate.M(); 
+		    
+		    if(InvMass_FCNC_top_candidate > 160)   tcZ = true; 
+		    else tcZZ = true; 
+		
+		}
+		if((tcZcandidate ||tcZZcandidate) && nBJets > 0)
+		{
+			vector <TLorentzVector> highestDisc = SM_b(debug,selectedBJets_CSVM); 
+		    	TLorentzVector tempBjet; 
+		    	tempBjet = highestDisc[0];
+		    	Bdiscr = highestDisc[1].Px(); 
+		    	
+			TLorentzVector SMtop; 
+			SMtop = tempBjet + SMLepton; 
+			InvMass_SM_top = SMtop.M(); 
+			Eta_SM_top = SMtop.Eta(); 
+			Pt_SM_top = SMtop.Pt(); 
+		
+		}
+		
+		
+		
+		
+		
+		
+		/*
 		//tcZ 
 		vector <TLorentzVector> Zcandidates =  Channel_3L_Zcandidate(debug, selectedElectrons, selectedMuons);
 		if(debug)cout << " defined Zcandidates " << endl; 
-		if(Zcandidates[2].Px() == 1)  //when candidates are found
+		
+		
+		
+		if(Zcandidates[3].Px() == 1)  //when candidates are found
 		{
 			InvMass_Z = Channel_3L_Zcandidate_Mll(debug, Zcandidates); 
 			if(debug)cout << " InvMass_Z " << endl; 
@@ -2574,7 +3103,7 @@ int main (int argc, char *argv[])
 			} // inside Zmass window
 			else   // in H --> WW
 			{	
-			/*
+			
 				//choose b-jet with highest bdisc
 		    		if(nBJets > 0)
 		    		{
@@ -2618,95 +3147,18 @@ int main (int argc, char *argv[])
 		    	    
 		    	    
 		    		} // nBjets > 0	
-				*/
+				
 			} // end H--> WW   (outside Z mass window
 
 				
 			
 			
 		} //Zcandidate found
-		else //also H--> WW
-		{
-		/*
-		    bool charge = false; 
-		    if(nMuons == 3)
-		    {
-		    	    if(selectedMuons[0]->charge() != selectedMuons[1]->charge()) charge = true; 
-		    	    if(selectedMuons[0]->charge() != selectedMuons[2]->charge()) charge = true;
-		    	    if(selectedMuons[2]->charge() != selectedMuons[1]->charge()) charge = true;
-		    }
-		    else if(nElectrons ==3)
-		    {
-		    	    if(selectedElectrons[0]->charge() != selectedElectrons[1]->charge()) charge = true; 
-		    	    if(selectedElectrons[0]->charge() != selectedElectrons[2]->charge()) charge = true;
-		    	    if(selectedElectrons[2]->charge() != selectedElectrons[1]->charge()) charge = true;
-		    }
-		    else if(nMuons == 2)
-		    {
-		    	    if(selectedMuons[0]->charge() != selectedMuons[1]->charge()) charge = true; 
-		    	    if(selectedMuons[0]->charge() != selectedElectrons[0]->charge()) charge = true;
-		    	    if(selectedMuons[1]->charge() != selectedElectrons[0]->charge()) charge = true;
 		
 		
-		    }
-		    else
-		    {
-		    	    if(selectedElectrons[0]->charge() != selectedElectrons[1]->charge()) charge = true; 
-		    	    if(selectedElectrons[0]->charge() != selectedMuons[0]->charge()) charge = true;
-		    	    if(selectedElectrons[1]->charge() != selectedMuons[0]->charge()) charge = true;
 		
-		
-		    }
-		
-		    if(!charge) continue; 
-		
-		    //choose b-jet with highest bdisc
-		    if(nBJets > 0)
-		    {
-		    	    vector <TLorentzVector> highestDisc = SM_b(debug,selectedBJets_CSVM); 
-		    	    TLorentzVector tempBjet; 
-		    	    tempBjet = highestDisc[0];
-		    	    Bdiscr = highestDisc[1].Px(); 
-		    	    Bjet_Eta= tempBjet.Eta(); 
-		    	    Bjet_Phi = tempBjet.Phi(); 
-		    	    Bjet_Pt = tempBjet.Pt();
-		    	    Bjet_Px = tempBjet.Px(); 
-		    	    Bjet_Py = tempBjet.Py();
-		    	    Bjet_Pz = tempBjet.Pz();
-		    	    
-		    	    //choose lepton closest to this bjet 
-		    	    vector <pair<TLorentzVector,bool> > Wlepton = Channel_3L_SM_lep(debug,selectedMuons, selectedElectrons,tempBjet);
-		    	    TLorentzVector SM_lepton; 
-		    	    
-		    	    for(int i = 0; i< Wlepton.size();i++)
-		    	    {
-		    		    pair<TLorentzVector,bool> Pair = Wlepton[i]; 
-		    		    if(Pair.second)  SM_lepton = Pair.first; 
-		    	    
-		    	    }
-		    	    
-		    	    TLorentzVector combi; 
-		    	    combi = tempBjet + SM_lepton;
-		    	    InvMass_SM_lb = combi.M(); 
-		    	    
-		    	    TLorentzVector Hleptons = Channel_3L_Higgs_lep(debug,selectedMuons,selectedElectrons,Wlepton);
-		    	    InvMass_FCNC_ll = Hleptons.M(); 
-		    	    FCNC_ll_Phi=Hleptons.Phi(); 
-		    	    FCNC_ll_Eta= Hleptons.Eta(); 
-		    	    FCNC_ll_Px= Hleptons.Px(); 
-		    	    FCNC_ll_Pz = Hleptons.Pz();
-		    	    FCNC_ll_Py= Hleptons.Py(); 
-		    	    FCNC_ll_Pt= Hleptons.Pt(); 
-		    	    
-		    	    DeltaR_SMlb_FCNCll = combi.DeltaR(Hleptons); 
-		    	    DeltaPhi_SMlb_FCNCll = combi.DeltaPhi(Hleptons);
-		    	    
-		    	    
-		    }
 		
 		*/
-		}
-		
 	    	myTree->Fill();
 		nEvents_Selected[d]++;
 		if(debug) cout << "filled tree for 3l channel" << endl; 
@@ -2729,10 +3181,13 @@ int main (int argc, char *argv[])
 	cout<<endl;
 	cout<<endl;	
 	if(validate) cout << "Bjet matching efficiency is " << (double) (MatchedCounter/EventsToMatch)*100 << " % or " << MatchedCounter << " of " << EventsToMatch  << " SM b jets" <<endl; 
-	if(validate) cout << "Cjet matching efficiency is " << (double) (MatchedCounter_c/EventsToMatch_c)*100 << " % or " << MatchedCounter_c << " of " << EventsToMatch_c  << " FCNC c jets" <<endl; 
+	if(validate) cout << "Cjet matching efficiency is " << (double) (MatchedCounter_c/EventsToMatch_c)*100 << " % or " <<MatchedCounter_c << " of " << EventsToMatch_c  << " FCNC c jets" <<endl; 
+	if(validate) cout << "jet matching from W efficiency is " << (double) (MatchedCounter_W/EventsToMatch_W)*100 << " % or " << MatchedCounter_W << " of " << EventsToMatch_W  << " SM W jets" <<endl; 
+	
 	if(validate){
 	 SM_b_selection_efficiency->SetBinContent(1,MatchedCounter/EventsToMatch); 
 	 FCNC_c_selection_efficiency->SetBinContent(1,MatchedCounter_c/EventsToMatch_c);
+	  SM_Wjet_selection_efficiency->SetBinContent(1,MatchedCounter_W/EventsToMatch_W); 
 	}
 	else
 	{
