@@ -558,6 +558,7 @@ vector <TLorentzVector> Channel_45_5leptons( bool _debug, vector <TRootElectron*
 	  
 	  
 	  vector <TLorentzVector> TempVector; 
+	  TempVector.clear(); 
 	  TempVector.push_back(leptonfour); 
 	  TempVector.push_back(lepton_4);
 	  
@@ -875,150 +876,183 @@ vector <TLorentzVector> Channel_3L_Zcandidate(bool _debug, vector <TRootElectron
 
 }
 
-vector<pair<int,bool> > Channel_45_FCNC_cjet(bool _debug, vector<pair<int,bool> > _LightJets_Paired,vector<TRootJet*> _LightJets, TLorentzVector _leptonfour)
+vector<pair<int,bool> > Channel_45_FCNC_bjet(bool _debug, vector<pair<int,bool> > _Jets_Paired,vector<TRootJet*> _Jets)
 {
 	bool debug = _debug; 
-	if(debug) cout << "in FCNC top reconstruction" << endl; 
+	if(debug) cout << "in SM b selectection" << endl; 
+	int  Safetycounter = 0; 
 	
-	
-	Double_t DeltaR_LightJet_Higgs = 1000; 
-	Double_t DeltaPhi_LightJet_Higgs = 1000; 
-	Double_t Pt = 0.;
 	double tag = 0; 
-		
-	//take the jet closest to the higgs in delta R	
-	for( int i = 0; i <_LightJets.size(); i++)
-	 {
-	        
-	 	 if(debug) cout << "in for loop" << endl;
-	 	
-	 	 TLorentzVector LightJet;
-	 	 LightJet.SetPxPyPzE(_LightJets[i]->Px(),_LightJets[i]->Py(),_LightJets[i]->Pz(), _LightJets[i]->Energy());
-	 	 
-		 
-		 
-		 if(debug) cout << "defined lightjet" << endl; 
-		 
-	 	 Double_t Delta_R = LightJet.DeltaR(_leptonfour); 
-		 //Double_t Delta_R = LightJet.DrEtaPhi(_leptonfour); 
-	 	 if(debug) cout << "DeltaR: " << Delta_R<< endl;
-		 
-		 Double_t Delta_Phi = LightJet.DeltaPhi(_leptonfour); 
-	 	 
-		 Double_t tempPt = LightJet.Pt(); 
-		 
-		 double temptag = _LightJets[i]->btag_combinedSecondaryVertexBJetTags(); 
-		 
-		 /*
-		 if(Delta_Phi < DeltaPhi_LightJet_Higgs)  // has 34% selection efficiency
-	 	 {
-	 		 DeltaPhi_LightJet_Higgs = Delta_Phi; 
-			 _LightJets_Paired[i].second = true;
-			 
-			 
-			 if(i != 0)
-			 {
-			    for(int k = 0; k<i; k++)
-			    {
-			       _LightJets_Paired[k].second = false; 
-			    }
-			    for(int k = i+1; k<_LightJets.size(); k++)
-			    {
-			       _LightJets_Paired[k].second = false; 
-			    }
-	 		 }
-			 if(debug) cout << "set aPair.second to true" << endl; 
-			 
-			
-	 	 }
-		 */
-		 /*
-		 if(temptag > tag)  // 37% selection efficiency 
-		 {
-		 	tag = temptag;
-			_LightJets_Paired[i].second = true;
-			 
-			 
-			 if(i != 0)
-			 {
-			    for(int k = 0; k<i; k++)
-			    {
-			       _LightJets_Paired[k].second = false; 
-			    }
-			    for(int k = i+1; k<_LightJets.size(); k++)
-			    {
-			       _LightJets_Paired[k].second = false; 
-			    }
-	 		 }
-			 if(debug) cout << "set aPair.second to true" << endl; 
-			
-		 }
-		 */
-		 
-	 	 if(Delta_R < DeltaR_LightJet_Higgs)  // has 52% selection efficiency
-	 	 {
-	 		 DeltaR_LightJet_Higgs = Delta_R; 
-			 _LightJets_Paired[i].second = true;
-			 
-			 
-			 if(i != 0)
-			 {
-			    for(int k = 0; k<i; k++)
-			    {
-			       _LightJets_Paired[k].second = false; 
-			    }
-			    for(int k = i+1; k<_LightJets.size(); k++)
-			    {
-			       _LightJets_Paired[k].second = false; 
-			    }
-	 		 }
-			 if(debug) cout << "set aPair.second to true" << endl; 
-			 
-			
-	 	 }
-		 
-		 /*
-		 if(tempPt > Pt)   // has 29% selection efficiency
-		 {
-		        Pt = tempPt; 
-		 	_LightJets_Paired[i].second = true;
-			 
-			 
-			 if(i != 0)
-			 {
-			    for(int k = 0; k<i; k++)
-			    {
-			       _LightJets_Paired[k].second = false; 
-			    }
-			    for(int k = i+1; k<_LightJets.size(); k++)
-			    {
-			       _LightJets_Paired[k].second = false; 
-			    }
-	 		 }
-			 if(debug) cout << "set aPair.second to true" << endl; 
-		 
-		 }
-		 */
-	 	 
-	   
-	 }
 	
-	 if(debug) cout << "out Ljets > 0" << endl;
-	 
-	/*
-	for(int ii = 0; ii< _LightJets_Paired.size(); ii++)
+	for(int i = 0; i < _Jets.size(); i++)
 	{
-	   pair<int,bool> qaPair = _LightJets_Paired[ii]; 
+		
+	        double temptag = _Jets[i]->btag_combinedSecondaryVertexBJetTags(); 
+		if(temptag > tag)
+		{
+		  tag = temptag; 
+		  
+		
+		  _Jets_Paired[i].second = true;
+			 
+			 
+		 if(i != 0)
+		 {
+		    for(int k = 0; k<i; k++)
+		    {
+		       _Jets_Paired[k].second = false; 
+		    }
+		    for(int k = i+1; k<_Jets.size(); k++)
+		    {
+		       _Jets_Paired[k].second = false; 
+		    }
+	 	 }
+		 if(debug) cout << "set aPair.second to true" << endl; 
+		
+			
+	 	 }
+		
+		
+	
+	}
+	
+	for(int j = 0; j< _Jets_Paired.size(); j++)
+	{
+	   pair<int,bool> qaPair = _Jets_Paired[j]; 
+	  if(qaPair.second) Safetycounter++; 
+			
+	}
+	if(Safetycounter>1) cout << "WARNING: found too many bjets" << endl; 
+	/*
+	cout << "bjets" << endl; 
+	for(int ii = 0; ii< _Jets_Paired.size(); ii++)
+	{
+	   pair<int,bool> qaPair = _Jets_Paired[ii]; 
 	   cout << qaPair.first << " " << qaPair.second << endl;
 			
 	}
 
         cout << "return" << endl;
 	*/
-	return _LightJets_Paired; 
+	return _Jets_Paired; 
 }
 
-TLorentzVector Channel_45_FCNC_top(bool _debug, vector<pair<int,bool> > _Pairs, TLorentzVector _leptonfour, vector<TRootJet*> _LightJets)
+
+vector<pair<int,bool> > Channel_45_FCNC_cjet(bool _debug, vector<pair<int,bool> > _Jets_Paired,vector<TRootJet*> _Jets, TLorentzVector _leptonfour)
+{
+	bool debug = _debug; 
+	if(debug) cout << "in c jet reco" << endl; 
+	
+	int  Safetycounter = 0; 
+	Double_t DeltaR_Jet_Higgs = 1000; 
+	Double_t DeltaPhi_Jet_Higgs = 1000; 
+	Double_t Pt = 0.;
+	double tag = 0; 
+	double lastID = -1; 
+	int bjetID = -1; 
+	int cjetID = -1;
+	
+	for(int j = 0; j< _Jets_Paired.size(); j++)
+	{
+	  pair<int,bool> qaPair = _Jets_Paired[j]; 
+	  if(qaPair.second) bjetID = j; 
+			
+	}
+		
+	//take the jet closest to the higgs in delta R	
+	for( int i = 0; i <bjetID; i++)
+	{
+	     
+	 	 if(debug) cout << "in for loop" << endl;
+	 	
+	 	 TLorentzVector Jet;
+	 	 Jet.SetPxPyPzE(_Jets[i]->Px(),_Jets[i]->Py(),_Jets[i]->Pz(), _Jets[i]->Energy());
+	 	 
+		 
+		 
+		 if(debug) cout << "defined Jet" << endl; 
+		 
+	 	 Double_t Delta_R = Jet.DeltaR(_leptonfour); 
+		 if(debug) cout << "DeltaR: " << Delta_R<< endl;
+		 
+		 if(Delta_R < DeltaR_Jet_Higgs)  // has 52% selection efficiency
+	 	 {
+	 		 _Jets_Paired[lastID].second = false;
+			 DeltaR_Jet_Higgs = Delta_R; 
+			 _Jets_Paired[i].second = true;
+			 
+			 lastID = i; 
+			 
+			 
+			 if(debug) cout << "set aPair.second to true" << endl; 
+			 
+			
+	 	 }
+		 
+		 
+	     
+	   
+	 }
+	 //take the jet closest to the higgs in delta R	
+	for( int i = bjetID+1; i <_Jets.size(); i++)
+	{
+	      
+	 	 if(debug) cout << "in for loop" << endl;
+	 	
+	 	 TLorentzVector Jet;
+	 	 Jet.SetPxPyPzE(_Jets[i]->Px(),_Jets[i]->Py(),_Jets[i]->Pz(), _Jets[i]->Energy());
+	 	 
+		 
+		 
+		 if(debug) cout << "defined Jet" << endl; 
+		 
+	 	 Double_t Delta_R = Jet.DeltaR(_leptonfour); 
+		 if(debug) cout << "DeltaR: " << Delta_R<< endl;
+		 
+		 if(Delta_R < DeltaR_Jet_Higgs)  // has 52% selection efficiency
+	 	 {
+	 		 _Jets_Paired[lastID].second = false;
+			 DeltaR_Jet_Higgs = Delta_R; 
+			 _Jets_Paired[i].second = true;
+			 
+			 lastID = i; 
+			 
+			 
+			 if(debug) cout << "set aPair.second to true" << endl; 
+			 
+			
+	 	 }
+		 
+		 
+	     
+	   
+	 }
+	cjetID = lastID; 
+	
+	/*
+	for(int ii = 0; ii< _Jets_Paired.size(); ii++)
+	{
+	   pair<int,bool> qaPair = _Jets_Paired[ii]; 
+	   cout << qaPair.first << " " << qaPair.second << endl;
+			
+	}
+
+        cout << "return" << endl;
+	*/
+	for(int j = 0; j< _Jets_Paired.size(); j++)
+	{
+	   pair<int,bool> qaPair = _Jets_Paired[j]; 
+	  if(qaPair.second) Safetycounter++; 
+			
+	}
+	
+	if(Safetycounter>2) cout << "WARNING: found too many cjets" << endl; 
+	if(cjetID ==  bjetID) cout << "WARNING: cjet ID = bjet ID" << endl; 
+	
+	return _Jets_Paired; 
+}
+
+TLorentzVector Channel_45_FCNC_top(bool _debug, vector<pair<int,bool> > _Pairs, TLorentzVector _leptonfour, vector<TRootJet*>_Jets,int _bjetID)
 {
 	double InvMass = 0; 
 	bool debug = _debug; 
@@ -1026,52 +1060,62 @@ TLorentzVector Channel_45_FCNC_top(bool _debug, vector<pair<int,bool> > _Pairs, 
 	int counter = 0; 
 	TLorentzVector temp;
 	
-	for( int i = 0; i <_LightJets.size(); i++)
+	for( int i = 0; i <_Jets.size(); i++)
 	 {
 	 	 if(debug) cout << "in for loop" << endl;
 	 	 pair<int,int> aPair = _Pairs[i];
 	 	 
-		 TLorentzVector LightJet;
-	 	 LightJet.SetPxPyPzE(_LightJets[i]->Px(),_LightJets[i]->Py(),_LightJets[i]->Pz(), _LightJets[i]->Energy());
-	 	 
+		 
 		// cout << aPair.second << endl; 
-		 if(aPair.second)
+		 if(aPair.second && i != _bjetID)
 		 {
 		 	temp.Clear();  
-	             	temp = _leptonfour + LightJet; 
+			
+			TLorentzVector Jet;
+	 	        Jet.SetPxPyPzE(_Jets[i]->Px(),_Jets[i]->Py(),_Jets[i]->Pz(), _Jets[i]->Energy());
+	 	 
+	             	temp = _leptonfour + Jet; 
 			InvMass = temp.M(); 
 			counter++; 
 	 	 }
-		 if(counter>1) cout << "WARNING: something wrong with c-jet selection" << endl; 
+		 if(counter>1) cout << "WARNING: something wrong with top fcnc reco selection" << endl; 
 	   
 	 }
 	return temp; 
 }
 
-
-// take b -jet with highest dicriminating value
-vector <TLorentzVector> SM_b(bool _debug, vector<TRootJet*> _BJets)
+vector <TLorentzVector> SM_b(bool _debug, vector<pair<int,bool> > _Pairs,  vector<TRootJet*> _Jets)
 {
-	if(_debug) cout << "in SM bjet detemination " << endl; 
+	
+	bool debug = _debug; 
+	if(debug) cout << "in sm b " << endl; 
 	vector <TLorentzVector> tempV; 
-	TLorentzVector TempJet; 
-	TempJet.Clear(); 
-	double tag = 0; 
 	int ID = -1; 
-	for(int i = 0; i < _BJets.size(); i++)
-	{
-		
-	        double temptag = _BJets[i]->btag_combinedSecondaryVertexBJetTags(); 
-		if(temptag > tag)
-		{
-		  tag = temptag; 
-		  TempJet.SetPxPyPzE(_BJets[i]->Px(),_BJets[i]->Py(),_BJets[i]->Pz(), _BJets[i]->Energy());
-		  ID = i; 
-		}
+	double tag = 0; 
+	TLorentzVector temp;
 	
-	}
-	
-        tempV.push_back(TempJet); 
+	for( int i = 0; i <_Jets.size(); i++)
+	 {
+	 	 if(debug) cout << "in for loop" << endl;
+	 	 pair<int,int> aPair = _Pairs[i];
+	 	 
+		 TLorentzVector Jet;
+	 	 Jet.SetPxPyPzE(_Jets[i]->Px(),_Jets[i]->Py(),_Jets[i]->Pz(), _Jets[i]->Energy());
+	 	 double temptag = _Jets[i]->btag_combinedSecondaryVertexBJetTags(); 
+		 
+		// cout << aPair.second << endl; 
+		 if(aPair.second)
+		 {
+		 	temp.Clear();  
+	             	temp = Jet; 
+			ID = i; 
+			tag = temptag; 
+			
+	 	 }
+		 
+	   
+	 }
+	tempV.push_back(temp); 
 	
 	TLorentzVector tagV; 
 	tagV.SetPxPyPzE(tag,0,0,0);
@@ -1081,11 +1125,14 @@ vector <TLorentzVector> SM_b(bool _debug, vector<TRootJet*> _BJets)
 	tempID.SetPxPyPzE(ID,0,0,0); 
 	tempV.push_back(tempID); 
 	if(_debug) cout << "out SM bjet detemination " << endl;
-	return tempV; 
+	return tempV;  
 }
 
+
+
+
 //find jets closest to the bjet with highest discr
-vector <TLorentzVector> Channel_45_SM_Wqq(bool _debug,TLorentzVector _Bjet, vector <pair<int,bool> > _Paired, vector <TRootJet*> _LightJets)
+vector <TLorentzVector> Channel_45_SM_Wqq(bool _debug,TLorentzVector _Bjet, vector <pair<int,bool> > _Paired, vector <TRootJet*> _Jets)
 {
     vector <TLorentzVector> tempV; 
     tempV.clear();
@@ -1100,122 +1147,42 @@ vector <TLorentzVector> Channel_45_SM_Wqq(bool _debug,TLorentzVector _Bjet, vect
     	     
     	     
     
-    for(int iJet = 0; iJet < _LightJets.size()-1; iJet++)
+    for(int iJet = 0; iJet < _Jets.size()-1; iJet++)
     {
     	    pair<int,int> aPair = _Paired[iJet];
 	    
-	    TLorentzVector LightJet;
-    	    LightJet.SetPxPyPzE(_LightJets[iJet]->Px(),_LightJets[iJet]->Py(),_LightJets[iJet]->Pz(),_LightJets[iJet]->Energy());
+	    TLorentzVector Jet;
+    	    Jet.SetPxPyPzE(_Jets[iJet]->Px(),_Jets[iJet]->Py(),_Jets[iJet]->Pz(),_Jets[iJet]->Energy());
     	    
 	    
-	    for(int i = 1; i < _LightJets.size(); i++)
+	    for(int i = 1; i < _Jets.size(); i++)
 	    {    
 	        pair<int,int> bPair = _Paired[i];
-		TLorentzVector LightJet2;
-    	   	LightJet2.SetPxPyPzE(_LightJets[i]->Px(),_LightJets[i]->Py(),_LightJets[i]->Pz(),_LightJets[i]->Energy());
+		TLorentzVector Jet2;
+    	   	Jet2.SetPxPyPzE(_Jets[i]->Px(),_Jets[i]->Py(),_Jets[i]->Pz(),_Jets[i]->Energy());
     	    
     	    	if(!aPair.second && !bPair.second )
     	    	{	    
-    		    jets =  LightJet + LightJet2;
+    		    jets =  Jet + Jet2;
 		    if(fabs(jets.M() - 80.3) < fabs(Mass - 80.3) )
 		    {
 		    	Mass = jets.M(); 
 		    	double tempDeltaR = _Bjet.DeltaR(jets);
-    		    	if(tempDeltaR < dR)
-		    	{
-		    		dR = tempDeltaR;
+    		    	//if(tempDeltaR < dR)
+		    	//{
+		    		//dR = tempDeltaR;
 				Rjets = jets; 
 				JetID_1 = aPair.first;  // place of the jet in selectedJets
 				JetID_2 = bPair.first; 
 			 
-    		    	}
+    		    	//}
 		    }
 
     	    	}
 	   }
     }
     
-    /*
-    TLorentzVector firstJet; 
-    int lastSet = -1; 
-    for(int iJet = 0; iJet < _LightJets.size(); iJet++)
-    {
-    	    cout << "iJet : " << iJet << endl; 
-	    pair<int,int> aPair = _Paired[iJet];
-	    
-	    TLorentzVector LightJet;
-    	    LightJet.SetPxPyPzE(_LightJets[iJet]->Px(),_LightJets[iJet]->Py(),_LightJets[iJet]->Pz(),_LightJets[iJet]->Energy());
-    	    
-	   if(aPair.second) cout << "ID of true: " << iJet; 
-	    
-    	    if(!aPair.second)
-    	    {		
-    	    	
-	    	double tempDeltaR = _Bjet.DeltaR(LightJet);
-    	    	if(tempDeltaR < dR)
-	    	{
-			if(iJet!=0) 
-			{
-				//cout << "Pair with id " << lastSet << " set to false" << endl; 
-				
-				_Paired[lastSet].second = false; 
-			}
-			
-	    	    	dR = tempDeltaR;
-	    	       // Rjets = jets; 
-	    	    	JetID_1 = aPair.first;  // place of the jet in selectedJets
-	    	       // JetID_2 = bPair.first; 
-	    	 	firstJet = LightJet; 
-			_Paired[iJet].second = true; 
-			lastSet = iJet; 
-			//cout << "lastSet changed to " << lastSet << endl; 
-    	    	}
-	    	
-
-    	    }
-	   
-    }
-     
-    int counter = 0; 
-    for (int i = 0; i<_Paired.size(); i++)
-    {
-    	if(_Paired[i].second) counter++; 
     
-    }
-    //cout << "Nb set to true: " << counter << endl; 
-    //cout << endl;
-    //cout << endl;
-    dR = 10000;
-    TLorentzVector secondJet; 
-    for(int iJet = 0; iJet < _LightJets.size(); iJet++)
-    {
-    	    pair<int,int> aPair = _Paired[iJet];
-	    
-	    TLorentzVector LightJet;
-    	    LightJet.SetPxPyPzE(_LightJets[iJet]->Px(),_LightJets[iJet]->Py(),_LightJets[iJet]->Pz(),_LightJets[iJet]->Energy());
-    	    
-	    
-	    
-    	    if(!aPair.second)
-    	    {		
-    	    	
-	    	double tempDeltaR = _Bjet.DeltaR(LightJet);
-    	    	if(tempDeltaR < dR)
-	    	{
-	    	    	dR = tempDeltaR;
-	    	       
-	    	    	//JetID_1 = aPair.first;  // place of the jet in selectedJets
-	    	        JetID_2 = aPair.first; 
-	    	 	secondJet = LightJet; 
-    	    	}
-	    	
-
-    	    }
-	   
-    }
-    
-    Rjets = firstJet + secondJet; 
-    */
     TLorentzVector ID_1; 
     ID_1.SetPxPyPzE(JetID_1,0,0,0); 
     
@@ -1691,6 +1658,8 @@ int main (int argc, char *argv[])
 	
 	Double_t Bdiscr;
 	
+	
+	Double_t InvMass_leptonW; 
 	//3L channel variables
 	/*
 	Double_t InvMass_Z; 
@@ -1779,18 +1748,7 @@ int main (int argc, char *argv[])
         myTree->Branch("pZ_jet",pZ_jet,"pZ_jet[nJets]/D");
         myTree->Branch("E_jet",E_jet,"E_jet[nJets]/D");
 	
-	myTree->Branch("nBJets",&nJets, "nBJets/I");
-        myTree->Branch("pX_Bjet",pX_Bjet,"pX_Bjet[nBJets]/D");
-        myTree->Branch("pY_Bjet",pY_Bjet,"pY_Bjet[nBJets]/D");
-        myTree->Branch("pZ_Bjet",pZ_Bjet,"pZ_Bjet[nBJets]/D");
-        myTree->Branch("E_Bjet",E_Bjet,"E_Bjet[nBJets]/D");
-	
-	myTree->Branch("nLJets",&nJets, "nLJets/I");
-        myTree->Branch("pX_Ljet",pX_Ljet,"pX_Ljet[nLJets]/D");
-        myTree->Branch("pY_Ljet",pY_Ljet,"pY_Ljet[nLJets]/D");
-        myTree->Branch("pZ_Ljet",pZ_Ljet,"pZ_Ljet[nLJets]/D");
-        myTree->Branch("E_Ljet",E_Ljet,"E_Ljet[nLJets]/D");
-        
+	   
         myTree->Branch("missingEt",&missingEt,"missingEt/D");
 	myTree->Branch("missingEt_Phi",&missingEt_Phi,"missingEt_Phi/D");
 	myTree->Branch("missingEt_Theta",&missingEt_Theta,"missingEt_Theta/D");
@@ -1823,6 +1781,8 @@ int main (int argc, char *argv[])
 		myTree->Branch("FCNC_top_Pt", &FCNC_top_Pt, "FCNC_top_Pt/D");
 		
 		myTree->Branch("Bdiscr",&Bdiscr,"Bdiscr/D");
+		
+		myTree->Branch("InvMass_leptonW",&InvMass_leptonW,"InvMass_leptonW/D"); 
 	} 
        	if(channelName.find("3L")!=string::npos)
 	{
@@ -1894,7 +1854,10 @@ int main (int argc, char *argv[])
 	TH1F * True_bjet_Pt = new TH1F("True_bjet_Pt","True_bjet_Pt",200,0,200); 
 	TH1F * Selected_cjet_Pt = new TH1F("Selected_cjet_Pt","Selected_cjet_Pt",200,0,200); 
 	TH1F * True_cjet_Pt = new TH1F("True_cjet_Pt","True_cjet_Pt",200,0,200); 
-	
+	TH1F * Selected_Wjet1_Pt = new TH1F("Selected_Wjet1_Pt","Selected_Wjet1_Pt",200,0,200); 
+	TH1F * True_Wjet1_Pt = new TH1F("True_Wjet1_Pt","True_Wjet1_Pt",200,0,200); 
+	TH1F * Selected_Wjet2_Pt = new TH1F("Selected_Wjet2_Pt","Selected_Wjet2_Pt",200,0,200); 
+	TH1F * True_Wjet2_Pt = new TH1F("True_Wjet2_Pt","True_Wjet2_Pt",200,0,200);
         //open files and load
 	if(debug)       cout<<"LoadEvent"<<endl;
         treeLoader.LoadDataset (datasets[d], anaEnv);
@@ -1939,6 +1902,7 @@ int main (int argc, char *argv[])
 	double EventsToMatch_W = 0.;
 	nEvents[d] = 0;
 	nEvents_Selected[d] = 0; 
+	
         int itriggerSemiMu = -1,itriggerSemiEl = -1, previousRun = -1;
 	
 	// store number of events in ntuple 
@@ -2154,11 +2118,7 @@ int main (int argc, char *argv[])
 //            vector<TRootElectron*> selectedElectrons = selection.GetSelectedElectrons(selectedJets);
 	    vector<TRootElectron*> selectedElectrons = selection.GetSelectedDiElectrons();
 	    
-	    vector<TRootJet*> selectedBJets_CSVM; // B-jets at the Tight working point
-	    vector<TRootJet*> selectedLightJets; // light-Jets, to be filled afer b-tagging
-	    
-	     
-	   
+	  
 	    
 	     
             
@@ -2207,51 +2167,18 @@ int main (int argc, char *argv[])
                 nMuons++;
             }
             nJets=0;
+	    vector<int> selectedJets_ID; 
+	    selectedJets_ID.clear(); 
             for(int ijet=0; ijet<selectedJets.size() && nJets<10; ijet++){
                 pX_jet[nJets]=selectedJets[ijet]->Px();
                 pY_jet[nJets]=selectedJets[ijet]->Py();
                 pZ_jet[nJets]=selectedJets[ijet]->Pz();
                 E_jet[nJets]=selectedJets[ijet]->E();
                 nJets++;
+		selectedJets_ID.push_back(ijet); 
             }
 	    
-	    vector<int> SelectedBjets_ID; 
-	    vector<int> SelectedLightjets_ID; 
-	    SelectedBjets_ID.clear(); 
-	    SelectedLightjets_ID.clear(); 
-	    
-	    for(unsigned int iJet=0; iJet<selectedJets.size(); iJet++){
-		if (selectedJets[iJet]->btag_combinedSecondaryVertexBJetTags() > .679)
-		{
-			selectedBJets_CSVM.push_back(selectedJets[iJet]);
-			SelectedBjets_ID.push_back(iJet); 
-		}
-		else
-		{
-		 	selectedLightJets.push_back(selectedJets[iJet]);
-		 	SelectedLightjets_ID.push_back(iJet);
-		}
-			
-	     } 
-	     
-	    nBJets=0;
-            for(int ijet=0; ijet<selectedBJets_CSVM.size() && nBJets<10; ijet++){
-                pX_Bjet[nBJets]=selectedBJets_CSVM[ijet]->Px();
-                pY_Bjet[nBJets]=selectedBJets_CSVM[ijet]->Py();
-                pZ_Bjet[nBJets]=selectedBJets_CSVM[ijet]->Pz();
-                E_Bjet[nBJets]=selectedBJets_CSVM[ijet]->E();
-                nBJets++;
-            }
-	    
-	    nLJets=0;
-            for(int ijet=0; ijet<selectedLightJets.size() && nLJets<10; ijet++){
-                pX_Ljet[nLJets]=selectedLightJets[ijet]->Px();
-                pY_Ljet[nLJets]=selectedLightJets[ijet]->Py();
-                pZ_Ljet[nLJets]=selectedLightJets[ijet]->Pz();
-                E_Ljet[nLJets]=selectedLightJets[ijet]->E();
-                nLJets++;
-            }
-	    
+	   
 	    
 	    
 	    vector<pair<int,int> >  HighestPtLept;
@@ -2319,7 +2246,7 @@ int main (int argc, char *argv[])
 	    
 	       TLorentzVector bquark; 
 	       TLorentzVector cquark;
-	        TLorentzVector Wquark;
+	       TLorentzVector Wquark;
 	       for(unsigned int iMC = 0; iMC< mcParticles.size(); iMC++)
 	       {
 	       
@@ -2441,6 +2368,8 @@ int main (int argc, char *argv[])
 		     }
 		     
 		     if(debug) cout << "out nElectrons + nMuons > 4" << endl; 
+		     
+		     InvMass_leptonW = lepton_4.M(); 
 		 
 		 }
 		 else if(nElectrons+nMuons == 4)
@@ -2476,55 +2405,77 @@ int main (int argc, char *argv[])
 		 Eta_Higgs = leptonfour.Eta();
 		
 		 //make a pair of light jets with booleans such that I know which ones are matched
-		 vector<pair<int,bool> >  LightJets_Paired;
-	    	 LightJets_Paired.clear();
-	    	 for(int It = 0; It < selectedLightJets.size(); It++)
+		 vector<pair<int,bool> >  Jets_Paired;
+	    	 Jets_Paired.clear();
+	    	 for(int It = 0; It < selectedJets.size(); It++)
 	    	 {
-	    	 	 LightJets_Paired.push_back(make_pair(SelectedLightjets_ID[It], false));
+	    	 	 Jets_Paired.push_back(make_pair(selectedJets_ID[It], false));
 	    	 }
-		 /*
-		 // check the pairing
-		 for(int It = 0; It < selectedLightJets.size(); It++)
-	    	 {
-	    	 	cout << "Iterator: " << It << " JetID: " <<  LightJets_Paired[It].first << " Bool: " << LightJets_Paired[It].second << endl; 
+		 
+		 
+		 int Bjet_ID = -1;
+		 TLorentzVector tempBjet ;
+		 vector<pair<int,bool> > Jets_Paired_b; 		 
+		 if(nJets > 0)
+		 {
+		 	 // tag b jet with highest discrimanting power as the SM one
+		 	 Jets_Paired_b = Channel_45_FCNC_bjet(debug, Jets_Paired, selectedJets);
+			 
+			 vector <TLorentzVector> highestDisc = SM_b(debug,Jets_Paired_b,selectedJets); 
+		         tempBjet = highestDisc[0];
+			 Bdiscr = highestDisc[1].Px(); 
+			 Bjet_ID = highestDisc[2].Px();
+			 
+			 if(validate && MatchingId_b[0] != -1)
+			 {
+			 	if(debug) cout << "in validation" << endl; 
+				
+				if(debug)cout << "Place in jets " << Bjet_ID << endl; 
+			 	
+				if(debug)cout << "MatchingId size " << MatchingId_b.size() << endl; 
+				if(debug)cout << "MatchingId " << MatchingId_b[0] << endl; 
+				
+				EventsToMatch++;
+				
+			 	if(Bjet_ID == MatchingId_b[0] )
+				{
+				   if(debug) cout << "right match" << endl; 
+				   MatchedCounter++;
+				   //extra safety 
+					Selected_bjet_Pt -> Fill(selectedJets[Bjet_ID]->Pt()); 
+					True_bjet_Pt -> Fill(selectedJets[MatchingId_b[0]]->Pt()); 
+				   
+			 	}
+				else
+				{
+					if(debug) cout << "wrong match" << endl; 
+				}
+				
+			 }
+		 
 		 }
-		 */
 		 
 		 //Search fcnc c jet
-		 vector<pair<int,bool> > LightJets_Paired_c; 
+		 vector<pair<int,bool> > Jets_Paired_c; 
 		 
 		 
-		 if(nLJets>0)
+		 if(nJets>1) // there is a b and a c
 		 {
 		 	//find the right c-jet from FCNC decay
-		 	LightJets_Paired_c = Channel_45_FCNC_cjet(debug, LightJets_Paired, selectedLightJets, leptonfour); 
-		 	/*
-			// check pairing
-			for(int It = 0; It < selectedLightJets.size(); It++)
-	    		{
-	    	 	    cout << "Iterator: " << It << " JetID: " <<  LightJets_Paired_c[It].first << " Bool: " << LightJets_Paired_c[It].second << endl; 
-		 	}
-			*/ 
-			
-			//Calculate FCNC top from the chosen c-jet and Higgs
-		 	TLorentzVector FCNC_top = Channel_45_FCNC_top(debug, LightJets_Paired_c,leptonfour,selectedLightJets);
-			InvMass_FCNC_top_Zdecay = FCNC_top.M(); 
-			FCNC_top_eta = FCNC_top.Eta(); 
-			FCNC_top_phi = FCNC_top.Phi(); 
-			FCNC_top_Pt = FCNC_top.Pt(); 
-			
-			if(validate && MatchingId_c[0] != -1 )
+		 	Jets_Paired_c = Channel_45_FCNC_cjet(debug, Jets_Paired_b, selectedJets, leptonfour); 
+		 
+		 	if(validate && MatchingId_c[0] != -1 )
 			{
 			   EventsToMatch_c++;
 			   
 			   int ChosenID = -1; 
 			   
-			   for( int iJet = 0; iJet < LightJets_Paired_c.size(); iJet++)
+			   for( int iJet = 0; iJet < Jets_Paired_c.size(); iJet++)
 	 		   {
 	 	 		
-	 	 		pair<int,int> Pair = LightJets_Paired_c[iJet];
+	 	 		pair<int,int> Pair = Jets_Paired_c[iJet];
 	 	 	
-				if(Pair.second)
+				if(Pair.second && iJet != Bjet_ID)
 		 		{	
 		 			ChosenID = Pair.first; 
 	 	 		}
@@ -2542,53 +2493,27 @@ int main (int argc, char *argv[])
 			    }
 		 	 }
 			 
+			 //Calculate FCNC top from the chosen c-jet and Higgs
+		 	TLorentzVector FCNC_top = Channel_45_FCNC_top(debug, Jets_Paired_c,leptonfour,selectedJets,Bjet_ID);
+			InvMass_FCNC_top_Zdecay = FCNC_top.M(); 
+			FCNC_top_eta = FCNC_top.Eta(); 
+			FCNC_top_phi = FCNC_top.Phi(); 
+			FCNC_top_Pt = FCNC_top.Pt(); 
+			 
 		 }
 		
 		 
-		 TLorentzVector tempBjet ;		 
-		 if(nBJets > 0)
+				 
+		 if(nJets > 1)
 		 {
-		 	 // tag b jet with highest discrimanting power as the SM one
 		 	 
-			 vector <TLorentzVector> highestDisc = SM_b(debug,selectedBJets_CSVM); 
-		         tempBjet = highestDisc[0];
-			 Bdiscr = highestDisc[1].Px(); 
-			 
-			 
-			 if(validate && MatchingId_b[0] != -1)
-			 {
-			 	if(debug) cout << "in validation" << endl; 
-				int Bjet_ID = highestDisc[2].Px();
-				if(debug)cout << "Place in bjets " << Bjet_ID << endl; 
-			 	int BjetPlace_in_selectedJets = SelectedBjets_ID[Bjet_ID]; 
-			 	if(debug)cout << "Place in jets " << BjetPlace_in_selectedJets << endl; 
-				if(debug)cout << "MatchingId size " << MatchingId_b.size() << endl; 
-				if(debug)cout << "MatchingId " << MatchingId_b[0] << endl; 
-				
-				EventsToMatch++;
-				
-			 	if(BjetPlace_in_selectedJets == MatchingId_b[0] )
-				{
-				   if(debug) cout << "right match" << endl; 
-				   MatchedCounter++;
-				   //extra safety 
-					Selected_bjet_Pt -> Fill(selectedJets[BjetPlace_in_selectedJets]->Pt()); 
-					True_bjet_Pt -> Fill(selectedJets[MatchingId_b[0]]->Pt()); 
-				   
-			 	}
-				else
-				{
-					if(debug) cout << "wrong match" << endl; 
-				}
-				
-			 }
 		 	 // W boson decays hadronically
-		 	 if(nLJets>2 && (nMuons + nElectrons == 4))
+		 	 if(nJets>2 && (nMuons + nElectrons == 4))
 		 	 {
 		 	  
 		 	 
 		 		 //find the two jets closest to this b 
-				 vector <TLorentzVector> WjetCalc = Channel_45_SM_Wqq(debug,tempBjet, LightJets_Paired_c, selectedLightJets);
+				 vector <TLorentzVector> WjetCalc = Channel_45_SM_Wqq(debug,tempBjet, Jets_Paired_c, selectedJets);
 		 		 
 		 		 TLorentzVector Wjets = WjetCalc[0]; 
 				 int Wjet_ID_1 = WjetCalc[1].Px();
@@ -2612,11 +2537,34 @@ int main (int argc, char *argv[])
 			   				if(Wjet_ID_1 == MatchingId_W[i] && Wjet_ID_2 == MatchingId_W[k])
 			    				{
 			    					MatchedCounter_W++; 
-			    				}
+								TLorentzVector jet1; 
+								jet1.SetPxPyPzE(selectedJets[Wjet_ID_1]->Px(),selectedJets[Wjet_ID_1]->Py(),selectedJets[Wjet_ID_1]->Pz(),selectedJets[Wjet_ID_1]->Energy()); 
+			    					TLorentzVector jet2; 
+								jet2.SetPxPyPzE(selectedJets[Wjet_ID_2]->Px(),selectedJets[Wjet_ID_2]->Py(),selectedJets[Wjet_ID_2]->Pz(),selectedJets[Wjet_ID_2]->Energy()); 
+			    					
+								//extra safety 
+			    					Selected_Wjet1_Pt -> Fill(jet1.Pt()); 
+			    					True_Wjet1_Pt -> Fill(selectedJets[MatchingId_W[i]]->Pt()); 
+								Selected_Wjet2_Pt -> Fill(jet2.Pt()); 
+			    					True_Wjet2_Pt -> Fill(selectedJets[MatchingId_W[k]]->Pt()); 
+							}
 							else if(Wjet_ID_2 == MatchingId_W[i] && Wjet_ID_1 == MatchingId_W[k])
 			    				{
 			    					MatchedCounter_W++; 
+								TLorentzVector jet2;
+								jet2.SetPxPyPzE(selectedJets[Wjet_ID_1]->Px(),selectedJets[Wjet_ID_1]->Py(),selectedJets[Wjet_ID_1]->Pz(),selectedJets[Wjet_ID_1]->Energy()); 
+			    					TLorentzVector jet1;
+								jet1.SetPxPyPzE(selectedJets[Wjet_ID_2]->Px(),selectedJets[Wjet_ID_2]->Py(),selectedJets[Wjet_ID_2]->Pz(),selectedJets[Wjet_ID_2]->Energy()); 
+			    					
+								//extra safety 
+			    					Selected_Wjet1_Pt -> Fill(jet1.Pt()); 
+			    					True_Wjet1_Pt -> Fill(selectedJets[MatchingId_W[i]]->Pt()); 
+								Selected_Wjet2_Pt -> Fill(jet2.Pt()); 
+			    					True_Wjet2_Pt -> Fill(selectedJets[MatchingId_W[k]]->Pt()); 
+							
 			    				}
+							
+			    
 		 	 			}
 					      }
 					    }
@@ -2636,6 +2584,7 @@ int main (int argc, char *argv[])
 				 
 		 		 
 		 	 }
+			 
 		 	 // W boson decays leptonically 
 		 	 else if(nMuons + nElectrons > 4)
 		 	 {
@@ -2675,6 +2624,7 @@ int main (int argc, char *argv[])
 		 				 missingEt_vector = missingEt_vector2; 
 		 			 }
 		 		 }
+				 
 				 TLorentzVector combi; 
 		 		 combi = lepton_4 + tempBjet; 
 		 		 InvMass_SM_lb =combi.M();
@@ -2697,7 +2647,7 @@ int main (int argc, char *argv[])
 				}
 		 	 } // leptonic W
 		
-		 }  // nbjets > 0
+		 }  // njets > 1
 		
 		 myTree->Fill(); 
 		 nEvents_Selected[d]++;
@@ -2705,7 +2655,7 @@ int main (int argc, char *argv[])
 
 	    } // > 3 leptons
 	    
-	    if(channelName.find("3L")!=string::npos && (nElectrons+nMuons == 3))
+/*	    if(channelName.find("3L")!=string::npos && (nElectrons+nMuons == 3))
 	    {
 	    	if(debug)cout << " In nleptons == 3 " << endl; 
 		
@@ -3016,7 +2966,7 @@ int main (int argc, char *argv[])
 		}
 		
 		
-		
+*/		
 		
 		
 		
@@ -3159,13 +3109,13 @@ int main (int argc, char *argv[])
 		
 		
 		*/
-	    	myTree->Fill();
+/*	    	myTree->Fill();
 		nEvents_Selected[d]++;
 		if(debug) cout << "filled tree for 3l channel" << endl; 
 		
 	    }
 	    
-	    
+	*/    
 	    
 	    
 
