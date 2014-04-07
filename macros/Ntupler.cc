@@ -149,10 +149,19 @@ vector <TLorentzVector> Channel_45_5leptons( bool _debug, vector <TRootElectron*
       double _nElectrons = _Electrons.size(); 
 
       pair <double, double> missingEt_pZ_pair; 
-
+      
+      int ID_0 = -1;	    
+      int ID_1 = -1; 
+      int ID_2 = -1; 
+      int ID_3 = -1; 
+      int ID_4 = -1;
+      
 
       if( _nMuons == 2 & _nElectrons == 3)
       { 
+	   ID_0 = 20+0; 
+	   ID_1 = 20+1; 
+	   
 	   if(debug) cout << "In _nMuons == 2 & _nElectrons == 3 " << endl; 
 	   if(_Muons[0]->charge()!=_Muons[1]->charge())	chargereq1 = true; 
 	   if(_Electrons[0]->charge()!=_Electrons[1]->charge())	chargereq2 = true;
@@ -163,7 +172,10 @@ vector <TLorentzVector> Channel_45_5leptons( bool _debug, vector <TRootElectron*
 	   if(chargereq1 && chargereq2 && !leptons) // Mu0 and Mu1    El0 and El1
 	   {
 	 	  leptons=true; 
-	 	   
+	 	  ID_2 = 0; 
+		  ID_3 = 1; 
+		  ID_4 = 2; 
+		   
 	 	  lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
 	 	   
 	 	  lepton_1.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
@@ -179,7 +191,10 @@ vector <TLorentzVector> Channel_45_5leptons( bool _debug, vector <TRootElectron*
 	   if(chargereq1 && chargereq3 && !leptons) // Mu0 and Mu1    El0 and El2
 	   {
 	 	  leptons=true;    
-	 	  
+	 	  ID_2 = 0; 
+		  ID_3 = 2; 
+		  ID_4 = 1; 
+		  
 	 	  lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
 	 	  lepton_1.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
 	 	  lepton_2.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
@@ -190,7 +205,11 @@ vector <TLorentzVector> Channel_45_5leptons( bool _debug, vector <TRootElectron*
 	   if(chargereq1 && chargereq4 && !leptons) // Mu0 and Mu1    El2 and El1
 	   {
 	 	  leptons=true; 
-	 	  
+	 	  ID_2 = 2; 
+		  ID_3 = 1; 
+		  ID_4 = 0; 
+		  
+		  
 	 	  lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
 	 	  lepton_1.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
 	 	  lepton_2.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
@@ -208,6 +227,9 @@ vector <TLorentzVector> Channel_45_5leptons( bool _debug, vector <TRootElectron*
       } 
       if( _nMuons == 3 & _nElectrons == 2)
       {
+              ID_0 = 0; 
+	      ID_1 = 1; 
+	      
 	      if(debug) cout << "In _nMuons == 3 & _nElectrons == 2 " << endl; 
 	      if(_Electrons[0]->charge()!=_Electrons[1]->charge())   chargereq1 = true; 
 	      if(_Muons[0]->charge()!=_Muons[1]->charge())   chargereq2 = true;
@@ -218,7 +240,11 @@ vector <TLorentzVector> Channel_45_5leptons( bool _debug, vector <TRootElectron*
 	      if(chargereq1 && chargereq2 && !leptons) //El0 and El1 Mu0 and Mu1
 	      {
 	    	     leptons=true; 
-
+		     ID_2 = 20+0; 
+		     ID_3 = 20+1; 
+		     ID_4 = 20+2; 
+		  
+		
 	    	     lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
 	    	     lepton_1.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
 	    	     lepton_2.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
@@ -231,6 +257,9 @@ vector <TLorentzVector> Channel_45_5leptons( bool _debug, vector <TRootElectron*
 	      else if(chargereq1 && chargereq3 && !leptons) //El0 and El1 Mu0 and Mu2
 	      {
 	    	     leptons=true; 
+		     ID_2 = 20+0; 
+		     ID_3 = 20+2; 
+		     ID_4 = 20+1; 
 
 	 		 lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
 	 		 lepton_1.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
@@ -238,335 +267,487 @@ vector <TLorentzVector> Channel_45_5leptons( bool _debug, vector <TRootElectron*
 	 		 lepton_3.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
 	 		 lepton_4.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
 	  
-	 	  }
-	 	  else if(chargereq1 && chargereq4 && !leptons) //El0 and El1 Mu2 and Mu1
-	 	  {
-	 		 leptons=true; 
+	     }
+	     else if(chargereq1 && chargereq4 && !leptons) //El0 and El1 Mu2 and Mu1
+	     {
+	             leptons=true; 
+	             ID_2 = 20+2; 
+		     ID_3 = 20+1; 
+		     ID_4 = 20+0; 
 	  
-	 		 lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
-	 		 lepton_1.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
-	 		 lepton_2.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
-	 		 lepton_3.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
-	 		 lepton_4.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
+	             lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
+	             lepton_1.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
+	             lepton_2.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
+	             lepton_3.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
+	             lepton_4.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
 	  
-	 	  }
-	 	  leptonpair_1 = lepton_0 + lepton_1; 
-	 	  leptonpair_2 = lepton_2 + lepton_3;
-	 	  leptonfour = leptonpair_1 + leptonpair_2;
-	 	  missingEt_pZ_pair = MEzCalculator(lepton_4, _missingEt_pX, _missingEt_pY, isMuon);
+	      }
+	      leptonpair_1 = lepton_0 + lepton_1; 
+	      leptonpair_2 = lepton_2 + lepton_3;
+	      leptonfour = leptonpair_1 + leptonpair_2;
+	      missingEt_pZ_pair = MEzCalculator(lepton_4, _missingEt_pX, _missingEt_pY, isMuon);
 	  }
 	  if( _nMuons == 5 )
 	  {
-	 	  if(debug) cout << "In _nMuons == 5 " << endl; 
-	 	  if(_Muons[0]->charge()!=_Muons[1]->charge())   chargereq1 = true; 
-	 	  if(_Muons[0]->charge()!=_Muons[2]->charge())   chargereq2 = true;
-	 	  if(_Muons[0]->charge()!=_Muons[3]->charge())   chargereq3 = true;
-	 	  if(_Muons[0]->charge()!=_Muons[4]->charge())   chargereq4 = true;  
-	 	  if(_Muons[2]->charge()!=_Muons[1]->charge())   chargereq5 = true;
-	 	  if(_Muons[3]->charge()!=_Muons[1]->charge())   chargereq6 = true;
-	 	  if(_Muons[4]->charge()!=_Muons[1]->charge())   chargereq7 = true;
-	 	  if(_Muons[2]->charge()!=_Muons[3]->charge())   chargereq8 = true; 
-	 	  if(_Muons[2]->charge()!=_Muons[4]->charge())   chargereq9 = true;   
-	 	  if(_Muons[4]->charge()!=_Muons[3]->charge())   chargereq10 = true; 
-	 	  bool isMuon = true; 
-	 	  
-	 	  if(chargereq1 && chargereq8  && !leptons) //0 and 1	  2 and 3
-	 	  {
-	 		 leptons=true; 
+	      
+	      if(debug) cout << "In _nMuons == 5 " << endl; 
+	      if(_Muons[0]->charge()!=_Muons[1]->charge())   chargereq1 = true; 
+	      if(_Muons[0]->charge()!=_Muons[2]->charge())   chargereq2 = true;
+	      if(_Muons[0]->charge()!=_Muons[3]->charge())   chargereq3 = true;
+	      if(_Muons[0]->charge()!=_Muons[4]->charge())   chargereq4 = true;  
+	      if(_Muons[2]->charge()!=_Muons[1]->charge())   chargereq5 = true;
+	      if(_Muons[3]->charge()!=_Muons[1]->charge())   chargereq6 = true;
+	      if(_Muons[4]->charge()!=_Muons[1]->charge())   chargereq7 = true;
+	      if(_Muons[2]->charge()!=_Muons[3]->charge())   chargereq8 = true; 
+	      if(_Muons[2]->charge()!=_Muons[4]->charge())   chargereq9 = true;   
+	      if(_Muons[4]->charge()!=_Muons[3]->charge())   chargereq10 = true; 
+	      bool isMuon = true; 
+	 
+	      if(chargereq1 && chargereq8  && !leptons) //0 and 1     2 and 3
+	      {
+	 	     leptons=true; 
+		     ID_0 = 20 + 0; 
+		     ID_1 = 20 + 1; 
+		     ID_2 = 20 + 2; 
+		     ID_3 = 20 + 3; 
+		     ID_4 = 20 + 4; 
 	  
-	 		 lepton_3.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
-	 		 lepton_2.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
-	 		 lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
-	 		 lepton_1.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
-	 		 lepton_4.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
-	 		 
-	 	  }
-	 	  if(chargereq1 && chargereq9  && !leptons) //0 and 1	  2 and 4
-	 	  {
-	 		 leptons=true; 
+	 	     lepton_3.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
+	 	     lepton_2.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
+	 	     lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
+	 	     lepton_1.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
+	 	     lepton_4.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
+	 	     
+	      }
+	      if(chargereq1 && chargereq9  && !leptons) //0 and 1     2 and 4
+	      {
+	 	     leptons=true; 
+		     ID_0 = 20 + 0; 
+		     ID_1 = 20 + 1; 
+		     ID_2 = 20 + 2; 
+		     ID_3 = 20 + 4; 
+		     ID_4 = 20 + 3; 
 	  
-	 		 lepton_3.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
-	 		 lepton_2.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
-	 		 lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
-	 		 lepton_1.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
-	 		 lepton_4.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
-	 	  }
-	 	  if(chargereq1 && chargereq10  && !leptons) //0 and 1     3 and 4
-	 	  {
-	 		 leptons=true; 
-	 	  
-	 		 lepton_3.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
-	 		 lepton_2.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
-	 		 lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
-	 		 lepton_1.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
-	 		 lepton_4.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
-	 	  }
-	 	  if(chargereq2 && chargereq6  && !leptons) //0 and 2	  1 and 3
-	 	  {
-	 		 leptons=true; 
-	 	  
-	 		 lepton_3.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
-	 		 lepton_2.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
-	 		 lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
-	 		 lepton_1.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
-	 		 lepton_4.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
-	 	  }
-	 	  if(chargereq2 && chargereq7  && !leptons) //0 and 2	  1 and 4
-	 	  {
-	 		 leptons=true; 
-	 	  
-	 		 lepton_3.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
-	 		 lepton_2.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
-	 		 lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
-	 		 lepton_1.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
-	 		 lepton_4.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
-	 	  }
-	 	  if(chargereq2 && chargereq10  && !leptons) //0 and 2     3 and 4
-	 	  {
-	 		 leptons=true; 
-	 	  
-	 		 lepton_3.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
-	 		 lepton_2.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
-	 		 lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
-	 		 lepton_1.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
-	 		 lepton_4.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
-	 	  }
-	 	  if(chargereq3 && chargereq5  && !leptons) //0 and 3	  1 and 2
-	 	  {
-	 		 leptons=true; 
-	 	  
-	 		 lepton_3.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
-	 		 lepton_2.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
-	 		 lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
-	 		 lepton_1.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
-	 		 lepton_4.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
-	 	  }
-	 	  if(chargereq3 && chargereq7  && !leptons) //0 and 3	  1 and 4
-	 	  {
-	 		 leptons=true; 
-	 	  
-	 		 lepton_3.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
-	 		 lepton_2.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
-	 		 lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
-	 		 lepton_1.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
-	 		 lepton_4.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
-	 	  }
-	 	  if(chargereq3 && chargereq9  && !leptons) //0 and 3	  4 and 2
-	 	  {
-	 		 leptons=true; 
-	 	  
-	 		 lepton_3.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
-	 		 lepton_2.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
-	 		 lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
-	 		 lepton_1.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
-	 		 lepton_4.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
-	 	  }
-	 	  if(chargereq4 && chargereq5  && !leptons) //0 and 4	   1 and 2
-	 	  {
-	 		  leptons=true; 
-	 	  
-	 		  lepton_3.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
-	 		  lepton_2.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
-	 		  lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
-	 		  lepton_1.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
-	 		  lepton_4.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
-	 	  }
-	 	  if(chargereq4 && chargereq6  && !leptons) //0 and 4	   1 and 3
-	 	  {
-	 		  leptons=true; 
-	 	  
-	 		  lepton_3.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
-	 		  lepton_2.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
-	 		  lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
-	 		  lepton_1.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
-	 		  lepton_4.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
-	 	  }
-	 	  if(chargereq4 && chargereq8  && !leptons) //0 and 4	   3 and 2
-	 	  {
-	 		  leptons=true; 
-	 	  
-	 		  lepton_3.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
-	 		  lepton_2.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
-	 		  lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
-	 		  lepton_1.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
-	 		  lepton_4.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
-	 	  }
-	 	  
-	 	  leptonpair_1 = lepton_0 + lepton_1; 
-	 	  leptonpair_2 = lepton_2 + lepton_3;
-	 	  leptonfour = leptonpair_1 + leptonpair_2;
-	 	  missingEt_pZ_pair = MEzCalculator(lepton_4, _missingEt_pX, _missingEt_pY, isMuon);
-	 	  
+	  
+	 	     lepton_3.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
+	 	     lepton_2.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
+	 	     lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
+	 	     lepton_1.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
+	 	     lepton_4.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
+	      }
+	      if(chargereq1 && chargereq10  && !leptons) //0 and 1     3 and 4
+	      {
+	 	     leptons=true;
+		     ID_0 = 20 + 0; 
+		     ID_1 = 20 + 1; 
+		     ID_2 = 20 + 4; 
+		     ID_3 = 20 + 3; 
+		     ID_4 = 20 + 2; 
+	   
+	 
+	 	     lepton_3.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
+	 	     lepton_2.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
+	 	     lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
+	 	     lepton_1.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
+	 	     lepton_4.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
+	      }
+	      if(chargereq2 && chargereq6  && !leptons) //0 and 2     1 and 3
+	      {
+	 	     leptons=true; 
+		     ID_0 = 20 + 0; 
+		     ID_1 = 20 + 1; 
+		     ID_2 = 20 + 2; 
+		     ID_3 = 20 + 3; 
+		     ID_4 = 20 + 4; 
+	  
+	 
+	 	     lepton_3.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
+	 	     lepton_2.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
+	 	     lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
+	 	     lepton_1.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
+	 	     lepton_4.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
+	      }
+	      if(chargereq2 && chargereq7  && !leptons) //0 and 2     1 and 4
+	      {
+	 	     leptons=true; 
+		     ID_0 = 20 + 0; 
+		     ID_1 = 20 + 1; 
+		     ID_2 = 20 + 2; 
+		     ID_3 = 20 + 4; 
+		     ID_4 = 20 + 3; 
+	  
+	 
+	 	     lepton_3.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
+	 	     lepton_2.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
+	 	     lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
+	 	     lepton_1.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
+	 	     lepton_4.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
+	      }
+	      if(chargereq2 && chargereq10  && !leptons) //0 and 2     3 and 4
+	      {
+	 	     leptons=true; 
+		     ID_0 = 20 + 0; 
+		     ID_1 = 20 + 4; 
+		     ID_2 = 20 + 2; 
+		     ID_3 = 20 + 3; 
+		     ID_4 = 20 + 1; 
+	  
+	 
+	 	     lepton_3.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
+	 	     lepton_2.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
+	 	     lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
+	 	     lepton_1.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
+	 	     lepton_4.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
+	      }
+	      if(chargereq3 && chargereq5  && !leptons) //0 and 3     1 and 2
+	      {
+	 	     leptons=true; 
+		     ID_0 = 20 + 0; 
+		     ID_1 = 20 + 1; 
+		     ID_2 = 20 + 2; 
+		     ID_3 = 20 + 3; 
+		     ID_4 = 20 + 4; 
+	  
+	 
+	 	     lepton_3.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
+	 	     lepton_2.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
+	 	     lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
+	 	     lepton_1.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
+	 	     lepton_4.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
+	      }
+	      if(chargereq3 && chargereq7  && !leptons) //0 and 3     1 and 4
+	      {
+	 	     leptons=true; 
+		     ID_0 = 20 + 0; 
+		     ID_1 = 20 + 1; 
+		     ID_2 = 20 + 4; 
+		     ID_3 = 20 + 3; 
+		     ID_4 = 20 + 2; 
+	  
+	 
+	 	     lepton_3.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
+	 	     lepton_2.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
+	 	     lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
+	 	     lepton_1.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
+	 	     lepton_4.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
+	      }
+	      if(chargereq3 && chargereq9  && !leptons) //0 and 3     4 and 2
+	      {
+	 	     leptons=true; 
+		     ID_0 = 20 + 0; 
+		     ID_1 = 20 + 4; 
+		     ID_2 = 20 + 2; 
+		     ID_3 = 20 + 3; 
+		     ID_4 = 20 + 1; 
+	  
+	 
+	 	     lepton_3.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
+	 	     lepton_2.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
+	 	     lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
+	 	     lepton_1.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
+	 	     lepton_4.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
+	      }
+	      if(chargereq4 && chargereq5  && !leptons) //0 and 4      1 and 2
+	      {
+	 	      leptons=true; 
+		      ID_0 = 20 + 0; 
+		     ID_1 = 20 + 1; 
+		     ID_2 = 20 + 2; 
+		     ID_3 = 20 + 4; 
+		     ID_4 = 20 + 3; 
+	  
+	 
+	 	      lepton_3.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
+	 	      lepton_2.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
+	 	      lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
+	 	      lepton_1.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
+	 	      lepton_4.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
+	      }
+	      if(chargereq4 && chargereq6  && !leptons) //0 and 4      1 and 3
+	      {
+	 	      leptons=true; 
+		      ID_0 = 20 + 0; 
+		     ID_1 = 20 + 1; 
+		     ID_2 = 20 + 4; 
+		     ID_3 = 20 + 3; 
+		     ID_4 = 20 + 2; 
+	  
+	 
+	 	      lepton_3.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
+	 	      lepton_2.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
+	 	      lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
+	 	      lepton_1.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
+	 	      lepton_4.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
+	      }
+	      if(chargereq4 && chargereq8  && !leptons) //0 and 4      3 and 2
+	      {
+	 	      leptons=true; 
+		      ID_0 = 20 + 0; 
+		     ID_1 = 20 + 4; 
+		     ID_2 = 20 + 2; 
+		     ID_3 = 20 + 3; 
+		     ID_4 = 20 + 1; 
+	  
+	 
+	 	      lepton_3.SetPxPyPzE(_Muons[2]->Px(),_Muons[2]->Py(),_Muons[2]->Pz(),_Muons[2]->Energy());
+	 	      lepton_2.SetPxPyPzE(_Muons[3]->Px(),_Muons[3]->Py(),_Muons[3]->Pz(),_Muons[3]->Energy());
+	 	      lepton_0.SetPxPyPzE(_Muons[0]->Px(),_Muons[0]->Py(),_Muons[0]->Pz(),_Muons[0]->Energy());
+	 	      lepton_1.SetPxPyPzE(_Muons[4]->Px(),_Muons[4]->Py(),_Muons[4]->Pz(),_Muons[4]->Energy());
+	 	      lepton_4.SetPxPyPzE(_Muons[1]->Px(),_Muons[1]->Py(),_Muons[1]->Pz(),_Muons[1]->Energy());
+	      }
+	 
+	      leptonpair_1 = lepton_0 + lepton_1; 
+	      leptonpair_2 = lepton_2 + lepton_3;
+	      leptonfour = leptonpair_1 + leptonpair_2;
+	      missingEt_pZ_pair = MEzCalculator(lepton_4, _missingEt_pX, _missingEt_pY, isMuon);
+	 
 	  }
-	   if( _nElectrons == 5)
-	   {
-	 	 if(debug) cout << "_nElectrons == 5 " << endl; 
-	 	 if(_Electrons[0]->charge()!=_Electrons[1]->charge())   chargereq1 = true; 
-	 	 if(_Electrons[0]->charge()!=_Electrons[2]->charge())   chargereq2 = true;
-	 	 if(_Electrons[0]->charge()!=_Electrons[3]->charge())   chargereq3 = true;
-	 	 if(_Electrons[0]->charge()!=_Electrons[4]->charge())   chargereq4 = true;  
-	 	 if(_Electrons[2]->charge()!=_Electrons[1]->charge())   chargereq5 = true;
-	 	 if(_Electrons[3]->charge()!=_Electrons[1]->charge())   chargereq6 = true;
-	 	 if(_Electrons[4]->charge()!=_Electrons[1]->charge())   chargereq7 = true;
-	 	 if(_Electrons[2]->charge()!=_Electrons[3]->charge())   chargereq8 = true; 
-	 	 if(_Electrons[2]->charge()!=_Electrons[4]->charge())   chargereq9 = true;   
-	 	 if(_Electrons[4]->charge()!=_Electrons[3]->charge())   chargereq10 = true; 
-	 	 bool isMuon = false; 
-	 	 
-	 	 if(chargereq1 && chargereq8  && !leptons) //0 and 1	 2 and 3
-	 	 {
-	 		leptons=true; 
-	 	 
-	 		lepton_3.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
-	 		lepton_2.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
-	 		lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
-	 		lepton_1.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
-	 		lepton_4.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
-	 	 }
-	 	 if(chargereq1 && chargereq9  && !leptons) //0 and 1	 2 and 4
-	 	 {
-	 		leptons=true; 
-	 	 
-	 		lepton_3.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
-	 		lepton_2.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
-	 		lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
-	 		lepton_1.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
-	 		lepton_4.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
-	 	 }
-	 	 if(chargereq1 && chargereq10  && !leptons) //0 and 1	  3 and 4
-	 	 {
-	 		leptons=true; 
-	 	 
-	 		lepton_3.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
-	 		lepton_2.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
-	 		lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
-	 		lepton_1.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
-	 		lepton_4.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
-	 	 
-	 	 }
-	 	 if(chargereq2 && chargereq6  && !leptons) //0 and 2	 1 and 3
-	 	 {
-	 		leptons=true; 
-	 	 
-	 		lepton_3.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
-	 		lepton_2.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
-	 		lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
-	 		lepton_1.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
-	 		lepton_4.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
-	 	 
-	 	 }
-	 	 if(chargereq2 && chargereq7  && !leptons) //0 and 2	 1 and 4
-	 	 {
-	 		leptons=true; 
-	 	 
-	 		lepton_3.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
-	 		lepton_2.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
-	 		lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
-	 		lepton_1.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
-	 		lepton_4.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
-	 	 }
-	 	 if(chargereq2 && chargereq10  && !leptons) //0 and 2	  3 and 4
-	 	 {
-	 		leptons=true; 
-	 	 
-	 		lepton_3.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
-	 		lepton_2.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
-	 		lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
-	 		lepton_1.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
-	 		lepton_4.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
-	 	 }
-	 	 if(chargereq3 && chargereq5  && !leptons) //0 and 3	 1 and 2
-	 	 {
-	 		leptons=true; 
-	 	 
-	 		lepton_3.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
-	 		lepton_2.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
-	 		lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
-	 		lepton_1.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
-	 		lepton_4.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
-	 	 }
-	 	 if(chargereq3 && chargereq7  && !leptons) //0 and 3	 1 and 4
-	 	 {
-	 		leptons=true; 
-	 	 
-	 		lepton_3.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
-	 		lepton_2.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
-	 		lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
-	 		lepton_1.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
-	 		lepton_4.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
-	 	 }
-	 	 if(chargereq3 && chargereq9  && !leptons) //0 and 3	 4 and 2
-	 	 {
-	 		leptons=true; 
-	 	 
-	 		lepton_3.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
-	 		lepton_2.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
-	 		lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
-	 		lepton_1.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
-	 		lepton_4.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
-	 	 }
-	 	 if(chargereq4 && chargereq5  && !leptons) //0 and 4	 1 and 2
-	 	 {
-	 		leptons=true; 
-	 	 
-	 		lepton_3.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
-	 		lepton_2.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
-	 		lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
-	 		lepton_1.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
-	 		lepton_4.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
-	 	 }
-	 	 if(chargereq4 && chargereq6  && !leptons) //0 and 4	 1 and 3
-	 	 {
-	 		leptons=true; 
-	 	 
-	 		lepton_3.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
-	 		lepton_2.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
-	 		lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
-	 		lepton_1.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
-	 		lepton_4.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
-	 	 }
-	 	 if(chargereq4 && chargereq8  && !leptons) //0 and 4	 3 and 2
-	 	 {
-	 		leptons=true; 
-	 	 
-	 		lepton_3.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
-	 		lepton_2.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
-	 		lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
-	 		lepton_1.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
-	 		lepton_4.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
-	 	 }
-	 	 
-	 	 leptonpair_1 = lepton_0 + lepton_1; 
-	 	 leptonpair_2 = lepton_2 + lepton_3;
-	 	 leptonfour = leptonpair_1 + leptonpair_2;
-	 	 missingEt_pZ_pair = MEzCalculator(lepton_4, _missingEt_pX, _missingEt_pY, isMuon);
-	  }
-	  
-	  TLorentzVector missingEt_vector1; 
-	   missingEt_vector1.SetPxPyPzE(_missingEt_pX, _missingEt_pY, missingEt_pZ_pair.first,_missingEt/TMath::Sin(_missingEt_Theta));
-			
-	  TLorentzVector missingEt_vector2; 
-	  missingEt_vector2.SetPxPyPzE(_missingEt_pX, _missingEt_pY, missingEt_pZ_pair.second,_missingEt/TMath::Sin(_missingEt_Theta));
-			
-	  TLorentzVector boolVector; 
-	  if(leptons) 
+	  if( _nElectrons == 5)
 	  {
-		boolVector.SetPxPyPzE(1,1,1,1);
-		if(debug) cout << "leptons set to true" << endl; 
-          }
-	  else boolVector.SetPxPyPzE(0,0,0,0);
-	  
-	  
-	  vector <TLorentzVector> TempVector; 
-	  TempVector.clear(); 
-	  TempVector.push_back(leptonfour); 
-	  TempVector.push_back(lepton_4);
-	  
-	  TempVector.push_back(missingEt_vector1); 
-	  TempVector.push_back(missingEt_vector2); 
-	  TempVector.push_back(boolVector); 
-	  
-	  return TempVector; 
+	        if(debug) cout << "_nElectrons == 5 " << endl; 
+	        if(_Electrons[0]->charge()!=_Electrons[1]->charge())   chargereq1 = true; 
+	        if(_Electrons[0]->charge()!=_Electrons[2]->charge())   chargereq2 = true;
+	        if(_Electrons[0]->charge()!=_Electrons[3]->charge())   chargereq3 = true;
+	        if(_Electrons[0]->charge()!=_Electrons[4]->charge())   chargereq4 = true;  
+	        if(_Electrons[2]->charge()!=_Electrons[1]->charge())   chargereq5 = true;
+	        if(_Electrons[3]->charge()!=_Electrons[1]->charge())   chargereq6 = true;
+	        if(_Electrons[4]->charge()!=_Electrons[1]->charge())   chargereq7 = true;
+	        if(_Electrons[2]->charge()!=_Electrons[3]->charge())   chargereq8 = true; 
+	        if(_Electrons[2]->charge()!=_Electrons[4]->charge())   chargereq9 = true;   
+	        if(_Electrons[4]->charge()!=_Electrons[3]->charge())   chargereq10 = true; 
+	        bool isMuon = false; 
+	        
+	        if(chargereq1 && chargereq8  && !leptons) //0 and 1	2 and 3
+	        {
+	               leptons=true; 
+	               ID_0 = 0; 
+	               ID_1 = 1; 
+	               ID_2 = 2; 
+	               ID_3 = 3; 
+	               ID_4 = 4; 
+	 
+	        
+	               lepton_3.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
+	               lepton_2.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
+	               lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
+	               lepton_1.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
+	               lepton_4.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
+	        }
+	        if(chargereq1 && chargereq9  && !leptons) //0 and 1	2 and 4
+	        {
+	               leptons=true;
+		       ID_0 = 0; 
+	               ID_1 = 1; 
+	               ID_2 = 2; 
+	               ID_3 = 4; 
+	               ID_4 = 3;  
+	        
+	               lepton_3.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
+	               lepton_2.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
+	               lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
+	               lepton_1.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
+	               lepton_4.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
+	        }
+	        if(chargereq1 && chargereq10  && !leptons) //0 and 1	 3 and 4
+	        {
+	               leptons=true; 
+		       ID_0 = 0; 
+	               ID_1 = 1; 
+	               ID_2 = 4; 
+	               ID_3 = 3; 
+	               ID_4 = 2; 
+	        
+	               lepton_3.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
+	               lepton_2.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
+	               lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
+	               lepton_1.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
+	               lepton_4.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
+	        
+	        }
+	        if(chargereq2 && chargereq6  && !leptons) //0 and 2	1 and 3
+	        {
+	               leptons=true; 
+		       ID_0 = 0; 
+	               ID_1 = 1; 
+	               ID_2 = 2; 
+	               ID_3 = 3; 
+	               ID_4 = 4; 
+	        
+	               lepton_3.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
+	               lepton_2.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
+	               lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
+	               lepton_1.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
+	               lepton_4.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
+	        
+	        }
+	        if(chargereq2 && chargereq7  && !leptons) //0 and 2	1 and 4
+	        {
+	               leptons=true; 
+		       ID_0 = 0; 
+	               ID_1 = 1; 
+	               ID_2 = 2; 
+	               ID_3 = 4; 
+	               ID_4 = 3; 
+	        
+	               lepton_3.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
+	               lepton_2.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
+	               lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
+	               lepton_1.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
+	               lepton_4.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
+	        }
+	        if(chargereq2 && chargereq10  && !leptons) //0 and 2	 3 and 4
+	        {
+	               leptons=true; 
+		       ID_0 = 0; 
+	               ID_1 = 4; 
+	               ID_2 = 2; 
+	               ID_3 = 3; 
+	               ID_4 = 1; 
+	        
+	               lepton_3.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
+	               lepton_2.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
+	               lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
+	               lepton_1.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
+	               lepton_4.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
+	        }
+	        if(chargereq3 && chargereq5  && !leptons) //0 and 3	1 and 2
+	        {
+	               leptons=true; 
+		       ID_0 = 0; 
+	               ID_1 = 1; 
+	               ID_2 = 2; 
+	               ID_3 = 3; 
+	               ID_4 = 4; 
+	        
+	               lepton_3.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
+	               lepton_2.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
+	               lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
+	               lepton_1.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
+	               lepton_4.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
+	        }
+	        if(chargereq3 && chargereq7  && !leptons) //0 and 3	1 and 4
+	        {
+	               leptons=true; 
+		       ID_0 = 0; 
+	               ID_1 = 1; 
+	               ID_2 = 4; 
+	               ID_3 = 3; 
+	               ID_4 = 2; 
+	        
+	               lepton_3.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
+	               lepton_2.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
+	               lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
+	               lepton_1.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
+	               lepton_4.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
+	        }
+	        if(chargereq3 && chargereq9  && !leptons) //0 and 3	4 and 2
+	        {
+	               leptons=true; 
+		       ID_0 = 0; 
+	               ID_1 = 4; 
+	               ID_2 = 2; 
+	               ID_3 = 3; 
+	               ID_4 = 1; 
+	        
+	               lepton_3.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
+	               lepton_2.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
+	               lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
+	               lepton_1.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
+	               lepton_4.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
+	        }
+	        if(chargereq4 && chargereq5  && !leptons) //0 and 4	1 and 2
+	        {
+	               leptons=true; 
+		       ID_0 = 0; 
+	               ID_1 = 1; 
+	               ID_2 = 2; 
+	               ID_3 = 4; 
+	               ID_4 = 3; 
+	        
+	               lepton_3.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
+	               lepton_2.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
+	               lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
+	               lepton_1.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
+	               lepton_4.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
+	        }
+	        if(chargereq4 && chargereq6  && !leptons) //0 and 4	1 and 3
+	        {
+	               leptons=true; 
+		       ID_0 = 0; 
+	               ID_1 = 1; 
+	               ID_2 = 4; 
+	               ID_3 = 3; 
+	               ID_4 = 2; 
+	        
+	               lepton_3.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
+	               lepton_2.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
+	               lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
+	               lepton_1.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
+	               lepton_4.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
+	        }
+	        if(chargereq4 && chargereq8  && !leptons) //0 and 4	3 and 2
+	        {
+	               leptons=true; 
+		       ID_0 = 0; 
+	               ID_1 = 4; 
+	               ID_2 = 2; 
+	               ID_3 = 3; 
+	               ID_4 = 1; 
+	        
+	               lepton_3.SetPxPyPzE(_Electrons[2]->Px(),_Electrons[2]->Py(),_Electrons[2]->Pz(),_Electrons[2]->Energy());
+	               lepton_2.SetPxPyPzE(_Electrons[3]->Px(),_Electrons[3]->Py(),_Electrons[3]->Pz(),_Electrons[3]->Energy());
+	               lepton_0.SetPxPyPzE(_Electrons[0]->Px(),_Electrons[0]->Py(),_Electrons[0]->Pz(),_Electrons[0]->Energy());
+	               lepton_1.SetPxPyPzE(_Electrons[4]->Px(),_Electrons[4]->Py(),_Electrons[4]->Pz(),_Electrons[4]->Energy());
+	               lepton_4.SetPxPyPzE(_Electrons[1]->Px(),_Electrons[1]->Py(),_Electrons[1]->Pz(),_Electrons[1]->Energy());
+	        }
+	        
+	        leptonpair_1 = lepton_0 + lepton_1; 
+	        leptonpair_2 = lepton_2 + lepton_3;
+	        leptonfour = leptonpair_1 + leptonpair_2;
+	        missingEt_pZ_pair = MEzCalculator(lepton_4, _missingEt_pX, _missingEt_pY, isMuon);
+	 }
+	 
+	 TLorentzVector missingEt_vector1; 
+	  missingEt_vector1.SetPxPyPzE(_missingEt_pX, _missingEt_pY, missingEt_pZ_pair.first,_missingEt/TMath::Sin(_missingEt_Theta));
+	               
+	 TLorentzVector missingEt_vector2; 
+	 missingEt_vector2.SetPxPyPzE(_missingEt_pX, _missingEt_pY, missingEt_pZ_pair.second,_missingEt/TMath::Sin(_missingEt_Theta));
+	               
+	 TLorentzVector boolVector; 
+	 if(leptons) 
+	 {
+	       boolVector.SetPxPyPzE(1,1,1,1);
+	       if(debug) cout << "leptons set to true" << endl; 
+         }
+	 else boolVector.SetPxPyPzE(0,0,0,0);
+	 
+	 TLorentzVector Vid_0; 
+	 Vid_0.SetPxPyPzE(ID_0,0,0,0); 
+	 TLorentzVector Vid_1; 
+	 Vid_1.SetPxPyPzE(ID_1,0,0,0); 
+	 TLorentzVector Vid_2; 
+	 Vid_2.SetPxPyPzE(ID_2,0,0,0); 
+	 TLorentzVector Vid_3; 
+	 Vid_3.SetPxPyPzE(ID_3,0,0,0); 
+	 TLorentzVector Vid_4; 
+	 Vid_4.SetPxPyPzE(ID_4,0,0,0); 
+	 
+	 vector <TLorentzVector> TempVector; 
+	 TempVector.clear(); 
+	 TempVector.push_back(leptonfour); 
+	 TempVector.push_back(lepton_4);
+	 
+	 TempVector.push_back(missingEt_vector1); 
+	 TempVector.push_back(missingEt_vector2); 
+	 TempVector.push_back(boolVector); 
+	 
+	 TempVector.push_back(Vid_0);
+	 TempVector.push_back(Vid_1);
+	 TempVector.push_back(Vid_2);
+	 TempVector.push_back(Vid_3);
+	 TempVector.push_back(Vid_4);
+	 
+	 return TempVector; 
 }
 
 
@@ -588,6 +769,11 @@ vector <TLorentzVector> Channel_45_4leptons( bool _debug, vector <TRootElectron*
 	bool chargereq6=false;
 	
 	bool debug = _debug;
+	
+	int ID_0 = -1; 
+	int ID_1 = -1; 
+	int ID_2 = -1; 
+	int ID_3 = -1; 
 
 	TLorentzVector leptonpair_1; // two OSSF with highest pt
 	TLorentzVector leptonpair_2; // two OSSF with 2nd highest pt
@@ -611,6 +797,10 @@ vector <TLorentzVector> Channel_45_4leptons( bool _debug, vector <TRootElectron*
 	//select ZZ events, muon flavours come in pairs and OS
 	if( nMuons == 2 & nElectrons == 2)
 	{ 
+	     ID_0= 20+0; 
+	     ID_1 = 20+1; 
+	     ID_2 = 0; 
+	     ID_3 = 1; 
 	     if(_Muons[0]->charge()!=_Muons[1]->charge())   chargereq1 = true; 
 	     if(_Electrons[0]->charge()!=_Electrons[1]->charge())   chargereq2 = true;
 	
@@ -637,6 +827,10 @@ vector <TLorentzVector> Channel_45_4leptons( bool _debug, vector <TRootElectron*
 
 	if( nMuons == 4)
 	{
+	   ID_0= 20+0; 
+	   ID_1 = 20+1; 
+	   ID_2 = 20 + 2; 
+	   ID_3 = 20+3;
 	   if(debug) cout << "In nMuons == 4 " << endl; 
 	   if(_Muons[0]->charge()!=_Muons[1]->charge())	chargereq1 = true; 
 	   if(_Muons[0]->charge()!=_Muons[2]->charge())	chargereq2 = true;
@@ -683,6 +877,10 @@ vector <TLorentzVector> Channel_45_4leptons( bool _debug, vector <TRootElectron*
 	   }
 	   if(nElectrons == 4)
 	   {
+	   	ID_0 = 0; 
+	        ID_1 = 1; 
+	        ID_2 = 2; 
+	        ID_3 = 3;
 	   	   if(debug) cout << "In nElectrons == 4 " << endl; 
 	   	   if(_Electrons[0]->charge()!=_Electrons[1]->charge())	chargereq1 = true; 
 	   	   if(_Electrons[0]->charge()!=_Electrons[2]->charge())	chargereq2 = true;
@@ -733,10 +931,24 @@ vector <TLorentzVector> Channel_45_4leptons( bool _debug, vector <TRootElectron*
 	  }
 	  else{ boolVector.SetPxPyPzE(0,0,0,0);}
 	  
+	  TLorentzVector Vid_0; 
+	  Vid_0.SetPxPyPzE(ID_0,0,0,0); 
+	  TLorentzVector Vid_1; 
+	  Vid_1.SetPxPyPzE(ID_1,0,0,0); 
+	  TLorentzVector Vid_2; 
+	  Vid_2.SetPxPyPzE(ID_2,0,0,0); 
+	  TLorentzVector Vid_3; 
+	  Vid_3.SetPxPyPzE(ID_3,0,0,0); 
+	  
+	  
      	  vector <TLorentzVector> TempVector; 
 	  TempVector.clear();
 	  TempVector.push_back(leptonfour); 
 	  TempVector.push_back(boolVector); 
+	  TempVector.push_back(Vid_0); 
+	  TempVector.push_back(Vid_1);
+	  TempVector.push_back(Vid_2);
+	  TempVector.push_back(Vid_3);
 	  
 	  return TempVector; 
 
@@ -1147,23 +1359,28 @@ vector <TLorentzVector> Channel_45_SM_Wqq(bool _debug,TLorentzVector _Bjet, vect
     	     
     	     
     
-    for(int iJet = 0; iJet < _Jets.size()-1; iJet++)
+    for(int iJet = 0; iJet < _Jets.size(); iJet++)
     {
     	    pair<int,int> aPair = _Paired[iJet];
 	    
-	    TLorentzVector Jet;
-    	    Jet.SetPxPyPzE(_Jets[iJet]->Px(),_Jets[iJet]->Py(),_Jets[iJet]->Pz(),_Jets[iJet]->Energy());
-    	    
 	    
-	    for(int i = 1; i < _Jets.size(); i++)
+	    
+	    for(int i = 0; i < _Jets.size(); i++)
 	    {    
-	        pair<int,int> bPair = _Paired[i];
-		TLorentzVector Jet2;
-    	   	Jet2.SetPxPyPzE(_Jets[i]->Px(),_Jets[i]->Py(),_Jets[i]->Pz(),_Jets[i]->Energy());
+	        
+		  pair<int,int> bPair = _Paired[i];
+	      if(i != iJet)
+		{
+		  TLorentzVector Jet2;
+    	   	  Jet2.SetPxPyPzE(_Jets[i]->Px(),_Jets[i]->Py(),_Jets[i]->Pz(),_Jets[i]->Energy());
+    	    	  
+		  TLorentzVector Jet;
+    	    	  Jet.SetPxPyPzE(_Jets[iJet]->Px(),_Jets[iJet]->Py(),_Jets[iJet]->Pz(),_Jets[iJet]->Energy());
     	    
-    	    	if(!aPair.second && !bPair.second )
-    	    	{	    
+    	    	  if(!aPair.second && !bPair.second)
+    	    	  {	    
     		    jets =  Jet + Jet2;
+		    
 		    if(fabs(jets.M() - 80.3) < fabs(Mass - 80.3) )
 		    {
 		    	Mass = jets.M(); 
@@ -1171,18 +1388,29 @@ vector <TLorentzVector> Channel_45_SM_Wqq(bool _debug,TLorentzVector _Bjet, vect
     		    	//if(tempDeltaR < dR)
 		    	//{
 		    		//dR = tempDeltaR;
-				Rjets = jets; 
+				Rjets = Jet + Jet2;
+				//Rjets.SetPxPyPzE(jets.Px(),jets.Py(),jets.Pz(),jets.Energy()); 
 				JetID_1 = aPair.first;  // place of the jet in selectedJets
 				JetID_2 = bPair.first; 
 			 
     		    	//}
 		    }
 
-    	    	}
+    	    	  }
+		}
 	   }
+	   
+	   
     }
     
-    
+    if(Mass == 0) cout << "zero mass " << endl; 
+    if(Rjets.M() == 0) 
+    {
+    	cout << "size " << _Jets.size() << endl; 
+	cout << "mass " << Mass << endl; 
+	cout << "R mass " << Rjets.M() << endl; 
+	cout << "zero mass 2" << endl; // this is the problematic one
+    }
     TLorentzVector ID_1; 
     ID_1.SetPxPyPzE(JetID_1,0,0,0); 
     
@@ -1900,6 +2128,10 @@ int main (int argc, char *argv[])
 	double EventsToMatch_c = 0.; 
 	double MatchedCounter_W = 0.; 
 	double EventsToMatch_W = 0.;
+	double MatchedCounter_Z = 0.; 
+	double EventsToMatch_Z = 0.;
+	double MatchedCounter_Wl = 0.; 
+	double EventsToMatch_Wl = 0.;
 	nEvents[d] = 0;
 	nEvents_Selected[d] = 0; 
 	
@@ -1956,6 +2188,39 @@ int main (int argc, char *argv[])
             //for (unsigned int ievt = 0; ievt < 20000; ievt++)
         {
             
+	   InvMass_4lept_Zdecay = -100;
+	   InvMass_FCNC_top_Zdecay = -100; 
+	   InvMass_SM_lb = -100; 
+	   InvMass_SM_W_lv = -100;
+	   InvMass_SM_W_qq = -100;
+	   InvMass_SM_W = -100;
+	   InvMass_SM_top_blv = -100;
+	   InvMass_SM_top_bqq = -100;
+	   InvMass_SM_top = -100;
+	   TrMass_W = -100; 
+	   TrMass_W_qq = -100; 
+	   TrMass_W_lv = -100; 
+	/*
+	   Phi_Higgs ; 
+	   Eta_Higgs; 
+	
+	   FCNC_top_eta; 
+	   FCNC_top_phi; 
+         */  FCNC_top_Pt = -5;
+	 
+	   Bdiscr = -5;
+	
+	
+	   InvMass_leptonW = -5; 
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
             vector < TRootVertex* > vertex;
             vector < TRootMuon* > init_muons;
             vector < TRootElectron* > init_electrons;
@@ -2277,7 +2542,6 @@ int main (int argc, char *argv[])
 		    }
 	        }
 		
-		if(B_partons.size() == 0 || C_partons.size() == 0 || W_partons.size() == 0) continue;   //when no partons are found, dismiss event
 		
 		const int TotalMinDist= JetPartonMatching::totalMinDist; 
 		
@@ -2322,22 +2586,160 @@ int main (int argc, char *argv[])
 		
 	    }
 	    
+
+	    /////////////////////////////
+	    /// lepton parton matching ////
+	    /////////////////////////////()
+	  
+	    std::vector<TLorentzVector> ZE_partons;
+	    std::vector<TLorentzVector> ZM_partons;
+	    std::vector<TLorentzVector> WE_partons;
+	    std::vector<TLorentzVector> WM_partons;
+	    std::vector<TLorentzVector> tlelectrons;
+	    std::vector<TLorentzVector> tlmuons;
+	    std::vector<int> MatchingId_ZE; 
+	    std::vector<int> MatchingId_ZM; 
+	    std::vector<int> MatchingId_WE; 
+	    std::vector<int> MatchingId_WM; 
 	    
+	    MatchingId_ZE.clear(); 
+	    MatchingId_ZM.clear();
+	    ZE_partons.clear(); 
+	    ZM_partons.clear();
+	    MatchingId_WE.clear(); 
+	    MatchingId_WM.clear();
+	    WE_partons.clear(); 
+	    WM_partons.clear();
+	    tlelectrons.clear(); 
+	    tlmuons.clear(); 
+	    
+	    if(validate)
+	    {
+	       for(unsigned int i=0;i<selectedElectrons.size();i++)
+	       {
+	            tlelectrons.push_back((TLorentzVector)*selectedElectrons[i]);
+		
+	       }
+	       for(unsigned int i=0;i<selectedMuons.size();i++)
+	       {
+	            tlmuons.push_back((TLorentzVector)*selectedMuons[i]);
+		
+	       }
+	    
+	       TLorentzVector electron; 
+	       TLorentzVector muon;
+	       
+	       //cout << mcParticles.size() << endl; 
+	       for(unsigned int iMC = 0; iMC< mcParticles.size(); iMC++)
+	       {
+	       
+	    	  //  cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
+            	    if( mcParticles[iMC]->status() != 3) continue;    // only those from hard interaction
+	      
+	    	    if(fabs(mcParticles[iMC]->type()) == 11 && fabs(mcParticles[iMC]->motherType()) == 25 && channelName.find("45")!=string::npos)  
+		    {
+		        electron = *mcParticles[iMC]; 
+		        
+		        if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
+            	        ZE_partons.push_back(electron); 
+		    }
+		    else if(fabs(mcParticles[iMC]->type()) == 13 && fabs(mcParticles[iMC]->motherType()) == 25 )  
+		    {
+		        muon = *mcParticles[iMC]; 
+		        
+		        if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
+            	        ZM_partons.push_back(muon); 
+		    }
+		     else if(fabs(mcParticles[iMC]->type()) == 13 && fabs(mcParticles[iMC]->motherType()) == 24 )  
+		    {
+		        muon = *mcParticles[iMC]; 
+		        
+		        if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
+            	        WM_partons.push_back(muon); 
+		    }
+		     else if(fabs(mcParticles[iMC]->type()) == 11 && fabs(mcParticles[iMC]->motherType()) == 24 )  
+		    {
+		        electron = *mcParticles[iMC]; 
+		        
+		        if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
+            	        WE_partons.push_back(electron); 
+		    }
+		    
+	        }
+		/*
+		if(selectedElectrons.size() + selectedMuons.size() > 4)
+		{
+		cout << "WE partons size: " << WE_partons.size() << endl; 
+		cout << "WM partons size: " << WM_partons.size() << endl; 
+		
+		}
+		*/
+		const int TotalMinDist= JetPartonMatching::totalMinDist; 
+		
+		JetPartonMatching myJetPartonMatcher_e = JetPartonMatching(ZE_partons,tlelectrons,TotalMinDist, true,true ,0.3);
+		JetPartonMatching myJetPartonMatcher_m = JetPartonMatching(ZM_partons,tlmuons,TotalMinDist, true,true ,0.3);
+		JetPartonMatching myJetPartonMatcher_eW = JetPartonMatching(WE_partons,tlelectrons,TotalMinDist, true,true ,0.3);
+		JetPartonMatching myJetPartonMatcher_mW = JetPartonMatching(WM_partons,tlmuons,TotalMinDist, true,true ,0.3);
+		/*if(selectedElectrons.size() + selectedMuons.size() > 4)
+		{
+		    myJetPartonMatcher_mW.print();
+		    cout << endl; 
+		    cout << endl; 
+		}*/
+		//myJetPartonMatcher_mW.print();
+		
+	
+		if(debug) 
+		{
+			cout << "E PARTONS" << endl; 
+			myJetPartonMatcher_e.print();
+			cout << "M PARTONS" << endl; 
+			myJetPartonMatcher_m.print();
+			
+		        cout << endl; 
+		}
+			
+		// get the matching jet IDs
+		for(int iID = 0; iID < ZE_partons.size(); iID++)
+		{
+		    int ID = -1; 
+		    
+		    ID = myJetPartonMatcher_e.getMatchForParton(iID,0); 
+		    MatchingId_ZE.push_back(ID); 
+		}
+		for(int iID = 0; iID < ZM_partons.size(); iID++)
+		{
+		    int ID = -1; 
+		    
+		    ID = myJetPartonMatcher_m.getMatchForParton(iID,0); 
+		    MatchingId_ZM.push_back(ID); 
+		}
+		for(int iID = 0; iID < WM_partons.size(); iID++)
+		{
+		    int ID = -1; 
+		    
+		    ID = myJetPartonMatcher_mW.getMatchForParton(iID,0); 
+		    MatchingId_WM.push_back(ID); 
+		}
+		for(int iID = 0; iID < WE_partons.size(); iID++)
+		{
+		    int ID = -1; 
+		    
+		    ID = myJetPartonMatcher_eW.getMatchForParton(iID,0); 
+		    MatchingId_WE.push_back(ID); 
+		}
+		/*if(selectedElectrons.size() + selectedMuons.size() > 4)
+		{
+		cout << "WE partons id size: " << MatchingId_WE.size() << endl; 
+		cout << "WM partons  id size: " << MatchingId_WM.size() << endl; 
+		}*/
+	    }
+	  
 	    //////////////////////////////////
 	    /// variables for 45          /////
 	    ///////////////////////////////////
 	    
-	    TLorentzVector Reco_FCNC_top_combi; 
-	    TLorentzVector leptonpair_1; // two OSSF with highest pt
-	    TLorentzVector leptonpair_2; // two OSSF with 2nd highest pt
-	    TLorentzVector leptonfour; // decay of Z
-	    TLorentzVector lepton_0;
-	    TLorentzVector lepton_1;
-	    TLorentzVector lepton_2;
-	    TLorentzVector lepton_3;
-	    TLorentzVector lepton_4;
-	    TLorentzVector missingEt_vector1; 
-	    TLorentzVector missingEt_vector2; 
+	   
 	    
 
 	    
@@ -2346,9 +2748,21 @@ int main (int argc, char *argv[])
 	    { 		
 	    	 if(debug) cout << "In nElectrons + nMuons > 3" << endl; 
 		 
-		
+	    	TLorentzVector leptonfour; // decay of Z
+		leptonfour.Clear(); 
+	    	TLorentzVector lepton_4;
+		lepton_4.Clear(); 
+	    	TLorentzVector missingEt_vector1; 
+		missingEt_vector1.Clear();
+	    	TLorentzVector missingEt_vector2; 
+		missingEt_vector2.Clear();
 		 
-		 bool Zdecay = false ; // defines if the leptons are coming from a Z decay  
+		 bool Zdecay = false ; // defines if the leptons are coming from a Z decay 
+		 int LeptonID_0;
+		int LeptonID_1;
+		int LeptonID_2;
+		int LeptonID_3;
+		int LeptonID_4 ;
 		 
 		 //define all leptons
 		 if(nElectrons+nMuons > 4)
@@ -2360,6 +2774,11 @@ int main (int argc, char *argv[])
 		     lepton_4 = vectors_5leptons[1];  // extra lepton from SM W decay
 		     missingEt_vector1 = vectors_5leptons[2];  // met candidate
 		     missingEt_vector2 = vectors_5leptons[3];  // met candidate
+		     LeptonID_0 = vectors_5leptons[4].Px();
+		     LeptonID_1 = vectors_5leptons[5].Px();
+		     LeptonID_2= vectors_5leptons[6].Px();
+		     LeptonID_3= vectors_5leptons[7].Px();
+		     LeptonID_4= vectors_5leptons[8].Px();
 		     
 		     TLorentzVector boolV = vectors_5leptons[4]; 
 		     if(boolV.Px() == 1) {
@@ -2370,6 +2789,171 @@ int main (int argc, char *argv[])
 		     if(debug) cout << "out nElectrons + nMuons > 4" << endl; 
 		     
 		     InvMass_leptonW = lepton_4.M(); 
+		     
+		     
+		     if(validate)
+		     {
+		       bool matches = true; 
+		       bool matchesW = true; 
+		       bool matchW = false; 
+		       for(int i = 0; i<MatchingId_ZE.size(); i++)
+		       {
+			    if(MatchingId_ZE[i] == -1) matches = false; 
+			    //cout << "matches false E" << endl; 
+		       }
+		       for(int i = 0; i<MatchingId_ZM.size(); i++)
+		       {
+			    if(MatchingId_ZM[i] == -1) matches = false; 
+			   // cout << "matches false M" << endl; 
+		       }
+		       for(int i = 0; i<MatchingId_WM.size(); i++)
+		       {
+			    if(MatchingId_WM[i] == -1) matchesW = false; 
+			    
+			    
+		       }
+		       for(int i = 0; i<MatchingId_WE.size(); i++)
+		       {
+			    if(MatchingId_WE[i] == -1) matchesW = false; 
+			    
+		       }
+		       
+		       if(MatchingId_WE.size() != 0 && MatchingId_WM.size() != 0) matchW = true; 
+		       if(MatchingId_WE.size() == 0 && MatchingId_WM.size() != 0) matchW = true;
+		       if(MatchingId_WE.size() != 0 && MatchingId_WM.size() == 0) matchW = true;
+		       
+		       if(matchesW && matchW)
+		       {
+		           //cout << "match W " << endl; 
+		           EventsToMatch_Wl++; 
+			   bool matchWw = false; 
+		       	  if(LeptonID_4 < 19)
+			  {
+			     for(int i = 0; i<MatchingId_WE.size(); i++)
+			     {
+				 if(MatchingId_WE[i] == LeptonID_4) matchWw = true;  
+		             }
+			  
+			  }
+			  else if(LeptonID_4>19)
+			  {
+			      for(int i = 0; i<MatchingId_WE.size(); i++)
+			     {
+			     	if(MatchingId_WM[i] == (LeptonID_4-20)) matchWw = true; 
+			     }
+			  }
+			  if(matchWw)
+			  {
+			     MatchedCounter_Wl++; 
+		          }
+		       }
+		       if(matches)
+		       {
+		         if(MatchingId_ZE.size() != 0 && MatchingId_ZM.size() != 0) EventsToMatch_Z++; 
+			 else if(MatchingId_ZE.size() == 0 && MatchingId_ZM.size() != 0) EventsToMatch_Z++; 
+			 else if(MatchingId_ZE.size() != 0 && MatchingId_ZM.size() == 0) EventsToMatch_Z++; 
+			
+			
+			//cout << "Events to match: " << EventsToMatch_Z << endl; 
+			bool leptonfound_0 = false; 
+		      	bool leptonfound_1 = false;
+		      	bool leptonfound_2 = false;
+		     	bool leptonfound_3 = false;
+		     	 
+			int Lepton_0 = -1; 
+			int Lepton_1 = -1; 
+			int Lepton_2 = -1; 
+			int Lepton_3 = -1; 
+			
+		     	if(LeptonID_0 <18)
+			{
+				Lepton_0 = LeptonID_0; 
+				for(int i = 0; i<MatchingId_ZE.size(); i++)
+				{
+					if(MatchingId_ZE[i] == Lepton_0) leptonfound_0 = true; 
+				}
+				
+			}
+			else if(LeptonID_0 > 19)
+			{
+				Lepton_0 = LeptonID_0 - 20; 
+				for(int i = 0; i<MatchingId_ZM.size(); i++)
+				{
+					if(MatchingId_ZM[i] == Lepton_0) leptonfound_0 = true; 
+				}
+				
+			}
+			
+			if(LeptonID_1 <18)
+			{
+				Lepton_1 = LeptonID_1; 
+				for(int i = 0; i<MatchingId_ZE.size(); i++)
+				{
+					if(MatchingId_ZE[i] == Lepton_1 && Lepton_1 != Lepton_0) leptonfound_1 = true; 
+				}
+				
+			}
+			else if(LeptonID_1 > 19)
+			{
+				Lepton_1 = LeptonID_1 - 20; 
+				for(int i = 0; i<MatchingId_ZM.size(); i++)
+				{
+					if(MatchingId_ZM[i] == Lepton_1 && Lepton_1 != Lepton_0) leptonfound_1 = true; 
+				}
+				
+			}
+			
+			if(LeptonID_2 <18)
+			{
+				Lepton_2 = LeptonID_2; 
+				for(int i = 0; i<MatchingId_ZE.size(); i++)
+				{
+					if(MatchingId_ZE[i] == Lepton_2 && Lepton_2 != Lepton_0 && Lepton_1 != Lepton_2) leptonfound_2 = true; 
+				}
+				
+			}
+			else if(LeptonID_2 > 19)
+			{
+				Lepton_2 = LeptonID_2 - 20; 
+				for(int i = 0; i<MatchingId_ZM.size(); i++)
+				{
+					if(MatchingId_ZM[i] == Lepton_2 && Lepton_2 != Lepton_0 && Lepton_1 != Lepton_2) leptonfound_2 = true; 
+				}
+				
+			}
+			
+			if(LeptonID_3 <18)
+			{
+				Lepton_3 = LeptonID_3; 
+				for(int i = 0; i<MatchingId_ZE.size(); i++)
+				{
+					if(MatchingId_ZE[i] == Lepton_3 && Lepton_3 != Lepton_0 && Lepton_1 != Lepton_3 && Lepton_2 != Lepton_3) leptonfound_3 = true; 
+				}
+				
+			}
+			else if(LeptonID_3 > 19)
+			{
+				Lepton_3 = LeptonID_3 - 20; 
+				for(int i = 0; i<MatchingId_ZM.size(); i++)
+				{
+					if(MatchingId_ZM[i] == Lepton_3 && Lepton_3 != Lepton_0 && Lepton_1 != Lepton_3 && Lepton_2 != Lepton_3) leptonfound_3 = true; 
+				}
+				
+			}
+		        if(leptonfound_0 && leptonfound_1 && leptonfound_2 && leptonfound_3 )  
+		        {
+			     MatchedCounter_Z++; 
+			
+			}
+		       
+		       
+		       //cout << "L0 = " << Lepton_0 << endl;
+		       //cout << "L1 = " << Lepton_1 << endl;
+		       //cout << "L2 = " << Lepton_2 << endl;
+		       //cout << "L3 = " << Lepton_3 << endl;
+		       
+		       }
+		    } 
 		 
 		 }
 		 else if(nElectrons+nMuons == 4)
@@ -2383,6 +2967,135 @@ int main (int argc, char *argv[])
 		     	 Zdecay = true; 
 			 
 		     }
+		     LeptonID_0 = vectors_4leptons[2].Px();
+		     LeptonID_1 = vectors_4leptons[3].Px();
+		     LeptonID_2= vectors_4leptons[4].Px();
+		     LeptonID_3= vectors_4leptons[5].Px();
+		      
+		      
+		      
+		    
+		     if(validate)
+		     {
+		       bool matches = true; 
+		       for(int i = 0; i<MatchingId_ZE.size(); i++)
+		       {
+			    if(MatchingId_ZE[i] == -1) matches = false; 
+			    //cout << "MatchingId_ZE[i]: i " << i << " ID: " << MatchingId_ZE[i] << endl; 
+			    //cout << "false E" << endl; 
+		       }
+		        for(int i = 0; i<MatchingId_ZM.size(); i++)
+		       {
+			    if(MatchingId_ZM[i] == -1) matches = false; 
+			    //cout << "MatchingId_ZM[i]: i " << i << " ID: " << MatchingId_ZM[i] << endl; 
+			    //cout << " false M " << endl; 
+		       }
+		       if(matches)
+		       {
+		         bool leptonfound_0 = false; 
+		         bool leptonfound_1 = false;
+		         bool leptonfound_2 = false;
+		         bool leptonfound_3 = false;
+		         
+		         if(MatchingId_ZE.size() != 0 && MatchingId_ZM.size() != 0) EventsToMatch_Z++; 
+			 else if(MatchingId_ZE.size() == 0 && MatchingId_ZM.size() != 0) EventsToMatch_Z++; 
+			 else if(MatchingId_ZE.size() != 0 && MatchingId_ZM.size() == 0) EventsToMatch_Z++; 
+			//cout << EventsToMatch_Z << endl; 
+			
+			int Lepton_0 = -1; 
+			int Lepton_1 = -1; 
+			int Lepton_2 = -1; 
+			int Lepton_3 = -1; 
+		     	if(LeptonID_0 <18)
+			{
+				Lepton_0 = LeptonID_0; 
+				for(int i = 0; i<MatchingId_ZE.size(); i++)
+				{
+					if(MatchingId_ZE[i] == Lepton_0) leptonfound_0 = true; 
+				}
+				
+			}
+			else if(LeptonID_0 > 19)
+			{
+				Lepton_0 = LeptonID_0 - 20; 
+				for(int i = 0; i<MatchingId_ZM.size(); i++)
+				{
+					if(MatchingId_ZM[i] == Lepton_0) leptonfound_0 = true; 
+				}
+				
+			}
+			
+			if(LeptonID_1 <18)
+			{
+				Lepton_1 = LeptonID_1; 
+				for(int i = 0; i<MatchingId_ZE.size(); i++)
+				{
+					if(MatchingId_ZE[i] == Lepton_1 && Lepton_1 != Lepton_0) leptonfound_1 = true; 
+				}
+				
+			}
+			else if(LeptonID_1 > 19)
+			{
+				Lepton_1 = LeptonID_1 - 20; 
+				for(int i = 0; i<MatchingId_ZM.size(); i++)
+				{
+					if(MatchingId_ZM[i] == Lepton_1 && Lepton_1 != Lepton_0) leptonfound_1 = true; 
+				}
+				
+			}
+			
+			if(LeptonID_2 <18)
+			{
+				Lepton_2 = LeptonID_2; 
+				for(int i = 0; i<MatchingId_ZE.size(); i++)
+				{
+					if(MatchingId_ZE[i] == Lepton_2 && Lepton_2 != Lepton_0 && Lepton_1 != Lepton_2) leptonfound_2 = true; 
+				}
+				
+			}
+			else if(LeptonID_2 > 19)
+			{
+				Lepton_2 = LeptonID_2 - 20; 
+				for(int i = 0; i<MatchingId_ZM.size(); i++)
+				{
+					if(MatchingId_ZM[i] == Lepton_2 && Lepton_2 != Lepton_0 && Lepton_1 != Lepton_2) leptonfound_2 = true; 
+				}
+				
+			}
+			
+			if(LeptonID_3 <18)
+			{
+				Lepton_3 = LeptonID_3; 
+				for(int i = 0; i<MatchingId_ZE.size(); i++)
+				{
+					if(MatchingId_ZE[i] == Lepton_3 && Lepton_3 != Lepton_0 && Lepton_1 != Lepton_3 && Lepton_2 != Lepton_3) leptonfound_3 = true; 
+				}
+				
+			}
+			else if(LeptonID_3 > 19)
+			{
+				Lepton_3 = LeptonID_3 - 20; 
+				for(int i = 0; i<MatchingId_ZM.size(); i++)
+				{
+					if(MatchingId_ZM[i] == Lepton_3 && Lepton_3 != Lepton_0 && Lepton_1 != Lepton_3 && Lepton_2 != Lepton_3) leptonfound_3 = true; 
+				}
+				
+			}
+		        if(leptonfound_0 && leptonfound_1 && leptonfound_2 && leptonfound_3 )  
+		        {
+			     MatchedCounter_Z++; 
+			
+			}
+			
+	
+			
+			//cout << "L0 = " << Lepton_0 << endl;
+		       //cout << "L1 = " << Lepton_1 << endl;
+		       //cout << "L2 = " << Lepton_2 << endl;
+		      // cout << "L3 = " << Lepton_3 << endl;
+		       }
+		    } 
+		     
 		      
 		     if(debug) cout << "Out nElectrons + nMuons = 4" << endl; 
 		 }
@@ -2425,7 +3138,8 @@ int main (int argc, char *argv[])
 		         tempBjet = highestDisc[0];
 			 Bdiscr = highestDisc[1].Px(); 
 			 Bjet_ID = highestDisc[2].Px();
-			 
+			 if(MatchingId_b.size() != 0)
+			 {
 			 if(validate && MatchingId_b[0] != -1)
 			 {
 			 	if(debug) cout << "in validation" << endl; 
@@ -2452,6 +3166,7 @@ int main (int argc, char *argv[])
 				}
 				
 			 }
+			 }
 		 
 		 }
 		 
@@ -2463,7 +3178,9 @@ int main (int argc, char *argv[])
 		 {
 		 	//find the right c-jet from FCNC decay
 		 	Jets_Paired_c = Channel_45_FCNC_cjet(debug, Jets_Paired_b, selectedJets, leptonfour); 
-		 
+			 
+		 	if(MatchingId_c.size() != 0)
+			{
 		 	if(validate && MatchingId_c[0] != -1 )
 			{
 			   EventsToMatch_c++;
@@ -2492,7 +3209,7 @@ int main (int argc, char *argv[])
 			    	True_cjet_Pt -> Fill(selectedJets[MatchingId_c[0]]->Pt()); 
 			    }
 		 	 }
-			 
+			 }
 			 //Calculate FCNC top from the chosen c-jet and Higgs
 		 	TLorentzVector FCNC_top = Channel_45_FCNC_top(debug, Jets_Paired_c,leptonfour,selectedJets,Bjet_ID);
 			InvMass_FCNC_top_Zdecay = FCNC_top.M(); 
@@ -2508,7 +3225,7 @@ int main (int argc, char *argv[])
 		 {
 		 	 
 		 	 // W boson decays hadronically
-		 	 if(nJets>2 && (nMuons + nElectrons == 4))
+		 	 if(nJets>3 && (nMuons + nElectrons == 4))
 		 	 {
 		 	  
 		 	 
@@ -2520,7 +3237,7 @@ int main (int argc, char *argv[])
 				 int Wjet_ID_2 = WjetCalc[2].Px();
 				 
 				 
-				 if(validate)
+				 if(validate && MatchingId_W.size() != 0)
 				 { 
 				 	for(int i = 0; i < MatchingId_W.size(); i++)
 					{
@@ -2590,6 +3307,7 @@ int main (int argc, char *argv[])
 		 	 {
 		 		 //define the missing et 
 		 		 TLorentzVector missingEt_vector; 
+				 missingEt_vector.Clear(); 
 		 	         bool NonNegMET = false; 
 		
 		 		 TLorentzVector SumInv1; 
@@ -3133,6 +3851,8 @@ int main (int argc, char *argv[])
 	if(validate) cout << "Bjet matching efficiency is " << (double) (MatchedCounter/EventsToMatch)*100 << " % or " << MatchedCounter << " of " << EventsToMatch  << " SM b jets" <<endl; 
 	if(validate) cout << "Cjet matching efficiency is " << (double) (MatchedCounter_c/EventsToMatch_c)*100 << " % or " <<MatchedCounter_c << " of " << EventsToMatch_c  << " FCNC c jets" <<endl; 
 	if(validate) cout << "jet matching from W efficiency is " << (double) (MatchedCounter_W/EventsToMatch_W)*100 << " % or " << MatchedCounter_W << " of " << EventsToMatch_W  << " SM W jets" <<endl; 
+	if(validate) cout << "lepton matching from H efficiency is " << (double) (MatchedCounter_Z/EventsToMatch_Z)*100 << " % or " << MatchedCounter_Z << " of " << EventsToMatch_Z << " FCNC Z leptons" <<endl; 
+	if(validate) cout << "lepton matching from W efficiency is " << (double) (MatchedCounter_Wl/EventsToMatch_Wl)*100 << " % or " << MatchedCounter_Wl << " of " << EventsToMatch_Wl << " W leptons" <<endl; 
 	
 	if(validate){
 	 SM_b_selection_efficiency->SetBinContent(1,MatchedCounter/EventsToMatch); 
