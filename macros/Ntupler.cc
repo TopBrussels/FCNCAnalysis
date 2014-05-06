@@ -2078,6 +2078,8 @@ int main (int argc, char *argv[])
 	TH1F * SM_b_selection_efficiency = new TH1F("SM_b_selection_efficiency","SM_b_selection_efficiency",2,0,2);
 	TH1F * SM_Wjet_selection_efficiency = new TH1F("SM_Wjet_selection_efficiency","SM_Wjet_selection_efficiency",2,0,2);
 	TH1F * FCNC_c_selection_efficiency = new TH1F("FCNC_c_selection_efficiency","FCNC_c_selection_efficiency",2,0,2);
+	TH1F * FCNC_selection_efficiency = new TH1F("FCNC_selection_efficiency","FCNC_selection_efficiency",2,0,2);
+	TH1F * SM_selection_efficiency = new TH1F("SM_selection_efficiency","SM_selection_efficiency",2,0,2);
 	TH1F * Selected_bjet_Pt = new TH1F("Selected_bjet_Pt","Selected_bjet_Pt",200,0,200); 
 	TH1F * True_bjet_Pt = new TH1F("True_bjet_Pt","True_bjet_Pt",200,0,200); 
 	TH1F * Selected_cjet_Pt = new TH1F("Selected_cjet_Pt","Selected_cjet_Pt",200,0,200); 
@@ -2132,6 +2134,10 @@ int main (int argc, char *argv[])
 	double EventsToMatch_Z = 0.;
 	double MatchedCounter_Wl = 0.; 
 	double EventsToMatch_Wl = 0.;
+	double Matched_FCNC_3L = 0.; 
+	double Matched_FCNCtoMatch = 0.;
+	double Matched_SM_3L = 0.; 
+	double Matched_SMtoMatch = 0.;
 	nEvents[d] = 0;
 	nEvents_Selected[d] = 0; 
 	
@@ -2239,7 +2245,7 @@ int main (int argc, char *argv[])
 	    	sort(mcParticles.begin(),mcParticles.end(),HighestPt()); // HighestPt() is included from the Selection class
 	    	
 	    }
-	    if(validate && (datasetName.find("TTJetsTocHbW_HToZZ_ZToJ")!=string::npos ||datasetName.find("TTJetsTocHbW_HToZZ_ZToB")!=string::npos ||datasetName.find("TTJetsTocHbW_HToZZ_ZToNuL")!=string::npos || datasetName.find("TTJetsTocZ")!=string::npos || datasetName.find("TTJetsTocHbW_HToWW_WToNuL")!=string::npos)  && channelName.find("3L")!=string::npos  )
+	    if(validate && (datasetName.find("TTJetsTocHbW_HToZZ_ZToLL")!=string::npos||datasetName.find("TTJetsTocHbW_HToZZ_ZToJ")!=string::npos||datasetName.find("TTJetsTocHbW_HToZZ_ZToB")!=string::npos ||datasetName.find("TTJetsTocHbW_HToZZ_ZToNuL")!=string::npos || datasetName.find("TTJetsTocZ")!=string::npos ||    datasetName.find("TTJetsTocHbW_HToWW_WToLNuL")!=string::npos)  && channelName.find("3L")!=string::npos  )
 	    {
 	    	if(debug) cout << "Loading mc particles" << endl; 
 	    	treeLoader.LoadMCEvent(ievt,0,0,mcParticles,false); 
@@ -2254,8 +2260,7 @@ int main (int argc, char *argv[])
             nEvents[d]++;
             
             if(ievt%1000 == 0)
-                std::cout<<"Processing the "<<ievt<<"th event (" <<
-		((double)ievt/(double)datasets[d]->NofEvtsToRunOver())*100 <<"%)" << " +> "<< (nEvents_Selected[d]/(double)datasets[d]->NofEvtsToRunOver())*100 << "% selected of the total events" << flush<<"\r";
+                std::cout<<"Processing the "<<ievt<<"th event (" <<((double)ievt/(double)datasets[d]->NofEvtsToRunOver())*100 <<"%)" << " +> "<<(nEvents_Selected[d]/(double)datasets[d]->NofEvtsToRunOver())*100 << "% selected of the total " << (double)datasets[d]->NofEvtsToRunOver() << " events" << flush<<"\r";
             
             ////////////////
             // LOAD EVENT //
@@ -2487,7 +2492,7 @@ int main (int argc, char *argv[])
 	    
 	    std::vector<TLorentzVector> B_partons;
 	    std::vector<TLorentzVector> C_partons;
-	     std::vector<TLorentzVector> W_partons;
+	    std::vector<TLorentzVector> W_partons;
 	    std::vector<TLorentzVector> tljets;
 	    std::vector<int> MatchingId_b; 
 	    std::vector<int> MatchingId_c; 
@@ -2501,7 +2506,7 @@ int main (int argc, char *argv[])
 	    tljets.clear(); 
 	    
 	    
-	    if(validate)
+	    if(validate && channelName.find("45")!=string::npos)
 	    {
 	       for(unsigned int i=0;i<selectedJets.size();i++)
 	       {
@@ -2518,7 +2523,7 @@ int main (int argc, char *argv[])
 	    	    //if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
             	    if( mcParticles[iMC]->status() != 3) continue;    // only those from hard interaction
 	      
-	    	    if(fabs(mcParticles[iMC]->type()) == 5 && fabs(mcParticles[iMC]->motherType()) == 6 && channelName.find("45")!=string::npos)  
+	    	    if(fabs(mcParticles[iMC]->type()) == 5 && fabs(mcParticles[iMC]->motherType()) == 6 )  
 		    {
 		        bquark = *mcParticles[iMC]; 
 		        
@@ -2613,7 +2618,7 @@ int main (int argc, char *argv[])
 	    tlelectrons.clear(); 
 	    tlmuons.clear(); 
 	    
-	    if(validate)
+	    if(validate && channelName.find("45")!=string::npos)
 	    {
 	       for(unsigned int i=0;i<selectedElectrons.size();i++)
 	       {
@@ -2636,7 +2641,7 @@ int main (int argc, char *argv[])
 	    	  //  cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
             	    if( mcParticles[iMC]->status() != 3) continue;    // only those from hard interaction
 	      
-	    	    if(fabs(mcParticles[iMC]->type()) == 11 && fabs(mcParticles[iMC]->motherType()) == 25 && channelName.find("45")!=string::npos)  
+	    	    if(fabs(mcParticles[iMC]->type()) == 11 && fabs(mcParticles[iMC]->motherType()) == 25 )  
 		    {
 		        electron = *mcParticles[iMC]; 
 		        
@@ -2736,13 +2741,168 @@ int main (int argc, char *argv[])
 	    }
 	  
 	    //////////////////////////////////
-	    /// variables for 45          /////
+	    /// lepton matching for 3L       /////
 	    ///////////////////////////////////
+	    std::vector<TLorentzVector> E_3L_partons;
+	    std::vector<TLorentzVector> M_3L_partons;
+	    std::vector<TLorentzVector> E_3L_SMpartons;
+	    std::vector<TLorentzVector> M_3L_SMpartons;
+	    std::vector<TLorentzVector> tlelectrons_3L;
+	    std::vector<TLorentzVector> tlmuons_3L;
+	    std::vector<int> MatchingId_E_3L; 
+	    std::vector<int> MatchingId_M_3L; 
+	    std::vector<int> MatchingId_E_3L_SM; 
+	    std::vector<int> MatchingId_M_3L_SM; 
 	    
-	   
+	    MatchingId_E_3L.clear(); 
+	    MatchingId_M_3L.clear();
+	    E_3L_partons.clear(); 
+	    M_3L_partons.clear();
+	    MatchingId_E_3L_SM.clear(); 
+	    MatchingId_M_3L_SM.clear();
+	    E_3L_SMpartons.clear(); 
+	    M_3L_SMpartons.clear();
+	    tlelectrons_3L.clear(); 
+	    tlmuons_3L.clear(); 
+	    
+	    if(validate && channelName.find("3L")!=string::npos)
+	    {
+	       for(unsigned int i=0;i<selectedElectrons.size();i++)
+	       {
+	            tlelectrons_3L.push_back((TLorentzVector)*selectedElectrons[i]);
+		
+	       }
+	       for(unsigned int i=0;i<selectedMuons.size();i++)
+	       {
+	            tlmuons_3L.push_back((TLorentzVector)*selectedMuons[i]);
+		
+	       }
+	    
+	       TLorentzVector electron; 
+	       TLorentzVector muon;
+	       
+	      if(mcParticles.size() != 0 && debug)  cout << "mcParticles.size() = " << mcParticles.size() << endl; 
+	       for(unsigned int iMC = 0; iMC< mcParticles.size(); iMC++)
+	       {
+	       
+	    	    //  cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
+            	    if( mcParticles[iMC]->status() != 3) continue;    // only those from hard interaction
+	      
+	    	    if(fabs(mcParticles[iMC]->type()) == 11 && fabs(mcParticles[iMC]->motherType()) == 25)  
+		    {
+		        electron = *mcParticles[iMC]; 
+		        
+		        if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
+            	        E_3L_partons.push_back(electron); 
+		    }
+		    else if(fabs(mcParticles[iMC]->type()) == 13 && fabs(mcParticles[iMC]->motherType()) == 25 )  
+		    {
+		        muon = *mcParticles[iMC]; 
+		        
+		        if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
+            	        M_3L_partons.push_back(muon); 
+		    }
+		    else if(fabs(mcParticles[iMC]->type()) == 13 && fabs(mcParticles[iMC]->motherType()) == 23 )  
+		    {
+		        muon = *mcParticles[iMC]; 
+		        
+		        if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
+            	        M_3L_partons.push_back(muon); 
+		    }
+		     else if(fabs(mcParticles[iMC]->type()) == 11 && fabs(mcParticles[iMC]->motherType()) == 23 )  
+		    {
+		        electron = *mcParticles[iMC]; 
+		        
+		        if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
+            	        E_3L_partons.push_back(electron); 
+		    }
+		    
+		    if(fabs(mcParticles[iMC]->type()) == 11 && fabs(mcParticles[iMC]->motherType()) == 24 )  
+		    {
+		        electron = *mcParticles[iMC]; 
+		        
+		        if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
+            	        E_3L_SMpartons.push_back(electron); 
+		    }
+		    else if(fabs(mcParticles[iMC]->type()) == 13 && fabs(mcParticles[iMC]->motherType()) == 24 )  
+		    {
+		        muon = *mcParticles[iMC]; 
+		        
+		        if(debug) cout << iMC << ":  status: " << mcParticles[iMC]->status() << "  pdgId: " << mcParticles[iMC]->type() << " motherPdgId: " << mcParticles[iMC]->motherType() << "  grannyPdgId: " << mcParticles[iMC]->grannyType() << endl;
+            	        M_3L_SMpartons.push_back(muon); 
+		    }
+		    
+	        }
+		
+		
+		
+		const int TotalMinDist= JetPartonMatching::totalMinDist; 
+		
+		JetPartonMatching myJetPartonMatcher_e3L = JetPartonMatching(E_3L_partons,tlelectrons_3L,TotalMinDist, true,true ,0.3);
+		JetPartonMatching myJetPartonMatcher_m3L = JetPartonMatching(M_3L_partons,tlmuons_3L,TotalMinDist, true,true ,0.3);
+		JetPartonMatching myJetPartonMatcher_e3L_SM = JetPartonMatching(E_3L_SMpartons,tlelectrons_3L,TotalMinDist, true,true ,0.3);
+		JetPartonMatching myJetPartonMatcher_m3L_SM = JetPartonMatching(M_3L_SMpartons,tlmuons_3L,TotalMinDist, true,true ,0.3);
+		
+		
+		/*
+		if(debug) 
+		{
+			cout << endl; 
+			cout << "E PARTONS" << endl; 
+			myJetPartonMatcher_e3L.print();
+			cout << endl; 
+			cout << "M PARTONS" << endl; 
+			myJetPartonMatcher_m3L.print();
+			
+		        cout << endl; 
+		}
+		*/	
+		// get the matching jet IDs
+		if((E_3L_partons.size() != 0 || M_3L_partons.size()!=0) && debug )
+		{
+			cout << "E_3L_partons.size() " << E_3L_partons.size() << endl; 
+			cout << "M_3L_partons.size() " << M_3L_partons.size() << endl; 
+		}
+		for(int iID = 0; iID < E_3L_partons.size(); iID++)
+		{
+		    int ID = -1; 
+		    
+		    ID = myJetPartonMatcher_e3L.getMatchForParton(iID,0); 
+		    MatchingId_E_3L.push_back(ID); 
+		}
+		for(int iID = 0; iID < M_3L_partons.size(); iID++)
+		{
+		    int ID = -1; 
+		    
+		    ID = myJetPartonMatcher_m3L.getMatchForParton(iID,0); 
+		    MatchingId_M_3L.push_back(ID); 
+		}
+		for(int iID = 0; iID < E_3L_SMpartons.size(); iID++)
+		{
+		    int ID = -1; 
+		    
+		    ID = myJetPartonMatcher_e3L_SM.getMatchForParton(iID,0); 
+		    MatchingId_E_3L_SM.push_back(ID); 
+		}
+		for(int iID = 0; iID < M_3L_SMpartons.size(); iID++)
+		{
+		    int ID = -1; 
+		    
+		    ID = myJetPartonMatcher_m3L_SM.getMatchForParton(iID,0); 
+		    MatchingId_M_3L_SM.push_back(ID); 
+		}
+		
+		if((MatchingId_E_3L.size() != 0 || MatchingId_M_3L.size() !=0) && debug)
+		{
+		cout << "E_3L partons id size: " << MatchingId_E_3L.size() << endl; 
+		cout << "M_3L partons  id size: " << MatchingId_M_3L.size() << endl; 
+		}
+	    }
+	  
+	  
 	    
 
-	    
+	    ////////////////////////////: 45 ///////////////////////////
 	    
 	    if(channelName.find("45")!=string::npos && (nElectrons+nMuons>3))
 	    { 		
@@ -3373,7 +3533,15 @@ int main (int argc, char *argv[])
 
 	    } // > 3 leptons
 	    
-/*	    if(channelName.find("3L")!=string::npos && (nElectrons+nMuons == 3))
+	    
+	    
+	    
+	    
+	    
+	    
+	    //////////////////////////////// 3 L ///////////////////////////////
+	    
+	    if(channelName.find("3L")!=string::npos && (nElectrons+nMuons == 3))
 	    {
 	    	if(debug)cout << " In nleptons == 3 " << endl; 
 		
@@ -3398,11 +3566,12 @@ int main (int argc, char *argv[])
 		 	 Muon.SetPxPyPzE(selectedMuons[i]->Px(), selectedMuons[i]->Py(), selectedMuons[i]->Pz(), selectedMuons[i]->Energy()); 
 		 	 tempLeptons = tempLeptons+Muon; 
 		}
+		
 		InvMass_Leptons = tempLeptons.M(); 
 		
 		if(debug)cout << " determined invariant mass of all 3 leptons " << endl; 
 		
-		
+		// the fcnc leptons are taken as the leptons closest in delta r
 		Double_t temp_DR = 0.; 
 		Double_t temp_DRmin = 100000.; 
 		TLorentzVector FCNC_lepton1; 
@@ -3416,8 +3585,11 @@ int main (int argc, char *argv[])
 		bool FCNC_lepton1_isE = false; 
 		bool FCNC_lepton2_isM= false; 
 		bool FCNC_lepton2_isE = false; 
+		bool SM_lepton_isM= false; 
+		bool SM_lepton_isE = false; 
 		int Number_1 = -1; 
 		int Number_2 = -1; 
+		int Number_3 = -1; 
 		
 			
 	    	for(int i = 0; i<HighestPtLept.size(); i++)
@@ -3508,62 +3680,261 @@ int main (int argc, char *argv[])
 		Phi_FCNC_Leptons = tempFCNC.Phi(); 
 		Theta_FCNC_Leptons = tempFCNC.Theta(); 
 		
+		////////////////////
+		//// VALIDATION ////
+		////////////////////
+		int counter_FCNC_3L = 0; 
+		int counter_FCNCtoMatch = 0; 
+		
+		if(validate)
+		{
+			/*
+			if(MatchingId_M_3L.size()!=0){
+			 cout << "MatchingId_M_3L.size(): " << MatchingId_M_3L.size() << endl; 
+			 for(int i = 0 ; i< MatchingId_M_3L.size(); i++)
+			 {
+			 	cout << "i: " << i << " MatchingId_M_3L[i]: " << MatchingId_M_3L[i] << endl; 
+			 }
+			}
+			if(MatchingId_E_3L.size()!=0){
+			 cout << "MatchingId_E_3L.size(): " << MatchingId_E_3L.size() << endl; 
+			 for(int i = 0 ; i< MatchingId_E_3L.size(); i++)
+			 {
+			 	cout << "i: " << i << " MatchingId_E_3L[i]: " << MatchingId_E_3L[i] << endl; 
+			 }
+			} 
+			if(MatchingId_E_3L.size()!=0 || MatchingId_M_3L.size()!=0)
+			{cout << "Number_1: " << Number_1 << endl; 
+			cout << "Number_2: " << Number_2 << endl;} 
+			*/
+			if(FCNC_lepton1_isMuon)
+			{
+			    for(int i = 0 ; i< MatchingId_M_3L.size(); i++)
+			    {
+			    	if(MatchingId_M_3L[i] != -1)
+				{
+					counter_FCNCtoMatch++; 
+					if(MatchingId_M_3L[i] == Number_1) 
+					{
+						counter_FCNC_3L++; 
+						//cout << "counter_FCNC_3L: " << counter_FCNC_3L << endl; 
+					}
+				}
+			    }
+			}
+			else if (FCNC_lepton1_isElectron)
+			{
+			    for(int i = 0 ; i< MatchingId_E_3L.size(); i++)
+			    {
+			    	if(MatchingId_E_3L[i] != -1)
+				{
+					counter_FCNCtoMatch++; 
+					if(MatchingId_E_3L[i] == Number_1) 
+					{
+						counter_FCNC_3L++; 
+						//cout << "counter_FCNC_3L: " << counter_FCNC_3L << endl; 
+					}
+				}
+			    }
+			
+			
+			}
+			if(FCNC_lepton2_isMuon)
+			{
+			    for(int i = 0 ; i< MatchingId_M_3L.size(); i++)
+			    {
+			    	if(MatchingId_M_3L[i] != -1)
+				{
+					counter_FCNCtoMatch++; 
+					if(MatchingId_M_3L[i] == Number_2)
+					{
+					 counter_FCNC_3L++; 
+					 //cout << "counter_FCNC_3L: " << counter_FCNC_3L << endl; 
+					}
+				}
+			    }
+		
+			}
+			else if (FCNC_lepton2_isElectron)
+			{
+			     for(int i = 0 ; i< MatchingId_E_3L.size(); i++)
+			    {
+			    	if(MatchingId_E_3L[i] != -1)
+				{
+					counter_FCNCtoMatch++; 
+					if(MatchingId_E_3L[i] == Number_2) 
+					{
+						counter_FCNC_3L++; 
+						//cout << "counter_FCNC_3L: " << counter_FCNC_3L << endl; 
+					}
+				}
+			    }
+
+			}
+			Matched_FCNC_3L = Matched_FCNC_3L + counter_FCNC_3L; 
+			Matched_FCNCtoMatch = Matched_FCNCtoMatch+counter_FCNCtoMatch; 
+		
+		
+		
+		}
+		//////////////////////
 		
 		TLorentzVector SMLepton; 
 		
 		//define remaining lepton
 		if(selectedMuons.size() == 3)
 		{
-			if(Number_1 != 0 && Number_2 != 0) SMLepton.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(),selectedMuons[0]->Pz(), selectedMuons[0]->Energy()); 
-			if(Number_1 != 1 && Number_2 != 1) SMLepton.SetPxPyPzE(selectedMuons[1]->Px(), selectedMuons[1]->Py(),selectedMuons[1]->Pz(), selectedMuons[1]->Energy()); 
-			if(Number_1 != 2 && Number_2 != 2) SMLepton.SetPxPyPzE(selectedMuons[2]->Px(), selectedMuons[2]->Py(),selectedMuons[2]->Pz(), selectedMuons[2]->Energy()); 
-			
+			SM_lepton_isM = true; 
+			if(Number_1 != 0 && Number_2 != 0){
+			 SMLepton.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(),selectedMuons[0]->Pz(), selectedMuons[0]->Energy()); 
+			 Number_3 = 0; 
+			}
+			if(Number_1 != 1 && Number_2 != 1){
+			 SMLepton.SetPxPyPzE(selectedMuons[1]->Px(), selectedMuons[1]->Py(),selectedMuons[1]->Pz(), selectedMuons[1]->Energy()); 
+			 Number_3 = 1; 
+			}
+			if(Number_1 != 2 && Number_2 != 2){
+			 SMLepton.SetPxPyPzE(selectedMuons[2]->Px(), selectedMuons[2]->Py(),selectedMuons[2]->Pz(), selectedMuons[2]->Energy()); 
+			 Number_3 = 2; 
+			}
 		}
 		else if(selectedElectrons.size() == 3)
 		{
-			if(Number_1 != 0 && Number_2 != 0) SMLepton.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(),selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy()); 
-			if(Number_1 != 1 && Number_2 != 1) SMLepton.SetPxPyPzE(selectedElectrons[1]->Px(), selectedElectrons[1]->Py(),selectedElectrons[1]->Pz(), selectedElectrons[1]->Energy()); 
-			if(Number_1 != 2 && Number_2 != 2) SMLepton.SetPxPyPzE(selectedElectrons[2]->Px(), selectedElectrons[2]->Py(),selectedElectrons[2]->Pz(), selectedElectrons[2]->Energy()); 
-			
+			SM_lepton_isE = true; 
+			if(Number_1 != 0 && Number_2 != 0){
+			 SMLepton.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(),selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy()); 
+			 Number_3 = 0; 
+			}
+			if(Number_1 != 1 && Number_2 != 1){
+			 SMLepton.SetPxPyPzE(selectedElectrons[1]->Px(), selectedElectrons[1]->Py(),selectedElectrons[1]->Pz(), selectedElectrons[1]->Energy()); 
+			 Number_3 = 1; 
+			}
+			if(Number_1 != 2 && Number_2 != 2){
+			 SMLepton.SetPxPyPzE(selectedElectrons[2]->Px(), selectedElectrons[2]->Py(),selectedElectrons[2]->Pz(), selectedElectrons[2]->Energy()); 
+			 Number_3 = 2; 
+			}
 		}
 		else if(selectedMuons.size()==1)
 		{
 			if(FCNC_lepton1_isMuon)
 			{
-				 
-				if(Number_2 != 0) SMLepton.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(),selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy()); 
-				if(Number_2 != 1) SMLepton.SetPxPyPzE(selectedElectrons[1]->Px(), selectedElectrons[1]->Py(),selectedElectrons[1]->Pz(), selectedElectrons[1]->Energy()); 
+				SM_lepton_isE = true;  
+				if(Number_2 != 0){
+				 SMLepton.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(),selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy()); 
+				 Number_3 = 0; 
+				}
+				if(Number_2 != 1){
+				 SMLepton.SetPxPyPzE(selectedElectrons[1]->Px(), selectedElectrons[1]->Py(),selectedElectrons[1]->Pz(), selectedElectrons[1]->Energy()); 
+				 Number_3 = 1; 
+				}
 			}
 			else if(FCNC_lepton2_isMuon)
 			{
-				if(Number_1 != 0 ) SMLepton.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(),selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy()); 
-				if(Number_1 != 1 ) SMLepton.SetPxPyPzE(selectedElectrons[1]->Px(), selectedElectrons[1]->Py(),selectedElectrons[1]->Pz(), selectedElectrons[1]->Energy()); 
-				
+				SM_lepton_isE= true; 
+				if(Number_1 != 0 ){
+				 SMLepton.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(),selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy()); 
+				 Number_3 = 0; 
+				}
+				if(Number_1 != 1 ){
+				 SMLepton.SetPxPyPzE(selectedElectrons[1]->Px(), selectedElectrons[1]->Py(),selectedElectrons[1]->Pz(), selectedElectrons[1]->Energy()); 
+				 Number_3 = 1; 
+				}
 			}
 			else
 			{
+				SM_lepton_isM = true; 
 				SMLepton.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(),selectedMuons[0]->Pz(), selectedMuons[0]->Energy()); 
+				Number_3 = 0; 
+				
 			}
 		}
 		else if(selectedElectrons.size()==1)
 		{
 			if(FCNC_lepton1_isElectron)
 			{
-				 
-				if(Number_2 != 0) SMLepton.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(),selectedMuons[0]->Pz(), selectedMuons[0]->Energy()); 
-				if(Number_2 != 1) SMLepton.SetPxPyPzE(selectedMuons[1]->Px(), selectedMuons[1]->Py(),selectedMuons[1]->Pz(), selectedMuons[1]->Energy()); 
+				 SM_lepton_isM = true; 
+				if(Number_2 != 0){
+				 SMLepton.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(),selectedMuons[0]->Pz(), selectedMuons[0]->Energy()); 
+				 Number_3 = 0; 
+				}
+				if(Number_2 != 1){
+				 SMLepton.SetPxPyPzE(selectedMuons[1]->Px(), selectedMuons[1]->Py(),selectedMuons[1]->Pz(), selectedMuons[1]->Energy()); 
+				 Number_3 = 1; 
+				}
 			}
 			else if(FCNC_lepton2_isElectron)
 			{
-				if(Number_1 != 0 ) SMLepton.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(),selectedMuons[0]->Pz(), selectedMuons[0]->Energy()); 
-				if(Number_1 != 1 ) SMLepton.SetPxPyPzE(selectedMuons[1]->Px(), selectedMuons[1]->Py(),selectedMuons[1]->Pz(), selectedMuons[1]->Energy()); 
-				
+				SM_lepton_isM = true; 
+				if(Number_1 != 0 ){
+				 SMLepton.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(),selectedMuons[0]->Pz(), selectedMuons[0]->Energy()); 
+				 Number_3 = 0; 
+				}
+				if(Number_1 != 1 ){
+				 SMLepton.SetPxPyPzE(selectedMuons[1]->Px(), selectedMuons[1]->Py(),selectedMuons[1]->Pz(), selectedMuons[1]->Energy()); 
+				 Number_3 = 1; 
+				}
 			}
 			else
 			{
+				SM_lepton_isE = true; 
 				SMLepton.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(),selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy()); 
+				Number_3 = 0; 
+				
 			}
 		}
+	
+		//////////////////// Validation
+		int counter_SM_3L = 0; 
+		int counter_SMtoMatch = 0; 
+		
+		if(validate)
+		{
+			
+			if(SM_lepton_isM)
+			{
+			    for(int i = 0 ; i< MatchingId_M_3L_SM.size(); i++)
+			    {
+			    	if(MatchingId_M_3L_SM[i] != -1)
+				{
+					counter_SMtoMatch++; 
+					if(MatchingId_M_3L_SM[i] == Number_3) 
+					{
+						counter_SM_3L++; 
+						//cout << "counter_SM_3L: " << counter_SM_3L << endl; 
+					}
+				}
+			    }
+			}
+			else if (SM_lepton_isE)
+			{
+			    for(int i = 0 ; i< MatchingId_E_3L_SM.size(); i++)
+			    {
+			    	if(MatchingId_E_3L_SM[i] != -1)
+				{
+					counter_SMtoMatch++; 
+					if(MatchingId_E_3L_SM[i] == Number_3) 
+					{
+						counter_SM_3L++; 
+						//cout << "counter_SM_3L: " << counter_SM_3L << endl; 
+					}
+				}
+			    }
+			
+			
+			}
+			
+			Matched_SM_3L = Matched_SM_3L + counter_SM_3L; 
+			Matched_SMtoMatch = Matched_SMtoMatch+counter_SMtoMatch; 
+		
+		
+		
+		}
+		
+		
+		
+		///////////////////////////
+		
+		
 		
 		Eta_SM_Lepton = SMLepton.Eta(); 
 		Pt_SM_Lepton = SMLepton.Pt(); 
@@ -3627,6 +3998,7 @@ int main (int argc, char *argv[])
 		
 		
 		//// add the c jet
+		/*
 		if(tcWW && nLJets >0)
 		{
 		    TLorentzVector Top_FCNC_Candidate = Channel_3L_FCNC_top_candidate(debug, tempFCNC, selectedLightJets); 
@@ -3683,8 +4055,8 @@ int main (int argc, char *argv[])
 		
 		}
 		
+		*/
 		
-*/		
 		
 		
 		
@@ -3827,13 +4199,13 @@ int main (int argc, char *argv[])
 		
 		
 		*/
-/*	    	myTree->Fill();
+	    	myTree->Fill();
 		nEvents_Selected[d]++;
 		if(debug) cout << "filled tree for 3l channel" << endl; 
 		
 	    }
 	    
-	*/    
+	    
 	    
 	    
 
@@ -3848,6 +4220,8 @@ int main (int argc, char *argv[])
 	
 	cout<<endl;
 	cout<<endl;	
+	if(channelName.find("45")!=string::npos)
+	{
 	if(validate) cout << "Bjet matching efficiency is " << (double) (MatchedCounter/EventsToMatch)*100 << " % or " << MatchedCounter << " of " << EventsToMatch  << " SM b jets" <<endl; 
 	if(validate) cout << "Cjet matching efficiency is " << (double) (MatchedCounter_c/EventsToMatch_c)*100 << " % or " <<MatchedCounter_c << " of " << EventsToMatch_c  << " FCNC c jets" <<endl; 
 	if(validate) cout << "jet matching from W efficiency is " << (double) (MatchedCounter_W/EventsToMatch_W)*100 << " % or " << MatchedCounter_W << " of " << EventsToMatch_W  << " SM W jets" <<endl; 
@@ -3864,7 +4238,17 @@ int main (int argc, char *argv[])
 	 SM_b_selection_efficiency->SetBinContent(1,-1);
 	 FCNC_c_selection_efficiency->SetBinContent(1,-1);
 	}
+	}
 	
+	if(channelName.find("3L")!=string::npos && validate)
+	{
+	   cout << "FCNC lepton matching efficiency is " << (double)(Matched_FCNC_3L/Matched_FCNCtoMatch)*100 << " % or " << Matched_FCNC_3L << " of " <<  Matched_FCNCtoMatch  << " FCNC leptons" <<endl; 
+	   cout << "SM lepton matching efficiency is " << (double)(Matched_SM_3L/Matched_SMtoMatch)*100 << " % or " <<  Matched_SM_3L << " of " <<  Matched_SMtoMatch  << " SM leptons" <<endl; 
+	   SM_selection_efficiency->SetBinContent(1,Matched_SM_3L/Matched_SMtoMatch);
+	   FCNC_selection_efficiency->SetBinContent(1,Matched_FCNC_3L/Matched_FCNCtoMatch);
+	
+	}
+	cout << "Number of selected events: " << nEvents_Selected[d] << endl; 
 	cout<<endl;
         
         
