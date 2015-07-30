@@ -1,0 +1,4 @@
+#! /bin/bash
+
+g++ -g -std=c++11 -L ~/lib -I ../ -l TopTreeAnaContent74 -l TopTreeAna74 -l MLP -l TreePlayer -l TMVA -l XMLIO -I `root-config --incdir` `root-config --libs` FCNC_EventSelection.cc -o MACRO
+#g++ -g -std=c++11 -L ~/lib -I ../ -l TopTreeAnaContent74 -l TopTreeAna74 -l MLP -l TreePlayer -l TMVA -l XMLIO -I `root-config --incdir` `root-config --libs` OldMacros/_ORIGINAL_FourTopBased_FCNC_EventSelection_1L3B.cc -o MACRO
