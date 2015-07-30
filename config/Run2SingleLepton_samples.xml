@@ -2,17 +2,7 @@
 <data>
 <datasets>
 
-<d name="TTJets"  title="t\bar{t}+jets MadGraph Spring15"   add="1"   color="633"  ls="1"  lw="2" normf="1"  EqLumi="13632.82" xsection="831.76"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v2/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TOPTREE-TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2-MINIAODSIM--CMSSW_74X_v2--MCRUN2_74_V9-All/150623_163453/0000/TOPTREE_*.root"/>
-
-<d name="TToLeptons"  title="Single t"   add="0"   color="633"  ls="0"  lw="2" normf="1"  EqLumi="223000.0" xsection="103.04"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/heilman/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/crab_TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola_TOPTREE_v4/141205_074006/0000/TOPTREE_*.root"/>
-
-<d name="TbarToLeptons"  title="Single tbar"   add="0"   color="633"  ls="1"  lw="2" normf="1"  EqLumi="223000.0" xsection="103.04"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/heilman/TBarToLeptons_s-channel-CSA14_Tune4C_13TeV-aMCatNLO-tauola/crab_TbarToLeptons_TOPTREE_v1/141125_144851/0000/TOPTREE_*.root"/>
-
-<d name="T_tW"  title="t tW"  add="0"   color="633"  ls="0"  lw="2" normf="1"  EqLumi="27699.43" xsection="35.6"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/heilman/T_tW-channel-DR_Tune4C_13TeV-CSA14-powheg-tauola/crab_T_tW-channel-DR_Tune4C_13TeV-CSA14-powheg-tauola_PHYS14_TOPTREE_v1/150122_085329/0000/TOPTREE_*.root"/>
-
-<d name="Tbar_tW"  title="tbar tW"  add="0"   color="633"  ls="1"  lw="2" normf="1"  EqLumi="27297.75" xsection="35.6"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/heilman/Tbar_tW-channel-DR_Tune4C_13TeV-CSA14-powheg-tauola/crab_Tbar_tW-channel-DR_Tune4C_13TeV-CSA14-powheg-tauola_PHYS14_TOPTREE_v1/150122_092929/0000/*.root"/>
-
-<d name="TbarToLeptons-tchannel"  title="tbar-tchannel"   add="0"   color="633"  ls="1"  lw="2" normf="1"  EqLumi="32464.3" xsection="61.6"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/heilman/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/crab_TbarToLeptons_t-channel_TOPTREE_v1/141204_092219/0000/TOPTREE_*.root"/>
+<d name="TTJets"  title="t\bar{t}+jets MadGraph Spring15"   add="1"   color="633"  ls="1"  lw="2" normf="1"  EqLumi="6004.44" xsection="831.76"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/heilman/TopTree/CMSSW_74X_v4/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_TOPTREE-TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8-RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1-MINIAODSIM--CMSSW_74X_v4--MCRUN2_74_V9-All/150720_081014/0000/TOPTREE_*.root"/>
 
 </datasets>
 

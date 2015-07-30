@@ -872,11 +872,11 @@ int main (int argc, char *argv[])
 
 			if(Muon && !Electron)
 			{
-				if(nLooseMu != 0) continue;
+				if(nLooseMu != 1) continue;
 			}
 			if(!Muon && Electron)
 			{
-				if(nLooseEl != 0) continue;
+				if(nLooseEl != 1) continue;
 			}
 			selecTable.Fill(d,3,scaleFactor);
 
