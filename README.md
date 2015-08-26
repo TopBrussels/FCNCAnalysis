@@ -34,7 +34,7 @@ git clone https://github.com/TopBrussels/TopTreeAnalysisBase TopTreeAnalysisBase
 
 cd TopTreeAnalysisBase/
 
-git checkout master
+git checkout CMSSW_74X
 
 make
 
