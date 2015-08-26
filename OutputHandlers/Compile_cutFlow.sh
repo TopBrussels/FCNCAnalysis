@@ -14,20 +14,20 @@
 if [ -d Output_Table ]; then
 	:
 else
-	mkdir Output_Table
+	mkdir Output_cutFlow
 fi
 echo -e "\033[40;32m----------------------------------------------------------"
 echo -e "-- Compiling macro to analyze variables tables --\033[37m"
 if [ -s Table.o ]; then
 	rm Table.o
 fi
-g++ -c `root-config --cflags` Table.cpp
-g++ -o Table `root-config --libs` Table.o
+g++ -c `root-config --cflags` cutFlow.cpp
+g++ -o cutFlow `root-config --libs` cutFlow.o
 if [ -s Table.o ]; then
 
 echo -e "\033[40;36mCOMPILATION FINISHED"
-echo "Flags for running ./Table:"
-./Table --help
+echo "Flags for running ./cutFlow:"
+./cutFlow --help
 echo -e "\033[40;32m----------------------------------------------------------\033[37m"
 else
 	exit 1

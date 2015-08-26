@@ -1,5 +1,5 @@
-#ifndef __Table_H_INCLUDED__
-#define __Table_H_INCLUDED__
+#ifndef __cutFlow_H_INCLUDED__
+#define __cutFlow_H_INCLUDED__
 
 #include <cmath>
 #include <fstream>
@@ -16,7 +16,7 @@
 #include <iomanip>
 
 
-class Table
+class cutFlow
 {
 public:
 		std::vector <std::string>  SampleTxtReader(const char *inputtxt);
