@@ -7,13 +7,13 @@
 1) Setup instructions:
 ----------------------
 
-    `cmsrel CMSSW_7_4_2
+    cmsrel CMSSW_7_4_2
     cd CMSSW_7_4_2/src/
     cmsenv
     git clone https://github.com/TopBrussels/TopTreeProducer TopBrussels/TopTreeProducer
-    cd TopBrussels/TopTreeProducer/'
+    cd TopBrussels/TopTreeProducer/
 
-_**In the next command the BRANCH (CMSSW74X) and the TAG (e.g. CMSSW_74X_v4 or CMSSW_74X_v5) are defined! Adapt this according to which TopTrees you want to analyze.**_
+_In the next command the BRANCH (CMSSW74X) and the TAG (e.g. CMSSW_74X_v4 or CMSSW_74X_v5) are defined! Adapt this according to which TopTrees you want to analyze._
 
     git checkout -b CMSSW_74X CMSSW_74X_v4
 
@@ -42,6 +42,6 @@ so for TopTreeProducer development the command should be just 'git checkout CMSS
 2) Compile and run:
 -------------------
 
-_**run the 'CompileMacro' to compile and launch the 'LaunchParallelMacro.py' as 'python LaunchParallelMacro.py'**_
+_run the 'CompileMacro' to compile and launch the 'LaunchParallelMacro.py' as 'python LaunchParallelMacro.py'_
 
 
