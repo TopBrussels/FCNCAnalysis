@@ -17,7 +17,11 @@ git clone https://github.com/TopBrussels/TopTreeProducer TopBrussels/TopTreeProd
 
 cd TopBrussels/TopTreeProducer/
 
-git checkout -b CMSSW_70X phys14.v1   # this is where the BRANCH (CMSSW70X) and the TAG (phys14.v1) are defined!!
+# in the next command the BRANCH (CMSSW74X) and the TAG (e.g. CMSSW_74X_v4 or CMSSW_74X_v5) are defined! Adapt this according to which TopTrees you want to analyze.
+git checkout -b CMSSW_74X CMSSW_74X_v4
+# Rule of thumb: for TopTree analysis one should indeed check out a TopTreeProducer tag (=fixed code), 
+# while for TopTreeProducer development one should check out only a (non-tag) branch (=code that can be updated -pulled and pushed- via git),
+# so for TopTreeProducer development the command should be just 'git checkout CMSSW_74X' without specifying a tag
 
 scram b clean
 
