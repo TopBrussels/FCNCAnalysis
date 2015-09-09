@@ -1,7 +1,7 @@
 # FCNCAnalysis
---------------------------------------------
---- FCNC analysis in the TopTreeFramework --
---------------------------------------------
+---------------------------------------------
+--- FCNC analysis in the TopTreeFramework ---
+---------------------------------------------
 
 
 1) Setup instructions:
