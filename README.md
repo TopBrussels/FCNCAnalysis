@@ -17,7 +17,7 @@ _In the next command the BRANCH (CMSSW74X) and the TAG (e.g. CMSSW_74X_v4 or CMS
 
     git checkout -b CMSSW_74X CMSSW_74X_v4
 
-_Rule of thumb: for TopTree analysis one should indeed check out a TopTreeProducer tag (=fixed code), 
+_Rule of thumb: for TopTree analysis one should indeed check out a TopTreeProducer tag (=fixed code) in the above command, 
 while for TopTreeProducer development one should check out only a (non-tag) branch (=code that can be updated -pulled and pushed- via git),
 so for TopTreeProducer development the command should be just 'git checkout CMSSW_74X' without specifying a tag_
 
