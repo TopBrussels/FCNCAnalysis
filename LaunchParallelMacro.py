@@ -18,14 +18,15 @@ numCores = 8
 args = []
 execCommands = []
 topTrees = []
-jobSize = 1000000
+jobSize = 6000000
 for d in datasets:
     if d.attrib['add'] == '1':
         print "found dataset to be added..." + str(d.attrib['name'])
         files = ["./MACRO", d.attrib['name'], d.attrib['title'], d.attrib['add'], d.attrib['color'], d.attrib['ls'], d.attrib['lw'], d.attrib['normf'], d.attrib['EqLumi'], d.attrib['xsection'], d.attrib['PreselEff']]
         topTrees = glob.glob(d.attrib['filenames'])
         for f in glob.glob(d.attrib['filenames']):
-            files.append("dcap://maite.iihe.ac.be"+f)
+#            files.append("dcap://maite.iihe.ac.be"+f)  ##Comment out for local runs. Put back on for files on /pnfs
+            files.append(""+f)
         args.append(files)
 outfiles = []
 fileNames = []
