@@ -4,7 +4,7 @@ import time
 import os
 import glob
 
-tree = ET.ElementTree(file='config/FullMcBkgdSamplesV6TreeProc.xml')
+tree = ET.ElementTree(file='config/FullMcBkgdSamplesV6TreeProc_TreeProcessor.xml')
 #tree = ET.ElementTree(file='config/Testing.xml')
 
 root = tree.getroot()
@@ -22,7 +22,7 @@ jobSize = 6000000
 for d in datasets:
     if d.attrib['add'] == '1':
         print "found dataset to be added..." + str(d.attrib['name'])
-        files = ["./MACRO", d.attrib['name'], d.attrib['title'], d.attrib['add'], d.attrib['color'], d.attrib['ls'], d.attrib['lw'], d.attrib['normf'], d.attrib['EqLumi'], d.attrib['xsection'], d.attrib['PreselEff']]
+        files = ["./MACRO_TreeProcessor", d.attrib['name'], d.attrib['title'], d.attrib['add'], d.attrib['color'], d.attrib['ls'], d.attrib['lw'], d.attrib['normf'], d.attrib['EqLumi'], d.attrib['xsection'], d.attrib['PreselEff']]
         topTrees = glob.glob(d.attrib['filenames'])
         for f in glob.glob(d.attrib['filenames']):
             files.append("dcap://maite.iihe.ac.be"+f)  ##Comment out for local runs. Put back on for files on /pnfs

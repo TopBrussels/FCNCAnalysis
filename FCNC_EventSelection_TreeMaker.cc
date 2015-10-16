@@ -711,7 +711,7 @@ if(event->eventId() == 18696194) cout << "Event present" << endl;/*cout << event
                 }
 
             }
-            float weight_0 = event->weight0();
+/*            float weight_0 = event->weight0();
             if (debug)cout <<"Weight0: " << weight_0 <<endl;
             if(nlo)
             {
@@ -721,7 +721,7 @@ if(event->eventId() == 18696194) cout << "Event present" << endl;/*cout << event
                     negWeights++;
                 }
             }
-
+*/
             float rho = event->fixedGridRhoFastjetAll();
             if (debug)cout <<"Rho: " << rho <<endl;
             string graphName;
