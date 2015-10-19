@@ -312,7 +312,7 @@ int main (int argc, char *argv[])
 
     //Output ROOT file
     string outputDirectory("MACRO_Output"+channelpostfix);
-    mkdir(outputDirectory.c_str(),0777);
+//    mkdir(outputDirectory.c_str(),0777);
     string rootFileName (outputDirectory+"/FCNC_1L3B"+postfix+channelpostfix+".root");
     TFile *fout = new TFile (rootFileName.c_str(), "RECREATE");
 
@@ -542,8 +542,8 @@ int main (int argc, char *argv[])
         int mkdirstatus = mkdir(channel_dir.c_str(),0777);
         mkdirstatus = mkdir(date_dir.c_str(),0777);
 
-        string Ntupname = "Trees_SelectionOutput"+channelpostfix+"/Trees_SelectionOutput_"+ date_str  +"/FCNC_1L3B_" +postfix + ".root";
-        string Ntuptitle = "FCNC_1L3B_" + channelpostfix;
+        string Ntupname = "Trees_SelectionOutput"+channelpostfix+"/Trees_SelectionOutput_"+ date_str  +"/FCNC_1L3B_" +postfix + channelpostfix + ".root";
+        string Ntuptitle = "tree";
 
         TFile * tupfile = new TFile(Ntupname.c_str(),"RECREATE");
 
@@ -1286,11 +1286,11 @@ if(event->eventId() == 18696194) cout << "Event present" << endl;/*cout << event
     fout->cd();
 
 	//Output ROOT file
-    for(map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
+/*    for(map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
     {
         string name = it->first;
         MultiSamplePlot *temp = it->second;
-        temp->Write(fout, name, true, outputDirectory, "png");
+        temp->Write(fout, name, false, outputDirectory, "png");
     }
 
     TDirectory* th2dir = fout->mkdir("Histos2D");
@@ -1303,7 +1303,7 @@ if(event->eventId() == 18696194) cout << "Event present" << endl;/*cout << event
         TH2F *temp = it->second;
         temp->Write();
     }
-    delete fout;
+*/    delete fout;
     cout << "It took " << ((double)clock() - start) / CLOCKS_PER_SEC << " to run the program" << endl;
     cout << "********************************************" << endl;
     cout << "           End of the program !!            " << endl;
