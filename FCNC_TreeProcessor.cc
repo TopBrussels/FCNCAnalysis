@@ -49,7 +49,7 @@ int main()
     string CraneenPath;
 
 
-	xmlFileName = "config/FullMcBkgdSamplesV6TreeProc_TreeProcessor.xml";
+	xmlFileName = "config/FullMcBkgdSamplesV7TreeProc_TreeProcessor.xml";
     cout << "xmlFileName is " << xmlFileName << endl;
 
 
@@ -59,14 +59,14 @@ int main()
     // electron plots
     DatasetPlotter(11, -0.5, 10.5, "nb_jets", xmlFileName,CraneenPath);
     DatasetPlotter(11, -0.5, 10.5, "nb_bjets", xmlFileName,CraneenPath);
-    DatasetPlotter(100, 0, 1000, "leptonpt", xmlFileName,CraneenPath);
-    DatasetPlotter(100, 0, 1000, "jet1_Pt", xmlFileName,CraneenPath);
-    DatasetPlotter(100, 0, 1000, "jet2_Pt", xmlFileName,CraneenPath);
-    DatasetPlotter(100, 0, 1000, "jet3_Pt", xmlFileName,CraneenPath);
-    DatasetPlotter(100, 0, 1000, "MissingEt", xmlFileName,CraneenPath);
-    DatasetPlotter(100, 0., 1, "bdisc1", xmlFileName,CraneenPath);
-    DatasetPlotter(100, 0., 1, "bdisc2", xmlFileName,CraneenPath);
-    DatasetPlotter(100, 0., 1, "bdisc3", xmlFileName,CraneenPath);
+    DatasetPlotter(40, 0, 400, "leptonpt", xmlFileName,CraneenPath);
+    DatasetPlotter(40, 0, 400, "jet1_Pt", xmlFileName,CraneenPath);
+    DatasetPlotter(40, 0, 400, "jet2_Pt", xmlFileName,CraneenPath);
+    DatasetPlotter(40, 0, 400, "jet3_Pt", xmlFileName,CraneenPath);
+    DatasetPlotter(40, 0, 400, "MissingEt", xmlFileName,CraneenPath);
+    DatasetPlotter(40, 0., 1, "bdisc1", xmlFileName,CraneenPath);
+    DatasetPlotter(40, 0., 1, "bdisc2", xmlFileName,CraneenPath);
+    DatasetPlotter(40, 0., 1, "bdisc3", xmlFileName,CraneenPath);
 
     // muon plots
 
@@ -129,19 +129,19 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
   	free(dup);
 
 
-  	TString CraneenPath = "/user/kderoove/FCNC/TopTreeFramework_Run2/CMSSW_7_4_14/src/TopBrussels/FCNCAnalysis/Trees_SelectionOutput_El/Trees_SelectionOutput_16_10_2015";
+  	TString CraneenPath = "/user/kderoove/FCNC/TopTreeFramework_Run2/CMSSW_7_4_14/src/TopBrussels/FCNCAnalysis/Trees_SelectionOutput_El/Trees_SelectionOutput_20_10_2015";
 
   
 	for (int d = 0; d < datasets.size(); d++)   //Loop through datasets  
 	{
 		dataSetName = datasets[d]->Name();
 		cout<<"Dataset:  :"<<dataSetName<<endl;
-		filepath = CraneenPath+"/FCNC_1L3B__Run2_TopTree_Study_"+dataSetName /*+"_MuEl"*/+ ".root";
+		filepath = CraneenPath+"/FCNC_1L3B__Run2_TopTree_Study_"+dataSetName +"_El"+ ".root";
 		if (debug) cout<<"filepath: "<<filepath<<endl;
 	
 
 		FileObj[dataSetName.c_str()] = new TFile((filepath).c_str(),"READ"); //create TFile for each dataset      
-		string TTreename = "FCNC_1L3B__El";	
+		string TTreename = "tree";	
 		ttree[dataSetName.c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename.c_str()); //get ttre for each dataset
 		nEntries = ttree[dataSetName.c_str()]->GetEntries();
 		cout<<"                 nEntries: "<<nEntries<<endl;
@@ -255,7 +255,7 @@ void MSPCreator ()
 			cout << "Saving the MSP" << endl;
 			cout << " and it->first is " << it->first << endl;
       	}
-		temp->Draw("MyMSP_"+it->first, 0, false, false, false, 100);
+		temp->Draw("MyMSP_"+it->first, 0, false, false, false, 1);
       	temp->Write(outfile, it->first, false,"myOutput_MSPlots" , "png");
 	}
   

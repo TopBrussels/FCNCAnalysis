@@ -4,7 +4,7 @@ import time
 import os
 import glob
 
-tree = ET.ElementTree(file='config/FullMcBkgdSamplesV6TreeProc.xml')
+tree = ET.ElementTree(file='config/FullMcBkgdSamplesV7TreeProc.xml')
 #tree = ET.ElementTree(file='config/Testing.xml')
 
 root = tree.getroot()

@@ -219,8 +219,8 @@ int main (int argc, char *argv[])
     string xmlFileName = "";
 
     //Setting Lepton Channels
-    bool Muon = false;
-    bool Electron = true;
+    bool Muon = true;
+    bool Electron = false;
    	FILE* eventlist;
 
     if(Muon && !Electron)
