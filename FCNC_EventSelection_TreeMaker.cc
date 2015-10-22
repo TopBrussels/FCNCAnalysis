@@ -638,7 +638,7 @@ int main (int argc, char *argv[])
             currentfrac = ievt_d/end_d;
             if (debug)cout <<"event loop 1"<<endl;
 
-            if(ievt%1000 == 0)
+            if(ievt%10000 == 0)
             {
                 std::cout<<"Processing the "<<ievt<<"th event, time = "<< ((double)clock() - start) / CLOCKS_PER_SEC << " ("<<100*(ievt-start)/(ending-start)<<"%)"<<flush<<"\r"<<endl;
             }

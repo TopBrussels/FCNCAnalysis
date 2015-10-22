@@ -33,6 +33,10 @@ map<string,TTree*> ttree;
 map<string,MultiSamplePlot*> MSPlot;
 
 
+float Luminosity = 569.017464; // pb-1
+TString slumi = "569.017464";
+
+
 // functions prototype
 std::string intToStr (int number);
 void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinterest, string xmlNom, string TreePath);
@@ -107,7 +111,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
   	//***********************************************OPEN FILES & GET NTUPLES**********************************************
   	string dataSetName, filepath;
   	int nEntries;
-  	float ScaleFactor, NormFactor, Luminosity;
+  	float ScaleFactor, NormFactor;
   	float varofInterest;
   	double varofInterest_double [20];
 
@@ -129,14 +133,14 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
   	free(dup);
 
 
-  	TString CraneenPath = "/user/kderoove/FCNC/TopTreeFramework_Run2/CMSSW_7_4_14/src/TopBrussels/FCNCAnalysis/Trees_SelectionOutput_El/Trees_SelectionOutput_20_10_2015";
+  	TString CraneenPath = "/user/kderoove/FCNC/TopTreeFramework_Run2/CMSSW_7_4_14/src/TopBrussels/FCNCAnalysis/Trees_SelectionOutput_Mu/Trees_SelectionOutput_21_10_2015";
 
   
 	for (int d = 0; d < datasets.size(); d++)   //Loop through datasets  
 	{
 		dataSetName = datasets[d]->Name();
 		cout<<"Dataset:  :"<<dataSetName<<endl;
-		filepath = CraneenPath+"/FCNC_1L3B__Run2_TopTree_Study_"+dataSetName +"_El"+ ".root";
+		filepath = CraneenPath+"/FCNC_1L3B__Run2_TopTree_Study_"+dataSetName +"_Mu"+ ".root";
 		if (debug) cout<<"filepath: "<<filepath<<endl;
 	
 
@@ -169,8 +173,6 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 		if(dataSetName.find("Data")!=string::npos || dataSetName.find("data")!=string::npos || dataSetName.find("DATA")!=string::npos) isData =true;
 		  
 		ScaleFactor = 1.; // event scale factor
-		Luminosity = 105.32; // pb-1
-		TString slumi = "105.32";
 		  
 		//      histo1D[dataSetName.c_str()] = new TH1F((dataSetName+"_"+v[0]).c_str(),(dataSetName+"_"+v[0]).c_str(), nBins, plotLow, plotHigh);
 
@@ -255,6 +257,7 @@ void MSPCreator ()
 			cout << "Saving the MSP" << endl;
 			cout << " and it->first is " << it->first << endl;
       	}
+      	temp->setDataLumi(Luminosity);
 		temp->Draw("MyMSP_"+it->first, 0, false, false, false, 1);
       	temp->Write(outfile, it->first, false,"myOutput_MSPlots" , "png");
 	}
