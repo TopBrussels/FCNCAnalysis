@@ -6,8 +6,8 @@ MACRO
 MACRO_Output/
 Ntupler
 SelectionOutput/
-SelectionTable_test.tex
+Ntuples/
+SelectionTables/
+CreateErrorBands
 Terminal_Output/
-WZ_tree.root
-testAnalyser_output.root
 Backup/FCNC_EventSelection_backup.cc
