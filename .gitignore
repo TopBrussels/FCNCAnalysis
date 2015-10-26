@@ -1,2 +1,13 @@
 __init__.py
 *.pyc
+FCNC_EventSelection
+FCNC_TriLepton_Analyzer
+MACRO
+MACRO_Output/
+Ntupler
+SelectionOutput/
+SelectionTable_test.tex
+Terminal_Output/
+WZ_tree.root
+testAnalyser_output.root
+Backup/FCNC_EventSelection_backup.cc

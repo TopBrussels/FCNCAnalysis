@@ -4,7 +4,7 @@ import time
 import os
 import glob
 
-tree = ET.ElementTree(file='config/Run2SingleLepton_samples.xml')
+tree = ET.ElementTree(file='config/Run2TriLepton_samples.xml')
 #tree = ET.ElementTree(file='config/Testing.xml')
 
 root = tree.getroot()
@@ -25,7 +25,7 @@ for d in datasets:
         files = ["./MACRO", d.attrib['name'], d.attrib['title'], d.attrib['add'], d.attrib['color'], d.attrib['ls'], d.attrib['lw'], d.attrib['normf'], d.attrib['EqLumi'], d.attrib['xsection'], d.attrib['PreselEff']]
         topTrees = glob.glob(d.attrib['filenames'])
         for f in glob.glob(d.attrib['filenames']):
-            files.append("dcap://maite.iihe.ac.be"+f)
+            files.append("dcap://maite.iihe.ac.be/"+f)
         args.append(files)
 outfiles = []
 fileNames = []
@@ -38,7 +38,7 @@ for row in args:
     print "checking args..."
     if row[3] == '1':
         title = row[1]
-
+        
         totalEvents = float(row[8])*float(row[9])
 #        tempList = list(row)
 #        tempList.extend(["", ""])
