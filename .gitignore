@@ -11,3 +11,5 @@ SelectionTables/
 CreateErrorBands
 Terminal_Output/
 Backup/FCNC_EventSelection_backup.cc
+.gitignore
+config/Run2TriLepton_samples.xml
