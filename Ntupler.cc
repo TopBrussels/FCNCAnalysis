@@ -37,10 +37,14 @@
 #include "../TopTreeAnalysisBase/MCInformation/interface/LumiReWeighting.h"
 
 
+
+
 using namespace std;
 using namespace reweight;
 using namespace TopTree;
 
+std::vector <int> OSSFLeptonPairCalculator(std::vector<TRootElectron*> Elec, std::vector<TRootMuon*> Mu, int verb); 
+TLorentzVector CreateZboson(std::vector<int> Lep, std::vector<TRootElectron*> Elec, std::vector<TRootMuon*> Mu, int verb); 
 
 int main (int argc, char *argv[])
 {
@@ -203,7 +207,23 @@ int main (int argc, char *argv[])
      Int_t lumi_num;
      Int_t nvtx;
      Int_t npu;
-     
+    
+     //doubles
+     double ptZboson;
+     double pxZboson;
+     double pyZboson;
+     double pzZboson;
+     double etaZboson;
+     double eZboson; 
+     double mZboson; 
+
+     double ptWboson_lep;
+     double pxWboson_lep;
+     double pyWboson_lep;
+     double pzWboson_lep;
+     double etaWboson_lep;
+     double eWboson_lep; 
+ 
      //vectors
      std::vector<double> *ptMuon; 
      std::vector<double> *pxMuon; 
@@ -258,7 +278,22 @@ int main (int argc, char *argv[])
  //    myTree -> Branch("metPx", &metPx, "metPx/D");
  //    myTree -> Branch("metPy", &metPy, "metPy/D");
      
-     // Set the branches for the vectors 
+     myTree->Branch("ptZboson", &ptZboson,"ptZboson/D");
+     myTree->Branch("pxZboson", &pxZboson,"pxZboson/D");
+     myTree->Branch("pyZboson", &pyZboson,"pyZboson/D");
+     myTree->Branch("pzZboson", &pzZboson,"pzZboson/D");  
+     myTree->Branch("etaZboson", &etaZboson,"etaZboson/D");
+     myTree->Branch("eZboson", &eZboson,"eZboson/D");
+     myTree->Branch("mZboson", &mZboson,"mZboson/D");
+     
+     myTree->Branch("ptWboson_lep", &ptWboson_lep,"ptWboson_lep/D");
+     myTree->Branch("pxWboson_lep", &pxWboson_lep,"pxWboson_lep/D");
+     myTree->Branch("pyWboson_lep", &pyWboson_lep,"pyWboson_lep/D");
+     myTree->Branch("pzWboson_lep", &pzWboson_lep,"pzWboson_lep/D");
+     myTree->Branch("etaWboson_lep", &etaWboson_lep,"etaWboson_lep/D");
+     myTree->Branch("eWboson_lep", &eWboson_lep,"eWboson_lep/D");
+    
+     // Set branches for vectors
      myTree->Branch("ptMuon","std::vector<double>",&ptMuon);   // Make a branch with name ptMuon, from type vector(double), on loaction ptMuon
      myTree->Branch("pxMuon","std::vector<double>",&pxMuon);
      myTree->Branch("pyMuon","std::vector<double>",&pyMuon);
@@ -400,14 +435,19 @@ int main (int argc, char *argv[])
       vector<TRootPFJet*> selectedJets = selection.GetSelectedJets(20, 2.5, true, "Tight");  // GetSelectedJets(float PtThr, float EtaThr, bool applyJetID, std::string TightLoose)
       vector<TRootMuon*> selectedMuons = selection.GetSelectedMuons(20, 2.5, 0.12,"Tight","Spring15");  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
       vector<TRootElectron*> selectedElectrons = selection.GetSelectedElectrons(20, 2.5, "Tight", "Spring15_50ns", true);  // GetSelectedElectrons(float PtThr, float etaThr, string WorkingPoint, string ProductionCampaign, bool CutsBased)
-   
+      
+      sort(selectedJets.begin(), selectedJets.end(),HighestPt()); 
+      sort(selectedMuons.begin(), selectedMuons.end(), HighestPt()); 
+      sort(selectedElectrons.begin(), selectedElectrons.end(), HighestPt()); 
+      
       vector<bool> BtagBooleans; 
       BtagBooleans.clear(); 
       
       // Start analysis selection
       eventSelected = false;
-      
-      selecTable.Fill(d,0,scaleFactor);
+      TLorentzVector Zboson;
+      TLorentzVector Wlep; 
+       selecTable.Fill(d,0,scaleFactor);
       /// At the moment do not use trigger
       selecTable.Fill(d,1,scaleFactor);
       if (isGoodPV)
@@ -423,11 +463,12 @@ int main (int argc, char *argv[])
 	    
 	    if(selectedJets.size() > 1)
 	    {
-	       if(verbose>3) cout << " at least 1 jet " << endl; 
+	       if(verbose>3) cout << " at least 2 jets " << endl; 
 	       selecTable.Fill(d,4,scaleFactor); 
 	       int nBtagged = 0; 
 	       for(unsigned int i = 0; i < selectedJets.size() ; i++)
 	       {
+	         
 	         bool Btagged = false; 
 		 TRootJet* tempJet = (TRootJet*) selectedJets[i];
 		 if(tempJet->btag_combinedInclusiveSecondaryVertexV2BJetTags() > 0.605)//loose WP
@@ -440,16 +481,44 @@ int main (int argc, char *argv[])
 	       if(verbose > 3) cout << "btagging done" << endl; 
 	       if(nBtagged>1)
 	       {
+	         if(verbose>3) cout << " at least 1 bjet " << endl; 
 	         selecTable.Fill(d,5,scaleFactor); 
-		// if(OSSFpair)
-	       //  {
-		//    selecTable.Fill(d,6,scaleFactor); 
-		 //   if(ZmassWindow)
-		  //  {
-		    //   selecTable.Fill(d,7,scaleFactor);
-		       eventSelected = true;
-	            //}
-		 //}
+		 
+		 std::vector<int> Leptons; 
+		 Leptons.clear(); 
+		 Leptons = OSSFLeptonPairCalculator(selectedElectrons, selectedMuons, verbose);
+		 if(verbose>3) cout <<   Leptons[0]<< " , " <<  Leptons[1]<< " , " <<  Leptons[2]<< " , " <<  Leptons[3]<< " , " <<  Leptons[4]<< " , " <<  Leptons[5]   << endl; 
+		 
+		 bool OSSFpair = false; 
+		 if( (Leptons[0] != -5 && Leptons[1] != -5) | (Leptons[3] != -5 && Leptons[4] != -5) ) OSSFpair = true; 
+		 if(OSSFpair)
+	         {
+		    if(verbose>3) cout << " OSSF "<< endl; 
+		    selecTable.Fill(d,6,scaleFactor); 
+		    
+		    Zboson.Clear(); 
+		    Zboson = CreateZboson(Leptons, selectedElectrons, selectedMuons, verbose); 
+		    
+                    Wlep.Clear(); 
+                    if(fabs(Leptons[2]) != 5)
+		    {
+		      if(verbose>3) cout << " the W lepton is an electron " << endl; 
+		      Wlep.SetPxPyPzE(selectedElectrons[Leptons[2]]->Px(), selectedElectrons[Leptons[2]]->Py(), selectedElectrons[Leptons[2]]->Pz(), selectedElectrons[Leptons[2]]->Energy()); 
+                    }
+		    else if(fabs(Leptons[5]) != 5)
+		    {
+		      if(verbose>3) cout << " the W lepton is a muon " << endl; 
+		      Wlep.SetPxPyPzE(selectedMuons[Leptons[5]]->Px(), selectedMuons[Leptons[5]]->Py(), selectedMuons[Leptons[5]]->Pz(), selectedMuons[Leptons[5]]->Energy()); 		    
+		    }
+		    bool ZmassWindow = false; 
+		    if(fabs(Zboson.M()-90.0) < 15.0) ZmassWindow = true; 
+		    if(ZmassWindow)
+		    {
+		      if(verbose>3) cout << " Zmass window " << endl; 
+		      selecTable.Fill(d,7,scaleFactor);
+		      eventSelected = true;
+	            }
+		 }
 	       } 
 	    }
          
@@ -478,7 +547,8 @@ int main (int argc, char *argv[])
       etaElectron = new std::vector<double>; 
       eElectron = new std::vector<double>; 
       qElectron = new std::vector<double>;
-            
+      
+ 
       ptJet = new std::vector<double>; 
       pxJet = new std::vector<double>; 
       pyJet = new std::vector<double>; 
@@ -488,6 +558,22 @@ int main (int argc, char *argv[])
       qJet = new std::vector<double>; 
       BtagCSVjet = new std::vector<double>;
       BtagCSVL = new std::vector<bool>; 
+      
+      
+      ptZboson = Zboson.Pt();
+      pxZboson = Zboson.Px();
+      pyZboson = Zboson.Py();
+      pzZboson = Zboson.Pt();
+      etaZboson = Zboson.Eta();
+      eZboson = Zboson.Energy();
+      mZboson = Zboson.M();  
+
+      ptWboson_lep = Wlep.Pt();
+      pxWboson_lep = Wlep.Px();
+      pyWboson_lep = Wlep.Py();
+      pzWboson_lep = Wlep.Pz();
+      etaWboson_lep = Wlep.Eta();
+      eWboson_lep = Wlep.Energy();
       
       for (unsigned int i = 0; i < selectedElectrons.size(); i++) 
       {
@@ -530,7 +616,6 @@ int main (int argc, char *argv[])
       nofSelectedEvents++; 
       myTree->Fill();
       
-      delete ptElectron;
       delete pxElectron;
       delete pyElectron;
       delete pzElectron;
@@ -609,4 +694,122 @@ int main (int argc, char *argv[])
 
   return 0;
   
+}
+
+
+std::vector<int> OSSFLeptonPairCalculator(vector<TRootElectron*> electrons, vector<TRootMuon*> muons, int verbose)
+{
+  if(verbose > 3) cout << "In OSSFLeptonPairCalculator " << endl; 
+  std::vector<int> leptons;
+  leptons.clear();  
+  int ElecZ0 = -5; 
+  int ElecZ1 = -5; 
+  int ElecW = -5; 
+  int MuZ0 = -5; 
+  int MuZ1 = -5; 
+  int MuW = -5;
+  
+  if(electrons.size() == 3)
+  {
+    if(electrons[0]->charge() != electrons[1]->charge())
+    {
+      ElecZ0 = 0; 
+      ElecZ1 = 1;
+      ElecW = 2; 
+      if(verbose>3) cout << " the Zboson consists of electrons " << endl; 
+    }    
+    else if (electrons[0]->charge() != electrons[2]->charge())
+    {
+      ElecZ0 = 0; 
+      ElecZ1 = 2; 
+      ElecW = 1; 
+      if(verbose>3) cout << " the Zboson consistes of electrons " << endl; 
+    }
+    else if (electrons[1]->charge() != electrons[2]->charge())
+    {
+      ElecZ0 = 1; 
+      ElecZ1 = 2; 
+      ElecW = 0;
+      if(verbose>3) cout << " the Zboson consists of electrons " << endl; 
+    }
+
+  }
+  else if ( (electrons.size() == 2) && (electrons[0]->charge() != electrons[1]->charge()) ) 
+  {
+    ElecZ0 = 0; 
+    ElecZ1 = 1; 
+    MuW = 0; 
+    if(verbose>3) cout << " the Zboson consists of electrons " << endl; 
+  }
+  else if ( (muons.size() == 2) && (muons[0]->charge() != muons[1]->charge()) )
+  {
+    ElecW = 0; 
+    MuZ0 = 0; 
+    MuZ1 = 1;
+    if(verbose>3) cout << " the Zboson consists of muons " << endl; 
+  }
+  else if (muons.size() == 3)
+  {
+    if(muons[0]->charge() != muons[1]->charge())
+    {
+      MuZ0 = 0; 
+      MuZ1 = 1;
+      MuW = 2; 
+      if(verbose>3) cout << " the Zboson consists of muons " << endl; 
+    }    
+    else if (muons[0]->charge() != muons[2]->charge())
+    {
+      MuZ0 = 0; 
+      MuZ1 = 2; 
+      MuW = 1; 
+      if(verbose>3) cout << " the Zboson consists of muons " << endl; 
+    }
+    else if (muons[1]->charge() != muons[2]->charge())
+    {
+      MuZ0 = 1; 
+      MuZ1 = 2; 
+      MuW = 0;
+      if(verbose>3) cout << " the Zboson consists of muons " << endl; 
+    }
+     
+  }
+  leptons.push_back(ElecZ0); 
+  leptons.push_back(ElecZ1); 
+  leptons.push_back(ElecW); 
+  leptons.push_back(MuZ0); 
+  leptons.push_back(MuZ1); 
+  leptons.push_back(MuW); 
+  if(verbose>3) cout << " out OSSF.. " << endl; 
+  if(verbose>3) cout <<   leptons[0]<< " , " <<  leptons[1]<< " , " <<  leptons[2]<< " , " <<  leptons[3]<< " , " <<  leptons[4]<< " , " <<  leptons[5]   << endl; 
+  
+  return leptons; 
+}
+
+
+TLorentzVector CreateZboson(std::vector<int> leptons, std::vector<TRootElectron*> electrons, std::vector<TRootMuon*> muons, int verbose)
+{
+  if(verbose>3) cout << " in Zboson creator " << endl; 
+  TLorentzVector Zbos;
+  Zbos.Clear(); 
+  TLorentzVector Zbos_lep0; 
+  Zbos_lep0.Clear(); 
+  TLorentzVector Zbos_lep1; 
+  Zbos_lep1.Clear(); 
+  
+  if(verbose>3) cout <<   leptons[0]<< " , " <<  leptons[1]<< " , " <<  leptons[2]<< " , " <<  leptons[3]<< " , " <<  leptons[4]<< " , " <<  leptons[5]   << endl; 
+  
+  if(fabs(leptons[0]) < 3 && fabs(leptons[1]) < 3) 
+  {
+      Zbos_lep0.SetPxPyPzE(electrons[leptons[0]]->Px(), electrons[leptons[0]]->Py(), electrons[leptons[0]]->Pz(), electrons[leptons[0]]->Energy()); 
+      Zbos_lep1.SetPxPyPzE(electrons[leptons[1]]->Px(), electrons[leptons[1]]->Py(),electrons[leptons[1]]->Pz(), electrons[leptons[1]]->Energy()); 
+  }
+  else if(fabs(leptons[3]) < 3 && fabs(leptons[4]) < 3)
+  {
+     Zbos_lep0.SetPxPyPzE(muons[leptons[3]]->Px(),muons[leptons[3]]->Py(), muons[leptons[3]]->Pz(),muons[leptons[3]]->Energy()); 
+     Zbos_lep1.SetPxPyPzE(muons[leptons[4]]->Px(),muons[leptons[4]]->Py(), muons[leptons[4]]->Pz(),muons[leptons[4]]->Energy());     
+  }
+
+  Zbos = Zbos_lep0 + Zbos_lep1; 
+  if(verbose>3) cout << " out Zboson creator " <<endl; 
+  return Zbos; 
 }
