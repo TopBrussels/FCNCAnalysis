@@ -82,15 +82,146 @@ int main (int argc, char *argv[])
   
   bool eventSelected = false;
   int nofSelectedEvents = 0;
-  
-  
+  bool ee = false; 
+  bool emu = false; 
+  bool mumu = false; 
+  bool runHLT = true; 
+  std::string sWPMuon = "Tight"; 
+  std::string sWPElectron = "Tight";
   /// xml file
   string xmlFileName ="config/Run2TriLepton_samples.xml";
   
-  if (argc > 1)
-    xmlFileName = (string)argv[1];
-  
+  for(int iarg = 0; iarg < argc && argc>1 ; iarg++){
+       std::string argval=argv[iarg];
+       if(argval=="--help" || argval =="--h"){
+   	       cout << "--ee:	Di-Electron" << endl;
+   	       cout << "--emu:  Electron-Muon" << endl;
+   	       cout << "--mumu: Di-Muon" << endl;
+	       cout << "--noHLT: disable triggering" << endl; 
+	       cout << "--WPmu WPpoint: working point muon" << endl; 
+	       cout << "--WPel WPpoint: working point electron" << endl; 
+// 		 cout << "--JESplus: JES sys +1 sigma MET included" << endl;
+// 		  cout << "--JESminus: JES sys -1 sigma MET included" << endl;
+// 		  cout << "--JERplus: JER +" << endl;
+// 		  cout << "--JERminus: JER -" << endl;
+// 		  cout << "--SFplus: SF up +10% syst for b quarks" << endl;
+// 		  cout << "--SFminus: SF down -10% syst for b quarks" << endl;
+//             cout << "--SFplus_c: SF up +10% systfor c quarks" << endl;
+// 		  cout << "--SFminus_c: SF down -10% syst for c quarks" << endl;
+//             cout << "--SFplus_l: SF up +10% syst for light quarks" << endl;
+// 		  cout << "--SFminus_l: SF down -10% syst for light quarks" << endl;
+// 		  cout << "--PUup: PU reweghting scaled up " << endl;
+// 		  cout << "--PUdown: PU reweghting scaled down " << endl;
+// 		  cout << "--NoPU: Do not apply pileup re-weighting" << endl;
+// 		  cout << "--NoSF: Do not apply b-tag scale factor" << endl;
+// 		  cout << "--RAW: Do not apply pileup re-weighting or b-tag scale factor" << endl;
+               cout << "--xml dir/myxml.xml Xml file" << endl;  
+   	       return 0;
+       }
+       if(argval=="--noHLT"){
+               runHLT = false; 
+       }
+       if (argval=="--ee"){
+   	       ee = true ;
+       }
+       if (argval=="--emu"){
+   	       emu = true;
+       }
+       if (argval=="--mumu"){
+   	       mumu = true ;
+       }
+// 	  if (argval=="--PUup" ){
+// 		  PUsysUp = true;
+//             pdf = false; 
+// 	  }
+// 	  if (argval=="--PUdown" ){
+// 		  PUsysDown = true;
+//             pdf = false; 
+// 	  }
+// 	  if (argval=="--JESplus") {
+// 		  JESPlus = true;
+//             pdf = false; 
+// 	  }
+// 	  if (argval=="--JESminus") {
+// 		  JESMinus = true;
+//             pdf = false; 
+// 	  }
+// 	  if (argval=="--JERplus") {
+// 		  JERPlus = true;
+// 	  }
+// 	  if (argval=="--JERminus") {
+// 		  JERMinus = true;
+// 	  }
+// 	  if (argval=="--SFplus") {
+// 		  SFplus = true;
+//             pdf = false; 
+// 	  }
+// 	  if (argval=="--SFminus"){
+// 		  SFminus = true;
+//             pdf = false; 
+// 	  }	   
+// 	  if (argval=="--NoPU") {
+// 		  reweightPU = false;
+//             pdf = false; 
+// 	  }
+// 	  if (argval=="--NoSF") {
+// 		  scaleFactor = false;
+//             pdf = false; 
+// 	  }
+// 	  if (argval=="--RAW") {
+// 		  reweightPU = false; 
+// 		  scaleFactor = false; 
+// 		  isRAW = true;
+//             pdf = false; 
+// 	  }
+// 	  if (argval=="--3D") {
+// 		  Pu3D = true;
+//             pdf = false; 
+// 	  }
+      if(argval=="--WPel")
+      {
+      	iarg++; 
+	sWPElectron =argv[iarg];
+      }
+      if(argval=="--WPmu")
+      {
+      	iarg++; 
+	sWPMuon = argv[iarg];
+      }
+      if (argval=="--xml") {
+   	       iarg++;
+               xmlFileName = argv[iarg];
+       }
+   }
+     
+ 
+
   const char *xmlfile = xmlFileName.c_str();
+  
+  
+  //Setting Lepton Channels 
+
+  if(emu)
+  {
+      cout << " --> Using the Muon-Electron channel..." << endl;
+      //channelpostfix = "_MuEl";
+  }
+  else if(ee)
+  {
+      cout << " --> Using the Electron-Electron channel..." << endl;
+      //channelpostfix = "_ElEl";
+  }
+  else if(mumu)
+  {
+      cout << " --> Using the Muon-Muon channel..." << endl;
+      //channelpostfix = "_MuMu";
+  }
+  else
+  {
+      cerr<<"ERROR: Correct Di-lepton Channel not selected."<<endl;
+      exit(1);
+  }  
+  
   
   cout << " - Using config file " << xmlfile << endl;
   
@@ -118,24 +249,31 @@ int main (int argc, char *argv[])
   
   new ((*tcAnaEnv)[0]) AnalysisEnvironment(anaEnv);
   int verbose = anaEnv.Verbose;
+  
+  ////////////
+  /// object selection and identification
+  //////////////////////
   int PVertexNdofCut = 4; // anaEnv.PVertexNdofCut; 
   int PVertexZCut =24;// anaEnv.PVertexZCut; 
   int PVertexRhoCut = 2; // anaEnv.PVertexRhoCut; 
   int MuonPtCut = 20;  //anaEnv.MuonPtCutSR; 
   int MuonEtaCut = 2.4;  //anaEnv.MuonEtaCutSR; 
   int MuonRelIsoCut = 0.15; //anaEnv.MuonRelIsoCutSR;
-  std::string WPMuon = "Tight"; // https://indico.cern.ch/event/450085/contribution/4/attachments/1169767/1688138/20151013_MOC.pdf
+  std::string WPMuon = sWPMuon; // https://indico.cern.ch/event/450085/contribution/4/attachments/1169767/1688138/20151013_MOC.pdf
   std::string CampaignMuon = "Spring15"; 
   int ElectronPtCut = 20.; //anaEnv.ElectronPtCut; 
   int ElectronEtaCut = 2.4; //anaEnv.ElectronEtaCut; 
   std::string CampaignElectron = "Spring15_25ns"; 
-  std::string WPElectron = "Tight"; // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2
+  std::string WPElectron = sWPElectron; // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2
   int cutsBasedElectron = 1; 
   int JetsPtCut = 40; //anaEnv.JetsPtCutSR; 
   int applyJetID = anaEnv.applyJetID; 
   int JetsEtaCut = 2.4; 
   std::string WPJet = "Tight"; // https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
 
+  /////////
+  /// lumi
+  /////////
   float oldLuminosity = anaEnv.Luminosity;  // in 1/pb
   cout << "Analysis environment luminosity for rescaling " << oldLuminosity << endl;
   
@@ -153,6 +291,10 @@ int main (int argc, char *argv[])
   cout << "Number of datasets: " << datasets.size() << endl;
   for (unsigned int i=0;i<datasets.size();i++) new ((*tcdatasets)[i]) Dataset(*datasets[i]);
   
+  
+  /// //////////
+  /// determine lumi
+  ////////////////////////
   float Luminosity = oldLuminosity;
 
 
@@ -162,12 +304,14 @@ int main (int argc, char *argv[])
     if (Luminosity > datasets[d]->EquivalentLumi() ) Luminosity = datasets[d]->EquivalentLumi();
     string dataSetName = datasets[d]->Name();
     
-
+    Luminosity = datasets[d]->EquivalentLumi();
     if( dataSetName.find("WZ") == 0 ){      datasets[d]->SetColor(kBlue);   }
   }
   if ( Luminosity != oldLuminosity ) cout << "Changed analysis environment luminosity to "<< Luminosity << endl;
   
    
+   
+   // set rootfile to store controlplots 
    TFile *fout = new TFile(rootFileName.c_str(), "RECREATE"); 
     
 
@@ -241,15 +385,6 @@ int main (int argc, char *argv[])
    MSPlot["ZMASS_NbOfElectrons"]  = new MultiSamplePlot(datasets, "ZMASS_NbOfElectrons", 16, -0.5, 15, "After Zmass window req.:  nb of electrons");
    MSPlot["ZMASS_NbOfLeptons"]    = new MultiSamplePlot(datasets, "ZMASS_NbOfLeptons", 16, -0.5, 15, "After Zmass window req.:  nb of leptons");
 
- /* 
-   MSPlot["cutFlow"]->GetXaxis()->SetBinLabel(1, "preselected");
-   MSPlot["cutFlow"]->GetXaxis()->SetBinLabel(2, "trigged");
-   MSPlot["cutFlow"]->GetXaxis()->SetBinLabel(3, "Good PV");
-   MSPlot["cutFlow"]->GetXaxis()->SetBinLabel(4, "3 selected leptons");
-   MSPlot["cutFlow"]->GetXaxis()->SetBinLabel(5, "At least 2 jets");
-   MSPlot["cutFlow"]->GetXaxis()->SetBinLabel(5, "At least 1 CSV loose jet");
-   MSPlot["cutFlow"]->GetXaxis()->SetBinLabel(7, "At least 1 OSSF lepton pair");
-   MSPlot["cutFlow"]->GetXaxis()->SetBinLabel(8, "Z mass window of 15 GeV"); */
   ////////////////////////////////////
   ///  Selection table
   ////////////////////////////////////
@@ -288,7 +423,7 @@ int main (int argc, char *argv[])
     int iFile = -1;
     string dataSetName = datasets[d]->Name();
     
-    int isdata; 
+    int isdata = 0; 
     
     if (verbose > 1)
       cout << "   Dataset " << d << ": " << datasets[d]->Name() << " - title : " << datasets[d]->Title() << endl;
@@ -301,7 +436,7 @@ int main (int argc, char *argv[])
     roottreename+= datasets[d]->Name();
     roottreename+="_tree.root";
 
-    cout << "  - Recreate outputfile ... " << roottreename.c_str() << endl; 
+    cout << "  - Recreate outputfile for ntuples ... " << roottreename.c_str() << endl; 
     // create the output file that is used for further analysis. This file can contain histograms and/or trees (in this case only a tree)
     TFile *fileout = new TFile (roottreename.c_str(), "RECREATE");
     fileout->cd();
@@ -504,7 +639,8 @@ int main (int argc, char *argv[])
     ////////////////////////////////////
     //some bookkeeping variables
     nEvents[d] = 0;
-    int itriggerSemiMu = -1,itriggerSemiEl = -1, previousRun = -1;
+    int previousRun = -1;
+    int itrigger = -1; 
     if (verbose > 1)
       cout << "	Loop over events " << endl;
     
@@ -542,15 +678,12 @@ int main (int argc, char *argv[])
       {
         previousFilename = currentFilename;
         iFile++;
-        cout << "File changed!!! => iFile = " << iFile << endl;
+        cout << "WARNING: File changed => iFile = " << iFile << endl;
       }
       
-      int currentRun = event->runId();
       
-      if (previousRun != currentRun)
-        previousRun = currentRun;
-      
-      
+      int currentRun = event->runId(); 
+ 
       run_num=event->runId();
       evt_num=event->eventId();
       lumi_num=event->lumiBlockId();
@@ -561,6 +694,31 @@ int main (int argc, char *argv[])
       }
       bookkeeping->Fill(); 
       
+      /////////////////////////////
+      /// Trigger
+      ///////////////////////////
+      
+      bool trigged = false; 
+      //If the HLT is applied 
+      if(runHLT && previousRun != currentRun){
+        //The HLT is only used for data
+        if(isdata == 1){
+          //The HLT path is dependent of the mode, these paths are the several steps or software modules. Each module performs a well defined task 
+          // such as reconstruction of physics objects, making intermediate decisions, triggering more refined reconstructions in subsequent modules, 
+          // or calculating the final decision for that trigger path.
+	  if(emu) itrigger = treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2"), currentRun, iFile);
+          else if(mumu) itrigger = treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v2"), currentRun, iFile);
+          else if(ee) itrigger = treeLoader.iTrigger (string("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2"), currentRun, iFile);
+
+          if(itrigger == 9999) 
+	  {
+	      cout << "ERROR: no valid trigger found for this event/data in run " << event->runId() << endl; 
+	  }   
+	  
+        } // closing the HLT for data loop
+        //For the MC, there is no triggerpath
+        else itrigger = true;     	
+      } // closing the HLT run loop
       
       ////////////////////////////////////
       ///  DETERMINE EVENT SCALEFACTOR  ///
@@ -647,12 +805,17 @@ int main (int argc, char *argv[])
       MSPlot["init_NbOfLeptons"]->Fill(selectedElectrons.size()+selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor); 
       
       
-      /// At the moment do not use trigger
-      selecTable.Fill(d,1,scaleFactor);
-      MSPlot["cutFlow"]->Fill(1, datasets[d], true, Luminosity*scaleFactor );
+      /// Trigger
+      if(runHLT) trigged = treeLoader.EventTrigged(itrigger);
+      else trigged = true; 
+       
+      if(trigged)
+      { 
+       selecTable.Fill(d,1,scaleFactor);
+       MSPlot["cutFlow"]->Fill(1, datasets[d], true, Luminosity*scaleFactor );
       
-      if (isGoodPV)
-      {
+       if (isGoodPV)
+       {
         if(verbose>3) cout << "GoodPV" << endl; 
         selecTable.Fill(d,2,scaleFactor);
 	MSPlot["cutFlow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor );
@@ -763,7 +926,8 @@ int main (int argc, char *argv[])
 	    }
          
         }  // 3 leptons
-      }  // good PV
+       }  // good PV
+      } // trigger
       
       
       if (! eventSelected )
@@ -1019,7 +1183,7 @@ int main (int argc, char *argv[])
     if(verbose>3) cout << "MSPlot: " << it->first << endl;
     MultiSamplePlot *temp = it->second;
     string name = it->first;
-    temp->Draw(name, 0, false, false, false, 1);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
+    temp->Draw(name, 1, false, false, false, 1);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
     temp->Write(fout, name, true, pathPNG+"MSPlot/", "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
   }
    
