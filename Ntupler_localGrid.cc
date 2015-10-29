@@ -1,3 +1,4 @@
+
 ////////////////////////////////////////////////////////////
 /////                                                  /////
 /////  Preliminary macro to try and make some plots    /////
@@ -47,15 +48,6 @@ using namespace TopTree;
 
 /// Normal Plots (TH1F* and TH2F*)
 //map<string,TH1F*> histo1D;
-//map<string,TH2F*> histo2D;
-//map<string,TProfile*> histoProfile;
-
-/// MultiSamplePlot
-map<string,MultiSamplePlot*> MSPlot;
-
-/// MultiPadPlot
-//map<string,MultiSamplePlot*> MultiPadPlot;
-
 
 // Homemade functions
 std::vector <int> OSSFLeptonPairCalculator(std::vector<TRootElectron*> Elec, std::vector<TRootMuon*> Mu, int verb); 
@@ -70,8 +62,6 @@ float workingpointvalue_Tight = 0.970;//working points updated to 2015 BTV-POG r
 
 int main (int argc, char *argv[])
 {
-  
-  string rootFileName = "ControlPlots.root";
   
   clock_t start = clock();
 
@@ -89,151 +79,96 @@ int main (int argc, char *argv[])
   bool emu = false; 
   bool mumu = false; 
   bool runHLT = false; 
-  std::string sWPMuon = "Tight"; 
-  std::string sWPElectron = "Tight";
+  std::string sWPMuon = "Loose"; 
+  std::string sWPElectron = "Loose";
   /// xml file
   string xmlFileName ="config/Run2TriLepton_samples.xml";
   float Luminosity = 552.672886226 ; // EG rereco run D  151020_153539 
-  for(int iarg = 0; iarg < argc && argc>1 ; iarg++){
-       std::string argval=argv[iarg];
-       if(argval=="--help" || argval =="--h"){
-   	       cout << "--ee:	Di-Electron" << endl;
-   	       cout << "--emu:  Electron-Muon" << endl;
-   	       cout << "--mumu: Di-Muon" << endl;
-	       cout << "--noHLT: disable triggering" << endl; 
-	       cout << "--WPmu WPpoint: working point muon" << endl; 
-	       cout << "--WPel WPpoint: working point electron" << endl; 
-// 		 cout << "--JESplus: JES sys +1 sigma MET included" << endl;
-// 		  cout << "--JESminus: JES sys -1 sigma MET included" << endl;
-// 		  cout << "--JERplus: JER +" << endl;
-// 		  cout << "--JERminus: JER -" << endl;
-// 		  cout << "--SFplus: SF up +10% syst for b quarks" << endl;
-// 		  cout << "--SFminus: SF down -10% syst for b quarks" << endl;
-//             cout << "--SFplus_c: SF up +10% systfor c quarks" << endl;
-// 		  cout << "--SFminus_c: SF down -10% syst for c quarks" << endl;
-//             cout << "--SFplus_l: SF up +10% syst for light quarks" << endl;
-// 		  cout << "--SFminus_l: SF down -10% syst for light quarks" << endl;
-// 		  cout << "--PUup: PU reweghting scaled up " << endl;
-// 		  cout << "--PUdown: PU reweghting scaled down " << endl;
-// 		  cout << "--NoPU: Do not apply pileup re-weighting" << endl;
-// 		  cout << "--NoSF: Do not apply b-tag scale factor" << endl;
-// 		  cout << "--RAW: Do not apply pileup re-weighting or b-tag scale factor" << endl;
-               cout << "--xml dir/myxml.xml Xml file" << endl;  
-   	       return 0;
-       }
-       if(argval=="--noHLT"){
-               runHLT = false; 
-       }
-       if (argval=="--ee"){
-   	       ee = true ;
-       }
-       if (argval=="--emu"){
-   	       emu = true;
-       }
-       if (argval=="--mumu"){
-   	       mumu = true ;
-       }
-// 	  if (argval=="--PUup" ){
-// 		  PUsysUp = true;
-//             pdf = false; 
-// 	  }
-// 	  if (argval=="--PUdown" ){
-// 		  PUsysDown = true;
-//             pdf = false; 
-// 	  }
-// 	  if (argval=="--JESplus") {
-// 		  JESPlus = true;
-//             pdf = false; 
-// 	  }
-// 	  if (argval=="--JESminus") {
-// 		  JESMinus = true;
-//             pdf = false; 
-// 	  }
-// 	  if (argval=="--JERplus") {
-// 		  JERPlus = true;
-// 	  }
-// 	  if (argval=="--JERminus") {
-// 		  JERMinus = true;
-// 	  }
-// 	  if (argval=="--SFplus") {
-// 		  SFplus = true;
-//             pdf = false; 
-// 	  }
-// 	  if (argval=="--SFminus"){
-// 		  SFminus = true;
-//             pdf = false; 
-// 	  }	   
-// 	  if (argval=="--NoPU") {
-// 		  reweightPU = false;
-//             pdf = false; 
-// 	  }
-// 	  if (argval=="--NoSF") {
-// 		  scaleFactor = false;
-//             pdf = false; 
-// 	  }
-// 	  if (argval=="--RAW") {
-// 		  reweightPU = false; 
-// 		  scaleFactor = false; 
-// 		  isRAW = true;
-//             pdf = false; 
-// 	  }
-// 	  if (argval=="--3D") {
-// 		  Pu3D = true;
-//             pdf = false; 
-// 	  }
-      if(argval=="--WPel")
-      {
-      	iarg++; 
-	sWPElectron =argv[iarg];
-      }
-      if(argval=="--WPmu")
-      {
-      	iarg++; 
-	sWPMuon = argv[iarg];
-      }
-      if (argval=="--xml") {
-   	       iarg++;
-               xmlFileName = argv[iarg];
-       }
-   }
-     
- 
-
   const char *xmlfile = xmlFileName.c_str();
-
+  std::string channelpostfix = ""; 
  
   //Setting Lepton Channels 
 
   if(emu)
   {
       cout << " --> Using the Muon-Electron channel..." << endl;
-      //channelpostfix = "_MuEl";
+      channelpostfix = "_MuEl";
   }
   else if(ee)
   {
       cout << " --> Using the Electron-Electron channel..." << endl;
-      //channelpostfix = "_ElEl";
+      channelpostfix = "_ElEl";
   }
   else if(mumu)
   {
       cout << " --> Using the Muon-Muon channel..." << endl;
-      //channelpostfix = "_MuMu";
+      channelpostfix = "_MuMu";
   }
   else
   {
       cerr<<"ERROR: Correct Di-lepton Channel not selected."<<endl;
       exit(1);
-  }  
-  
-  
+  }    
   cout << " - Using config file " << xmlfile << endl;
+
+  /// setting all arguments to be able to run on local grid
+  // check if all arguments are there
+  if(argc < 15)
+  {
+        std::cerr << "TOO FEW INPUTs FROM XMLFILE.  CHECK XML INPUT FROM SCRIPT.  " << argc << " ARGUMENTS HAVE BEEN PASSED." << std::endl;
+    for (int n_arg=1; n_arg<argc; n_arg++)
+    {
+       std:: cerr << "arg number " << n_arg << " is " << argv[n_arg] << std::endl; 
+    }
+    return 1;
+  }
+  // placing argument in variables
+  const string dName              = argv[1];
+  const string dTitle             = argv[2];
+  const int color                 = strtol(argv[4], NULL, 10);
+  const int ls                    = strtol(argv[5], NULL, 10);
+  const int lw                    = strtol(argv[6], NULL, 10);
+  const float normf               = strtod(argv[7], NULL);
+  const float EqLumi              = strtod(argv[8], NULL);
+  const float xSect               = strtod(argv[9], NULL);
+  const float PreselEff           = strtod(argv[10], NULL);
+  string fileName                 = argv[11];
+  const int startEvent            = strtol(argv[argc-3], NULL, 10);
+  const int endEvent              = strtol(argv[argc-2], NULL, 10);
+  const int JobNum                = strtol(argv[argc-1], NULL, 10);
+
+
+    
+  vector<string> vecfileNames;
+  for(int args = 11; args < argc-3; args++)
+  {
+     vecfileNames.push_back(argv[args]);
+  }
+
+
+  //info
+    cout << "---Dataset accepted from command line---" << endl;
+    cout << "Dataset Name: " << dName << endl;
+    cout << "Dataset Title: " << dTitle << endl;
+    cout << "Dataset color: " << color << endl;
+    cout << "Dataset ls: " << ls << endl;
+    cout << "Dataset lw: " << lw << endl;
+    cout << "Dataset normf: " << normf << endl;
+    cout << "Dataset EqLumi: " << EqLumi << endl;
+    cout << "Dataset xSect: " << xSect << endl;
+    cout << "Dataset File Name: " << vecfileNames[0] << endl;
+    cout << "Beginning Event: " << startEvent << endl;
+    cout << "Ending Event: " << endEvent << endl;
+    cout << "JobNum: " << JobNum << endl;
+    
+
   
   //Configuration output format
-  TTree *configTree = new TTree("configTree","configuration Tree");
-  TClonesArray* tcdatasets = new TClonesArray("Dataset",1000);
-  configTree->Branch("Datasets","TClonesArray",&tcdatasets);
+//  TTree *configTree = new TTree("configTree","configuration Tree");
+//  TClonesArray* tcdatasets = new TClonesArray("Dataset",1000);
+//  configTree->Branch("Datasets","TClonesArray",&tcdatasets);
   TClonesArray* tcAnaEnv = new TClonesArray("AnalysisEnvironment",1000);
-  configTree->Branch("AnaEnv","TClonesArray",&tcAnaEnv);
+//  configTree->Branch("AnaEnv","TClonesArray",&tcAnaEnv);
   
   
   
@@ -243,15 +178,36 @@ int main (int argc, char *argv[])
   
   AnalysisEnvironment anaEnv;
   cout << " - Loading environment ..." << endl;
-  AnalysisEnvironmentLoader anaLoad(anaEnv,xmlfile);
-  
+  // AnalysisEnvironmentLoader anaLoad(anaEnv,xmlfile); doesn't work on localgird
+  anaEnv.PrimaryVertexCollection = "PrimaryVertex";
+    anaEnv.JetCollection = "PFJets_slimmedJets";
+    anaEnv.FatJetCollection = "FatJets_slimmedJetsAK8";
+    anaEnv.METCollection = "PFMET_slimmedMETs";
+    anaEnv.MuonCollection = "Muons_slimmedMuons";
+    anaEnv.ElectronCollection = "Electrons_slimmedElectrons";
+    anaEnv.GenJetCollection   = "GenJets_slimmedGenJets";
+    anaEnv.TrackMETCollection = "";
+    anaEnv.GenEventCollection = "GenEvent";
+    anaEnv.NPGenEventCollection = "NPGenEvent";
+    anaEnv.MCParticlesCollection = "MCParticles";
+    anaEnv.loadFatJetCollection = true;
+    anaEnv.loadGenJetCollection = false;
+    anaEnv.loadGenEventCollection = false;
+    anaEnv.loadNPGenEventCollection = false;
+    anaEnv.loadMCParticles = true;
+    anaEnv.loadTrackMETCollection = false;
+    anaEnv.JetType = 2;
+    anaEnv.METType = 2;  
+
+
+
   cout << anaEnv.JetCollection << " " <<  anaEnv.METCollection << " "
     << anaEnv.ElectronCollection << " " << anaEnv.MuonCollection << " "
     << anaEnv.PrimaryVertexCollection << " " << anaEnv.GenJetCollection << " "
     << endl;
   
-  new ((*tcAnaEnv)[0]) AnalysisEnvironment(anaEnv);
-  int verbose = anaEnv.Verbose;
+  //new ((*tcAnaEnv)[0]) AnalysisEnvironment(anaEnv);
+  int verbose = 2; // anaEnv.Verbose;
   
   ////////////
   /// object selection and identification
@@ -288,18 +244,16 @@ int main (int argc, char *argv[])
   TTreeLoader treeLoader; 
   vector < Dataset* > datasets;
   cout << " - Loading datasets ..." << endl;
-
-  treeLoader.LoadDatasets(datasets, xmlfile); 
+  cout << " - Creating Dataset ..." << endl;
+  Dataset* theDataset = new Dataset(dName, dTitle, true, color, ls, lw, normf, xSect, vecfileNames);
+  theDataset->SetEquivalentLuminosity(EqLumi*normf);
+  datasets.push_back(theDataset);
   cout << "Number of datasets: " << datasets.size() << endl;
-  for (unsigned int i=0;i<datasets.size();i++) new ((*tcdatasets)[i]) Dataset(*datasets[i]);
 
   
   /// //////////
   /// determine lumi
   ////////////////////////
-
-
-  
   for (unsigned int d = 0; d < datasets.size (); d++)
   {
     string dataSetName = datasets[d]->Name();
@@ -312,8 +266,11 @@ int main (int argc, char *argv[])
 //  if ( Luminosity != oldLuminosity ) cout << "Changed analysis environment luminosity to "<< Luminosity << endl;
    Luminosity =oldLuminosity; // the previous doesn't work  
     cout << "lumi is " << Luminosity << endl;  
-   
+   stringstream ss;
+    ss << JobNum;
+    string strJobNum = ss.str(); 
    // set rootfile to store controlplots 
+   string rootFileName = "ControlPlots"+channelpostfix + "_" + strJobNum+".root";
    TFile *fout = new TFile(rootFileName.c_str(), "RECREATE"); 
     
 
@@ -326,66 +283,6 @@ int main (int argc, char *argv[])
   double NEvtsData = 0;
   Double_t *nEvents = new Double_t[datasets.size()];
   
-  
-  ///////////////////////////////////
-  /// MultisamplePlots            ///
-  //////////////////////////////////
-   MSPlot["cutFlow"]              = new MultiSamplePlot(datasets, "cutFlow", 15, -0.5, 14.5, "cutFlow");
-   MSPlot["BasecutFlow"]              = new MultiSamplePlot(datasets, "BasecutFlow", 15, -0.5, 14.5, "Baseline cutFlow");   
-
-   MSPlot["init_NbOfVertices"]    = new MultiSamplePlot(datasets, "init_NbOfVertices", 60, 0, 60, "initial nb of vertices");
-   MSPlot["init_NbOfJets"]	  = new MultiSamplePlot(datasets, "init_NbOfJets", 16, -0.5, 15, "initial nb of jets"); 
-   MSPlot["init_NbOfCSVLJets"]    = new MultiSamplePlot(datasets, "init_NbOfCSVLJets", 16, -0.5, 15, "initial nb of CSV loose jets");
-   MSPlot["init_NbOfCSVMJets"]    = new MultiSamplePlot(datasets, "init_NbOfCSVMJets", 16, -0.5, 15, "initial nb of CSV medium jets"); 
-   MSPlot["init_NbOfCSVTJets"]    = new MultiSamplePlot(datasets, "init_NbOfCSVTJets", 16, -0.5, 15, "initial nb of CSV tight jets");
-   MSPlot["init_NbOfMuons"]       = new MultiSamplePlot(datasets, "init_NbOfMuons", 16, -0.5, 15,"initial nb of muons"); 
-   MSPlot["init_NbOfElectrons"]   = new MultiSamplePlot(datasets, "init_NbOfElectrons", 16, -0.5, 15, "initial nb of electrons"); 
-   MSPlot["init_NbOfLeptons"]     = new MultiSamplePlot(datasets, "init_NbOfLeptons", 16, -0.5, 15, "initial nb of leptons"); 
-   
-   MSPlot["3L_NbOfVertices"]      = new MultiSamplePlot(datasets, "3L_NbOfVertices", 60, 0, 60, "After 3 lepton req.:  nb of vertices");
-   MSPlot["3L_NbOfJets"]          = new MultiSamplePlot(datasets, "3L_NbOfJets", 16, -0.5, 15, "After 3 lepton req.:  nb of jets");
-   MSPlot["3L_NbOfCSVLJets"]      = new MultiSamplePlot(datasets, "3L_NbOfCSVLJets", 16, -0.5, 15, "After 3 lepton req.:  nb of CSV loose jets");
-   MSPlot["3L_NbOfCSVMJets"]      = new MultiSamplePlot(datasets, "3L_NbOfCSVMJets", 16, -0.5, 15, "After 3 lepton req.:  nb of CSV medium jets");
-   MSPlot["3L_NbOfCSVTJets"]      = new MultiSamplePlot(datasets, "3L_NbOfCSVTJets", 16, -0.5, 15, "After 3 lepton req.:  nb of CSV tight jets");
-   MSPlot["3L_NbOfMuons"]         = new MultiSamplePlot(datasets, "3L_NbOfMuons", 16, -0.5, 15,"After 3 lepton req.:  nb of muons");
-   MSPlot["3L_NbOfElectrons"]     = new MultiSamplePlot(datasets, "3L_NbOfElectrons", 16, -0.5, 15, "After 3 lepton req.:  nb of electrons");
-   MSPlot["3L_NbOfLeptons"]       = new MultiSamplePlot(datasets, "3L_NbOfLeptons", 16, -0.5, 15, "After 3 lepton req.:  nb of leptons");
-
-   MSPlot["2J_NbOfVertices"]      = new MultiSamplePlot(datasets, "2J_NbOfVertices", 60, 0, 60, "After 2 jet req.:  nb of vertices");
-   MSPlot["2J_NbOfJets"]          = new MultiSamplePlot(datasets, "2J_NbOfJets", 16, -0.5, 15, "After 2 jet req.:  nb of jets");
-   MSPlot["2J_NbOfCSVLJets"]      = new MultiSamplePlot(datasets, "2J_NbOfCSVLJets", 16, -0.5, 15, "After 2 jet req.:  nb of CSV loose jets");
-   MSPlot["2J_NbOfCSVMJets"]      = new MultiSamplePlot(datasets, "2J_NbOfCSVMJets", 16, -0.5, 15, "After 2 jet req.:  nb of CSV medium jets");
-   MSPlot["2J_NbOfCSVTJets"]      = new MultiSamplePlot(datasets, "2J_NbOfCSVTJets", 16, -0.5, 15, "After 2 jet req.:  nb of CSV tight jets");
-   MSPlot["2J_NbOfMuons"]         = new MultiSamplePlot(datasets, "2J_NbOfMuons", 16, -0.5, 15,"After 2 jet req.:  nb of muons");
-   MSPlot["2J_NbOfElectrons"]     = new MultiSamplePlot(datasets, "2J_NbOfElectrons", 16, -0.5, 15, "After 2 jet req.:  nb of electrons");
-   MSPlot["2J_NbOfLeptons"]       = new MultiSamplePlot(datasets, "2J_NbOfLeptons", 16, -0.5, 15, "After 2 jet req.:  nb of leptons");
-
-   MSPlot["1BJ_NbOfVertices"]     = new MultiSamplePlot(datasets, "1BJ_NbOfVertices", 60, 0, 60, "After 1 Bjet req.:  nb of vertices");
-   MSPlot["1BJ_NbOfJets"]         = new MultiSamplePlot(datasets, "1BJ_NbOfJets", 16, -0.5, 15, "After 1 Bjet req.:  nb of jets");
-   MSPlot["1BJ_NbOfCSVLJets"]     = new MultiSamplePlot(datasets, "1BJ_NbOfCSVLJets", 16, -0.5, 15, "After 1 Bjet req.:  nb of CSV loose jets");
-   MSPlot["1BJ_NbOfCSVMJets"]     = new MultiSamplePlot(datasets, "1BJ_NbOfCSVMJets", 16, -0.5, 15, "After 1 Bjet req.:  nb of CSV medium jets");
-   MSPlot["1BJ_NbOfCSVTJets"]     = new MultiSamplePlot(datasets, "1BJ_NbOfCSVTJets", 16, -0.5, 15, "After 1 Bjet req.:  nb of CSV tight jets");
-   MSPlot["1BJ_NbOfMuons"]        = new MultiSamplePlot(datasets, "1BJ_NbOfMuons", 16, -0.5, 15,"After 1 Bjet req.:  nb of muons");
-   MSPlot["1BJ_NbOfElectrons"]    = new MultiSamplePlot(datasets, "1BJ_NbOfElectrons", 16, -0.5, 15, "After 1 Bjet req.:  nb of electrons");
-   MSPlot["1BJ_NbOfLeptons"]      = new MultiSamplePlot(datasets, "1BJ_NbOfLeptons", 16, -0.5, 15, "After 1 Bjet req.:  nb of leptons");
-
-   MSPlot["OSSF_NbOfVertices"]    = new MultiSamplePlot(datasets, "OSSF_NbOfVertices", 60, 0, 60, "After OSSF req.:  nb of vertices");
-   MSPlot["OSSF_NbOfJets"]        = new MultiSamplePlot(datasets, "OSSF_NbOfJets", 16, -0.5, 15, "After OSSF req.:  nb of jets");
-   MSPlot["OSSF_NbOfCSVLJets"]    = new MultiSamplePlot(datasets, "OSSF_NbOfCSVLJets", 16, -0.5, 15, "After OSSF req.:  nb of CSV loose jets");
-   MSPlot["OSSF_NbOfCSVMJets"]    = new MultiSamplePlot(datasets, "OSSF_NbOfCSVMJets", 16, -0.5, 15, "After OSSF req.:  nb of CSV medium jets");
-   MSPlot["OSSF_NbOfCSVTJets"]    = new MultiSamplePlot(datasets, "OSSF_NbOfCSVTJets", 16, -0.5, 15, "After OSSF req.:  nb of CSV tight jets");
-   MSPlot["OSSF_NbOfMuons"]       = new MultiSamplePlot(datasets, "OSSF_NbOfMuons", 16, -0.5, 15,"After OSSF req.:  nb of muons");
-   MSPlot["OSSF_NbOfElectrons"]   = new MultiSamplePlot(datasets, "OSSF_NbOfElectrons", 16, -0.5, 15, "After OSSF req.:  nb of electrons");
-   MSPlot["OSSF_NbOfLeptons"]     = new MultiSamplePlot(datasets, "OSSF_NbOfLeptons", 16, -0.5, 15, "After OSSF req.:  nb of leptons");
-
-   MSPlot["ZMASS_NbOfVertices"]   = new MultiSamplePlot(datasets, "ZMASS_NbOfVertices", 60, 0, 60, "After Zmass window req.:  nb of vertices");
-   MSPlot["ZMASS_NbOfJets"]       = new MultiSamplePlot(datasets, "ZMASS_NbOfJets", 16, -0.5, 15, "After Zmass window req.:  nb of jets");
-   MSPlot["ZMASS_NbOfCSVLJets"]   = new MultiSamplePlot(datasets, "ZMASS_NbOfCSVLJets", 16, -0.5, 15, "After Zmass window req.:  nb of CSV loose jets");
-   MSPlot["ZMASS_NbOfCSVMJets"]   = new MultiSamplePlot(datasets, "ZMASS_NbOfCSVMJets", 16, -0.5, 15, "After Zmass window req.:  nb of CSV medium jets");
-   MSPlot["ZMASS_NbOfCSVTJets"]   = new MultiSamplePlot(datasets, "ZMASS_NbOfCSVTJets", 16, -0.5, 15, "After Zmass window req.:  nb of CSV tight jets");
-   MSPlot["ZMASS_NbOfMuons"]      = new MultiSamplePlot(datasets, "ZMASS_NbOfMuons", 16, -0.5, 15,"After Zmass window req.:  nb of muons");
-   MSPlot["ZMASS_NbOfElectrons"]  = new MultiSamplePlot(datasets, "ZMASS_NbOfElectrons", 16, -0.5, 15, "After Zmass window req.:  nb of electrons");
-   MSPlot["ZMASS_NbOfLeptons"]    = new MultiSamplePlot(datasets, "ZMASS_NbOfLeptons", 16, -0.5, 15, "After Zmass window req.:  nb of leptons");
 
   ////////////////////////////////////
   ///  Selection table
@@ -424,23 +321,7 @@ int main (int argc, char *argv[])
     cout << "luminosity of dataset " << Luminosity << endl; 
     string previousFilename = "";
     int iFile = -1;
-    float xSect = -1; 
     string dataSetName = datasets[d]->Name();
-    if(dataSetName.find("tZq") == 0  ) xSect = 0.09741; 
-    if(dataSetName.find("Zjets_10_50") == 0  ) xSect = 15729.2; 
-    if(dataSetName.find("Zjets_50") == 0  ) xSect = 4925; 
-    if(dataSetName.find("ttbar") == 0  ) xSect = 48.5; 
-    if(dataSetName.find("ttW")==0  ) xSect= 0.01189; 
-    if(dataSetName.find("ttZ") == 0  ) xSect = 0.00001827;
-    if(dataSetName.find("WZ") ==0  ) xSect = 1.463; 
-    if(dataSetName.find("ZZ") == 0  ) xSect = 0.2781;   
-    if (dataSetName.find("Data") == 0 || dataSetName.find("data") == 0 || dataSetName.find("DATA") == 0) xSect = 1; 
-    cout << " Xsection of dataset " << xSect << endl;
-    if(xSect == -1){
-      cout << "ERROR: couldn't find xsection " << endl; 
-      continue; 
-    }
-
  
     int isdata = 0; 
     
@@ -461,8 +342,9 @@ int main (int argc, char *argv[])
     
     
     // make root tree file name
-    string roottreename = "Ntuples/";
+    string roottreename = "/user/ivanpari/CMSSW_7_4_15/src/TopBrussels/FCNCAnalysis/Ntuples/";
     roottreename+= datasets[d]->Name();
+    roottreename+= strJobNum; 
     roottreename+="_tree.root";
 
     cout << "  - Recreate outputfile for ntuples ... " << roottreename.c_str() << endl; 
@@ -768,9 +650,9 @@ int main (int argc, char *argv[])
       Run2Selection selection(init_jets_corrected, init_muons, init_electrons, mets);
       
       bool isGoodPV = selection.isPVSelected(vertex, PVertexNdofCut, PVertexZCut,PVertexRhoCut); //isPVSelected(const std::vector<TRootVertex*>& vertex, int NdofCut, float Zcut, float RhoCut)
-      
-      vector<TRootPFJet*> selectedJets = selection.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet);  // GetSelectedJets(float PtThr, float EtaThr, bool applyJetID, std::string TightLoose)
       vector<TRootMuon*> selectedMuons = selection.GetSelectedMuons(MuonPtCut, MuonEtaCut, MuonRelIsoCut,WPMuon,CampaignMuon);  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
+ 
+      vector<TRootPFJet*> selectedJets = selection.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet);  // GetSelectedJets(float PtThr, float EtaThr, bool applyJetID, std::string TightLoose)
       vector<TRootElectron*> selectedElectrons = selection.GetSelectedElectrons(ElectronPtCut, ElectronEtaCut, WPElectron, CampaignElectron, cutsBasedElectron);  // GetSelectedElectrons(float PtThr, float etaThr, string WorkingPoint, string ProductionCampaign, bool CutsBased)
       
       sort(selectedJets.begin(), selectedJets.end(),HighestPt()); 
@@ -812,7 +694,7 @@ int main (int argc, char *argv[])
       /// Initial nbrs
       
       selecTable.Fill(d,0,scaleFactor*Luminosity);
-      MSPlot["cutFlow"]->Fill(0, datasets[d], true, Luminosity*scaleFactor );
+/*      MSPlot["cutFlow"]->Fill(0, datasets[d], true, Luminosity*scaleFactor );
       MSPlot["init_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
       MSPlot["init_NbOfJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor); 
       MSPlot["init_NbOfCSVLJets"]->Fill(selectedBCSVLJets.size(), datasets[d], true, Luminosity*scaleFactor);
@@ -821,7 +703,7 @@ int main (int argc, char *argv[])
       MSPlot["init_NbOfMuons"]->Fill(selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor); 
       MSPlot["init_NbOfElectrons"]->Fill(selectedElectrons.size(),datasets[d], true, Luminosity*scaleFactor); 
       MSPlot["init_NbOfLeptons"]->Fill(selectedElectrons.size()+selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor); 
-      
+  */    
       
       /// Trigger
       if(runHLT) trigged = treeLoader.EventTrigged(itrigger);
@@ -830,19 +712,19 @@ int main (int argc, char *argv[])
       if(trigged)
       { 
        selecTable.Fill(d,1,scaleFactor*Luminosity);
-       MSPlot["cutFlow"]->Fill(1, datasets[d], true, Luminosity*scaleFactor );
+//       MSPlot["cutFlow"]->Fill(1, datasets[d], true, Luminosity*scaleFactor );
       
        if (isGoodPV)
        {
         if(verbose>3) cout << "GoodPV" << endl; 
         selecTable.Fill(d,2,scaleFactor*Luminosity);
-	MSPlot["cutFlow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor );
+//	MSPlot["cutFlow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor );
 
         if (selectedMuons.size() + selectedElectrons.size()== 3)
         {
             if(verbose>3) cout << "3 electrons "<< endl; 
  	    selecTable.Fill(d,3,scaleFactor*Luminosity);
-	    MSPlot["cutFlow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor );
+/*	    MSPlot["cutFlow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor );
             MSPlot["BasecutFlow"]->Fill(0, datasets[d], true, Luminosity*scaleFactor );
             MSPlot["3L_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
             MSPlot["3L_NbOfJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
@@ -852,12 +734,12 @@ int main (int argc, char *argv[])
             MSPlot["3L_NbOfMuons"]->Fill(selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);
             MSPlot["3L_NbOfElectrons"]->Fill(selectedElectrons.size(),datasets[d], true, Luminosity*scaleFactor);
             MSPlot["3L_NbOfLeptons"]->Fill(selectedElectrons.size()+selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);	    
-	    
+*/	    
 	    if(selectedJets.size() > 1)
 	    {
 	       if(verbose>3) cout << " at least 2 jets " << endl; 
 	       selecTable.Fill(d,4,scaleFactor*Luminosity); 
-	       MSPlot["cutFlow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor );
+/*	       MSPlot["cutFlow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor );
 	       MSPlot["BasecutFlow"]->Fill(1, datasets[d], true, Luminosity*scaleFactor );
                MSPlot["2J_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
                MSPlot["2J_NbOfJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
@@ -867,12 +749,12 @@ int main (int argc, char *argv[])
                MSPlot["2J_NbOfMuons"]->Fill(selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);
                MSPlot["2J_NbOfElectrons"]->Fill(selectedElectrons.size(),datasets[d], true, Luminosity*scaleFactor);
                MSPlot["2J_NbOfLeptons"]->Fill(selectedElectrons.size()+selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);
-
+*/
 	       if(selectedBCSVLJets.size()>1)
 	       {
 	         if(verbose>3) cout << " at least 1 bjet " << endl; 
 	         selecTable.Fill(d,5,scaleFactor*Luminosity); 
-		 MSPlot["cutFlow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor );
+/*		 MSPlot["cutFlow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor );
  		 MSPlot["BasecutFlow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor );
                  MSPlot["1BJ_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
                  MSPlot["1BJ_NbOfJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
@@ -882,7 +764,7 @@ int main (int argc, char *argv[])
                  MSPlot["1BJ_NbOfMuons"]->Fill(selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);
                  MSPlot["1BJ_NbOfElectrons"]->Fill(selectedElectrons.size(),datasets[d], true, Luminosity*scaleFactor);
                  MSPlot["1BJ_NbOfLeptons"]->Fill(selectedElectrons.size()+selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);	 
-		 
+*/		 
 		 std::vector<int> Leptons; 
 		 Leptons.clear(); 
 		 Leptons = OSSFLeptonPairCalculator(selectedElectrons, selectedMuons, verbose);
@@ -894,7 +776,7 @@ int main (int argc, char *argv[])
 	         {
 		    if(verbose>3) cout << " OSSF "<< endl; 
 		    selecTable.Fill(d,6,scaleFactor*Luminosity);
-		    MSPlot["cutFlow"]->Fill(6, datasets[d], true, Luminosity*scaleFactor );
+/*		    MSPlot["cutFlow"]->Fill(6, datasets[d], true, Luminosity*scaleFactor );
 		    MSPlot["BasecutFlow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor );
 	            MSPlot["OSSF_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
      		    MSPlot["OSSF_NbOfJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
@@ -905,7 +787,7 @@ int main (int argc, char *argv[])
      		    MSPlot["OSSF_NbOfElectrons"]->Fill(selectedElectrons.size(),datasets[d], true, Luminosity*scaleFactor);
                     MSPlot["OSSF_NbOfLeptons"]->Fill(selectedElectrons.size()+selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);   
 		    
-		    
+*/		    
 		    Zboson.Clear(); 
 		    Zboson = CreateZboson(Leptons, selectedElectrons, selectedMuons, verbose); 
 		    
@@ -926,7 +808,7 @@ int main (int argc, char *argv[])
 		    {
 		      if(verbose>3) cout << " Zmass window " << endl; 
 		      selecTable.Fill(d,7,scaleFactor*Luminosity);
-		      MSPlot["cutFlow"]->Fill(7, datasets[d], true, Luminosity*scaleFactor );
+/*		      MSPlot["cutFlow"]->Fill(7, datasets[d], true, Luminosity*scaleFactor );
 		      MSPlot["BasecutFlow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor );
                       MSPlot["ZMASS_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
 		      MSPlot["ZMASS_NbOfJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
@@ -936,7 +818,7 @@ int main (int argc, char *argv[])
 		      MSPlot["ZMASS_NbOfMuons"]->Fill(selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);
 		      MSPlot["ZMASS_NbOfElectrons"]->Fill(selectedElectrons.size(),datasets[d], true, Luminosity*scaleFactor);
 		      MSPlot["ZMASS_NbOfLeptons"]->Fill(selectedElectrons.size()+selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);
-
+*/
 		      eventSelected = true;
 	            }
 		 }
@@ -1189,7 +1071,7 @@ int main (int argc, char *argv[])
   ///   Write plots   ///
   ///*****************///
   
-  string pathPNG = "ControlPlots/";
+/*  string pathPNG = "ControlPlots/";
   mkdir(pathPNG.c_str(),0777);
   mkdir((pathPNG+"MSPlot/").c_str(),0777); // 0777 if it doesn't exist already, make it
   
@@ -1203,7 +1085,7 @@ int main (int argc, char *argv[])
     temp->Draw(name, 1, false, false, false, 1);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
     temp->Write(fout, name, true, pathPNG+"MSPlot/", "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
   }
-   
+*/   
    
    
    ///////////////////
@@ -1213,9 +1095,9 @@ int main (int argc, char *argv[])
   fout->Close();
   
   delete fout;
-  delete tcdatasets;
+ // delete tcdatasets;
   delete tcAnaEnv;
-  delete configTree;
+ // delete configTree;
  
   cout << "It took us " << ((double)clock() - start) / CLOCKS_PER_SEC << " s to run the program" << endl;
     

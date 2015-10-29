@@ -1,30 +1,9 @@
 <?xml version="1.0"?>
 <data>
 <datasets>
-<!-- data -->
-<d name="data" title="data ElEl rereco run2015D" add="1" color="1" lw="2" normf="1" Eqlumi="-1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DoubleEG/crab_DoubleEG-Run2015D-05Oct2015-v1-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151020_153539/0000/*.root"/>
-
 <!-- tVq -->
 
-<d name="tZq" title="tZq to 3lNu" add="1" color="5" ls="1" lw="2" normf="1" EqLumi="30125151.4218" xsection="0.09741" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1/crab_tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2-CMSSW_74X_v8-MCRUN2_74_V9/151021_135224/0000/*.root"/>
-
-<!-- Z jets -->
-<d name="Zjets_10_50" title="DY to ll 10  mll  50" add="1" color="44" ls="1" lw="2" normf="1" EqLumi="1941.32943824" xsection="15729.2" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1-CMSSW_74X_v8-MCRUN2_74_V9/151020_154300/0000/*.root"/>
-
-<d name="Zjets_50" title="DY to ll mll to 50" add="1" color="633" ls="45" lw="2" normf="1" EqLumi="1838.1057868" xsection="4925" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1-CMSSW_74X_v8-MCRUN2_74_V9/151020_154341/0000/*.root"/>
-
-<!-- ttbar -->
-<d name="ttbar" title="tt dilepton + jets" add="1" color="37" ls="1" lw="2" normf="1" EqLumi="122158.886598" xsection="48.5" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2-CMSSW_74X_v8-MCRUN2_74_V9/151020_160646/0000/*.root"/>
-
-<!-- ttbar + V -->
-<d name="ttW" title="ttW" add="1" color="6" ls="1" lw="2" normf="1" EqLumi="21270647.603" xsection="0.01189" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1-CMSSW_74X_v8-MCRUN2_74_V9/151020_160834/0000/*.root"/>
-
-<d name="ttZ" title="ttZ" add="1" color="8" ls="1" lw="2" normf="1" EqLumi="21784345922.3" xsection="0.00001827" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/crab_TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1-CMSSW_74X_v8-MCRUN2_74_V9/151020_160850/0000/*.root"/>
-
-<!-- VV --> 
-<d name="WZ" title="WZ to lllnu" add="1" color="4" ls="1" lw="2" normf="1" EqLumi="1315789.47368" xsection="1.463" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/crab_WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1-CMSSW_74X_v8-MCRUN2_74_V9/151020_161555/0000/*.root"/>
-
-<d name="ZZ" title="ZZ to 4l" add="1" color="2" ls="1" lw="2" normf="1" EqLumi="23921294.4984" xsection="0.2781" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/ZZTo4L_13TeV_powheg_pythia8/crab_ZZTo4L_13TeV_powheg_pythia8-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1-CMSSW_74X_v8-MCRUN2_74_V9/151020_161655/0000/TOPTREE*.root"/>
+<d name="tZq" title="tZqto3lNu" add="1" color="5" ls="1" lw="2" normf="1" EqLumi="30125151.4218" xsection="0.09741" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1/crab_tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2-CMSSW_74X_v8-MCRUN2_74_V9/151021_135224/0000/*.root"/>
 
 </datasets>
 
@@ -32,8 +11,8 @@
 
 <analysis>
 <a type="Collections" PVCollection="PrimaryVertex" JetType="2" JetCollection="PFJets_slimmedJets" METType="2" METCollection="PFMET_slimmedMETs" MuonCollection="Muons_slimmedMuons" ElectronCollection="Electrons_slimmedElectrons" loadGenJetCollection="0" GenJetCollection="GenJets_slimmedGenJets" loadGenEventCollection="0" GenEventCollection="GenEvent" loadNPGenEventCollection="0" NPGenEventCollection="NPGenEvent" loadMCParticles="1" MCParticlesCollection="MCParticles" TrackMETCollection="" loadTrackMETCollection="0"/>
-<a type="Conditions" isMC="1" MCRound="0" Vars_ByFile="0" VarsFile="m0_100_m12_100" IntToCut="4" Verbose="2" Luminosity="999999" JES="1." nPseudoExp="0" nPseudoSession="0" runonTTrees="0" doABCD="1" doVJEstim="1" doVJEstPE="1" doTtJEstim="1" doTemplComp="0" doSystematics="0"/>
+<!--<a type="Conditions" isMC="1" MCRound="0" Vars_ByFile="0" VarsFile="m0_100_m12_100" IntToCut="4" Verbose="2" Luminosity="552.673" JES="1." nPseudoExp="0" nPseudoSession="0" runonTTrees="0" doABCD="1" doVJEstim="1" doVJEstPE="1" doTtJEstim="1" doTemplComp="0" doSystematics="0"/>
 <a type="Selection" PVertexNdofCut="4" PVertexZCut="24." PVertexRhoCut="2." MuonPtCutSR="20." MuonEtaCutSR="2.1" MuonRelIsoCutSR="0.05" MuonNHitsCutSR="10" MuonD0CutSR="0.02" MuonDRJetsCut="0.3" MuonPtCutVetoSR="10." MuonEtaCutVetoSR="2.5" MuonRelIsoCutVetoSR="0.2" ElectronPtCut="15." ElectronEtaCut="2.5" ElectronRelIsoCut="0.2" JetsPtCutSR="30." JetsEtaCutSR="2.4" applyJetID="1" JetEMFCut="0.01" n90HitsCut="1" fHPDCut="0.98" NofJets="4" NofJetBins="2"/>
-
+-->
 </analysis>
 </data>
