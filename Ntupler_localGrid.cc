@@ -92,17 +92,17 @@ int main (int argc, char *argv[])
   if(emu)
   {
       cout << " --> Using the Muon-Electron channel..." << endl;
-      channelpostfix = "_MuEl";
+      channelpostfix = "_MuEl_";
   }
   else if(ee)
   {
       cout << " --> Using the Electron-Electron channel..." << endl;
-      channelpostfix = "_ElEl";
+      channelpostfix = "_ElEl_";
   }
   else if(mumu)
   {
       cout << " --> Using the Muon-Muon channel..." << endl;
-      channelpostfix = "_MuMu";
+      channelpostfix = "_MuMu_";
   }
   else
   {
@@ -269,11 +269,6 @@ int main (int argc, char *argv[])
    stringstream ss;
     ss << JobNum;
     string strJobNum = ss.str(); 
-   // set rootfile to store controlplots 
-   string rootFileName = "ControlPlots"+channelpostfix + "_" + strJobNum+".root";
-   TFile *fout = new TFile(rootFileName.c_str(), "RECREATE"); 
-    
-
   
   
   //Global variable
@@ -337,13 +332,33 @@ int main (int argc, char *argv[])
         lumiWeight = Luminosity*xSect/datasets[d]->NofEvtsToRunOver();
         cout << "the weight to apply for each event of this data set is " << "Lumi * (xs/NSample) = "  << Luminosity << " * (" << xSect << "/" << datasets[d]->NofEvtsToRunOver() << ") = " << Luminosity << " * " << xSect/datasets[d]->NofEvtsToRunOver() << " = " << Luminosity*xSect/datasets[d]->NofEvtsToRunOver()  <<  endl;
       }
-
-   
+    // Make controlplots root file
+    
+    
+    
+    
+    // Controlplots
+   // set rootfile to store controlplots
+    string pathRoot = "ControlPlots/";
+    mkdir(pathRoot.c_str(),0777); 
+    string pathRootSample = channelpostfix + datasets[d]->Name();
+    mkdir((pathRoot+pathRootSample+"/").c_str(),0777);
+    string rootFileName = pathRoot + pathRootSample +"/ControlPlots"+channelpostfix + datasets[d]->Name() + "_" + strJobNum+".root";
+    TFile *fout = new TFile(rootFileName.c_str(), "RECREATE");
+    
+    map <string,TH1F*> histo1D;
+ 
+    std::string  titlePlot = ""; 
+    titlePlot = "initial_Nb_Jets"+channelpostfix+datasets[d]->Name(); 	
+    //sprintf(titlePlot,"initial_Nb_Jets_%s_%s",channelpostfix,datasets[d]->Name());
+    histo1D["h_initial_Nb_Jets"] = new TH1F(titlePlot.c_str(), "Initial nb. of jets",  16, - 0.5, 15 ); 
+	
     
     
     // make root tree file name
     string roottreename = "/user/ivanpari/CMSSW_7_4_15/src/TopBrussels/FCNCAnalysis/Ntuples/";
     roottreename+= datasets[d]->Name();
+    roottreename+=" ";
     roottreename+= strJobNum; 
     roottreename+="_tree.root";
 
@@ -694,6 +709,7 @@ int main (int argc, char *argv[])
       /// Initial nbrs
       
       selecTable.Fill(d,0,scaleFactor*Luminosity);
+      histo1D["h_initial_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
 /*      MSPlot["cutFlow"]->Fill(0, datasets[d], true, Luminosity*scaleFactor );
       MSPlot["init_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
       MSPlot["init_NbOfJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor); 
@@ -1048,54 +1064,51 @@ int main (int argc, char *argv[])
     delete fileout; 
 
    
-    
-    
-    
-    //important: free memory
-    treeLoader.UnLoadDataset();
-    
-  }  // Loop on datasets
-  
-  
-  
-  
-    ///////////////
-    /// TABLES
-    //////////////////
-   selecTable.TableCalculator(false, true, true, true, true); 
-   string selectionTableAll = "SelectionTables/SelectionTable_allSamples.tex";
-   selecTable.Write(selectionTableAll.c_str(), true, true, true, true, true, true, false);
    
    
    ///*****************///
   ///   Write plots   ///
   ///*****************///
-  
-/*  string pathPNG = "ControlPlots/";
+  string pathPNG = "ControlPlots/";
   mkdir(pathPNG.c_str(),0777);
-  mkdir((pathPNG+"MSPlot/").c_str(),0777); // 0777 if it doesn't exist already, make it
+  mkdir((pathPNG+"1DPlot/").c_str(),0777); // 0777 if it doesn't exist already, make it
   
+ 
   ///Write histograms
   fout->cd();
-  for (map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
+  for (map<string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
   {
-    if(verbose>3) cout << "MSPlot: " << it->first << endl;
-    MultiSamplePlot *temp = it->second;
+    if(verbose>3) cout << "1D Plot: " << it->first << endl;
+   // TCanvas ctemp = 
+    TH1F *temp = it->second;
     string name = it->first;
-    temp->Draw(name, 1, false, false, false, 1);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
-    temp->Write(fout, name, true, pathPNG+"MSPlot/", "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
+    temp->Draw();  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
+    //c1->SaveAs(pathPNG+"1DPlot/"+name modeString[mode] + "_" + cutLabel + ".png");
+    //temp->Write(fout, name, true, pathPNG+"1DPlot/", "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
   }
-*/   
+
    
    
    ///////////////////
    /// CLEANING
    /////////////////
-  
+  fout->Write();   
   fout->Close();
   
   delete fout;
- // delete tcdatasets;
+
+   treeLoader.UnLoadDataset();
+ } // end datasetloop
+
+ ///////////////
+  /// TABLES
+  //////////////////
+    selecTable.TableCalculator(false, true, true, true, true);
+   string selectionTableAll = "SelectionTables/SelectionTable_allSamples.tex";
+   selecTable.Write(selectionTableAll.c_str(), true, true, true, true, true, true, false);
+
+ 
+// delete tcdatasets;
   delete tcAnaEnv;
  // delete configTree;
  
