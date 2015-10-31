@@ -349,7 +349,7 @@ int main (int argc, char *argv[])
     map <string,TH1F*> histo1D;
  
     std::string  titlePlot = ""; 
-    titlePlot = "initial_Nb_Jets"+channelpostfix+datasets[d]->Name(); 	
+    titlePlot = "initial_Nb_Jets"+channelpostfix; 	
     //sprintf(titlePlot,"initial_Nb_Jets_%s_%s",channelpostfix,datasets[d]->Name());
     histo1D["h_initial_Nb_Jets"] = new TH1F(titlePlot.c_str(), "Initial nb. of jets",  16, - 0.5, 15 ); 
 	
