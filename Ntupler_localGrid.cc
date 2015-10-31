@@ -86,7 +86,10 @@ int main (int argc, char *argv[])
   float Luminosity = 552.672886226 ; // EG rereco run D  151020_153539 
   const char *xmlfile = xmlFileName.c_str();
   std::string channelpostfix = ""; 
- 
+  bool doJESup = false; 
+  bool doJESdown= false; 
+  bool doJERup = false; 
+  bool doJERdown =false;  
   //Setting Lepton Channels 
 
   if(emu)
@@ -191,7 +194,7 @@ int main (int argc, char *argv[])
     anaEnv.NPGenEventCollection = "NPGenEvent";
     anaEnv.MCParticlesCollection = "MCParticles";
     anaEnv.loadFatJetCollection = true;
-    anaEnv.loadGenJetCollection = false;
+    anaEnv.loadGenJetCollection = true;// changed on 31okt
     anaEnv.loadGenEventCollection = false;
     anaEnv.loadNPGenEventCollection = false;
     anaEnv.loadMCParticles = true;
@@ -326,8 +329,10 @@ int main (int argc, char *argv[])
       cout << "      -> This sample contains, " << datasets[d]->NofEvtsToRunOver() << " events." << endl;
     
     double lumiWeight = -99.;
-    if (dataSetName.find("Data") == 0 || dataSetName.find("data") == 0 || dataSetName.find("DATA") == 0)
+    if (dataSetName.find("Data") == 0 || dataSetName.find("data") == 0 || dataSetName.find("DATA") == 0){
         lumiWeight=1;
+	isdata = 1;
+    }
     else{
         lumiWeight = Luminosity*xSect/datasets[d]->NofEvtsToRunOver();
         cout << "the weight to apply for each event of this data set is " << "Lumi * (xs/NSample) = "  << Luminosity << " * (" << xSect << "/" << datasets[d]->NofEvtsToRunOver() << ") = " << Luminosity << " * " << xSect/datasets[d]->NofEvtsToRunOver() << " = " << Luminosity*xSect/datasets[d]->NofEvtsToRunOver()  <<  endl;
@@ -350,16 +355,29 @@ int main (int argc, char *argv[])
  
     std::string  titlePlot = ""; 
     titlePlot = "initial_Nb_Jets"+channelpostfix; 	
-    //sprintf(titlePlot,"initial_Nb_Jets_%s_%s",channelpostfix,datasets[d]->Name());
     histo1D["h_initial_Nb_Jets"] = new TH1F(titlePlot.c_str(), "Initial nb. of jets",  16, - 0.5, 15 ); 
-	
-    
+    titlePlot = "3L_Nb_Jets"+channelpostfix;
+    histo1D["h_3L_Nb_Jets"] = new TH1F(titlePlot.c_str(), "After 3L cut: nb. of jets",  16, - 0.5, 15 );	
+    titlePlot = "2J_Nb_Jets"+channelpostfix;
+    histo1D["h_2J_Nb_Jets"] = new TH1F(titlePlot.c_str(), "After at least 2 jets cut: nb. of jets",  16, - 0.5, 15 );     
+    titlePlot = "1BJ_Nb_Jets"+channelpostfix;
+    histo1D["h_1BJ_Nb_Jets"] = new TH1F(titlePlot.c_str(), "After at least 1 CSVL jet cut: nb. of jets",  16, - 0.5, 15 );     
+    titlePlot = "OSSF_Nb_Jets"+channelpostfix;
+    histo1D["h_OSSF_Nb_Jets"] = new TH1F(titlePlot.c_str(), "After OSSF lepton pair req: nb. of jets",  16, - 0.5, 15 );     
+    titlePlot = "ZMASS_Nb_Jets"+channelpostfix;
+    histo1D["h_ZMASS_Nb_Jets"] = new TH1F(titlePlot.c_str(), "After Zmass window: nb. of jets",  16, - 0.5, 15 );     
+    titlePlot = "cutFlow"+channelpostfix; 
+    histo1D["h_cutFlow"] = new TH1F(titlePlot.c_str(), "cutflow", 10,-0.5,11);
     
     // make root tree file name
     string roottreename = "/user/ivanpari/CMSSW_7_4_15/src/TopBrussels/FCNCAnalysis/Ntuples/";
     roottreename+= datasets[d]->Name();
-    roottreename+=" ";
-    roottreename+= strJobNum; 
+    roottreename+="_";
+    roottreename+= strJobNum;
+    if(doJESup) roottreename+= "_JESup";
+    if(doJESdown) roottreename+= "_JESdown";
+    if(doJERup) roottreename+="_JERup";
+    if(doJERdown) roottreename+="_JERdown"; 
     roottreename+="_tree.root";
 
     cout << "  - Recreate outputfile for ntuples ... " << roottreename.c_str() << endl; 
@@ -552,8 +570,36 @@ int main (int argc, char *argv[])
      noselTree->Branch("nvtx",&nvtx,"nvtx/I");
  */    // noselTree->Branch("nElectrons",&nElectrons, "nElectrons/I");
     
-    
-    
+    //////////////////////////
+    // Initialize JER  Factor
+    ///////////////(order matters! )
+     vector<JetCorrectorParameters> vCorrParam;
+
+    if(dataSetName.find("Data") == 0 || dataSetName.find("data") == 0 || dataSetName.find("DATA") == 0 ) // Data!
+   {
+     JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV2_DATA_L1FastJet_AK4PFchs.txt");
+      vCorrParam.push_back(*L1JetCorPar);
+      JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV2_DATA_L2Relative_AK4PFchs.txt");
+      vCorrParam.push_back(*L2JetCorPar);
+      JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV2_DATA_L3Absolute_AK4PFchs.txt");
+       vCorrParam.push_back(*L3JetCorPar);
+       JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV2_DATA_L2L3Residual_AK4PFchs.txt");
+       vCorrParam.push_back(*L2L3ResJetCorPar);
+   }
+   else
+   {
+       JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV2_MC_L1FastJet_AK4PFchs.txt");
+       vCorrParam.push_back(*L1JetCorPar);
+       JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV2_MC_L2Relative_AK4PFchs.txt");
+       vCorrParam.push_back(*L2JetCorPar);
+       JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV2_MC_L3Absolute_AK4PFchs.txt");
+        vCorrParam.push_back(*L3JetCorPar);
+   }
+  JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV2_MC_Uncertainty_AK4PFchs.txt");
+
+ 
+   JetTools *jetTools = new JetTools(vCorrParam, jecUnc, true); //true means redo also L1
+     
     //open files and load
     cout << "LoadEvent" << endl;
     treeLoader.LoadDataset(datasets[d], anaEnv);
@@ -571,15 +617,12 @@ int main (int argc, char *argv[])
       cout << "	Loop over events " << endl;
     
     for (unsigned int ievt = 0; ievt < datasets[d]->NofEvtsToRunOver(); ievt++)
-//    for (unsigned int ievt = 0; ievt < 2000; ievt++)
     {
       vector < TRootVertex* > vertex;
       vector < TRootMuon* > init_muons;
       vector < TRootElectron* > init_electrons;
-      vector < TRootJet* > init_jets_corrected;
       vector < TRootJet* > init_jets;
       vector < TRootMET* > mets;
-      //vector < TRootGenJet* > genjets;
       
       nEvents[d]++;
       
@@ -592,7 +635,7 @@ int main (int argc, char *argv[])
       ///  LOAD EVENT  ///
       ////////////////////
       
-      TRootEvent* event = treeLoader.LoadEvent(ievt, vertex, init_muons, init_electrons, init_jets_corrected, mets);
+      TRootEvent* event = treeLoader.LoadEvent(ievt, vertex, init_muons, init_electrons, init_jets, mets);
 
 
       ////////////////////////////
@@ -618,8 +661,29 @@ int main (int argc, char *argv[])
       if( run_num > 10000){//data
          isdata=1;
       }
-      bookkeeping->Fill(); 
-      
+      bookkeeping->Fill();
+
+      //////////////////////
+      // Load genjets for JER smearing 
+      /////////////////////////////////
+      vector<TRootGenJet*> genjets;
+      if( ! (dataSetName == "Data" || dataSetName == "data" || dataSetName == "DATA" ) )
+       {
+          // loading GenJets as I need them for JER
+          genjets = treeLoader.LoadGenJet(ievt);
+       } 
+      //JER
+     
+     if(doJERdown){
+        jetTools->correctJetJER(init_jets,genjets,mets[0], "minus", false); // false means don't use old numbers, but new ones
+      }
+      else if(doJERup){
+        jetTools->correctJetJER(init_jets,genjets,mets[0], "plus", false); // false means don't use old numbers, but new ones
+      }
+      else{
+	jetTools->correctJetJER(init_jets,genjets,mets[0], "nominal", false); // false means don't use old numbers, but new ones
+     }
+     
       /////////////////////////////
       /// Trigger
       ///////////////////////////
@@ -662,7 +726,7 @@ int main (int argc, char *argv[])
       /////////////////////////
       
       //Declare selection instance
-      Run2Selection selection(init_jets_corrected, init_muons, init_electrons, mets);
+      Run2Selection selection(init_jets, init_muons, init_electrons, mets);
       
       bool isGoodPV = selection.isPVSelected(vertex, PVertexNdofCut, PVertexZCut,PVertexRhoCut); //isPVSelected(const std::vector<TRootVertex*>& vertex, int NdofCut, float Zcut, float RhoCut)
       vector<TRootMuon*> selectedMuons = selection.GetSelectedMuons(MuonPtCut, MuonEtaCut, MuonRelIsoCut,WPMuon,CampaignMuon);  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
@@ -709,6 +773,7 @@ int main (int argc, char *argv[])
       /// Initial nbrs
       
       selecTable.Fill(d,0,scaleFactor*Luminosity);
+      histo1D["h_cutFlow"]->Fill(0., scaleFactor*lumiWeight); 
       histo1D["h_initial_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
 /*      MSPlot["cutFlow"]->Fill(0, datasets[d], true, Luminosity*scaleFactor );
       MSPlot["init_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
@@ -728,18 +793,21 @@ int main (int argc, char *argv[])
       if(trigged)
       { 
        selecTable.Fill(d,1,scaleFactor*Luminosity);
-//       MSPlot["cutFlow"]->Fill(1, datasets[d], true, Luminosity*scaleFactor );
-      
+       histo1D["h_cutFlow"]->Fill(1., scaleFactor*lumiWeight);
+       //histo1D["h_initial_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);      
        if (isGoodPV)
        {
         if(verbose>3) cout << "GoodPV" << endl; 
         selecTable.Fill(d,2,scaleFactor*Luminosity);
+        histo1D["h_cutFlow"]->Fill(2., scaleFactor*lumiWeight);
 //	MSPlot["cutFlow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor );
 
         if (selectedMuons.size() + selectedElectrons.size()== 3)
         {
             if(verbose>3) cout << "3 electrons "<< endl; 
  	    selecTable.Fill(d,3,scaleFactor*Luminosity);
+            histo1D["h_cutFlow"]->Fill(3., scaleFactor*lumiWeight);
+            histo1D["h_3L_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
 /*	    MSPlot["cutFlow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor );
             MSPlot["BasecutFlow"]->Fill(0, datasets[d], true, Luminosity*scaleFactor );
             MSPlot["3L_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
@@ -755,6 +823,8 @@ int main (int argc, char *argv[])
 	    {
 	       if(verbose>3) cout << " at least 2 jets " << endl; 
 	       selecTable.Fill(d,4,scaleFactor*Luminosity); 
+               histo1D["h_cutFlow"]->Fill(4., scaleFactor*lumiWeight);
+               histo1D["h_2J_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
 /*	       MSPlot["cutFlow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor );
 	       MSPlot["BasecutFlow"]->Fill(1, datasets[d], true, Luminosity*scaleFactor );
                MSPlot["2J_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
@@ -766,10 +836,12 @@ int main (int argc, char *argv[])
                MSPlot["2J_NbOfElectrons"]->Fill(selectedElectrons.size(),datasets[d], true, Luminosity*scaleFactor);
                MSPlot["2J_NbOfLeptons"]->Fill(selectedElectrons.size()+selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);
 */
-	       if(selectedBCSVLJets.size()>1)
+	       if(selectedBCSVLJets.size()>0)
 	       {
 	         if(verbose>3) cout << " at least 1 bjet " << endl; 
 	         selecTable.Fill(d,5,scaleFactor*Luminosity); 
+		 histo1D["h_cutFlow"]->Fill(5., scaleFactor*lumiWeight);
+                 histo1D["h_1BJ_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
 /*		 MSPlot["cutFlow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor );
  		 MSPlot["BasecutFlow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor );
                  MSPlot["1BJ_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
@@ -792,6 +864,8 @@ int main (int argc, char *argv[])
 	         {
 		    if(verbose>3) cout << " OSSF "<< endl; 
 		    selecTable.Fill(d,6,scaleFactor*Luminosity);
+		    histo1D["h_cutFlow"]->Fill(6., scaleFactor*lumiWeight);
+ 		    histo1D["h_OSSF_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
 /*		    MSPlot["cutFlow"]->Fill(6, datasets[d], true, Luminosity*scaleFactor );
 		    MSPlot["BasecutFlow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor );
 	            MSPlot["OSSF_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
@@ -823,7 +897,9 @@ int main (int argc, char *argv[])
 		    if(ZmassWindow)
 		    {
 		      if(verbose>3) cout << " Zmass window " << endl; 
-		      selecTable.Fill(d,7,scaleFactor*Luminosity);
+		      selecTable.Fill(d,7.,scaleFactor*Luminosity);
+		      histo1D["h_cutFlow"]->Fill(7, scaleFactor*lumiWeight);
+		      histo1D["h_ZMASS_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
 /*		      MSPlot["cutFlow"]->Fill(7, datasets[d], true, Luminosity*scaleFactor );
 		      MSPlot["BasecutFlow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor );
                       MSPlot["ZMASS_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
@@ -1072,8 +1148,8 @@ int main (int argc, char *argv[])
   string pathPNG = "ControlPlots/";
   mkdir(pathPNG.c_str(),0777);
   mkdir((pathPNG+"1DPlot/").c_str(),0777); // 0777 if it doesn't exist already, make it
-  
- 
+  if(doJERup) mkdir((pathPNG+"1DPlot/JERup").c_str(),0777);
+  if(doJERdown) mkdir((pathPNG+"1DPlot/JERdown").c_str(),0777);
   ///Write histograms
   fout->cd();
   for (map<string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
