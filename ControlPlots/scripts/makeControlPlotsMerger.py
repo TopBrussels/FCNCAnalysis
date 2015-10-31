@@ -43,5 +43,7 @@ for d in datasets:
         pathdir = "../"+str(channel)+ "allSamples/"
         if not os.path.exists(pathdir):
            os.mkdir(str(pathdir))
+        commandfirst = "rm " + str(pathdir)+"/merged"+ str(channel) + str(d.attrib['name']) + ".root"
         commandString = "hadd -f " + str(pathdir)+"/merged"+ str(channel) + str(d.attrib['name']) + ".root ../"+str(channel)+str(d.attrib['name'])+"/*.root" 
+        print >> oufile, commandfirst
         print >> oufile, commandString
