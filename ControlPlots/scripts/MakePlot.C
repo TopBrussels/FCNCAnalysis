@@ -160,7 +160,7 @@ void MakePlot(string channel = "ee", bool plotData = false) {
      else{
          datanb = iProcess;
          h[iVar][iProcess]->SetMarkerStyle(20);
-         h[iVar][iProcess]->SetMarkerSize(1.2);
+         h[iVar][iProcess]->SetMarkerSize(0.5);
          h[iVar][iProcess]->SetLineWidth(1);
          h[iVar][iProcess]->SetMarkerColor(kBlack);
          h[iVar][iProcess]->SetLineColor(kBlack);
@@ -169,57 +169,80 @@ void MakePlot(string channel = "ee", bool plotData = false) {
     }
     
    
-    double max = 0; 
-   if(plotData) max = TMath::Max(hStack[iVar]->GetMaximum(), h[iVar][datanb]->GetMaximum());
-   else max  = hStack[iVar]->GetMaximum();
+   double max = 0; 
    TCanvas *c1 = new TCanvas();
-   TPad *pad1 = new TPad("pad1","pad1",0,0.3,1,1);
-   pad1->SetBottomMargin(0);
-   //pad1->SetLogy(1);
-   pad1->Draw();
-   pad1->cd();     
-   hStack[iVar]->Draw("histo");
-   hStack[iVar]->SetMaximum(max * 1.2);
+
+   if(plotData)
+   {
+    max = TMath::Max(hStack[iVar]->GetMaximum(), h[iVar][datanb]->GetMaximum());
+    TPad *pad1 = new TPad("pad1","pad1",0,0.3,1,1);
+    pad1->SetBottomMargin(0);
+    //pad1->SetLogy(1);
+    pad1->Draw();
+    pad1->cd();     
+    hStack[iVar]->Draw("histo");
+    hStack[iVar]->SetMaximum(max * 1.2);
     //hStack[iVar]->SetMinimum(1);
     hStack[iVar]->GetXaxis()->SetTitle(listTitle[iVar].c_str());
     hStack[iVar]->GetYaxis()->SetTitle("events / lumi fb^{-1}");    
     hStack[iVar]->GetYaxis()->CenterTitle(); 
-    if(plotData){
-        hStack[iVar][datanb].Draw("e,sames");
-        leg->AddEntry(h[iVar][datanb], Vmyprocess[datanb].c_str(),"p");   
-    }
+    
+    h[iVar][datanb]->Draw("e,same");
+    leg->AddEntry(h[iVar][datanb], Vmyprocess[datanb].c_str(),"p");   
+    
     labelcms->Draw();
     labelcms2->Draw(); 
     leg->Draw(); 
     c1->cd(); 
  
-   TPad *pad2 = new TPad("pad2","pad2",0,0,1,0.3);
-   pad2->SetTopMargin(0);
-   pad2->SetBottomMargin(0.3);
-   pad2->Draw();
-   pad2->cd();
-   hdata->Sumw2();
-   histo[iVar]->Divide(hdata);
-   histo[iVar]->SetMarkerStyle(21);
-   histo[iVar]->SetTitle("");
-   histo[iVar]->GetYaxis()->SetTitle("MC/Data");
-   histo[iVar]->GetYaxis()->CenterTitle(); 
-   histo[iVar]->SetMarkerStyle(2);
-   histo[iVar]->Draw("ep");
-   histo[iVar]->Draw(); 
-   c1->cd(); 
+    TPad *pad2 = new TPad("pad2","pad2",0,0,1,0.3);
+    pad2->SetTopMargin(0);
+    pad2->SetBottomMargin(0.3);
+    pad2->Draw();
+    pad2->cd();
+    hdata->Sumw2();
+    histo[iVar]->Divide(hdata);
+    histo[iVar]->SetMarkerStyle(21);
+    histo[iVar]->SetTitle("");
+    histo[iVar]->GetYaxis()->SetTitle("MC/Data");
+    histo[iVar]->GetYaxis()->CenterTitle(); 
+    histo[iVar]->SetMarkerStyle(2);
+    histo[iVar]->Draw("ep");
+    histo[iVar]->Draw(); 
+    c1->cd(); 
  
     string pngname = "../1DPlot/"; 
     pngname += listHisto[iVar];  
-    pngname += ".png"; 
+    pngname += "Ratio.png"; 
+    string pdfname = "../1DPlot/";
+    pdfname += listHisto[iVar];
+    pdfname += "Ratio.pdf";
+    c1->SaveAs(pngname.c_str());
+    c1->SaveAs(pdfname.c_str());
+  }
+  else{
+    max  = hStack[iVar]->GetMaximum();
+    hStack[iVar]->Draw("histo");
+    hStack[iVar]->SetMaximum(max * 1.2);
+    //hStack[iVar]->SetMinimum(1);
+    hStack[iVar]->GetXaxis()->SetTitle(listTitle[iVar].c_str());
+    hStack[iVar]->GetYaxis()->SetTitle("events / lumi fb^{-1}");
+    hStack[iVar]->GetYaxis()->CenterTitle();
+
+    labelcms->Draw();
+    labelcms2->Draw();
+    leg->Draw();
+
+    string pngname = "../1DPlot/";
+    pngname += listHisto[iVar];
+    pngname += ".png";
     string pdfname = "../1DPlot/";
     pdfname += listHisto[iVar];
     pdfname += ".pdf";
     c1->SaveAs(pngname.c_str());
-    c1->SaveAs(pdfname.c_str());
+    c1->SaveAs(pdfname.c_str()); 
 
-   
-/*    c1->SetLogy(); 
+    c1->SetLogy(); 
     string pngnamelogy = "../1DPlot/";
     pngnamelogy += listHisto[iVar];
     pngnamelogy += "logy.png";
@@ -227,8 +250,11 @@ void MakePlot(string channel = "ee", bool plotData = false) {
     pdfnamelogy += listHisto[iVar];
     pdfnamelogy += "logy.pdf";
     c1->SaveAs(pngnamelogy.c_str());
-    c1->SaveAs(pdfnamelogy.c_str());   
-*/
+    c1->SaveAs(pdfnamelogy.c_str()); 
+
+
+
+   }
   }
   cout << " **** DONE with THStack *** " << endl;
   
