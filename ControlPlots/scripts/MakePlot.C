@@ -2,12 +2,21 @@
 #include <TFile.h>
 #include <iostream>
 #include <stdio.h>
-//#include "TStyle.h"
+#include "TStyle.h"
 #include "TH2.h"
 #include "TKey.h"
 #include "setTDRStyle.C"
 #include <cmath>
 #include "THStack.h"
+#include "TPaveText.h"
+#include "TROOT.h"
+#include "TRint.h"
+#include "TSystemDirectory.h"
+#include "TFile.h"
+#include "TLegend.h"
+#include "TCanvas.h"
+
+
 
 void MakePlot(string channel = "ee", bool plotData = false) {
 
@@ -22,14 +31,14 @@ void MakePlot(string channel = "ee", bool plotData = false) {
  setTDRStyle();
  gROOT->SetBatch(1);
 
- labelcms2  = new TPaveText(0.12,0.85,0.5,0.88,"NDCBR");
+ TPaveText* labelcms2  = new TPaveText(0.12,0.85,0.5,0.88,"NDCBR");
  labelcms2->SetTextAlign(12);
  labelcms2->SetTextSize(0.04);
  labelcms2->SetFillColor(kWhite);
  labelcms2->AddText(chan.c_str());
  labelcms2->SetBorderSize(0);
 
- labelcms  = new TPaveText(0.12,0.88,0.5,0.94,"NDCBR");
+ TPaveText* labelcms  = new TPaveText(0.12,0.88,0.5,0.94,"NDCBR");
  labelcms->SetTextAlign(12);
  labelcms->SetTextSize(0.04);
  labelcms->SetFillColor(kWhite);
@@ -87,7 +96,7 @@ void MakePlot(string channel = "ee", bool plotData = false) {
  vector<TString> Vmyprocess; 
  Vmyprocess.clear(); 
  cout << " - samples " << endl; 
- for(int k =0; k<listrootfiles.size(); k++)
+ for(unsigned int k =0; k<listrootfiles.size(); k++)
  { 
   TString Proc = listrootfiles[k]; 
   TObjArray *oProc = Proc.Tokenize("_"); 
@@ -99,10 +108,17 @@ void MakePlot(string channel = "ee", bool plotData = false) {
  // Set the colors 
  vector<Color_t> color; 
  color.clear(); 
- for(int i = 0; i<Vmyprocess.size(); i++) {
-    if(Vmyprocess[i].CompareTo("WZ")) color.push_back(kMagenta); 
-    if(Vmyprocess[i].CompareTo("tZq")) color.push_back(kBlue); 
-    if(Vmyprocess[i].CompareTo("data")) color.push_back(kBlack);
+ for(unsigned int i = 0; i<Vmyprocess.size(); i++) {
+    if(Vmyprocess[i].Contains("WZ")){ color.push_back(kMagenta);} 
+    if(Vmyprocess[i].Contains("tZq")){ color.push_back(kBlue); }
+    if(Vmyprocess[i].Contains("data")){ color.push_back(kBlack);}
+    if(Vmyprocess[i].Contains("ZZ")){ color.push_back(kGreen-2);}    
+    if(Vmyprocess[i].Contains("ttbar")){ color.push_back(kGreen);}
+    if(Vmyprocess[i].Contains("Zjets1050")){ color.push_back(kBlue-2);}
+    if(Vmyprocess[i].Contains("Zjets50")){ color.push_back(kBlue-3);} 
+    if(Vmyprocess[i].Contains("ttZ")){ color.push_back(kMagenta-3);} 
+    if(Vmyprocess[i].Contains("ttW")){ color.push_back(kCyan);}
+    
  } 
   // list all histograms in the rootfiles  
   TFile *f1 = new TFile(listrootfiles[0]);
@@ -137,12 +153,15 @@ void MakePlot(string channel = "ee", bool plotData = false) {
    listHisto.push_back(obj->GetName());
    listTitle.push_back(obj->GetTitle()); 
   }
+  cout << " *** CHECKS *** " << endl;  
+  for(unsigned int i = 0 ; i < Vmyprocess.size(); i++){
+    cout << listrootfiles[i] << " " << Vmyprocess[i] << " " << color[i] << endl; 
 
+  }
 
   cout << " **** DONE GETTING FILES, FILLING THStack *** " << endl; 
   const int sizeRF= listrootfiles.size(); 
   const int sizeH = listHisto.size(); 
-//  Color_t color[3] = {kMagenta, kBlue, kBlack};
   TH1F* h[sizeH][sizeRF]; 
   TH1F* histo[sizeH]; 
   THStack* hStack[sizeH]; 
@@ -150,24 +169,24 @@ void MakePlot(string channel = "ee", bool plotData = false) {
   TH1F* hdata;
 //  vector<string> Vmyprocess = {"WZ","tZq","data"};
   
-  for(int iVar = 0; iVar < listHisto.size(); iVar++)
+  for(unsigned int iVar = 0; iVar < listHisto.size(); iVar++)
   {
-    leg = new TLegend(0.7,0.7,0.96,0.96);
+    TLegend* leg = new TLegend(0.7,0.7,0.96,0.96);
     leg->SetFillStyle(1001);
     leg->SetFillColor(kWhite);
     leg->SetBorderSize(1);
 
     hStack[iVar] = new THStack(listHisto[iVar].c_str(), listTitle[iVar].c_str());
     int datanb = -1;
-    int counter = 1; 
-    for(int iProcess = 0; iProcess < listrootfiles.size(); iProcess++)
+    unsigned int counter = 1; 
+    for(unsigned int iProcess = 0; iProcess < listrootfiles.size(); iProcess++)
     {
          
      TString myprocess = Vmyprocess[iProcess];
      TString myrootfile = listrootfiles[iProcess];
      TFile *_file0 = TFile::Open(myrootfile);
      h[iVar][iProcess] = (TH1F*) _file0->Get((listHisto[iVar]).c_str());
-     if(myprocess.CompareTo("data")!=0){
+     if(myprocess.CompareTo("data")){
        leg->AddEntry(h[iVar][iProcess], Vmyprocess[iProcess],"f");
        h[iVar][iProcess]->SetFillColor(color[iProcess]);
        h[iVar][iProcess]->SetLineColor(kBlack);
@@ -185,12 +204,13 @@ void MakePlot(string channel = "ee", bool plotData = false) {
      }
      else{
          datanb = iProcess;
-         h[iVar][iProcess]->SetMarkerStyle(20);
-         h[iVar][iProcess]->SetMarkerSize(0.5);
-         h[iVar][iProcess]->SetLineWidth(1);
-         h[iVar][iProcess]->SetMarkerColor(kBlack);
-         h[iVar][iProcess]->SetLineColor(kBlack);
+         h[iVar][datanb]->SetMarkerStyle(20);
+         h[iVar][datanb]->SetMarkerSize(0.5);
+         h[iVar][datanb]->SetLineWidth(1);
+         h[iVar][datanb]->SetMarkerColor(kBlack);
+         h[iVar][datanb]->SetLineColor(kBlack);
          hdata = (TH1F*) _file0->Get((listHisto[iVar]).c_str());
+         cout << " data? " << Vmyprocess[iProcess] << endl; 
      }
     }
     
@@ -200,6 +220,7 @@ void MakePlot(string channel = "ee", bool plotData = false) {
 
    if(plotData)
    {
+    cout << " PLOTTING DATA" <<endl; 
     max = TMath::Max(hStack[iVar]->GetMaximum(), h[iVar][datanb]->GetMaximum());
     TPad *pad1 = new TPad("pad1","pad1",0,0.3,1,1);
     pad1->SetBottomMargin(0);
@@ -207,7 +228,7 @@ void MakePlot(string channel = "ee", bool plotData = false) {
     pad1->Draw();
     pad1->cd();     
     hStack[iVar]->Draw("histo");
-    hStack[iVar]->SetMaximum(max * 1.2);
+    hStack[iVar]->SetMaximum(max * 1.6);
     //hStack[iVar]->SetMinimum(1);
     hStack[iVar]->GetXaxis()->SetTitle(listTitle[iVar].c_str());
     hStack[iVar]->GetYaxis()->SetTitle("events / lumi fb^{-1}");    
@@ -245,11 +266,22 @@ void MakePlot(string channel = "ee", bool plotData = false) {
     pdfname += "Ratio.pdf";
     c1->SaveAs(pngname.c_str());
     c1->SaveAs(pdfname.c_str());
+
+    pad1->SetLogy(1); 
+    string pngnamelogy = "../1DPlot/";
+    pngnamelogy += listHisto[iVar];
+    pngnamelogy += "Ratio_logy.png";
+    string pdfnamelogy = "../1DPlot/";
+    pdfnamelogy += listHisto[iVar];
+    pdfnamelogy += "Ratio_logy.pdf";
+    c1->SaveAs(pngnamelogy.c_str());
+    c1->SaveAs(pdfnamelogy.c_str());   
   }
   else{
+   cout << " NOT PLOTTING DATA " << endl; 
     max  = hStack[iVar]->GetMaximum();
     hStack[iVar]->Draw("histo");
-    hStack[iVar]->SetMaximum(max * 1.2);
+    hStack[iVar]->SetMaximum(max * 1.6);
     //hStack[iVar]->SetMinimum(1);
     hStack[iVar]->GetXaxis()->SetTitle(listTitle[iVar].c_str());
     hStack[iVar]->GetYaxis()->SetTitle("events / lumi fb^{-1}");
