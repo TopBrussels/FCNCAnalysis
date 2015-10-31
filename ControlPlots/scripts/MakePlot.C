@@ -10,6 +10,8 @@
 #include "THStack.h"
 
 void MakePlot(string channel = "ee", bool plotData = false) {
+
+
  
  string chan = ""; 
  chan += channel; 
@@ -54,7 +56,10 @@ void MakePlot(string channel = "ee", bool plotData = false) {
   // Get all rootfiles
   vector<TString> listrootfiles; 
   listrootfiles.clear(); 
-  const char *dirname = "../_ElEl_allSamples/";
+  const char *dirname; 
+  if(chan.find("ee") == 0) dirname = "../_ElEl_allSamples/";
+  else if(chan.find("mumu") == 0) dirname = "../_MuMu_allSamples/";
+  else if(chan.find("emu") == 0) dirname = "../_ElMu_allSamples/";
   const char *ext=".root";
   TSystemDirectory dir(dirname, dirname);
   TList *files = dir.GetListOfFiles();
@@ -71,16 +76,37 @@ void MakePlot(string channel = "ee", bool plotData = false) {
        //if (!file->IsDirectory()) cout << "not a dir" << endl; 
        if (!file->IsDirectory() && fname.EndsWith(ext)) {
            cout << fname << endl;
-           listrootfiles.push_back("../_ElEl_allSamples/"+fname);
+           listrootfiles.push_back(dirname+fname);
         }
      }
   }
   else cout << " no files found " << endl; 
 
-  
+
+ /// Get ProcessNames
+ vector<TString> Vmyprocess; 
+ Vmyprocess.clear(); 
+ cout << " - samples " << endl; 
+ for(int k =0; k<listrootfiles.size(); k++)
+ { 
+  TString Proc = listrootfiles[k]; 
+  TObjArray *oProc = Proc.Tokenize("_"); 
+  TString ProcSample =  ((TObjString *)(oProc->At(4)))->String(); 
+  TObjArray *oProcSample = ProcSample.Tokenize("."); 
+  Vmyprocess.push_back(((TObjString *)(oProcSample->At(0)))->String());  
+  cout << ((TObjString *)(oProcSample->At(0)))->String() << endl; 
+ }
+ // Set the colors 
+ vector<Color_t> color; 
+ color.clear(); 
+ for(int i = 0; i<Vmyprocess.size(); i++) {
+    if(Vmyprocess[i].CompareTo("WZ")) color.push_back(kMagenta); 
+    if(Vmyprocess[i].CompareTo("tZq")) color.push_back(kBlue); 
+    if(Vmyprocess[i].CompareTo("data")) color.push_back(kBlack);
+ } 
+  // list all histograms in the rootfiles  
   TFile *f1 = new TFile(listrootfiles[0]);
 
-  // list all histograms in the rootfiles
   vector<string> listHisto;
   listHisto.clear(); 
   vector<string> listTitle;
@@ -101,7 +127,7 @@ void MakePlot(string channel = "ee", bool plotData = false) {
   while (( key = (TKey*)next()) ) {
     obj = key->ReadObj() ;
     if (    (strcmp(obj->IsA()->GetName(),"TProfile")!=0)
-         && (!obj->InheritsFrom("TH2"))
+//         && (!obj->InheritsFrom("TH2"))
 	 && (!obj->InheritsFrom("TH1")) 
        ) {
       printf("<W> Object %s is not 1D or 2D histogram : "
@@ -116,13 +142,13 @@ void MakePlot(string channel = "ee", bool plotData = false) {
   cout << " **** DONE GETTING FILES, FILLING THStack *** " << endl; 
   const int sizeRF= listrootfiles.size(); 
   const int sizeH = listHisto.size(); 
-  Color_t color[3] = {kMagenta, kBlue, kBlack};
+//  Color_t color[3] = {kMagenta, kBlue, kBlack};
   TH1F* h[sizeH][sizeRF]; 
   TH1F* histo[sizeH]; 
   THStack* hStack[sizeH]; 
   TH1F* addH;
   TH1F* hdata;
-  vector<string> Vmyprocess = {"WZ","tZq","data"};
+//  vector<string> Vmyprocess = {"WZ","tZq","data"};
   
   for(int iVar = 0; iVar < listHisto.size(); iVar++)
   {
@@ -137,12 +163,12 @@ void MakePlot(string channel = "ee", bool plotData = false) {
     for(int iProcess = 0; iProcess < listrootfiles.size(); iProcess++)
     {
          
-     string myprocess = Vmyprocess[iProcess];
+     TString myprocess = Vmyprocess[iProcess];
      TString myrootfile = listrootfiles[iProcess];
      TFile *_file0 = TFile::Open(myrootfile);
      h[iVar][iProcess] = (TH1F*) _file0->Get((listHisto[iVar]).c_str());
-     if(myprocess.find("data")!=0){
-       leg->AddEntry(h[iVar][iProcess], Vmyprocess[iProcess].c_str(),"f");
+     if(myprocess.CompareTo("data")!=0){
+       leg->AddEntry(h[iVar][iProcess], Vmyprocess[iProcess],"f");
        h[iVar][iProcess]->SetFillColor(color[iProcess]);
        h[iVar][iProcess]->SetLineColor(kBlack);
        h[iVar][iProcess]->SetLineWidth(1);
@@ -188,7 +214,7 @@ void MakePlot(string channel = "ee", bool plotData = false) {
     hStack[iVar]->GetYaxis()->CenterTitle(); 
     
     h[iVar][datanb]->Draw("e,same");
-    leg->AddEntry(h[iVar][datanb], Vmyprocess[datanb].c_str(),"p");   
+    leg->AddEntry(h[iVar][datanb], Vmyprocess[datanb],"p");   
     
     labelcms->Draw();
     labelcms2->Draw(); 
