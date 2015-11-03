@@ -33,8 +33,9 @@ map<string,TTree*> ttree;
 map<string,MultiSamplePlot*> MSPlot;
 
 
-float Luminosity = 569.017464; // pb-1
-TString slumi = "569.017464";
+float Luminosity = 1274.249985842; // pb-1
+TString slumi = "1274.249985842";
+Bool_t debug = false;
 
 
 // functions prototype
@@ -53,7 +54,7 @@ int main()
     string CraneenPath;
 
 
-	xmlFileName = "config/FullMcBkgdSamplesV7TreeProc_TreeProcessor.xml";
+	xmlFileName = "config/FullMcBkgdSamplesV8_TreeProcessor.xml";
     cout << "xmlFileName is " << xmlFileName << endl;
 
 
@@ -62,7 +63,7 @@ int main()
 
     // electron plots
     DatasetPlotter(11, -0.5, 10.5, "nb_jets", xmlFileName,CraneenPath);
-    DatasetPlotter(11, -0.5, 10.5, "nb_bjets", xmlFileName,CraneenPath);
+   	DatasetPlotter(11, -0.5, 10.5, "nb_bjets", xmlFileName,CraneenPath);
     DatasetPlotter(40, 0, 400, "leptonpt", xmlFileName,CraneenPath);
     DatasetPlotter(40, 0, 400, "jet1_Pt", xmlFileName,CraneenPath);
     DatasetPlotter(40, 0, 400, "jet2_Pt", xmlFileName,CraneenPath);
@@ -82,7 +83,6 @@ int main()
 
 void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinterest, string xmlNom, string TreePath)
 {
-  	Bool_t debug = false;
   	cout<<""<<endl;
   	cout<<"RUNNING NOMINAL DATASETS"<<endl;
   	cout<<""<<endl;
@@ -133,7 +133,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
   	free(dup);
 
 
-  	TString CraneenPath = "/user/kderoove/FCNC/TopTreeFramework_Run2/CMSSW_7_4_14/src/TopBrussels/FCNCAnalysis/Trees_SelectionOutput_Mu/Trees_SelectionOutput_21_10_2015";
+  	TString CraneenPath = "/user/kderoove/FCNC/TopTreeFramework_Run2/CMSSW_7_4_14/src/TopBrussels/FCNCAnalysis/Trees_SelectionOutput_Mu/Trees_SelectionOutput_26_10_2015";
 
   
 	for (int d = 0; d < datasets.size(); d++)   //Loop through datasets  
@@ -192,7 +192,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 			}
 		}
 		  
-	 
+cout << "HERE1" << endl;	 
 		TCanvas *canv = new TCanvas(("canv_"+v[0]+dataSetName).c_str(),("canv_"+v[0]+dataSetName).c_str());
 		  
 		  
@@ -208,8 +208,10 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 		}
 	}// end loop datasets
 
+cout << "HERE2" << endl;	 
 
-	treeLoader.UnLoadDataset();
+//	treeLoader.UnLoadDataset();
+cout << "HERE3" << endl;	 
   
   	if (debug){
     	cout << "before cleaning" << endl;
@@ -221,6 +223,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
       	}
 	}
   
+cout << "HERE4" << endl;	 
 
   	// clearing vector
   	v.clear();
@@ -229,6 +232,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
     	cout << "v.size() is " << v.size() << endl;
   	}
   
+cout << "HERE5" << endl;	 
 
 
 };

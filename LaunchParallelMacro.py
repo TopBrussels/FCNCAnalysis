@@ -4,7 +4,7 @@ import time
 import os
 import glob
 
-tree = ET.ElementTree(file='config/FullMcBkgdSamplesV7TreeProc.xml')
+tree = ET.ElementTree(file='config/FullMcBkgdSamplesV8.xml')
 #tree = ET.ElementTree(file='config/Testing.xml')
 
 root = tree.getroot()
@@ -18,7 +18,7 @@ numCores = 8
 args = []
 execCommands = []
 topTrees = []
-jobSize = 6000000
+jobSize = 2000000
 for d in datasets:
     if d.attrib['add'] == '1':
         print "found dataset to be added..." + str(d.attrib['name'])

@@ -763,7 +763,66 @@ if(event->eventId() == 18696194) cout << "Event present" << endl;/*cout << event
                 //            coutObjectsFourVector(init_muons,init_electrons,init_jets,mets,"Before JES correction:");
 
             }
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			///////////////////////////////////////////////////////////////// trigger /////////////////////////////////////////////////////////////////
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+			//This is where the triggers are specified, for now Im using the Single lepton (muon) plus jets triggers
+			// we may need to use different triggers...
+				
+/*			bool trigged = false;
+			int currentRun = event->runId();
+			if(previousRun != currentRun)
+			{
+				//	  cout <<"What run? "<< currentRun<<endl;
+			  	previousRun = currentRun;
+				if(Muon)
+				{
+					if(dataSetName == "Data" || dataSetName == "data" || dataSetName == "DATA")
+					{
+					  
+					  	itrigger = treeLoader.iTrigger (string ("HLT_IsoMu18_v2"), currentRun, iFile);
+			
+		  		  		if(itrigger == 9999)
+						{
+					  		cout << "NO VALID TRIGGER FOUND FOR THIS EVENT (DATA) IN RUN " << event->runId() << endl;
+		 	 			}
+			   		}
+			   		else 
+			   		{
+					  	itrigger = treeLoader.iTrigger (string ("HLT_IsoMu18_v2"), currentRun, iFile);
+		  				if(itrigger == 9999)
+						{
+						  		cerr << "NO VALID TRIGGER FOUND FOR THIS EVENT (" << dataSetName << ") IN RUN " << event->runId() << endl;
+						}
+					}
+				    if (debug) cout <<"end if muon..."<<endl;
+				} //end if Muon
+				else if(Electron)
+				{
+					if(dataSetName == "Data" || dataSetName == "data" || dataSetName == "DATA")
+					{
+			
+					  	if(event->runId() >= 190456 && event->runId() <= 190738) itrigger = treeLoader.iTrigger (string ("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v8"), currentRun, iFile);
+					  	else if ( event->runId() >= 190762 && event->runId() <= 191511 ) itrigger = treeLoader.iTrigger (string ("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v9"), currentRun, iFile);
+			  			if(itrigger == 9999)
+						{
+					  		cout << "NO VALID TRIGGER FOUND FOR THIS EVENT (DATA) IN RUN " << event->runId() << endl;
+		 	 			}		
+					}
+			   		else 
+					{
+						if(dataSetName == "TTJets") itrigger = treeLoader.iTrigger (string ("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v8"), currentRun, iFile);
+						else if (dataSetName == "WJets") itrigger = treeLoader.iTrigger (string ("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v8"), currentRun, iFile);
+		
+		  				if(itrigger == 9999)
+						{
+						  		cout << "NO VALID TRIGGER FOUND FOR THIS EVENT (" << dataSetName << ") IN RUN " << event->runId() << endl;
+						}
+					}
+				} //end if Electron
+			} //end previousRun != currentRun
+*/
             ///////////////////////////////////////////////////////////
             // Event selection
             ///////////////////////////////////////////////////////////
@@ -771,7 +830,7 @@ if(event->eventId() == 18696194) cout << "Event present" << endl;/*cout << event
             // Apply trigger selection
 //            trigged = treeLoader.EventTrigged (itrigger);
             bool trigged = true;  // Disabling the HLT requirement
-            if (debug)cout<<"triggered? Y/N?  "<< trigged  <<endl;
+//            if (debug)cout<<"triggered? Y/N?  "<< trigged  <<endl;
             if(!trigged)		   continue;  //If an HLT condition is not present, skip this event in the loop.
             // Declare selection instance
             Run2Selection r2selection(init_jets, init_muons, init_electrons, mets);
@@ -881,7 +940,6 @@ if(event->eventId() == 18696194) cout << "Event present" << endl;/*cout << event
 
             //Filling Histogram of the number of vertices before Event Selection
 
-//            if (!trigged) continue;  // Redunant check that an HLT was triggered
             if (!isGoodPV) continue; // Check that there is a good Primary Vertex
             MSPlot["cutFlow"]->Fill(1, datasets[d], true, Luminosity*scaleFactor );
 
