@@ -488,7 +488,7 @@ int main (int argc, char *argv[])
         int mkdirstatus = mkdir(channel_dir.c_str(),0777);
         mkdirstatus = mkdir(date_dir.c_str(),0777);
 
-        string Ntupname = "Trees_SelectionOutput"+channelpostfix+"/Trees_SelectionOutput_"+ date_str  +"/FCNC_1L3B_" +postfix + channelpostfix + ".root";
+        string Ntupname = "Trees_SelectionOutput"+channelpostfix+"/Trees_SelectionOutput_"+ date_str  +"/FCNC_1L3B_" +postfix + channelpostfix + "_" + JobNum + ".root";
         string Ntuptitle = "tree";
 
         TFile * tupfile = new TFile(Ntupname.c_str(),"RECREATE");
