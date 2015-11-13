@@ -488,14 +488,46 @@ int main (int argc, char *argv[])
         int mkdirstatus = mkdir(channel_dir.c_str(),0777);
         mkdirstatus = mkdir(date_dir.c_str(),0777);
 
-        string Ntupname = "Trees_SelectionOutput"+channelpostfix+"/Trees_SelectionOutput_"+ date_str  +"/FCNC_1L3B_" +postfix + channelpostfix + "_" + JobNum + ".root";
+        string jobNumString = static_cast<ostringstream*>( &(ostringstream() << JobNum) )->str();
+        string Ntupname = "Trees_SelectionOutput"+channelpostfix+"/Trees_SelectionOutput_"+ date_str  +"/FCNC_1L3B_" +postfix + channelpostfix + "_" + jobNumString + ".root";
         string Ntuptitle = "tree";
 
         TFile * tupfile = new TFile(Ntupname.c_str(),"RECREATE");
-        TNtuple * tup      = new TNtuple(Ntuptitle.c_str(), Ntuptitle.c_str(), "leptonpt:bdisc1:bdisc2:bdisc3:nb_jets:nb_bjets:jet1_Pt:jet2_Pt:jet3_Pt:MissingEt:leptoneta:MTlepmet:MLepTop:MHadTop:EtaLepTop:EtaHadTop:MassW:EtaW");
+        TNtuple * tup      = new TNtuple(Ntuptitle.c_str(), Ntuptitle.c_str(), "leptonpt:bdisc1:bdisc2:bdisc3:nb_jets:nb_bjets:jet1_Pt:jet2_Pt:jet3_Pt:MissingEt:leptoneta:MTlepmet:MLepTop_GenMatch:MHadTop_GenMatch:EtaLepTop_GenMatch:EtaHadTop_GenMatch:MassW_GenMatch:EtaW_GenMatch:dR_lepJet_minMLepTop:MHadTop:EtaLepTop:EtaHadTop:MassW:EtaW:MLepTop:MHadTop:EtaLepTop:EtaHadTop:MassW:EtaW");
         
         
         if(debug)cout<<"created craneens"<<endl;
+        ///////////////////////////////////////////////////////////////
+        // JEC
+        ///////////////////////////////////////////////////////////////
+        vector<JetCorrectorParameters> vCorrParam;
+
+        if(dName.find("Data")<=0 || dName.find("data")<=0 || dName.find("DATA")<=0)
+        {
+            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_DATA_L1FastJet_AK4PFchs.txt");
+            vCorrParam.push_back(*L1JetCorPar);
+            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_DATA_L2Relative_AK4PFchs.txt");
+            vCorrParam.push_back(*L2JetCorPar);
+            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_DATA_L3Absolute_AK4PFchs.txt");
+            vCorrParam.push_back(*L3JetCorPar);
+            JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_DATA_L2L3Residual_AK4PFchs.txt");
+            vCorrParam.push_back(*L2L3ResJetCorPar);
+        }
+        else
+        {
+            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_MC_L1FastJet_AK4PFchs.txt");
+            vCorrParam.push_back(*L1JetCorPar);
+            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_MC_L2Relative_AK4PFchs.txt");
+            vCorrParam.push_back(*L2JetCorPar);
+            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_MC_L3Absolute_AK4PFchs.txt");
+            vCorrParam.push_back(*L3JetCorPar);
+        }
+        JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_DATA_Uncertainty_AK4PFchs.txt");
+
+        JetTools *jetTools = new JetTools(vCorrParam, jecUnc, true);
+
+
+
         //////////////////////////////////////////////////
         // Pre-event loop definitions
         /////////////////////////////////////////////////
@@ -508,7 +540,7 @@ int main (int argc, char *argv[])
 
         if (debug) cout << " - Loop over events " << endl;
 
-        float leptonpt,bdisc1,bdisc2,bdisc3,nb_jets,nb_bjets,jet1_Pt,jet2_Pt,jet3_Pt,MissingEt,leptoneta,MTlepmet,MLepTop,MHadTop,EtaLepTop,EtaHadTop,MassW,EtaW;
+        float leptonpt,bdisc1,bdisc2,bdisc3,nb_jets,nb_bjets,jet1_Pt,jet2_Pt,jet3_Pt,MissingEt,leptoneta,MTlepmet,MLepTop_GenMatch,MHadTop_GenMatch,EtaLepTop_GenMatch,EtaHadTop_GenMatch,MassW_GenMatch,EtaW_GenMatch,dR_lepJet_min,MLepTop,MHadTop,EtaLepTop,EtaHadTop,MassW,EtaW;
 
         double end_d = ending;
         if(endEvent > ending) end_d = ending;
@@ -523,8 +555,9 @@ int main (int argc, char *argv[])
         for (unsigned int ievt = event_start; ievt < end_d; ievt++)
         {
 	        leptonpt = -1., bdisc1 = -1., bdisc2 = -1., bdisc3 = -1., nb_jets = -1, nb_bjets = -1., jet1_Pt = -1, jet2_Pt = -1.,jet3_Pt = -1., MissingEt = -1.;
-            leptoneta = -99999.; MTlepmet = -1.; MLepTop = -1.; MHadTop = -1.; EtaLepTop = -99999.; EtaHadTop = -99999.; MassW = -1.; EtaW = -99999.;
-           
+            leptoneta = -99999.; MTlepmet = -1.; MLepTop_GenMatch = -1.; MHadTop_GenMatch = -1.; EtaLepTop_GenMatch = -99999.;
+            EtaHadTop_GenMatch = -99999.; MassW_GenMatch = -1.; EtaW_GenMatch = -99999.; dR_lepJet_min = 99999.;
+            MLepTop = -1.; MHadTop = -1.; EtaLepTop = -99999.; EtaHadTop = -99999.; MassW = -1.; EtaW = -99999.;
 
             double ievt_d = ievt;
             if (debug)cout <<"event loop 1"<<endl;
@@ -542,7 +575,43 @@ int main (int argc, char *argv[])
 
             float rho = event->fixedGridRhoFastjetAll();
             if (debug)cout <<"Rho: " << rho <<endl;
+            //////////////////////////////////
+            //Loading Gen jets //
+            //////////////////////////////////
 
+            vector<TRootGenJet*> genjets;
+            if(dName.find("Data")<=0 || dName.find("data")<=0 || dName.find("DATA")<=0)
+            {
+                // loading GenJets as I need them for JER
+                genjets = treeLoader.LoadGenJet(ievt);
+            }
+
+            ///////////////////////
+            // JER smearing
+            //////////////////////
+
+            if(dName.find("Data")<=0 || dName.find("data")<=0 || dName.find("DATA")<=0)
+            {
+                //JER
+                doJERShift == 0;
+                if(doJERShift == 1)
+                    jetTools->correctJetJER(init_jets, genjets, mets[0], "minus");
+                else if(doJERShift == 2)
+                    jetTools->correctJetJER(init_jets, genjets, mets[0], "plus");
+                else
+                    jetTools->correctJetJER(init_jets, genjets, mets[0], "nominal");
+
+                //     coutObjectsFourVector(init_muons,init_electrons,init_jets,mets,"After JER correction:");
+
+                // JES sysematic!
+                if (doJESShift == 1)
+                    jetTools->correctJetJESUnc(init_jets, mets[0], "minus");
+                else if (doJESShift == 2)
+                    jetTools->correctJetJESUnc(init_jets, mets[0], "plus");
+
+                //            coutObjectsFourVector(init_muons,init_electrons,init_jets,mets,"Before JES correction:");
+
+            }
             ///////////////////////////////////////////////////////////
             // Event selection
             ///////////////////////////////////////////////////////////
@@ -562,7 +631,7 @@ int main (int argc, char *argv[])
             vector<TRootJet*>      selectedLightJets_MWP;
             vector<TRootJet*>      selectedLightJets_TWP;
             vector<TRootJet*>      selectedLightJets;
-		    vector<TLorentzVector> selectedMuonsTLV, selectedElectronsTLV, metsTLV, selectedJetsTLV, selectedLeptonsTLV;
+		    vector<TLorentzVector> selectedMuonsTLV, selectedElectronsTLV, metsTLV, selectedJetsTLV, selectedBJetsTLV, selectedLeptonsTLV;
             vector<TLorentzVector> selectedMuonsTLV_JC, selectedElectronsTLV_JC, selectedLooseIsoMuonsTLV;
             vector<TLorentzVector> mcParticlesTLV, mcMuonsTLV, mcPartonsTLV;
             vector<TRootMCParticle*> mcParticlesMatching_,mcParticles;
@@ -815,6 +884,9 @@ int main (int argc, char *argv[])
             }
             passed++;
 
+            // take all the selectedJets_ to study the radiation stuff, selectedJets_ are already ordened in decreasing Pt()
+            for (unsigned int i = 0; i < selectedJets.size(); i++) selectedJetsTLV.push_back(*selectedJets[i]);
+            for (unsigned int i = 0; i < selectedMBJets.size(); i++) selectedBJetsTLV.push_back(*selectedMBJets[i]);
 
             //////////////////////////////////////
             // Peeking at the MC info 
@@ -866,8 +938,6 @@ int main (int argc, char *argv[])
                       
                 }
                     
-                // take all the selectedJets_ to study the radiation stuff, selectedJets_ are already ordened in decreasing Pt()
-                for (unsigned int i = 0; i < selectedJets.size(); i++) selectedJetsTLV.push_back(*selectedJets[i]);
                     
                 JetPartonMatching matching = JetPartonMatching(mcParticlesTLV, selectedJetsTLV, 2, true, true, 0.3);		// partons, jets, choose algorithm, use maxDist, use dR, set maxDist=0.3
                 if (matching.getNumberOfAvailableCombinations() != 1) cerr << "matching.getNumberOfAvailableCombinations() = "<<matching.getNumberOfAvailableCombinations()<<" .  This should be equal to 1 !!!"<<endl;
@@ -1063,28 +1133,79 @@ int main (int argc, char *argv[])
             if( int(leptonicBJet_.first) != 9999) //Leptonic decays ///////////////////// CHANGE TO LEPTONIC TOP
             {
                 int ind_jet = leptonicBJet_.first;///////////////////// CHANGE TO LEPTONIC TOP
-                MLepTop = (selectedJetsTLV[ind_jet] + selectedLeptonsTLV[0] + metsTLV[0]).M();
-                EtaLepTop = (selectedJetsTLV[ind_jet] + selectedLeptonsTLV[0] + metsTLV[0]).Eta();
+                MLepTop_GenMatch = (selectedJetsTLV[ind_jet] + selectedLeptonsTLV[0] + metsTLV[0]).M();
+                EtaLepTop_GenMatch = (selectedJetsTLV[ind_jet] + selectedLeptonsTLV[0] + metsTLV[0]).Eta();
             }
             if(int(hadronicWJet1_.first) != 9999 && int(hadronicWJet2_.first) != 9999) //Hadronic decays
             {
                 int ind_jet1 = hadronicWJet1_.first;
                 int ind_jet2 = hadronicWJet2_.first;
-                MassW = (selectedJetsTLV[ind_jet1] + selectedJetsTLV[ind_jet2]).M();
-                EtaW = (selectedJetsTLV[ind_jet1] + selectedJetsTLV[ind_jet2]).Eta();
+                MassW_GenMatch = (selectedJetsTLV[ind_jet1] + selectedJetsTLV[ind_jet2]).M();
+                EtaW_GenMatch = (selectedJetsTLV[ind_jet1] + selectedJetsTLV[ind_jet2]).Eta();
 
                 if(int(hadronicBJet_.first) != 9999)/////////////////////// CHANGE TO HADRONIC TOP
                 {
                     int ind_jet_top = hadronicBJet_.first;///////////////////// CHANGE TO LEPTONIC TOP
-                    MHadTop = (selectedJetsTLV[ind_jet1] + selectedJetsTLV[ind_jet2] + selectedJetsTLV[ind_jet_top]).M();
-                    EtaHadTop = (selectedJetsTLV[ind_jet1] + selectedJetsTLV[ind_jet2] + selectedJetsTLV[ind_jet_top]).Eta();
+                    MHadTop_GenMatch = (selectedJetsTLV[ind_jet1] + selectedJetsTLV[ind_jet2] + selectedJetsTLV[ind_jet_top]).M();
+                    EtaHadTop_GenMatch = (selectedJetsTLV[ind_jet1] + selectedJetsTLV[ind_jet2] + selectedJetsTLV[ind_jet_top]).Eta();
                 }
                 
             }
             
             ///////////////////////////
-            //Filling nTuple//
+            //Defining ntuple variables
             ///////////////////////////
+            float chi_LepTop = 99999.;float chi_HadTop = 99999.;float chi_W = 99999.;float chi_comb = 99999.;
+            float TopMass = 172.5;
+            float WMass = 80.4;
+            float Topsigma = 40;//ref https://indico.cern.ch/event/366968/session/9/contribution/10/attachments/729442/1000907/kskovpenFCNC20150530_tH.pdf
+            float Wsigma = 15;//ref https://indico.cern.ch/event/366968/session/9/contribution/10/attachments/729442/1000907/kskovpenFCNC20150530_tH.pdf
+            float Hsigma = 30;//ref https://indico.cern.ch/event/366968/session/9/contribution/10/attachments/729442/1000907/kskovpenFCNC20150530_tH.pdf
+            for(unsigned int  iBJet1 = 0; iBJet1 < selectedBJetsTLV.size(); iBJet1++)
+            {
+                float tmp_LepTopMass = -1.;float tmp_HadTopMass = -1.;float tmp_WMass = -1.;float tmp_LepTopEta = -99999.;float tmp_HadTopEta = -99999.;float tmp_WEta = -99999.;
+                float chi_lep = 9999.;
+                float chi_W = 9999.;
+                float chi_hadTop = 9999.;
+                for(unsigned int  iJet1 = 0; iJet1 < selectedJetsTLV.size(); iJet1++)
+                {
+                    if(selectedJetsTLV[iJet1].Pt() == selectedBJetsTLV[iBJet1].Pt() && selectedJetsTLV[iJet1].Eta() == selectedBJetsTLV[iBJet1].Eta() )
+                    {
+                        if(debug) cout << "Skipped same jet as in b-jet coll." << endl;
+                        continue;
+                    }
+                    for(unsigned int  iJet2 = 0; iJet2 < selectedJetsTLV.size(); iJet2++)
+                    {
+                        if(selectedJetsTLV[iJet2].Pt() == selectedBJetsTLV[iBJet1].Pt() && selectedJetsTLV[iJet2].Eta() == selectedBJetsTLV[iBJet1].Eta() ) continue;
+                        if(iJet1 == iJet2) continue;
+                        
+                        tmp_WMass = (selectedJetsTLV[iJet1]+selectedJetsTLV[iJet2]).M();
+                        tmp_HadTopMass = (selectedJetsTLV[iJet1]+selectedJetsTLV[iJet2]+selectedBJetsTLV[iBJet1]).M();
+                        tmp_WEta = (selectedJetsTLV[iJet1]+selectedJetsTLV[iJet2]).Eta();
+                        tmp_HadTopEta = (selectedJetsTLV[iJet1]+selectedJetsTLV[iJet2]+selectedBJetsTLV[iBJet1]).Eta();
+                        
+                        chi_hadTop = pow(tmp_HadTopMass-TopMass,2)/pow(Topsigma,2);
+                        chi_W = pow(tmp_WMass-WMass,2)/pow(Wsigma,2);
+                        if(chi_hadTop + chi_W < chi_comb)
+                        {
+                            chi_comb = chi_hadTop + chi_W;
+                            MHadTop = tmp_HadTopMass;
+                            EtaHadTop = tmp_HadTopEta;
+                            MassW = tmp_WMass;
+                            EtaW = tmp_WEta;
+                        }
+                        
+                    }//Loop iJet2
+                }//Loop iJet1
+            }//Loop iBJet1
+            for(unsigned int  iJet = 0; iJet < selectedJetsTLV.size(); iJet++)
+            {
+                float tmp_dR_lepJet = 99999.;
+                if(Muon) tmp_dR_lepJet = selectedMuonsTLV[0].DeltaR(selectedJetsTLV[iJet]);
+                if(Electron) tmp_dR_lepJet= selectedElectronsTLV[0].DeltaR(selectedJetsTLV[iJet]);
+                
+                if(tmp_dR_lepJet < dR_lepJet_min) dR_lepJet_min = tmp_dR_lepJet;
+            }
 			if(Muon && !Electron)
 			{
 			    leptonpt = selectedMuons[0]->Pt();
@@ -1106,7 +1227,7 @@ int main (int argc, char *argv[])
 			MissingEt = mets[0]->Et();
 			MTlepmet = MT;
 
-            float vals[18] = {leptonpt,bdisc1,bdisc2,bdisc3,nb_jets,nb_bjets,jet1_Pt,jet2_Pt,jet3_Pt,MissingEt,leptoneta,MTlepmet,MLepTop,MHadTop,EtaLepTop,EtaHadTop,MassW,EtaW};
+            float vals[31] = {leptonpt,bdisc1,bdisc2,bdisc3,nb_jets,nb_bjets,jet1_Pt,jet2_Pt,jet3_Pt,MissingEt,leptoneta,MTlepmet,MLepTop_GenMatch,MHadTop_GenMatch,EtaLepTop_GenMatch,EtaHadTop_GenMatch,MassW_GenMatch,EtaW_GenMatch,dR_lepJet_min,MLepTop,MHadTop,EtaLepTop,EtaHadTop,MassW,EtaW,MLepTop,MHadTop,EtaLepTop,EtaHadTop,MassW,EtaW};
             tup->Fill(vals);
 
 
