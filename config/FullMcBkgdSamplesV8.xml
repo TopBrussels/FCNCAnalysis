@@ -14,9 +14,9 @@
 
 <d name="Data_Run2015C"     title="Data"    add="0"   color="1"  ls="1"  lw="2" normf="1" xsection="35537.321572537"  EqLumi="10.364005606" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/SingleMuon/crab_SingleMuon-Run2015C-23Sep2015-v1-CMSSW_74X_v8-74X_dataRun2_Prompt_v1/151020_153938/0000/TOPTREE_*.root"/>
 
-<d name="Data_Run2015D"     title="Data"    add="1"   color="1"  ls="1"  lw="2" normf="1" xsection="32787.466965749"  EqLumi="552.672886226" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/SingleMuon/crab_SingleMuon-Run2015D-PromptReco-v3-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151020_153959/0000/TOPTREE_*.root"/>
+<d name="Data_Run2015Dv3"     title="Data"    add="0"   color="1"  ls="1"  lw="2" normf="1" xsection="32787.466965749"  EqLumi="552.672886226" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/SingleMuon/crab_SingleMuon-Run2015D-PromptReco-v3-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151020_153959/0000/TOPTREE_*.root"/>
 
-<d name="Data_Run2015D"     title="Data"    add="1"   color="1"  ls="1"  lw="2" normf="1" xsection="35408.605679644"  EqLumi="711.213094010" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/SingleMuon/crab_SingleMuon-Run2015D-PromptReco-v4-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151020_154012/0000/TOPTREE_*.root"/>
+<d name="Data_Run2015Dv4"     title="Data"    add="0"   color="1"  ls="1"  lw="2" normf="1" xsection="35408.605679644"  EqLumi="711.213094010" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/SingleMuon/crab_SingleMuon-Run2015D-PromptReco-v4-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151020_154012/0000/TOPTREE_*.root"/>
 
 <d name="T_tW"  title="t tW"  add="0"   color="7"  ls="0"  lw="2" normf="1"  EqLumi="27771.2691771" xsection="35.85"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/crab_ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1-CMSSW_74X_v8-MCRUN2_74_V9/151020_160546/0000/TOPTREE_*.root"/>
 

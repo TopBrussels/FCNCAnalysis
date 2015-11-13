@@ -22,6 +22,9 @@ print "found  "  + str(len(datasets)) + " datasets"
 # create new dir if not already existing
 if not os.path.exists("SubmitScripts"):
     os.makedirs("SubmitScripts")
+# create new dir if not already existing
+if not os.path.exists("Terminal_Output"):
+    os.makedirs("Terminal_Output")
 
 
 # vector containing all the root file for a given dataset
