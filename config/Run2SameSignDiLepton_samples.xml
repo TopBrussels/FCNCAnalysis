@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!--<data>-->
+<datasets>
+ <!--
+  <!-- Double Muons -->
+    <d name="Data_Run2015D"     title="Data"    add="0"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="552.672886226" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DoubleMuon/crab_DoubleMuon-Run2015D-PromptReco-v3-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155057/0000/TOPTREE_*.root"/>
+    
+    <d name="Data_Run2015D"     title="Data"    add="0"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="711.213094010" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DoubleMuon/crab_DoubleMuon-Run2015D-PromptReco-v4-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155106/0000/TOPTREE_*.root"/>
+
+<!-- Double EG -->
+<!--
+    <d name="Data_Run2015D"     title="Data"    add="0"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="552.672886226" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DoubleEG/crab_DoubleEG-Run2015D-PromptReco-v3-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155031/0000/TOPTREE_*.root"/>
+    
+    <d name="Data_Run2015D"     title="Data"    add="0"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="711.213094010" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DoubleEG/crab_DoubleEG-Run2015D-PromptReco-v4-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155039/0000/TOPTREE_*.root"/>
+-->
+<!-- MuonEG -->
+<!--
+<d name="Data_Run2015D"     title="Data"    add="0"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="552.672886226" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/MuonEG/crab_MuonEG-Run2015D-PromptReco-v3-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155127/0000/TOPTREE_*.root"/>
+
+<d name="Data_Run2015D"     title="Data"    add="0"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="711.213094010" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/MuonEG/crab_MuonEG-Run2015D-PromptReco-v4-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155142/0000/TOPTREE_*.root"/>
+
+-->
+
+
+<!-- backgrounds -->
+<!--
+    <d name="DYJets"  title="DY+jets"   add="1"   color="kBlue-7"  ls="1"  lw="2" normf="1"  EqLumi="1502.46813384" xsection="6025.2"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1-CMSSW_74X_v8-MCRUN2_74_V9/151020_154341/0000/TOPTREE_*.root" />
+    
+    <d name="WJets"  title="WJets"   add="1"   color="413"  ls="1"  lw="2" normf="1"  EqLumi="392.537626369" xsection="61526"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1-CMSSW_74X_v8-MCRUN2_74_V9/151020_161108/0000/TOPTREE_*.root"  />
+    
+    <d name="TTJets"  title="t\bar{t}+jets Madgraph MLM"   add="1"   color="kCyan-7"  ls="1"  lw="2" normf="1"  EqLumi="13632.8171588" xsection="831.76"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2-CMSSW_74X_v8-MCRUN2_74_V9/151020_160750/0000/TOPTREE_*.root"/>
+  
+    <d name="WZ" title="WZtolllnu" add="1" color="4" ls="1" lw="2" normf="1" EqLumi="1315789.47368" xsection="1.463" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/crab_WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1-CMSSW_74X_v8-MCRUN2_74_V9/151020_161555/0000/*.root"/>
+-->
+</datasets>
+
+
+
+<!-- SIGNALS -->
+
+<d name="NP_overlay_TTtoTHToWW-Kappa-hct"  title="tt \rightarrow tcH"  add="1"   color="kPink+4"  ls="1"  lw="2" normf="1"  EqLumi="261651.676206" xsection="0.779"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/sabuzeid/FCNC_MCSamples_13TeV_Kirill/tHFCNC13TeV/kskovpen-kskovpen_TTtoTHToWW_1L_Kappa_hct_AODFASTSIM_4d8f2bc2e6b46f86d9c660f8ab1d998e_USER-881b16c8bee650855968d7f6ca374946/USER/tHFCNC13TeV/crab_TopTree_FCNC_tHWW_4/151027_161145/0000/*.root"/>
+
+<d name="NP_overlay_TTtoTHToWW-Kappa-hut"  title="tt \rightarrow tuH"  add="1"   color="kPink+5"  ls="1"  lw="2" normf="1"  EqLumi="228945.21668" xsection="0.526"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/sabuzeid/FCNC_MCSamples_13TeV_Kirill/tHFCNC13TeV/kskovpen-kskovpen_TTtoTHToWW_1L_Kappa_hut_AODFASTSIM_4d8f2bc2e6b46f86d9c660f8ab1d998e_USER-881b16c8bee650855968d7f6ca374946/USER/tHFCNC13TeV/crab_TopTree_FCNC_tHWW_3/151027_160409/0000/*.root"/>
+
+<d name="NP_overlay_tHToWW_Kappa_hut"  title="tt \rightarrow tuH"  add="1"   color="kPink+8"  ls="1"  lw="2" normf="1"  EqLumi="185614.849188" xsection="0.963552"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/sabuzeid/FCNC_MCSamples_13TeV_Kirill/tHFCNC13TeV/kskovpen-kskovpen_tHToWW_1L_Kappa_hut_AODFASTSIM_4d8f2bc2e6b46f86d9c660f8ab1d998e_USER-881b16c8bee650855968d7f6ca374946/USER/tHFCNC13TeV/crab_TopTree_FCNC_tHWW_1_Resubmitted/151027_112422/0000/*.root"/>
+
+<d name="NP_overlay_tHToWW_Kappa_hct"  title="tt \rightarrow tuH"  add="1"   color="kPink+7"  ls="1"  lw="2" normf="1"  EqLumi="2065727.69953" xsection="0.143191"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/sabuzeid/FCNC_MCSamples_13TeV_Kirill/tHFCNC13TeV/kskovpen-kskovpen_TTtoTHToWW_1L_Kappa_hct_AODFASTSIM_4d8f2bc2e6b46f86d9c660f8ab1d998e_USER-881b16c8bee650855968d7f6ca374946/USER/tHFCNC13TeV/crab_TopTree_FCNC_tHWW_4/151027_161145/0000/*.root"/>
+
+
+<analysis>
+<a type="Collections" PVCollection="PrimaryVertex" JetType="2" JetCollection="PFJets_slimmedJets" METType="2" METCollection="PFMET_slimmedMETs" MuonCollection="Muons_slimmedMuons" ElectronCollection="Electrons_slimmedElectrons" loadGenJetCollection="0" GenJetCollection="GenJets_slimmedGenJets" loadGenEventCollection="0" GenEventCollection="GenEvent" loadNPGenEventCollection="0" NPGenEventCollection="NPGenEvent" loadMCParticles="1" MCParticlesCollection="MCParticles" TrackMETCollection="" loadTrackMET="0"/>
+</analysis>
+<!--</data>-->
