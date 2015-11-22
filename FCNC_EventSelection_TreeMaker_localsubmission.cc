@@ -76,6 +76,7 @@ using namespace reweight;
 bool debug = false;
 bool Muon = false;
 bool Electron = true;
+bool bTagReweight_PreReweighting = true; //Needs to be set only once to true in order to produce the EtaPtHistos
 string btagger = "CSVM";
 
 /// MultiSamplePlot
@@ -139,6 +140,9 @@ int main (int argc, char *argv[])
     cout << "JobNum: " << JobNum << endl;
     cout << "----------------------------------------" << endl;
 
+    stringstream ss;
+    ss << JobNum;
+    string strJobNum = ss.str();
 
     //Initializing event counts etc.
     int passed = 0;
@@ -163,8 +167,8 @@ int main (int argc, char *argv[])
     ///////////////////////////////////////////////////////////////
     // Initialize scale&reweight-handlings
     //////////////////////////////////////////////////////////////
-    bool bTagReweight = false;
-    bool bLeptonSF = false;
+    bool bTagReweight = true;
+    bool bLeptonSF = true;
     
     int doJESShift = 0; // 0: off 1: minus 2: plus
     cout << "doJESShift: " << doJESShift << endl;
@@ -272,16 +276,70 @@ int main (int argc, char *argv[])
     // Btag and lepton scale factors
     //////////////////////////////////////////////
     BTagCalibration * bTagCalib;   
-    BTagCalibrationReader * bTagReader;
-    BTagWeightTools *btwt;
-    // BTagCalibrationReader * bTagReadercomb;
+//    BTagCalibrationReader * bTagReader_comb_central;
+//    BTagCalibrationReader * bTagReader_comb_up;
+//    BTagCalibrationReader * bTagReader_comb_down;
+    BTagCalibrationReader * bTagReader_mujets_central;
+//    BTagCalibrationReader * bTagReader_mujets_up;
+//    BTagCalibrationReader * bTagReader_mujets_down;
+//    BTagCalibrationReader * bTagReader_ttbar_central;
+//    BTagCalibrationReader * bTagReader_ttbar_up;
+//    BTagCalibrationReader * bTagReader_ttbar_down;
+//    BTagWeightTools *btwt_comb_central;
+//    BTagWeightTools *btwt_comb_up;
+//    BTagWeightTools *btwt_comb_down;
+    BTagWeightTools *btwt_mujets_central;
+//    BTagWeightTools *btwt_mujets_up;
+//    BTagWeightTools *btwt_mujets_down;
+//    BTagWeightTools *btwt_ttbar_central;
+//    BTagWeightTools *btwt_ttbar_up;
+//    BTagWeightTools *btwt_ttbar_down;
 
-    if(bTagReweight && dName.find("Data")==string::npos){
-        //Btag documentation : http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
-        bTagCalib = new BTagCalibration("CSVv2","CSVv2_13TeV_combTomujets.csv");
-        bTagReader = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"mujets","central"); //mujets
-        btwt = new BTagWeightTools("HistosPtEta_"+dName+".root",true);        
-        // bTagReadercomb = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"comb","central"); //comb
+    if(bTagReweight)
+    {
+        if(dName.find("Data")>=0 || dName.find("data")>=0 || dName.find("DATA")>=0)        //Btag documentation : http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
+        {
+            bTagCalib = new BTagCalibration("CSVv2","../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_13TeV_LanaMod_combToMujets.csv");
+            bTagReader_mujets_central = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"mujets","central"); //mujets
+//            bTagReader_mujets_up = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"mujets","up"); //mujets
+//            bTagReader_mujets_down = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"mujets","down"); //mujets
+//            bTagReader_comb_central = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"comb","central"); //mujets
+//            bTagReader_comb_up = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"comb","up"); //mujets
+//            bTagReader_comb_down = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"comb","down"); //mujets
+//            bTagReader_ttbar_central = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"ttbar","central"); //mujets
+//            bTagReader_ttbar_up = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"ttbar","up"); //mujets
+//            bTagReader_ttbar_down = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"ttbar","down"); //mujets
+            if(bTagReweight_PreReweighting)// Need to differentiate BTagWeightTools according to filling the histos and just reading, because of overwriting possibilities in grid submission
+            {
+/*                btwt_comb_central = new BTagWeightTools(bTagReader_comb_central,"HistosPtEta.root",false,30,999,2.4);
+                btwt_comb_up = new BTagWeightTools(bTagReader_comb_up,"HistosPtEta.root",false,30,999,2.4);
+                btwt_comb_down = new BTagWeightTools(bTagReader_comb_down,"HistosPtEta.root",false,30,999,2.4);
+                btwt_mujets_central = new BTagWeightTools(bTagReader_mujets_central,"HistosPtEta.root",false,30,999,2.4);
+                btwt_mujets_up = new BTagWeightTools(bTagReader_mujets_up,"HistosPtEta.root",false,30,999,2.4);
+                btwt_mujets_down = new BTagWeightTools(bTagReader_mujets_down,"HistosPtEta.root",false,30,999,2.4);
+*///                btwt_comb_central = new BTagWeightTools(bTagReader_comb_central,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum + "_comb_central.root",false,30,999,2.4);
+//                btwt_comb_up = new BTagWeightTools(bTagReader_comb_up,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_comb_up.root",false,30,999,2.4);
+//                btwt_comb_down = new BTagWeightTools(bTagReader_comb_down,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_comb_down.root",false,30,999,2.4);
+                btwt_mujets_central = new BTagWeightTools(bTagReader_mujets_central,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_mujets_central.root",false,30,999,2.4);
+//                btwt_mujets_up = new BTagWeightTools(bTagReader_mujets_up,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_mujets_up.root",false,30,999,2.4);
+//                btwt_mujets_down = new BTagWeightTools(bTagReader_mujets_down,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_mujets_down.root",false,30,999,2.4);
+//                btwt_ttbar_central = new BTagWeightTools(bTagReader_ttbar_central,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_ttbar_central.root",false,30,999,2.4);
+//                btwt_ttbar_up = new BTagWeightTools(bTagReader_ttbar_up,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_ttbar_up.root",false,30,999,2.4);
+//                btwt_ttbar_down = new BTagWeightTools(bTagReader_ttbar_down,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_ttbar_down.root",false,30,999,2.4);
+            }
+            else
+            {
+//                btwt_comb_central = new BTagWeightTools(bTagReader_comb_central,"BTagHistosPtEta/HistosPtEta_"+dName + "_comb_central.root",false,30,999,2.4);
+//                btwt_comb_up = new BTagWeightTools(bTagReader_comb_up,"BTagHistosPtEta/HistosPtEta_"+dName +"_comb_up.root",false,30,999,2.4);
+//                btwt_comb_down = new BTagWeightTools(bTagReader_comb_down,"BTagHistosPtEta/HistosPtEta_"+dName+"_comb_down.root",false,30,999,2.4);
+                btwt_mujets_central = new BTagWeightTools(bTagReader_mujets_central,"BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_central.root",false,30,999,2.4);
+//                btwt_mujets_up = new BTagWeightTools(bTagReader_mujets_up,"BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_up.root",false,30,999,2.4);
+//                btwt_mujets_down = new BTagWeightTools(bTagReader_mujets_down,"BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_down.root",false,30,999,2.4);
+//                btwt_ttbar_central = new BTagWeightTools(bTagReader_ttbar_central,"BTagHistosPtEta/HistosPtEta_"+dName+"_ttbar_central.root",false,30,999,2.4);
+//                btwt_ttbar_up = new BTagWeightTools(bTagReader_ttbar_up,"BTagHistosPtEta/HistosPtEta_"+dName+"_ttbar_up.root",false,30,999,2.4);
+//                btwt_ttbar_down = new BTagWeightTools(bTagReader_ttbar_down,"BTagHistosPtEta/HistosPtEta_"+dName+"_ttbar_down.root",false,30,999,2.4);
+            }
+        }       
     }
 
     MuonSFWeight* muonSFWeight;   
@@ -295,6 +353,8 @@ int main (int argc, char *argv[])
         }
     }
 
+    LumiReWeighting LumiWeights;
+    LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring15DR74-Asympt25ns.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2015Data74X_25ns-Run254231-258750Cert/nominal.root", "pileup", "pileup");    
 
     /////////////////////////////////
     //  Loop over Datasets
@@ -314,18 +374,15 @@ int main (int argc, char *argv[])
     double newlumi;
 
     // add jobs number at the end of file if 
-    stringstream ss;
-    ss << JobNum;
-    string strJobNum = ss.str();
     //Output ROOT file
     string outputDirectory("MACRO_Output"+channelpostfix);
     mkdir(outputDirectory.c_str(),0777);
     
-    string rootFileName (outputDirectory+"/DisplacedTop"+postfix+channelpostfix+".root");
+    string rootFileName (outputDirectory+"/FCNC_1L3B_"+postfix+channelpostfix+".root");
     if (strJobNum != "0")
       {
 	cout << "strJobNum is " << strJobNum << endl;
-        rootFileName = outputDirectory+"/DisplacedTop"+postfix+channelpostfix+"_"+strJobNum+".root";
+        rootFileName = outputDirectory+"/FCNC_1L3B_"+postfix+channelpostfix+"_"+strJobNum+".root";
       }
     
     
@@ -450,8 +507,6 @@ int main (int argc, char *argv[])
     histo2D["JetID_vs_pdgID"] = new TH2F("JetID_vs_pdgID","parton pdgID:jet number",12,-0.5,11.5, 61, -30.5,30.5);
 
 
-    LumiReWeighting LumiWeights;
-    LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring15DR74-Asympt25ns.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2015Data74X_25ns-Run254231-258750Cert/nominal.root", "pileup", "pileup");    
 
     /////////////////////////////////
     //       Loop on datasets      //
@@ -490,10 +545,17 @@ int main (int argc, char *argv[])
 
         string jobNumString = static_cast<ostringstream*>( &(ostringstream() << JobNum) )->str();
         string Ntupname = "Trees_SelectionOutput"+channelpostfix+"/Trees_SelectionOutput_"+ date_str  +"/FCNC_1L3B_" +postfix + channelpostfix + "_" + jobNumString + ".root";
-        string Ntuptitle = "tree";
+        string Ntuptitle_AdvancedVars = "AdvancedVarsTree";
+        string Ntuptitle_ObjectVars = "ObjectVarsTree";
+        string Ntuptitle_EventInfo = "EventInfoTree";
+        string Ntuptitle_Weights = "Weights";
 
         TFile * tupfile = new TFile(Ntupname.c_str(),"RECREATE");
-        TNtuple * tup      = new TNtuple(Ntuptitle.c_str(), Ntuptitle.c_str(), "leptonpt:bdisc1:bdisc2:bdisc3:nb_jets:nb_bjets:jet1_Pt:jet2_Pt:jet3_Pt:MissingEt:leptoneta:MTlepmet:MLepTop_GenMatch:MHadTop_GenMatch:EtaLepTop_GenMatch:EtaHadTop_GenMatch:MassW_GenMatch:EtaW_GenMatch:dR_lepJet_minMLepTop:MHadTop:EtaLepTop:EtaHadTop:MassW:EtaW:MLepTop:MHadTop:EtaLepTop:EtaHadTop:MassW:EtaW");
+        TNtuple * tup      = new TNtuple(Ntuptitle_AdvancedVars.c_str(), Ntuptitle_AdvancedVars.c_str(), "MTlepmet:MLepTop_GenMatch:MHadTop_GenMatch:EtaLepTop_GenMatch:EtaHadTop_GenMatch:MassW_GenMatch:EtaW_GenMatch:dR_lepJet_min:MLepTop:MHadTop:EtaLepTop:EtaHadTop:MassW:EtaW");
+        TNtuple * tup_ObjectVars      = new TNtuple(Ntuptitle_ObjectVars.c_str(), Ntuptitle_ObjectVars.c_str(), "qlepton:leptonpt:leptoneta:leptonX:leptonY:leptonZ:leptonE:bdisc1:bdisc2:bdisc3:bdisc4:bdisc5:jet1_Pt:jet2_Pt:jet3_Pt:jet4_Pt:jet5_Pt:jet1_Eta:jet2_Eta:jet3_Eta:jet4_Eta:jet5_Eta:jet1_x:jet2_x:jet3_x:jet4_x:jet5_x:jet1_y:jet2_y:jet3_y:jet4_y:jet5_y:jet1_z:jet2_z:jet3_z:jet4_z:jet5_z:jet1_E:jet2_E:jet3_E:jet4_E:jet5_E:MissingEt");
+        TNtuple * tup_EventInfo      = new TNtuple(Ntuptitle_EventInfo.c_str(), Ntuptitle_EventInfo.c_str(), "nbVertices:nb_jets:nb_bjets");
+        TNtuple * tup_Weights      = new TNtuple(Ntuptitle_Weights.c_str(), Ntuptitle_Weights.c_str(), "lumiWeight:fleptonSF:btagWeight_comb_central:btagWeight_comb_up:btagWeight_comb_down:btagWeight_mujets_central:btagWeight_mujets_up:btagWeight_mujets_down:btagWeight_ttbar_central:btagWeight_ttbar_up:btagWeight_ttbar_down");
+                    
         
         
         if(debug)cout<<"created craneens"<<endl;
@@ -540,7 +602,11 @@ int main (int argc, char *argv[])
 
         if (debug) cout << " - Loop over events " << endl;
 
-        float leptonpt,bdisc1,bdisc2,bdisc3,nb_jets,nb_bjets,jet1_Pt,jet2_Pt,jet3_Pt,MissingEt,leptoneta,MTlepmet,MLepTop_GenMatch,MHadTop_GenMatch,EtaLepTop_GenMatch,EtaHadTop_GenMatch,MassW_GenMatch,EtaW_GenMatch,dR_lepJet_min,MLepTop,MHadTop,EtaLepTop,EtaHadTop,MassW,EtaW;
+        float qlepton,leptonpt,bdisc1,bdisc2,bdisc3,bdisc4,bdisc5,nb_jets,nb_bjets,jet1_Pt,jet2_Pt,jet3_Pt,MissingEt,leptoneta,MTlepmet,MLepTop_GenMatch,MHadTop_GenMatch,EtaLepTop_GenMatch,EtaHadTop_GenMatch,MassW_GenMatch,EtaW_GenMatch,dR_lepJet_min,MLepTop,MHadTop,EtaLepTop,EtaHadTop,MassW,EtaW,nbVertices;
+        float leptonX,leptonY,leptonZ,leptonE,jet4_Pt,jet5_Pt,jet1_Eta,jet2_Eta,jet3_Eta,jet4_Eta,jet5_Eta,jet1_x,jet2_x,jet3_x,jet4_x,jet5_x,jet1_y,jet2_y,jet3_y,jet4_y,jet5_y,jet1_z,jet2_z,jet3_z,jet4_z,jet5_z,jet1_E,jet2_E,jet3_E,jet4_E,jet5_E;
+        float lumiWeight, fleptonSF;
+        float btagWeight_comb_central,btagWeight_comb_up,btagWeight_comb_down,btagWeight_mujets_central,btagWeight_mujets_up,btagWeight_mujets_down,btagWeight_ttbar_central,btagWeight_ttbar_up,btagWeight_ttbar_down;
+
 
         double end_d = ending;
         if(endEvent > ending) end_d = ending;
@@ -554,10 +620,18 @@ int main (int argc, char *argv[])
         //////////////////////////////////////
         for (unsigned int ievt = event_start; ievt < end_d; ievt++)
         {
-	        leptonpt = -1., bdisc1 = -1., bdisc2 = -1., bdisc3 = -1., nb_jets = -1, nb_bjets = -1., jet1_Pt = -1, jet2_Pt = -1.,jet3_Pt = -1., MissingEt = -1.;
+	        qlepton = 0; leptonpt = -1.; bdisc1 = -1.; bdisc2 = -1.; bdisc3 = -1.; bdisc4 = -1.; bdisc5 = -1.; nb_jets = -1; nb_bjets = -1.; jet1_Pt = -1; jet2_Pt = -1.;jet3_Pt = -1.; MissingEt = -1.;
             leptoneta = -99999.; MTlepmet = -1.; MLepTop_GenMatch = -1.; MHadTop_GenMatch = -1.; EtaLepTop_GenMatch = -99999.;
             EtaHadTop_GenMatch = -99999.; MassW_GenMatch = -1.; EtaW_GenMatch = -99999.; dR_lepJet_min = 99999.;
-            MLepTop = -1.; MHadTop = -1.; EtaLepTop = -99999.; EtaHadTop = -99999.; MassW = -1.; EtaW = -99999.;
+            MLepTop = -1.; MHadTop = -1.; EtaLepTop = -99999.; EtaHadTop = -99999.; MassW = -1.; EtaW = -99999.; nbVertices = -1;
+            jet4_Pt = -1.; jet5_Pt = -1.; jet1_Eta = -99999.; jet2_Eta = -99999.; jet3_Eta = -99999.; jet4_Eta = -99999.; jet5_Eta = -99999.;
+            jet1_x = -99999.; jet2_x = -99999.; jet3_x = -99999.; jet4_x = -99999.; jet5_x = -99999.;
+            jet1_y = -99999.; jet2_y = -99999.; jet3_y = -99999.; jet4_y = -99999.; jet5_y = -99999.;
+            jet1_z = -99999.; jet2_z = -99999.; jet3_z = -99999.; jet4_z = -99999.; jet5_z = -99999.; jet1_E = -1.; jet2_E = -1.; jet3_E = -1.; jet4_E = -1.; jet5_E = -1.;
+            leptonX = -99999.; leptonY = -99999.; leptonZ = -99999.; leptonE = -1.;
+            lumiWeight = 1.; fleptonSF = 1.;
+            btagWeight_comb_central = 1.;btagWeight_comb_up = 1.;btagWeight_comb_down = 1.;btagWeight_mujets_central = 1.;
+            btagWeight_mujets_up = 1.;btagWeight_mujets_down = 1.;btagWeight_ttbar_central = 1.;btagWeight_ttbar_up = 1.;btagWeight_ttbar_down = 1.;
 
             double ievt_d = ievt;
             if (debug)cout <<"event loop 1"<<endl;
@@ -580,8 +654,9 @@ int main (int argc, char *argv[])
             //////////////////////////////////
 
             vector<TRootGenJet*> genjets;
-            if(dName.find("Data")<=0 || dName.find("data")<=0 || dName.find("DATA")<=0)
+            if(dName.find("Data")>=0 || dName.find("data")>=0 || dName.find("DATA")>=0)//genjets only available in non-data samples
             {
+                if(debug) cout << "loading genjets" << endl;
                 // loading GenJets as I need them for JER
                 genjets = treeLoader.LoadGenJet(ievt);
             }
@@ -590,7 +665,7 @@ int main (int argc, char *argv[])
             // JER smearing
             //////////////////////
 
-            if(dName.find("Data")<=0 || dName.find("data")<=0 || dName.find("DATA")<=0)
+            if(dName.find("Data")>=0 || dName.find("data")>=0 || dName.find("DATA")>=0)//JER smearing only feasible for non-data samples
             {
                 //JER
                 doJERShift == 0;
@@ -701,12 +776,32 @@ int main (int argc, char *argv[])
             weightCount += scaleFactor;
             eventCount++;
 
+            ///////////////////////////////////////////////////
+            // Fill b-tag histos for scale factors
+            // info: http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees_v2.pdf
+            ////////////////////////////////////////////////////
+            if(bTagReweight_PreReweighting)
+            {
+                if(dName.find("Data")>=0 || dName.find("data")>=0 || dName.find("DATA")>=0)        //Btag documentation : http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
+                {
+//                    btwt_comb_central->FillMCEfficiencyHistos(selectedJets);
+//                    btwt_comb_up->FillMCEfficiencyHistos(selectedJets);
+//                    btwt_comb_down->FillMCEfficiencyHistos(selectedJets);
+                    btwt_mujets_central->FillMCEfficiencyHistos(selectedJets);
+//                    btwt_mujets_up->FillMCEfficiencyHistos(selectedJets);
+//                    btwt_mujets_down->FillMCEfficiencyHistos(selectedJets);
+//                    btwt_ttbar_central->FillMCEfficiencyHistos(selectedJets);
+//                    btwt_ttbar_up->FillMCEfficiencyHistos(selectedJets);
+//                    btwt_ttbar_down->FillMCEfficiencyHistos(selectedJets);
+                }
+            }       
 
 
 
-            ////////////////////////////////////////////
-            // Applying baseline selection //
-            ///////////////////////////////////////////
+
+            //////////////////////////////////////////////////////
+            // Applying baseline lepton selection
+            //////////////////////////////////////////////////////
 
             //Filling Histogram of the number of vertices before Event Selection
 
@@ -751,8 +846,37 @@ int main (int argc, char *argv[])
 	            if (debug)	cout <<"Vetoed extra electrons..."<<endl;
 			}
 			MSPlot["cutFlow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor );
-
 			
+			////////////////////////////////////////////////////////////////////////////////
+			// Clean jet collection from jets overlapping with lepton
+            ////////////////////////////////////////////////////////////////////////////////
+			float clean_dR = 0.4;
+			if(Muon)
+			{
+			    for(unsigned int iJet = 0; iJet < selectedJets.size(); iJet++)
+			    {
+			        float tmp_dR = 5.;
+			        tmp_dR = sqrt(pow(selectedMuons[0]->Phi()-selectedJets[iJet]->Phi(),2)+pow(selectedMuons[0]->Eta()-selectedJets[iJet]->Eta(),2));
+			        if(tmp_dR < clean_dR)
+			        {
+			            selectedJets.erase(selectedJets.begin() + iJet);
+			            if(debug) cout << "Cleaned jet collection from overlapping lepton" << endl;
+			        }
+			    }
+			}
+			if(Electron)
+			{
+			    for(unsigned int iJet = 0; iJet < selectedJets.size(); iJet++)
+			    {
+			        float tmp_dR = 5.;
+			        tmp_dR = sqrt(pow(selectedElectrons[0]->Phi()-selectedJets[iJet]->Phi(),2)+pow(selectedElectrons[0]->Eta()-selectedJets[iJet]->Eta(),2));
+			        if(tmp_dR < clean_dR)
+			        {
+			            selectedJets.erase(selectedJets.begin() + iJet);
+			            if(debug) cout << "Cleaned jet collection from overlapping lepton" << endl;
+			        }
+			    }
+			}
 			/////////////////////////////////////////////
 			// Make TLorentzVectors //
 			////////////////////////////////////////////
@@ -767,8 +891,9 @@ int main (int argc, char *argv[])
 			if(mets.size() > 0) metsTLV.push_back( *mets[0] );
 			else cout<<"No MET??"<<endl;
 			
-			
+			////////////////////////////////////////////////////////////////
 			//Calculations for MT(lep,MET) selection cut
+			////////////////////////////////////////////////////////////////
 			float MT = -999;
 			if(Muon)
 			{
@@ -785,13 +910,14 @@ int main (int argc, char *argv[])
 			MSPlot["MT_LepMET_preCut"] ->Fill(MT, datasets[d], true, Luminosity*scaleFactor );
 			MSPlot["MET_preCut"] ->Fill(mets[0]->Et(), datasets[d], true, Luminosity*scaleFactor );
 
-			if(MT <= 50) continue;
-			MSPlot["cutFlow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor );
-	        if (debug)	cout <<"Cut on MT..."<<endl;
+//			if(MT <= 50) continue;
+//			MSPlot["cutFlow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor );
+//	        if (debug)	cout <<"Cut on MT..."<<endl;
 
             sort(selectedJets.begin(),selectedJets.end(),HighestPt()); //order Jets wrt Pt for tuple output
-			
+			////////////////////////////////////
 		    //Fill b-jet collections
+            ////////////////////////////////////
 		    for (Int_t seljet =0; seljet < selectedJets.size(); seljet++ )
 		    {
 		     	if (selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose   )
@@ -865,7 +991,9 @@ int main (int argc, char *argv[])
 				MSPlot["NbLightJetsPreJetSel_5"] ->Fill(selectedLightJets_MWP.size(), datasets[d], true, Luminosity*scaleFactor);
 			}
 
-
+            //////////////////////////////////////////////////////////////////////
+            // Cut on nb of jets and b-jets
+            //////////////////////////////////////////////////////////////////////
 			if(selectedJets.size() < 3)  continue;
 			MSPlot["cutFlow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor );
 	        if (debug)	cout <<"Cut on nb jets..."<<endl;
@@ -994,6 +1122,47 @@ int main (int argc, char *argv[])
                 }  /// End loop over Jet Parton Pairs
             
             }// End MC matching (end of data-if-statement)
+
+
+            //////////////////////////////////////////////////
+            // Apply scale factors
+            //////////////////////////////////////////////////
+            if(dName.find("Data")<=0 || dName.find("data")<=0 || dName.find("DATA")<=0) //If sample is data, no PU reweighting
+            {
+                lumiWeight=1;
+            }
+            else
+            {
+                lumiWeight = LumiWeights.ITweight( vertex.size() );
+            }
+            if(debug) cout << "lumiweight: " << lumiWeight << endl;
+            if(bLeptonSF){
+                if(Muon){
+                    fleptonSF = muonSFWeight->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
+                }
+                else if(Electron){
+                    fleptonSF = electronSFWeight->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0);
+                }
+            }
+            if(debug) cout<<"lepton SF:  "<<fleptonSF<<endl;
+            if(bTagReweight && !bTagReweight_PreReweighting)
+            {
+                if(dName.find("Data")>=0 || dName.find("data")>=0 || dName.find("DATA")>=0) //If sample is data, no PU reweighting
+                {
+//                    btagWeight_comb_central =  btwt_comb_central->getMCEventWeight(selectedJets, false);
+//                    btagWeight_comb_up =  btwt_comb_up->getMCEventWeight(selectedJets, false);
+//                    btagWeight_comb_down =  btwt_comb_down->getMCEventWeight(selectedJets, false);
+                    btagWeight_mujets_central =  btwt_mujets_central->getMCEventWeight(selectedJets, false);
+//                    btagWeight_mujets_up =  btwt_mujets_up->getMCEventWeight(selectedJets, false);
+//                    btagWeight_mujets_down =  btwt_mujets_down->getMCEventWeight(selectedJets, false);
+//                    btagWeight_ttbar_central =  btwt_ttbar_central->getMCEventWeight(selectedJets, false);
+//                    btagWeight_ttbar_up =  btwt_ttbar_up->getMCEventWeight(selectedJets, false);
+//                    btagWeight_ttbar_down =  btwt_ttbar_down->getMCEventWeight(selectedJets, false);
+                }
+            }
+            if(debug) cout<<"btag SF:  "<< endl;
+
+            scaleFactor = scaleFactor * lumiWeight * fleptonSF;
 
 
             ///////////////////////////////////////////////////
@@ -1161,6 +1330,7 @@ int main (int argc, char *argv[])
             float Topsigma = 40;//ref https://indico.cern.ch/event/366968/session/9/contribution/10/attachments/729442/1000907/kskovpenFCNC20150530_tH.pdf
             float Wsigma = 15;//ref https://indico.cern.ch/event/366968/session/9/contribution/10/attachments/729442/1000907/kskovpenFCNC20150530_tH.pdf
             float Hsigma = 30;//ref https://indico.cern.ch/event/366968/session/9/contribution/10/attachments/729442/1000907/kskovpenFCNC20150530_tH.pdf
+            //Reconstruction of top objects
             for(unsigned int  iBJet1 = 0; iBJet1 < selectedBJetsTLV.size(); iBJet1++)
             {
                 float tmp_LepTopMass = -1.;float tmp_HadTopMass = -1.;float tmp_WMass = -1.;float tmp_LepTopEta = -99999.;float tmp_HadTopEta = -99999.;float tmp_WEta = -99999.;
@@ -1210,11 +1380,21 @@ int main (int argc, char *argv[])
 			{
 			    leptonpt = selectedMuons[0]->Pt();
 			    leptoneta = selectedMuons[0]->Eta();
+			    leptonX = selectedMuons[0]->X();
+			    leptonY = selectedMuons[0]->Y();
+			    leptonZ = selectedMuons[0]->Z();
+			    leptonE = selectedMuons[0]->E();
+			    qlepton = selectedMuons[0]->charge();
 			}
 			else if(!Muon && Electron)
 			{
 			    leptonpt = selectedElectrons[0]->Pt();
 			    leptoneta = selectedElectrons[0]->Eta();
+			    leptonX = selectedElectrons[0]->X();
+			    leptonY = selectedElectrons[0]->Y();
+			    leptonZ = selectedElectrons[0]->Z();
+			    leptonE = selectedElectrons[0]->E();
+			    qlepton = selectedElectrons[0]->charge();
 			}
 			bdisc1 = selectedJets[0]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
 			bdisc2 = selectedJets[1]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
@@ -1224,11 +1404,55 @@ int main (int argc, char *argv[])
 			jet1_Pt = selectedJets[0]->Pt();
 			jet2_Pt = selectedJets[1]->Pt();
 			jet3_Pt = selectedJets[2]->Pt();
+			jet1_Eta = selectedJets[0]->Eta();
+			jet2_Eta = selectedJets[1]->Eta();
+			jet3_Eta = selectedJets[2]->Eta();
+			jet1_x = selectedJets[0]->X();
+			jet2_x = selectedJets[1]->X();
+			jet3_x = selectedJets[2]->X();
+			jet1_y = selectedJets[0]->Y();
+			jet2_y = selectedJets[1]->Y();
+			jet3_y = selectedJets[2]->Y();
+			jet1_z = selectedJets[0]->Z();
+			jet2_z = selectedJets[1]->Z();
+			jet3_z = selectedJets[2]->Z();
+			jet1_E = selectedJets[0]->E();
+			jet2_E = selectedJets[1]->E();
+			jet3_E = selectedJets[2]->E();
+			if(selectedJets.size() >= 4)
+			{
+			    jet4_Pt = selectedJets[3]->Pt();
+			    jet4_Eta = selectedJets[3]->Eta();
+			    jet4_x = selectedJets[3]->X();
+			    jet4_y = selectedJets[3]->Y();
+			    jet4_z = selectedJets[3]->Z();
+			    jet4_E = selectedJets[3]->E();
+			    bdisc4 = selectedJets[3]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
+			}
+			if(selectedJets.size() >= 5)
+			{
+			    jet5_Pt = selectedJets[4]->Pt();
+			    jet5_Eta = selectedJets[4]->Eta();
+			    jet5_x = selectedJets[4]->X();
+			    jet5_y = selectedJets[4]->Y();
+			    jet5_z = selectedJets[4]->Z();
+			    jet5_E = selectedJets[4]->E();
+			    bdisc5 = selectedJets[4]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
+			}
 			MissingEt = mets[0]->Et();
 			MTlepmet = MT;
+			nbVertices = vertex.size();
 
-            float vals[31] = {leptonpt,bdisc1,bdisc2,bdisc3,nb_jets,nb_bjets,jet1_Pt,jet2_Pt,jet3_Pt,MissingEt,leptoneta,MTlepmet,MLepTop_GenMatch,MHadTop_GenMatch,EtaLepTop_GenMatch,EtaHadTop_GenMatch,MassW_GenMatch,EtaW_GenMatch,dR_lepJet_min,MLepTop,MHadTop,EtaLepTop,EtaHadTop,MassW,EtaW,MLepTop,MHadTop,EtaLepTop,EtaHadTop,MassW,EtaW};
+
+
+            float vals[14] = {MTlepmet,MLepTop_GenMatch,MHadTop_GenMatch,EtaLepTop_GenMatch,EtaHadTop_GenMatch,MassW_GenMatch,EtaW_GenMatch,dR_lepJet_min,MLepTop,MHadTop,EtaLepTop,EtaHadTop,MassW,EtaW};
+            float vals_ObjectVars[43] = {qlepton,leptonpt,leptoneta,leptonX,leptonY,leptonZ,leptonE,bdisc1,bdisc2,bdisc3,bdisc4,bdisc5,jet1_Pt,jet2_Pt,jet3_Pt,jet4_Pt,jet5_Pt,jet1_Eta,jet2_Eta,jet3_Eta,jet4_Eta,jet5_Eta,jet1_x,jet2_x,jet3_x,jet4_x,jet5_x,jet1_y,jet2_y,jet3_y,jet4_y,jet5_y,jet1_z,jet2_z,jet3_z,jet4_z,jet5_z,jet1_E,jet2_E,jet3_E,jet4_E,jet5_E,MissingEt};
+            float vals_EventInfo[3] = {nbVertices,nb_jets,nb_bjets};
+            float vals_Weights[11] = {lumiWeight,fleptonSF,btagWeight_comb_central,btagWeight_comb_up,btagWeight_comb_down,btagWeight_mujets_central,btagWeight_mujets_up,btagWeight_mujets_down,btagWeight_ttbar_central,btagWeight_ttbar_up,btagWeight_ttbar_down};
             tup->Fill(vals);
+            tup_ObjectVars->Fill(vals_ObjectVars);
+            tup_EventInfo->Fill(vals_EventInfo);
+            tup_Weights->Fill(vals_Weights);
 
 
 			///////////////////////////
@@ -1243,6 +1467,9 @@ int main (int argc, char *argv[])
         } //End Loop on Events
 
 		tup->Write();
+		tup_ObjectVars->Write();
+		tup_EventInfo->Write();
+       	tup_Weights->Write();
        	tupfile->Close();
         cout <<"n events passed  =  "<<passed <<endl;
         cout <<"n events with negative weights = "<<negWeights << endl;
@@ -1273,6 +1500,15 @@ int main (int argc, char *argv[])
     TDirectory* th2dir = fout->mkdir("Histos2D");
     th2dir->cd();
 
+//    delete btwt_comb_central;
+//    delete btwt_comb_up;
+//    delete btwt_comb_down;
+    delete btwt_mujets_central;
+//    delete btwt_mujets_up;
+//    delete btwt_mujets_down;
+//    delete btwt_ttbar_central;
+//    delete btwt_ttbar_up;
+//    delete btwt_ttbar_down;
 
     for(map<std::string,TH2F*>::const_iterator it = histo2D.begin(); it != histo2D.end(); it++)
     {
@@ -1304,341 +1540,3 @@ int main (int argc, char *argv[])
 }
 
 
-
-
-
-/*
-
-            float HTb = 0.;
-            for (Int_t seljet =0; seljet < selectedJets.size(); seljet++ )
-            {
-                if (selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > 0.244   )
-                {
-                    selectedLBJets.push_back(selectedJets[seljet]);
-                    if (selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > 0.679)
-                    {
-                        HTb += selectedJets[seljet]->Pt();
-                        selectedMBJets.push_back(selectedJets[seljet]);
-                        if (selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > 0.898)
-                        {
-                            selectedTBJets.push_back(selectedJets[seljet]);
-                        }
-                    }
-                }
-                else
-                {
-                    selectedLightJets.push_back(selectedJets[seljet]);
-                }
-            }
-            float nJets = selectedJets.size(); //Number of Jets in Event
-            float nLtags = selectedLBJets.size(); //Number of CSVL tags in Event (includes jets that pass CSVM & CSVT)
-            float nMtags = selectedMBJets.size(); //Number of CSVM tags in Event (includes jets that pass CSVT)
-            float nTtags = selectedTBJets.size(); //Number of CSVT tags in Event 
-            float nLights=selectedLightJets.size();
-
-            selectedLBJets.clear();
-            selectedMBJets.clear();
-            selectedTBJets.clear();
-            selectedLightJets.clear();
-
-            float temp_HT = 0.;
-            float HT_leading = 0.;
-            float HT_lagging = 0.;
-            float HTRat = 0;
-            for (Int_t seljet0 =0; seljet0 < selectedJets.size(); seljet0++ ){
-                temp_HT += selectedJets[seljet0]->Pt();
-                if (seljet0 < 4){
-                    HT_leading += selectedJets[seljet0]->Pt();
-                }else{
-                    HT_lagging += selectedJets[seljet0]->Pt();
-                }
-            }
-
-            //HTRat = HT_leading/HT_lagging;
-
-
-
-            /////////////////////////////////
-            // Applying baseline selection //
-            /////////////////////////////////
-
-
-            float weight_0 = 1; //nominal
-            float weight_1 = 1;
-            float weight_2 = 1;
-            float weight_3 = 1;
-            float weight_4 = 1;
-            float weight_5 = 1;
-            float weight_6 = 1;
-            float weight_7 = 1;
-            float weight_8 = 1;
-
-
-
-            // Apply trigger selection
-            //trigged = treeLoader.EventTrigged (itrigger);
-            bool trigged = false;  // Disabling the HLT requirement
-
-            trigged=true;
-            // Apply primary vertex selection
-            bool isGoodPV = r2selection.isPVSelected(vertex, 4, 24., 2);
-            if (debug)	cout <<"PrimaryVertexBit: " << isGoodPV << " TriggerBit: " << trigged <<endl;
-            if (debug) cin.get();
-
-            preTrig++;
-            if (debug)cout<<"triggered? Y/N?  "<< trigged  <<endl;
-            if(dName.find("Data") != string::npos || dName.find("data") != string::npos || dName.find("DATA") != string::npos){
-            if (!trigged)          continue;  //If an HLT condition is not present, skip this event in the loop.       
-            }
-            postTrig++;
-
-            if(dName.find("TTJets") != string::npos){
-                weight_0 = (runInfos->getWeightInfo(currentRun).weightIndex("scale_variation 1")/(abs(event->originalXWGTUP()))); //nominal                   
-            }
-            weightCount += scaleFactor;
-            eventCount++;
-
-
-            if(nlo)
-            {
-                if(weight_0 < 0.0)
-                {
-                    scaleFactor = -1.0;  //Taking into account negative weights in NLO Monte Carlo
-                    negWeights++;
-                }
-            }
-
-
-            //Filling Histogram of the number of vertices before Event Selection
-            MSPlot["NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
-
-            if (!isGoodPV) continue; // Check that there is a good Primary Vertex
-
-            if (debug) cout <<"Number of Muons = "<< nMu <<"    Electrons =  "  <<nEl<<"     Jets = "<< selectedJets.size()   <<" loose BJets = "<<  nLtags   <<
-                "  MuonChannel = "<<Muon<<" Electron Channel"<<Electron<<endl;
-
-            //Apply the lepton, jet, btag and HT & MET selections
-            if (Muon)
-            {
-                if  (  !( nMu == 1 && nEl == 0 && nLooseMu == 1 && nJets>=6 && nMtags >=2)) continue; // Muon Channel Selection
-
-            }
-            else if(Electron){
-                if  (  !( nMu == 0 && nEl == 1 && nLooseEl == 1 && nJets>=6 && nMtags >=2)) continue; // Electron Channel Selection
-            }
-            else{
-                cerr<<"Correct Channel not selected."<<endl;
-                exit(1);
-            }
-            if(dName.find("TTJets")!=string::npos){
-                weight_1 = (runInfos->getWeightInfo(currentRun).weightIndex("Central scale variation 2")/(abs(event->originalXWGTUP())));                
-                weight_2 = (runInfos->getWeightInfo(currentRun).weightIndex("Central scale variation 3")/(abs(event->originalXWGTUP())));                
-                weight_3 = (runInfos->getWeightInfo(currentRun).weightIndex("Central scale variation 4")/(abs(event->originalXWGTUP())));                
-                weight_4 = (runInfos->getWeightInfo(currentRun).weightIndex("Central scale variation 5")/(abs(event->originalXWGTUP())));                
-                weight_5 = (runInfos->getWeightInfo(currentRun).weightIndex("Central scale variation 6")/(abs(event->originalXWGTUP())));                
-                weight_6 = (runInfos->getWeightInfo(currentRun).weightIndex("Central scale variation 7")/(abs(event->originalXWGTUP())));                
-                weight_7 = (runInfos->getWeightInfo(currentRun).weightIndex("Central scale variation 8")/(abs(event->originalXWGTUP())));                
-                weight_8 = (runInfos->getWeightInfo(currentRun).weightIndex("Central scale variation 9")/(abs(event->originalXWGTUP())));                  
-            }
-            //cout<<"weight0: "<<weight_0<<" weight1: "<<weight_1<<" weight2: "<<weight_2<<endl;
-
-            if(dName.find("Data") !=string::npos || dName.find("data") != string::npos || dName.find("DATA") != string::npos)
-            {
-                lumiWeight=1;
-            }
-            else{
-                lumiWeight = LumiWeights.ITweight( vertex.size() );
-            }
-            scaleFactor = scaleFactor * lumiWeight;
-            float bTagEff(-1);
-            // if(bTagReweight && dName.find("Data")==string::npos){
-            // //get btag weight info
-            //     for(int jetbtag = 0; jetbtag<selectedJets.size(); jetbtag++){
-            //         float jetpt = selectedJets[jetbtag]->Pt();
-            //         float jeteta = selectedJets[jetbtag]->Eta();
-            //         float jetdisc = selectedJets[jetbtag]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
-            //         BTagEntry::JetFlavor jflav;
-            //         int jetpartonflav = std::abs(selectedJets[jetbtag]->partonFlavour());
-            //         if(debug) cout<<"parton flavour: "<<jetpartonflav<<"  jet eta: "<<jeteta<<" jet pt: "<<jetpt<<"  jet disc: "<<jetdisc<<endl;
-            //         if(jetpartonflav == 5){
-            //             jflav = BTagEntry::FLAV_B;
-            //         }
-            //         else if(jetpartonflav == 4){
-            //             jflav = BTagEntry::FLAV_C;
-            //         }
-            //         else{
-            //             jflav = BTagEntry::FLAV_UDSG;
-            //         }
-            //         bTagEff = bTagReader->eval(jflav, jeteta, jetpt, jetdisc);                     
-            //         if(debug)cout<<"btag efficiency = "<<bTagEff<<endl;       
-            //     }      
-            //     btwt->FillMCEfficiencyHistos(selectedJets); 
-            // }
-
-            float btagWeight = 1;
-            if(bTagReweight && dName.find("Data")==string::npos){
-                btagWeight =  btwt->getMCEventWeight(selectedJets, false);
-                // cout<<"btag weight "<<btagWeight<<endl;
-            }
-
-            float fleptonSF = 0;
-            if(bLeptonSF){
-                if(Muon){
-                    fleptonSF = muonSFWeight->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
-                }
-                else if(Electron){
-                    fleptonSF = electronSFWeight->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0);
-                }
-            }
-            if(debug) cout<<"lepton SF:  "<<fleptonSF<<endl;
-
-            scaleFactor *= fleptonSF;
-            scaleFactor *= btagWeight;
-
-            if(debug)
-            {
-                cout<<"Selection Passed."<<endl;
-                cin.get();
-            }
-            passed++;
-
-            TRootGenEvent* genEvt = 0;
-
-            sort(selectedJets.begin(),selectedJets.end(),HighestCSVBtag());
-
-
-            ///////////////////////////////////
-            // Filling histograms / plotting //
-            ///////////////////////////////////
-
-            //////////////////////
-            // Muon Based Plots //
-            //////////////////////
-            float leptonIso=0;
-            float chargedHIso = 0;
-            float neutralHIso = 0;
-            float photonIso = 0;
-            float PUIso = 0;
-            for (Int_t selmu =0; selmu < selectedMuons.size(); selmu++ )
-            {
-                float relisomu = (selectedMuons[0]->chargedHadronIso(4) + max( 0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.) ) / selectedMuons[0]->Pt();
-                chargedHIso = selectedMuons[0]->chargedHadronIso(4);
-                neutralHIso = selectedMuons[0]->neutralHadronIso(4);
-                photonIso = selectedMuons[0]->photonIso(4);
-                PUIso = selectedMuons[0]->puChargedHadronIso(4);
-
-                
-                MSPlot["leptonIso"]->Fill(relisomu, datasets[d], true, Luminosity*scaleFactor);
-                MSPlot["MuonPt"]->Fill(selectedMuons[selmu]->Pt(), datasets[d], true, Luminosity*scaleFactor);
-                leptonIso = relisomu;
-            }
-
-            //////////////////////////
-            // Electron Based Plots //
-            //////////////////////////
-
-            for (Int_t selel =0; selel < selectedElectrons.size(); selel++ )
-            {
-                float reliso = selectedElectrons[selel]->relPfIso(3, 0.5);
-                MSPlot["ElectronRelIsolation"]->Fill(reliso, datasets[d], true, Luminosity*scaleFactor);
-                leptonIso = reliso;
-            }
-
-            //////////////////////
-            // Jets Based Plots //
-            //////////////////////
-
-            HT = 0;
-            float HT1M2L=0, H1M2L=0, HTbjets=0, HT2M=0, H2M=0, HT2L2J=0;
-            sort(selectedJets.begin(),selectedJets.end(),HighestPt()); //order Jets wrt Pt for tuple output
-
-            for (Int_t seljet1 =0; seljet1 < selectedJets.size(); seljet1++ )
-            {
-                MSPlot["BdiscBJetCand_CSV"]->Fill(selectedJets[seljet1]->btag_combinedInclusiveSecondaryVertexV2BJetTags(),datasets[d], true, Luminosity*scaleFactor);
-                MSPlot["JetEta"]->Fill(selectedJets[seljet1]->Eta() , datasets[d], true, Luminosity*scaleFactor);
-                //Event-level variables
-                jetpt = selectedJets[seljet1]->Pt();
-                HT = HT + jetpt;
-                H = H +  selectedJets[seljet1]->P();
-                if (seljet1 > 4  )  HTHi +=  selectedJets[seljet1]->Pt();
-            }
-
-            HTH = HT/H;
-            HTRat = HTHi/HT;
-
-            float selectedLeptonPt = 0 ;
-            if(Muon){
-                selectedLeptonPt = selectedMuons[0]->Pt();
-            }
-            else if(Electron){
-                selectedLeptonPt = selectedElectrons[0]->Pt();
-            }
-
-       
-
-            MSPlot["HTb_SelectedJets"]->Fill(HTb, datasets[d], true, Luminosity*scaleFactor);
-            MSPlot["HTRat"]->Fill(HTRat, datasets[d], true, Luminosity*scaleFactor);
-            MSPlot["NbOfSelectedBJets"]->Fill(selectedMBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-            float met = mets[0]->Et();
-            MSPlot["MET"]->Fill(mets[0]->Et(), datasets[d], true, Luminosity*scaleFactor);
-
-            if(nJets>5){
-                MSPlot["5thJetPt"]->Fill(selectedJets[4]->Pt(), datasets[d], true, Luminosity*scaleFactor);
-                MSPlot["6thJetPt"]->Fill(selectedJets[5]->Pt(), datasets[d], true, Luminosity*scaleFactor);
-            }
-
-            MSPlot["HT_SelectedJets"]->Fill(HT, datasets[d], true, Luminosity*scaleFactor);
-
-
-            if(Muon){
-                muonpt  = selectedMuons[0]->Pt();
-                muoneta = selectedMuons[0]->Eta();
-                leptonphi = selectedMuons[0]->Phi();
-            }
-            else if(Electron){
-                muonpt  = selectedElectrons[0]->Pt();
-                muoneta = selectedElectrons[0]->Eta();
-                leptonphi = selectedElectrons[0]->Phi();
-
-            }
-
-            bjetpt = selectedMBJets[0]->Pt();
-
-
-            float firstjetpt = selectedJets[0]->Pt();
-            float secondjetpt = selectedJets[1]->Pt();
-            
-            float nvertices = vertex.size();
-            float angletoplep = 0;
-            float angletop1top2 = 0;
-            float diTopness = 0;
-
-            float vals[39] = {BDTScore,nJets,nLtags,nMtags,nTtags,HT,muonpt,muoneta,bjetpt,HT2M,HTb,HTH,HTRat,diTopness,scaleFactor,nvertices,normfactor,Luminosity,weight_0,weight_1,weight_2,weight_3,weight_4,weight_5,weight_6,weight_7,weight_8,met,angletop1top2,angletoplep, firstjetpt,secondjetpt, leptonIso, leptonphi, chargedHIso,neutralHIso,photonIso,PUIso,lumiWeight};
-            tupfile->cd();
-            tup->Fill(vals);
-
-			///////////////////////////
-			// Event info //////
-			///////////////////////////
-			if(Muon && !Electron)
-			fprintf(eventlist,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %6.1f  %+4.2f    %d %d \n", event->runId(), event->lumiBlockId(), event->eventId(), selectedMuons[0]->type(), selectedMuons[0]->Pt(), selectedMuons[0]->Eta(), selectedMuons[0]->Phi(),mets[0]->Et(), mets[0]->Phi(),selectedJets.size(), selectedMBJets.size());
-			else if(!Muon && Electron)
-			fprintf(eventlist,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %6.1f  %+4.2f    %d %d \n", event->runId(), event->lumiBlockId(), event->eventId(), selectedElectrons[0]->type(), selectedElectrons[0]->Pt(), selectedElectrons[0]->Eta(), selectedElectrons[0]->Phi(),mets[0]->Et(), mets[0]->Phi(),selectedJets.size(), selectedMBJets.size());
-
-
-        } //End Loop on Events
-
-        tupfile->cd();
-        tup->Write();
-        tupfile->Close();
-        
-        cout <<"n events passed  =  "<<passed <<endl;
-        cout <<"n events with negative weights = "<<negWeights << endl;
-        cout << "Event Count: " << eventCount << endl;
-        cout << "Weight Count: " << weightCount << endl;
-        //important: free memory
-        treeLoader.UnLoadDataset();
-    } //End Loop on Datasets
-
-    fclose (eventlist);
-*/
