@@ -18,7 +18,7 @@
 
 
 
-void MakePlot(string channel = "ee", bool plotData = false) {
+void MakePlot(string channel = "ee", bool plotData = true) {
 
 
  
@@ -251,6 +251,9 @@ void MakePlot(string channel = "ee", bool plotData = false) {
     histo[iVar]->Divide(hdata);
     histo[iVar]->SetMarkerStyle(21);
     histo[iVar]->SetTitle("");
+    histo[iVar]->GetXaxis()->SetTitle(listTitle[iVar].c_str());
+    histo[iVar]->GetXaxis()->SetTitleSize(0.08);
+    histo[iVar]->GetYaxis()->SetTitleSize(0.04);
     histo[iVar]->GetYaxis()->SetTitle("MC/Data");
     histo[iVar]->GetYaxis()->CenterTitle(); 
     histo[iVar]->SetMarkerStyle(2);

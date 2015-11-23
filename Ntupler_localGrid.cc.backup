@@ -78,9 +78,9 @@ int main (int argc, char *argv[])
   bool ee = true; 
   bool emu = false; 
   bool mumu = false; 
-  bool runHLT = true; 
-  std::string sWPMuon = "Tight"; 
-  std::string sWPElectron = "Medium";
+  bool runHLT = false; 
+  std::string sWPMuon = "Loose"; 
+  std::string sWPElectron = "Loose";
   /// xml file
   string xmlFileName ="config/Run2TriLepton_samples.xml";
   float Luminosity = 552.672886226 ; // EG rereco run D  151020_153539 
@@ -224,11 +224,11 @@ int main (int argc, char *argv[])
   std::string WPMuon = sWPMuon; // https://indico.cern.ch/event/450085/contribution/4/attachments/1169767/1688138/20151013_MOC.pdf
   std::string CampaignMuon = "Spring15"; 
   int ElectronPtCut = 20.; //anaEnv.ElectronPtCut; 
-  int ElectronEtaCut = 2.5; //anaEnv.ElectronEtaCut; 
+  int ElectronEtaCut = 2.4; //anaEnv.ElectronEtaCut; 
   std::string CampaignElectron = "Spring15_25ns"; 
   std::string WPElectron = sWPElectron; // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2
   int cutsBasedElectron = 1; 
-  int JetsPtCut = 30; //anaEnv.JetsPtCutSR; 
+  int JetsPtCut = 40; //anaEnv.JetsPtCutSR; 
   int applyJetID = anaEnv.applyJetID; 
   int JetsEtaCut = 2.4; 
   std::string WPJet = "Tight"; // https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
@@ -291,12 +291,10 @@ int main (int argc, char *argv[])
   CutsSelecTable.push_back(string("trigged"));
   CutsSelecTable.push_back(string("Good PV"));
   CutsSelecTable.push_back(string("3 selected leptons"));
-  CutsSelecTable.push_back(string("lepton veto"));
-  CutsSelecTable.push_back(string("Z selection")); 
-  CutsSelecTable.push_back(string("jet selection")); 
-  CutsSelecTable.push_back(string("b-tagging"));
-  CutsSelecTable.push_back(string("mWt")); 
-  CutsSelecTable.push_back(string("top mass cut"));
+  CutsSelecTable.push_back(string("At least 2 jets")); 
+  CutsSelecTable.push_back(string("At least 1 CSV loose jet")); 
+  CutsSelecTable.push_back(string("At least 1 OSSF lepton pair"));
+  CutsSelecTable.push_back(string("Z mass window of 15 GeV")); 
    
   if (verbose > 0)
     cout << " - CutsSelectionTable instantiated ..." << endl;
@@ -372,9 +370,6 @@ int main (int argc, char *argv[])
     histo1D["h_ZMASS_Nb_Jets"] = new TH1F(titlePlot.c_str(), "After Zmass window: nb. of jets",  16, - 0.5, 15 );     
     titlePlot = "cutFlow"+channelpostfix; 
     histo1D["h_cutFlow"] = new TH1F(titlePlot.c_str(), "cutflow", 10,-0.5,11);
-    titlePlot = "raw_cutFlow"+channelpostfix;
-    histo1D["h_raw_cutFlow"] = new TH1F(titlePlot.c_str(), "Raw cutflow", 10,-0.5,11);
-
 
    titlePlot = "initial_Nb_Jets_unCORJER"+channelpostfix;
    histo1D["h_initial_Nb_Jets_unCORJER"] = new TH1F(titlePlot.c_str(), "Initial nb. of jets (no JER) ",  16, - 0.5, 15 );
@@ -726,10 +721,7 @@ int main (int argc, char *argv[])
 	  
         } // closing the HLT for data loop
         //For the MC, there is no triggerpath
-        else
-
-
- itrigger = true;     	
+        else itrigger = true;     	
       } // closing the HLT run loop
       
       ////////////////////////////////////
@@ -754,19 +746,14 @@ int main (int argc, char *argv[])
 
       bool isGoodPV = selection.isPVSelected(vertex, PVertexNdofCut, PVertexZCut,PVertexRhoCut); //isPVSelected(const std::vector<TRootVertex*>& vertex, int NdofCut, float Zcut, float RhoCut)
       vector<TRootMuon*> selectedMuons = selection.GetSelectedMuons(MuonPtCut, MuonEtaCut, MuonRelIsoCut,WPMuon,CampaignMuon);  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
-      vector<TRootMuon*> selectedLooseMuons = selection.GetSelectedMuons(MuonPtCut, MuonEtaCut, MuonRelIsoCut,"Loose",CampaignMuon);  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
-
  
       vector<TRootPFJet*> selectedJets = selection.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet);  // GetSelectedJets(float PtThr, float EtaThr, bool applyJetID, std::string TightLoose)
       vector<TRootPFJet*> selectedJets_unCORJER = selection_unCORJER.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet); 
       vector<TRootElectron*> selectedElectrons = selection.GetSelectedElectrons(ElectronPtCut, ElectronEtaCut, WPElectron, CampaignElectron, cutsBasedElectron);  // GetSelectedElectrons(float PtThr, float etaThr, string WorkingPoint, string ProductionCampaign, bool CutsBased)
-      vector<TRootElectron*> selectedVetoElectrons = selection.GetSelectedElectrons(ElectronPtCut, ElectronEtaCut, "Veto", CampaignElectron, cutsBasedElectron);  // GetSelectedElectrons(float PtThr, float etaThr, string WorkingPoint, string ProductionCampaign, bool CutsBased)
-
       
       sort(selectedJets.begin(), selectedJets.end(),HighestPt()); 
       sort(selectedJets_unCORJER.begin(), selectedJets_unCORJER.end(),HighestPt());
       sort(selectedMuons.begin(), selectedMuons.end(), HighestPt()); 
-      sort(selectedLooseMuons.begin(), selectedMuons.end(), HighestPt());
       sort(selectedElectrons.begin(), selectedElectrons.end(), HighestPt()); 
       
       vector<bool> BtagBooleans; 
@@ -804,12 +791,9 @@ int main (int argc, char *argv[])
       /// Initial nbrs
       
       selecTable.Fill(d,0,scaleFactor*Luminosity);
-      histo1D["h_cutFlow"]->Fill(0., scaleFactor*lumiWeight);
-      histo1D["h_raw_cutFlow"]->Fill(0.); 
+      histo1D["h_cutFlow"]->Fill(0., scaleFactor*lumiWeight); 
       histo1D["h_initial_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
       histo1D["h_initial_Nb_Jets_unCORJER"]->Fill(selectedJets_unCORJER.size(), scaleFactor*lumiWeight);
-      
-      
       for(unsigned int i = 0 ; i < selectedJets.size(); i++){
          TRootJet* jet = (TRootJet*) selectedJets[i];
          histo1D["h_initial_Jet_Pt"]->Fill(jet->Pt(),  scaleFactor*lumiWeight);
@@ -820,7 +804,16 @@ int main (int argc, char *argv[])
          histo1D["h_initial_Jet_unCORJER_Pt"]->Fill(jet_unCORJER->Pt(),  scaleFactor*lumiWeight);
 
       }
- 
+/*      MSPlot["cutFlow"]->Fill(0, datasets[d], true, Luminosity*scaleFactor );
+      MSPlot["init_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
+      MSPlot["init_NbOfJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor); 
+      MSPlot["init_NbOfCSVLJets"]->Fill(selectedBCSVLJets.size(), datasets[d], true, Luminosity*scaleFactor);
+      MSPlot["init_NbOfCSVMJets"]->Fill(selectedBCSVMJets.size(), datasets[d], true, Luminosity*scaleFactor);
+      MSPlot["init_NbOfCSVTJets"]->Fill(selectedBCSVTJets.size(), datasets[d], true, Luminosity*scaleFactor);
+      MSPlot["init_NbOfMuons"]->Fill(selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor); 
+      MSPlot["init_NbOfElectrons"]->Fill(selectedElectrons.size(),datasets[d], true, Luminosity*scaleFactor); 
+      MSPlot["init_NbOfLeptons"]->Fill(selectedElectrons.size()+selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor); 
+  */    
       
       /// Trigger
       if(runHLT) trigged = treeLoader.EventTrigged(itrigger);
@@ -830,93 +823,128 @@ int main (int argc, char *argv[])
       { 
        selecTable.Fill(d,1,scaleFactor*Luminosity);
        histo1D["h_cutFlow"]->Fill(1., scaleFactor*lumiWeight);
-       histo1D["h_raw_cutFlow"]->Fill(1.);
-
+       //histo1D["h_initial_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);      
        if (isGoodPV)
        {
         if(verbose>3) cout << "GoodPV" << endl; 
         selecTable.Fill(d,2,scaleFactor*Luminosity);
         histo1D["h_cutFlow"]->Fill(2., scaleFactor*lumiWeight);
-        histo1D["h_raw_cutFlow"]->Fill(2.);
+//	MSPlot["cutFlow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor );
 
         if (selectedMuons.size() + selectedElectrons.size()== 3)
         {
             if(verbose>3) cout << "3 electrons "<< endl; 
  	    selecTable.Fill(d,3,scaleFactor*Luminosity);
             histo1D["h_cutFlow"]->Fill(3., scaleFactor*lumiWeight);
-            histo1D["h_raw_cutFlow"]->Fill(3.);
             histo1D["h_3L_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
-	    
-	    
-	    if (selectedLooseMuons.size() > selectedMuons.size() || selectedVetoElectrons.size() > selectedElectrons.size() ){ continue;}
-            else
+/*	    MSPlot["cutFlow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor );
+            MSPlot["BasecutFlow"]->Fill(0, datasets[d], true, Luminosity*scaleFactor );
+            MSPlot["3L_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
+            MSPlot["3L_NbOfJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
+            MSPlot["3L_NbOfCSVLJets"]->Fill(selectedBCSVLJets.size(), datasets[d], true, Luminosity*scaleFactor);
+            MSPlot["3L_NbOfCSVMJets"]->Fill(selectedBCSVMJets.size(), datasets[d], true, Luminosity*scaleFactor);
+            MSPlot["3L_NbOfCSVTJets"]->Fill(selectedBCSVTJets.size(), datasets[d], true, Luminosity*scaleFactor);
+            MSPlot["3L_NbOfMuons"]->Fill(selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);
+            MSPlot["3L_NbOfElectrons"]->Fill(selectedElectrons.size(),datasets[d], true, Luminosity*scaleFactor);
+            MSPlot["3L_NbOfLeptons"]->Fill(selectedElectrons.size()+selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);	    
+*/	    
+	    if(selectedJets.size() > 1)
 	    {
+	       if(verbose>3) cout << " at least 2 jets " << endl; 
 	       selecTable.Fill(d,4,scaleFactor*Luminosity); 
                histo1D["h_cutFlow"]->Fill(4., scaleFactor*lumiWeight);
-               histo1D["h_raw_cutFlow"]->Fill(4.);
-               histo1D["h_cutFlow"]->Fill(4.);
-	    
-	       std::vector<int> Leptons; 
-	       Leptons.clear(); 
-	       Leptons = OSSFLeptonPairCalculator(selectedElectrons, selectedMuons, verbose);
-	       if(verbose>3) cout <<   Leptons[0]<< " , " <<  Leptons[1]<< " , " <<  Leptons[2]<< " , " <<  Leptons[3]<< " , " <<  Leptons[4]<< " , " <<  Leptons[5]   << endl; 
-	
-	       bool OSSFpair = false; 
-	       if( (Leptons[0] != -5 && Leptons[1] != -5) | (Leptons[3] != -5 && Leptons[4] != -5) ) OSSFpair = true; 
-	       if(OSSFpair)
+               histo1D["h_2J_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
+/*	       MSPlot["cutFlow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor );
+	       MSPlot["BasecutFlow"]->Fill(1, datasets[d], true, Luminosity*scaleFactor );
+               MSPlot["2J_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
+               MSPlot["2J_NbOfJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
+               MSPlot["2J_NbOfCSVLJets"]->Fill(selectedBCSVLJets.size(), datasets[d], true, Luminosity*scaleFactor);
+               MSPlot["2J_NbOfCSVMJets"]->Fill(selectedBCSVMJets.size(), datasets[d], true, Luminosity*scaleFactor);
+               MSPlot["2J_NbOfCSVTJets"]->Fill(selectedBCSVTJets.size(), datasets[d], true, Luminosity*scaleFactor);
+               MSPlot["2J_NbOfMuons"]->Fill(selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);
+               MSPlot["2J_NbOfElectrons"]->Fill(selectedElectrons.size(),datasets[d], true, Luminosity*scaleFactor);
+               MSPlot["2J_NbOfLeptons"]->Fill(selectedElectrons.size()+selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);
+*/
+	       if(selectedBCSVLJets.size()>0)
 	       {
-	          if(verbose>3) cout << " OSSF "<< endl; 
- 	          histo1D["h_OSSF_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
-	          
-	          Zboson.Clear(); 
-	          Zboson = CreateZboson(Leptons, selectedElectrons, selectedMuons, verbose); 
-	          
-                  Wlep.Clear(); 
-                  if(fabs(Leptons[2]) != 5)
-	          {
-	            if(verbose>3) cout << " the W lepton is an electron " << endl; 
-	            Wlep.SetPxPyPzE(selectedElectrons[Leptons[2]]->Px(), selectedElectrons[Leptons[2]]->Py(), selectedElectrons[Leptons[2]]->Pz(), selectedElectrons[Leptons[2]]->Energy()); 
-                  }
-	          else if(fabs(Leptons[5]) != 5)
-	          {
-	            if(verbose>3) cout << " the W lepton is a muon " << endl; 
-	            Wlep.SetPxPyPzE(selectedMuons[Leptons[5]]->Px(), selectedMuons[Leptons[5]]->Py(), selectedMuons[Leptons[5]]->Pz(), selectedMuons[Leptons[5]]->Energy());		  
-	          }
-	          bool ZmassWindow = false; 
-	          if(Zboson.M() < 106 && Zboson.M() > 76) ZmassWindow = true; 
-	          if(ZmassWindow)
-	          {
-	            if(verbose>3) cout << " Zmass window " << endl; 
-	            selecTable.Fill(d,5.,scaleFactor*Luminosity);
-	            histo1D["h_cutFlow"]->Fill(5, scaleFactor*lumiWeight);
-                    histo1D["h_raw_cutFlow"]->Fill(5);
-	            histo1D["h_ZMASS_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
-
-		    if(selectedJets.size() > 1)
+	         if(verbose>3) cout << " at least 1 bjet " << endl; 
+	         selecTable.Fill(d,5,scaleFactor*Luminosity); 
+		 histo1D["h_cutFlow"]->Fill(5., scaleFactor*lumiWeight);
+                 histo1D["h_1BJ_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
+/*		 MSPlot["cutFlow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor );
+ 		 MSPlot["BasecutFlow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor );
+                 MSPlot["1BJ_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
+                 MSPlot["1BJ_NbOfJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
+     		 MSPlot["1BJ_NbOfCSVLJets"]->Fill(selectedBCSVLJets.size(), datasets[d], true, Luminosity*scaleFactor);
+	         MSPlot["1BJ_NbOfCSVMJets"]->Fill(selectedBCSVMJets.size(), datasets[d], true, Luminosity*scaleFactor);
+		 MSPlot["1BJ_NbOfCSVTJets"]->Fill(selectedBCSVTJets.size(), datasets[d], true, Luminosity*scaleFactor);
+                 MSPlot["1BJ_NbOfMuons"]->Fill(selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);
+                 MSPlot["1BJ_NbOfElectrons"]->Fill(selectedElectrons.size(),datasets[d], true, Luminosity*scaleFactor);
+                 MSPlot["1BJ_NbOfLeptons"]->Fill(selectedElectrons.size()+selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);	 
+*/		 
+		 std::vector<int> Leptons; 
+		 Leptons.clear(); 
+		 Leptons = OSSFLeptonPairCalculator(selectedElectrons, selectedMuons, verbose);
+		 if(verbose>3) cout <<   Leptons[0]<< " , " <<  Leptons[1]<< " , " <<  Leptons[2]<< " , " <<  Leptons[3]<< " , " <<  Leptons[4]<< " , " <<  Leptons[5]   << endl; 
+		 
+		 bool OSSFpair = false; 
+		 if( (Leptons[0] != -5 && Leptons[1] != -5) | (Leptons[3] != -5 && Leptons[4] != -5) ) OSSFpair = true; 
+		 if(OSSFpair)
+	         {
+		    if(verbose>3) cout << " OSSF "<< endl; 
+		    selecTable.Fill(d,6,scaleFactor*Luminosity);
+		    histo1D["h_cutFlow"]->Fill(6., scaleFactor*lumiWeight);
+ 		    histo1D["h_OSSF_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
+/*		    MSPlot["cutFlow"]->Fill(6, datasets[d], true, Luminosity*scaleFactor );
+		    MSPlot["BasecutFlow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor );
+	            MSPlot["OSSF_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
+     		    MSPlot["OSSF_NbOfJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
+      		    MSPlot["OSSF_NbOfCSVLJets"]->Fill(selectedBCSVLJets.size(), datasets[d], true, Luminosity*scaleFactor);
+      		    MSPlot["OSSF_NbOfCSVMJets"]->Fill(selectedBCSVMJets.size(), datasets[d], true, Luminosity*scaleFactor);
+      		    MSPlot["OSSF_NbOfCSVTJets"]->Fill(selectedBCSVTJets.size(), datasets[d], true, Luminosity*scaleFactor);
+    		    MSPlot["OSSF_NbOfMuons"]->Fill(selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);
+     		    MSPlot["OSSF_NbOfElectrons"]->Fill(selectedElectrons.size(),datasets[d], true, Luminosity*scaleFactor);
+                    MSPlot["OSSF_NbOfLeptons"]->Fill(selectedElectrons.size()+selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);   
+		    
+*/		    
+		    Zboson.Clear(); 
+		    Zboson = CreateZboson(Leptons, selectedElectrons, selectedMuons, verbose); 
+		    
+                    Wlep.Clear(); 
+                    if(fabs(Leptons[2]) != 5)
 		    {
-		       if(verbose>3) cout << " at least 2 jets " << endl; 
-	               selecTable.Fill(d,6,scaleFactor*Luminosity); 
-                       histo1D["h_cutFlow"]->Fill(6., scaleFactor*lumiWeight);
-                       histo1D["h_raw_cutFlow"]->Fill(6.);
-                       histo1D["h_2J_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
-
-                       if(selectedBCSVLJets.size()>0)
-	               {
-	       		  if(verbose>3) cout << " at least 1 bjet " << endl; 
-	       		  selecTable.Fill(d,7,scaleFactor*Luminosity); 
-			  histo1D["h_cutFlow"]->Fill(7., scaleFactor*lumiWeight);
-                          histo1D["h_raw_cutFlow"]->Fill(7.);
-               		  histo1D["h_1BJ_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
-			  
-			  eventSelected = true;
-		       } // >0 bjets
-
-	            }// > 1 jet
-	          }//Zmass
-	       } //OSSFpair	  
-	    
-	    } //lepton veto
-	   
+		      if(verbose>3) cout << " the W lepton is an electron " << endl; 
+		      Wlep.SetPxPyPzE(selectedElectrons[Leptons[2]]->Px(), selectedElectrons[Leptons[2]]->Py(), selectedElectrons[Leptons[2]]->Pz(), selectedElectrons[Leptons[2]]->Energy()); 
+                    }
+		    else if(fabs(Leptons[5]) != 5)
+		    {
+		      if(verbose>3) cout << " the W lepton is a muon " << endl; 
+		      Wlep.SetPxPyPzE(selectedMuons[Leptons[5]]->Px(), selectedMuons[Leptons[5]]->Py(), selectedMuons[Leptons[5]]->Pz(), selectedMuons[Leptons[5]]->Energy()); 		    
+		    }
+		    bool ZmassWindow = false; 
+		    if(fabs(Zboson.M()-90.0) < 15.0) ZmassWindow = true; 
+		    if(ZmassWindow)
+		    {
+		      if(verbose>3) cout << " Zmass window " << endl; 
+		      selecTable.Fill(d,7.,scaleFactor*Luminosity);
+		      histo1D["h_cutFlow"]->Fill(7, scaleFactor*lumiWeight);
+		      histo1D["h_ZMASS_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
+/*		      MSPlot["cutFlow"]->Fill(7, datasets[d], true, Luminosity*scaleFactor );
+		      MSPlot["BasecutFlow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor );
+                      MSPlot["ZMASS_NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
+		      MSPlot["ZMASS_NbOfJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
+		      MSPlot["ZMASS_NbOfCSVLJets"]->Fill(selectedBCSVLJets.size(), datasets[d], true, Luminosity*scaleFactor);
+  		      MSPlot["ZMASS_NbOfCSVMJets"]->Fill(selectedBCSVMJets.size(), datasets[d], true, Luminosity*scaleFactor);
+		      MSPlot["ZMASS_NbOfCSVTJets"]->Fill(selectedBCSVTJets.size(), datasets[d], true, Luminosity*scaleFactor);
+		      MSPlot["ZMASS_NbOfMuons"]->Fill(selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);
+		      MSPlot["ZMASS_NbOfElectrons"]->Fill(selectedElectrons.size(),datasets[d], true, Luminosity*scaleFactor);
+		      MSPlot["ZMASS_NbOfLeptons"]->Fill(selectedElectrons.size()+selectedMuons.size(),datasets[d], true, Luminosity*scaleFactor);
+*/
+		      eventSelected = true;
+	            }
+		 }
+	       } 
+	    }
          
         }  // 3 leptons
        }  // good PV
