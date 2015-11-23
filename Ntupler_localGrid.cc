@@ -727,9 +727,13 @@ int main (int argc, char *argv[])
         } // closing the HLT for data loop
         //For the MC, there is no triggerpath
         else
+        {
+          if(emu) itrigger = treeLoader.iTrigger ("HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1", currentRun, iFile);
+          else if(mumu) itrigger = treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v1"), currentRun, iFile);
+          else if(ee) itrigger = treeLoader.iTrigger (string ("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1"), currentRun, iFile);
 
-
- itrigger = true;     	
+//          itrigger = true;     	
+        }
       } // closing the HLT run loop
       
       ////////////////////////////////////
