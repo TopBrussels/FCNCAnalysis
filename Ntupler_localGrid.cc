@@ -236,7 +236,7 @@ int main (int argc, char *argv[])
   /////////
   /// lumi
   /////////
-  float oldLuminosity = anaEnv.Luminosity;  // in 1/pb
+  float oldLuminosity =  1263.885980236;    //anaEnv.Luminosity;  // in 1/pb
   cout << "Analysis environment luminosity for rescaling " << oldLuminosity << endl;
   
  
@@ -371,9 +371,9 @@ int main (int argc, char *argv[])
     titlePlot = "ZMASS_Nb_Jets"+channelpostfix;
     histo1D["h_ZMASS_Nb_Jets"] = new TH1F(titlePlot.c_str(), "After Zmass window: nb. of jets",  16, - 0.5, 15 );     
     titlePlot = "cutFlow"+channelpostfix; 
-    histo1D["h_cutFlow"] = new TH1F(titlePlot.c_str(), "cutflow", 10,-0.5,11);
+    histo1D["h_cutFlow"] = new TH1F(titlePlot.c_str(), "cutflow", 13,-0.5,12);
     titlePlot = "raw_cutFlow"+channelpostfix;
-    histo1D["h_raw_cutFlow"] = new TH1F(titlePlot.c_str(), "Raw cutflow", 10,-0.5,11);
+    histo1D["h_raw_cutFlow"] = new TH1F(titlePlot.c_str(), "Raw cutflow", 13,-0.5,12);
 
 
    titlePlot = "initial_Nb_Jets_unCORJER"+channelpostfix;
@@ -637,8 +637,7 @@ int main (int argc, char *argv[])
       vector < TRootMuon* > init_muons;
       vector < TRootElectron* > init_electrons;
       vector < TRootJet* > init_jets;
-       vector < TRootJet* > init_jets_unCORJER;
-      
+      vector < TRootJet* > init_jets_unCORJER; 
       vector < TRootMET* > mets;
       
       nEvents[d]++;
@@ -731,8 +730,6 @@ int main (int argc, char *argv[])
           if(emu) itrigger = treeLoader.iTrigger ("HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1", currentRun, iFile);
           else if(mumu) itrigger = treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v1"), currentRun, iFile);
           else if(ee) itrigger = treeLoader.iTrigger (string ("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1"), currentRun, iFile);
-
-//          itrigger = true;     	
         }
       } // closing the HLT run loop
       
@@ -798,6 +795,10 @@ int main (int argc, char *argv[])
          }
        }
        if(verbose > 3) cout << "btagging done" << endl; 
+	
+       double met_px = mets[0]->Px();
+       double met_py = mets[0]->Py();
+       double met_pt = sqrt(met_px*met_px + met_py*met_py);
       
       // Start analysis selection
       eventSelected = false;
@@ -911,8 +912,34 @@ int main (int argc, char *argv[])
 			  histo1D["h_cutFlow"]->Fill(7., scaleFactor*lumiWeight);
                           histo1D["h_raw_cutFlow"]->Fill(7.);
                		  histo1D["h_1BJ_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
-			  
-			  eventSelected = true;
+
+                          float Phi_Wlep_MET = mets[0]->DeltaPhi(Wlep);
+                 	  float CosPhi_Wlep_MET = cos(Phi_Wlep_MET);
+                 	  float mWT = TMath::Sqrt(2*met_pt*Wlep.Pt()*(1-CosPhi_Wlep_MET));
+
+                          if(mWT > 20)
+			  {
+                             selecTable.Fill(d,8,scaleFactor*Luminosity);
+                             histo1D["h_cutFlow"]->Fill(8., scaleFactor*lumiWeight);
+                             histo1D["h_raw_cutFlow"]->Fill(8.);
+
+                             TLorentzVector Bjet;
+                             Bjet.Clear();
+                             Bjet.SetPxPyPzE(selectedBCSVLJets[0]->Px(),selectedBCSVLJets[0]->Py(),selectedBCSVLJets[0]->Pz(),selectedBCSVLJets[0]->Energy());
+
+			     TLorentzVector SMtop; 
+			     SMtop.Clear(); 
+			     SMtop = Bjet + Wlep;     
+			     float topmass = SMtop.M();
+			     if( topmass < 155 && topmass > 95)
+                             {
+  			        selecTable.Fill(d,9,scaleFactor*Luminosity);
+                                histo1D["h_cutFlow"]->Fill(9., scaleFactor*lumiWeight);
+                                histo1D["h_raw_cutFlow"]->Fill(9.);
+ 
+			        eventSelected = true;
+                            } // topmass
+			  } //mWt
 		       } // >0 bjets
 
 	            }// > 1 jet
