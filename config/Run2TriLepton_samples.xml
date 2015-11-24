@@ -4,8 +4,21 @@
 <!--synch-->
 <d name="Synch" title="Synch_tZqto3lNu" add="1" color="5" ls="1" lw="2" normf="1" EqLumi="30125151.4218" xsection="0.09741" PreselEff="0.0" filenames="/user/ivanpari/CMSSW_7_4_15/src/TopBrussels/FCNCAnalysis/SynchRootFile/*.root"/>
 
-<!-- data -->
+<!-- data D -->
 <d name="data" title="dataElElrerecorun2015D" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="552.672886226" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DoubleEG/crab_DoubleEG-Run2015D-05Oct2015-v1-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151020_153539/0000/*.root"/>
+
+<d name="data" title="dataMuMurerecorun2015D" add="0" color="1" ls="1" lw="2" normf="1" EqLumi="552.672886226" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DoubleMuon/crab_DoubleMuon-Run2015D-05Oct2015-v1-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155049/0000/*.root"/>
+
+<d name="data" title="dataMuElrerecorun2015D" add="0" color="1" ls="1" lw="2" normf="1" EqLumi="552.672886226" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/MuonEG/crab_MuonEG-Run2015D-05Oct2015-v2-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155115/0000/*.root"/>
+
+<d name="data" title="dataElElpromptrecorun2015D" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="711.213094010" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DoubleEG/crab_DoubleEG-Run2015D-PromptReco-v4-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155039/0000/*.root"/>
+
+<d name="data" title="dataMuMupromptrecorun2015D" add="0" color="1" ls="1" lw="2" normf="1" EqLumi="711.213094010" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DoubleMuon/crab_DoubleMuon-Run2015D-PromptReco-v4-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155106/0000/*.root"/>
+
+<d name="data" title="dataMuElpromptrecorun2015D" add="0" color="1" ls="1" lw="2" normf="1" EqLumi="711.213094010" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/MuonEG/crab_MuonEG-Run2015D-PromptReco-v4-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155142/0000/*.root"/>
+
+
+
 
 <!-- tZq SM -->
 <d name="tZq" title="tZqto3lNu" add="1" color="5" ls="1" lw="2" normf="1" EqLumi="30125151.4218" xsection="0.09741" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1/crab_tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2-CMSSW_74X_v8-MCRUN2_74_V9/151021_135224/0000/*.root"/>
