@@ -66,7 +66,7 @@ void MakePlot(string channel = "ee", bool plotData = true) {
   vector<TString> listrootfiles; 
   listrootfiles.clear(); 
   const char *dirname; 
-  if(chan.find("ee") == 0) dirname = "../_ElEl_allSamples/";
+  if(chan.find("ee") == 0) dirname = "../_ElEl/";
   else if(chan.find("mumu") == 0) dirname = "../_MuMu_allSamples/";
   else if(chan.find("emu") == 0) dirname = "../_ElMu_allSamples/";
   const char *ext=".root";
@@ -99,9 +99,18 @@ void MakePlot(string channel = "ee", bool plotData = true) {
  for(unsigned int k =0; k<listrootfiles.size(); k++)
  { 
   TString Proc = listrootfiles[k]; 
-  TObjArray *oProc = Proc.Tokenize("_"); 
-  TString ProcSample =  ((TObjString *)(oProc->At(4)))->String(); 
+  //cout << "1" << endl; 
+  TObjArray *oProc = Proc.Tokenize("_");
+  //cout << "2" << endl;
+  //for(unsigned int o = 0; o < oProc->GetEntries(); o++)
+  //{
+  //   cout << ((TObjString *)(oProc->At(o)))->String() << endl; 
+  //} 
+//  TString ProcSample =  ((TObjString *)(oProc->At(4)))->String(); 
+  TString ProcSample =  ((TObjString *)(oProc->At(3)))->String();
+//  cout << "3" << endl;
   TObjArray *oProcSample = ProcSample.Tokenize("."); 
+//  cout << "4" << endl;
   Vmyprocess.push_back(((TObjString *)(oProcSample->At(0)))->String());  
   cout << ((TObjString *)(oProcSample->At(0)))->String() << endl; 
  }
@@ -109,7 +118,16 @@ void MakePlot(string channel = "ee", bool plotData = true) {
  vector<Color_t> color; 
  color.clear(); 
  for(unsigned int i = 0; i<Vmyprocess.size(); i++) {
-    if(Vmyprocess[i].Contains("WZ")){ color.push_back(kMagenta);} 
+    if(Vmyprocess[i].Contains("diboson")){ color.push_back(kMagenta);}
+    if(Vmyprocess[i].Contains("tZq")){ color.push_back(kBlue); }
+    if(Vmyprocess[i].Contains("data")){ color.push_back(kBlack);}
+    if(Vmyprocess[i].Contains("ttV")){ color.push_back(kCyan);}
+    if(Vmyprocess[i].Contains("ttbar")){ color.push_back(kGreen);}
+    if(Vmyprocess[i].Contains("Zjets")){ color.push_back(kBlue-3);}
+    if(Vmyprocess[i].Contains("ST")){ color.push_back(kCyan+5);}
+/*    if(Vmyprocess[i].Contains("WZ")){ color.push_back(kMagenta);} 
+    if(Vmyprocess[i].Contains("WW")){ color.push_back(kMagenta+1);}
+    if(Vmyprocess[i].Contains("ZZ")){ color.push_back(kMagenta+2);}
     if(Vmyprocess[i].Contains("tZq")){ color.push_back(kBlue); }
     if(Vmyprocess[i].Contains("data")){ color.push_back(kBlack);}
     if(Vmyprocess[i].Contains("ZZ")){ color.push_back(kGreen-2);}    
@@ -117,9 +135,12 @@ void MakePlot(string channel = "ee", bool plotData = true) {
     if(Vmyprocess[i].Contains("Zjets1050")){ color.push_back(kBlue-2);}
     if(Vmyprocess[i].Contains("Zjets50")){ color.push_back(kBlue-3);} 
     if(Vmyprocess[i].Contains("ttZ")){ color.push_back(kMagenta-3);} 
+    if(Vmyprocess[i].Contains("Synch")){ color.push_back(kMagenta-3);}
     if(Vmyprocess[i].Contains("ttW")){ color.push_back(kCyan);}
-    
- } 
+    if(Vmyprocess[i].Contains("STs")){ color.push_back(kCyan+3);} 
+    if(Vmyprocess[i].Contains("STt") && !Vmyprocess[i].Contains("STtW")){ color.push_back(kCyan+4);}
+    if(Vmyprocess[i].Contains("STtW")){ color.push_back(kCyan+5);}
+*/ } 
   // list all histograms in the rootfiles  
   TFile *f1 = new TFile(listrootfiles[0]);
 
@@ -153,12 +174,12 @@ void MakePlot(string channel = "ee", bool plotData = true) {
    listHisto.push_back(obj->GetName());
    listTitle.push_back(obj->GetTitle()); 
   }
-  cout << " *** CHECKS *** " << endl;  
+/*  cout << " *** CHECKS *** " << endl;  
   for(unsigned int i = 0 ; i < Vmyprocess.size(); i++){
     cout << listrootfiles[i] << " " << Vmyprocess[i] << " " << color[i] << endl; 
 
   }
-
+*/
   cout << " **** DONE GETTING FILES, FILLING THStack *** " << endl; 
   const int sizeRF= listrootfiles.size(); 
   const int sizeH = listHisto.size(); 
