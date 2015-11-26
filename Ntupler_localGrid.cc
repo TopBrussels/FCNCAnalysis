@@ -313,10 +313,10 @@ int main (int argc, char *argv[])
   LumiReWeighting LumiWeights(pathToCaliDir+"PileUpReweighting/pileup_MC_RunIISpring15DR74-Asympt25ns.root",pathToCaliDir+"PileUpReweighting/pileup_2015Data74X_25ns-Run254231-258750Cert/nominal.root","pileup","pileup");
  
   // Btag SF 
-/*  BTagCalibration * bTagCalib;   
+  BTagCalibration * bTagCalib;   
   BTagCalibrationReader * bTagReader;
   BTagWeightTools *btwt;
-*/ 
+ 
   ////////////////////////////////////
   ///  Loop on datasets
   ////////////////////////////////////
@@ -411,15 +411,15 @@ int main (int argc, char *argv[])
     ////////////////////
     //  SF
     //  ////////////////
-/*    TFile *BtagHisto = new TFile("HistosPtEta.root","RECREATE");
+    TFile *BtagHisto = new TFile("HistosPtEta.root","RECREATE");
     if(applyBtagSF && !isdata){
-       // http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees_v2.pdf 
-       bTagCalib = new BTagCalibration("CSVv2",pathToCaliDir+"Btagging/CSVv2_Lana.csv");
-       bTagReader = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_LOOSE,"mujets","central");
+       // http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees_v2.pdf
+       // removed in the first line of the csv file "CSVv2;"  
+       bTagCalib = new BTagCalibration("CSVv2",pathToCaliDir+"BTagging/CSVv2_13TeV_25ns.csv");
+       bTagReader = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_LOOSE,"comb","central");
        if(fillingbTagHistos) btwt = new BTagWeightTools(bTagReader,30,999,2.4,"HistosPtEta_"+dataSetName+".root");
        else btwt = new BTagWeightTools(bTagReader,30,999,2.4,"HistosPtEta.root");
     }
-*/
 
      //////////////////////////////
      // My tree - variables //
@@ -656,7 +656,8 @@ int main (int argc, char *argv[])
       vector < TRootMuon* > init_muons;
       vector < TRootElectron* > init_electrons;
       vector < TRootJet* > init_jets;
-      vector < TRootJet* > init_jets_unCORJER; 
+      vector < TRootJet* > init_jets_unCORJER;
+      vector < TRootJet* > init_jets_unCORJES; 
       vector < TRootMET* > mets;
       
       nEvents[d]++;
@@ -720,6 +721,20 @@ int main (int argc, char *argv[])
       else{
 	jetTools->correctJetJER(init_jets,genjets,mets[0], "nominal", false); // false means don't use old numbers, but new ones
      }
+
+      // JES
+      if(doJESup){
+         init_jets_unCORJES = init_jets; 
+         jetTools->correctJetJESUnc(init_jets, "plus", 1);
+
+
+     }
+     else if(doJESdown){
+         init_jets_unCORJES = init_jets;
+         jetTools->correctJetJESUnc(init_jets, "minus", 1);
+
+
+     }
      
       /////////////////////////////
       /// Trigger
@@ -770,7 +785,7 @@ int main (int argc, char *argv[])
       //Declare selection instance
       Run2Selection selection(init_jets, init_muons, init_electrons, mets);
       Run2Selection selection_unCORJER( init_jets_unCORJER, init_muons, init_electrons, mets);    
-
+      Run2Selection selection_unCORJES( init_jets_unCORJES, init_muons, init_electrons, mets);
 
       bool isGoodPV = selection.isPVSelected(vertex, PVertexNdofCut, PVertexZCut,PVertexRhoCut); //isPVSelected(const std::vector<TRootVertex*>& vertex, int NdofCut, float Zcut, float RhoCut)
       vector<TRootMuon*> selectedMuons = selection.GetSelectedMuons(MuonPtCut, MuonEtaCut, MuonRelIsoCut,WPMuon,CampaignMuon);  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
@@ -779,12 +794,14 @@ int main (int argc, char *argv[])
  
       vector<TRootPFJet*> selectedJets = selection.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet);  // GetSelectedJets(float PtThr, float EtaThr, bool applyJetID, std::string TightLoose)
       vector<TRootPFJet*> selectedJets_unCORJER = selection_unCORJER.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet); 
+      vector<TRootPFJet*> selectedJets_unCORJES = selection_unCORJES.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet);
       vector<TRootElectron*> selectedElectrons = selection.GetSelectedElectrons(ElectronPtCut, ElectronEtaCut, WPElectron, CampaignElectron, cutsBasedElectron);  // GetSelectedElectrons(float PtThr, float etaThr, string WorkingPoint, string ProductionCampaign, bool CutsBased)
       vector<TRootElectron*> selectedVetoElectrons = selection.GetSelectedElectrons(12, ElectronEtaCut, "Veto", CampaignElectron, cutsBasedElectron);  // GetSelectedElectrons(float PtThr, float etaThr, string WorkingPoint, string ProductionCampaign, bool CutsBased)
 
       
       sort(selectedJets.begin(), selectedJets.end(),HighestPt()); 
       sort(selectedJets_unCORJER.begin(), selectedJets_unCORJER.end(),HighestPt());
+      sort(selectedJets_unCORJES.begin(), selectedJets_unCORJES.end(),HighestPt());
       sort(selectedMuons.begin(), selectedMuons.end(), HighestPt()); 
       sort(selectedVetoMuons.begin(), selectedVetoMuons.end(), HighestPt());
       sort(selectedElectrons.begin(), selectedElectrons.end(), HighestPt()); 
@@ -843,7 +860,7 @@ int main (int argc, char *argv[])
          if(selectedElectrons.size()>1)  {electron2SF =  electronSFWeight->at(selectedElectrons[1]->Eta(),selectedElectrons[1]->Pt(),0); electronScaleFactor *= electron2SF; }
          if(selectedElectrons.size()>2)  {electron3SF =  electronSFWeight->at(selectedElectrons[2]->Eta(),selectedElectrons[2]->Pt(),0); electronScaleFactor *= electron3SF; }
       }
-/*      if(fillingbTagHistos){
+      if(fillingbTagHistos){
          if(!isdata && applyBtagSF) btwt->FillMCEfficiencyHistos(selectedJets); 
                 
        }
@@ -852,7 +869,7 @@ int main (int argc, char *argv[])
            btagScaleFactor =  btwt->getMCEventWeight(selectedJets,BtagHisto, false);
            // cout<<"btag weight "<<btagWeight<<endl;
        }     
-*/         
+         
       
 
 
@@ -861,7 +878,7 @@ int main (int argc, char *argv[])
       if(applyMuonSF) scaleFactor *= muonScaleFactor;
       if(applyElectronSF) scaleFactor *= electronScaleFactor;
       if(applyPUSF) scaleFactor *= puScaleFactor;
-//      if(applyBtagSF) scaleFactor *= btagScaleFactor;
+      if(applyBtagSF) scaleFactor *= btagScaleFactor;
       if(!applyGlobalSF || isdata) scaleFactor = 1.;
 
 
@@ -897,7 +914,7 @@ int main (int argc, char *argv[])
       /// Trigger
       if(runHLT) trigged = treeLoader.EventTrigged(itrigger);
       else trigged = true; 
-       
+      //SELECTION 
       if(trigged)
       { 
        histo1D["h_cutFlow"]->Fill(1., scaleFactor*lumiWeight);
