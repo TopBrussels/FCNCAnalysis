@@ -18,9 +18,7 @@
 //used TopTreeAnalysis classes
 #include "../TopTreeProducer/interface/TRootRun.h"
 #include "../TopTreeProducer/interface/TRootEvent.h"
-#include "../TopTreeAnalysisBase/Selection/interface/SelectionTable.h"
 #include "../TopTreeAnalysisBase/Tools/interface/PlottingTools.h"
-#include "../TopTreeAnalysisBase/Tools/interface/MultiSamplePlot.h"
 #include "../TopTreeAnalysisBase/Tools/interface/TTreeLoader.h"
 #include "../TopTreeAnalysisBase/Tools/interface/AnalysisEnvironmentLoader.h"
 #include "../TopTreeAnalysisBase/Content/interface/AnalysisEnvironment.h"
@@ -36,8 +34,11 @@
 #include "../TopTreeAnalysisBase/MCInformation/interface/JetPartonMatching.h"
 #include "../TopTreeAnalysisBase/Reconstruction/interface/JetCorrectorParameters.h"
 #include "../TopTreeAnalysisBase/MCInformation/interface/LumiReWeighting.h"
-
-
+#include "TopTreeAnalysisBase/Tools/interface/LeptonTools.h"
+//This header file is taken directly from the BTV wiki. It contains
+//
+#include "TopTreeAnalysisBase/Tools/interface/BTagWeightTools.h"
+#include "TopTreeAnalysisBase/Tools/interface/BTagCalibrationStandalone.h"
 
 
 using namespace std;
@@ -75,9 +76,9 @@ int main (int argc, char *argv[])
   /////////////////////
   bool eventSelected = false;
   int nofSelectedEvents = 0;
-  bool ee = true; 
+  bool ee = false; 
   bool emu = false; 
-  bool mumu = false; 
+  bool mumu = true; 
   bool runHLT = true; 
   std::string sWPMuon = "Tight"; 
   std::string sWPElectron = "Medium";
@@ -229,7 +230,7 @@ int main (int argc, char *argv[])
   std::string WPElectron = sWPElectron; // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2
   int cutsBasedElectron = 1; 
   int JetsPtCut = 30; //anaEnv.JetsPtCutSR; 
-  int applyJetID = anaEnv.applyJetID; 
+  int applyJetID = true; //anaEnv.applyJetID; 
   int JetsEtaCut = 2.4; 
   std::string WPJet = "Tight"; // https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
 
@@ -282,32 +283,40 @@ int main (int argc, char *argv[])
   Double_t *nEvents = new Double_t[datasets.size()];
   
 
-  ////////////////////////////////////
-  ///  Selection table
-  ////////////////////////////////////
+  ///////////////////////
+  //  Event SF
+  ///////////////
+  Double_t scaleFactor = 1.;
+
+  Double_t muonScaleFactor, electronScaleFactor, puScaleFactor, btagScaleFactor;
+  muonScaleFactor = electronScaleFactor = puScaleFactor = btagScaleFactor = 1.0;
+
+  Bool_t applyMuonSF , applyElectronSF, applyPUSF, applyGlobalSF, applyBtagSF, fillingbTagHistos;
+  applyMuonSF = true;
+  applyElectronSF = true;
+  applyPUSF = true;
+  applyGlobalSF = true;
+  applyBtagSF = false;
+ fillingbTagHistos = false;
+
+  string pathToCaliDir = "/user/ivanpari/CMSSW_7_4_15/src/TopBrussels/TopTreeAnalysisBase/Calibrations/";
+
+  //Muon SF 
+  string muonFile= "Muon_SF_TopEA.root";
+  MuonSFWeight *muonSFWeight = new MuonSFWeight (pathToCaliDir+"LeptonSF/"+muonFile,"SF_totErr", false, false); // (... , ... , debug, print warning)
   
-  vector<string> CutsSelecTable;
-  CutsSelecTable.push_back(string("preselected"));
-  CutsSelecTable.push_back(string("trigged"));
-  CutsSelecTable.push_back(string("Good PV"));
-  CutsSelecTable.push_back(string("3 selected leptons"));
-  CutsSelecTable.push_back(string("lepton veto"));
-  CutsSelecTable.push_back(string("Z selection")); 
-  CutsSelecTable.push_back(string("jet selection")); 
-  CutsSelecTable.push_back(string("b-tagging"));
-  CutsSelecTable.push_back(string("mWt")); 
-  CutsSelecTable.push_back(string("top mass cut"));
-   
-  if (verbose > 0)
-    cout << " - CutsSelectionTable instantiated ..." << endl;
-    
-  SelectionTable selecTable(CutsSelecTable, datasets);
-  selecTable.SetLuminosity(Luminosity);
-  if (verbose > 0)
-    cout << " - SelectionTable instantiated ..." << endl;
-  
-  
-  
+  //Electron SF
+  string electronFile= "Elec_SF_TopEA.root";
+  ElectronSFWeight *electronSFWeight = new ElectronSFWeight (pathToCaliDir+"LeptonSF/"+electronFile,"GlobalSF", false, false); // (... , ... , debug, print warning)
+
+  //PU SF 
+  LumiReWeighting LumiWeights(pathToCaliDir+"PileUpReweighting/pileup_MC_RunIISpring15DR74-Asympt25ns.root",pathToCaliDir+"PileUpReweighting/pileup_2015Data74X_25ns-Run254231-258750Cert/nominal.root","pileup","pileup");
+ 
+  // Btag SF 
+/*  BTagCalibration * bTagCalib;   
+  BTagCalibrationReader * bTagReader;
+  BTagWeightTools *btwt;
+*/ 
   ////////////////////////////////////
   ///  Loop on datasets
   ////////////////////////////////////
@@ -339,9 +348,8 @@ int main (int argc, char *argv[])
         lumiWeight = Luminosity*xSect/datasets[d]->NofEvtsToRunOver();
         cout << "the weight to apply for each event of this data set is " << "Lumi * (xs/NSample) = "  << Luminosity << " * (" << xSect << "/" << datasets[d]->NofEvtsToRunOver() << ") = " << Luminosity << " * " << xSect/datasets[d]->NofEvtsToRunOver() << " = " << Luminosity*xSect/datasets[d]->NofEvtsToRunOver()  <<  endl;
       }
-    // Make controlplots root file
     
-    
+     
     
     
     // Controlplots
@@ -399,7 +407,20 @@ int main (int argc, char *argv[])
     // create the output file that is used for further analysis. This file can contain histograms and/or trees (in this case only a tree)
     TFile *fileout = new TFile (roottreename.c_str(), "RECREATE");
     fileout->cd();
-    
+   
+    ////////////////////
+    //  SF
+    //  ////////////////
+/*    TFile *BtagHisto = new TFile("HistosPtEta.root","RECREATE");
+    if(applyBtagSF && !isdata){
+       // http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees_v2.pdf 
+       bTagCalib = new BTagCalibration("CSVv2",pathToCaliDir+"Btagging/CSVv2_Lana.csv");
+       bTagReader = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_LOOSE,"mujets","central");
+       if(fillingbTagHistos) btwt = new BTagWeightTools(bTagReader,30,999,2.4,"HistosPtEta_"+dataSetName+".root");
+       else btwt = new BTagWeightTools(bTagReader,30,999,2.4,"HistosPtEta.root");
+    }
+*/
+
      //////////////////////////////
      // My tree - variables //
      //////////////////////////////
@@ -425,7 +446,11 @@ int main (int argc, char *argv[])
      double pyWboson_lep;
      double pzWboson_lep;
      double etaWboson_lep;
-     double eWboson_lep; 
+     double eWboson_lep;
+
+     double metPt; 
+     double metPx; 
+     double metPy; 
  
      //vectors
      std::vector<double> *ptMuon; 
@@ -501,9 +526,9 @@ int main (int argc, char *argv[])
      myTree->Branch("npu",&npu,"npu/I");
      
      //Set branches for doubles 
- ///   myTree -> Branch("metPt", &metPt, "metPt/D");
- //    myTree -> Branch("metPx", &metPx, "metPx/D");
- //    myTree -> Branch("metPy", &metPy, "metPy/D");
+    myTree -> Branch("metPt", &metPt, "metPt/D");
+    myTree -> Branch("metPx", &metPx, "metPx/D");
+    myTree -> Branch("metPy", &metPy, "metPy/D");
      
      myTree->Branch("ptZboson", &ptZboson,"ptZboson/D");
      myTree->Branch("pxZboson", &pxZboson,"pxZboson/D");
@@ -577,16 +602,10 @@ int main (int argc, char *argv[])
 
     
     
-//     TTree *noselTree = new TTree("noselTree","noselTree");
-/*      noselTree->Branch("isdata",&isdata,"isdata/I");
-     noselTree->Branch("run_num",&run_num,"run_num/I");
-     noselTree->Branch("evt_num",&evt_num,"evt_num/I");
-     noselTree->Branch("lumi_num",&lumi_num,"lumi_num/I");
-     noselTree->Branch("nvtx",&nvtx,"nvtx/I");
- */    // noselTree->Branch("nElectrons",&nElectrons, "nElectrons/I");
+     TTree *BkgTree = new TTree("BkgTree","BkgTree");
     
     //////////////////////////
-    // Initialize JER  Factor
+    // Initialize JEC  Factor
     ///////////////(order matters! )
      vector<JetCorrectorParameters> vCorrParam;
 
@@ -707,6 +726,9 @@ int main (int argc, char *argv[])
       ///////////////////////////
       
       bool trigged = false; 
+      bool trigEMU, trigMUMU,trigEE; 
+      trigEMU = trigMUMU = trigEE = false; 
+
       //If the HLT is applied 
       if(runHLT && previousRun != currentRun){
         //The HLT is only used for data
@@ -714,9 +736,12 @@ int main (int argc, char *argv[])
           //The HLT path is dependent of the mode, these paths are the several steps or software modules. Each module performs a well defined task 
           // such as reconstruction of physics objects, making intermediate decisions, triggering more refined reconstructions in subsequent modules, 
           // or calculating the final decision for that trigger path.
-	  if(emu) itrigger = treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2"), currentRun, iFile);
-          else if(mumu) itrigger = treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v2"), currentRun, iFile);
-          else if(ee) itrigger = treeLoader.iTrigger (string("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2"), currentRun, iFile);
+          trigEMU = treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2"), currentRun, iFile);
+          trigEE = treeLoader.iTrigger (string("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2"), currentRun, iFile);
+          trigMUMU =treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v2"), currentRun, iFile); 
+	  if(emu) itrigger = trigEMU;
+          else if(mumu && !trigEMU) itrigger = trigMUMU;
+          else if(ee && !trigEMU) itrigger = trigEE;
 
           if(itrigger == 9999) 
 	  {
@@ -727,22 +752,16 @@ int main (int argc, char *argv[])
         //For the MC, there is no triggerpath
         else
         {
-          if(emu) itrigger = treeLoader.iTrigger ("HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1", currentRun, iFile);
-          else if(mumu) itrigger = treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v1"), currentRun, iFile);
-          else if(ee) itrigger = treeLoader.iTrigger (string ("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1"), currentRun, iFile);
+          trigEMU =  itrigger = treeLoader.iTrigger ("HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1", currentRun, iFile);
+          trigMUMU =  itrigger = treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v1"), currentRun, iFile);
+          trigEE = itrigger = treeLoader.iTrigger (string ("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1"), currentRun, iFile);
+          if(emu) itrigger = trigEMU;
+          else if(mumu && !trigEMU) itrigger = trigMUMU;
+          else if(ee && !trigEMU) itrigger = trigEE;
+
         }
       } // closing the HLT run loop
       
-      ////////////////////////////////////
-      ///  DETERMINE EVENT SCALEFACTOR  ///
-      /////////////////////////////////////
-      
-      // scale factor for the event
-      float scaleFactor = 1.;
-      
-      
-      // Reweight for finite MC sample
-     // scaleFactor = scaleFactor*lumiWeight;
       
       /////////////////////////
       ///  EVENT SELECTION  ///
@@ -755,20 +774,21 @@ int main (int argc, char *argv[])
 
       bool isGoodPV = selection.isPVSelected(vertex, PVertexNdofCut, PVertexZCut,PVertexRhoCut); //isPVSelected(const std::vector<TRootVertex*>& vertex, int NdofCut, float Zcut, float RhoCut)
       vector<TRootMuon*> selectedMuons = selection.GetSelectedMuons(MuonPtCut, MuonEtaCut, MuonRelIsoCut,WPMuon,CampaignMuon);  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
-      vector<TRootMuon*> selectedLooseMuons = selection.GetSelectedMuons(MuonPtCut, MuonEtaCut, MuonRelIsoCut,"Loose",CampaignMuon);  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
+      vector<TRootMuon*> selectedVetoMuons = selection.GetSelectedMuons(8, MuonEtaCut, 0.2,"Loose",CampaignMuon);  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
 
  
       vector<TRootPFJet*> selectedJets = selection.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet);  // GetSelectedJets(float PtThr, float EtaThr, bool applyJetID, std::string TightLoose)
       vector<TRootPFJet*> selectedJets_unCORJER = selection_unCORJER.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet); 
       vector<TRootElectron*> selectedElectrons = selection.GetSelectedElectrons(ElectronPtCut, ElectronEtaCut, WPElectron, CampaignElectron, cutsBasedElectron);  // GetSelectedElectrons(float PtThr, float etaThr, string WorkingPoint, string ProductionCampaign, bool CutsBased)
-      vector<TRootElectron*> selectedVetoElectrons = selection.GetSelectedElectrons(ElectronPtCut, ElectronEtaCut, "Veto", CampaignElectron, cutsBasedElectron);  // GetSelectedElectrons(float PtThr, float etaThr, string WorkingPoint, string ProductionCampaign, bool CutsBased)
+      vector<TRootElectron*> selectedVetoElectrons = selection.GetSelectedElectrons(12, ElectronEtaCut, "Veto", CampaignElectron, cutsBasedElectron);  // GetSelectedElectrons(float PtThr, float etaThr, string WorkingPoint, string ProductionCampaign, bool CutsBased)
 
       
       sort(selectedJets.begin(), selectedJets.end(),HighestPt()); 
       sort(selectedJets_unCORJER.begin(), selectedJets_unCORJER.end(),HighestPt());
       sort(selectedMuons.begin(), selectedMuons.end(), HighestPt()); 
-      sort(selectedLooseMuons.begin(), selectedMuons.end(), HighestPt());
+      sort(selectedVetoMuons.begin(), selectedVetoMuons.end(), HighestPt());
       sort(selectedElectrons.begin(), selectedElectrons.end(), HighestPt()); 
+      sort(selectedVetoElectrons.begin(), selectedVetoElectrons.end(), HighestPt());
       
       vector<bool> BtagBooleans; 
       BtagBooleans.clear(); 
@@ -799,7 +819,55 @@ int main (int argc, char *argv[])
        double met_px = mets[0]->Px();
        double met_py = mets[0]->Py();
        double met_pt = sqrt(met_px*met_px + met_py*met_py);
+
+      ////////////////////////////////////
+      ///  DETERMINE EVENT SCALEFACTOR  ///
+      /////////////////////////////////////
+      // PU SF
+       if (applyPUSF && !isdata ){
+          double puWeight = LumiWeights.ITweight( nvtx ); // simplest reweighting, just use reconstructed number of PV. faco
+          puScaleFactor=puWeight;
+          if (verbose>3) cout << "puScaleFactor is " << puScaleFactor << endl;
+      }
+
+      // Lepton SF
+      float muon1SF, muon2SF,muon3SF, electron1SF, electron2SF, electron3SF; 
+      muon1SF =  muon2SF = muon3SF = electron1SF = electron2SF = electron3SF = 0.;
+      if(applyMuonSF && !isdata){
+         if(selectedMuons.size()>0) {muon1SF = muonSFWeight->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0); muonScaleFactor = muon1SF; }
+         if(selectedMuons.size()>1) {muon2SF = muonSFWeight->at(selectedMuons[1]->Eta(), selectedMuons[1]->Pt(), 0); muonScaleFactor *= muon2SF;}
+         if(selectedMuons.size()>2) {muon3SF = muonSFWeight->at(selectedMuons[2]->Eta(), selectedMuons[2]->Pt(), 0); muonScaleFactor *= muon3SF;}
+      }
+      if(applyElectronSF && !isdata){
+         if(selectedElectrons.size()>0)  {electron1SF =  electronSFWeight->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0); electronScaleFactor = electron1SF; }
+         if(selectedElectrons.size()>1)  {electron2SF =  electronSFWeight->at(selectedElectrons[1]->Eta(),selectedElectrons[1]->Pt(),0); electronScaleFactor *= electron2SF; }
+         if(selectedElectrons.size()>2)  {electron3SF =  electronSFWeight->at(selectedElectrons[2]->Eta(),selectedElectrons[2]->Pt(),0); electronScaleFactor *= electron3SF; }
+      }
+/*      if(fillingbTagHistos){
+         if(!isdata && applyBtagSF) btwt->FillMCEfficiencyHistos(selectedJets); 
+                
+       }
+       if (verbose>3) cout<<"getMCEventWeight for btag"<<endl;
+       if(applyBtagSF && isdata){
+           btagScaleFactor =  btwt->getMCEventWeight(selectedJets,BtagHisto, false);
+           // cout<<"btag weight "<<btagWeight<<endl;
+       }     
+*/         
       
+
+
+
+
+      if(applyMuonSF) scaleFactor *= muonScaleFactor;
+      if(applyElectronSF) scaleFactor *= electronScaleFactor;
+      if(applyPUSF) scaleFactor *= puScaleFactor;
+//      if(applyBtagSF) scaleFactor *= btagScaleFactor;
+      if(!applyGlobalSF || isdata) scaleFactor = 1.;
+
+
+
+
+
       // Start analysis selection
       eventSelected = false;
       TLorentzVector Zboson;
@@ -808,7 +876,6 @@ int main (int argc, char *argv[])
       
       /// Initial nbrs
       
-      selecTable.Fill(d,0,scaleFactor*Luminosity);
       histo1D["h_cutFlow"]->Fill(0., scaleFactor*lumiWeight);
       histo1D["h_raw_cutFlow"]->Fill(0.); 
       histo1D["h_initial_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
@@ -833,30 +900,25 @@ int main (int argc, char *argv[])
        
       if(trigged)
       { 
-       selecTable.Fill(d,1,scaleFactor*Luminosity);
        histo1D["h_cutFlow"]->Fill(1., scaleFactor*lumiWeight);
        histo1D["h_raw_cutFlow"]->Fill(1.);
 
        if (isGoodPV)
        {
         if(verbose>3) cout << "GoodPV" << endl; 
-        selecTable.Fill(d,2,scaleFactor*Luminosity);
         histo1D["h_cutFlow"]->Fill(2., scaleFactor*lumiWeight);
         histo1D["h_raw_cutFlow"]->Fill(2.);
 
         if (selectedMuons.size() + selectedElectrons.size()== 3)
         {
             if(verbose>3) cout << "3 electrons "<< endl; 
- 	    selecTable.Fill(d,3,scaleFactor*Luminosity);
             histo1D["h_cutFlow"]->Fill(3., scaleFactor*lumiWeight);
             histo1D["h_raw_cutFlow"]->Fill(3.);
             histo1D["h_3L_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
 	    
 	    
-	    if (selectedLooseMuons.size() > selectedMuons.size() || selectedVetoElectrons.size() > selectedElectrons.size() ){ continue;}
-            else
+	    if (selectedVetoMuons.size()+ selectedVetoElectrons.size() == 3)
 	    {
-	       selecTable.Fill(d,4,scaleFactor*Luminosity); 
                histo1D["h_cutFlow"]->Fill(4., scaleFactor*lumiWeight);
                histo1D["h_raw_cutFlow"]->Fill(4.);
                histo1D["h_cutFlow"]->Fill(4.);
@@ -892,7 +954,6 @@ int main (int argc, char *argv[])
 	          if(ZmassWindow)
 	          {
 	            if(verbose>3) cout << " Zmass window " << endl; 
-	            selecTable.Fill(d,5.,scaleFactor*Luminosity);
 	            histo1D["h_cutFlow"]->Fill(5, scaleFactor*lumiWeight);
                     histo1D["h_raw_cutFlow"]->Fill(5);
 	            histo1D["h_ZMASS_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
@@ -900,7 +961,6 @@ int main (int argc, char *argv[])
 		    if(selectedJets.size() > 1)
 		    {
 		       if(verbose>3) cout << " at least 2 jets " << endl; 
-	               selecTable.Fill(d,6,scaleFactor*Luminosity); 
                        histo1D["h_cutFlow"]->Fill(6., scaleFactor*lumiWeight);
                        histo1D["h_raw_cutFlow"]->Fill(6.);
                        histo1D["h_2J_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
@@ -908,7 +968,6 @@ int main (int argc, char *argv[])
                        if(selectedBCSVLJets.size()>0)
 	               {
 	       		  if(verbose>3) cout << " at least 1 bjet " << endl; 
-	       		  selecTable.Fill(d,7,scaleFactor*Luminosity); 
 			  histo1D["h_cutFlow"]->Fill(7., scaleFactor*lumiWeight);
                           histo1D["h_raw_cutFlow"]->Fill(7.);
                		  histo1D["h_1BJ_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
@@ -919,7 +978,6 @@ int main (int argc, char *argv[])
 
                           if(mWT > 20)
 			  {
-                             selecTable.Fill(d,8,scaleFactor*Luminosity);
                              histo1D["h_cutFlow"]->Fill(8., scaleFactor*lumiWeight);
                              histo1D["h_raw_cutFlow"]->Fill(8.);
 
@@ -933,7 +991,6 @@ int main (int argc, char *argv[])
 			     float topmass = SMtop.M();
 			     if( topmass < 155 && topmass > 95)
                              {
-  			        selecTable.Fill(d,9,scaleFactor*Luminosity);
                                 histo1D["h_cutFlow"]->Fill(9., scaleFactor*lumiWeight);
                                 histo1D["h_raw_cutFlow"]->Fill(9.);
  
@@ -976,7 +1033,7 @@ int main (int argc, char *argv[])
       eElectron = new std::vector<double>; 
       qElectron = new std::vector<double>;
       
- 
+
       ptJet = new std::vector<double>; 
       pxJet = new std::vector<double>; 
       pyJet = new std::vector<double>; 
@@ -1025,7 +1082,11 @@ int main (int argc, char *argv[])
       pzWboson_lep = Wlep.Pz();
       etaWboson_lep = Wlep.Eta();
       eWboson_lep = Wlep.Energy();
-      
+
+
+       metPt = met_pt; 
+       metPx = met_px; 
+       metPy = met_py;      
       for (unsigned int i = 0; i < selectedElectrons.size(); i++) 
       {
       	TRootElectron* tempElectron = (TRootElectron*) selectedElectrons[i];
@@ -1163,8 +1224,6 @@ int main (int argc, char *argv[])
     cout << endl;
     cout << "Data set " << datasets[d]->Title() << " has " << nofSelectedEvents << " selected events." << endl;
     
-    string selectionTable = "SelectionTables/SelectionTable_"+datasets[d]->Name() +".tex";
-    selecTable.Write(selectionTable.c_str(), true, true, true, true, true, true, false);
     
     myTree->Write();
     fileout->Write();
@@ -1208,12 +1267,6 @@ int main (int argc, char *argv[])
    treeLoader.UnLoadDataset();
  } // end datasetloop
 
- ///////////////
-  /// TABLES
-  //////////////////
-    selecTable.TableCalculator(false, true, true, true, true);
-   string selectionTableAll = "SelectionTables/SelectionTable_allSamples.tex";
-   selecTable.Write(selectionTableAll.c_str(), true, true, true, true, true, true, false);
 
  
 // delete tcdatasets;
