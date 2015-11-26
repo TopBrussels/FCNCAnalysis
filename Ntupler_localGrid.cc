@@ -791,15 +791,15 @@ int main (int argc, char *argv[])
       vector<TRootMuon*> selectedMuons = selection.GetSelectedMuons(MuonPtCut, MuonEtaCut, MuonRelIsoCut,WPMuon,CampaignMuon);  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
       vector<TRootMuon*> selectedVetoMuons = selection.GetSelectedMuons(8, MuonEtaCut, 0.2,"Loose",CampaignMuon);  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
 
- 
+      vector<TRootPFJet*> selectedJets_bfCleaning = selection.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet); 
       vector<TRootPFJet*> selectedJets = selection.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet);  // GetSelectedJets(float PtThr, float EtaThr, bool applyJetID, std::string TightLoose)
       vector<TRootPFJet*> selectedJets_unCORJER = selection_unCORJER.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet); 
       vector<TRootPFJet*> selectedJets_unCORJES = selection_unCORJES.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet);
       vector<TRootElectron*> selectedElectrons = selection.GetSelectedElectrons(ElectronPtCut, ElectronEtaCut, WPElectron, CampaignElectron, cutsBasedElectron);  // GetSelectedElectrons(float PtThr, float etaThr, string WorkingPoint, string ProductionCampaign, bool CutsBased)
       vector<TRootElectron*> selectedVetoElectrons = selection.GetSelectedElectrons(12, ElectronEtaCut, "Veto", CampaignElectron, cutsBasedElectron);  // GetSelectedElectrons(float PtThr, float etaThr, string WorkingPoint, string ProductionCampaign, bool CutsBased)
 
-      
-      sort(selectedJets.begin(), selectedJets.end(),HighestPt()); 
+      sort(selectedJets.begin(), selectedJets.end(),HighestPt());
+      sort(selectedJets_bfCleaning.begin(), selectedJets_bfCleaning.end(),HighestPt()); 
       sort(selectedJets_unCORJER.begin(), selectedJets_unCORJER.end(),HighestPt());
       sort(selectedJets_unCORJES.begin(), selectedJets_unCORJES.end(),HighestPt());
       sort(selectedMuons.begin(), selectedMuons.end(), HighestPt()); 
@@ -807,6 +807,31 @@ int main (int argc, char *argv[])
       sort(selectedElectrons.begin(), selectedElectrons.end(), HighestPt()); 
       sort(selectedVetoElectrons.begin(), selectedVetoElectrons.end(), HighestPt());
       
+      //jetcleaning
+      for (int origJets=0; origJets<selectedJets.size(); origJets++){
+         bool erased = false;
+         if(selectedMuons.size()>0){
+             if(selectedJets[origJets]->DeltaR(*selectedMuons[0])<0.4){ selectedJets.erase(selectedJets.begin()+origJets); erased = true;}
+         }
+         if(selectedMuons.size()>1 && !erased){
+             if(selectedJets[origJets]->DeltaR(*selectedMuons[1])<0.4){ selectedJets.erase(selectedJets.begin()+origJets); erased = true;}
+         }            
+         if(selectedMuons.size()>2 && !erased){
+             if(selectedJets[origJets]->DeltaR(*selectedMuons[2])<0.4){ selectedJets.erase(selectedJets.begin()+origJets); erased = true;}
+         }
+         if(selectedElectrons.size()>0 && !erased){        
+             if(selectedJets[origJets]->DeltaR(*selectedElectrons[0])<0.4){ selectedJets.erase(selectedJets.begin()+origJets); erased = true;}
+         }                       
+         if(selectedElectrons.size()>1 && !erased){
+             if(selectedJets[origJets]->DeltaR(*selectedElectrons[1])<0.4){ selectedJets.erase(selectedJets.begin()+origJets); erased = true;}
+         }
+         if(selectedElectrons.size()>2 && !erased){
+             if(selectedJets[origJets]->DeltaR(*selectedElectrons[2])<0.4){ selectedJets.erase(selectedJets.begin()+origJets); erased = true;}
+         }
+      }
+     if(verbose>3) if( selectedJets_bfCleaning.size() != selectedJets.size()) cout << "original = " << selectedJets_bfCleaning.size() << " after cleaning = " << selectedJets.size() << endl; 
+
+
       vector<bool> BtagBooleans; 
       BtagBooleans.clear(); 
       vector<TRootJet*> selectedBCSVLJets; 
