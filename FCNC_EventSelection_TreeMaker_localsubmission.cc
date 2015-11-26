@@ -73,10 +73,10 @@ using namespace reweight;
 
 
 // General flags
-bool debug = false;
-bool Muon = false;
-bool Electron = true;
-bool bTagReweight_PreReweighting = true; //Needs to be set only once to true in order to produce the EtaPtHistos
+bool debug = true;
+bool Muon = true;
+bool Electron = false;
+bool bTagReweight_PreReweighting = false; //Needs to be set only once to true in order to produce the EtaPtHistos
 string btagger = "CSVM";
 
 /// MultiSamplePlot
@@ -297,7 +297,7 @@ int main (int argc, char *argv[])
 
     if(bTagReweight)
     {
-        if(dName.find("Data")>=0 || dName.find("data")>=0 || dName.find("DATA")>=0)        //Btag documentation : http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
+        if(dName.find("Data")==string::npos)        //Btag documentation : http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
         {
             bTagCalib = new BTagCalibration("CSVv2","../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_13TeV_LanaMod_combToMujets.csv");
             bTagReader_mujets_central = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"mujets","central"); //mujets
@@ -311,13 +311,7 @@ int main (int argc, char *argv[])
 //            bTagReader_ttbar_down = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"ttbar","down"); //mujets
             if(bTagReweight_PreReweighting)// Need to differentiate BTagWeightTools according to filling the histos and just reading, because of overwriting possibilities in grid submission
             {
-/*                btwt_comb_central = new BTagWeightTools(bTagReader_comb_central,"HistosPtEta.root",false,30,999,2.4);
-                btwt_comb_up = new BTagWeightTools(bTagReader_comb_up,"HistosPtEta.root",false,30,999,2.4);
-                btwt_comb_down = new BTagWeightTools(bTagReader_comb_down,"HistosPtEta.root",false,30,999,2.4);
-                btwt_mujets_central = new BTagWeightTools(bTagReader_mujets_central,"HistosPtEta.root",false,30,999,2.4);
-                btwt_mujets_up = new BTagWeightTools(bTagReader_mujets_up,"HistosPtEta.root",false,30,999,2.4);
-                btwt_mujets_down = new BTagWeightTools(bTagReader_mujets_down,"HistosPtEta.root",false,30,999,2.4);
-*///                btwt_comb_central = new BTagWeightTools(bTagReader_comb_central,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum + "_comb_central.root",false,30,999,2.4);
+//                btwt_comb_central = new BTagWeightTools(bTagReader_comb_central,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum + "_comb_central.root",false,30,999,2.4);
 //                btwt_comb_up = new BTagWeightTools(bTagReader_comb_up,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_comb_up.root",false,30,999,2.4);
 //                btwt_comb_down = new BTagWeightTools(bTagReader_comb_down,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_comb_down.root",false,30,999,2.4);
                 btwt_mujets_central = new BTagWeightTools(bTagReader_mujets_central,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_mujets_central.root",false,30,999,2.4);
@@ -361,7 +355,7 @@ int main (int argc, char *argv[])
     /////////////////////////////////
 	float Luminosity = 1.; //pb^-1
     cout <<"found sample with equivalent lumi "<<  theDataset->EquivalentLumi() <<endl;
-    if(dName.find("Data")<=0 || dName.find("data")<=0 || dName.find("DATA")<=0)
+    if(dName.find("Data")==string::npos)
     {
         Luminosity = theDataset->EquivalentLumi();
         cout <<"found DATA sample with equivalent lumi "<<  theDataset->EquivalentLumi() <<endl;
@@ -564,7 +558,7 @@ int main (int argc, char *argv[])
         ///////////////////////////////////////////////////////////////
         vector<JetCorrectorParameters> vCorrParam;
 
-        if(dName.find("Data")<=0 || dName.find("data")<=0 || dName.find("DATA")<=0)
+        if(dName.find("Data")!=string::npos)
         {
             JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_DATA_L1FastJet_AK4PFchs.txt");
             vCorrParam.push_back(*L1JetCorPar);
@@ -654,7 +648,7 @@ int main (int argc, char *argv[])
             //////////////////////////////////
 
             vector<TRootGenJet*> genjets;
-            if(dName.find("Data")>=0 || dName.find("data")>=0 || dName.find("DATA")>=0)//genjets only available in non-data samples
+            if(dName.find("Data")==string::npos)//genjets only available in non-data samples
             {
                 if(debug) cout << "loading genjets" << endl;
                 // loading GenJets as I need them for JER
@@ -665,7 +659,7 @@ int main (int argc, char *argv[])
             // JER smearing
             //////////////////////
 
-            if(dName.find("Data")>=0 || dName.find("data")>=0 || dName.find("DATA")>=0)//JER smearing only feasible for non-data samples
+            if(dName.find("Data")==string::npos)//JER smearing only feasible for non-data samples
             {
                 //JER
                 doJERShift == 0;
@@ -771,7 +765,7 @@ int main (int argc, char *argv[])
             bool isGoodPV = r2selection.isPVSelected(vertex, 4, 24., 2);
             bool trigged = true;
             if (debug)	cout <<"PrimaryVertexBit: " << isGoodPV << " TriggerBit: " << trigged <<endl;
-            if (debug) cin.get();
+//            if (debug) cin.get();
             MSPlot["cutFlow"]->Fill(0, datasets[d], true, Luminosity*scaleFactor );
             weightCount += scaleFactor;
             eventCount++;
@@ -782,7 +776,7 @@ int main (int argc, char *argv[])
             ////////////////////////////////////////////////////
             if(bTagReweight_PreReweighting)
             {
-                if(dName.find("Data")>=0 || dName.find("data")>=0 || dName.find("DATA")>=0)        //Btag documentation : http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
+                if(dName.find("Data")==string::npos)        //Btag documentation : http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
                 {
 //                    btwt_comb_central->FillMCEfficiencyHistos(selectedJets);
 //                    btwt_comb_up->FillMCEfficiencyHistos(selectedJets);
@@ -1127,7 +1121,7 @@ int main (int argc, char *argv[])
             //////////////////////////////////////////////////
             // Apply scale factors
             //////////////////////////////////////////////////
-            if(dName.find("Data")<=0 || dName.find("data")<=0 || dName.find("DATA")<=0) //If sample is data, no PU reweighting
+            if(dName.find("Data")!=string::npos) //If sample is data, no PU reweighting
             {
                 lumiWeight=1;
             }
@@ -1147,8 +1141,9 @@ int main (int argc, char *argv[])
             if(debug) cout<<"lepton SF:  "<<fleptonSF<<endl;
             if(bTagReweight && !bTagReweight_PreReweighting)
             {
-                if(dName.find("Data")>=0 || dName.find("data")>=0 || dName.find("DATA")>=0) //If sample is data, no PU reweighting
+                if(dName.find("Data")==string::npos) //If sample is data, no PU reweighting
                 {
+                    if(debug) cout << "Applying b-tag weights " << endl;
 //                    btagWeight_comb_central =  btwt_comb_central->getMCEventWeight(selectedJets, false);
 //                    btagWeight_comb_up =  btwt_comb_up->getMCEventWeight(selectedJets, false);
 //                    btagWeight_comb_down =  btwt_comb_down->getMCEventWeight(selectedJets, false);

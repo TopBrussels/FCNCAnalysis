@@ -4,7 +4,7 @@ import xml.etree.cElementTree as ET
 import os
 
 #Define path where ntuples are stored
-pathDateTrees = "Trees_SelectionOutput_20_11_2015/" #needs to be changed for every different set of ntuples
+pathDateTrees = "Trees_SelectionOutput_24_11_2015/" #needs to be changed for every different set of ntuples
 pathNonMerged = "Trees_SelectionOutput_Mu/" + pathDateTrees #needs to be changed for different lepton channel
 pathMerged = "MergedTrees_Mu/" + pathDateTrees
 
