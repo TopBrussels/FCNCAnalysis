@@ -47,8 +47,6 @@ using namespace TopTree;
 
 
 
-/// Normal Plots (TH1F* and TH2F*)
-//map<string,TH1F*> histo1D;
 
 // Homemade functions
 std::vector <int> OSSFLeptonPairCalculator(std::vector<TRootElectron*> Elec, std::vector<TRootMuon*> Mu, int verb); 
@@ -364,34 +362,64 @@ int main (int argc, char *argv[])
     TFile *fout = new TFile(rootFileName.c_str(), "RECREATE");
     
     map <string,TH1F*> histo1D;
+    map <string,TH2F*> histo2D;
  
     std::string  titlePlot = ""; 
     titlePlot = "initial_Nb_Jets"+channelpostfix; 	
-    histo1D["h_initial_Nb_Jets"] = new TH1F(titlePlot.c_str(), "Initial nb. of jets",  16, - 0.5, 15 ); 
+    histo1D["h_initial_Nb_Jets"] = new TH1F(titlePlot.c_str(), "Initial nb. of jets",  16, - 0.5, 15.5 ); 
     titlePlot = "3L_Nb_Jets"+channelpostfix;
-    histo1D["h_3L_Nb_Jets"] = new TH1F(titlePlot.c_str(), "After 3L cut: nb. of jets",  16, - 0.5, 15 );	
+    histo1D["h_3L_Nb_Jets"] = new TH1F(titlePlot.c_str(), "After 3L cut: nb. of jets",  16, - 0.5, 15.5 );	
     titlePlot = "2J_Nb_Jets"+channelpostfix;
-    histo1D["h_2J_Nb_Jets"] = new TH1F(titlePlot.c_str(), "After at least 2 jets cut: nb. of jets",  16, - 0.5, 15 );     
+    histo1D["h_2J_Nb_Jets"] = new TH1F(titlePlot.c_str(), "After at least 2 jets cut: nb. of jets",  16, - 0.5, 15.5 );     
     titlePlot = "1BJ_Nb_Jets"+channelpostfix;
-    histo1D["h_1BJ_Nb_Jets"] = new TH1F(titlePlot.c_str(), "After at least 1 CSVL jet cut: nb. of jets",  16, - 0.5, 15 );     
+    histo1D["h_1BJ_Nb_Jets"] = new TH1F(titlePlot.c_str(), "After at least 1 CSVL jet cut: nb. of jets",  16, - 0.5, 15.5 );     
     titlePlot = "OSSF_Nb_Jets"+channelpostfix;
-    histo1D["h_OSSF_Nb_Jets"] = new TH1F(titlePlot.c_str(), "After OSSF lepton pair req: nb. of jets",  16, - 0.5, 15 );     
+    histo1D["h_OSSF_Nb_Jets"] = new TH1F(titlePlot.c_str(), "After OSSF lepton pair req: nb. of jets",  16, - 0.5, 15.5 );     
     titlePlot = "ZMASS_Nb_Jets"+channelpostfix;
-    histo1D["h_ZMASS_Nb_Jets"] = new TH1F(titlePlot.c_str(), "After Zmass window: nb. of jets",  16, - 0.5, 15 );     
+    histo1D["h_ZMASS_Nb_Jets"] = new TH1F(titlePlot.c_str(), "After Zmass window: nb. of jets",  16, - 0.5, 15.5 );     
+
     titlePlot = "cutFlow"+channelpostfix; 
-    histo1D["h_cutFlow"] = new TH1F(titlePlot.c_str(), "cutflow", 13,-0.5,12);
+    histo1D["h_cutFlow"] = new TH1F(titlePlot.c_str(), "cutflow", 13,-0.5,12.5);
     titlePlot = "raw_cutFlow"+channelpostfix;
-    histo1D["h_raw_cutFlow"] = new TH1F(titlePlot.c_str(), "Raw cutflow", 13,-0.5,12);
+    histo1D["h_raw_cutFlow"] = new TH1F(titlePlot.c_str(), "Raw cutflow", 13,-0.5,12.5);
 
 
-   titlePlot = "initial_Nb_Jets_unCORJER"+channelpostfix;
-   histo1D["h_initial_Nb_Jets_unCORJER"] = new TH1F(titlePlot.c_str(), "Initial nb. of jets (no JER) ",  16, - 0.5, 15 );
-   titlePlot = "initial_Jet_unCORJER_Pt"+channelpostfix; 
-   histo1D["h_initial_Jet_unCORJER_Pt"]  = new TH1F(titlePlot.c_str(), "Initial Pt jet (no JER)",  200, 0., 400 );
-   titlePlot = "initial_Jet_Pt"+channelpostfix;
-   histo1D["h_initial_Jet_Pt"]  = new TH1F(titlePlot.c_str(), "Initial Pt jet ",  200, 0., 400 );
+    // plots to check reweighting
+    titlePlot = "initial_Nb_CSVLJets_beforeBtagSF"+channelpostfix;
+    histo1D["h_initial_Nb_CSVLJets_beforeBtagSF"] = new TH1F(titlePlot.c_str(), "Initial nb. of CSVL jets (no b tag SF) ",  16, - 0.5, 15.5 );
+    titlePlot = "initial_Nb_CSVLJets"+channelpostfix;
+    histo1D["h_initial_Nb_CSVLJets"] = new TH1F(titlePlot.c_str(), "Initial nb. of CSVL jets ",  16, - 0.5, 15.5 );
+    titlePlot = "initial_Nb_Jets_bfCleaning"+channelpostfix;
+    histo1D["h_initial_Nb_Jets_bfCleaning"] = new TH1F(titlePlot.c_str(), "Initial nb. of jets (no lepton cleaning) ",  16, - 0.5, 15.5 );     
+    titlePlot = "initial_Nb_Jets_unCORJER"+channelpostfix;
+    histo1D["h_initial_Nb_Jets_unCORJER"] = new TH1F(titlePlot.c_str(), "Initial nb. of jets (no JER) ",  16, - 0.5, 15.5 );
+    titlePlot = "initial_Jet_unCORJER_Pt"+channelpostfix; 
+    histo1D["h_initial_Jet_unCORJER_Pt"]  = new TH1F(titlePlot.c_str(), "Initial Pt jet (no JER)",  200, 0., 400 );
+    titlePlot = "initial_Nb_Jets_unCORJES"+channelpostfix;
+    histo1D["h_initial_Nb_Jets_unCORJES"] = new TH1F(titlePlot.c_str(), "Initial nb. of jets (no JES) ",  16, - 0.5, 15.5 );
+    titlePlot = "initial_Jet_unCORJES_Pt"+channelpostfix;
+    histo1D["h_initial_Jet_unCORJES_Pt"]  = new TH1F(titlePlot.c_str(), "Initial Pt jet (no JES)",  200, 0., 400 );
+    titlePlot = "initial_Jet_Pt"+channelpostfix;
+    histo1D["h_initial_Jet_Pt"]  = new TH1F(titlePlot.c_str(), "Initial Pt jet ",  200, 0., 400 );
+    titlePlot = "initial_nPV_beforePUSF" + channelpostfix;
+    histo1D["h_initial_nPV_beforePUSF"] = new TH1F(titlePlot.c_str(),"Initial nb of vertices before PU reweighting", 13,-0.5,12.5 );
+    titlePlot = "initial_nPV_afterPUSF" + channelpostfix;
+    histo1D["h_initial_nPV_afterPUSF"] = new TH1F(titlePlot.c_str(),"Initial nb of vertices after PU reweighting", 13,-0.5,12.5 );
+    titlePlot = "muonSF"+channelpostfix;
+    histo1D["h_muonSF"] = new TH1F(titlePlot.c_str(), "Muon scale factors", 100, 0, 1);
+    titlePlot = "electronSF"+channelpostfix;
+    histo1D["h_electronSF"] = new TH1F(titlePlot.c_str(), "Electron scale factors", 100, 0, 1);
+    titlePlot = "puSF"+channelpostfix;
+    histo1D["h_puSF"] = new TH1F(titlePlot.c_str(), "PU scale factors", 100, 0, 1);
+    titlePlot = "btagSF"+channelpostfix;
+    histo1D["h_btagSF"] = new TH1F(titlePlot.c_str(), "Btag scale factors", 100, 0, 1);
+        
 
-    
+ 
+    titlePlot = "GmuonSF"+channelpostfix;
+    histo2D["h2_muonSF"]= new TH2F(titlePlot.c_str(), "Muon scale factors in function of p_{T} and #eta; p_{T} [GeV]; #eta", 60, 0, 600, 21, 0, 2.1);
+    titlePlot = "GelectronSF"+channelpostfix;
+    histo2D["h2_electronSF"]= new TH2F(titlePlot.c_str(), "Electron scale factors in function of p_{T} and #eta; p_{T} [GeV]; #eta", 60, 0, 600, 21, 0, 2.1); 
     // make root tree file name
     string roottreename = "/user/ivanpari/CMSSW_7_4_15/src/TopBrussels/FCNCAnalysis/Ntuples/";
     roottreename+= datasets[d]->Name();
@@ -719,6 +747,7 @@ int main (int argc, char *argv[])
         jetTools->correctJetJER(init_jets,genjets,mets[0], "plus", false); // false means don't use old numbers, but new ones
       }
       else{
+        init_jets_unCORJER= init_jets;
 	jetTools->correctJetJER(init_jets,genjets,mets[0], "nominal", false); // false means don't use old numbers, but new ones
      }
 
@@ -735,6 +764,7 @@ int main (int argc, char *argv[])
 
 
      }
+     else init_jets_unCORJES = init_jets;
      
       /////////////////////////////
       /// Trigger
@@ -876,29 +906,36 @@ int main (int argc, char *argv[])
       float muon1SF, muon2SF,muon3SF, electron1SF, electron2SF, electron3SF; 
       muon1SF =  muon2SF = muon3SF = electron1SF = electron2SF = electron3SF = 0.;
       if(applyMuonSF && !isdata){
-         if(selectedMuons.size()>0) {muon1SF = muonSFWeight->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0); muonScaleFactor = muon1SF; }
-         if(selectedMuons.size()>1) {muon2SF = muonSFWeight->at(selectedMuons[1]->Eta(), selectedMuons[1]->Pt(), 0); muonScaleFactor *= muon2SF;}
-         if(selectedMuons.size()>2) {muon3SF = muonSFWeight->at(selectedMuons[2]->Eta(), selectedMuons[2]->Pt(), 0); muonScaleFactor *= muon3SF;}
+         if(selectedMuons.size()>0) {muon1SF = muonSFWeight->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0); muonScaleFactor = muon1SF; 
+             histo2D["h2_muonSF"]->Fill(selectedMuons[0]->Pt(), selectedMuons[0]->Eta(), muon1SF);}
+         if(selectedMuons.size()>1) {muon2SF = muonSFWeight->at(selectedMuons[1]->Eta(), selectedMuons[1]->Pt(), 0); muonScaleFactor *= muon2SF; 
+             histo2D["h2_muonSF"]->Fill(selectedMuons[1]->Pt(), selectedMuons[1]->Eta(), muon2SF);}
+         if(selectedMuons.size()>2) {muon3SF = muonSFWeight->at(selectedMuons[2]->Eta(), selectedMuons[2]->Pt(), 0); muonScaleFactor *= muon3SF; 
+             histo2D["h2_muonSF"]->Fill(selectedMuons[2]->Pt(), selectedMuons[2]->Eta(), muon3SF);}
       }
       if(applyElectronSF && !isdata){
-         if(selectedElectrons.size()>0)  {electron1SF =  electronSFWeight->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0); electronScaleFactor = electron1SF; }
-         if(selectedElectrons.size()>1)  {electron2SF =  electronSFWeight->at(selectedElectrons[1]->Eta(),selectedElectrons[1]->Pt(),0); electronScaleFactor *= electron2SF; }
-         if(selectedElectrons.size()>2)  {electron3SF =  electronSFWeight->at(selectedElectrons[2]->Eta(),selectedElectrons[2]->Pt(),0); electronScaleFactor *= electron3SF; }
+         if(selectedElectrons.size()>0)  {electron1SF =  electronSFWeight->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0); electronScaleFactor = electron1SF;  
+             histo2D["h2_electronSF"]->Fill(selectedElectrons[0]->Pt(), selectedElectrons[0]->Eta(), electron1SF);}
+         if(selectedElectrons.size()>1)  {electron2SF =  electronSFWeight->at(selectedElectrons[1]->Eta(),selectedElectrons[1]->Pt(),0); electronScaleFactor *= electron2SF;  
+             histo2D["h2_electronSF"]->Fill(selectedElectrons[1]->Pt(), selectedElectrons[1]->Eta(), electron2SF); }
+         if(selectedElectrons.size()>2)  {electron3SF =  electronSFWeight->at(selectedElectrons[2]->Eta(),selectedElectrons[2]->Pt(),0); electronScaleFactor *= electron3SF;  
+             histo2D["h2_electronSF"]->Fill(selectedElectrons[2]->Pt(), selectedElectrons[2]->Eta(), electron3SF); }
       }
       if(fillingbTagHistos){
          if(!isdata && applyBtagSF) btwt->FillMCEfficiencyHistos(selectedJets); 
                 
-       }
-       if (verbose>3) cout<<"getMCEventWeight for btag"<<endl;
-       if(applyBtagSF && isdata){
+      }
+      if (verbose>3) cout<<"getMCEventWeight for btag"<<endl;
+      if(applyBtagSF && isdata){
            btagScaleFactor =  btwt->getMCEventWeight(selectedJets,BtagHisto, false);
            // cout<<"btag weight "<<btagWeight<<endl;
        }     
          
-      
-
-
-
+       
+      histo1D["h_muonSF"]->Fill(muonScaleFactor); 
+      histo1D["h_electronSF"]->Fill(electronScaleFactor);
+      histo1D["h_puSF"]->Fill(puScaleFactor);
+      histo1D["h_btagSF"]->Fill(btagScaleFactor);
 
       if(applyMuonSF) scaleFactor *= muonScaleFactor;
       if(applyElectronSF) scaleFactor *= electronScaleFactor;
@@ -907,8 +944,12 @@ int main (int argc, char *argv[])
       if(!applyGlobalSF || isdata) scaleFactor = 1.;
 
 
-
-
+      if(applyPUSF) { histo1D["h_initial_nPV_beforePUSF"]->Fill(vertex.size(), scaleFactor*lumiWeight/puScaleFactor);}
+      else { histo1D["h_initial_nPV_beforePUSF"]->Fill(vertex.size(), scaleFactor*lumiWeight);}
+      histo1D["h_initial_nPV_afterPUSF"]->Fill(vertex.size(), scaleFactor*lumiWeight);
+      if(applyBtagSF) {histo1D["h_initial_Nb_CSVLJets_beforeBtagSF"]->Fill(vertex.size(), scaleFactor*lumiWeight/btagScaleFactor);}
+      else { histo1D["h_initial_Nb_CSVLJets_beforeBtagSF"]->Fill(vertex.size(), scaleFactor*lumiWeight);}
+      histo1D["h_initial_Nb_CSVLJets"]->Fill(vertex.size(), scaleFactor*lumiWeight);
 
       // Start analysis selection
       eventSelected = false;
@@ -919,10 +960,11 @@ int main (int argc, char *argv[])
       /// Initial nbrs
       
       histo1D["h_cutFlow"]->Fill(0., scaleFactor*lumiWeight);
-      histo1D["h_raw_cutFlow"]->Fill(0.); 
+      histo1D["h_raw_cutFlow"]->Fill(0.);
+      histo1D["h_initial_Nb_Jets_bfCleaning"]->Fill(selectedJets_bfCleaning.size(), scaleFactor*lumiWeight); 
       histo1D["h_initial_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
       histo1D["h_initial_Nb_Jets_unCORJER"]->Fill(selectedJets_unCORJER.size(), scaleFactor*lumiWeight);
-      
+      histo1D["h_initial_Nb_Jets_unCORJES"]->Fill(selectedJets_unCORJES.size(), scaleFactor*lumiWeight);     
       
       for(unsigned int i = 0 ; i < selectedJets.size(); i++){
          TRootJet* jet = (TRootJet*) selectedJets[i];
@@ -932,9 +974,13 @@ int main (int argc, char *argv[])
      for(unsigned int i = 0 ; i < selectedJets_unCORJER.size(); i++){
          TRootJet* jet_unCORJER = (TRootJet*) selectedJets_unCORJER[i];
          histo1D["h_initial_Jet_unCORJER_Pt"]->Fill(jet_unCORJER->Pt(),  scaleFactor*lumiWeight);
+     
+      }
+     for(unsigned int i = 0 ; i < selectedJets_unCORJES.size(); i++){
+         TRootJet* jet_unCORJES = (TRootJet*) selectedJets_unCORJES[i];
+         histo1D["h_initial_Jet_unCORJES_Pt"]->Fill(jet_unCORJES->Pt(),  scaleFactor*lumiWeight);
 
       }
- 
       
       /// Trigger
       if(runHLT) trigged = treeLoader.EventTrigged(itrigger);
