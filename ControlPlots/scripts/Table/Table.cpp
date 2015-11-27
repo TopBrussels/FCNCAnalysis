@@ -143,11 +143,10 @@ int main(int argc,char *argv[])
 		// Making the optimal cut plots /////////////////////
 		/////////////////////////////////////////////////////
 		TFile *infile = 0;
-		TFile *outputfile = new TFile("Output_Table/Table.tex","RECREATE");
+
+		// creating new stream, a tex file
 		ofstream output; 
 		output.open("Output_Table/Table.tex");
-		
-		
 		
 	
 	        int nprocess = signalnames.size()+backgroundnames.size(); 
@@ -216,71 +215,78 @@ int main(int argc,char *argv[])
 			}
 		}
 		
+
+
+		// header of the tex file
+		output << "\\documentclass[a4paper,8pt]{article}" << endl;
+		output << "\\usepackage{geometry}" << endl; 
+		output << "\\geometry{legalpaper, landscape, margin=0.1in}" << endl; 
+  		output << "\\begin{document}" << endl;
+  		output << endl;
+  		output << endl;
 		
-		cout << "\\documentclass[a4paper,8pt]{article}" << endl;
-		cout << "\\usepackage{geometry}" << endl; 
-		cout << "\\geometry{legalpaper, landscape, margin=0.1in}" << endl; 
-  		cout << "\\begin{document}" << endl;
-  		cout << endl;
-  		cout << endl;
-		
-		cout << "  \\begin{table}" << endl;
-  		cout << "  \\begin{center}" << endl;
-  		cout << "  \\begin{tabular} {|l|"; 
+		output << "  \\begin{table}" << endl;
+  		output << "  \\begin{center}" << endl;
+  		output << "  \\begin{tabular} {|l|" << endl; 
+
 		
 		
-		
-		
+		// Filling the core of the tex file
 		for(int iBin = 0; iBin < Cuts.size(); iBin++)
 		{
-		   cout << "c|" ; 
+		   output << "c|" ; 
 		}
-		cout << "}" << endl; 
-		cout << "\\hline" << endl; 
-		cout << "& " ;
+		output << "}" << endl; 
+		output << "\\hline" << endl; 
+		output << "& " ;
 		
 		
 		for(int iCut = 0; iCut < Cuts.size()-1; iCut++)
 		{
-			cout << Cuts[iCut] << "&" ; 
+			output << Cuts[iCut] << "&" ; 
 		
 		}
 		
-		cout << Cuts[Cuts.size()-1] ; 
-		cout << "\\\\" << endl; 
+		output << Cuts[Cuts.size()-1] ; 
+		output << "\\\\" << endl; 
 		
 		for (int iProc = 0; iProc < nprocess ; iProc++)
 		{
 		  if(iProc != 0 && iProc != signalnames.size())
 		  {     
-		       cout << processName[iProc] << " &" ;
+		       output << processName[iProc] << " &" ;
 		       for(int iB = 1; iB < Cuts.size(); iB++)
 		       {
 		       
-		         cout << setprecision(Values[iProc][iB][1]) << Values[iProc][iB][0];
-			 cout << " $\\pm $ " << setprecision(Values[iProc][iB][1]) << Values[iProc][iB][2];
-			 cout << "&"; 
+		         output << setprecision(Values[iProc][iB][1]) << Values[iProc][iB][0];
+			 output << " $\\pm $ " << setprecision(Values[iProc][iB][1]) << Values[iProc][iB][2];
+			 output << "&"; 
 			 
 			 
 		       }
-		       cout << setprecision(Values[iProc][Cuts.size()][1]) << Values[iProc][Cuts.size()][0]; 
-		       cout << " $\\pm $ " << setprecision(Values[iProc][Cuts.size()][1]) << Values[iProc][Cuts.size()][2];
-		       cout << "\\\\" << endl; 
+		       output << setprecision(Values[iProc][Cuts.size()][1]) << Values[iProc][Cuts.size()][0]; 
+		       output << " $\\pm $ " << setprecision(Values[iProc][Cuts.size()][1]) << Values[iProc][Cuts.size()][2];
+		       output << "\\\\" << endl; 
 		       
 		 }   
 		}
 		
-		cout << "   \\hline " << endl;
-  		cout << "  \\end{tabular}" << endl;
-  		cout << "  \\end{center}" << endl;
-  		cout << "  \\end{table}" << endl;
-  		cout << endl;
-  		cout << endl;
-		cout << "\\end{document}" << endl; 
+
+		// footer of the tex file
+		output << "   \\hline " << endl;
+  		output << "  \\end{tabular}" << endl;
+  		output << "  \\end{center}" << endl;
+  		output << "  \\end{table}" << endl;
+  		output << endl;
+  		output << endl;
+		output << "\\end{document}" << endl; 
+		
 		
 
+		// closing the tex file
+		output.close();
 		
-		outputfile->Write();
+		//		outputfile->Write();
 
 		if(information) cout << "DONE!!! " << endl;
 		
