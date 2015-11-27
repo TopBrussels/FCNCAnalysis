@@ -83,7 +83,7 @@ int main(int argc,char *argv[])
 		/////////////////////////////////////
 		// Reading in the sample txt files //
 		////////////////////////////////////
-		if(information) cout << "\033[40;32m[INFO]\033[37m Reading in Signal.txt, Background.txt and Variables.txt and Cuts.txt" << endl;
+		if(information) cout << " Reading in Signal.txt, Background.txt and Variables.txt and Cuts.txt" << endl;
 		const char * Signaltxt = "Signal.txt";
 		const char * Backgroundtxt = "Background.txt";
 		const char * Variabletxt = "Variables.txt";
@@ -105,33 +105,33 @@ int main(int argc,char *argv[])
 		
 		if(signalnames.size() == 0)
 		{
-		 	cout << "\033[40;31m[ERROR]\033[37m No signal defined in Signal.txt ... Exiting macro..." << endl;
+		 	cout << "No signal defined in Signal.txt ... Exiting macro..." << endl;
 			return 1;
 		}
 		if(backgroundnames.size() == 0)
 		{
-		 	cout << "\033[40;31m[ERROR]\033[37m No background defined in Background.txt ... Exiting macro..." << endl;
+		 	cout << "No background defined in Background.txt ... Exiting macro..." << endl;
 			return 1;
 		}
 		if(Cuts.size() == 0)
 		{
-		 	cout << "\033[40;31m[ERROR]\033[37m No cuts defined in Cuts.txt ... Exiting macro..." << endl;
+		 	cout << "No cuts defined in Cuts.txt ... Exiting macro..." << endl;
 			return 1;
 		}
 
 		if(information)
 		{
-			cout << "\033[40;32m[INFO]\033[37m Signal samples in "<< signalnames[0] <<": " << endl;
+			cout << "Signal samples in "<< signalnames[0] <<": " << endl;
 				for(int i = 1; i < signalnames.size(); i++)
 				{
 					cout << "  - " << signalnames[i] << endl;
 				}
-			cout << "\033[40;32m[INFO]\033[37m Background samples in " << backgroundnames[0] << ": " << endl;
+			cout << "Background samples in " << backgroundnames[0] << ": " << endl;
 				for(int i = 1; i < backgroundnames.size(); i++)
 				{
 					cout << "  - " << backgroundnames[i] << endl;
 				}
-			cout << "\033[40;32m[INFO]\033[37m Cuts: " << endl;
+			cout << "Cuts: " << endl;
 				for(int i = 0; i < Cuts.size(); i++)
 				{
 					cout << "  - " << Cuts[i] << endl;
@@ -159,12 +159,12 @@ int main(int argc,char *argv[])
 		for(unsigned int iSignal = 1; iSignal < signalnames.size(); iSignal++)
 		{
 			
-			if(!TabClass.RootFile(signalnames[0])) infile = new TFile((signalnames[0] + "merged_ElEl_" +  signalnames[iSignal] + ".root").c_str(),"read"); //Checks whether background samples is in 1 rootfile, or in a directory containing different rootfiles
+			if(!TabClass.RootFile(signalnames[0])) infile = new TFile((signalnames[0] + "merged_MuMu_" +  signalnames[iSignal] + ".root").c_str(),"read"); //Checks whether background samples is in 1 rootfile, or in a directory containing different rootfiles
 			else infile = new TFile(signalnames[0].c_str(),"read");
                        
                            
 			TH1F *histo( (TH1F*) infile->Get((Variables[iVar]).c_str()) );
-			if(!histo && warnings) cout << "\033[40;36m[WARNING]\033[37m Signal " << signalnames[iSignal] << " does not exist or does not contain variable " << Variables[iVar] << " Check Signal.txt or Variables.txt" <<endl;
+			if(!histo && warnings) cout << "Signal " << signalnames[iSignal] << " does not exist or does not contain variable " << Variables[iVar] << " Check Signal.txt or Variables.txt" <<endl;
 
 			if(histo)
 			{
@@ -181,14 +181,14 @@ int main(int argc,char *argv[])
 		for(unsigned int iBackgr = 1; iBackgr < backgroundnames.size(); iBackgr++)
 		{
 
-			if(!TabClass.RootFile(backgroundnames[0])) infile = new TFile((backgroundnames[0] + "merged_ElEl_"+backgroundnames[iBackgr] + ".root").c_str(),"read");//Checks whether background samples are in 1 rootfile, or in a directory containing different rootfiles
+			if(!TabClass.RootFile(backgroundnames[0])) infile = new TFile((backgroundnames[0] + "merged_MuMu_"+backgroundnames[iBackgr] + ".root").c_str(),"read");//Checks whether background samples are in 1 rootfile, or in a directory containing different rootfiles
 			else infile = new TFile(backgroundnames[0].c_str(),"read");
 
 
 
 
 			TH1F *histo( (TH1F*) infile->Get((Variables[iVar]).c_str()) );
-			if(!histo && warnings) cout << "\033[40;36m[WARNING]\033[37m Background " << backgroundnames[iBackgr] << " does not exist or does not contain variable " << Variables[iVar] << " Check Background.txt or Variables.txt" <<endl;
+			if(!histo && warnings) cout << "Background " << backgroundnames[iBackgr] << " does not exist or does not contain variable " << Variables[iVar] << " Check Background.txt or Variables.txt" <<endl;
 
 
 			if(histo)
@@ -282,7 +282,7 @@ int main(int argc,char *argv[])
 		
 		outputfile->Write();
 
-		if(information) cout << "\033[40;32m[INFO]\033[37m DONE!!! " << endl;
+		if(information) cout << "DONE!!! " << endl;
 		
 		return 0;
 }

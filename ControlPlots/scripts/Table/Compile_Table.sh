@@ -16,8 +16,7 @@ if [ -d Output_Table ]; then
 else
 	mkdir Output_Table
 fi
-echo -e "\033[40;32m----------------------------------------------------------"
-echo -e "-- Compiling macro to analyze variables tables --\033[37m"
+echo -e "-- Compiling macro to analyze variables tables"
 if [ -s Table.o ]; then
 	rm Table.o
 fi
@@ -25,10 +24,10 @@ g++ -c `root-config --cflags` Table.cpp
 g++ -o Table `root-config --libs` Table.o
 if [ -s Table.o ]; then
 
-echo -e "\033[40;36mCOMPILATION FINISHED"
+echo -e "COMPILATION FINISHED"
 echo "Flags for running ./Table:"
 ./Table --help
-echo -e "\033[40;32m----------------------------------------------------------\033[37m"
+echo -e "----------------------------------------------------------"
 else
 	exit 1
 fi
