@@ -72,6 +72,7 @@ int main (int argc, char *argv[])
   /////////////////////
   ///  Configuration
   /////////////////////
+
   bool eventSelected = false;
   int nofSelectedEvents = 0;
   bool ee = false; 
@@ -82,9 +83,10 @@ int main (int argc, char *argv[])
   std::string sWPElectron = "Medium";
   /// xml file
   string xmlFileName ="config/Run2TriLepton_samples.xml";
-  float Luminosity = 552.672886226 ; // EG rereco run D  151020_153539 
+  float Luminosity = 1263.885980236;  ; //  rereco run D + prompt v4 
   const char *xmlfile = xmlFileName.c_str();
   std::string channelpostfix = ""; 
+  //UNCERTAINTIES
   bool doJESup = false; 
   bool doJESdown= false; 
   bool doJERup = false; 
@@ -138,6 +140,7 @@ int main (int argc, char *argv[])
   const int startEvent            = strtol(argv[argc-3], NULL, 10);
   const int endEvent              = strtol(argv[argc-2], NULL, 10);
   const int JobNum                = strtol(argv[argc-1], NULL, 10);
+  
 
 
     
@@ -261,12 +264,10 @@ int main (int argc, char *argv[])
     string dataSetName = datasets[d]->Name();
     if(dataSetName.find("Data")==0 || dataSetName.find("data")==0 || dataSetName.find("DATA")==0)
     {
-        Luminosity = datasets[d]->EquivalentLumi();
         cout <<"found DATA sample with equivalent lumi "<<  datasets[d]->EquivalentLumi() <<endl;
     }   
   }
 //  if ( Luminosity != oldLuminosity ) cout << "Changed analysis environment luminosity to "<< Luminosity << endl;
-   Luminosity =oldLuminosity; // the previous doesn't work  
     cout << "lumi is " << Luminosity << endl;  
    stringstream ss;
     ss << JobNum;
@@ -289,14 +290,14 @@ int main (int argc, char *argv[])
   Double_t muonScaleFactor, electronScaleFactor, puScaleFactor, btagScaleFactor;
   muonScaleFactor = electronScaleFactor = puScaleFactor = btagScaleFactor = 1.0;
 
-  Bool_t applyMuonSF , applyElectronSF, applyPUSF, applyGlobalSF, applyBtagSF, fillingbTagHistos;
+  Bool_t applyMuonSF , applyElectronSF, applyPUSF, applyGlobalSF, applyBtagSF, fillingbTagHistos, applyJetCleaning;
   applyMuonSF = true;
   applyElectronSF = true;
   applyPUSF = true;
   applyGlobalSF = true;
-  applyBtagSF = false;
- fillingbTagHistos = false;
-
+  applyBtagSF = false; // doesn't work in 74X
+  fillingbTagHistos = false;
+  applyJetCleaning = true; 
   string pathToCaliDir = "/user/ivanpari/CMSSW_7_4_15/src/TopBrussels/TopTreeAnalysisBase/Calibrations/";
 
   //Muon SF 
@@ -314,6 +315,9 @@ int main (int argc, char *argv[])
   BTagCalibration * bTagCalib;   
   BTagCalibrationReader * bTagReader;
   BTagWeightTools *btwt;
+  
+ 
+  
  
   ////////////////////////////////////
   ///  Loop on datasets
@@ -357,10 +361,17 @@ int main (int argc, char *argv[])
     string pathRootSample = channelpostfix + datasets[d]->Name();
     if(doJERup) pathRootSample += "_JERup";
     if(doJERdown) pathRootSample += "_JERdown";
+    if(doJESup) pathRootSample += "_JERup";
+    if(doJESdown) pathRootSample += "_JERdown";
+   
     mkdir((pathRoot+pathRootSample+"/").c_str(),0777);
     string rootFileName = pathRoot + pathRootSample +"/ControlPlots"+channelpostfix + datasets[d]->Name() + "_" + strJobNum+".root";
     TFile *fout = new TFile(rootFileName.c_str(), "RECREATE");
     
+   
+       ////////////////////////////
+  /// HISTO
+  ////////////////////////////:
     map <string,TH1F*> histo1D;
     map <string,TH2F*> histo2D;
  
@@ -383,6 +394,48 @@ int main (int argc, char *argv[])
     titlePlot = "raw_cutFlow"+channelpostfix;
     histo1D["h_raw_cutFlow"] = new TH1F(titlePlot.c_str(), "Raw cutflow", 13,-0.5,12.5);
 
+   // some kinetic variables
+    titlePlot = "initial_met"+channelpostfix;
+    histo1D["h_initial_met"] = new TH1F(titlePlot.c_str(), "missing E_{T}; E_{T}^{mis} [GeV]", 200, 0,200); 
+    titlePlot = "Ht"+channelpostfix;
+    histo1D["h_Ht"] = new TH1F(titlePlot.c_str(), "Scalar sum of transverse momenta of the jets; H_{T} [GeV]", 120, 0,1200);
+    titlePlot = "Pt_first_Muon"+channelpostfix;
+    histo1D["h_Pt_first_Muon"] = new TH1F(titlePlot.c_str(), "Transverse momentum of the leading muon", 200,0,200); 
+    titlePlot = "Pt_2nd_Muon"+channelpostfix;
+    histo1D["h_Pt_2nd_Muon"] = new TH1F(titlePlot.c_str(), "Transverse momentum of the 2nd leading muon", 200,0,200);
+    titlePlot = "Pt_3d_Muon"+channelpostfix;
+    histo1D["h_Pt_3d_Muon"] = new TH1F(titlePlot.c_str(), "Transverse momentum of the 3d leading muon", 200,0,200);
+    titlePlot = "Pt_first_Electron"+channelpostfix;
+    histo1D["h_Pt_first_Electron"] = new TH1F(titlePlot.c_str(), "Transverse momentum of the leading electron", 200,0,200);
+    titlePlot = "Pt_2nd_Electron"+channelpostfix;
+    histo1D["h_Pt_2nd_Electron"] = new TH1F(titlePlot.c_str(), "Transverse momentum of the 2nd leading electron", 200,0,200);
+    titlePlot = "Pt_3d_Electron"+channelpostfix;
+    histo1D["h_Pt_3d_Electron"] = new TH1F(titlePlot.c_str(), "Transverse momentum of the 3d leading electron", 200,0,200);
+    titlePlot = "Pt_first_Jet"+channelpostfix;
+    histo1D["h_Pt_first_Jet"] = new TH1F(titlePlot.c_str(), "Transverse momentum of the leading jet", 200,0,200);
+    titlePlot = "Pt_2nd_Jet"+channelpostfix;
+    histo1D["h_Pt_2nd_Jet"] = new TH1F(titlePlot.c_str(), "Transverse momentum of the 2nd leading jet", 200,0,200);
+    titlePlot = "Pt_first_BCSVLJet"+channelpostfix;
+    histo1D["h_Pt_first_BCSVLJet"] = new TH1F(titlePlot.c_str(), "Transverse momentum of the leading CSVL jet", 200,0,200);
+    titlePlot = "Pt_2nd_BCSVLJet"+channelpostfix;
+    histo1D["h_Pt_2nd_BCSVLJet"] = new TH1F(titlePlot.c_str(), "Transverse momentum of the 2nd leading CSVL jet", 200,0,200);
+    titlePlot = "Pt_first_BCSVMJet"+channelpostfix;
+    histo1D["h_Pt_first_BCSVMJet"] = new TH1F(titlePlot.c_str(), "Transverse momentum of the leading CSVM jet", 200,0,200);
+    titlePlot = "Pt_2nd_BCSVMJet"+channelpostfix;
+    histo1D["h_Pt_2nd_BCSVMJet"] = new TH1F(titlePlot.c_str(), "Transverse momentum of the 2nd leading CSVM jet", 200,0,200);
+    titlePlot = "Pt_first_BCSVTJet"+channelpostfix;
+    histo1D["h_Pt_first_BCSVTJet"] = new TH1F(titlePlot.c_str(), "Transverse momentum of the leading CSVT jet", 200,0,200);
+    titlePlot = "Pt_2nd_BCSVTJet"+channelpostfix;
+    histo1D["h_Pt_2nd_BCSVTJet"] = new TH1F(titlePlot.c_str(), "Transverse momentum of the 2nd leading CSVT jet", 200,0,200);
+
+    titlePlot = "Zmass"+channelpostfix;
+    histo1D["h_Zmass"] = new TH1F(titlePlot.c_str(), "Invariant mass of the Z boson", 200, 0, 200);
+    titlePlot = "Zmass_bf"+channelpostfix;
+    histo1D["h_Zmass_bf"] = new TH1F(titlePlot.c_str(), "Invariant mass of the Z boson before cuts", 200, 0, 200);
+    titlePlot = "mWT"+channelpostfix;
+    histo1D["h_mWT"] = new TH1F(titlePlot.c_str(), "Transverse  mass of the W boson", 200, 0, 200);
+    titlePlot = "topmass"+channelpostfix;
+    histo1D["h_topmass"] = new TH1F(titlePlot.c_str(), "Invariant mass of the SM top (b+l)", 200, 0, 200);
 
     // plots to check reweighting
     titlePlot = "initial_Nb_CSVLJets_beforeBtagSF"+channelpostfix;
@@ -420,8 +473,14 @@ int main (int argc, char *argv[])
     histo2D["h2_muonSF"]= new TH2F(titlePlot.c_str(), "Muon scale factors in function of p_{T} and #eta; p_{T} [GeV]; #eta", 60, 0, 600, 21, 0, 2.1);
     titlePlot = "GelectronSF"+channelpostfix;
     histo2D["h2_electronSF"]= new TH2F(titlePlot.c_str(), "Electron scale factors in function of p_{T} and #eta; p_{T} [GeV]; #eta", 60, 0, 600, 21, 0, 2.1); 
+   
+    
+    
     // make root tree file name
-    string roottreename = "/user/ivanpari/CMSSW_7_4_15/src/TopBrussels/FCNCAnalysis/Ntuples/";
+    string roottreename = "/user/ivanpari/CMSSW_7_4_15/src/TopBrussels/FCNCAnalysis/";
+    roottreename+= "Ntuples/";
+
+    mkdir((roottreename).c_str(),0777);
     roottreename+= datasets[d]->Name();
     roottreename+="_";
     roottreename+= strJobNum;
@@ -439,15 +498,19 @@ int main (int argc, char *argv[])
     ////////////////////
     //  SF
     //  ////////////////
-    TFile *BtagHisto = new TFile("HistosPtEta.root","RECREATE");
     if(applyBtagSF && !isdata){
        // http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees_v2.pdf
        // removed in the first line of the csv file "CSVv2;"  
        bTagCalib = new BTagCalibration("CSVv2",pathToCaliDir+"BTagging/CSVv2_13TeV_25ns.csv");
        bTagReader = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_LOOSE,"comb","central");
-       if(fillingbTagHistos) btwt = new BTagWeightTools(bTagReader,30,999,2.4,"HistosPtEta_"+dataSetName+".root");
-       else btwt = new BTagWeightTools(bTagReader,30,999,2.4,"HistosPtEta.root");
+       if(fillingbTagHistos) btwt = new BTagWeightTools(bTagReader,30,999,2.4,"forBtagSF/HistosPtEta_"+dataSetName+".root");
+       else btwt = new BTagWeightTools(bTagReader,30,999,2.4,"forBtagSF/HistosPtEta_tmp.root");
     }
+    
+    
+
+   
+    
 
      //////////////////////////////
      // My tree - variables //
@@ -627,11 +690,6 @@ int main (int argc, char *argv[])
      myTree->Branch("etaCSVTJet","std::vector<double>",&etaCSVTJet);
      myTree->Branch("qCSVTJet","std::vector<double>",&qCSVTJet);
 
-
-    
-    
-     TTree *BkgTree = new TTree("BkgTree","BkgTree");
-    
     //////////////////////////
     // Initialize JEC  Factor
     ///////////////(order matters! )
@@ -675,19 +733,74 @@ int main (int argc, char *argv[])
     nEvents[d] = 0;
     int previousRun = -1;
     int itrigger = -1; 
+    bool trigged = false; 
+    int trigEMU, trigMUMU,trigEE; 
+    trigEMU = trigMUMU = trigEE = -1; 
     if (verbose > 1)
       cout << "	Loop over events " << endl;
+
+    vector < TRootVertex* > vertex;
+    vector < TRootMuon* > init_muons;
+    vector < TRootElectron* > init_electrons;
+    vector < TRootJet* > init_jets;
+    vector < TRootJet* > init_jets_unCORJER;
+    vector < TRootJet* > init_jets_unCORJES;
+    vector < TRootMET* > mets;
+    int currentRun; 
+    vector<TRootGenJet*> genjets;
+
+    bool isGoodPV;
+    vector<TRootMuon*> selectedMuons;
+    vector<TRootMuon*> selectedVetoMuons;
+
+    vector<TRootPFJet*> selectedJets_bfCleaning;
+    vector<TRootPFJet*> selectedJets ;
+    vector<TRootPFJet*> selectedJets_unCORJER ;
+    vector<TRootPFJet*> selectedJets_unCORJES ;
+    vector<TRootElectron*> selectedElectrons ;
+    vector<TRootElectron*> selectedVetoElectrons ;
+
+    vector<bool> BtagBooleans; 
+    vector<TRootJet*> selectedBCSVLJets; 
+    vector<TRootJet*> selectedBCSVMJets;
+    vector<TRootJet*> selectedBCSVTJets;
+
+    std::vector<int> Leptons;
+    TRootJet* tempJet;
+    
+    TLorentzVector Zboson;
+    TLorentzVector Wlep;
     
     for (unsigned int ievt = 0; ievt < datasets[d]->NofEvtsToRunOver(); ievt++)
     {
-      vector < TRootVertex* > vertex;
-      vector < TRootMuon* > init_muons;
-      vector < TRootElectron* > init_electrons;
-      vector < TRootJet* > init_jets;
-      vector < TRootJet* > init_jets_unCORJER;
-      vector < TRootJet* > init_jets_unCORJES; 
-      vector < TRootMET* > mets;
       
+      vertex.clear();
+      init_muons.clear();
+      init_electrons.clear(); 
+      init_jets.clear(); 
+      init_jets_unCORJER.clear(); 
+      init_jets_unCORJES.clear();
+      mets.clear();
+      
+      currentRun = -99999;
+      isGoodPV=false;
+      selectedMuons.clear();
+      selectedVetoMuons.clear();
+      selectedJets_bfCleaning.clear();
+      selectedJets.clear() ;
+      selectedJets_unCORJER.clear() ;
+      selectedJets_unCORJES.clear() ; 
+      selectedElectrons.clear() ;
+      selectedVetoElectrons.clear() ;
+
+      BtagBooleans.clear();
+      selectedBCSVLJets.clear();
+      selectedBCSVMJets.clear();
+      selectedBCSVTJets.clear();
+      
+      Zboson.Clear();
+      Wlep.Clear(); 
+
       nEvents[d]++;
       
       if (ievt%500 == 0)
@@ -715,8 +828,7 @@ int main (int argc, char *argv[])
       }
       
       
-      int currentRun = event->runId(); 
- 
+      currentRun = event->runId();  
       run_num=event->runId();
       evt_num=event->eventId();
       lumi_num=event->lumiBlockId();
@@ -730,7 +842,7 @@ int main (int argc, char *argv[])
       //////////////////////
       // Load genjets for JER smearing 
       /////////////////////////////////
-      vector<TRootGenJet*> genjets;
+      genjets.clear();
       if( ! (dataSetName == "Data" || dataSetName == "data" || dataSetName == "DATA" ) )
        {
           // loading GenJets as I need them for JER
@@ -770,9 +882,8 @@ int main (int argc, char *argv[])
       /// Trigger
       ///////////////////////////
       
-      bool trigged = false; 
-      bool trigEMU, trigMUMU,trigEE; 
-      trigEMU = trigMUMU = trigEE = false; 
+       trigEMU = trigMUMU = trigEE = -1; 
+       itrigger = -1; 
 
       //If the HLT is applied 
       if(runHLT && previousRun != currentRun){
@@ -818,15 +929,15 @@ int main (int argc, char *argv[])
       Run2Selection selection_unCORJES( init_jets_unCORJES, init_muons, init_electrons, mets);
 
       bool isGoodPV = selection.isPVSelected(vertex, PVertexNdofCut, PVertexZCut,PVertexRhoCut); //isPVSelected(const std::vector<TRootVertex*>& vertex, int NdofCut, float Zcut, float RhoCut)
-      vector<TRootMuon*> selectedMuons = selection.GetSelectedMuons(MuonPtCut, MuonEtaCut, MuonRelIsoCut,WPMuon,CampaignMuon);  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
-      vector<TRootMuon*> selectedVetoMuons = selection.GetSelectedMuons(8, MuonEtaCut, 0.2,"Loose",CampaignMuon);  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
+      selectedMuons = selection.GetSelectedMuons(MuonPtCut, MuonEtaCut, MuonRelIsoCut,WPMuon,CampaignMuon);  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
+      selectedVetoMuons = selection.GetSelectedMuons(8, MuonEtaCut, 0.2,"Loose",CampaignMuon);  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
 
-      vector<TRootPFJet*> selectedJets_bfCleaning = selection.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet); 
-      vector<TRootPFJet*> selectedJets = selection.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet);  // GetSelectedJets(float PtThr, float EtaThr, bool applyJetID, std::string TightLoose)
-      vector<TRootPFJet*> selectedJets_unCORJER = selection_unCORJER.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet); 
-      vector<TRootPFJet*> selectedJets_unCORJES = selection_unCORJES.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet);
-      vector<TRootElectron*> selectedElectrons = selection.GetSelectedElectrons(ElectronPtCut, ElectronEtaCut, WPElectron, CampaignElectron, cutsBasedElectron);  // GetSelectedElectrons(float PtThr, float etaThr, string WorkingPoint, string ProductionCampaign, bool CutsBased)
-      vector<TRootElectron*> selectedVetoElectrons = selection.GetSelectedElectrons(12, ElectronEtaCut, "Veto", CampaignElectron, cutsBasedElectron);  // GetSelectedElectrons(float PtThr, float etaThr, string WorkingPoint, string ProductionCampaign, bool CutsBased)
+      selectedJets_bfCleaning = selection.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet); 
+      selectedJets = selection.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet);  // GetSelectedJets(float PtThr, float EtaThr, bool applyJetID, std::string TightLoose)
+      selectedJets_unCORJER = selection_unCORJER.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet); 
+      selectedJets_unCORJES = selection_unCORJES.GetSelectedJets(JetsPtCut, JetsEtaCut, applyJetID, WPJet);
+      selectedElectrons = selection.GetSelectedElectrons(ElectronPtCut, ElectronEtaCut, WPElectron, CampaignElectron, cutsBasedElectron);  // GetSelectedElectrons(float PtThr, float etaThr, string WorkingPoint, string ProductionCampaign, bool CutsBased)
+      selectedVetoElectrons = selection.GetSelectedElectrons(12, ElectronEtaCut, "Veto", CampaignElectron, cutsBasedElectron);  // GetSelectedElectrons(float PtThr, float etaThr, string WorkingPoint, string ProductionCampaign, bool CutsBased)
 
       sort(selectedJets.begin(), selectedJets.end(),HighestPt());
       sort(selectedJets_bfCleaning.begin(), selectedJets_bfCleaning.end(),HighestPt()); 
@@ -838,7 +949,8 @@ int main (int argc, char *argv[])
       sort(selectedVetoElectrons.begin(), selectedVetoElectrons.end(), HighestPt());
       
       //jetcleaning
-      for (int origJets=0; origJets<selectedJets.size(); origJets++){
+      if(applyJetCleaning){
+       for (int origJets=0; origJets<selectedJets.size(); origJets++){
          bool erased = false;
          if(selectedMuons.size()>0){
              if(selectedJets[origJets]->DeltaR(*selectedMuons[0])<0.4){ selectedJets.erase(selectedJets.begin()+origJets); erased = true;}
@@ -858,19 +970,15 @@ int main (int argc, char *argv[])
          if(selectedElectrons.size()>2 && !erased){
              if(selectedJets[origJets]->DeltaR(*selectedElectrons[2])<0.4){ selectedJets.erase(selectedJets.begin()+origJets); erased = true;}
          }
+       }
+       if(verbose>3) if( selectedJets_bfCleaning.size() != selectedJets.size()) cout << "original = " << selectedJets_bfCleaning.size() << " after cleaning = " << selectedJets.size() << endl; 
       }
-     if(verbose>3) if( selectedJets_bfCleaning.size() != selectedJets.size()) cout << "original = " << selectedJets_bfCleaning.size() << " after cleaning = " << selectedJets.size() << endl; 
 
-
-      vector<bool> BtagBooleans; 
-      BtagBooleans.clear(); 
-      vector<TRootJet*> selectedBCSVLJets; 
-      vector<TRootJet*> selectedBCSVMJets;
-      vector<TRootJet*> selectedBCSVTJets;
+      
       for(unsigned int i = 0; i < selectedJets.size() ; i++)
       {
          bool Btagged = false;
-         TRootJet* tempJet = (TRootJet*) selectedJets[i];
+         tempJet = (TRootJet*) selectedJets[i];
          if(tempJet->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose)//loose WP
          {
            Btagged = true;
@@ -905,29 +1013,29 @@ int main (int argc, char *argv[])
       // Lepton SF
       float muon1SF, muon2SF,muon3SF, electron1SF, electron2SF, electron3SF; 
       muon1SF =  muon2SF = muon3SF = electron1SF = electron2SF = electron3SF = 0.;
-      if(applyMuonSF && !isdata){
+       if(applyMuonSF && !isdata){
          if(selectedMuons.size()>0) {muon1SF = muonSFWeight->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0); muonScaleFactor = muon1SF; 
              histo2D["h2_muonSF"]->Fill(selectedMuons[0]->Pt(), selectedMuons[0]->Eta(), muon1SF);}
          if(selectedMuons.size()>1) {muon2SF = muonSFWeight->at(selectedMuons[1]->Eta(), selectedMuons[1]->Pt(), 0); muonScaleFactor *= muon2SF; 
              histo2D["h2_muonSF"]->Fill(selectedMuons[1]->Pt(), selectedMuons[1]->Eta(), muon2SF);}
          if(selectedMuons.size()>2) {muon3SF = muonSFWeight->at(selectedMuons[2]->Eta(), selectedMuons[2]->Pt(), 0); muonScaleFactor *= muon3SF; 
              histo2D["h2_muonSF"]->Fill(selectedMuons[2]->Pt(), selectedMuons[2]->Eta(), muon3SF);}
-      }
-      if(applyElectronSF && !isdata){
+       }
+       if(applyElectronSF && !isdata){
          if(selectedElectrons.size()>0)  {electron1SF =  electronSFWeight->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0); electronScaleFactor = electron1SF;  
              histo2D["h2_electronSF"]->Fill(selectedElectrons[0]->Pt(), selectedElectrons[0]->Eta(), electron1SF);}
          if(selectedElectrons.size()>1)  {electron2SF =  electronSFWeight->at(selectedElectrons[1]->Eta(),selectedElectrons[1]->Pt(),0); electronScaleFactor *= electron2SF;  
              histo2D["h2_electronSF"]->Fill(selectedElectrons[1]->Pt(), selectedElectrons[1]->Eta(), electron2SF); }
          if(selectedElectrons.size()>2)  {electron3SF =  electronSFWeight->at(selectedElectrons[2]->Eta(),selectedElectrons[2]->Pt(),0); electronScaleFactor *= electron3SF;  
              histo2D["h2_electronSF"]->Fill(selectedElectrons[2]->Pt(), selectedElectrons[2]->Eta(), electron3SF); }
-      }
+       }
       if(fillingbTagHistos){
          if(!isdata && applyBtagSF) btwt->FillMCEfficiencyHistos(selectedJets); 
                 
       }
       if (verbose>3) cout<<"getMCEventWeight for btag"<<endl;
-      if(applyBtagSF && isdata){
-           btagScaleFactor =  btwt->getMCEventWeight(selectedJets,BtagHisto, false);
+      if(applyBtagSF && !isdata && !fillingbTagHistos){
+           btagScaleFactor =  btwt->getMCEventWeight(selectedJets,(TFile*) "HistosPtEta.root", false);
            // cout<<"btag weight "<<btagWeight<<endl;
        }     
          
@@ -943,45 +1051,24 @@ int main (int argc, char *argv[])
       if(applyBtagSF) scaleFactor *= btagScaleFactor;
       if(!applyGlobalSF || isdata) scaleFactor = 1.;
 
-
+      
       if(applyPUSF) { histo1D["h_initial_nPV_beforePUSF"]->Fill(vertex.size(), scaleFactor*lumiWeight/puScaleFactor);}
       else { histo1D["h_initial_nPV_beforePUSF"]->Fill(vertex.size(), scaleFactor*lumiWeight);}
       histo1D["h_initial_nPV_afterPUSF"]->Fill(vertex.size(), scaleFactor*lumiWeight);
       if(applyBtagSF) {histo1D["h_initial_Nb_CSVLJets_beforeBtagSF"]->Fill(vertex.size(), scaleFactor*lumiWeight/btagScaleFactor);}
       else { histo1D["h_initial_Nb_CSVLJets_beforeBtagSF"]->Fill(vertex.size(), scaleFactor*lumiWeight);}
       histo1D["h_initial_Nb_CSVLJets"]->Fill(vertex.size(), scaleFactor*lumiWeight);
-
+      
       // Start analysis selection
       eventSelected = false;
-      TLorentzVector Zboson;
-      TLorentzVector Wlep; 
+
       
       
       /// Initial nbrs
       
       histo1D["h_cutFlow"]->Fill(0., scaleFactor*lumiWeight);
       histo1D["h_raw_cutFlow"]->Fill(0.);
-      histo1D["h_initial_Nb_Jets_bfCleaning"]->Fill(selectedJets_bfCleaning.size(), scaleFactor*lumiWeight); 
-      histo1D["h_initial_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
-      histo1D["h_initial_Nb_Jets_unCORJER"]->Fill(selectedJets_unCORJER.size(), scaleFactor*lumiWeight);
-      histo1D["h_initial_Nb_Jets_unCORJES"]->Fill(selectedJets_unCORJES.size(), scaleFactor*lumiWeight);     
-      
-      for(unsigned int i = 0 ; i < selectedJets.size(); i++){
-         TRootJet* jet = (TRootJet*) selectedJets[i];
-         histo1D["h_initial_Jet_Pt"]->Fill(jet->Pt(),  scaleFactor*lumiWeight);
 
-      }
-     for(unsigned int i = 0 ; i < selectedJets_unCORJER.size(); i++){
-         TRootJet* jet_unCORJER = (TRootJet*) selectedJets_unCORJER[i];
-         histo1D["h_initial_Jet_unCORJER_Pt"]->Fill(jet_unCORJER->Pt(),  scaleFactor*lumiWeight);
-     
-      }
-     for(unsigned int i = 0 ; i < selectedJets_unCORJES.size(); i++){
-         TRootJet* jet_unCORJES = (TRootJet*) selectedJets_unCORJES[i];
-         histo1D["h_initial_Jet_unCORJES_Pt"]->Fill(jet_unCORJES->Pt(),  scaleFactor*lumiWeight);
-
-      }
-      
       /// Trigger
       if(runHLT) trigged = treeLoader.EventTrigged(itrigger);
       else trigged = true; 
@@ -997,8 +1084,52 @@ int main (int argc, char *argv[])
         histo1D["h_cutFlow"]->Fill(2., scaleFactor*lumiWeight);
         histo1D["h_raw_cutFlow"]->Fill(2.);
 
-        if (selectedMuons.size() + selectedElectrons.size()== 3)
+        histo1D["h_initial_Nb_Jets_bfCleaning"]->Fill(selectedJets_bfCleaning.size(), scaleFactor*lumiWeight); 
+        histo1D["h_initial_Nb_Jets"]->Fill(selectedJets.size(), scaleFactor*lumiWeight);
+        histo1D["h_initial_Nb_Jets_unCORJER"]->Fill(selectedJets_unCORJER.size(), scaleFactor*lumiWeight);
+        histo1D["h_initial_Nb_Jets_unCORJES"]->Fill(selectedJets_unCORJES.size(), scaleFactor*lumiWeight);     
+        histo1D["h_initial_met"]->Fill(met_pt, scaleFactor*lumiWeight);
+	
+
+        float tempPt = 0.;           
+        for(unsigned int i = 0 ; i < selectedJets.size(); i++){
+            TRootJet* jet = (TRootJet*) selectedJets[i];
+            histo1D["h_initial_Jet_Pt"]->Fill(jet->Pt(),  scaleFactor*lumiWeight);
+            tempPt += jet->Pt();
+        }
+        histo1D["h_Ht"]->Fill(tempPt, scaleFactor*lumiWeight);
+        
+        for(unsigned int i = 0 ; i < selectedJets_unCORJER.size(); i++){
+          TRootJet* jet_unCORJER = (TRootJet*) selectedJets_unCORJER[i];
+          histo1D["h_initial_Jet_unCORJER_Pt"]->Fill(jet_unCORJER->Pt(),  scaleFactor*lumiWeight);
+        
+        }
+        for(unsigned int i = 0 ; i < selectedJets_unCORJES.size(); i++){
+          TRootJet* jet_unCORJES = (TRootJet*) selectedJets_unCORJES[i];
+          histo1D["h_initial_Jet_unCORJES_Pt"]->Fill(jet_unCORJES->Pt(),  scaleFactor*lumiWeight);
+
+        }
+        
+        if(selectedMuons.size() > 0) histo1D["h_Pt_first_Muon"]->Fill(selectedMuons[0]->Pt(),	scaleFactor*lumiWeight);
+        if(selectedMuons.size() > 1) histo1D["h_Pt_2nd_Muon"]->Fill(selectedMuons[1]->Pt(),   scaleFactor*lumiWeight);
+        if(selectedMuons.size() > 2) histo1D["h_Pt_3d_Muon"]->Fill(selectedMuons[2]->Pt(),   scaleFactor*lumiWeight);
+        if(selectedElectrons.size() > 0) histo1D["h_Pt_first_Electron"]->Fill(selectedElectrons[0]->Pt(),   scaleFactor*lumiWeight);
+        if(selectedElectrons.size() > 1) histo1D["h_Pt_2nd_Electron"]->Fill(selectedElectrons[1]->Pt(),   scaleFactor*lumiWeight);
+        if(selectedElectrons.size() > 2) histo1D["h_Pt_first_Electron"]->Fill(selectedElectrons[2]->Pt(),  scaleFactor*lumiWeight);
+        if(selectedJets.size()>0) histo1D["h_Pt_first_Jet"]->Fill(selectedJets[0]->Pt(), scaleFactor*lumiWeight);
+        if(selectedJets.size()>1) histo1D["h_Pt_2nd_Jet"]->Fill(selectedJets[1]->Pt(), scaleFactor*lumiWeight);
+        if(selectedBCSVLJets.size()>0) histo1D["h_Pt_first_BCSVLJet"]->Fill(selectedBCSVLJets[0]->Pt(), scaleFactor*lumiWeight);
+        if(selectedBCSVLJets.size()>1) histo1D["h_Pt_2nd_BCSVLJet"]->Fill(selectedBCSVLJets[1]->Pt(), scaleFactor*lumiWeight);
+        if(selectedBCSVMJets.size()>0) histo1D["h_Pt_first_BCSVMJet"]->Fill(selectedBCSVMJets[0]->Pt(), scaleFactor*lumiWeight);
+        if(selectedBCSVMJets.size()>1) histo1D["h_Pt_2nd_BCSVMJet"]->Fill(selectedBCSVMJets[1]->Pt(), scaleFactor*lumiWeight);
+        if(selectedBCSVTJets.size()>0) histo1D["h_Pt_first_BCSVTJet"]->Fill(selectedBCSVTJets[0]->Pt(), scaleFactor*lumiWeight);
+        if(selectedBCSVTJets.size()>1) histo1D["h_Pt_2nd_BCSVTJet"]->Fill(selectedBCSVTJets[1]->Pt(), scaleFactor*lumiWeight);
+	  
+
+
+        if (selectedMuons.size() + selectedElectrons.size()== 3 )
         {
+	    
             if(verbose>3) cout << "3 electrons "<< endl; 
             histo1D["h_cutFlow"]->Fill(3., scaleFactor*lumiWeight);
             histo1D["h_raw_cutFlow"]->Fill(3.);
@@ -1009,9 +1140,7 @@ int main (int argc, char *argv[])
 	    {
                histo1D["h_cutFlow"]->Fill(4., scaleFactor*lumiWeight);
                histo1D["h_raw_cutFlow"]->Fill(4.);
-               histo1D["h_cutFlow"]->Fill(4.);
 	    
-	       std::vector<int> Leptons; 
 	       Leptons.clear(); 
 	       Leptons = OSSFLeptonPairCalculator(selectedElectrons, selectedMuons, verbose);
 	       if(verbose>3) cout <<   Leptons[0]<< " , " <<  Leptons[1]<< " , " <<  Leptons[2]<< " , " <<  Leptons[3]<< " , " <<  Leptons[4]<< " , " <<  Leptons[5]   << endl; 
@@ -1037,7 +1166,9 @@ int main (int argc, char *argv[])
 	            if(verbose>3) cout << " the W lepton is a muon " << endl; 
 	            Wlep.SetPxPyPzE(selectedMuons[Leptons[5]]->Px(), selectedMuons[Leptons[5]]->Py(), selectedMuons[Leptons[5]]->Pz(), selectedMuons[Leptons[5]]->Energy());		  
 	          }
-	          bool ZmassWindow = false; 
+	          bool ZmassWindow = false;
+                  histo1D["h_Zmass"]->Fill(Zboson.M(), scaleFactor*lumiWeight);
+ 
 	          if(Zboson.M() < 106 && Zboson.M() > 76) ZmassWindow = true; 
 	          if(ZmassWindow)
 	          {
@@ -1063,6 +1194,7 @@ int main (int argc, char *argv[])
                           float Phi_Wlep_MET = mets[0]->DeltaPhi(Wlep);
                  	  float CosPhi_Wlep_MET = cos(Phi_Wlep_MET);
                  	  float mWT = TMath::Sqrt(2*met_pt*Wlep.Pt()*(1-CosPhi_Wlep_MET));
+                          histo1D["h_mWT"]->Fill(mWT, scaleFactor*lumiWeight);
 
                           if(mWT > 20)
 			  {
@@ -1077,6 +1209,8 @@ int main (int argc, char *argv[])
 			     SMtop.Clear(); 
 			     SMtop = Bjet + Wlep;     
 			     float topmass = SMtop.M();
+                             histo1D["h_topmass"]->Fill(topmass, scaleFactor*lumiWeight);
+
 			     if( topmass < 155 && topmass > 95)
                              {
                                 histo1D["h_cutFlow"]->Fill(9., scaleFactor*lumiWeight);
@@ -1099,10 +1233,11 @@ int main (int argc, char *argv[])
       } // trigger
       
       
-      if (! eventSelected )
+      if (! eventSelected)
       {
         continue;
-      }
+      } 
+
       
       if(verbose>3) cout << "filling the tree" << endl; 
       ptMuon = new std::vector<double>; 
@@ -1198,10 +1333,9 @@ int main (int argc, char *argv[])
 	etaMuon->push_back(tempMuon->Eta()); 
 	qMuon->push_back(tempMuon->charge());
       }
-            
       for (unsigned int i =0; i < selectedJets.size(); i ++)
       {
-        TRootJet* tempJet = (TRootJet*) selectedJets[i];
+        tempJet = (TRootJet*) selectedJets[i];
         ptJet->push_back(tempJet->Pt());
         pxJet->push_back(tempJet->Px());
         pyJet->push_back(tempJet->Py());
@@ -1212,9 +1346,10 @@ int main (int argc, char *argv[])
         BtagCSVjet->push_back(tempJet->btag_combinedInclusiveSecondaryVertexV2BJetTags()); 
         BtagCSVL->push_back(BtagBooleans[i]); 
       }
+      
       for (unsigned int i = 0; i< selectedBCSVLJets.size(); i++)
       {
-        TRootJet* tempJet = (TRootJet*) selectedBCSVLJets[i];
+        tempJet = (TRootJet*) selectedBCSVLJets[i];
 	ptCSVLJet->push_back(tempJet->Pt());
         pxCSVLJet->push_back(tempJet->Px());
         pyCSVLJet->push_back(tempJet->Py());
@@ -1225,7 +1360,7 @@ int main (int argc, char *argv[])
       }
       for (unsigned int i = 0; i< selectedBCSVMJets.size(); i++)
       {
-        TRootJet* tempJet = (TRootJet*) selectedBCSVMJets[i];
+        tempJet = (TRootJet*) selectedBCSVMJets[i];
         ptCSVMJet->push_back(tempJet->Pt());
         pxCSVMJet->push_back(tempJet->Px());
         pyCSVMJet->push_back(tempJet->Py());
@@ -1236,7 +1371,7 @@ int main (int argc, char *argv[])
       }
       for (unsigned int i = 0; i< selectedBCSVTJets.size(); i++)
       {
-        TRootJet* tempJet = (TRootJet*) selectedBCSVTJets[i];
+        tempJet = (TRootJet*) selectedBCSVTJets[i];
         ptCSVTJet->push_back(tempJet->Pt());
         pxCSVTJet->push_back(tempJet->Px());
         pyCSVTJet->push_back(tempJet->Py());
@@ -1249,6 +1384,7 @@ int main (int argc, char *argv[])
 
       nofSelectedEvents++; 
       myTree->Fill();
+
       
       delete pxElectron;
       delete pyElectron;
@@ -1314,6 +1450,7 @@ int main (int argc, char *argv[])
     
     
     myTree->Write();
+
     fileout->Write();
     fileout->Close();
     delete fileout; 
@@ -1329,19 +1466,37 @@ int main (int argc, char *argv[])
   mkdir((pathPNG+"1DPlot/").c_str(),0777); // 0777 if it doesn't exist already, make it
   if(doJERup) mkdir((pathPNG+"1DPlot/JERup").c_str(),0777);
   if(doJERdown) mkdir((pathPNG+"1DPlot/JERdown").c_str(),0777);
+  if(doJESup) mkdir((pathPNG+"1DPlot/JESup").c_str(),0777);
+  if(doJESdown) mkdir((pathPNG+"1DPlot/JESdown").c_str(),0777);
+
+  mkdir((pathPNG+"2DPlot/").c_str(),0777); // 0777 if it doesn't exist already, make it
+  if(doJERup) mkdir((pathPNG+"2DPlot/JERup").c_str(),0777);
+  if(doJERdown) mkdir((pathPNG+"2DPlot/JERdown").c_str(),0777);
+  if(doJESup) mkdir((pathPNG+"2DPlot/JESup").c_str(),0777);
+  if(doJESdown) mkdir((pathPNG+"2DPlot/JESdown").c_str(),0777);
+
   ///Write histograms
   fout->cd();
   for (map<string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
   {
-    if(verbose>3) cout << "1D Plot: " << it->first << endl;
+    cout << "1D Plot: " << it->first << endl;
    // TCanvas ctemp = 
+    
     TH1F *temp = it->second;
     string name = it->first;
+    cout << name << endl; 
     temp->Draw();  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
     //c1->SaveAs(pathPNG+"1DPlot/"+name modeString[mode] + "_" + cutLabel + ".png");
     //temp->Write(fout, name, true, pathPNG+"1DPlot/", "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
   }
-
+  for (map<string,TH2F*>::const_iterator it = histo2D.begin(); it != histo2D.end(); it++)
+  {
+    if(verbose>3) cout << "2D Plot: " << it->first << endl;
+   
+     TH2F *temp = it->second;
+     string name = it->first;
+     temp->Draw();
+  }
    
    
    ///////////////////
