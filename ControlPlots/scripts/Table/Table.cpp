@@ -83,7 +83,7 @@ int main(int argc,char *argv[])
 		/////////////////////////////////////
 		// Reading in the sample txt files //
 		////////////////////////////////////
-		if(information) cout << "\033[40;32m[INFO]\033[37m Reading in Signal.txt, Background.txt and Variables.txt and Cuts.txt" << endl;
+		if(information) cout << " Reading in Signal.txt, Background.txt and Variables.txt and Cuts.txt" << endl;
 		const char * Signaltxt = "Signal.txt";
 		const char * Backgroundtxt = "Background.txt";
 		const char * Variabletxt = "Variables.txt";
@@ -105,33 +105,33 @@ int main(int argc,char *argv[])
 		
 		if(signalnames.size() == 0)
 		{
-		 	cout << "\033[40;31m[ERROR]\033[37m No signal defined in Signal.txt ... Exiting macro..." << endl;
+		 	cout << "No signal defined in Signal.txt ... Exiting macro..." << endl;
 			return 1;
 		}
 		if(backgroundnames.size() == 0)
 		{
-		 	cout << "\033[40;31m[ERROR]\033[37m No background defined in Background.txt ... Exiting macro..." << endl;
+		 	cout << "No background defined in Background.txt ... Exiting macro..." << endl;
 			return 1;
 		}
 		if(Cuts.size() == 0)
 		{
-		 	cout << "\033[40;31m[ERROR]\033[37m No cuts defined in Cuts.txt ... Exiting macro..." << endl;
+		 	cout << "No cuts defined in Cuts.txt ... Exiting macro..." << endl;
 			return 1;
 		}
 
 		if(information)
 		{
-			cout << "\033[40;32m[INFO]\033[37m Signal samples in "<< signalnames[0] <<": " << endl;
+			cout << "Signal samples in "<< signalnames[0] <<": " << endl;
 				for(int i = 1; i < signalnames.size(); i++)
 				{
 					cout << "  - " << signalnames[i] << endl;
 				}
-			cout << "\033[40;32m[INFO]\033[37m Background samples in " << backgroundnames[0] << ": " << endl;
+			cout << "Background samples in " << backgroundnames[0] << ": " << endl;
 				for(int i = 1; i < backgroundnames.size(); i++)
 				{
 					cout << "  - " << backgroundnames[i] << endl;
 				}
-			cout << "\033[40;32m[INFO]\033[37m Cuts: " << endl;
+			cout << "Cuts: " << endl;
 				for(int i = 0; i < Cuts.size(); i++)
 				{
 					cout << "  - " << Cuts[i] << endl;
@@ -143,11 +143,10 @@ int main(int argc,char *argv[])
 		// Making the optimal cut plots /////////////////////
 		/////////////////////////////////////////////////////
 		TFile *infile = 0;
-		TFile *outputfile = new TFile("Output_Table/Table.tex","RECREATE");
+
+		// creating new stream, a tex file
 		ofstream output; 
 		output.open("Output_Table/Table.tex");
-		
-		
 		
 	
 	        int nprocess = signalnames.size()+backgroundnames.size(); 
@@ -159,12 +158,12 @@ int main(int argc,char *argv[])
 		for(unsigned int iSignal = 1; iSignal < signalnames.size(); iSignal++)
 		{
 			
-			if(!TabClass.RootFile(signalnames[0])) infile = new TFile((signalnames[0] + "merged_ElEl_" +  signalnames[iSignal] + ".root").c_str(),"read"); //Checks whether background samples is in 1 rootfile, or in a directory containing different rootfiles
+			if(!TabClass.RootFile(signalnames[0])) infile = new TFile((signalnames[0] + "merged_MuMu_" +  signalnames[iSignal] + ".root").c_str(),"read"); //Checks whether background samples is in 1 rootfile, or in a directory containing different rootfiles
 			else infile = new TFile(signalnames[0].c_str(),"read");
                        
                            
 			TH1F *histo( (TH1F*) infile->Get((Variables[iVar]).c_str()) );
-			if(!histo && warnings) cout << "\033[40;36m[WARNING]\033[37m Signal " << signalnames[iSignal] << " does not exist or does not contain variable " << Variables[iVar] << " Check Signal.txt or Variables.txt" <<endl;
+			if(!histo && warnings) cout << "Signal " << signalnames[iSignal] << " does not exist or does not contain variable " << Variables[iVar] << " Check Signal.txt or Variables.txt" <<endl;
 
 			if(histo)
 			{
@@ -181,14 +180,14 @@ int main(int argc,char *argv[])
 		for(unsigned int iBackgr = 1; iBackgr < backgroundnames.size(); iBackgr++)
 		{
 
-			if(!TabClass.RootFile(backgroundnames[0])) infile = new TFile((backgroundnames[0] + "merged_ElEl_"+backgroundnames[iBackgr] + ".root").c_str(),"read");//Checks whether background samples are in 1 rootfile, or in a directory containing different rootfiles
+			if(!TabClass.RootFile(backgroundnames[0])) infile = new TFile((backgroundnames[0] + "merged_MuMu_"+backgroundnames[iBackgr] + ".root").c_str(),"read");//Checks whether background samples are in 1 rootfile, or in a directory containing different rootfiles
 			else infile = new TFile(backgroundnames[0].c_str(),"read");
 
 
 
 
 			TH1F *histo( (TH1F*) infile->Get((Variables[iVar]).c_str()) );
-			if(!histo && warnings) cout << "\033[40;36m[WARNING]\033[37m Background " << backgroundnames[iBackgr] << " does not exist or does not contain variable " << Variables[iVar] << " Check Background.txt or Variables.txt" <<endl;
+			if(!histo && warnings) cout << "Background " << backgroundnames[iBackgr] << " does not exist or does not contain variable " << Variables[iVar] << " Check Background.txt or Variables.txt" <<endl;
 
 
 			if(histo)
@@ -216,73 +215,80 @@ int main(int argc,char *argv[])
 			}
 		}
 		
+
+
+		// header of the tex file
+		output << "\\documentclass[a4paper,8pt]{article}" << endl;
+		output << "\\usepackage{geometry}" << endl; 
+		output << "\\geometry{legalpaper, landscape, margin=0.1in}" << endl; 
+  		output << "\\begin{document}" << endl;
+  		output << endl;
+  		output << endl;
 		
-		cout << "\\documentclass[a4paper,8pt]{article}" << endl;
-		cout << "\\usepackage{geometry}" << endl; 
-		cout << "\\geometry{legalpaper, landscape, margin=0.1in}" << endl; 
-  		cout << "\\begin{document}" << endl;
-  		cout << endl;
-  		cout << endl;
-		
-		cout << "  \\begin{table}" << endl;
-  		cout << "  \\begin{center}" << endl;
-  		cout << "  \\begin{tabular} {|l|"; 
+		output << "  \\begin{table}" << endl;
+  		output << "  \\begin{center}" << endl;
+  		output << "  \\begin{tabular} {|l|" << endl; 
+
 		
 		
-		
-		
+		// Filling the core of the tex file
 		for(int iBin = 0; iBin < Cuts.size(); iBin++)
 		{
-		   cout << "c|" ; 
+		   output << "c|" ; 
 		}
-		cout << "}" << endl; 
-		cout << "\\hline" << endl; 
-		cout << "& " ;
+		output << "}" << endl; 
+		output << "\\hline" << endl; 
+		output << "& " ;
 		
 		
 		for(int iCut = 0; iCut < Cuts.size()-1; iCut++)
 		{
-			cout << Cuts[iCut] << "&" ; 
+			output << Cuts[iCut] << "&" ; 
 		
 		}
 		
-		cout << Cuts[Cuts.size()-1] ; 
-		cout << "\\\\" << endl; 
+		output << Cuts[Cuts.size()-1] ; 
+		output << "\\\\" << endl; 
 		
 		for (int iProc = 0; iProc < nprocess ; iProc++)
 		{
 		  if(iProc != 0 && iProc != signalnames.size())
 		  {     
-		       cout << processName[iProc] << " &" ;
+		       output << processName[iProc] << " &" ;
 		       for(int iB = 1; iB < Cuts.size(); iB++)
 		       {
 		       
-		         cout << setprecision(Values[iProc][iB][1]) << Values[iProc][iB][0];
-			 cout << " $\\pm $ " << setprecision(Values[iProc][iB][1]) << Values[iProc][iB][2];
-			 cout << "&"; 
+		         output << setprecision(Values[iProc][iB][1]) << Values[iProc][iB][0];
+			 output << " $\\pm $ " << setprecision(Values[iProc][iB][1]) << Values[iProc][iB][2];
+			 output << "&"; 
 			 
 			 
 		       }
-		       cout << setprecision(Values[iProc][Cuts.size()][1]) << Values[iProc][Cuts.size()][0]; 
-		       cout << " $\\pm $ " << setprecision(Values[iProc][Cuts.size()][1]) << Values[iProc][Cuts.size()][2];
-		       cout << "\\\\" << endl; 
+		       output << setprecision(Values[iProc][Cuts.size()][1]) << Values[iProc][Cuts.size()][0]; 
+		       output << " $\\pm $ " << setprecision(Values[iProc][Cuts.size()][1]) << Values[iProc][Cuts.size()][2];
+		       output << "\\\\" << endl; 
 		       
 		 }   
 		}
 		
-		cout << "   \\hline " << endl;
-  		cout << "  \\end{tabular}" << endl;
-  		cout << "  \\end{center}" << endl;
-  		cout << "  \\end{table}" << endl;
-  		cout << endl;
-  		cout << endl;
-		cout << "\\end{document}" << endl; 
+
+		// footer of the tex file
+		output << "   \\hline " << endl;
+  		output << "  \\end{tabular}" << endl;
+  		output << "  \\end{center}" << endl;
+  		output << "  \\end{table}" << endl;
+  		output << endl;
+  		output << endl;
+		output << "\\end{document}" << endl; 
+		
 		
 
+		// closing the tex file
+		output.close();
 		
-		outputfile->Write();
+		//		outputfile->Write();
 
-		if(information) cout << "\033[40;32m[INFO]\033[37m DONE!!! " << endl;
+		if(information) cout << "DONE!!! " << endl;
 		
 		return 0;
 }
