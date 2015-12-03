@@ -217,7 +217,7 @@ int main (int argc, char *argv[])
   ////////////
   /// object selection and identification
   //////////////////////
-  int PVertexNdofCut = 4; // anaEnv.PVertexNdofCut; 
+/*  int PVertexNdofCut = 4; // anaEnv.PVertexNdofCut; 
   int PVertexZCut =24;// anaEnv.PVertexZCut; 
   int PVertexRhoCut = 2; // anaEnv.PVertexRhoCut; 
   int MuonPtCut = 20;  //anaEnv.MuonPtCutSR; 
@@ -234,7 +234,7 @@ int main (int argc, char *argv[])
   int applyJetID = true; //anaEnv.applyJetID; 
   int JetsEtaCut = 2.4; 
   std::string WPJet = "Tight"; // https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
-
+*/
   /////////
   /// lumi
   /////////
@@ -291,13 +291,13 @@ int main (int argc, char *argv[])
   muonScaleFactor = electronScaleFactor = puScaleFactor = btagScaleFactor = 1.0;
 
   Bool_t applyMuonSF , applyElectronSF, applyPUSF, applyGlobalSF, applyBtagSF, fillingbTagHistos, applyJetCleaning;
-  applyMuonSF = true;
-  applyElectronSF = true;
-  applyPUSF = true;
-  applyGlobalSF = true;
+  applyMuonSF = false;
+  applyElectronSF = false;
+  applyPUSF = false;
+  applyGlobalSF = false;
   applyBtagSF = false; // doesn't work in 74X
   fillingbTagHistos = false;
-  applyJetCleaning = true; 
+  applyJetCleaning = false; 
   string pathToCaliDir = "/user/ivanpari/CMSSW_7_4_15/src/TopBrussels/TopTreeAnalysisBase/Calibrations/";
 
   //Muon SF 
@@ -347,8 +347,8 @@ int main (int argc, char *argv[])
 	isdata = 1;
     }
     else{
-        lumiWeight = Luminosity*xSect/datasets[d]->NofEvtsToRunOver();
-        cout << "the weight to apply for each event of this data set is " << "Lumi * (xs/NSample) = "  << Luminosity << " * (" << xSect << "/" << datasets[d]->NofEvtsToRunOver() << ") = " << Luminosity << " * " << xSect/datasets[d]->NofEvtsToRunOver() << " = " << Luminosity*xSect/datasets[d]->NofEvtsToRunOver()  <<  endl;
+        lumiWeight = Luminosity/ datasets[d]->EquivalentLumi();
+        cout << "the weight to apply for each event of this data set is " << "Lumi * (xs/NSample) = Lumi / EqLumi = "  << Luminosity  /  datasets[d]->EquivalentLumi()  <<  endl;
       }
     
      
