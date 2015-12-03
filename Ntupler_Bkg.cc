@@ -291,13 +291,13 @@ int main (int argc, char *argv[])
   muonScaleFactor = electronScaleFactor = puScaleFactor = btagScaleFactor = 1.0;
 
   Bool_t applyMuonSF , applyElectronSF, applyPUSF, applyGlobalSF, applyBtagSF, fillingbTagHistos, applyJetCleaning;
-  applyMuonSF = true;
-  applyElectronSF = true;
-  applyPUSF = true;
-  applyGlobalSF = true;
+  applyMuonSF = false;
+  applyElectronSF = false;
+  applyPUSF = false;
+  applyGlobalSF = false;
   applyBtagSF = false; // doesn't work in 74X
   fillingbTagHistos = false;
-  applyJetCleaning = true; 
+  applyJetCleaning = false; 
   string pathToCaliDir = "/user/ivanpari/CMSSW_7_4_15/src/TopBrussels/TopTreeAnalysisBase/Calibrations/";
 
   //Muon SF 
@@ -345,15 +345,18 @@ int main (int argc, char *argv[])
     if (dataSetName.find("Data") == 0 || dataSetName.find("data") == 0 || dataSetName.find("DATA") == 0){
         lumiWeight=1;
 	isdata = 1;
+        
     }
     else{
-        lumiWeight = Luminosity*xSect/datasets[d]->NofEvtsToRunOver();
-        cout << "the weight to apply for each event of this data set is " << "Lumi * (xs/NSample) = "  << Luminosity << " * (" << xSect << "/" << datasets[d]->NofEvtsToRunOver() << ") = " << Luminosity << " * " << xSect/datasets[d]->NofEvtsToRunOver() << " = " << Luminosity*xSect/datasets[d]->NofEvtsToRunOver()  <<  endl;
+        lumiWeight = Luminosity/ datasets[d]->EquivalentLumi();
+        cout << "the weight to apply for each event of this data set is " << "Lumi * (xs/NSample) = Lumi / EqLumi = "  << Luminosity  /  datasets[d]->EquivalentLumi()  <<  endl;
       }
-    
-     
-    
-    
+/*   double testW = -99; 
+   testW =  Luminosity/datasets[d]->EquivalentLumi();    
+    if(testW != lumiWeight){
+       cout << "testW = " << testW << " - lumiW = " << lumiWeight << endl;    
+    }
+*/    
     // Controlplots
    // set rootfile to store controlplots
     string pathRoot = "ControlPlots_Bkg/";
@@ -1064,7 +1067,7 @@ int main (int argc, char *argv[])
       // Start analysis selection
       eventSelected = false;
 
-      
+      cout << "scaleFactor*lumiWeight = " << scaleFactor*lumiWeight << endl;  
       
       /// Initial nbrs
       
@@ -1111,8 +1114,8 @@ int main (int argc, char *argv[])
           histo1D["h_initial_Jet_unCORJES_Pt"]->Fill(jet_unCORJES->Pt(),  scaleFactor*lumiWeight);
         }
 
-       if(selectedMuons.size() > 0) cout << "selectedMuons.size() = "<< selectedMuons.size() << endl;
-       if(selectedElectrons.size() >0)  cout << "selectedElectrons.size() = "<< selectedElectrons.size() << endl;
+ //      if(selectedMuons.size() > 0) cout << "selectedMuons.size() = "<< selectedMuons.size() << endl;
+//       if(selectedElectrons.size() >0)  cout << "selectedElectrons.size() = "<< selectedElectrons.size() << endl;
         if (selectedMuons.size() + selectedElectrons.size() > 1 )
         {
 	    
