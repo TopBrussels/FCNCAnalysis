@@ -78,9 +78,9 @@ int main (int argc, char *argv[])
   bool ee = false; 
   bool emu = false; 
   bool mumu = true; 
-  bool runHLT = false; 
-  std::string sWPMuon = "Loose"; 
-  std::string sWPElectron = "Loose";
+  bool runHLT = true; 
+//  std::string sWPMuon = "Loose"; 
+//  std::string sWPElectron = "Loose";
   /// xml file
   string xmlFileName ="config/Run2TriLepton_samples.xml";
   float Luminosity = 1263.885980236;  ; //  rereco run D + prompt v4 
@@ -217,7 +217,7 @@ int main (int argc, char *argv[])
   ////////////
   /// object selection and identification
   //////////////////////
-  int PVertexNdofCut = 4; // anaEnv.PVertexNdofCut; 
+/*  int PVertexNdofCut = 4; // anaEnv.PVertexNdofCut; 
   int PVertexZCut =24;// anaEnv.PVertexZCut; 
   int PVertexRhoCut = 2; // anaEnv.PVertexRhoCut; 
   int MuonPtCut = 20;  //anaEnv.MuonPtCutSR; 
@@ -234,7 +234,7 @@ int main (int argc, char *argv[])
   int applyJetID = true; //anaEnv.applyJetID; 
   int JetsEtaCut = 2.4; 
   std::string WPJet = "Loose"; // https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
-
+*/
   /////////
   /// lumi
   /////////
@@ -297,7 +297,7 @@ int main (int argc, char *argv[])
   applyGlobalSF = false;
   applyBtagSF = false; // doesn't work in 74X
   fillingbTagHistos = false;
-  applyJetCleaning = false; 
+  applyJetCleaning = true; 
   string pathToCaliDir = "/user/ivanpari/CMSSW_7_4_15/src/TopBrussels/TopTreeAnalysisBase/Calibrations/";
 
   //Muon SF 
@@ -525,6 +525,15 @@ int main (int argc, char *argv[])
      Int_t lumi_num;
      Int_t nvtx;
      Int_t npu;
+
+     Int_t jetCleaned;
+
+     double puSF; 
+     double muSF;
+     double elSF;
+     double btagSF;
+     double lumiSF;
+     double globalSF;
     
      //doubles
      double ptZboson;
@@ -618,11 +627,19 @@ int main (int argc, char *argv[])
      myTree->Branch("lumi_num",&lumi_num,"lumi_num/I");
      myTree->Branch("nvtx",&nvtx,"nvtx/I");
      myTree->Branch("npu",&npu,"npu/I");
+     myTree->Branch("jetCleaned",&jetCleaned,"jetCleaned/I"); 
+
+     myTree->Branch("puSF",&puSF,"puSF/D"); 
+     myTree->Branch("muSF",&muSF,"muSF/D");
+     myTree->Branch("elSF",&elSF,"elSF/D");
+     myTree->Branch("btagSF",&btagSF,"btagSF/D");
+     myTree->Branch("lumiSF",&lumiSF,"lumiSF/D");
+     myTree->Branch("globalSF",&globalSF,"globalSF/D");
      
      //Set branches for doubles 
-    myTree -> Branch("metPt", &metPt, "metPt/D");
-    myTree -> Branch("metPx", &metPx, "metPx/D");
-    myTree -> Branch("metPy", &metPy, "metPy/D");
+     myTree -> Branch("metPt", &metPt, "metPt/D");
+     myTree -> Branch("metPx", &metPx, "metPx/D");
+     myTree -> Branch("metPy", &metPy, "metPy/D");
      
      myTree->Branch("ptZboson", &ptZboson,"ptZboson/D");
      myTree->Branch("pxZboson", &pxZboson,"pxZboson/D");
@@ -726,7 +743,7 @@ int main (int argc, char *argv[])
     //open files and load
     cout << "LoadEvent" << endl;
     treeLoader.LoadDataset(datasets[d], anaEnv);
-    
+    if(runHLT) cout << " run trigger is ON " << endl;     
     nofSelectedEvents = 0; 
     
     ////////////////////////////////////
@@ -895,12 +912,13 @@ int main (int argc, char *argv[])
           //The HLT path is dependent of the mode, these paths are the several steps or software modules. Each module performs a well defined task 
           // such as reconstruction of physics objects, making intermediate decisions, triggering more refined reconstructions in subsequent modules, 
           // or calculating the final decision for that trigger path.
-          trigEMU = treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2"), currentRun, iFile);
+         // trigEMU = treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2"), currentRun, iFile);
           trigEE = treeLoader.iTrigger (string("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2"), currentRun, iFile);
-          trigMUMU =treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v2"), currentRun, iFile); 
-	  if(emu) itrigger = trigEMU;
-          else if(mumu && !trigEMU) itrigger = trigMUMU;
-          else if(ee && !trigEMU) itrigger = trigEE;
+          trigMUMU =treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v2"), currentRun, iFile); 
+	//  if(emu) itrigger = trigEMU;
+        //  else if(mumu && !trigEMU)
+           itrigger = trigMUMU;
+         // else if(ee && !trigEMU) itrigger = trigEE;
 
           if(itrigger == 9999) 
 	  {
@@ -911,17 +929,18 @@ int main (int argc, char *argv[])
         //For the MC, there is no triggerpath
         else
         {
-          trigEMU =  itrigger = treeLoader.iTrigger ("HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1", currentRun, iFile);
-          trigMUMU =  itrigger = treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v1"), currentRun, iFile);
-          trigEE = itrigger = treeLoader.iTrigger (string ("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1"), currentRun, iFile);
-          if(emu) itrigger = trigEMU;
-          else if(mumu && !trigEMU) itrigger = trigMUMU;
-          else if(ee && !trigEMU) itrigger = trigEE;
+          //trigEMU =  treeLoader.iTrigger ("HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1", currentRun, iFile);
+          trigMUMU = treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v1"), currentRun, iFile);
+          //trigEE= treeLoader.iTrigger (string ("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1"), currentRun, iFile);
+          //if(emu) itrigger = trigEMU;
+          //else if(mumu && !trigEMU)
+          itrigger = trigMUMU;
+          //else if(ee && !trigEMU) itrigger = trigEE;
 
         }
       } // closing the HLT run loop
       
-      
+       
       /////////////////////////
       ///  EVENT SELECTION  ///
       /////////////////////////
@@ -1009,7 +1028,7 @@ int main (int argc, char *argv[])
       ///  DETERMINE EVENT SCALEFACTOR  ///
       /////////////////////////////////////
       // PU SF
-       if (applyPUSF && !isdata ){
+       if (!isdata ){
           double puWeight = LumiWeights.ITweight( nvtx ); // simplest reweighting, just use reconstructed number of PV. faco
           puScaleFactor=puWeight;
           if (verbose>3) cout << "puScaleFactor is " << puScaleFactor << endl;
@@ -1017,8 +1036,8 @@ int main (int argc, char *argv[])
 
       // Lepton SF
       float muon1SF, muon2SF,muon3SF, electron1SF, electron2SF, electron3SF; 
-      muon1SF =  muon2SF = muon3SF = electron1SF = electron2SF = electron3SF = 0.;
-       if(applyMuonSF && !isdata){
+       muonScaleFactor = electronScaleFactor =  muon1SF =  muon2SF = muon3SF = electron1SF = electron2SF = electron3SF = 1.;
+       if(!isdata){
          if(selectedMuons.size()>0) {muon1SF = muonSFWeight->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0); muonScaleFactor = muon1SF; 
              histo2D["h2_muonSF"]->Fill(selectedMuons[0]->Pt(), selectedMuons[0]->Eta(), muon1SF);}
          if(selectedMuons.size()>1) {muon2SF = muonSFWeight->at(selectedMuons[1]->Eta(), selectedMuons[1]->Pt(), 0); muonScaleFactor *= muon2SF; 
@@ -1026,7 +1045,7 @@ int main (int argc, char *argv[])
          if(selectedMuons.size()>2) {muon3SF = muonSFWeight->at(selectedMuons[2]->Eta(), selectedMuons[2]->Pt(), 0); muonScaleFactor *= muon3SF; 
              histo2D["h2_muonSF"]->Fill(selectedMuons[2]->Pt(), selectedMuons[2]->Eta(), muon3SF);}
        }
-       if(applyElectronSF && !isdata){
+       if(!isdata){
          if(selectedElectrons.size()>0)  {electron1SF =  electronSFWeight->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0); electronScaleFactor = electron1SF;  
              histo2D["h2_electronSF"]->Fill(selectedElectrons[0]->Pt(), selectedElectrons[0]->Eta(), electron1SF);}
          if(selectedElectrons.size()>1)  {electron2SF =  electronSFWeight->at(selectedElectrons[1]->Eta(),selectedElectrons[1]->Pt(),0); electronScaleFactor *= electron2SF;  
@@ -1035,12 +1054,12 @@ int main (int argc, char *argv[])
              histo2D["h2_electronSF"]->Fill(selectedElectrons[2]->Pt(), selectedElectrons[2]->Eta(), electron3SF); }
        }
       if(fillingbTagHistos){
-         if(!isdata && applyBtagSF) btwt->FillMCEfficiencyHistos(selectedJets); 
+         if(!isdata ) btwt->FillMCEfficiencyHistos(selectedJets); 
                 
       }
       if (verbose>3) cout<<"getMCEventWeight for btag"<<endl;
-      if(applyBtagSF && !isdata && !fillingbTagHistos){
-           btagScaleFactor =  btwt->getMCEventWeight(selectedJets,(TFile*) "HistosPtEta.root", false);
+      if(!isdata && !fillingbTagHistos){
+         //  btagScaleFactor =  btwt->getMCEventWeight(selectedJets,(TFile*) "HistosPtEta.root", false);
            // cout<<"btag weight "<<btagWeight<<endl;
        }     
          
@@ -1067,7 +1086,7 @@ int main (int argc, char *argv[])
       // Start analysis selection
       eventSelected = false;
 
-      cout << "scaleFactor*lumiWeight = " << scaleFactor*lumiWeight << endl;  
+//      cout << "scaleFactor*lumiWeight = " << scaleFactor*lumiWeight << endl;  
       
       /// Initial nbrs
       
@@ -1076,7 +1095,7 @@ int main (int argc, char *argv[])
 
       /// Trigger
       if(runHLT) trigged = treeLoader.EventTrigged(itrigger);
-      else trigged = true; 
+      else if(!runHLT) trigged = true; 
       //SELECTION 
       if(trigged)
       { 
@@ -1250,6 +1269,14 @@ int main (int argc, char *argv[])
       etaWboson_lep = Wlep.Eta();
       eWboson_lep = Wlep.Energy();
 
+       jetCleaned = applyJetCleaning;
+       puSF = puScaleFactor;
+       muSF = muonScaleFactor; 
+       elSF = electronScaleFactor;
+       btagSF = btagScaleFactor;
+       lumiSF = lumiWeight;
+       globalSF = scaleFactor;
+
 
        metPt = met_pt; 
        metPx = met_px; 
@@ -1329,7 +1356,7 @@ int main (int argc, char *argv[])
       nofSelectedEvents++; 
       myTree->Fill();
 
-      
+     
       delete pxElectron;
       delete pyElectron;
       delete pzElectron;
