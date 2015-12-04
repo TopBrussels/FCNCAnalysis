@@ -83,7 +83,7 @@ int main (int argc, char *argv[])
 //  std::string sWPElectron = "Loose";
   /// xml file
   string xmlFileName ="config/Run2TriLepton_samples.xml";
-  float Luminosity = 1263.885980236;  ; //  rereco run D + prompt v4 
+  float Luminosity = 552.672886226; // single mu //  1263.885980236;  ; //  rereco run D + prompt v4 
   const char *xmlfile = xmlFileName.c_str();
   std::string channelpostfix = ""; 
   //UNCERTAINTIES
@@ -238,7 +238,7 @@ int main (int argc, char *argv[])
   /////////
   /// lumi
   /////////
-  float oldLuminosity =  1263.885980236;    //anaEnv.Luminosity;  // in 1/pb
+  float oldLuminosity = 552.672886226 ; //  1263.885980236;    //anaEnv.Luminosity;  // in 1/pb
   cout << "Analysis environment luminosity for rescaling " << oldLuminosity << endl;
   
  
@@ -752,9 +752,11 @@ int main (int argc, char *argv[])
     //some bookkeeping variables
     nEvents[d] = 0;
     int previousRun = -1;
-    int itrigger = -1; 
+    int itrigger = -1;
+    int itrigger_1 = -1;
+    int itrigger_2 = -1;  
     bool trigged = false; 
-    int trigEMU, trigMUMU,trigEE; 
+    int trigEMU, trigMUMU, trigMUMU_1, trigMUMU_2,trigEE; 
     trigEMU = trigMUMU = trigEE = -1; 
     if (verbose > 1)
       cout << "	Loop over events " << endl;
@@ -902,8 +904,8 @@ int main (int argc, char *argv[])
       /// Trigger
       ///////////////////////////
       
-       trigEMU = trigMUMU = trigEE = -1; 
-       itrigger = -1; 
+       trigEMU = trigMUMU = trigEE = trigMUMU_1 =trigMUMU_2 =-1; 
+       itrigger = itrigger_1 = itrigger_2  =-1; 
 
       //If the HLT is applied 
       if(runHLT && previousRun != currentRun){
@@ -913,11 +915,14 @@ int main (int argc, char *argv[])
           // such as reconstruction of physics objects, making intermediate decisions, triggering more refined reconstructions in subsequent modules, 
           // or calculating the final decision for that trigger path.
          // trigEMU = treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2"), currentRun, iFile);
-          trigEE = treeLoader.iTrigger (string("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2"), currentRun, iFile);
-          trigMUMU =treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v2"), currentRun, iFile); 
+        //    trigEE = treeLoader.iTrigger (string("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2"), currentRun, iFile);
+        //  trigMUMU =treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v2"), currentRun, iFile); 
 	//  if(emu) itrigger = trigEMU;
         //  else if(mumu && !trigEMU)
-           itrigger = trigMUMU;
+           trigMUMU_1 = treeLoader.iTrigger (string ("HLT_IsoMu18_v2"), currentRun, iFile); //single Mu
+           trigMUMU_2 = treeLoader.iTrigger (string ("HLT_IsoMu18_v1"), currentRun, iFile); //single Mu
+           itrigger_1  = trigMUMU_1;
+           itrigger_2  = trigMUMU_2;
          // else if(ee && !trigEMU) itrigger = trigEE;
 
           if(itrigger == 9999) 
@@ -930,7 +935,8 @@ int main (int argc, char *argv[])
         else
         {
           //trigEMU =  treeLoader.iTrigger ("HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1", currentRun, iFile);
-          trigMUMU = treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v1"), currentRun, iFile);
+//          trigMUMU = treeLoader.iTrigger (string ("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v1"), currentRun, iFile);
+          trigMUMU = treeLoader.iTrigger (string ("HLT_IsoMu17_eta2p1_v1"), currentRun, iFile); // single Mu
           //trigEE= treeLoader.iTrigger (string ("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1"), currentRun, iFile);
           //if(emu) itrigger = trigEMU;
           //else if(mumu && !trigEMU)
@@ -952,8 +958,8 @@ int main (int argc, char *argv[])
 
 
       bool isGoodPV = selection.isPVSelected(vertex, 4, 24,2); //isPVSelected(const std::vector<TRootVertex*>& vertex, int NdofCut, float Zcut, float RhoCut)
-      selectedMuons = selection.GetSelectedMuons(20, 2.4, 0.15,"Tight","Spring15");  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
-      selectedVetoMuons = selection.GetSelectedMuons(8, 2.4, 0.15,"Loose","Spring15");  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
+      selectedMuons = selection.GetSelectedMuons(20, 2.1, 0.15,"Tight","Spring15");  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
+      selectedVetoMuons = selection.GetSelectedMuons(8, 2.1, 0.15,"Loose","Spring15");  // GetSelectedMuons(float PtThr, float EtaThr,float MuonRelIso)
 
       selectedJets_bfCleaning = selection.GetSelectedJets(30, 2.4, true, "Tight");
       selectedJets = selection.GetSelectedJets(30, 2.4, true, "Tight");  // GetSelectedJets(float PtThr, float EtaThr, bool applyJetID, std::string TightLoose)
@@ -1094,7 +1100,9 @@ int main (int argc, char *argv[])
       histo1D["h_raw_cutFlow"]->Fill(0.);
 
       /// Trigger
-      if(runHLT) trigged = treeLoader.EventTrigged(itrigger);
+      if(runHLT && !isdata) trigged = treeLoader.EventTrigged(itrigger);
+      else if(runHLT && isdata) trigged = treeLoader.EventTrigged(itrigger_1);
+      else if(runHLT && isdata && !trigged) trigged = treeLoader.EventTrigged(itrigger_2);
       else if(!runHLT) trigged = true; 
       //SELECTION 
       if(trigged)
