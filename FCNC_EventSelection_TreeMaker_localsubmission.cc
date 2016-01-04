@@ -73,11 +73,12 @@ using namespace reweight;
 
 
 // General flags
-bool debug = true;
-bool Muon = true;
-bool Electron = false;
-bool bTagReweight_PreReweighting = false; //Needs to be set only once to true in order to produce the EtaPtHistos
+bool debug = false;
+bool Muon = false;
+bool Electron = true;
+bool bTagReweight_PreReweighting = true; //Needs to be set only once to true in order to produce the EtaPtHistos
 string btagger = "CSVM";
+bool runHLT = false;
 
 /// MultiSamplePlot
 map<string,MultiSamplePlot*> MSPlot;
@@ -288,7 +289,7 @@ int main (int argc, char *argv[])
 //    BTagWeightTools *btwt_comb_central;
 //    BTagWeightTools *btwt_comb_up;
 //    BTagWeightTools *btwt_comb_down;
-    BTagWeightTools *btwt_mujets_central;
+    BTagWeightTools *btwt_mujets_central = 0;
 //    BTagWeightTools *btwt_mujets_up;
 //    BTagWeightTools *btwt_mujets_down;
 //    BTagWeightTools *btwt_ttbar_central;
@@ -517,6 +518,7 @@ int main (int argc, char *argv[])
 
         bool nlo = false;
 
+
         if(dName.find("NLO") != std::string::npos || dName.find("nlo") !=std::string::npos) nlo = true;
         else nlo = false;
 
@@ -590,7 +592,10 @@ int main (int argc, char *argv[])
 
         int itrigger = -1, previousRun = -1, start = 0;
         int currentRun;
+        int iFile = -1;
+        int isdata = 0;
         unsigned int ending = datasets[d]->NofEvtsToRunOver();    cout <<"Number of events = "<<  ending  <<endl;
+        string previousFilename = "";
 
         int event_start = startEvent;
 
@@ -640,6 +645,20 @@ int main (int argc, char *argv[])
             if(debug)cout<<"before tree load"<<endl;
             event = treeLoader.LoadEvent (ievt, vertex, init_muons, init_electrons, init_jets, mets, debug);  //load event
             if(debug)cout<<"after tree load"<<endl;
+
+            ////////////////////////////
+            ///  Include trigger set up here when using data
+            ////////////////////////////
+      
+            string currentfilename = datasets[d]->eventTree()->GetFile()->GetName();
+            //cout<<currentfilename<<endl;
+            if(previousFilename != currentfilename){
+                previousFilename = currentfilename;
+                iFile++;
+                cout<<"File changed!!! => iFile = "<<iFile << " new file is " << datasets[d]->eventTree()->GetFile()->GetName() << " in sample " << datasets[d]->Name() << endl;
+            }
+            if( event->runId() > 10000) isdata=1;
+
 
             float rho = event->fixedGridRhoFastjetAll();
             if (debug)cout <<"Rho: " << rho <<endl;
@@ -759,40 +778,41 @@ int main (int argc, char *argv[])
             ////////////////////////////////////////////////
             // PV selection and trigger
             ////////////////////////////////////////////////
-
+            
             if (debug)	cout <<" applying baseline event selection for cut table..."<<endl;
             // Apply primary vertex selection
             bool isGoodPV = r2selection.isPVSelected(vertex, 4, 24., 2);
-            bool trigged = true;
-            if (debug)	cout <<"PrimaryVertexBit: " << isGoodPV << " TriggerBit: " << trigged <<endl;
+            bool trigged = false;
+            if (debug)	cout <<"PrimaryVertexBit: " << isGoodPV <<endl;
 //            if (debug) cin.get();
             MSPlot["cutFlow"]->Fill(0, datasets[d], true, Luminosity*scaleFactor );
             weightCount += scaleFactor;
             eventCount++;
 
-            ///////////////////////////////////////////////////
-            // Fill b-tag histos for scale factors
-            // info: http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees_v2.pdf
-            ////////////////////////////////////////////////////
-            if(bTagReweight_PreReweighting)
+            //If the HLT is applied 
+            if(runHLT && previousRun != currentRun)
             {
-                if(dName.find("Data")==string::npos)        //Btag documentation : http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
+                //The HLT is only used for data
+                if(isdata == 1)
                 {
-//                    btwt_comb_central->FillMCEfficiencyHistos(selectedJets);
-//                    btwt_comb_up->FillMCEfficiencyHistos(selectedJets);
-//                    btwt_comb_down->FillMCEfficiencyHistos(selectedJets);
-                    btwt_mujets_central->FillMCEfficiencyHistos(selectedJets);
-//                    btwt_mujets_up->FillMCEfficiencyHistos(selectedJets);
-//                    btwt_mujets_down->FillMCEfficiencyHistos(selectedJets);
-//                    btwt_ttbar_central->FillMCEfficiencyHistos(selectedJets);
-//                    btwt_ttbar_up->FillMCEfficiencyHistos(selectedJets);
-//                    btwt_ttbar_down->FillMCEfficiencyHistos(selectedJets);
+                    //The HLT path is dependent of the mode, these paths are the several steps or software modules. Each module performs a well defined task 
+                    // such as reconstruction of physics objects, making intermediate decisions, triggering more refined reconstructions in subsequent modules, 
+                    // or calculating the final decision for that trigger path.
+                    if(Muon)itrigger = treeLoader.iTrigger (string ("HLT_IsoMu20"), currentRun, iFile);
+                    else if(Electron)itrigger = treeLoader.iTrigger (string (" HLT_Ele27_eta2p1_WPLoose_Gsf_v*"), currentRun, iFile);
+                    if(itrigger == 9999) cout << "ERROR: no valid trigger found for this event/data in run " << event->runId() << endl; 
+	          
+                } // closing the HLT for data loop
+                //For the MC, there is no triggerpath
+                else
+                {
+                    if(Muon)itrigger = treeLoader.iTrigger (string ("HLT_IsoMu20"), currentRun, iFile);
+                    else if(Electron)itrigger = treeLoader.iTrigger (string (" HLT_Ele27_eta2p1_WPLoose_Gsf_v*"), currentRun, iFile);
                 }
-            }       
+            }// closing the HLT run loop
 
-
-
-
+            if(runHLT) trigged = treeLoader.EventTrigged(itrigger);
+            else trigged = true;
             //////////////////////////////////////////////////////
             // Applying baseline lepton selection
             //////////////////////////////////////////////////////
@@ -802,6 +822,8 @@ int main (int argc, char *argv[])
             if (!isGoodPV) continue; // Check that there is a good Primary Vertex
             MSPlot["cutFlow"]->Fill(1, datasets[d], true, Luminosity*scaleFactor );
 
+            if(!trigged) continue;
+            MSPlot["cutFlow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor );
 
             if (debug)
             {
@@ -827,7 +849,7 @@ int main (int argc, char *argv[])
                 cerr<<"Correct Channel not selected."<<endl;
                 exit(1);
             }
-            MSPlot["cutFlow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor );
+            MSPlot["cutFlow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor );
 
 			if(Muon && !Electron)
 			{
@@ -839,7 +861,7 @@ int main (int argc, char *argv[])
 				if(nLooseEl != 1) continue;
 	            if (debug)	cout <<"Vetoed extra electrons..."<<endl;
 			}
-			MSPlot["cutFlow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor );
+			MSPlot["cutFlow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor );
 			
 			////////////////////////////////////////////////////////////////////////////////
 			// Clean jet collection from jets overlapping with lepton
@@ -905,7 +927,7 @@ int main (int argc, char *argv[])
 			MSPlot["MET_preCut"] ->Fill(mets[0]->Et(), datasets[d], true, Luminosity*scaleFactor );
 
 //			if(MT <= 50) continue;
-//			MSPlot["cutFlow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor );
+			MSPlot["cutFlow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor );
 //	        if (debug)	cout <<"Cut on MT..."<<endl;
 
             sort(selectedJets.begin(),selectedJets.end(),HighestPt()); //order Jets wrt Pt for tuple output
@@ -989,15 +1011,38 @@ int main (int argc, char *argv[])
             // Cut on nb of jets and b-jets
             //////////////////////////////////////////////////////////////////////
 			if(selectedJets.size() < 3)  continue;
-			MSPlot["cutFlow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor );
+			MSPlot["cutFlow"]->Fill(6, datasets[d], true, Luminosity*scaleFactor );
 	        if (debug)	cout <<"Cut on nb jets..."<<endl;
+
+            ///////////////////////////////////////////////////
+            // Fill b-tag histos for scale factors
+            // info: http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees_v2.pdf
+            ////////////////////////////////////////////////////
+            if(bTagReweight_PreReweighting)
+            {
+                if(dName.find("Data")==string::npos)        //Btag documentation : http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
+                {
+//                    btwt_comb_central->FillMCEfficiencyHistos(selectedJets);
+//                    btwt_comb_up->FillMCEfficiencyHistos(selectedJets);
+//                    btwt_comb_down->FillMCEfficiencyHistos(selectedJets);
+                    btwt_mujets_central->FillMCEfficiencyHistos(selectedJets);
+//                    btwt_mujets_up->FillMCEfficiencyHistos(selectedJets);
+//                    btwt_mujets_down->FillMCEfficiencyHistos(selectedJets);
+//                    btwt_ttbar_central->FillMCEfficiencyHistos(selectedJets);
+//                    btwt_ttbar_up->FillMCEfficiencyHistos(selectedJets);
+//                    btwt_ttbar_down->FillMCEfficiencyHistos(selectedJets);
+                }
+            }       
+
+
+
 
 
 		  	if(selectedMBJets.size() < 3) continue;
 	        if (debug)	cout <<"Cut on nb b-jets..."<<endl;
-			MSPlot["cutFlow"]->Fill(6, datasets[d], true, Luminosity*scaleFactor );
-
 			MSPlot["cutFlow"]->Fill(7, datasets[d], true, Luminosity*scaleFactor );
+
+			MSPlot["cutFlow"]->Fill(8, datasets[d], true, Luminosity*scaleFactor );
 
             if(debug)
             {
@@ -1513,16 +1558,6 @@ int main (int argc, char *argv[])
     }
     delete fout;
 
-
-
-/*    if(Muon){
-
-        cout<<"TRIGGGG"<<endl;
-
-        cout<<"preTrig: "<<preTrig<<"   postTrig: "<<postTrig<<endl;
-        cout<<"********"<<endl;
-    }
-*/
 
 
 

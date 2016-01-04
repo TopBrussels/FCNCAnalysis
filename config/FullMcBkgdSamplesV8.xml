@@ -35,13 +35,13 @@
 
 <!-- SIGNALS -->
 
-<d name="NP_overlay_TTtoTHToBB-1L-Kappa-hct"  title="tt \rightarrow tcH"  add="0"   color="kCyan"  ls="1"  lw="2" normf="1"  EqLumi="261651.676206" xsection="2.446"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/TTtoTHToBB-1L-Kappa-hct/tHFCNC13TeV/crab_TTtoTHToBB-1L-Kappa-hct/151014_112337/0000/*.root"/>
+<d name="NP_overlay_TTtoTHToBB-1L-Kappa-hct"  title="tt \rightarrow tcH"  add="1"   color="kCyan"  ls="1"  lw="2" normf="1"  EqLumi="261651.676206" xsection="2.446"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/TTtoTHToBB-1L-Kappa-hct/tHFCNC13TeV/crab_TTtoTHToBB-1L-Kappa-hct/151014_112337/0000/*.root"/>
 
-<d name="NP_overlay_TTtoTHToBB-1L-Kappa-hut"  title="tt \rightarrow tuH"  add="0"   color="kCyan-7"  ls="1"  lw="2" normf="1"  EqLumi="228945.21668" xsection="2.446"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/TTtoTHToBB-1L-Kappa-hut/tHFCNC13TeV/crab_TTtoTHToBB-1L-Kappa-hut/151014_090649/0000/*.root"/>
+<d name="NP_overlay_TTtoTHToBB-1L-Kappa-hut"  title="tt \rightarrow tuH"  add="1"   color="kCyan-7"  ls="1"  lw="2" normf="1"  EqLumi="228945.21668" xsection="2.446"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/TTtoTHToBB-1L-Kappa-hut/tHFCNC13TeV/crab_TTtoTHToBB-1L-Kappa-hut/151014_090649/0000/*.root"/>
 
-<d name="NP_overlay_tHToBB_1L_Kappa_hut"  title="tt \rightarrow tuH"  add="0"   color="kCyan+2"  ls="1"  lw="2" normf="1"  EqLumi="185614.849188" xsection="1.724"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/tHToBB_1L_Kappa_hut/tHFCNC13TeV/crab_tHToBB_1L_Kappa_hut/151014_120125/0000/*.root"/>
+<d name="NP_overlay_tHToBB_1L_Kappa_hut"  title="tt \rightarrow tuH"  add="1"   color="kCyan+2"  ls="1"  lw="2" normf="1"  EqLumi="185614.849188" xsection="1.724"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/tHToBB_1L_Kappa_hut/tHFCNC13TeV/crab_tHToBB_1L_Kappa_hut/151014_120125/0000/*.root"/>
 
-<d name="NP_overlay_tHToBB_1L_Kappa_hct"  title="tt \rightarrow tuH"  add="0"   color="kCyan-6"  ls="1"  lw="2" normf="1"  EqLumi="2065727.69953" xsection="0.213"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/tHToBB_1L_Kappa_hct/tHFCNC13TeV/crab_tHToBB_1L_Kappa_hct/151014_120023/0000/*.root"/>
+<d name="NP_overlay_tHToBB_1L_Kappa_hct"  title="tt \rightarrow tuH"  add="1"   color="kCyan-6"  ls="1"  lw="2" normf="1"  EqLumi="2065727.69953" xsection="0.213"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/tHToBB_1L_Kappa_hct/tHFCNC13TeV/crab_tHToBB_1L_Kappa_hct/151014_120023/0000/*.root"/>
 
 
 
