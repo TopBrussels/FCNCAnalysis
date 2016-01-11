@@ -35,7 +35,7 @@ map<string,MultiSamplePlot*> MSPlot;
 
 float Luminosity = 1263.885980236; // pb-1
 TString slumi = "1263.885980236";
-std::string channel = "_Mu";
+std::string channel = "_El";
 std::string date = "_24_11_2015";
 Bool_t debug = false;
 
