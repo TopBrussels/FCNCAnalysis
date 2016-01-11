@@ -1,2 +1,15 @@
 __init__.py
 *.pyc
+BTagHistosPtEta/
+EventInfo_*.txt
+*.root
+MACRO_Output_*/
+MACRO_TreeProcessor
+Merged*/
+Plots*/
+TreeMaker
+localsubmission/SubmitPart.sh
+localsubmission/SubmitScripts/
+localsubmission/Terminal_Output/
+nohup*
+myOutput_MSPlots*/
