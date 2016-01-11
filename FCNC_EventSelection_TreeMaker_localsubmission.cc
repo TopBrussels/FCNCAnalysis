@@ -41,7 +41,6 @@
 #include "TopTreeAnalysisBase/Content/interface/Dataset.h"
 #include "TopTreeAnalysisBase/Tools/interface/JetTools.h"
 #include "TopTreeAnalysisBase/Tools/interface/PlottingTools.h"
-#include "TopTreeAnalysisBase/Tools/interface/MultiSamplePlot.h"
 #include "TopTreeAnalysisBase/Tools/interface/TTreeLoader.h"
 #include "TopTreeAnalysisBase/Tools/interface/AnalysisEnvironmentLoader.h"
 #include "TopTreeAnalysisBase/Reconstruction/interface/JetCorrectorParameters.h"
@@ -52,7 +51,7 @@
 #include "TopTreeAnalysisBase/Reconstruction/interface/MEzCalculator.h"
 #include "TopTreeAnalysisBase/Tools/interface/LeptonTools.h"
 #include "TopTreeAnalysisBase/Tools/interface/SourceDate.h"
-
+#include "TopTreeAnalysisBase/Tools/interface/Trigger.h"
 #include "TopTreeAnalysisBase/Reconstruction/interface/TTreeObservables.h"
 
 //This header file is taken directly from the BTV wiki. It contains
@@ -72,16 +71,8 @@ using namespace TopTree;
 using namespace reweight;
 
 
-// General flags
-bool debug = false;
-bool Muon = false;
-bool Electron = true;
-bool bTagReweight_PreReweighting = true; //Needs to be set only once to true in order to produce the EtaPtHistos
-string btagger = "CSVM";
-bool runHLT = false;
-
-/// MultiSamplePlot
-map<string,MultiSamplePlot*> MSPlot;
+/// TH1F
+map<string,TH1F*> histo1D;
 map<string,TH2F*> histo2D;
 
 struct HighestCSVBtag
@@ -154,9 +145,9 @@ int main (int argc, char *argv[])
     int eventCount = 0;
 
     //Initializing CSVv2 b-tag WP
-	float workingpointvalue_Loose = 0.605;//working points updated to 2015 BTV-POG recommendations.
-	float workingpointvalue_Medium = 0.890;//working points updated to 2015 BTV-POG recommendations.
-	float workingpointvalue_Tight = 0.970;//working points updated to 2015 BTV-POG recommendations.
+	  float workingpointvalue_Loose = 0.605;//working points updated to 2015 BTV-POG recommendations.
+	  float workingpointvalue_Medium = 0.890;//working points updated to 2015 BTV-POG recommendations.
+	  float workingpointvalue_Tight = 0.970;//working points updated to 2015 BTV-POG recommendations.
 
     clock_t start = clock();
     cout << "*************************************************************" << endl;
@@ -207,6 +198,13 @@ int main (int argc, char *argv[])
     // Configuration
     ///////////////////////////////////////
 
+    bool debug = false;
+    bool Muon = true;
+    bool Electron = false;
+    bool bTagReweight_PreReweighting = true; //Needs to be set only once to true in order to produce the EtaPtHistos
+    string btagger = "CSVM";
+    bool printTriggers = false;
+    bool applyTriggers = true;
     string channelpostfix = "";
     string xmlFileName = "";
 
@@ -300,7 +298,7 @@ int main (int argc, char *argv[])
     {
         if(dName.find("Data")==string::npos)        //Btag documentation : http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
         {
-            bTagCalib = new BTagCalibration("CSVv2","../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_13TeV_LanaMod_combToMujets.csv");
+            bTagCalib = new BTagCalibration("CSVv2","../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_13TeV_25ns_combToMujets.csv");
             bTagReader_mujets_central = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"mujets","central"); //mujets
 //            bTagReader_mujets_up = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"mujets","up"); //mujets
 //            bTagReader_mujets_down = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"mujets","down"); //mujets
@@ -351,10 +349,19 @@ int main (int argc, char *argv[])
     LumiReWeighting LumiWeights;
     LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring15DR74-Asympt25ns.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2015Data74X_25ns-Run254231-258750Cert/nominal.root", "pileup", "pileup");    
 
+    ////////////////////////////
+    ///  Initialise trigger  ///
+    ////////////////////////////
+
+    if (debug) cout << "Initializing trigger" << endl;    
+    //Trigger* trigger = new Trigger(hasMuon, hasElectron, trigSingleLep, trigDoubleLep);
+    Trigger* trigger = 0;
+    if(applyTriggers) trigger = new Trigger(Muon, Electron, true, false);
+
     /////////////////////////////////
     //  Loop over Datasets
     /////////////////////////////////
-	float Luminosity = 1.; //pb^-1
+	  float Luminosity = 1.; //pb^-1
     cout <<"found sample with equivalent lumi "<<  theDataset->EquivalentLumi() <<endl;
     if(dName.find("Data")==string::npos)
     {
@@ -370,14 +377,18 @@ int main (int argc, char *argv[])
 
     // add jobs number at the end of file if 
     //Output ROOT file
-    string outputDirectory("MACRO_Output"+channelpostfix);
-    mkdir(outputDirectory.c_str(),0777);
+    SourceDate *strdate = new SourceDate();
+    string date_str = strdate->ReturnDateStr();
+    string histo_dir = "TreeMakerOutput/MACRO_histos"+channelpostfix;
+    string histo_dir_date = histo_dir+"/MACRO_histos_" + date_str +"/";
+    int mkdirstatus_histos = mkdir(histo_dir.c_str(),0777);
+    mkdirstatus_histos = mkdir(histo_dir_date.c_str(),0777);
     
-    string rootFileName (outputDirectory+"/FCNC_1L3B_"+postfix+channelpostfix+".root");
+    string rootFileName (histo_dir_date+"/FCNC_1L3B_"+postfix+channelpostfix+".root");
     if (strJobNum != "0")
       {
-	cout << "strJobNum is " << strJobNum << endl;
-        rootFileName = outputDirectory+"/FCNC_1L3B_"+postfix+channelpostfix+"_"+strJobNum+".root";
+	      cout << "strJobNum is " << strJobNum << endl;
+        rootFileName = histo_dir_date+"/FCNC_1L3B_"+postfix+channelpostfix+"_"+strJobNum+".root";
       }
     
     
@@ -402,103 +413,101 @@ int main (int argc, char *argv[])
     ////////////////// MultiSample plots  //////////////////////////////
     ////////////////////////////////////////////////////////////////////
 
-    MSPlot["NbOfVertices"]                                  = new MultiSamplePlot(datasets, "NbOfVertices", 60, 0, 60, "Nb. of vertices");
-    MSPlot["cutFlow"]                                  = new MultiSamplePlot(datasets, "cutFlow", 15, -0.5, 14.5, "cutFlow");
+    histo1D["NbOfVertices"]                                  = new TH1F("NbOfVertices", "Nb. of vertices", 60, 0, 60);
+    histo1D["cutFlow"]                                  = new TH1F( "cutFlow", "cutFlow", 15, -0.5, 14.5);
     //Muons
-    MSPlot["MuonPt"]                                        = new MultiSamplePlot(datasets, "MuonPt", 30, 0, 300, "PT_{#mu}");
-    MSPlot["LeptonPt"]                                        = new MultiSamplePlot(datasets, "MuonPt", 30, 0, 300, "PT_{lep}");
-    MSPlot["MuonRelIsolation"]                              = new MultiSamplePlot(datasets, "MuonRelIsolation", 10, 0, .25, "RelIso");
+    histo1D["MuonPt"]                                        = new TH1F( "MuonPt", "PT_{#mu}", 30, 0, 300);
+    histo1D["LeptonPt"]                                        = new TH1F( "LeptonPt", "PT_{lep}", 30, 0, 300);
+    histo1D["MuonRelIsolation"]                              = new TH1F( "MuonRelIsolation", "RelIso", 10, 0, .25);
     //Electrons
-    MSPlot["ElectronRelIsolation"]                          = new MultiSamplePlot(datasets, "ElectronRelIsolation", 10, 0, .25, "RelIso");
-    MSPlot["ElectronPt"]                                    = new MultiSamplePlot(datasets, "ElectronPt", 30, 0, 300, "PT_{e}");
-    MSPlot["NbOfElectronsPreJetSel"]                           = new MultiSamplePlot(datasets, "NbOfElectronsPreJetSel", 10, 0, 10, "Nb. of electrons");
+    histo1D["ElectronRelIsolation"]                          = new TH1F( "ElectronRelIsolation", "RelIso", 10, 0, .25);
+    histo1D["ElectronPt"]                                    = new TH1F( "ElectronPt", "PT_{e}", 30, 0, 300);
     //Init Electron Plots
-    MSPlot["InitElectronPt"]                                = new MultiSamplePlot(datasets, "InitElectronPt", 30, 0, 300, "PT_{e}");
-    MSPlot["InitElectronEta"]                               = new MultiSamplePlot(datasets, "InitElectronEta", 40, -4, 4, "#eta");
-    MSPlot["NbOfElectronsInit"]                             = new MultiSamplePlot(datasets, "NbOfElectronsInit", 10, 0, 10, "Nb. of electrons");
-    MSPlot["InitElectronRelIsolation"]                      = new MultiSamplePlot(datasets, "InitElectronRelIsolation", 10, 0, .25, "RelIso");
-    MSPlot["InitElectronSuperClusterEta"]                   = new MultiSamplePlot(datasets, "InitElectronSuperClusterEta", 10, 0, 2.5, "#eta");
-    MSPlot["InitElectrondEtaI"]                             = new MultiSamplePlot(datasets, "InitElectrondEtaI", 20, 0, .05, "#eta");
-    MSPlot["InitElectrondPhiI"]                             = new MultiSamplePlot(datasets, "InitElectrondPhiI", 20, 0, .2, "#phi");
-    MSPlot["InitElectronHoverE"]                            = new MultiSamplePlot(datasets, "InitElectronHoverE", 10, 0, .15, "H/E");
-    MSPlot["InitElectrond0"]                                = new MultiSamplePlot(datasets, "InitElectrond0", 20, 0, .1, "d0");
-    MSPlot["InitElectrondZ"]                                = new MultiSamplePlot(datasets, "InitElectrondZ", 10, 0, .25, "dZ");
-    MSPlot["InitElectronEminusP"]                           = new MultiSamplePlot(datasets, "InitElectronEminusP", 10, 0, .25, "1/GeV");
-    MSPlot["InitElectronConversion"]                        = new MultiSamplePlot(datasets, "InitElectronConversion", 2, 0, 2, "Conversion Pass");
-    MSPlot["InitElectronMissingHits"]                       = new MultiSamplePlot(datasets, "InitElectronMissingHits", 10, 0, 10, "MissingHits");
-    MSPlot["InitElectronCutFlow"]                           = new MultiSamplePlot(datasets, "InitElectronCutFlow", 12, 0, 12, "CutNumber");
+/*
+    histo1D["InitElectronPt"]                                = new TH1F( "InitElectronPt", "PT_{e}", 30, 0, 300);
+    histo1D["InitElectronEta"]                               = new TH1F( "InitElectronEta", "#eta", 40, -4, 4);
+    histo1D["NbOfElectronsInit"]                             = new TH1F( "NbOfElectronsInit", "Nb. of electrons", 10, 0, 10);
+    histo1D["InitElectronRelIsolation"]                      = new TH1F( "InitElectronRelIsolation", "RelIso", 10, 0, .25);
+    histo1D["InitElectronSuperClusterEta"]                   = new TH1F( "InitElectronSuperClusterEta", "#eta", 10, 0, 2.5);
+    histo1D["InitElectrondEtaI"]                             = new TH1F( "InitElectrondEtaI", "#eta", 20, 0, .05);
+    histo1D["InitElectrondPhiI"]                             = new TH1F( "InitElectrondPhiI", "#phi", 20, 0, .2);
+    histo1D["InitElectronHoverE"]                            = new TH1F( "InitElectronHoverE", "H/E", 10, 0, .15);
+    histo1D["InitElectrond0"]                                = new TH1F( "InitElectrond0", "d0", 20, 0, .1);
+    histo1D["InitElectrondZ"]                                = new TH1F( "InitElectrondZ", "dZ", 10, 0, .25);
+    histo1D["InitElectronEminusP"]                           = new TH1F( "InitElectronEminusP", "1/GeV", 10, 0, .25);
+    histo1D["InitElectronConversion"]                        = new TH1F( "InitElectronConversion", "Conversion Pass", 2, 0, 2);
+    histo1D["InitElectronMissingHits"]                       = new TH1F( "InitElectronMissingHits", "MissingHits", 10, 0, 10);
+    histo1D["InitElectronCutFlow"]                           = new TH1F( "InitElectronCutFlow", "CutNumber", 12, 0, 12);
+*/
     //B-tagging discriminators
-    MSPlot["Bdisc_CSV_jet1"]                             = new MultiSamplePlot(datasets, "Bdisc_CSV_jet1", 30, 0, 1, "CSV b-disc._{jet1}");
-    MSPlot["Bdisc_CSV_jet2"]                             = new MultiSamplePlot(datasets, "Bdisc_CSV_jet2", 30, 0, 1, "CSV b-disc._{jet2}");
-    MSPlot["Bdisc_CSV_jet3"]                             = new MultiSamplePlot(datasets, "Bdisc_CSV_jet3", 30, 0, 1, "CSV b-disc._{jet3}");
-    MSPlot["Bdisc_CSV_jet4"]                             = new MultiSamplePlot(datasets, "Bdisc_CSV_jet4", 30, 0, 1, "CSV b-disc._{jet4}");
-    MSPlot["Bdisc_CSV_jet5"]                             = new MultiSamplePlot(datasets, "Bdisc_CSV_jet5", 30, 0, 1, "CSV b-disc._{jet5}");
-    MSPlot["Bdisc_CSV_jet6"]                             = new MultiSamplePlot(datasets, "Bdisc_CSV_jet6", 30, 0, 1, "CSV b-disc._{jet6}");
-    MSPlot["Bdisc_CSV_Bjet1"]                             = new MultiSamplePlot(datasets, "Bdisc_CSV_Bjet1", 30, 0, 1, "CSV b-disc._{bjet1}");
-    MSPlot["Bdisc_CSV_Bjet2"]                             = new MultiSamplePlot(datasets, "Bdisc_CSV_Bjet2", 30, 0, 1, "CSV b-disc._{bjet2}");
-    MSPlot["Bdisc_CSV_Bjet3"]                             = new MultiSamplePlot(datasets, "Bdisc_CSV_Bjet3", 30, 0, 1, "CSV b-disc._{bjet3}");
-    MSPlot["Bdisc_CSV_Bjet4"]                             = new MultiSamplePlot(datasets, "Bdisc_CSV_Bjet4", 30, 0, 1, "CSV b-disc._{bjet4}");
-    MSPlot["Bdisc_CSV_Bjet5"]                             = new MultiSamplePlot(datasets, "Bdisc_CSV_Bjet5", 30, 0, 1, "CSV b-disc._{bjet5}");
-    MSPlot["Bdisc_CSV_Bjet6"]                             = new MultiSamplePlot(datasets, "Bdisc_CSV_Bjet6", 30, 0, 1, "CSV b-disc._{bjet6}");
+    histo1D["Bdisc_CSV_jet1"]                             = new TH1F( "Bdisc_CSV_jet1", "CSV b-disc._{jet1}", 30, 0, 1);
+    histo1D["Bdisc_CSV_jet2"]                             = new TH1F( "Bdisc_CSV_jet2", "CSV b-disc._{jet2}", 30, 0, 1);
+    histo1D["Bdisc_CSV_jet3"]                             = new TH1F( "Bdisc_CSV_jet3", "CSV b-disc._{jet3}", 30, 0, 1);
+    histo1D["Bdisc_CSV_jet4"]                             = new TH1F( "Bdisc_CSV_jet4", "CSV b-disc._{jet4}", 30, 0, 1);
+    histo1D["Bdisc_CSV_jet5"]                             = new TH1F( "Bdisc_CSV_jet5", "CSV b-disc._{jet5}", 30, 0, 1);
+    histo1D["Bdisc_CSV_jet6"]                             = new TH1F( "Bdisc_CSV_jet6", "CSV b-disc._{jet6}", 30, 0, 1);
+    histo1D["Bdisc_CSV_Bjet1"]                             = new TH1F( "Bdisc_CSV_Bjet1", "CSV b-disc._{bjet1}", 30, 0, 1);
+    histo1D["Bdisc_CSV_Bjet2"]                             = new TH1F( "Bdisc_CSV_Bjet2", "CSV b-disc._{bjet2}", 30, 0, 1);
+    histo1D["Bdisc_CSV_Bjet3"]                             = new TH1F( "Bdisc_CSV_Bjet3", "CSV b-disc._{bjet3}", 30, 0, 1);
+    histo1D["Bdisc_CSV_Bjet4"]                             = new TH1F( "Bdisc_CSV_Bjet4", "CSV b-disc._{bjet4}", 30, 0, 1);
+    histo1D["Bdisc_CSV_Bjet5"]                             = new TH1F( "Bdisc_CSV_Bjet5", "CSV b-disc._{bjet5}", 30, 0, 1);
+    histo1D["Bdisc_CSV_Bjet6"]                             = new TH1F( "Bdisc_CSV_Bjet6", "CSV b-disc._{bjet6}", 30, 0, 1);
     //Jets
-    MSPlot["JetEta"]                                        = new MultiSamplePlot(datasets, "JetEta", 40,-4, 4, "Jet #eta");
-    MSPlot["NbJetsPreJetSel"]                                        = new MultiSamplePlot(datasets, "NbJetsPreJetSel", 15,-0.5, 14.5, "nb. jets");
-    MSPlot["NbCSVLJetsPreJetSel_0"]                                        = new MultiSamplePlot(datasets, "NbCSVLJetsPreJetSel_0", 15,-0.5, 14.5, "nb. CSVL tags");
-    MSPlot["NbCSVMJetsPreJetSel_0"]                                        = new MultiSamplePlot(datasets, "NbCSVMJetsPreJetSel_0", 15,-0.5, 14.5, "nb. CSVM tags");
-    MSPlot["NbCSVTJetsPreJetSel_0"]                                        = new MultiSamplePlot(datasets, "NbCSVTJetsPreJetSel_0", 15,-0.5, 14.5, "nb. CSVT tags");
-    MSPlot["NbLightJetsPreJetSel_0"]                                        = new MultiSamplePlot(datasets, "NbLightJetsPreJetSel_0", 15,-0.5, 14.5, "nb. Light tags");
-    MSPlot["NbCSVLJetsPreJetSel_1"]                                        = new MultiSamplePlot(datasets, "NbCSVLJetsPreJetSel_1", 15,-0.5, 14.5, "nb. CSVL tags");
-    MSPlot["NbCSVMJetsPreJetSel_1"]                                        = new MultiSamplePlot(datasets, "NbCSVMJetsPreJetSel_1", 15,-0.5, 14.5, "nb. CSVM tags");
-    MSPlot["NbCSVTJetsPreJetSel_1"]                                        = new MultiSamplePlot(datasets, "NbCSVTJetsPreJetSel_1", 15,-0.5, 14.5, "nb. CSVT tags");
-    MSPlot["NbLightJetsPreJetSel_1"]                                        = new MultiSamplePlot(datasets, "NbLightJetsPreJetSel_1", 15,-0.5, 14.5, "nb. Light tags");
-    MSPlot["NbCSVLJetsPreJetSel_2"]                                        = new MultiSamplePlot(datasets, "NbCSVLJetsPreJetSel_2", 15,-0.5, 14.5, "nb. CSVL tags");
-    MSPlot["NbCSVMJetsPreJetSel_2"]                                        = new MultiSamplePlot(datasets, "NbCSVMJetsPreJetSel_2", 15,-0.5, 14.5, "nb. CSVM tags");
-    MSPlot["NbCSVTJetsPreJetSel_2"]                                        = new MultiSamplePlot(datasets, "NbCSVTJetsPreJetSel_2", 15,-0.5, 14.5, "nb. CSVT tags");
-    MSPlot["NbLightJetsPreJetSel_2"]                                        = new MultiSamplePlot(datasets, "NbLightJetsPreJetSel_2", 15,-0.5, 14.5, "nb. Light tags");
-    MSPlot["NbCSVLJetsPreJetSel_3"]                                        = new MultiSamplePlot(datasets, "NbCSVLJetsPreJetSel_3", 15,-0.5, 14.5, "nb. CSVL tags");
-    MSPlot["NbCSVMJetsPreJetSel_3"]                                        = new MultiSamplePlot(datasets, "NbCSVMJetsPreJetSel_3", 15,-0.5, 14.5, "nb. CSVM tags");
-    MSPlot["NbCSVTJetsPreJetSel_3"]                                        = new MultiSamplePlot(datasets, "NbCSVTJetsPreJetSel_3", 15,-0.5, 14.5, "nb. CSVT tags");
-    MSPlot["NbLightJetsPreJetSel_3"]                                        = new MultiSamplePlot(datasets, "NbLightJetsPreJetSel_3", 15,-0.5, 14.5, "nb. Light tags");
-    MSPlot["NbCSVLJetsPreJetSel_4"]                                        = new MultiSamplePlot(datasets, "NbCSVLJetsPreJetSel_4", 15,-0.5, 14.5, "nb. CSVL tags");
-    MSPlot["NbCSVMJetsPreJetSel_4"]                                        = new MultiSamplePlot(datasets, "NbCSVMJetsPreJetSel_4", 15,-0.5, 14.5, "nb. CSVM tags");
-    MSPlot["NbCSVTJetsPreJetSel_4"]                                        = new MultiSamplePlot(datasets, "NbCSVTJetsPreJetSel_4", 15,-0.5, 14.5, "nb. CSVT tags");
-    MSPlot["NbLightJetsPreJetSel_4"]                                        = new MultiSamplePlot(datasets, "NbLightJetsPreJetSel_4", 15,-0.5, 14.5, "nb. Light tags");
-    MSPlot["NbCSVLJetsPreJetSel_5"]                                        = new MultiSamplePlot(datasets, "NbCSVLJetsPreJetSel_5", 15,-0.5, 14.5, "nb. CSVL tags");
-    MSPlot["NbCSVMJetsPreJetSel_5"]                                        = new MultiSamplePlot(datasets, "NbCSVMJetsPreJetSel_5", 15,-0.5, 14.5, "nb. CSVM tags");
-    MSPlot["NbCSVTJetsPreJetSel_5"]                                        = new MultiSamplePlot(datasets, "NbCSVTJetsPreJetSel_5", 15,-0.5, 14.5, "nb. CSVT tags");
-    MSPlot["NbLightJetsPreJetSel_5"]                                        = new MultiSamplePlot(datasets, "NbLightJetsPreJetSel_5", 15,-0.5, 14.5, "nb. Light tags");
-    MSPlot["NbJets"]                                        = new MultiSamplePlot(datasets, "NbJets", 15,-0.5, 14.5, "nb. jets");
-    MSPlot["NbCSVLJets"]                                        = new MultiSamplePlot(datasets, "NbCSVLJets", 15,-0.5, 14.5, "nb. CSVL tags");
-    MSPlot["NbCSVMJets"]                                        = new MultiSamplePlot(datasets, "NbCSVMJets", 15,-0.5, 14.5, "nb. CSVM tags");
-    MSPlot["NbCSVTJets"]                                        = new MultiSamplePlot(datasets, "NbCSVTJets", 15,-0.5, 14.5, "nb. CSVT tags");
-    MSPlot["1stJetPt"]                                      = new MultiSamplePlot(datasets, "1stJetPt", 30, 0, 300, "PT_{jet1}");
-    MSPlot["2ndJetPt"]                                      = new MultiSamplePlot(datasets, "2ndJetPt", 30, 0, 300, "PT_{jet2}");
-    MSPlot["3rdJetPt"]                                      = new MultiSamplePlot(datasets, "3rdJetPt", 30, 0, 300, "PT_{jet3}");
-    MSPlot["4thJetPt"]                                      = new MultiSamplePlot(datasets, "4thJetPt", 30, 0, 300, "PT_{jet4}");
-    MSPlot["5thJetPt"]                                      = new MultiSamplePlot(datasets, "5thJetPt", 30, 0, 300, "PT_{jet5}");
-    MSPlot["6thJetPt"]                                      = new MultiSamplePlot(datasets, "6thJetPt", 30, 0, 300, "PT_{jet6}");
-    MSPlot["1stBJetPt"]                                      = new MultiSamplePlot(datasets, "1stBJetPt", 30, 0, 300, "PT_{bjet1}");
-    MSPlot["2ndBJetPt"]                                      = new MultiSamplePlot(datasets, "2ndBJetPt", 30, 0, 300, "PT_{bjet2}");
-    MSPlot["3rdBJetPt"]                                      = new MultiSamplePlot(datasets, "3rdBJetPt", 30, 0, 300, "PT_{bjet3}");
-    MSPlot["4thBJetPt"]                                      = new MultiSamplePlot(datasets, "4thBJetPt", 30, 0, 300, "PT_{bjet4}");
-    MSPlot["5thBJetPt"]                                      = new MultiSamplePlot(datasets, "5thBJetPt", 30, 0, 300, "PT_{bjet5}");
-    MSPlot["6thBJetPt"]                                      = new MultiSamplePlot(datasets, "6thBJetPt", 30, 0, 300, "PT_{bjet6}");
-    MSPlot["HT_SelectedJets"]                               = new MultiSamplePlot(datasets, "HT_SelectedJets", 30, 0, 1500, "HT");
+    histo1D["JetEta"]                                        = new TH1F( "JetEta", "Jet #eta", 40,-4, 4);
+    histo1D["NbJetsPreJetSel"]                                        = new TH1F( "NbJetsPreJetSel", "nb. jets", 15,-0.5, 14.5);
+    histo1D["NbCSVLJetsPreJetSel_0"]                                        = new TH1F( "NbCSVLJetsPreJetSel_0", "nb. CSVL tags", 15,-0.5, 14.5);
+    histo1D["NbCSVMJetsPreJetSel_0"]                                        = new TH1F( "NbCSVMJetsPreJetSel_0", "nb. CSVM tags", 15,-0.5, 14.5);
+    histo1D["NbCSVTJetsPreJetSel_0"]                                        = new TH1F( "NbCSVTJetsPreJetSel_0", "nb. CSVT tags", 15,-0.5, 14.5);
+    histo1D["NbLightJetsPreJetSel_0"]                                        = new TH1F( "NbLightJetsPreJetSel_0", "nb. Light tags", 15,-0.5, 14.5);
+    histo1D["NbCSVLJetsPreJetSel_1"]                                        = new TH1F( "NbCSVLJetsPreJetSel_1", "nb. CSVL tags", 15,-0.5, 14.5);
+    histo1D["NbCSVMJetsPreJetSel_1"]                                        = new TH1F( "NbCSVMJetsPreJetSel_1", "nb. CSVM tags", 15,-0.5, 14.5);
+    histo1D["NbCSVTJetsPreJetSel_1"]                                        = new TH1F( "NbCSVTJetsPreJetSel_1", "nb. CSVT tags", 15,-0.5, 14.5);
+    histo1D["NbLightJetsPreJetSel_1"]                                        = new TH1F( "NbLightJetsPreJetSel_1", "nb. Light tags", 15,-0.5, 14.5);
+    histo1D["NbCSVLJetsPreJetSel_2"]                                        = new TH1F( "NbCSVLJetsPreJetSel_2", "nb. CSVL tags", 15,-0.5, 14.5);
+    histo1D["NbCSVMJetsPreJetSel_2"]                                        = new TH1F( "NbCSVMJetsPreJetSel_2", "nb. CSVM tags", 15,-0.5, 14.5);
+    histo1D["NbCSVTJetsPreJetSel_2"]                                        = new TH1F( "NbCSVTJetsPreJetSel_2", "nb. CSVT tags", 15,-0.5, 14.5);
+    histo1D["NbLightJetsPreJetSel_2"]                                        = new TH1F( "NbLightJetsPreJetSel_2", "nb. Light tags", 15,-0.5, 14.5);
+    histo1D["NbCSVLJetsPreJetSel_3"]                                        = new TH1F( "NbCSVLJetsPreJetSel_3", "nb. CSVL tags", 15,-0.5, 14.5);
+    histo1D["NbCSVMJetsPreJetSel_3"]                                        = new TH1F( "NbCSVMJetsPreJetSel_3", "nb. CSVM tags", 15,-0.5, 14.5);
+    histo1D["NbCSVTJetsPreJetSel_3"]                                        = new TH1F( "NbCSVTJetsPreJetSel_3", "nb. CSVT tags", 15,-0.5, 14.5);
+    histo1D["NbLightJetsPreJetSel_3"]                                        = new TH1F( "NbLightJetsPreJetSel_3", "nb. Light tags", 15,-0.5, 14.5);
+    histo1D["NbCSVLJetsPreJetSel_4"]                                        = new TH1F( "NbCSVLJetsPreJetSel_4", "nb. CSVL tags", 15,-0.5, 14.5);
+    histo1D["NbCSVMJetsPreJetSel_4"]                                        = new TH1F( "NbCSVMJetsPreJetSel_4", "nb. CSVM tags", 15,-0.5, 14.5);
+    histo1D["NbCSVTJetsPreJetSel_4"]                                        = new TH1F( "NbCSVTJetsPreJetSel_4", "nb. CSVT tags", 15,-0.5, 14.5);
+    histo1D["NbLightJetsPreJetSel_4"]                                        = new TH1F( "NbLightJetsPreJetSel_4", "nb. Light tags", 15,-0.5, 14.5);
+    histo1D["NbCSVLJetsPreJetSel_5"]                                        = new TH1F( "NbCSVLJetsPreJetSel_5", "nb. CSVL tags", 15,-0.5, 14.5);
+    histo1D["NbCSVMJetsPreJetSel_5"]                                        = new TH1F( "NbCSVMJetsPreJetSel_5", "nb. CSVM tags", 15,-0.5, 14.5);
+    histo1D["NbCSVTJetsPreJetSel_5"]                                        = new TH1F( "NbCSVTJetsPreJetSel_5", "nb. CSVT tags", 15,-0.5, 14.5);
+    histo1D["NbLightJetsPreJetSel_5"]                                        = new TH1F( "NbLightJetsPreJetSel_5", "nb. Light tags", 15,-0.5, 14.5);
+    histo1D["NbJets"]                                        = new TH1F( "NbJets", "nb. jets", 15,-0.5, 14.5);
+    histo1D["NbCSVLJets"]                                        = new TH1F( "NbCSVLJets", "nb. CSVL tags", 15,-0.5, 14.5);
+    histo1D["NbCSVMJets"]                                        = new TH1F( "NbCSVMJets", "nb. CSVM tags", 15,-0.5, 14.5);
+    histo1D["NbCSVTJets"]                                        = new TH1F( "NbCSVTJets", "nb. CSVT tags", 15,-0.5, 14.5);
+    histo1D["1stJetPt"]                                      = new TH1F( "1stJetPt", "PT_{jet1}", 30, 0, 300);
+    histo1D["2ndJetPt"]                                      = new TH1F( "2ndJetPt", "PT_{jet2}", 30, 0, 300);
+    histo1D["3rdJetPt"]                                      = new TH1F( "3rdJetPt", "PT_{jet3}", 30, 0, 300);
+    histo1D["4thJetPt"]                                      = new TH1F( "4thJetPt", "PT_{jet4}", 30, 0, 300);
+    histo1D["5thJetPt"]                                      = new TH1F( "5thJetPt", "PT_{jet5}", 30, 0, 300);
+    histo1D["6thJetPt"]                                      = new TH1F( "6thJetPt", "PT_{jet6}", 30, 0, 300);
+    histo1D["1stBJetPt"]                                      = new TH1F( "1stBJetPt", "PT_{bjet1}", 30, 0, 300);
+    histo1D["2ndBJetPt"]                                      = new TH1F( "2ndBJetPt", "PT_{bjet2}", 30, 0, 300);
+    histo1D["3rdBJetPt"]                                      = new TH1F( "3rdBJetPt", "PT_{bjet3}", 30, 0, 300);
+    histo1D["4thBJetPt"]                                      = new TH1F( "4thBJetPt", "PT_{bjet4}", 30, 0, 300);
+    histo1D["5thBJetPt"]                                      = new TH1F( "5thBJetPt", "PT_{bjet5}", 30, 0, 300);
+    histo1D["6thBJetPt"]                                      = new TH1F( "6thBJetPt", "PT_{bjet6}", 30, 0, 300);
+    histo1D["HT_SelectedJets"]                               = new TH1F( "HT_SelectedJets", "HT", 30, 0, 1500);
     //MET
-    MSPlot["MET_preCut"]                                           = new MultiSamplePlot(datasets, "MET_preCut", 70, 0, 700, "MET");
-    MSPlot["MT_LepMET_preCut"]                                           = new MultiSamplePlot(datasets, "MET_LepMET_preCut", 70, 0, 700, "MT(lep,MET)");
-    MSPlot["MET"]                                           = new MultiSamplePlot(datasets, "MET", 70, 0, 700, "MET");
-    MSPlot["MT_LepMET"]                                           = new MultiSamplePlot(datasets, "MT_LepMET", 70, 0, 700, "MT(lep,MET)");
+    histo1D["MET_preCut"]                                           = new TH1F( "MET_preCut", "MET", 70, 0, 700);
+    histo1D["MT_LepMET_preCut"]                                           = new TH1F( "MET_LepMET_preCut", "MT(lep,MET)", 70, 0, 700);
+    histo1D["MET"]                                           = new TH1F( "MET", "MET", 70, 0, 700);
+    histo1D["MT_LepMET"]                                           = new TH1F( "MT_LepMET", "MT(lep,MET)", 70, 0, 700);
 	//MC-info plots
-    MSPlot["JetID_Hmother"]                                           = new MultiSamplePlot(datasets, "JetID_Hmother", 12,-0.5,11.5, "jet number");
-
-    ///////////////////
-    // 1D histograms //
-    ///////////////////
+    histo1D["JetID_Hmother"]                                           = new TH1F( "JetID_Hmother", "jet number", 12,-0.5,11.5);
 
     ///////////////////
     // 2D histograms //
     ///////////////////
+    histo2D["NJet_vs_Nbjet"] = new TH2F("NJet_vs_Nbjet","NJet:Nbjet",12,-0.5,11.5, 61, -0.5,11.5);
     histo2D["JetID_vs_pdgID"] = new TH2F("JetID_vs_pdgID","parton pdgID:jet number",12,-0.5,11.5, 61, -30.5,30.5);
 
 
@@ -508,15 +517,15 @@ int main (int argc, char *argv[])
     /////////////////////////////////
     cout << " - Loop over datasets ... " << datasets.size () << " datasets !" << endl;
 
-    TFile * btaghistos = new TFile("histos/HistosPtEta.root");
+    string btagHisto_str = "BTagHistosPtEta/HistosPtEta.root"+dName+"_mujets_central.root";
+    TFile * btaghistos = new TFile(btagHisto_str.c_str());
 
     for (unsigned int d = 0; d < datasets.size(); d++)
     {
         cout<<"Load Dataset"<<endl;    treeLoader.LoadDataset (datasets[d], anaEnv);  //open files and load dataset
-        string previousFilename2 = "";
-        string currentfilename2 = "";
 
         bool nlo = false;
+        bool isData = false;
 
 
         if(dName.find("NLO") != std::string::npos || dName.find("nlo") !=std::string::npos) nlo = true;
@@ -530,17 +539,17 @@ int main (int argc, char *argv[])
         // Setup Date string and nTuple for output  
         ///////////////////////////////////////////////////////////
 
-        SourceDate *strdate = new SourceDate();
-        string date_str = strdate->ReturnDateStr();
+//        SourceDate *strdate = new SourceDate();
+//        string date_str = strdate->ReturnDateStr();
         if(debug)cout<<"date print"<<endl;
 
-        string channel_dir = "Trees_SelectionOutput"+channelpostfix;
-        string date_dir = channel_dir+"/Trees_SelectionOutput_" + date_str +"/";
-        int mkdirstatus = mkdir(channel_dir.c_str(),0777);
-        mkdirstatus = mkdir(date_dir.c_str(),0777);
+        string channel_dir = "TreeMakerOutput/Ntuples"+channelpostfix;
+        string date_dir = channel_dir+"/Ntuples_" + date_str +"/";
+        int mkdirstatus__ = mkdir(channel_dir.c_str(),0777);
+        mkdirstatus__ = mkdir(date_dir.c_str(),0777);
 
         string jobNumString = static_cast<ostringstream*>( &(ostringstream() << JobNum) )->str();
-        string Ntupname = "Trees_SelectionOutput"+channelpostfix+"/Trees_SelectionOutput_"+ date_str  +"/FCNC_1L3B_" +postfix + channelpostfix + "_" + jobNumString + ".root";
+        string Ntupname = date_dir +"FCNC_1L3B_" +postfix + channelpostfix + "_" + jobNumString + ".root";
         string Ntuptitle_AdvancedVars = "AdvancedVarsTree";
         string Ntuptitle_ObjectVars = "ObjectVarsTree";
         string Ntuptitle_EventInfo = "EventInfoTree";
@@ -570,6 +579,7 @@ int main (int argc, char *argv[])
             vCorrParam.push_back(*L3JetCorPar);
             JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_DATA_L2L3Residual_AK4PFchs.txt");
             vCorrParam.push_back(*L2L3ResJetCorPar);
+            isData = true;
         }
         else
         {
@@ -584,6 +594,8 @@ int main (int argc, char *argv[])
 
         JetTools *jetTools = new JetTools(vCorrParam, jecUnc, true);
 
+        /// book triggers
+        if (applyTriggers) { trigger->bookTriggers(isData);}
 
 
         //////////////////////////////////////////////////
@@ -593,7 +605,7 @@ int main (int argc, char *argv[])
         int itrigger = -1, previousRun = -1, start = 0;
         int currentRun;
         int iFile = -1;
-        int isdata = 0;
+        int isdata_int = 0;
         unsigned int ending = datasets[d]->NofEvtsToRunOver();    cout <<"Number of events = "<<  ending  <<endl;
         string previousFilename = "";
 
@@ -649,15 +661,13 @@ int main (int argc, char *argv[])
             ////////////////////////////
             ///  Include trigger set up here when using data
             ////////////////////////////
-      
-            string currentfilename = datasets[d]->eventTree()->GetFile()->GetName();
-            //cout<<currentfilename<<endl;
-            if(previousFilename != currentfilename){
-                previousFilename = currentfilename;
-                iFile++;
-                cout<<"File changed!!! => iFile = "<<iFile << " new file is " << datasets[d]->eventTree()->GetFile()->GetName() << " in sample " << datasets[d]->Name() << endl;
-            }
-            if( event->runId() > 10000) isdata=1;
+            datasets[d]->eventTree()->LoadTree(ievt);
+            string currentFilename = datasets[d]->eventTree()->GetFile()->GetName();
+            int currentRun = event->runId();
+
+            bool fileChanged = false;
+            bool runChanged = false;
+            if( event->runId() > 10000) isdata_int=1;
 
 
             float rho = event->fixedGridRhoFastjetAll();
@@ -727,7 +737,6 @@ int main (int argc, char *argv[])
             JetPartonMatching muonMatching, jetMatching;
 
 
-            currentRun = event->runId();
 
             // Declare selection instance
             Run2Selection r2selection(init_jets, init_muons, init_electrons, mets);
@@ -782,37 +791,30 @@ int main (int argc, char *argv[])
             if (debug)	cout <<" applying baseline event selection for cut table..."<<endl;
             // Apply primary vertex selection
             bool isGoodPV = r2selection.isPVSelected(vertex, 4, 24., 2);
-            bool trigged = false;
             if (debug)	cout <<"PrimaryVertexBit: " << isGoodPV <<endl;
 //            if (debug) cin.get();
-            MSPlot["cutFlow"]->Fill(0, datasets[d], true, Luminosity*scaleFactor );
+
+            histo1D["cutFlow"]->Fill(0., Luminosity*scaleFactor );
+
             weightCount += scaleFactor;
             eventCount++;
 
-            //If the HLT is applied 
-            if(runHLT && previousRun != currentRun)
+            bool trigged = false;
+            if ( ! applyTriggers && previousFilename != currentFilename )
             {
-                //The HLT is only used for data
-                if(isdata == 1)
-                {
-                    //The HLT path is dependent of the mode, these paths are the several steps or software modules. Each module performs a well defined task 
-                    // such as reconstruction of physics objects, making intermediate decisions, triggering more refined reconstructions in subsequent modules, 
-                    // or calculating the final decision for that trigger path.
-                    if(Muon)itrigger = treeLoader.iTrigger (string ("HLT_IsoMu20"), currentRun, iFile);
-                    else if(Electron)itrigger = treeLoader.iTrigger (string (" HLT_Ele27_eta2p1_WPLoose_Gsf_v*"), currentRun, iFile);
-                    if(itrigger == 9999) cout << "ERROR: no valid trigger found for this event/data in run " << event->runId() << endl; 
-	          
-                } // closing the HLT for data loop
-                //For the MC, there is no triggerpath
-                else
-                {
-                    if(Muon)itrigger = treeLoader.iTrigger (string ("HLT_IsoMu20"), currentRun, iFile);
-                    else if(Electron)itrigger = treeLoader.iTrigger (string (" HLT_Ele27_eta2p1_WPLoose_Gsf_v*"), currentRun, iFile);
-                }
-            }// closing the HLT run loop
-
-            if(runHLT) trigged = treeLoader.EventTrigged(itrigger);
-            else trigged = true;
+              fileChanged = true;
+              previousFilename = currentFilename;
+              iFile++;
+              cout << "File changed!!! => iFile = " << iFile << endl;
+              trigged = true;
+            }
+            
+            if (applyTriggers)
+            {
+              trigger->checkAvail(currentRun, datasets, d, &treeLoader, event, printTriggers);
+              trigged = trigger->checkIfFired();
+              
+            }
             //////////////////////////////////////////////////////
             // Applying baseline lepton selection
             //////////////////////////////////////////////////////
@@ -820,10 +822,10 @@ int main (int argc, char *argv[])
             //Filling Histogram of the number of vertices before Event Selection
 
             if (!isGoodPV) continue; // Check that there is a good Primary Vertex
-            MSPlot["cutFlow"]->Fill(1, datasets[d], true, Luminosity*scaleFactor );
+            histo1D["cutFlow"]->Fill(1., Luminosity*scaleFactor );
 
             if(!trigged) continue;
-            MSPlot["cutFlow"]->Fill(2, datasets[d], true, Luminosity*scaleFactor );
+            histo1D["cutFlow"]->Fill(2., Luminosity*scaleFactor );
 
             if (debug)
             {
@@ -849,7 +851,7 @@ int main (int argc, char *argv[])
                 cerr<<"Correct Channel not selected."<<endl;
                 exit(1);
             }
-            MSPlot["cutFlow"]->Fill(3, datasets[d], true, Luminosity*scaleFactor );
+            histo1D["cutFlow"]->Fill(3., Luminosity*scaleFactor );
 
 			if(Muon && !Electron)
 			{
@@ -861,7 +863,7 @@ int main (int argc, char *argv[])
 				if(nLooseEl != 1) continue;
 	            if (debug)	cout <<"Vetoed extra electrons..."<<endl;
 			}
-			MSPlot["cutFlow"]->Fill(4, datasets[d], true, Luminosity*scaleFactor );
+			histo1D["cutFlow"]->Fill(4., Luminosity*scaleFactor );
 			
 			////////////////////////////////////////////////////////////////////////////////
 			// Clean jet collection from jets overlapping with lepton
@@ -923,11 +925,11 @@ int main (int argc, char *argv[])
 			}
 			else cout << "Wrong channel (1)" << endl;
 
-			MSPlot["MT_LepMET_preCut"] ->Fill(MT, datasets[d], true, Luminosity*scaleFactor );
-			MSPlot["MET_preCut"] ->Fill(mets[0]->Et(), datasets[d], true, Luminosity*scaleFactor );
+			histo1D["MT_LepMET_preCut"] ->Fill(MT, Luminosity*scaleFactor );
+			histo1D["MET_preCut"] ->Fill(mets[0]->Et(), Luminosity*scaleFactor );
 
 //			if(MT <= 50) continue;
-			MSPlot["cutFlow"]->Fill(5, datasets[d], true, Luminosity*scaleFactor );
+			histo1D["cutFlow"]->Fill(5., Luminosity*scaleFactor );
 //	        if (debug)	cout <<"Cut on MT..."<<endl;
 
             sort(selectedJets.begin(),selectedJets.end(),HighestPt()); //order Jets wrt Pt for tuple output
@@ -962,56 +964,58 @@ int main (int argc, char *argv[])
 		   		}
 		  	}
 		  	
+      histo2D["NJet_vs_Nbjet"]->Fill(selectedJets.size(),selectedMBJets.size());
+
 
 			//////////////////////////////////////
 			// Pre-jet histograms //
 			/////////////////////////////////////
-			MSPlot["NbJetsPreJetSel"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
-			MSPlot["NbCSVLJetsPreJetSel_0"]->Fill(selectedLBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-			MSPlot["NbCSVMJetsPreJetSel_0"]->Fill(selectedMBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-			MSPlot["NbCSVTJetsPreJetSel_0"]->Fill(selectedTBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-			MSPlot["NbLightJetsPreJetSel_0"] ->Fill(selectedLightJets_MWP.size(), datasets[d], true, Luminosity*scaleFactor);
+			histo1D["NbJetsPreJetSel"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+			histo1D["NbCSVLJetsPreJetSel_0"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+			histo1D["NbCSVMJetsPreJetSel_0"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+			histo1D["NbCSVTJetsPreJetSel_0"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+			histo1D["NbLightJetsPreJetSel_0"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
 			if(selectedJets.size() >= 1)
 			{
-				MSPlot["NbCSVLJetsPreJetSel_1"]->Fill(selectedLBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["NbCSVMJetsPreJetSel_1"]->Fill(selectedMBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["NbCSVTJetsPreJetSel_1"]->Fill(selectedTBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["NbLightJetsPreJetSel_1"] ->Fill(selectedLightJets_MWP.size(), datasets[d], true, Luminosity*scaleFactor);
+				histo1D["NbCSVLJetsPreJetSel_1"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJetsPreJetSel_1"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJetsPreJetSel_1"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJetsPreJetSel_1"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 2)
 			{
-				MSPlot["NbCSVLJetsPreJetSel_2"]->Fill(selectedLBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["NbCSVMJetsPreJetSel_2"]->Fill(selectedMBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["NbCSVTJetsPreJetSel_2"]->Fill(selectedTBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["NbLightJetsPreJetSel_2"] ->Fill(selectedLightJets_MWP.size(), datasets[d], true, Luminosity*scaleFactor);
+				histo1D["NbCSVLJetsPreJetSel_2"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJetsPreJetSel_2"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJetsPreJetSel_2"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJetsPreJetSel_2"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 3)
 			{
-				MSPlot["NbCSVLJetsPreJetSel_3"]->Fill(selectedLBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["NbCSVMJetsPreJetSel_3"]->Fill(selectedMBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["NbCSVTJetsPreJetSel_3"]->Fill(selectedTBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["NbLightJetsPreJetSel_3"] ->Fill(selectedLightJets_MWP.size(), datasets[d], true, Luminosity*scaleFactor);
+				histo1D["NbCSVLJetsPreJetSel_3"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJetsPreJetSel_3"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJetsPreJetSel_3"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJetsPreJetSel_3"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 4)
 			{
-				MSPlot["NbCSVLJetsPreJetSel_4"]->Fill(selectedLBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["NbCSVMJetsPreJetSel_4"]->Fill(selectedMBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["NbCSVTJetsPreJetSel_4"]->Fill(selectedTBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["NbLightJetsPreJetSel_4"] ->Fill(selectedLightJets_MWP.size(), datasets[d], true, Luminosity*scaleFactor);
+				histo1D["NbCSVLJetsPreJetSel_4"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJetsPreJetSel_4"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJetsPreJetSel_4"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJetsPreJetSel_4"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 5)
 			{
-				MSPlot["NbCSVLJetsPreJetSel_5"]->Fill(selectedLBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["NbCSVMJetsPreJetSel_5"]->Fill(selectedMBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["NbCSVTJetsPreJetSel_5"]->Fill(selectedTBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["NbLightJetsPreJetSel_5"] ->Fill(selectedLightJets_MWP.size(), datasets[d], true, Luminosity*scaleFactor);
+				histo1D["NbCSVLJetsPreJetSel_5"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJetsPreJetSel_5"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJetsPreJetSel_5"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJetsPreJetSel_5"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
 			}
 
             //////////////////////////////////////////////////////////////////////
             // Cut on nb of jets and b-jets
             //////////////////////////////////////////////////////////////////////
 			if(selectedJets.size() < 3)  continue;
-			MSPlot["cutFlow"]->Fill(6, datasets[d], true, Luminosity*scaleFactor );
+			histo1D["cutFlow"]->Fill(6., Luminosity*scaleFactor );
 	        if (debug)	cout <<"Cut on nb jets..."<<endl;
 
             ///////////////////////////////////////////////////
@@ -1040,9 +1044,9 @@ int main (int argc, char *argv[])
 
 		  	if(selectedMBJets.size() < 3) continue;
 	        if (debug)	cout <<"Cut on nb b-jets..."<<endl;
-			MSPlot["cutFlow"]->Fill(7, datasets[d], true, Luminosity*scaleFactor );
+			histo1D["cutFlow"]->Fill(7., Luminosity*scaleFactor );
 
-			MSPlot["cutFlow"]->Fill(8, datasets[d], true, Luminosity*scaleFactor );
+			histo1D["cutFlow"]->Fill(8., Luminosity*scaleFactor );
 
             if(debug)
             {
@@ -1209,7 +1213,7 @@ int main (int argc, char *argv[])
             // Filling histograms / plotting //
             //////////////////////////////////////////////////
 
-            MSPlot["NbOfVertices"]->Fill(vertex.size(), datasets[d], true, Luminosity*scaleFactor);
+            histo1D["NbOfVertices"]->Fill(vertex.size(), Luminosity*scaleFactor);
 
 
 
@@ -1219,10 +1223,10 @@ int main (int argc, char *argv[])
             /////////////////////////////////////
             for (Int_t selmu =0; selmu < selectedMuons.size(); selmu++ )
             {
-                MSPlot["MuonPt"]->Fill(selectedMuons[selmu]->Pt(), datasets[d], true, Luminosity*scaleFactor);
-                MSPlot["LeptonPt"]->Fill(selectedMuons[selmu]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+                histo1D["MuonPt"]->Fill(selectedMuons[selmu]->Pt(), Luminosity*scaleFactor);
+                histo1D["LeptonPt"]->Fill(selectedMuons[selmu]->Pt(), Luminosity*scaleFactor);
                 float reliso = selectedMuons[selmu]->relPfIso(4, 0.5);
-                MSPlot["MuonRelIsolation"]->Fill(reliso, datasets[d], true, Luminosity*scaleFactor);
+                histo1D["MuonRelIsolation"]->Fill(reliso, Luminosity*scaleFactor);
             }
 
             //////////////////////////////////////////
@@ -1232,85 +1236,85 @@ int main (int argc, char *argv[])
             for (Int_t selel =0; selel < selectedElectrons.size(); selel++ )
             {
                 float reliso = selectedElectrons[selel]->relPfIso(3, 0.5);
-                MSPlot["ElectronRelIsolation"]->Fill(reliso, datasets[d], true, Luminosity*scaleFactor);
-                MSPlot["ElectronPt"]->Fill(selectedElectrons[selel]->Pt(), datasets[d], true, Luminosity*scaleFactor);
-                MSPlot["LeptonPt"]->Fill(selectedElectrons[selel]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+                histo1D["ElectronRelIsolation"]->Fill(reliso, Luminosity*scaleFactor);
+                histo1D["ElectronPt"]->Fill(selectedElectrons[selel]->Pt(), Luminosity*scaleFactor);
+                histo1D["LeptonPt"]->Fill(selectedElectrons[selel]->Pt(), Luminosity*scaleFactor);
             }
 
             //////////////////////////////////
             // Jets Based Plots //
             //////////////////////////////////
-			MSPlot["NbJets"]->Fill(selectedJets.size(), datasets[d], true, Luminosity*scaleFactor);
-			MSPlot["NbCSVLJets"]->Fill(selectedLBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-			MSPlot["NbCSVMJets"]->Fill(selectedMBJets.size(), datasets[d], true, Luminosity*scaleFactor);
-			MSPlot["NbCSVTJets"]->Fill(selectedTBJets.size(), datasets[d], true, Luminosity*scaleFactor);
+			histo1D["NbJets"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+			histo1D["NbCSVLJets"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+			histo1D["NbCSVMJets"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+			histo1D["NbCSVTJets"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
 
 			if(selectedJets.size() >= 1)
 			{
-				MSPlot["Bdisc_CSV_jet1"]->Fill(selectedJets[0]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["1stJetPt"]->Fill(selectedJets[0]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+				histo1D["Bdisc_CSV_jet1"]->Fill(selectedJets[0]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["1stJetPt"]->Fill(selectedJets[0]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 2)
 			{
-				MSPlot["Bdisc_CSV_jet2"]->Fill(selectedJets[1]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["2ndJetPt"]->Fill(selectedJets[1]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+				histo1D["Bdisc_CSV_jet2"]->Fill(selectedJets[1]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["2ndJetPt"]->Fill(selectedJets[1]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 3)
 			{
-				MSPlot["Bdisc_CSV_jet3"]->Fill(selectedJets[2]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["3rdJetPt"]->Fill(selectedJets[2]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+				histo1D["Bdisc_CSV_jet3"]->Fill(selectedJets[2]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["3rdJetPt"]->Fill(selectedJets[2]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 4)
 			{
-				MSPlot["Bdisc_CSV_jet4"]->Fill(selectedJets[3]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["4thJetPt"]->Fill(selectedJets[3]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+				histo1D["Bdisc_CSV_jet4"]->Fill(selectedJets[3]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["4thJetPt"]->Fill(selectedJets[3]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 5)
 			{
-				MSPlot["Bdisc_CSV_jet5"]->Fill(selectedJets[4]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["5thJetPt"]->Fill(selectedJets[4]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+				histo1D["Bdisc_CSV_jet5"]->Fill(selectedJets[4]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["5thJetPt"]->Fill(selectedJets[4]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 6)
 			{
-				MSPlot["Bdisc_CSV_jet6"]->Fill(selectedJets[5]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["6thJetPt"]->Fill(selectedJets[5]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+				histo1D["Bdisc_CSV_jet6"]->Fill(selectedJets[5]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["6thJetPt"]->Fill(selectedJets[5]->Pt(), Luminosity*scaleFactor);
 			}
 			//B-jets
 			if(debug) cout << "selectedMBJets.size() = "<< selectedMBJets.size() << endl;
 			if(selectedMBJets.size() >= 1)
 			{
-				MSPlot["Bdisc_CSV_Bjet1"]->Fill(selectedMBJets[0]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["1stBJetPt"]->Fill(selectedMBJets[0]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+				histo1D["Bdisc_CSV_Bjet1"]->Fill(selectedMBJets[0]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["1stBJetPt"]->Fill(selectedMBJets[0]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedMBJets.size() >= 2)
 			{
-				MSPlot["Bdisc_CSV_Bjet2"]->Fill(selectedMBJets[1]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["2ndBJetPt"]->Fill(selectedMBJets[1]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+				histo1D["Bdisc_CSV_Bjet2"]->Fill(selectedMBJets[1]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["2ndBJetPt"]->Fill(selectedMBJets[1]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedMBJets.size() >= 3)
 			{
-				MSPlot["Bdisc_CSV_Bjet3"]->Fill(selectedMBJets[2]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["3rdBJetPt"]->Fill(selectedMBJets[2]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+				histo1D["Bdisc_CSV_Bjet3"]->Fill(selectedMBJets[2]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["3rdBJetPt"]->Fill(selectedMBJets[2]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedMBJets.size() >= 4)
 			{
-				MSPlot["Bdisc_CSV_Bjet4"]->Fill(selectedMBJets[3]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["4thBJetPt"]->Fill(selectedMBJets[3]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+				histo1D["Bdisc_CSV_Bjet4"]->Fill(selectedMBJets[3]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["4thBJetPt"]->Fill(selectedMBJets[3]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedMBJets.size() >= 5)
 			{
-				MSPlot["Bdisc_CSV_Bjet5"]->Fill(selectedMBJets[4]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["5thBJetPt"]->Fill(selectedMBJets[4]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+				histo1D["Bdisc_CSV_Bjet5"]->Fill(selectedMBJets[4]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["5thBJetPt"]->Fill(selectedMBJets[4]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedMBJets.size() >= 6)
 			{
-				MSPlot["Bdisc_CSV_Bjet6"]->Fill(selectedMBJets[5]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), datasets[d], true, Luminosity*scaleFactor);
-				MSPlot["6thBJetPt"]->Fill(selectedMBJets[5]->Pt(), datasets[d], true, Luminosity*scaleFactor);
+				histo1D["Bdisc_CSV_Bjet6"]->Fill(selectedMBJets[5]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["6thBJetPt"]->Fill(selectedMBJets[5]->Pt(), Luminosity*scaleFactor);
 			}
 
 			for(unsigned int i = 0; i < selectedJets.size(); i++)
 			{
-				MSPlot["JetEta"]->Fill(selectedJets[i]->Eta(), datasets[d], true, Luminosity*scaleFactor);
+				histo1D["JetEta"]->Fill(selectedJets[i]->Eta(), Luminosity*scaleFactor);
 			}
 
             float HT = 0, H = 0;
@@ -1323,7 +1327,7 @@ int main (int argc, char *argv[])
                 H = H +  selectedJets[seljet1]->P();
             }
 
-            MSPlot["HT_SelectedJets"]->Fill(HT, datasets[d], true, Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets"]->Fill(HT, Luminosity*scaleFactor);
 
 
             float nvertices = vertex.size();
@@ -1333,8 +1337,8 @@ int main (int argc, char *argv[])
             //MET Based Plots//
             /////////////////////////////////
 
-            MSPlot["MET"]->Fill(mets[0]->Et(), datasets[d], true, Luminosity*scaleFactor);
-            MSPlot["MT_LepMET"]->Fill(MT, datasets[d], true, Luminosity*scaleFactor);
+            histo1D["MET"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["MT_LepMET"]->Fill(MT, Luminosity*scaleFactor);
 
             /////////////////////////////////////////////////////////
             //Topology Reconstructions (truth level)
@@ -1529,17 +1533,21 @@ int main (int argc, char *argv[])
 
     fout->cd();
 
-	//Output ROOT file
-    for(map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
-    {
-        string name = it->first;
-        MultiSamplePlot *temp = it->second;
-        temp->Write(fout, name, false, outputDirectory, "png");
-    }
-
-    TDirectory* th2dir = fout->mkdir("Histos2D");
-    th2dir->cd();
-
+  for (map<string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
+  {
+    cout << "1D Plot: " << it->first << endl;
+   // TCanvas ctemp = 
+    
+    TH1F *temp = it->second;
+    temp->Draw();  
+  }
+  for (map<string,TH2F*>::const_iterator it = histo2D.begin(); it != histo2D.end(); it++)
+  {
+     cout << "2D Plot: " << it->first << endl;
+   
+     TH2F *temp = it->second;
+     temp->Draw();
+  }
 //    delete btwt_comb_central;
 //    delete btwt_comb_up;
 //    delete btwt_comb_down;
@@ -1550,12 +1558,15 @@ int main (int argc, char *argv[])
 //    delete btwt_ttbar_up;
 //    delete btwt_ttbar_down;
 
-    for(map<std::string,TH2F*>::const_iterator it = histo2D.begin(); it != histo2D.end(); it++)
+/*    for(map<std::string,TH2F*>::const_iterator it = histo2D.begin(); it != histo2D.end(); it++)
     {
 
         TH2F *temp = it->second;
         temp->Write();
     }
+*/
+    fout->Write();   
+    fout->Close();
     delete fout;
 
 
