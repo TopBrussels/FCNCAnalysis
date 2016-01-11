@@ -72,15 +72,15 @@ int main()
     // calling datasetPlotter to create MSPplots
 
     // event plots
-//    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,NtuplesPath);
-    DatasetPlotter(200, 0, 200, "mZboson", xmlFileName,NtuplesPath); 
-
-//    DatasetPlotter(100, 0, 1000, "pt_electron[nElectrons]", xmlFileName,CraneenPath);
     
  
 
 
-    // calling the function that writtes all the MSPlots in a root file
+    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,NtuplesPath);
+    DatasetPlotter(10, -0.5, 11.5, "nElectrons", xmlFileName,NtuplesPath);
+    DatasetPlotter(10, -0.5, 11.5, "nMuons", xmlFileName,NtuplesPath);
+    DatasetPlotter(10, -0.5, 11.5, "nJets", xmlFileName,NtuplesPath);
+    DatasetPlotter(100, 0, 1000, "pt_electron[nElectrons]", xmlFileName,NtuplesPath);
     MSPCreator ();
 
 }
@@ -121,7 +121,8 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
   string dataSetName, filepath;
   int nEntries;
   float ScaleFactor, NormFactor, Luminosity;
-  double  varofInterest;
+  //double  varofInterest;
+  int varofInterest;
   double varofInterest_double [20];
 
 
@@ -150,7 +151,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
   //cout << v[0] << "  " << v[1] << endl;
   
 
-  TString NtuplesPath = "Merged/";
+  TString NtuplesPath = "Merged_EMU_Q/";
 
   
   for (int d = 0; d < datasets.size(); d++)   //Loop through datasets  
@@ -224,8 +225,8 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 
 
 
-      Luminosity = 711.213 +  552.6728; // pb-1
-      TString slumi = "1200" ; // "552.6728";
+      Luminosity = 552.6728;//711.213 +  552.6728; // pb-1
+      TString slumi = "553" ; // "552.6728";
 
       
       //      histo1D[dataSetName.c_str()] = new TH1F((dataSetName+"_"+v[0]).c_str(),(dataSetName+"_"+v[0]).c_str(), nBins, plotLow, plotHigh);
@@ -283,7 +284,8 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 	    if (isData) 
 	      {
 		// for data, fill once per event, weighted with the event scale factor only
-		MSPlot[plotname.c_str()]->Fill(varofInterest, datasets[d], false, globalScaleFactor); 	
+		MSPlot[plotname.c_str()]->Fill(varofInterest, datasets[d], true, globalScaleFactor*Luminosity); 	
+               // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
 	      }
 	    else
 	      {
@@ -304,7 +306,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 	      if (isData) 
 		{
 		  // for data, fill once per event, weighted with the event scale factor only
-		  MSPlot[plotname.c_str()]->Fill(varofInterest_double[i_object], datasets[d], false, globalScaleFactor); 	
+		  MSPlot[plotname.c_str()]->Fill(varofInterest_double[i_object], datasets[d], true, globalScaleFactor*Luminosity); 	
 		}
 	      else
 		{
@@ -391,7 +393,7 @@ void MSPCreator (){
 	cout << "Saving the MSP" << endl;
 	cout << " and it->first is " << it->first << endl;
       }
-      temp->Draw("MyMSP", 1, false, false, false, 100);
+      temp->Draw("MyMSP", 1, false, false, false, 1);
       temp->Write(outfile, "MyMSP"+it->first, true,"myOutput_MSPlots" , "png");
       //      vector<string> temp_histo = it->GetTH1FNames();
       //      for (int i_hist=0; i_hist < temp_histo.size();i_hist++  ){
@@ -410,4 +412,3 @@ std::string intToStr (int number){
   buff<<number;
   return buff.str();
 }
-
