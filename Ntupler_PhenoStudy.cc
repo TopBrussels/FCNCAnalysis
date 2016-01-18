@@ -71,7 +71,7 @@ map<string,MultiSamplePlot*> MSPlot;
 // Homemade functions
 std::vector <int> OSSFLeptonPairCalculator(std::vector<TRootElectron*> Elec, std::vector<TRootMuon*> Mu, int verb); 
 TLorentzVector CreateZboson(std::vector<int> Lep, std::vector<TRootElectron*> Elec, std::vector<TRootMuon*> Mu, int verb);
-
+TLorentzVector FCNCjetCalculator(std::vector<TRootJet*> nonBJets,std::vector<TRootJet*> BJets, TLorentzVector recoZ ,int verb);
 
 int main (int argc, char *argv[])
 {
@@ -185,16 +185,15 @@ int main (int argc, char *argv[])
 
     //Setting Lepton Channels 
     bool ee = false; 
-    bool emu = true;
-    bool noData = false;  
+    bool emu = false;
+    bool noData = true;  
     bool mumu = false; 
-    bool runHLT = true;
-    bool printTrigger =false;  
+    bool runHLT = false;
+    bool printTrigger = true;  
     bool applyJetCleaning = true; 
     bool applyJER = true;
     bool applyJES = true; 
-    bool applyPU = true;
-    bool applyLeptonSF = true; 
+    bool applyPU = false;
     if(emu)
     {
         cout << " --> Using the Muon-Electron channel..." << endl;
@@ -320,7 +319,7 @@ int main (int argc, char *argv[])
     
 
     //Output ROOT file
-    string outputDirectory("/user/ivanpari/CMSSW_7_4_15/src/TopBrussels/FCNCAnalysis/MACRO_Output_TOPPAS15003_18JanWZback"+channelpostfix);
+    string outputDirectory("/user/ivanpari/CMSSW_7_4_15/src/TopBrussels/FCNCAnalysis/MACRO_Output_2"+channelpostfix);
     mkdir(outputDirectory.c_str(),0777);
 
     // add jobs number at the end of file if 
@@ -359,10 +358,10 @@ int main (int argc, char *argv[])
     
     std::string  titlePlot = ""; 
     titlePlot = "cutFlow"+channelpostfix; 
-    histo1D["h_cutFlow"] = new TH1F(titlePlot.c_str(), "cutflow", 12,-0.5,11.5);
+    histo1D["h_cutFlow"] = new TH1F(titlePlot.c_str(), "cutflow", 16,-0.5,15.5);
 
     titlePlot = "Ht"+channelpostfix;
-    histo1D["h_Ht"] = new TH1F(titlePlot.c_str(), "Scalar sum of transverse momenta of the jets; H_{T} [GeV]", 50, 0,500);
+    histo1D["h_Ht"] = new TH1F(titlePlot.c_str(), "Scalar sum of transverse momenta of the jets; H_{T} [GeV]", 120, 0,1200);
     titlePlot = "Pt_first_Muon"+channelpostfix;
     histo1D["h_Pt_first_Muon"] = new TH1F(titlePlot.c_str(), "Transverse momentum of the leading muon", 100,0,200); 
     titlePlot = "Pt_2nd_Muon"+channelpostfix;
@@ -381,7 +380,12 @@ int main (int argc, char *argv[])
     histo1D["h_Pt_2nd_Jet"] = new TH1F(titlePlot.c_str(), "Transverse momentum of the 2nd leading jet", 100,0,200);
     titlePlot = "Pt_3d_Jet"+channelpostfix;
     histo1D["h_Pt_3d_Jet"] = new TH1F(titlePlot.c_str(), "Transverse momentum of the 3d leading jet", 100,0,200); 
-
+    titlePlot = "h_NbBCSVTJets"+channelpostfix; 
+    histo1D["h_NbBCSVTJets"] = new TH1F(titlePlot.c_str(), "Nb of CVST jets",9, -0.5,8.5); 
+    titlePlot = "h_Inv_Mass_FCNCtop"+channelpostfix; 
+    histo1D["h_Inv_Mass_FCNCtop"]  = new TH1F(titlePlot.c_str(), "Invariant Mass FCNC top",  75, 100, 250.0);
+    titlePlot = "h_Inv_Mass_lb"+channelpostfix;
+    histo1D["h_Inv_Mass_lb"]  = new TH1F(titlePlot.c_str(), "Invariant Mass SM lb", 50, 0.0, 500.0); 
 
         string titlefile = "Output" + channelpostfix;
     ///////////////////
@@ -400,12 +404,12 @@ int main (int argc, char *argv[])
 
     // electron
     float el_pt_cut =20.; // 42
-    float el_eta_cut = 2.4;
+    float el_eta_cut = 2.5;
 
 
     // muon
     float mu_pt_cut = 20.; // 40
-    float mu_eta_cut = 2.4;
+    float mu_eta_cut = 2.1;
     float mu_iso_cut = 0.15;
  
     //jets
@@ -574,9 +578,6 @@ int main (int argc, char *argv[])
   
         //variable for jets 
         Int_t nJets;
-	Int_t nCSVLBJets; 
-        Int_t nCSVMBJets;
-        Int_t nCSVTBJets;
         Double_t pt_jet[20];
         Double_t phi_jet[20];
         Double_t eta_jet[20];
@@ -860,8 +861,6 @@ int main (int argc, char *argv[])
             {
 	      trigged = true; 
             }
-            if(dName.find("FCNC")!=string::npos) trigged = true; 
- 
             if(debug) cout << "Apply trigger? " << runHLT << " trigged? " << trigged << endl; 
 
 	    ///////////////////////////////////////////
@@ -885,7 +884,7 @@ int main (int argc, char *argv[])
 
             if(applyJES && !isData)
 	    {
-                  jetTools->correctJets(init_jets_corrected,event->fixedGridRhoFastjetAll() ,false);
+             //     jetTools->correctJet(init_jets_corrected, false);
      	    }
             ///////////////////////////////////////////////////////////
             // Event selection
@@ -909,7 +908,7 @@ int main (int argc, char *argv[])
 
 	    // make a new collections of electrons
 	    if (debug)cout<<"Getting Electrons"<<endl;
-	    selectedElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Medium","Spring15_25ns",true);// pt, eta
+	    selectedElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Tight","Spring15_25ns",true);// pt, eta
 
             /// For MC Information
             vector<TRootMCParticle*> mcParticles;
@@ -1062,8 +1061,8 @@ int main (int argc, char *argv[])
                 bdisc_jet[nJets]=selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags() ;
                 nJets++;
 
-            }
-
+            } 
+	  /// Some variables from POG/PAG
 	    float workingpointvalue_Loose = 0.605;//working points updated to 2015 BTV-POG recommendations.
 	    float workingpointvalue_Medium = 0.890;//working points updated to 2015 BTV-POG recommendations.
 	    float workingpointvalue_Tight = 0.970;//working points updated to 2015 BTV-POG recommendations.
@@ -1095,10 +1094,7 @@ int main (int argc, char *argv[])
                 if(tempJet->btag_combinedInclusiveSecondaryVertexV2BJetTags() <= workingpointvalue_Loose){
  		 selectedLCSVLJets.push_back(tempJet); 
                }
-            } 
-            nCSVTBJets = selectedBCSVTJets.size(); 
-	    nCSVMBJets = selectedBCSVMJets.size();
- 	    nCSVLBJets = selectedBCSVLJets.size();
+            }
 
            /////////////////////
            //  met plots
@@ -1121,98 +1117,45 @@ int main (int argc, char *argv[])
             //////////////////
 
             double eventweight = 1. ;
-            double Luminosity = 566.48;  
+            double Luminosity = 552.6728;  
    	    if(noData) Luminosity = 100000.; 
 	    if(applyPU && !isData) eventweight *= puWeight ;
-            if(debug) cout << "Using a luminosity of " << Luminosity << " pb^-1" << endl; 
             if(!isData) eventweight *= Luminosity / datasets[d]->EquivalentLumi(); 
 	    // filling the cutflow and the histo 1 D
 
 	    // preselection cut
 //	    histo1D["h_cutFlow"]->Fill(0., eventweight);
+//            if(runHLT && !trigged) continue;
             if(trigged){
-              histo1D["h_cutFlow"]->Fill(1., eventweight); 
-//              if(debug) cout << "trigged" << endl;
+//              histo1D["h_cutFlow"]->Fill(1., eventweight); 
+              if(debug) cout << "trigged" << endl;
 //              if (!isGoodPV) continue; 
               if(isGoodPV){
 //                 histo1D["h_cutFlow"]->Fill(2., eventweight);
+		if(selectedElectrons.size() + selectedMuons.size() == 3)
+		{
+		    histo1D["h_cutFlow"]->Fill(3., eventweight);
+		    if(selectedJets.size() > 1)
+		    { 
+			histo1D["h_cutFlow"]->Fill(4., eventweight);		
+			if(selectedBCSVLJets.size()>0)
+			{
+			   histo1D["h_cutFlow"]->Fill(5., eventweight);
 
-		float tempPt = 0.;           
-	        for(unsigned int i = 0 ; i < selectedJets.size(); i++){
-        	    TRootJet* jet = (TRootJet*) selectedJets[i];
-            	    tempPt += jet->Pt();
-        	}
-	        histo1D["h_Ht"]->Fill(tempPt,  eventweight);
-//                 if(selectedElectrons.size() + selectedMuons.size()==0) continue; 
-                if(selectedElectrons.size()>0 && selectedMuons.size()>0){ 
-                    histo1D["h_cutFlow"]->Fill(3., eventweight);
-
-               if(selectedMuons.size() > 0) histo1D["h_Pt_first_Muon"]->Fill(selectedMuons[0]->Pt(),    eventweight);
-                if(selectedMuons.size() > 1) histo1D["h_Pt_2nd_Muon"]->Fill(selectedMuons[1]->Pt(),    eventweight);
-                if(selectedMuons.size() > 2) histo1D["h_Pt_3d_Muon"]->Fill(selectedMuons[2]->Pt(),    eventweight);
-                if(selectedElectrons.size() > 0) histo1D["h_Pt_first_Electron"]->Fill(selectedElectrons[0]->Pt(),    eventweight);
-                if(selectedElectrons.size() > 1) histo1D["h_Pt_2nd_Electron"]->Fill(selectedElectrons[1]->Pt(),    eventweight);
-                if(selectedElectrons.size() > 2) histo1D["h_Pt_3d_Electron"]->Fill(selectedElectrons[2]->Pt(),   eventweight);
-                if(selectedJets.size()>0) histo1D["h_Pt_first_Jet"]->Fill(selectedJets[0]->Pt(),  eventweight);
-                if(selectedJets.size()>1) histo1D["h_Pt_2nd_Jet"]->Fill(selectedJets[1]->Pt(),  eventweight);
-                if(selectedJets.size()>2) histo1D["h_Pt_3d_Jet"]->Fill(selectedJets[2]->Pt(),  eventweight);
-
-
-
-                    if(selectedElectrons.size()>1 ||  selectedMuons.size()>1){
-                        histo1D["h_cutFlow"]->Fill(4., eventweight);
-			TLorentzVector Zboson;
-			Zboson.Clear(); 
-			bool foundZ = false; 
-                        if(selectedElectrons.size() + selectedMuons.size() == 2)
-                        {
-			   TLorentzVector Lepton0; 
-			   TLorentzVector Lepton1;
-			   Lepton0.Clear(); 
-			   Lepton1.Clear();
-			   if(selectedElectrons.size()==2)
-			   {
-			      Lepton0.SetPxPyPzE(selectedElectrons[0]->Px(),selectedElectrons[0]->Py(), selectedElectrons[0]->Pz(),selectedElectrons[0]->Energy()  ) ;
-                              Lepton1.SetPxPyPzE(selectedElectrons[1]->Px(),selectedElectrons[1]->Py(), selectedElectrons[1]->Pz(),selectedElectrons[1]->Energy()  ) ;                  
-			      if(selectedElectrons[0]->charge() != selectedElectrons[1]->charge()) foundZ  = true; 
-			   }
-			   else if(selectedMuons.size()==2)
-	                   {
-                              Lepton0.SetPxPyPzE(selectedMuons[0]->Px(),selectedMuons[0]->Py(), selectedMuons[0]->Pz(),selectedMuons[0]->Energy()  ) ;
-                              Lepton1.SetPxPyPzE(selectedMuons[1]->Px(),selectedMuons[1]->Py(), selectedMuons[1]->Pz(),selectedMuons[1]->Energy()  ) ;
-			      if(selectedMuons[0]->charge() != selectedMuons[1]->charge()) foundZ = true; 
-                           }
-			   if(foundZ)
-			   {
-			     Zboson = Lepton0 + Lepton1; 
-			     Zboson_M = (Lepton0 + Lepton1).M(); 
-			     Zboson_Px = (Lepton0 + Lepton1).Px(); 
-                             Zboson_Py = (Lepton0 + Lepton1).Py();		      
-                             Zboson_Pz = (Lepton0 + Lepton1).Pz();
-                             Zboson_Energy = (Lepton0 + Lepton1).Energy();
-			   }
-			   else if(!foundZ) 
-                           {
-                             Zboson_M = -5;
-                             Zboson_Px = -5;
-                             Zboson_Py = -5;
-                             Zboson_Pz = -5;
-                             Zboson_Energy = -5;
-                           }	                
-                        }
-                       if(selectedElectrons.size() + selectedMuons.size()==3){
-                          histo1D["h_cutFlow"]->Fill(5., eventweight);
-                          std::vector <int>  Leptons; 
-			  TLorentzVector Wlepton;  
-			  Leptons.clear(); 
-			  Wlepton.Clear(); 
-			  Leptons = OSSFLeptonPairCalculator(selectedElectrons, selectedMuons, verbose);
-	   	          if(verbose>3) cout <<   Leptons[0]<< " , " <<  Leptons[1]<< " , " <<  Leptons[2]<< " , " <<  Leptons[3]<< " , " <<  Leptons[4]<< " , " <<  Leptons[5]   << endl; 
+			   TLorentzVector Zboson;
+			   Zboson.Clear(); 
+			   bool foundZ = false; 
+                           std::vector <int>  Leptons; 
+			   TLorentzVector Wlepton;  
+			   Leptons.clear(); 
+			   Wlepton.Clear(); 
+			   Leptons = OSSFLeptonPairCalculator(selectedElectrons, selectedMuons, verbose);
+	   	           if(verbose>3) cout <<   Leptons[0]<< " , " <<  Leptons[1]<< " , " <<  Leptons[2]<< " , " <<  Leptons[3]<< " , " <<  Leptons[4]<< " , " <<  Leptons[5]   << endl; 
 	
-	                  bool OSSFpair = false; 
-	                  if( (Leptons[0] != -5 && Leptons[1] != -5) || (Leptons[3] != -5 && Leptons[4] != -5) ) OSSFpair = true; 
-	       		  if(OSSFpair)
-	       		  {
+	                   bool OSSFpair = false; 
+	                   if( (Leptons[0] != -5 && Leptons[1] != -5) || (Leptons[3] != -5 && Leptons[4] != -5) ) OSSFpair = true; 
+	       		   if(OSSFpair)
+	       		   {
 			     Zboson = CreateZboson(Leptons, selectedElectrons, selectedMuons, verbose);
 			     foundZ = true;  
 			     if(fabs(Leptons[2]) != 5)
@@ -1223,37 +1166,68 @@ int main (int argc, char *argv[])
 	          	     {
 	            		Wlepton.SetPxPyPzE(selectedMuons[Leptons[5]]->Px(), selectedMuons[Leptons[5]]->Py(), selectedMuons[Leptons[5]]->Pz(), selectedMuons[Leptons[5]]->Energy());		  
 	          	     }
-			  }
+			   }
 
-		       } // 3leptons
-		       if(!foundZ) continue; 
-                       if(!(selectedElectrons.size() + selectedMuons.size()==3)) continue; 
- 
-		       histo1D["h_cutFlow"]->Fill(6., eventweight);
+		           if(!foundZ) continue; 
+		           histo1D["h_cutFlow"]->Fill(6., eventweight);
 
-                       if(Zboson.M() < 106 && Zboson.M() > 76) 
-                       {
-			  histo1D["h_cutFlow"]->Fill(7., eventweight);
- 			  if(selectedJets.size()>0)
-			  {
-			      histo1D["h_cutFlow"]->Fill(8., eventweight);
-                              if(selectedJets.size()>1)
-			      {
-				histo1D["h_cutFlow"]->Fill(9., eventweight);
-				if(selectedJets.size()<3)
+                           if((fabs(Zboson.M() -90.0))>15.0) 
+                           {
+			      histo1D["h_cutFlow"]->Fill(7., eventweight);
+			      TLorentzVector Bjet; 
+			      Bjet.Clear();
+                              Bjet.SetPxPyPzE(selectedBCSVLJets[0]->Px(),selectedBCSVLJets[0]->Py(),selectedBCSVLJets[0]->Pz(),selectedBCSVLJets[0]->Energy());
+			      TLorentzVector FCNCjet; 
+			      FCNCjet.Clear();                               
+
+  			       TLorentzVector MissingEt;
+	                       MissingEt.SetPxPyPzE(mets[0]->Px(),mets[0]->Py(),mets[0]->Pz(),mets[0]->Energy());
+                               double MetPt = sqrt(mets[0]->Px()*mets[0]->Px() + mets[0]->Py()*mets[0]->Py());
+			       float Phi_Wlep_MET = MissingEt.DeltaPhi(Wlepton);
+                   	       float Phi_Wlep_Bjet = Wlepton.DeltaPhi(Bjet);
+                   	       float Phi_Bjet_MET = MissingEt.DeltaPhi(Bjet);
+                   		float CosPhi_Wlep_MET = cos(Phi_Wlep_MET);
+                   		float CosPhi_Wlep_Bjet = cos(Phi_Wlep_Bjet);
+                   		float CosPhi_Bjet_MET = cos(Phi_Bjet_MET);
+                   		float TrMass_Wlep_MET = TMath::Sqrt(2*MetPt*Wlepton.Pt()*(1-CosPhi_Wlep_MET));
+                   		float TrMass_Wlep_MET_Bjet = TMath::Sqrt(2*MetPt*Wlepton.Pt()*(1-CosPhi_Wlep_MET)+2*MetPt*Bjet.Pt()*(1-CosPhi_Bjet_MET)+2*Bjet.Pt()*Wlepton.Pt()*(1-CosPhi_Wlep_Bjet));
+
+				
+				FCNCjet = FCNCjetCalculator(selectedLCSVLJets,selectedBCSVLJets,Zboson,verbose); 
+			        
+			        if(TrMass_Wlep_MET>50)
 				{
-				   histo1D["h_cutFlow"]->Fill(10., eventweight);
-				   myTree->Fill(); 		           
-			           passed++; 
-  				}
- 			      }
-                          }
-		       } // Zmass window 
-		     }//At least 2 leptons
-		  }
-               }
-            }
+				   
+				    histo1D["h_cutFlow"]->Fill(8., eventweight);
+			            if(fabs((Zboson+FCNCjet).M() - 172.9) < 35)
+				    {
+					histo1D["h_cutFlow"]->Fill(9., eventweight);
+					histo1D["h_NbBCSVTJets"]->Fill(selectedBCSVTJets.size(),eventweight); 
+					histo1D["h_Inv_Mass_FCNCtop"]->Fill((Zboson+FCNCjet).M(),eventweight);
+					histo1D["h_Inv_Mass_lb"]->Fill((Bjet+Wlepton).M(),eventweight);
 
+                if(selectedMuons.size() > 0) histo1D["h_Pt_first_Muon"]->Fill(selectedMuons[0]->Pt(),    eventweight);
+                if(selectedMuons.size() > 1) histo1D["h_Pt_2nd_Muon"]->Fill(selectedMuons[1]->Pt(),    eventweight);
+                if(selectedMuons.size() > 2) histo1D["h_Pt_3d_Muon"]->Fill(selectedMuons[2]->Pt(),    eventweight);
+                if(selectedElectrons.size() > 0) histo1D["h_Pt_first_Electron"]->Fill(selectedElectrons[0]->Pt(),    eventweight);
+                if(selectedElectrons.size() > 1) histo1D["h_Pt_2nd_Electron"]->Fill(selectedElectrons[1]->Pt(),    eventweight);
+                if(selectedElectrons.size() > 2) histo1D["h_Pt_3d_Electron"]->Fill(selectedElectrons[2]->Pt(),   eventweight);
+                if(selectedJets.size()>0) histo1D["h_Pt_first_Jet"]->Fill(selectedJets[0]->Pt(),  eventweight);
+                if(selectedJets.size()>1) histo1D["h_Pt_2nd_Jet"]->Fill(selectedJets[1]->Pt(),  eventweight);
+                if(selectedJets.size()>2) histo1D["h_Pt_3d_Jet"]->Fill(selectedJets[2]->Pt(),  eventweight);
+
+
+					myTree->Fill(); 		           
+			            	passed++;
+				    } // topmass
+				
+ 				} // tr mass W 
+		           } // Zmass window 
+		         }//At least 1 Bjet
+		      } // At least 2 jets
+                  } //3 leptons
+                } // Good PV
+             } // trugged
 	    
             
 
@@ -1437,3 +1411,60 @@ TLorentzVector CreateZboson(std::vector<int> leptons, std::vector<TRootElectron*
   if(verbose>3) cout << " out Zboson creator " <<endl; 
   return Zbos; 
 }
+
+TLorentzVector FCNCjetCalculator(std::vector<TRootJet*> nonBJets,std::vector<TRootJet*> BJets, TLorentzVector recoZ ,int verb)
+{
+    TLorentzVector FCNCjet; 
+    FCNCjet.Clear(); 
+
+
+     double TempMinMass = 100000.00;
+     double TopMass = 172.9;
+     TLorentzVector Jetcandidate;
+     int NbInColl = -1;
+     if(nonBJets.size() != 0){
+
+       for(unsigned int iJ = 0; iJ < nonBJets.size(); iJ++)
+       {
+     	  TLorentzVector Jet;
+     	  Jet.SetPxPyPzE(nonBJets[iJ]->Px(),nonBJets[iJ]->Py(),nonBJets[iJ]->Pz(),nonBJets[iJ]->Energy());
+
+     	  if(fabs((recoZ+Jet).M() - TopMass) < TempMinMass)
+     	  {
+     	    TempMinMass = fabs((recoZ+Jet).M() - TopMass);
+     	    Jetcandidate.SetPxPyPzE(Jet.Px(), Jet.Py(), Jet.Pz(), Jet.E());
+     	    NbInColl = iJ;
+
+     	  }
+
+
+       }
+       FCNCjet.SetPxPyPzE(nonBJets[NbInColl]->Px(),nonBJets[NbInColl]->Py(),nonBJets[NbInColl]->Pz(),nonBJets[NbInColl]->Energy());
+     }
+     else {
+       for(unsigned int iJ = 1; iJ < BJets.size(); iJ++)
+       {
+     	  TLorentzVector Jet;
+     	  Jet.SetPxPyPzE(BJets[iJ]->Px(),BJets[iJ]->Py(),BJets[iJ]->Pz(),BJets[iJ]->Energy());
+
+     	  if(fabs((recoZ+Jet).M() - TopMass) < TempMinMass)
+     	  {
+     	    TempMinMass = fabs((recoZ+Jet).M() - TopMass);
+     	    Jetcandidate.SetPxPyPzE(Jet.Px(), Jet.Py(), Jet.Pz(), Jet.E());
+     	    NbInColl = iJ;
+
+     	  }
+
+       }
+
+       FCNCjet.SetPxPyPzE(BJets[NbInColl]->Px(),BJets[NbInColl]->Py(),BJets[NbInColl]->Pz(),BJets[NbInColl]->Energy());
+     }
+
+
+    return FCNCjet;
+}
+
+
+
+
+
