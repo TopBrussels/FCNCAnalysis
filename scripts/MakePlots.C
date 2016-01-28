@@ -19,7 +19,7 @@
 
 
 
-void MakePlots(string channel = "Mu", string date = "11_1_2016", bool plotData = false) {
+void MakePlots(string channel = "El", string date = "14_1_2016", bool plotData = true) {
 
  string dirname_ = "../Merged/ControlPlots_"+channel+"/ControlPlots_"+date+"/";
  const char * dirname = dirname_.c_str();
@@ -107,9 +107,9 @@ void MakePlots(string channel = "Mu", string date = "11_1_2016", bool plotData =
 cout << "DEBUG: " << Vmyprocess[i] << endl;
     if(Vmyprocess[i].Contains("diboson")){ color.push_back(kMagenta);}
     if(Vmyprocess[i].Contains("tZq")){ color.push_back(kBlue); }
-    if(Vmyprocess[i].Contains("data")){ color.push_back(kBlack);}
+    if(Vmyprocess[i].Contains("Data")){ color.push_back(kBlack);}
     if(Vmyprocess[i].Contains("ttV")){ color.push_back(kCyan);}
-    if(Vmyprocess[i].Contains("TTJets")){ color.push_back(kGreen); cout << "color filled" << endl;}
+    if(Vmyprocess[i].Contains("TTJets")){ color.push_back(kGreen);}
     if(Vmyprocess[i].Contains("Zjets")){ color.push_back(kBlue-3);}
     if(Vmyprocess[i].Contains("ST")){ color.push_back(kCyan+5);}
 /*    if(Vmyprocess[i].Contains("WZ")){ color.push_back(kMagenta);} 
@@ -190,7 +190,7 @@ cout << "DEBUG: " << Vmyprocess[i] << endl;
      TString myrootfile = listrootfiles[iProcess];
      TFile *_file0 = TFile::Open(myrootfile);
      h[iVar][iProcess] = (TH1F*) _file0->Get((listHisto[iVar]).c_str());
-     if(myprocess.CompareTo("data")){
+     if(myprocess.CompareTo("Data")){
        leg->AddEntry(h[iVar][iProcess], Vmyprocess[iProcess],"f");
        h[iVar][iProcess]->SetFillColor(color[iProcess]);
        h[iVar][iProcess]->SetLineColor(kBlack);

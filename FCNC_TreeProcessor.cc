@@ -33,10 +33,10 @@ map<string,TTree*> ttree;
 map<string,MultiSamplePlot*> MSPlot;
 
 
-float Luminosity = 1263.885980236; // pb-1
-TString slumi = "1263.885980236";
-std::string channel = "_El";
-std::string date = "_24_11_2015";
+float Luminosity = 2196.422335; // pb-1 Muon  = 2196.422335, Electron = 2094.087
+TString slumi = "2196.422335";
+std::string channel = "_Mu";
+std::string date = "_20_1_2016";
 Bool_t debug = false;
 
 
@@ -87,11 +87,12 @@ int main()
     DatasetPlotter(40, -5., 5., "EtaLepTop", xmlFileName,CraneenPath,"AdvancedVarsTree");
     DatasetPlotter(40, -5., 5., "EtaHadTop", xmlFileName,CraneenPath,"AdvancedVarsTree");
     DatasetPlotter(40, 0., 500., "MassW", xmlFileName,CraneenPath,"AdvancedVarsTree");
+    DatasetPlotter(40, 0., 500., "Mbb", xmlFileName,CraneenPath,"AdvancedVarsTree");
     DatasetPlotter(40, -5., 5., "EtaW", xmlFileName,CraneenPath,"AdvancedVarsTree");
     DatasetPlotter(35, -0.5, 34.5, "nbVertices", xmlFileName,CraneenPath,"EventInfoTree");
-    DatasetPlotter(35, 0., 1.5, "lumiWeight", xmlFileName,CraneenPath,"EventInfoTree"); //PU
-    DatasetPlotter(35, 0., 1.5, "fleptonSF", xmlFileName,CraneenPath,"EventInfoTree");
-    DatasetPlotter(35, 0., 1.5, "btagWeight_mujets_central", xmlFileName,CraneenPath,"EventInfoTree");
+//    DatasetPlotter(35, 0., 1.5, "lumiWeight", xmlFileName,CraneenPath,"EventInfoTree"); //PU
+//    DatasetPlotter(35, 0., 1.5, "fleptonSF", xmlFileName,CraneenPath,"EventInfoTree");
+//    DatasetPlotter(35, 0., 1.5, "btagWeight_mujets_central", xmlFileName,CraneenPath,"EventInfoTree");
 
     // calling the function that writtes all the MSPlots in a root file
 	MSPCreator ();
@@ -152,7 +153,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
   	free(dup);
 
 
-  	TString CraneenPath = "/localgrid/kderoove/FCNC/TopTreeFramework/CMSSW_7_6_0/src/TopBrussels/FCNCAnalysis/MergedTrees" + channel + "/Trees_SelectionOutput" + date;
+  	TString CraneenPath = "/localgrid/kderoove/FCNC/TopTreeFramework/CMSSW_7_6_0/src/TopBrussels/FCNCAnalysis/Merged/Ntuples" + channel + "/Ntuples" + date;
 
   
 	for (int d = 0; d < datasets.size(); d++)   //Loop through datasets  
@@ -296,6 +297,20 @@ void MSPCreator ()
 			cout << " and it->first is " << it->first << endl;
       	}
       	temp->setDataLumi(Luminosity);
+      	//    temp->Draw(name,RatioType, addRatioErrorBand, addErrorBand, ErrorBandAroundTotalInput, scaleNPSignal);              
+      	//MultiSamplePlot options
+          /*
+          bool showEntriesLegend = false; //to show number of (weighted) events of the samples in the legend
+          bool setCMSPrelim = false; //if true, will display "CMS Preliminary", otherwise "CMS"
+          int RatioType = 0; //0: no ratio plot, 1: ratio = data/MC, 2: ratio = (data-MC)/MC
+          bool addErrorBand = false; //display an error band around the stacked SM MC on the main canvas
+          bool addRatioErrorBand = false; //display an error band on the ratio plot below the main canvas
+          bool ErrorBandAroundTotalInput = false; //see dedicated discussion below.
+          string errorbandfile = "ErrorBands/ErrorBandFile_15Jul15.root";  //a root file containing systematically shifted distributions to create error bands around the stacked SM MC. See dedicated discussion below.
+          bool dosystfile = false; //see dedicated discussion below.
+          int scaleNPSignal = 20; //determines the factor with which the new physics signal samples are scaled, only on the canvas (note that the TH1F histogram in the MSPlot output root file itself is not scaled with this factor!)
+          bool savePNG = false; //automatically save png files of MSPlots.
+          */
 		temp->Draw("MyMSP_"+it->first, 1, false, false, false, 1);
       	temp->Write(outfile, it->first, true,pathPNG, "png");
 	}

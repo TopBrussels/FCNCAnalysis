@@ -1,5 +1,7 @@
 #!/bin/bash 
 
+mkdir Terminal_Output
+
 cd SubmitScripts/
 for f in *.sh
 #for f in SubmitScripts/submit_Data1.sh SubmitScripts/submit_Data2.sh

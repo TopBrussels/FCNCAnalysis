@@ -199,8 +199,8 @@ int main (int argc, char *argv[])
     ///////////////////////////////////////
 
     bool debug = false;
-    bool Muon = false;
-    bool Electron = true;
+    bool Muon = true;
+    bool Electron = false;
     bool bTagReweight_PreReweighting = false; //Needs to be set only once to true in order to produce the EtaPtHistos
     string btagger = "CSVM";
     bool printTriggers = false;
@@ -874,7 +874,7 @@ int main (int argc, char *argv[])
         string Ntuptitle_Weights = "Weights";
 
         TFile * tupfile = new TFile(Ntupname.c_str(),"RECREATE");
-        TNtuple * tup      = new TNtuple(Ntuptitle_AdvancedVars.c_str(), Ntuptitle_AdvancedVars.c_str(), "Mbb:MTlepmet:MLepTop_GenMatch:MHadTop_GenMatch:EtaLepTop_GenMatch:EtaHadTop_GenMatch:MassW_GenMatch:EtaW_GenMatch:dR_lepJet_min:MLepTop:MHadTop:EtaLepTop:EtaHadTop:MassW:EtaW");
+        TNtuple * tup      = new TNtuple(Ntuptitle_AdvancedVars.c_str(), Ntuptitle_AdvancedVars.c_str(), "MTlepmet:MLepTop_GenMatch:MHadTop_GenMatch:EtaLepTop_GenMatch:EtaHadTop_GenMatch:MassW_GenMatch:EtaW_GenMatch:dR_lepJet_min:MLepTop:MHadTop:EtaLepTop:EtaHadTop:MassW:EtaW");
         TNtuple * tup_ObjectVars      = new TNtuple(Ntuptitle_ObjectVars.c_str(), Ntuptitle_ObjectVars.c_str(), "qlepton:leptonpt:leptoneta:leptonX:leptonY:leptonZ:leptonE:bdisc1:bdisc2:bdisc3:bdisc4:bdisc5:jet1_Pt:jet2_Pt:jet3_Pt:jet4_Pt:jet5_Pt:jet1_Eta:jet2_Eta:jet3_Eta:jet4_Eta:jet5_Eta:jet1_x:jet2_x:jet3_x:jet4_x:jet5_x:jet1_y:jet2_y:jet3_y:jet4_y:jet5_y:jet1_z:jet2_z:jet3_z:jet4_z:jet5_z:jet1_E:jet2_E:jet3_E:jet4_E:jet5_E:MissingEt");
         TNtuple * tup_EventInfo      = new TNtuple(Ntuptitle_EventInfo.c_str(), Ntuptitle_EventInfo.c_str(), "nbVertices:nb_jets:nb_bjets");
         TNtuple * tup_Weights      = new TNtuple(Ntuptitle_Weights.c_str(), Ntuptitle_Weights.c_str(), "lumiWeight:fleptonSF:btagWeight_comb_central:btagWeight_comb_up:btagWeight_comb_down:btagWeight_mujets_central:btagWeight_mujets_up:btagWeight_mujets_down:btagWeight_ttbar_central:btagWeight_ttbar_up:btagWeight_ttbar_down");
@@ -931,7 +931,7 @@ int main (int argc, char *argv[])
 
         if (debug) cout << " - Loop over events " << endl;
 
-        float qlepton,leptonpt,bdisc1,bdisc2,bdisc3,bdisc4,bdisc5,nb_jets,nb_bjets,jet1_Pt,jet2_Pt,jet3_Pt,MissingEt,leptoneta,Mbb,MTlepmet,MLepTop_GenMatch,MHadTop_GenMatch,EtaLepTop_GenMatch,EtaHadTop_GenMatch,MassW_GenMatch,EtaW_GenMatch,dR_lepJet_min,MLepTop,MHadTop,EtaLepTop,EtaHadTop,MassW,EtaW,nbVertices;
+        float qlepton,leptonpt,bdisc1,bdisc2,bdisc3,bdisc4,bdisc5,nb_jets,nb_bjets,jet1_Pt,jet2_Pt,jet3_Pt,MissingEt,leptoneta,MTlepmet,MLepTop_GenMatch,MHadTop_GenMatch,EtaLepTop_GenMatch,EtaHadTop_GenMatch,MassW_GenMatch,EtaW_GenMatch,dR_lepJet_min,MLepTop,MHadTop,EtaLepTop,EtaHadTop,MassW,EtaW,nbVertices;
         float leptonX,leptonY,leptonZ,leptonE,jet4_Pt,jet5_Pt,jet1_Eta,jet2_Eta,jet3_Eta,jet4_Eta,jet5_Eta,jet1_x,jet2_x,jet3_x,jet4_x,jet5_x,jet1_y,jet2_y,jet3_y,jet4_y,jet5_y,jet1_z,jet2_z,jet3_z,jet4_z,jet5_z,jet1_E,jet2_E,jet3_E,jet4_E,jet5_E;
         float lumiWeight, fleptonSF;
         float btagWeight_comb_central,btagWeight_comb_up,btagWeight_comb_down,btagWeight_mujets_central,btagWeight_mujets_up,btagWeight_mujets_down,btagWeight_ttbar_central,btagWeight_ttbar_up,btagWeight_ttbar_down;
@@ -953,7 +953,7 @@ int main (int argc, char *argv[])
         for (unsigned int ievt = event_start; ievt < end_d; ievt++)
         {
 	        qlepton = 0; leptonpt = -1.; bdisc1 = -1.; bdisc2 = -1.; bdisc3 = -1.; bdisc4 = -1.; bdisc5 = -1.; nb_jets = -1; nb_bjets = -1.; jet1_Pt = -1; jet2_Pt = -1.;jet3_Pt = -1.; MissingEt = -1.;
-            leptoneta = -99999.; Mbb=-1.; MTlepmet = -1.; MLepTop_GenMatch = -1.; MHadTop_GenMatch = -1.; EtaLepTop_GenMatch = -99999.;
+            leptoneta = -99999.; MTlepmet = -1.; MLepTop_GenMatch = -1.; MHadTop_GenMatch = -1.; EtaLepTop_GenMatch = -99999.;
             EtaHadTop_GenMatch = -99999.; MassW_GenMatch = -1.; EtaW_GenMatch = -99999.; dR_lepJet_min = 99999.;
             MLepTop = -1.; MHadTop = -1.; EtaLepTop = -99999.; EtaHadTop = -99999.; MassW = -1.; EtaW = -99999.; nbVertices = -1;
             jet4_Pt = -1.; jet5_Pt = -1.; jet1_Eta = -99999.; jet2_Eta = -99999.; jet3_Eta = -99999.; jet4_Eta = -99999.; jet5_Eta = -99999.;
@@ -1050,7 +1050,7 @@ int main (int argc, char *argv[])
             vector<TRootJet*>      selectedLightJets_MWP;
             vector<TRootJet*>      selectedLightJets_TWP;
             vector<TRootJet*>      selectedLightJets;
-		        vector<TLorentzVector> selectedMuonsTLV, selectedElectronsTLV, metsTLV, selectedJetsTLV, selectedBJetsTLV, selectedLightJetsTLV, selectedLeptonsTLV;
+		        vector<TLorentzVector> selectedMuonsTLV, selectedElectronsTLV, metsTLV, selectedJetsTLV, selectedBJetsTLV, selectedLeptonsTLV;
             vector<TLorentzVector> selectedMuonsTLV_JC, selectedElectronsTLV_JC, selectedLooseIsoMuonsTLV;
             vector<TLorentzVector> mcParticlesTLV, mcMuonsTLV, mcPartonsTLV;
             vector<TRootMCParticle*> mcParticlesMatching_,mcParticles;
@@ -1744,7 +1744,7 @@ int main (int argc, char *argv[])
             //////////////////////////////////////////////////////////////////////
             // Cut on nb of jets and b-jets
             //////////////////////////////////////////////////////////////////////
-			if(selectedJets.size() < 2)  continue;
+			if(selectedJets.size() < 3)  continue;
 			histo1D["cutFlow"]->Fill(6., 1. );//n Jets
 	        if (debug)	cout <<"Cut on nb jets..."<<endl;
 
@@ -1772,7 +1772,7 @@ int main (int argc, char *argv[])
 
 
 
-		  	if(selectedMBJets.size() < 1) continue;
+		  	if(selectedMBJets.size() < 3) continue;
 	        if (debug)	cout <<"Cut on nb b-jets..."<<endl;
 			histo1D["cutFlow"]->Fill(7., 1. ); //n BJets
 
@@ -1788,7 +1788,6 @@ int main (int argc, char *argv[])
             // take all the selectedJets_ to study the radiation stuff, selectedJets_ are already ordened in decreasing Pt()
             for (unsigned int i = 0; i < selectedJets.size(); i++) selectedJetsTLV.push_back(*selectedJets[i]);
             for (unsigned int i = 0; i < selectedMBJets.size(); i++) selectedBJetsTLV.push_back(*selectedMBJets[i]);
-            for (unsigned int i = 0; i < selectedLightJets_MWP.size(); i++) selectedLightJetsTLV.push_back(*selectedLightJets_MWP[i]);
 
             //////////////////////////////////////
             // Peeking at the MC info 
@@ -2170,11 +2169,8 @@ int main (int argc, char *argv[])
 			nbVertices = vertex.size();
 
 
-      if(selectedBJetsTLV.size()>=2)   Mbb = (selectedBJetsTLV[0]+selectedBJetsTLV[1]).M();
-      if(selectedLightJetsTLV.size()>=2) MassW = (selectedLightJetsTLV[0]+selectedLightJetsTLV[1]).M();
 
-
-            float vals[15] = {Mbb,MTlepmet,MLepTop_GenMatch,MHadTop_GenMatch,EtaLepTop_GenMatch,EtaHadTop_GenMatch,MassW_GenMatch,EtaW_GenMatch,dR_lepJet_min,MLepTop,MHadTop,EtaLepTop,EtaHadTop,MassW,EtaW};
+            float vals[14] = {MTlepmet,MLepTop_GenMatch,MHadTop_GenMatch,EtaLepTop_GenMatch,EtaHadTop_GenMatch,MassW_GenMatch,EtaW_GenMatch,dR_lepJet_min,MLepTop,MHadTop,EtaLepTop,EtaHadTop,MassW,EtaW};
             float vals_ObjectVars[43] = {qlepton,leptonpt,leptoneta,leptonX,leptonY,leptonZ,leptonE,bdisc1,bdisc2,bdisc3,bdisc4,bdisc5,jet1_Pt,jet2_Pt,jet3_Pt,jet4_Pt,jet5_Pt,jet1_Eta,jet2_Eta,jet3_Eta,jet4_Eta,jet5_Eta,jet1_x,jet2_x,jet3_x,jet4_x,jet5_x,jet1_y,jet2_y,jet3_y,jet4_y,jet5_y,jet1_z,jet2_z,jet3_z,jet4_z,jet5_z,jet1_E,jet2_E,jet3_E,jet4_E,jet5_E,MissingEt};
             float vals_EventInfo[3] = {nbVertices,nb_jets,nb_bjets};
             float vals_Weights[11] = {lumiWeight,fleptonSF,btagWeight_comb_central,btagWeight_comb_up,btagWeight_comb_down,btagWeight_mujets_central,btagWeight_mujets_up,btagWeight_mujets_down,btagWeight_ttbar_central,btagWeight_ttbar_up,btagWeight_ttbar_down};
