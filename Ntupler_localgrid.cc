@@ -1,0 +1,781 @@
+//////////////////////////////////////////////////////////////////////////////
+////         Analysis code for search for FCNC tZq                     ////
+//////////////////////////////////////////////////////////////////////////////
+
+
+#define _USE_MATH_DEFINES
+#include "TStyle.h"
+#include "TPaveText.h"
+#include "TTree.h"
+#include "TNtuple.h"
+#include "TNtuple.h"
+#include <TMatrixDSym.h>
+#include <TMatrixDSymEigen.h>
+#include <TVectorD.h>
+#include <ctime>
+
+#include <cmath>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <sys/stat.h>
+#include <errno.h>
+#include "TRandom3.h"
+#include "TRandom.h"
+#include "TProfile.h"
+#include <iostream>
+#include <map>
+#include <cstdlib>
+
+//user code
+#include "TopTreeProducer/interface/TRootRun.h"
+#include "TopTreeProducer/interface/TRootEvent.h"
+#include "TopTreeAnalysisBase/Selection/interface/Run2Selection.h"
+
+#include "TopTreeAnalysisBase/Content/interface/AnalysisEnvironment.h"
+#include "TopTreeAnalysisBase/Content/interface/Dataset.h"
+#include "TopTreeAnalysisBase/Tools/interface/JetTools.h"
+#include "TopTreeAnalysisBase/Tools/interface/PlottingTools.h"
+#include "TopTreeAnalysisBase/Tools/interface/TTreeLoader.h"
+#include "TopTreeAnalysisBase/Tools/interface/AnalysisEnvironmentLoader.h"
+#include "TopTreeAnalysisBase/Reconstruction/interface/JetCorrectorParameters.h"
+#include "TopTreeAnalysisBase/Reconstruction/interface/JetCorrectionUncertainty.h"
+#include "TopTreeAnalysisBase/Reconstruction/interface/MakeBinning.h"
+#include "TopTreeAnalysisBase/MCInformation/interface/LumiReWeighting.h"
+#include "TopTreeAnalysisBase/MCInformation/interface/JetPartonMatching.h"
+#include "TopTreeAnalysisBase/Reconstruction/interface/MEzCalculator.h"
+#include "TopTreeAnalysisBase/Tools/interface/LeptonTools.h"
+#include "TopTreeAnalysisBase/Tools/interface/SourceDate.h"
+#include "TopTreeAnalysisBase/Tools/interface/Trigger.h"
+#include "TopTreeAnalysisBase/Reconstruction/interface/TTreeObservables.h"
+
+//This header file is taken directly from the BTV wiki. It contains
+// to correctly apply an event level Btag SF. It is not yet on CVS
+// as I hope to merge the functionality into BTagWeigtTools.h
+//#include "TopTreeAnalysisBase/Tools/interface/BTagSFUtil.h"
+#include "TopTreeAnalysisBase/Tools/interface/BTagWeightTools.h"
+#include "TopTreeAnalysisBase/Tools/interface/BTagCalibrationStandalone.h"
+
+#include "TopTreeAnalysisBase/Tools/interface/JetTools.h"
+
+using namespace std;
+using namespace TopTree;
+using namespace reweight;
+
+
+/// TH1F
+map<string,TH1F*> histo1D;
+map<string,TH2F*> histo2D;
+
+struct HighestCSVBtag
+{
+    bool operator()( TRootJet* j1, TRootJet* j2 ) const
+    {
+        return j1->btag_combinedInclusiveSecondaryVertexV2BJetTags() > j2->btag_combinedInclusiveSecondaryVertexV2BJetTags();
+    }
+};
+
+
+string ConvertIntToString(int Number, bool pad)
+{
+  ostringstream convert;
+  convert.clear();
+  if ( pad && Number < 10 ) { convert << std::setw(2) << std::setfill('0');}
+  convert << Number;
+  return convert.str();
+};
+
+
+string MakeTimeStamp()
+{
+  time_t t = time(0);   // get time now
+  struct tm * now = localtime( & t );
+  
+  int year = now->tm_year - 100;  /// + 1900 to get current year
+  int month = now->tm_mon + 1;
+  int day = now->tm_mday;
+  int hour = now->tm_hour;
+  int min = now->tm_min;
+  //int sec = now->tm_sec;
+  
+  string year_str = ConvertIntToString(year, true);
+  string month_str = ConvertIntToString(month, true);
+  string day_str = ConvertIntToString(day, true);
+  string hour_str = ConvertIntToString(hour, true);
+  string min_str = ConvertIntToString(min, true);
+  //string sec_str = ConvertIntToString(sec, true);
+  
+  string date_str = year_str + month_str + day_str + "_" + hour_str + min_str;
+  return date_str;
+};
+
+
+
+int main (int argc, char *argv[])
+{
+  string dateString = MakeTimeStamp(); 
+  cout << "***********************************" << endl;
+  cout << "***   Beginning of program: tZq FCNC      ***" << endl;
+  cout << "***********************************" << endl;
+  cout << "Current time: " << dateString << endl;
+
+  clock_t start = clock();
+  
+  ///////////////////////////
+  /// Configuration      ///
+  //////////////////////////
+  int verbose = 0; // 0 = cout alll 
+  bool eventSelected = false; 
+  int nbSelectedEvents = 0; 
+  int nbEvents = 0; 
+  double dataLumi = 0; //pb
+  bool eee = false; 
+  bool eemu = false; 
+  bool mumue = false; 
+  bool mumumu = true; 
+  bool isData = false; 
+  bool runHLT = false; 
+  bool hasMu = false; 
+  bool hasEl = false; 
+  bool dilep =false; 
+  bool singlelep = false;
+  bool applyJetCleaning = true;  
+  string Channnel = ""; 
+  string xmlFileName = ""; 
+  if(mumumu)
+  {
+      cout << " --> Using the TriMuon channel <-- " << endl; 
+      Channel = "MuMuMu"; 
+      xmlFileName = "config/Run2TriLepton_MuMuMu.xml" ; 
+      dataLumi = 1200; //pb
+      hasMu = true; 
+      dilep = true; 
+  }
+  else
+  {
+      cerr << " ERROR: no channel specified " << endl; 
+      exit(1); 
+  }
+  
+  
+  //////////////////////////////////////////////
+  /// Set up everything for local submission ////
+  ///////////////////////////////////////////////
+  // check the arguments passed 
+  if(verbose == 0)
+  {
+     cout << " The list of arguments are: " << endl; 
+     for (int n_arg=1; n_arg<argc; n_arg++)
+     {
+	std:: cerr << "  - arg number " << n_arg << " is " << argv[n_arg] << std::endl;
+     }
+  }
+  if(argc < 14)
+  {
+    std::cerr << "TOO FEW INPUTs FROM XMLFILE.  CHECK XML INPUT FROM SCRIPT.  " << argc << " ARGUMENTS HAVE BEEN PASSED." << std::endl;
+    for (int n_arg=1; n_arg<argc; n_arg++)
+    {
+      std:: cerr << "  - arg number " << n_arg << " is " << argv[n_arg] << std::endl; 
+    }
+    exit(2);
+  
+  }
+  
+  // Put the argument in a format we can use 
+  const string dName             = argv[1];
+  const string dTitle		 = argv[2];
+  const int color		  = strtol(argv[4], NULL, 10);
+  const int ls  		  = strtol(argv[5], NULL, 10);
+  const int lw  		  = strtol(argv[6], NULL, 10);
+  const float normf		   = strtod(argv[7], NULL);
+  const float EqLumi		  = strtod(argv[8], NULL);
+  const float xSect		  = strtod(argv[9], NULL);
+  const float PreselEff 	  = strtod(argv[10], NULL);
+  string fileName		  = argv[11];
+  // if there only two arguments after the fileName, the jobNum will be set to 0 by default as an integer is expected and it will get a string (lastfile of the list) 
+  const int JobNum		  = strtol(argv[argc-3], NULL, 10);
+  const int startEvent  	  = strtol(argv[argc-2], NULL, 10);
+  const int endEvent		  = strtol(argv[argc-1], NULL, 10);
+
+  // all the files are stored from arg 11 to argc-2
+  vector<string> vecfileNames;
+  for(int args = 11; args < argc-3; args++)
+  {
+    vecfileNames.push_back(argv[args]);
+  }
+  
+  if (verbose==0)
+  {
+    cout << "The list of file to run over will be printed..." << endl;
+    for ( int nfiles = 0; nfiles < vecfileNames.size(); nfiles++)
+    {
+      cout << "file number " << nfiles << " is " << vecfileNames[nfiles] << endl;
+    }
+  }
+  
+  // Print information to a textfile
+  ofstream infoFile; 
+  string infoName =  "./Information/information"; 
+  infoName += "_"+ Channel;
+  infoName += "_" + dName;
+  infoName += "_" + JobNum; 
+  infoName += "_" + dateString;
+  infoName += ".txt"; 
+  infoFile.open(infoName.c_str());
+  
+  cout << "---Dataset accepted from command line---" << endl;
+  cout << "Dataset Name: " << dName << endl;
+  cout << "Dataset Title: " << dTitle << endl;
+  cout << "Dataset color: " << color << endl;
+  cout << "Dataset ls: " << ls << endl;
+  cout << "Dataset lw: " << lw << endl;
+  cout << "Dataset normf: " << normf << endl;
+  cout << "Dataset EqLumi: " << EqLumi << endl;
+  cout << "Dataset xSect: " << xSect << endl;
+  cout << "Dataset File Name: " << vecfileNames[0] << endl;
+  cout << "Beginning Event: " << startEvent << endl;
+  cout << "Ending Event: " << endEvent << endl;
+  cout << "JobNum: " << JobNum << endl;
+  bool isData= false;
+  if(dName.find("Data")!=string::npos || dName.find("data")!=string::npos || dName.find("DATA")!=string::npos){
+    isData = true;
+    cout << "running on data !!!!" << endl;
+    cout << "luminosity is " << dataLumi << endl; 
+  }
+  cout << "----------------------------------------" << endl;
+     
+  
+  infoFile << "---Dataset accepted from command line---" << endl;
+  infoFile << "Dataset Name: " << dName << " data? " << isData << endl;
+  infoFile << "Dataset Title: " << dTitle << endl;
+  infoFile << "Dataset color: " << color << endl;
+  infoFile << "Dataset ls: " << ls << endl;
+  infoFile << "Dataset lw: " << lw << endl;
+  infoFile << "Dataset normf: " << normf << endl;
+  infoFile << "Dataset EqLumi: " << EqLumi << endl;
+  infoFile << "Dataset xSect: " << xSect << endl;
+  infoFile << "Dataset File Name: " << vecfileNames[0] << endl;
+  infoFile << "Beginning Event: " << startEvent << endl;
+  infoFile << "Ending Event: " << endEvent << endl;
+  infoFile << "JobNum: " << JobNum << endl;
+  infoFile << "Trigger: " << runHLT << " mu/e/single/di " << hasMu << "/"<< hasEl << "/"<< singlelep << "/" << dilep << endl; 
+  infoFile << "Channel: mumumu/mumue/eee/eemu " << mumumu << "/" << mumue << "/" << eee << "/" <<
+  eemu << endl; 
+  infoFile << "xmlfile: " << xmlFileName.c_str();  << endl; 
+  infoFile << "Jetcleaning on? " <<  applyJetCleaning << endl; 
+
+  
+  
+
+
+  /////////////////////////////////
+  //  Set up AnalysisEnvironment 
+  /////////////////////////////////
+
+  AnalysisEnvironment anaEnv;
+  cout<<" - Creating environment ..."<<endl;
+  anaEnv.PrimaryVertexCollection = "PrimaryVertex";
+  anaEnv.JetCollection = "PFJets_slimmedJets";
+  anaEnv.FatJetCollection = "FatJets_slimmedJetsAK8";
+  anaEnv.METCollection = "PFMET_slimmedMETs";
+  anaEnv.MuonCollection = "Muons_slimmedMuons";
+  anaEnv.ElectronCollection = "Electrons_slimmedElectrons";
+  anaEnv.GenJetCollection   = "GenJets_slimmedGenJets";
+  anaEnv.TrackMETCollection = "";
+  anaEnv.GenEventCollection = "GenEvent";
+  anaEnv.NPGenEventCollection = "NPGenEvent";
+  anaEnv.MCParticlesCollection = "MCParticles";
+  anaEnv.loadFatJetCollection = false;
+  anaEnv.loadGenJetCollection = true;
+  anaEnv.loadGenEventCollection = false;
+  anaEnv.loadNPGenEventCollection = false;
+  anaEnv.loadMCParticles = true;
+  anaEnv.loadTrackMETCollection = false;
+  anaEnv.JetType = 2;
+  anaEnv.METType = 2;
+
+  ////////////////////////////////
+  //  Load datasets
+  ////////////////////////////////
+
+  TTreeLoader treeLoader;
+  vector < Dataset* > datasets;    
+  Dataset* theDataset = new Dataset(dName, dTitle, true, color, ls, lw, normf, xSect, vecfileNames);
+  theDataset->SetEquivalentLuminosity(EqLumi);
+  datasets.push_back(theDataset);
+  int ndatasets = datasets.size() - 1 ;
+
+  ////////////////////////////
+  ///  Initialise trigger  ///
+  ////////////////////////////
+
+  if(verbose == 0) cout << "Initializing trigger" << endl;    
+  Trigger* trigger = new Trigger(hasMu, hasEl, singlelep, dilep);
+
+
+  ///////////////////////////////
+  //  Set up Output ROOT file  ///
+  //////////////////////////////
+  stringstream ss;
+  ss << JobNum;
+  string strJobNum = ss.str();
+  string histo_dir = "NtupleMakerOutput/TriLepton_histos_"+ Channel;
+  string histo_dir_date = histo_dir+"/TriLepton_histos_" + dateString +"/";
+  mkdir(histo_dir.c_str(),0777);
+  mkdir(histo_dir_date.c_str(),0777);
+  
+  string rootFileName (histo_dir_date+"/FCNC_3L_"+Channel".root");
+  if (strJobNum != "0")
+  {
+    cout << "strJobNum is " << strJobNum << endl;
+    rootFileName = histo_dir_date+"/FCNC_3L_"+Channel+"_"+strJobNum+".root";
+  }
+  TFile *fout = new TFile (rootFileName.c_str(), "RECREATE");
+  
+  ///////////////////////////
+  /// Global variables //// 
+  //////////////////////////
+  TRootEvent* event = 0; 
+  // TRootRun *runInfos = new TRootRun();
+
+  /////////////////////////////
+  /// Object ID              /// 
+  /////////////////////////////
+  // electron
+  float el_pt_cut =20.; // 42
+  float el_eta_cut = 2.4;
+
+
+  // muon
+  float mu_pt_cut = 20.; // 40
+  float mu_eta_cut = 2.4;
+  float mu_iso_cut = 0.15;
+ 
+  //jets
+  float jet_pt_cut = 30.;
+  float jet_eta_cut = 2.4;
+  
+  // convert into string
+
+  std::ostringstream el_pt_cut_strs, el_eta_cut_strs, mu_pt_cut_strs, mu_eta_cut_strs, mu_iso_cut_strs, jet_pt_cut_strs, jet_eta_cut_strs;
+  std::string el_pt_cut_str, el_eta_cut_str, mu_pt_cut_str, mu_eta_cut_str, mu_iso_cut_str, jet_pt_cut_str, jet_eta_cut_str;
+  el_pt_cut_strs << el_pt_cut;
+  el_eta_cut_strs << el_eta_cut;
+  mu_pt_cut_strs << mu_pt_cut;
+  mu_eta_cut_strs << mu_eta_cut;
+  mu_iso_cut_strs << mu_iso_cut;
+  jet_pt_cut_strs << jet_pt_cut;
+  jet_eta_cut_strs << jet_eta_cut;
+  el_pt_cut_str = el_pt_cut_strs.str();
+  el_eta_cut_str = el_eta_cut_strs.str();
+  mu_pt_cut_str = mu_pt_cut_strs.str();
+  mu_eta_cut_str = mu_eta_cut_strs.str();
+  mu_iso_cut_str = mu_iso_cut_strs.str();
+  jet_pt_cut_str = jet_pt_cut_strs.str();
+  jet_eta_cut_str = jet_eta_cut_strs.str();
+    
+  infoFile << "El: pt = "  << el_pt_cut_str << " - eta = " << el_eta_cut_str << endl; 
+  infoFile << "Mu: pt = "  << mu_pt_cut_str << " - eta = " << mu_eta_cut_str << " - iso " << mu_iso_cut_str<< endl; 
+  infoFile << "Jet: pt = "  << jet_pt_cut_str << " - eta = " << jet_eta_cut_str <<  endl; 
+  
+  
+  
+
+    ////////////////////////////////////////////////////////////////////
+    //////////////////  1D plots  //////////////////////////////
+    ////////////////////////////////////////////////////////////////////
+/*
+    histo1D["NbOfVertices"]                                  = new TH1F("NbOfVertices", "Nb. of vertices", 60, 0, 60);
+    histo1D["cutFlow"]                                  = new TH1F( "cutFlow", "cutFlow", 15, -0.5, 14.5);
+    //Muons
+    histo1D["MuonPt"]                                        = new TH1F( "MuonPt", "PT_{#mu}", 30, 0, 300);
+    histo1D["LeptonPt"]                                        = new TH1F( "LeptonPt", "PT_{lep}", 30, 0, 300);
+    histo1D["MuonRelIsolation"]                              = new TH1F( "MuonRelIsolation", "RelIso", 10, 0, .25);
+    //Electrons
+    histo1D["ElectronRelIsolation"]                          = new TH1F( "ElectronRelIsolation", "RelIso", 10, 0, .25);
+    histo1D["ElectronPt"]                                    = new TH1F( "ElectronPt", "PT_{e}", 30, 0, 300);
+    //Init Electron Plots
+
+    histo1D["InitElectronPt"]                                = new TH1F( "InitElectronPt", "PT_{e}", 30, 0, 300);
+    histo1D["InitElectronEta"]                               = new TH1F( "InitElectronEta", "#eta", 40, -4, 4);
+    histo1D["NbOfElectronsInit"]                             = new TH1F( "NbOfElectronsInit", "Nb. of electrons", 10, 0, 10);
+    histo1D["InitElectronRelIsolation"]                      = new TH1F( "InitElectronRelIsolation", "RelIso", 10, 0, .25);
+    histo1D["InitElectronSuperClusterEta"]                   = new TH1F( "InitElectronSuperClusterEta", "#eta", 10, 0, 2.5);
+    histo1D["InitElectrondEtaI"]                             = new TH1F( "InitElectrondEtaI", "#eta", 20, 0, .05);
+    histo1D["InitElectrondPhiI"]                             = new TH1F( "InitElectrondPhiI", "#phi", 20, 0, .2);
+    histo1D["InitElectronHoverE"]                            = new TH1F( "InitElectronHoverE", "H/E", 10, 0, .15);
+    histo1D["InitElectrond0"]                                = new TH1F( "InitElectrond0", "d0", 20, 0, .1);
+    histo1D["InitElectrondZ"]                                = new TH1F( "InitElectrondZ", "dZ", 10, 0, .25);
+    histo1D["InitElectronEminusP"]                           = new TH1F( "InitElectronEminusP", "1/GeV", 10, 0, .25);
+    histo1D["InitElectronConversion"]                        = new TH1F( "InitElectronConversion", "Conversion Pass", 2, 0, 2);
+    histo1D["InitElectronMissingHits"]                       = new TH1F( "InitElectronMissingHits", "MissingHits", 10, 0, 10);
+    histo1D["InitElectronCutFlow"]                           = new TH1F( "InitElectronCutFlow", "CutNumber", 12, 0, 12);
+
+    //B-tagging discriminators
+    histo1D["Bdisc_CSV_jet1"]                             = new TH1F( "Bdisc_CSV_jet1", "CSV b-disc._{jet1}", 30, 0, 1);
+    histo1D["Bdisc_CSV_jet2"]                             = new TH1F( "Bdisc_CSV_jet2", "CSV b-disc._{jet2}", 30, 0, 1);
+    histo1D["Bdisc_CSV_jet3"]                             = new TH1F( "Bdisc_CSV_jet3", "CSV b-disc._{jet3}", 30, 0, 1);
+    histo1D["Bdisc_CSV_Bjet1"]                             = new TH1F( "Bdisc_CSV_Bjet1", "CSV b-disc._{bjet1}", 30, 0, 1);
+    histo1D["Bdisc_CSV_Bjet2"]                             = new TH1F( "Bdisc_CSV_Bjet2", "CSV b-disc._{bjet2}", 30, 0, 1);
+    histo1D["Bdisc_CSV_Bjet3"]                             = new TH1F( "Bdisc_CSV_Bjet3", "CSV b-disc._{bjet3}", 30, 0, 1);
+    //Jets
+    histo1D["JetEta"]                                        = new TH1F( "JetEta", "Jet #eta", 40,-4, 4);
+    histo1D["NbJets"]                                        = new TH1F( "NbJets", "nb. jets", 15,-0.5, 14.5);
+    histo1D["NbCSVLJets"]                                        = new TH1F( "NbCSVLJets", "nb. CSVL tags", 15,-0.5, 14.5);
+    histo1D["NbCSVMJets"]                                        = new TH1F( "NbCSVMJets", "nb. CSVM tags", 15,-0.5, 14.5);
+    histo1D["NbCSVTJets"]                                        = new TH1F( "NbCSVTJets", "nb. CSVT tags", 15,-0.5, 14.5);
+    histo1D["1stJetPt"]                                      = new TH1F( "1stJetPt", "PT_{jet1}", 30, 0, 300);
+    histo1D["2ndJetPt"]                                      = new TH1F( "2ndJetPt", "PT_{jet2}", 30, 0, 300);
+    histo1D["3rdJetPt"]                                      = new TH1F( "3rdJetPt", "PT_{jet3}", 30, 0, 300);
+    histo1D["1stBJetPt"]                                      = new TH1F( "1stBJetPt", "PT_{bjet1}", 30, 0, 300);
+    histo1D["2ndBJetPt"]                                      = new TH1F( "2ndBJetPt", "PT_{bjet2}", 30, 0, 300);
+    histo1D["3rdBJetPt"]                                      = new TH1F( "3rdBJetPt", "PT_{bjet3}", 30, 0, 300);
+    histo1D["HT_SelectedJets"]                               = new TH1F( "HT_SelectedJets", "HT", 30, 0, 1500);
+    //MET
+    histo1D["MET_preCut"]                                           = new TH1F( "MET_preCut", "MET", 70, 0, 700);
+    histo1D["MT_LepMET_preCut"]                                           = new TH1F( "MET_LepMET_preCut", "MT(lep,MET)", 70, 0, 700);
+    histo1D["MET"]                                           = new TH1F( "MET", "MET", 70, 0, 700);
+    histo1D["MT_LepMET"]                                           = new TH1F( "MT_LepMET", "MT(lep,MET)", 70, 0, 700);
+
+    ///////////////////
+    // 2D histograms //
+    ///////////////////
+    histo2D["NJet_vs_Nbjet"] = new TH2F("NJet_vs_Nbjet","NJet:Nbjet",12,-0.5,11.5, 61, -0.5,11.5);
+    histo2D["JetID_vs_pdgID"] = new TH2F("JetID_vs_pdgID","parton pdgID:jet number",12,-0.5,11.5, 61, -30.5,30.5);
+*/
+
+
+    /////////////////////////////////
+    //       Loop on datasets      //
+    /////////////////////////////////
+    cout << " - Loop over datasets ... " << datasets.size () << " datasets !" << endl;
+
+
+    for (unsigned int d = 0; d < datasets.size(); d++)
+    {
+        cout<<"Load Dataset"<<endl;    
+	treeLoader.LoadDataset (datasets[d], anaEnv);  //open files and load dataset	
+        string previousFilename = "";
+        int iFile = -1;
+        dName = datasets[d]->Name();
+        float normfactor = datasets[d]->NormFactor();
+	cout <<"found sample " << dName << " with equivalent lumi "<<  theDataset->EquivalentLumi() <<endl;
+	infoFile <<"found sample " << dName << " with equivalent lumi "<<  theDataset->EquivalentLumi() <<endl;
+	
+	
+
+        ////////////////////////////////////////////////////////////
+        // Setup Date string and nTuple for output  
+        ///////////////////////////////////////////////////////////
+
+        string channel_dir = "NtupleMakerOutput/Ntuples_"+Channel;
+        string date_dir = channel_dir+"/Ntuples_" + dataString +"/";
+        mkdir(channel_dir.c_str(),0777);
+        mkdir(date_dir.c_str(),0777);
+
+        
+        string Ntupname = date_dir +"FCNC_3L_" +Channel + "_" + strJobNum + ".root";
+        string Ntuptitle_ObjectVars = "ObjectVarsTree";
+        string Ntuptitle_EventInfo = "EventInfoTree";
+        string Ntuptitle_Weights = "Weights";
+
+        TFile * tupfile = new TFile(Ntupname.c_str(),"RECREATE");
+	tupfile->cd();
+	TTree* myTree = new TTree("tree","tree");
+ //       TNtuple * tup_ObjectVars      = new TNtuple(Ntuptitle_ObjectVars.c_str(), Ntuptitle_ObjectVars.c_str(), "qlepton:leptonpt:leptoneta:leptonX:leptonY:leptonZ:leptonE:bdisc1:bdisc2:bdisc3:bdisc4:bdisc5:jet1_Pt:jet2_Pt:jet3_Pt:jet4_Pt:jet5_Pt:jet1_Eta:jet2_Eta:jet3_Eta:jet4_Eta:jet5_Eta:jet1_x:jet2_x:jet3_x:jet4_x:jet5_x:jet1_y:jet2_y:jet3_y:jet4_y:jet5_y:jet1_z:jet2_z:jet3_z:jet4_z:jet5_z:jet1_E:jet2_E:jet3_E:jet4_E:jet5_E:MissingEt");
+ //       TNtuple * tup_EventInfo      = new TNtuple(Ntuptitle_EventInfo.c_str(), Ntuptitle_EventInfo.c_str(), "nbVertices:nb_jets:nb_bjets");
+ //       TNtuple * tup_Weights      = new TNtuple(Ntuptitle_Weights.c_str(), Ntuptitle_Weights.c_str(), "lumiWeight:fleptonSF:btagWeight_comb_central:btagWeight_comb_up:btagWeight_comb_down:btagWeight_mujets_central:btagWeight_mujets_up:btagWeight_mujets_down:btagWeight_ttbar_central:btagWeight_ttbar_up:btagWeight_ttbar_down");
+                    
+	///////////////////////////
+       /// output tree
+       ///////////////////////////
+       // event related variables
+       Int_t run_num;
+       Int_t evt_num;
+       Int_t lumi_num;
+       Int_t nvtx;
+       Int_t npu;
+       Double_t puSF;
+       // event related variables
+       myTree->Branch("run_num",&run_num,"run_num/I");
+       myTree->Branch("evt_num",&evt_num,"evt_num/I");
+       myTree->Branch("lumi_num",&lumi_num,"lumi_num/I");
+       myTree->Branch("nvtx",&nvtx,"nvtx/I");
+       myTree->Branch("npu",&npu,"npu/I");
+       myTree->Branch("puSF",&puSF,"puSF/D");  
+
+       //////////////////////////
+       //// Corrections/trigger ///
+       ///////////////////////////
+
+       /// book triggers
+       if (runHLT) { trigger->bookTriggers(isData);}
+
+
+       
+
+
+
+        //////////////////////////////////////////////////
+        // Pre-event loop definitions
+        /////////////////////////////////////////////////
+
+        int itrigger = -1, previousRun = -1, start = 0;
+        int currentRun;
+        int iFile = -1;
+        unsigned int ending = datasets[d]->NofEvtsToRunOver();    
+	cout <<"Number of events = "<<  ending  <<endl;
+	
+        string previousFilename = "";
+        int event_start = startEvent;
+	
+	double currentfrac =0.;
+        double end_d;
+        if(endEvent > ending)
+            end_d = ending;
+        else
+            end_d = endEvent;
+
+        int nEvents = end_d - event_start;
+        cout <<"Will run over "<<  (end_d - event_start) << " events..."<<endl;
+        cout <<"Starting event = = = = "<< event_start  << endl;
+        if(end_d < startEvent)
+        {
+            cout << "Starting event larger than number of events.  Exiting." << endl;
+            exit(3); 
+        } 
+
+        if (verbose == 0) cout << " - Loop over events " << endl;
+
+         //define object containers
+        vector<TRootElectron*> selectedElectrons;
+        vector<TRootPFJet*>    selectedJets;
+        vector<TRootMuon*>     selectedMuons;
+        
+        // initial variables
+        vector < TRootVertex* >   vertex;
+        vector < TRootMuon* >     init_muons;
+        vector < TRootElectron* > init_electrons;
+        vector < TRootJet* >      init_jets;
+        vector < TRootJet* >      init_jets_corrected;
+        vector < TRootGenJet* >   genjets;
+        vector < TRootMET* >      mets;
+        vector<TRootElectron*> selectedElectrons;
+        vector<TRootPFJet*>    selectedJets;
+        vector<TRootMuon*>     selectedMuons;
+        vector<TRootJet*>      selectedCSVLBJets;
+        vector<TRootJet*>      selectedCSVMBJets;
+        vector<TRootJet*>      selectedCSVTBJets;
+        vector<TRootMCParticle*> mcParticles;
+
+
+
+        //////////////////////////////////////
+        // Begin Event Loop
+        //////////////////////////////////////
+	nbEvents = 0; 
+        for (unsigned int ievt = event_start; ievt < end_d; ievt++)
+        {
+
+            double ievt_d = ievt;
+	    
+	    bool debug = false; 
+	    if (verbose == 0 ) debug = true; 
+	    currentfrac = ievt_d/end_d;
+	    if (debug)cout << endl << endl << "Starting a new event loop!"<<endl;
+
+            if(ievt%10000 == 0)
+            {
+                std::cout<<"Processing the "<<ievt<<"th event, time = "<< ((double)clock() - start) / CLOCKS_PER_SEC 
+                << " ("<<100*(ievt-start)/(ending-start)<<"%)"<<flush<<"\r"<<endl;
+            }
+
+            float scaleFactor = 1.;  // scale factor for the event
+	    
+	    
+            event = treeLoader.LoadEvent (ievt, vertex, init_muons, init_electrons, init_jets, mets, debug);  //load event
+	    genjets.clear();
+	    if(!isData) genjets = treeLoader.LoadGenJet(ievt,false);
+	    
+	    
+	    if(verbose == 0)
+	    {
+	    	cout <<"Number of Electrons Loaded: " << init_electrons.size() <<endl;
+	        cout <<"Number of Muons Loaded: " << init_muons.size() <<endl; 
+	        cout << "Number of Jets Loaded: " << init_jets_corrected.size() << endl;  
+	    }
+
+  
+             //  take the event          
+            datasets[d]->eventTree()->LoadTree(ievt);
+            string currentFilename = datasets[d]->eventTree()->GetFile()->GetName();
+            int currentRun = event->runId();
+	    run_num = event->runId(); 
+	    evt_num = event->eventId(); 
+	    lumi_num=event->lumiBlockId(); 
+	    nvtx = vertex.size();
+	    npu = (int) event->nTruePU(); 
+
+            ///////////////////////////////////////////
+	  //  Trigger
+	  ///////////////////////////////////////////
+	  
+	    bool trigged = false;
+            bool filechanged = false; 
+            bool runchanged = false; 
+            
+            if(runHLT)
+            {
+               trigger->checkAvail(currentRun, datasets, d, &treeLoader, event, printTrigger);
+               trigged = trigger->checkIfFired();
+
+            }
+            else if(!runHLT && previousFilename != currentFilename)
+            {
+               filechanged = true; 
+               previousFilename = currentFilename;
+               iFile++;
+               cout << "File changed!!! => iFile = " << iFile << endl;
+               trigged = true;
+
+            }
+            else if(!runHLT)
+            {
+	      trigged = true; 
+            }
+            if(dName.find("NP")!=string::npos) trigged = true; 
+ 
+            if(verbose==0) cout << "Apply trigger? " << runHLT << " trigged? " << trigged << endl; 
+
+
+            ///////////////////////////////////////////////////////////
+            // Event selection
+            ///////////////////////////////////////////////////////////
+
+            // Declare selection instance
+            Run2Selection selection(init_jets, init_muons, init_electrons, mets);
+	    selectedJets.clear(); 
+	    selectedJets  = selection.GetSelectedJets(jet_pt_cut,jet_eta_cut, true, "Tight"); 
+	    selectedMuons.clear();
+	    selectedMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut, "Tight", "Spring15"); 
+	    // pt, eta, iso // run normally
+	    selectedElectrons.clear();
+	    selectedElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Medium","Spring15_25ns",true);// pt, eta
+
+            /// For MC Information
+            mcParticles.clear();
+            treeLoader.LoadMCEvent(ievt, 0, 0, mcParticles, false);
+            sort(mcParticles.begin(),mcParticles.end(),HighestPt());
+	    
+	    if (verbose == 0) cout <<"Number of Muons, Electrons, Jets  ===>  " << endl << selectedMuons.size() <<" "  << selectedElectrons.size()<<" "<< selectedJets.size()   << endl;
+
+            
+            ////////////////////////////////////////////////
+            // Pre cut operations
+            ////////////////////////////////////////////////
+            // Apply primary vertex selection
+            bool isGoodPV = selection.isPVSelected(vertex, 4, 24., 2);
+	    
+	    if(applyJetCleaning){
+             if(verbose == 0) cout << "Applying jet cleaning " << endl; 
+             int OrigSize = selectedJets.size();
+             for (int origJets=0; origJets<selectedJets.size(); origJets++){
+              bool erased = false;
+              if(selectedMuons.size()>0){
+                if(selectedJets[origJets]->DeltaR(*selectedMuons[0])<0.4){ selectedJets.erase(selectedJets.begin()+origJets); erased = true;}
+              }
+              if(selectedMuons.size()>1 && !erased){
+                if(selectedJets[origJets]->DeltaR(*selectedMuons[1])<0.4){ selectedJets.erase(selectedJets.begin()+origJets); erased = true;}
+              }
+              if(selectedMuons.size()>2 && !erased){
+                if(selectedJets[origJets]->DeltaR(*selectedMuons[2])<0.4){ selectedJets.erase(selectedJets.begin()+origJets); erased = true;}
+              }
+              if(selectedElectrons.size()>0 && !erased){
+                if(selectedJets[origJets]->DeltaR(*selectedElectrons[0])<0.4){ selectedJets.erase(selectedJets.begin()+origJets); erased = true;}
+              }
+              if(selectedElectrons.size()>1 && !erased){
+                if(selectedJets[origJets]->DeltaR(*selectedElectrons[1])<0.4){ selectedJets.erase(selectedJets.begin()+origJets); erased = true;}
+              }
+              if(selectedElectrons.size()>2 && !erased){
+                if(selectedJets[origJets]->DeltaR(*selectedElectrons[2])<0.4){ selectedJets.erase(selectedJets.begin()+origJets); erased = true;}
+              }
+             }
+              if(verbose == 0){
+              if( OrigSize != selectedJets.size()) cout << "--> original = " << OrigSize  << " after cleaning = " << selectedJets.size() << endl;
+              else cout << "--> no change" << endl; 
+              }
+           }
+
+
+            //////////////////////////////////////////////////////
+            // Applying baseline selection
+            //////////////////////////////////////////////////////
+	    nbEvents++; 
+	    if(!isGoodPV) continue; 
+	    if(!trigged) continue; 
+	    if(mumumu && hasMu && selectedMuons.size() < 2) continue; 
+	    if(mumue && hasMu && !hasEl && selectedMuons.size() < 2) continue; 
+	    if(eemu && hasEl && !hasMu &&selectedElectrons.size() < 2) continue; 
+	    if(mumue && hasMu && hasEl && (selectedMuons.size() < 1 || selectedElectrons.size() < 1) ) continue; 
+	    if(eemu && hasEl && !hasMu && (selectedElectrons.size() < 1 || selectedMuons.size() <1)) continue; 
+	    if(eee && hasEl &&  selectedElectrons.size() < 2) continue; 
+	    
+	    eventSelected = true; 
+	    
+	    
+	    
+	    
+	    if(eventSelected) 
+	    {
+	       nbSelectedEvents++; 
+	       myTree->Fill(); 
+	       
+	    }
+	    
+	} // end eventloop
+
+	infoFile << nbSelectedEvents << " events out of " << nbEvents <<  " selected " << endl; 
+	
+        treeLoader.UnLoadDataset();
+    } //End Loop on Datasets
+
+  
+
+    /////////////
+    // Writing //
+    /////////////
+
+    cout << " - Writing outputs to the files ..." << endl;
+
+  fout->cd();
+
+
+  for (map<string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
+  {
+    cout << "1D Plot: " << it->first << endl;
+   // TCanvas ctemp = 
+    
+    TH1F *temp = it->second;
+    temp->Draw();  
+  }
+  for (map<string,TH2F*>::const_iterator it = histo2D.begin(); it != histo2D.end(); it++)
+  {
+     cout << "2D Plot: " << it->first << endl;
+   
+     TH2F *temp = it->second;
+     temp->Draw();
+  }
+    tupfile->Write();   
+    tupfile->Close();
+    delete tupfile;
+
+
+
+
+    cout << "It took us " << ((double)clock() - start) / CLOCKS_PER_SEC << " to run the program" << endl;
+    cout << "********************************************" << endl;
+    cout << "           End of the program !!            " << endl;
+    cout << "********************************************" << endl;
+    
+    return 0;
+}
