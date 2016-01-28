@@ -52,11 +52,17 @@
 //This header file is taken directly from the BTV wiki. It contains
 // to correctly apply an event level Btag SF. It is not yet on CVS
 // as I hope to merge the functionality into BTagWeigtTools.h
+
 //#include "TopTreeAnalysisBase/Tools/interface/BTagSFUtil.h"
 #include "TopTreeAnalysisBase/Tools/interface/BTagWeightTools.h"
 #include "TopTreeAnalysisBase/Tools/interface/BTagCalibrationStandalone.h"
 
-#include "TopTreeAnalysisBase/Tools/interface/JetTools.h"
+#include "TopTreeAnalysisBase/Tools/interface/JetCombiner.h"
+#include "TopTreeAnalysisBase/Tools/interface/MVATrainer.h"
+#include "TopTreeAnalysisBase/Tools/interface/MVAComputer.h"
+
+
+
 
 using namespace std;
 using namespace TopTree;
@@ -475,16 +481,10 @@ int main (int argc, char *argv[])
 
         
         string Ntupname = date_dir +"FCNC_3L_" +Channel + "_" + strJobNum + ".root";
-        string Ntuptitle_ObjectVars = "ObjectVarsTree";
-        string Ntuptitle_EventInfo = "EventInfoTree";
-        string Ntuptitle_Weights = "Weights";
 
         TFile * tupfile = new TFile(Ntupname.c_str(),"RECREATE");
 	tupfile->cd();
 	TTree* myTree = new TTree("tree","tree");
- //       TNtuple * tup_ObjectVars      = new TNtuple(Ntuptitle_ObjectVars.c_str(), Ntuptitle_ObjectVars.c_str(), "qlepton:leptonpt:leptoneta:leptonX:leptonY:leptonZ:leptonE:bdisc1:bdisc2:bdisc3:bdisc4:bdisc5:jet1_Pt:jet2_Pt:jet3_Pt:jet4_Pt:jet5_Pt:jet1_Eta:jet2_Eta:jet3_Eta:jet4_Eta:jet5_Eta:jet1_x:jet2_x:jet3_x:jet4_x:jet5_x:jet1_y:jet2_y:jet3_y:jet4_y:jet5_y:jet1_z:jet2_z:jet3_z:jet4_z:jet5_z:jet1_E:jet2_E:jet3_E:jet4_E:jet5_E:MissingEt");
- //       TNtuple * tup_EventInfo      = new TNtuple(Ntuptitle_EventInfo.c_str(), Ntuptitle_EventInfo.c_str(), "nbVertices:nb_jets:nb_bjets");
- //       TNtuple * tup_Weights      = new TNtuple(Ntuptitle_Weights.c_str(), Ntuptitle_Weights.c_str(), "lumiWeight:fleptonSF:btagWeight_comb_central:btagWeight_comb_up:btagWeight_comb_down:btagWeight_mujets_central:btagWeight_mujets_up:btagWeight_mujets_down:btagWeight_ttbar_central:btagWeight_ttbar_up:btagWeight_ttbar_down");
                     
 	///////////////////////////
        /// output tree
@@ -554,6 +554,7 @@ int main (int argc, char *argv[])
         vector < TRootMuon* >     init_muons;
         vector < TRootElectron* > init_electrons;
         vector < TRootJet* >      init_jets;
+	vector < TRootJet* >      init_fatjets;
         vector < TRootJet* >      init_jets_corrected;
         vector < TRootGenJet* >   genjets;
         vector < TRootMET* >      mets;
@@ -650,7 +651,7 @@ int main (int argc, char *argv[])
             ///////////////////////////////////////////////////////////
 
             // Declare selection instance
-            Run2Selection selection(init_jets, init_muons, init_electrons, mets);
+            Run2Selection selection(init_jets,init_fatjets, init_muons, init_electrons, mets);
 	    selectedJets.clear(); 
 	    selectedJets  = selection.GetSelectedJets(jet_pt_cut,jet_eta_cut, true, "Tight"); 
 	    selectedMuons.clear();
@@ -660,10 +661,10 @@ int main (int argc, char *argv[])
 	    selectedElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Medium","Spring15_25ns",true);// pt, eta
 
             /// For MC Information
-            //mcParticles.clear();
-            //treeLoader.LoadMCEvent(ievt, 0, 0, mcParticles, false);
-            //sort(mcParticles.begin(),mcParticles.end(),HighestPt());
-	    
+            mcParticles.clear();
+            treeLoader.LoadMCEvent(ievt, 0,  mcParticles, false);
+            sort(mcParticles.begin(),mcParticles.end(),HighestPt());
+	    // void TTreeLoader::LoadMCEvent(int, TopTree::TRootNPGenEvent*, std::vector<TopTree::TRootMCParticle*>&, bool) 
 	    if (verbose == 0) cout <<"Number of Muons, Electrons, Jets  ===>  " << endl << selectedMuons.size() <<" "  << selectedElectrons.size()<<" "<< selectedJets.size()   << endl;
 
             
@@ -710,11 +711,9 @@ int main (int argc, char *argv[])
 	    nbEvents++; 
 	    if(!isGoodPV) continue;
             if(verbose == 0) cout << "good pv" << endl;  
-	    //if(!trigged) continue; 
+	    if(!trigged) continue; 
             if(verbose == 0 ) cout << "trigger" << endl; 
-	    if(mumumu && !hasMu) continue; 
-	    if(verbose == 0 ) cout << "check" << endl; 
-            //if( selectedMuons.size() < 2) continue; 
+	    if(mumumu && !hasMu &&  selectedMuons.size() < 2) continue; 
 //	    if(mumue && hasMu && !hasEl && selectedMuons.size() < 2) continue; 
 //	    if(eemu && hasEl && !hasMu &&selectedElectrons.size() < 2) continue; 
 //	    if(mumue && hasMu && hasEl && (selectedMuons.size() < 1 || selectedElectrons.size() < 1) ) continue; 
@@ -735,12 +734,12 @@ int main (int argc, char *argv[])
 	   cout << "check" << endl;  
 	} // end eventloop
         if(verbose == 0) cout << "end eventloop" << endl; 
-	infoFile << nbSelectedEvents << " events out of " << nbEvents <<  " selected " << endl; 
+	infoFile << nbSelectedEvents << " events out of " << nbEvents <<  " selected " << endl;
+        cout << nbSelectedEvents << " events out of " << nbEvents <<  " selected " << endl; 
 	infoFile.close(); 
 	 tupfile->Write();   
     	tupfile->Close();
         delete tupfile;
-	delete infoFile;
         treeLoader.UnLoadDataset();
     } //End Loop on Datasets
 
