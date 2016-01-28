@@ -130,8 +130,11 @@ int main (int argc, char *argv[])
   ///////////////////////////
   /// Configuration      ///
   //////////////////////////
-  int verbose = 0; // 0 = cout alll 
-  bool eventSelected = false; 
+  int verbose = 1; // 0 = cout alll 
+  bool eventSelected = false;
+  int nbTrig = 0; 
+  int nbBaseline = 0; 
+  int nbGPV = 0; 
   int nbSelectedEvents = 0; 
   int nbEvents = 0; 
   double dataLumi = 0; //pb
@@ -710,15 +713,18 @@ int main (int argc, char *argv[])
             //////////////////////////////////////////////////////
 	    nbEvents++; 
 	    if(!isGoodPV) continue;
+            nbGPV++; 
             if(verbose == 0) cout << "good pv" << endl;  
 	    if(!trigged) continue; 
+            nbTrig++; 
             if(verbose == 0 ) cout << "trigger" << endl; 
 	    if(mumumu && !hasMu &&  selectedMuons.size() < 2) continue; 
-//	    if(mumue && hasMu && !hasEl && selectedMuons.size() < 2) continue; 
-//	    if(eemu && hasEl && !hasMu &&selectedElectrons.size() < 2) continue; 
-//	    if(mumue && hasMu && hasEl && (selectedMuons.size() < 1 || selectedElectrons.size() < 1) ) continue; 
-//	    if(eemu && hasEl && !hasMu && (selectedElectrons.size() < 1 || selectedMuons.size() <1)) continue; 
-//	    if(eee && hasEl &&  selectedElectrons.size() < 2) continue; 
+	    if(mumue && hasMu && !hasEl && selectedMuons.size() < 2) continue; 
+	    if(eemu && hasEl && !hasMu &&selectedElectrons.size() < 2) continue; 
+	    if(mumue && hasMu && hasEl && (selectedMuons.size() < 1 || selectedElectrons.size() < 1) ) continue; 
+	    if(eemu && hasEl && !hasMu && (selectedElectrons.size() < 1 || selectedMuons.size() <1)) continue; 
+	    if(eee && hasEl &&  selectedElectrons.size() < 2) continue;
+            nbBaseline++;  
 	    if(verbose == 0 ) cout << "baseline" << endl;
 	    eventSelected = true; 
 	    
@@ -731,11 +737,20 @@ int main (int argc, char *argv[])
 	       myTree->Fill(); 
 	       
 	    }
-	   cout << "check" << endl;  
 	} // end eventloop
         if(verbose == 0) cout << "end eventloop" << endl; 
-	infoFile << nbSelectedEvents << " events out of " << nbEvents <<  " selected " << endl;
-        cout << nbSelectedEvents << " events out of " << nbEvents <<  " selected " << endl; 
+	infoFile << nbSelectedEvents << " events out of initial " << nbEvents <<  " selected " << endl;
+        infoFile << nbSelectedEvents << " events out of trigged  " << nbTrig <<  " selected " << endl;
+        infoFile << nbBaseline << " baseline events out of trigged " << nbTrig <<  " selected " << endl;
+        infoFile << setprecision(2) << ((double)nbGPV/(double)nbEvents)*100 << " % of the initial events stay after Good PV" << endl;
+        infoFile << setprecision(2) << ((double)nbTrig/(double)nbEvents)*100 << " % of the initial events stay after Trigger" << endl;
+        infoFile << setprecision(2) << ((double)nbTrig/(double)nbGPV)*100 << " % of the GPV  events stay after Trigger" << endl;
+        cout << nbSelectedEvents << " events out of initial " << nbEvents <<  " selected " << endl; 
+        cout << nbSelectedEvents << " events out of trigged  " << nbTrig <<  " selected " << endl;
+        cout << nbBaseline << " baseline events out of trigged " << nbTrig <<  " selected " << endl;
+        cout << setprecision(2) << ((double)nbGPV/(double)nbEvents)*100 << " % of the initial events stay after Good PV" << endl; 
+	cout << setprecision(2) << ((double)nbTrig/(double)nbEvents)*100 << " % of the initial events stay after Trigger" << endl;
+        cout << setprecision(2) << ((double)nbTrig/(double)nbGPV)*100 << " % of the GPV  events stay after Trigger" << endl;
 	infoFile.close(); 
 	 tupfile->Write();   
     	tupfile->Close();
