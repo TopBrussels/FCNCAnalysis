@@ -132,15 +132,15 @@ int main (int argc, char *argv[])
   bool eee = false; 
   bool eemu = false; 
   bool mumue = false; 
-  bool mumumu = true; 
-  bool isData = false; 
-  bool runHLT = false; 
+  bool mumumu = true;  
+  bool runHLT = true; 
   bool hasMu = false; 
   bool hasEl = false; 
   bool dilep =false; 
   bool singlelep = false;
   bool applyJetCleaning = true;  
-  string Channnel = ""; 
+  bool printTrigger = false; 
+  string Channel = ""; 
   string xmlFileName = ""; 
   if(mumumu)
   {
@@ -170,7 +170,7 @@ int main (int argc, char *argv[])
 	std:: cerr << "  - arg number " << n_arg << " is " << argv[n_arg] << std::endl;
      }
   }
-  if(argc < 14)
+  if(argc < 15)
   {
     std::cerr << "TOO FEW INPUTs FROM XMLFILE.  CHECK XML INPUT FROM SCRIPT.  " << argc << " ARGUMENTS HAVE BEEN PASSED." << std::endl;
     for (int n_arg=1; n_arg<argc; n_arg++)
@@ -193,13 +193,14 @@ int main (int argc, char *argv[])
   const float PreselEff 	  = strtod(argv[10], NULL);
   string fileName		  = argv[11];
   // if there only two arguments after the fileName, the jobNum will be set to 0 by default as an integer is expected and it will get a string (lastfile of the list) 
+  string chanName		  = argv[argc-4];
   const int JobNum		  = strtol(argv[argc-3], NULL, 10);
   const int startEvent  	  = strtol(argv[argc-2], NULL, 10);
   const int endEvent		  = strtol(argv[argc-1], NULL, 10);
 
   // all the files are stored from arg 11 to argc-2
   vector<string> vecfileNames;
-  for(int args = 11; args < argc-3; args++)
+  for(int args = 11; args < argc-4; args++)
   {
     vecfileNames.push_back(argv[args]);
   }
@@ -215,7 +216,7 @@ int main (int argc, char *argv[])
   
   // Print information to a textfile
   ofstream infoFile; 
-  string infoName =  "./Information/information"; 
+  string infoName =  "Information/information"; 
   infoName += "_"+ Channel;
   infoName += "_" + dName;
   infoName += "_" + JobNum; 
@@ -261,7 +262,7 @@ int main (int argc, char *argv[])
   infoFile << "Trigger: " << runHLT << " mu/e/single/di " << hasMu << "/"<< hasEl << "/"<< singlelep << "/" << dilep << endl; 
   infoFile << "Channel: mumumu/mumue/eee/eemu " << mumumu << "/" << mumue << "/" << eee << "/" <<
   eemu << endl; 
-  infoFile << "xmlfile: " << xmlFileName.c_str();  << endl; 
+  infoFile << "xmlfile: " << xmlFileName.c_str()  << endl; 
   infoFile << "Jetcleaning on? " <<  applyJetCleaning << endl; 
 
   
@@ -281,16 +282,16 @@ int main (int argc, char *argv[])
   anaEnv.MuonCollection = "Muons_slimmedMuons";
   anaEnv.ElectronCollection = "Electrons_slimmedElectrons";
   anaEnv.GenJetCollection   = "GenJets_slimmedGenJets";
-  anaEnv.TrackMETCollection = "";
-  anaEnv.GenEventCollection = "GenEvent";
+//  anaEnv.TrackMETCollection = "";
+//  anaEnv.GenEventCollection = "GenEvent";
   anaEnv.NPGenEventCollection = "NPGenEvent";
   anaEnv.MCParticlesCollection = "MCParticles";
   anaEnv.loadFatJetCollection = false;
   anaEnv.loadGenJetCollection = true;
-  anaEnv.loadGenEventCollection = false;
+//  anaEnv.loadGenEventCollection = false;
   anaEnv.loadNPGenEventCollection = false;
   anaEnv.loadMCParticles = true;
-  anaEnv.loadTrackMETCollection = false;
+//  anaEnv.loadTrackMETCollection = false;
   anaEnv.JetType = 2;
   anaEnv.METType = 2;
 
@@ -324,7 +325,7 @@ int main (int argc, char *argv[])
   mkdir(histo_dir.c_str(),0777);
   mkdir(histo_dir_date.c_str(),0777);
   
-  string rootFileName (histo_dir_date+"/FCNC_3L_"+Channel".root");
+  string rootFileName (histo_dir_date+"/FCNC_3L_"+Channel+".root");
   if (strJobNum != "0")
   {
     cout << "strJobNum is " << strJobNum << endl;
@@ -455,12 +456,11 @@ int main (int argc, char *argv[])
     {
         cout<<"Load Dataset"<<endl;    
 	treeLoader.LoadDataset (datasets[d], anaEnv);  //open files and load dataset	
-        string previousFilename = "";
-        int iFile = -1;
-        dName = datasets[d]->Name();
+
+        string daName = datasets[d]->Name();
         float normfactor = datasets[d]->NormFactor();
-	cout <<"found sample " << dName << " with equivalent lumi "<<  theDataset->EquivalentLumi() <<endl;
-	infoFile <<"found sample " << dName << " with equivalent lumi "<<  theDataset->EquivalentLumi() <<endl;
+	cout <<"found sample " << daName.c_str() << " with equivalent lumi "<<  theDataset->EquivalentLumi() <<endl;
+	infoFile <<"found sample " << daName.c_str() << " with equivalent lumi "<<  theDataset->EquivalentLumi() <<endl;
 	
 	
 
@@ -469,7 +469,7 @@ int main (int argc, char *argv[])
         ///////////////////////////////////////////////////////////
 
         string channel_dir = "NtupleMakerOutput/Ntuples_"+Channel;
-        string date_dir = channel_dir+"/Ntuples_" + dataString +"/";
+        string date_dir = channel_dir+"/Ntuples_" + dateString +"/";
         mkdir(channel_dir.c_str(),0777);
         mkdir(date_dir.c_str(),0777);
 
@@ -548,10 +548,7 @@ int main (int argc, char *argv[])
         if (verbose == 0) cout << " - Loop over events " << endl;
 
          //define object containers
-        vector<TRootElectron*> selectedElectrons;
-        vector<TRootPFJet*>    selectedJets;
-        vector<TRootMuon*>     selectedMuons;
-        
+
         // initial variables
         vector < TRootVertex* >   vertex;
         vector < TRootMuon* >     init_muons;
@@ -576,8 +573,8 @@ int main (int argc, char *argv[])
 	nbEvents = 0; 
         for (unsigned int ievt = event_start; ievt < end_d; ievt++)
         {
-
-            double ievt_d = ievt;
+           if(verbose == 0 ) cout << "new event " << ievt << endl; 
+           double ievt_d = ievt;
 	    
 	    bool debug = false; 
 	    if (verbose == 0 ) debug = true; 
@@ -663,9 +660,9 @@ int main (int argc, char *argv[])
 	    selectedElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Medium","Spring15_25ns",true);// pt, eta
 
             /// For MC Information
-            mcParticles.clear();
-            treeLoader.LoadMCEvent(ievt, 0, 0, mcParticles, false);
-            sort(mcParticles.begin(),mcParticles.end(),HighestPt());
+            //mcParticles.clear();
+            //treeLoader.LoadMCEvent(ievt, 0, 0, mcParticles, false);
+            //sort(mcParticles.begin(),mcParticles.end(),HighestPt());
 	    
 	    if (verbose == 0) cout <<"Number of Muons, Electrons, Jets  ===>  " << endl << selectedMuons.size() <<" "  << selectedElectrons.size()<<" "<< selectedJets.size()   << endl;
 
@@ -711,31 +708,39 @@ int main (int argc, char *argv[])
             // Applying baseline selection
             //////////////////////////////////////////////////////
 	    nbEvents++; 
-	    if(!isGoodPV) continue; 
-	    if(!trigged) continue; 
-	    if(mumumu && hasMu && selectedMuons.size() < 2) continue; 
-	    if(mumue && hasMu && !hasEl && selectedMuons.size() < 2) continue; 
-	    if(eemu && hasEl && !hasMu &&selectedElectrons.size() < 2) continue; 
-	    if(mumue && hasMu && hasEl && (selectedMuons.size() < 1 || selectedElectrons.size() < 1) ) continue; 
-	    if(eemu && hasEl && !hasMu && (selectedElectrons.size() < 1 || selectedMuons.size() <1)) continue; 
-	    if(eee && hasEl &&  selectedElectrons.size() < 2) continue; 
-	    
+	    if(!isGoodPV) continue;
+            if(verbose == 0) cout << "good pv" << endl;  
+	    //if(!trigged) continue; 
+            if(verbose == 0 ) cout << "trigger" << endl; 
+	    if(mumumu && !hasMu) continue; 
+	    if(verbose == 0 ) cout << "check" << endl; 
+            //if( selectedMuons.size() < 2) continue; 
+//	    if(mumue && hasMu && !hasEl && selectedMuons.size() < 2) continue; 
+//	    if(eemu && hasEl && !hasMu &&selectedElectrons.size() < 2) continue; 
+//	    if(mumue && hasMu && hasEl && (selectedMuons.size() < 1 || selectedElectrons.size() < 1) ) continue; 
+//	    if(eemu && hasEl && !hasMu && (selectedElectrons.size() < 1 || selectedMuons.size() <1)) continue; 
+//	    if(eee && hasEl &&  selectedElectrons.size() < 2) continue; 
+	    if(verbose == 0 ) cout << "baseline" << endl;
 	    eventSelected = true; 
 	    
 	    
 	    
-	    
+	   
 	    if(eventSelected) 
 	    {
 	       nbSelectedEvents++; 
 	       myTree->Fill(); 
 	       
 	    }
-	    
+	   cout << "check" << endl;  
 	} // end eventloop
-
+        if(verbose == 0) cout << "end eventloop" << endl; 
 	infoFile << nbSelectedEvents << " events out of " << nbEvents <<  " selected " << endl; 
-	
+	infoFile.close(); 
+	 tupfile->Write();   
+    	tupfile->Close();
+        delete tupfile;
+	delete infoFile;
         treeLoader.UnLoadDataset();
     } //End Loop on Datasets
 
@@ -747,8 +752,8 @@ int main (int argc, char *argv[])
 
     cout << " - Writing outputs to the files ..." << endl;
 
-  fout->cd();
 
+/*
 
   for (map<string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
   {
@@ -765,11 +770,9 @@ int main (int argc, char *argv[])
      TH2F *temp = it->second;
      temp->Draw();
   }
-    tupfile->Write();   
-    tupfile->Close();
-    delete tupfile;
 
 
+*/
 
 
     cout << "It took us " << ((double)clock() - start) / CLOCKS_PER_SEC << " to run the program" << endl;

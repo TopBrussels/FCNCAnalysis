@@ -1,0 +1,21 @@
+---Dataset accepted from command line---
+Dataset Name: Zjets50 data? 0
+Dataset Title: DYtollmllto50
+Dataset color: 633
+Dataset ls: 1
+Dataset lw: 2
+Dataset normf: 1
+Dataset EqLumi: 4751
+Dataset xSect: 6025.2
+Dataset File Name: /pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3-CMSSW_74X_v8-MCRUN2_74_V9/151029_124746/0000/TOPTREE_29.root
+Beginning Event: 0
+Ending Event: 10000
+JobNum: 1
+Trigger: 1 mu/e/single/di 1/0/0/1
+Channel: mumumu/mumue/eee/eemu 1/0/0/0
+xmlfile: config/Run2TriLepton_MuMuMu.xml
+Jetcleaning on? 1
+El: pt = 20 - eta = 2.4
+Mu: pt = 20 - eta = 2.4 - iso 0.15
+Jet: pt = 30 - eta = 2.4
+found sample Zjets50 with equivalent lumi 4751
