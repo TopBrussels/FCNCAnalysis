@@ -156,7 +156,9 @@ int main (int argc, char *argv[])
   bool applyJetCleaning = true; 
   bool fillBtagHisto = false; 
   bool printTrigger = false;
-  bool printLeptonSF = false;  
+  bool printLeptonSF = false; 
+  bool applyJER = false; 
+  bool applyJES = false;  
   string Channel = ""; 
   string xmlFileName = ""; 
   if(mumumu)
@@ -210,16 +212,20 @@ int main (int argc, char *argv[])
   const float PreselEff 	  = strtod(argv[10], NULL);
   string fileName		  = argv[11];
   // if there only two arguments after the fileName, the jobNum will be set to 0 by default as an integer is expected and it will get a string (lastfile of the list) 
+  const int JES                 =  strtol(argv[argc-7], NULL,10);
+  const int JER                 =  strtol(argv[argc-6], NULL,10);
   const int FillBtagHisto	 =  strtol(argv[argc-5], NULL,10);
   string chanName		  = argv[argc-4];
   const int JobNum		  = strtol(argv[argc-3], NULL, 10);
   const int startEvent  	  = strtol(argv[argc-2], NULL, 10);
   const int endEvent		  = strtol(argv[argc-1], NULL, 10);
 
+  applyJES = JES; 
+  applyJER = JER; 
   fillBtagHisto = FillBtagHisto; 
   // all the files are stored from arg 11 to argc-2
   vector<string> vecfileNames;
-  for(int args = 11; args < argc-5; args++)
+  for(int args = 11; args < argc-7; args++)
   {
     vecfileNames.push_back(argv[args]);
   }
@@ -284,8 +290,8 @@ int main (int argc, char *argv[])
   infoFile << "xmlfile: " << xmlFileName.c_str()  << endl; 
   infoFile << "Jetcleaning on? " <<  applyJetCleaning << endl; 
   infoFile << "BtagReweighting  FillHisto? " << fillBtagHisto << endl; 
-  
-  
+  infoFile << "JES? " << applyJES << " JER? " << applyJER << endl; 
+  if(applyJER) infoFile << "WARNING: JER is on but not implemented in 76X " << endl; 
 
 
   /////////////////////////////////
@@ -342,6 +348,10 @@ int main (int argc, char *argv[])
   // for pu
   LumiReWeighting LumiWeights;
  
+  // JER / JEC 
+  vector<JetCorrectorParameters> vCorrParam;
+  string pathCalJEC = "../TopTreeAnalysisBase/Calibrations/JECFiles/";
+
 
   ///////////////////////////////
   //  Set up Output ROOT file  ///
@@ -535,7 +545,31 @@ int main (int argc, char *argv[])
             
         string electronFile= "Elec_SF_TopEA.root";
         ElectronSFWeight* electronSFWeight = new ElectronSFWeight (CaliPath+"LeptonSF/"+electronFile,"GlobalSF", true,printLeptonSF, printLeptonSF); // (... , ... , debug, print warning)  
-      
+
+	vCorrParam.clear();
+	if (isData)
+        {
+   	   JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters(pathCalJEC+"Summer15_25nsV2_DATA_L1FastJet_AK4PFchs.txt");
+      	   vCorrParam.push_back(*L1JetCorPar);
+           JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters(pathCalJEC+"Summer15_25nsV2_DATA_L2Relative_AK4PFchs.txt");
+           vCorrParam.push_back(*L2JetCorPar);
+           JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters(pathCalJEC+"Summer15_25nsV2_DATA_L3Absolute_AK4PFchs.txt");
+           vCorrParam.push_back(*L3JetCorPar);
+           JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters(pathCalJEC+"Summer15_25nsV2_DATA_L2L3Residual_AK4PFchs.txt");
+           vCorrParam.push_back(*L2L3ResJetCorPar);
+     	}
+     	else
+     	{
+      	   JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters(pathCalJEC+"Summer15_25nsV2_MC_L1FastJet_AK4PFchs.txt");
+      	   vCorrParam.push_back(*L1JetCorPar);
+      	   JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters(pathCalJEC+"Summer15_25nsV2_MC_L2Relative_AK4PFchs.txt");
+      	   vCorrParam.push_back(*L2JetCorPar);
+           JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters(pathCalJEC+"Summer15_25nsV2_MC_L3Absolute_AK4PFchs.txt");
+           vCorrParam.push_back(*L3JetCorPar);
+     	}
+     	JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty(pathCalJEC+"Summer15_25nsV2_MC_Uncertainty_AK4PFchs.txt");
+    
+     	JetTools *jetTools = new JetTools(vCorrParam, jecUnc, true); //true means redo also L1    
 
         ////////////////////////////////////////////////////////////
         // Setup Date string and nTuple for output  
@@ -663,7 +697,7 @@ int main (int argc, char *argv[])
 	    
             event = treeLoader.LoadEvent (ievt, vertex, init_muons, init_electrons, init_jets, mets, debug);  //load event
 	    genjets.clear();
-	    if(!isData) genjets = treeLoader.LoadGenJet(ievt,false);
+	    if(!isData) genjets = treeLoader.LoadGenJet(ievt,false);  //needed for JER
 	    
 	    
 	    if(verbose == 0)
@@ -715,6 +749,17 @@ int main (int argc, char *argv[])
  
             if(verbose==0) cout << "Apply trigger? " << runHLT << " trigged? " << trigged << endl; 
 
+	   ////////////////////////////
+	   ///// JES - JER smearing     ////
+	   //////////////////////////
+	   if(applyJER && !isData)
+	   {
+	//	jetTools->correctJER(init_jets_corrected, genjets, mets[0], "nominal", false);
+           }
+	   if(applyJES && !isData)
+	   {
+		 jetTools->correctJets(init_jets_corrected,event->fixedGridRhoFastjetAll() ,false);
+           }
 
             ///////////////////////////////////////////////////////////
             // Event selection
