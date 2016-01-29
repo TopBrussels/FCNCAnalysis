@@ -154,10 +154,9 @@ int main (int argc, char *argv[])
   bool dilep =false; 
   bool singlelep = false;
   bool applyJetCleaning = true; 
-  bool applyBtagReweight = true;
   bool fillBtagHisto = false; 
-  bool applyPUReweight = false;  
-  bool printTrigger = false; 
+  bool printTrigger = false;
+  bool printLeptonSF = false;  
   string Channel = ""; 
   string xmlFileName = ""; 
   if(mumumu)
@@ -284,7 +283,7 @@ int main (int argc, char *argv[])
   eemu << endl; 
   infoFile << "xmlfile: " << xmlFileName.c_str()  << endl; 
   infoFile << "Jetcleaning on? " <<  applyJetCleaning << endl; 
-  infoFile << "BtagReweighting on? " << applyBtagReweight << " FillHisto? " << fillBtagHisto << endl; 
+  infoFile << "BtagReweighting  FillHisto? " << fillBtagHisto << endl; 
   
   
 
@@ -375,13 +374,16 @@ int main (int argc, char *argv[])
   // electron
   float el_pt_cut =20.; // 42
   float el_eta_cut = 2.4;
-
-
+  bool TightEl = true; 
+  bool MediumEl = false; 
+  bool LooseEl = false; 
   // muon
   float mu_pt_cut = 20.; // 40
   float mu_eta_cut = 2.4;
   float mu_iso_cut = 0.15;
- 
+  bool TightMu = true; 
+  bool MediumMu = false; 
+  bool LooseMu = false;  
   //jets
   float jet_pt_cut = 30.;
   float jet_eta_cut = 2.4;
@@ -405,8 +407,8 @@ int main (int argc, char *argv[])
   jet_pt_cut_str = jet_pt_cut_strs.str();
   jet_eta_cut_str = jet_eta_cut_strs.str();
     
-  infoFile << "El: pt = "  << el_pt_cut_str << " - eta = " << el_eta_cut_str << endl; 
-  infoFile << "Mu: pt = "  << mu_pt_cut_str << " - eta = " << mu_eta_cut_str << " - iso " << mu_iso_cut_str<< endl; 
+  infoFile << "El: pt = "  << el_pt_cut_str << " - eta = " << el_eta_cut_str << " tight/medium/loose " << TightEl << "/" << MediumEl << "/" << LooseEl << endl; 
+  infoFile << "Mu: pt = "  << mu_pt_cut_str << " - eta = " << mu_eta_cut_str << " - iso " << mu_iso_cut_str << " tight/medium/loose " << TightMu << "/" << MediumMu<< "/" << LooseMu << endl; 
   infoFile << "Jet: pt = "  << jet_pt_cut_str << " - eta = " << jet_eta_cut_str <<  endl; 
   
   
@@ -493,8 +495,6 @@ int main (int argc, char *argv[])
 	infoFile <<"found sample " << daName.c_str() << " with equivalent lumi "<<  theDataset->EquivalentLumi() <<endl;
         if(daName.find("Data")!=string::npos || daName.find("data")!=string::npos || daName.find("DATA")!=string::npos){
    	   isData = true;
-    	    //cout << "running on data !!!!" << endl;
-            //cout << "luminosity is " << dataLumi << endl;
          }	
 
         /////////////////////////////////////////
@@ -502,7 +502,7 @@ int main (int argc, char *argv[])
         ////////////////////////////////////////
         string CaliPath = "../TopTreeAnalysisBase/Calibrations/"; 
         string BCaliPath = CaliPath + "BTagging/CSVv2_13TeV_25ns_combToMujets.csv";
-        if(applyBtagReweight && !isData)
+        if(!isData)
 	{
            // documentation at http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
 	   btagcalib = new BTagCalibration("CSVv2", "../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_13TeV_25ns_combToMujets.csv"); 
@@ -513,7 +513,6 @@ int main (int argc, char *argv[])
 	   }
 	   else
 	   {
-	//	cout << "CAVEAT!!! Using the BTagHistosPtEta/HistosPtEta_TTJets_mujets_central.root as standard PtEta histo for b-tag reweighing" << endl;
                 btwt = new BTagWeightTools(btagreader,"BTagHistosPtEta/HistosPtEta_TTJets_mujets_central.root",false,30,999,2.4);
 
 	   }
@@ -522,6 +521,21 @@ int main (int argc, char *argv[])
         }
 
         LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring15DR74-Asympt25ns.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2015Data74X_25ns-Run254231-258750Cert/nominal.root", "pileup60", "pileup");      	
+
+
+       //MuonSFWeight (const string &sfFile, const string &dataOverMC, const bool &extendRange, const bool &debug, const bool &printWarning)
+
+        MuonSFWeight* muonSFWeightID_T = new MuonSFWeight(CaliPath+"LeptonSF/"+"MuonID_Z_RunD_Reco74X_Nov20.root", "NUM_TightIDandIPCut_DEN_genTracks_PAR_pt_spliteta_bin1/abseta_pt_ratio",true, printLeptonSF,printLeptonSF);
+        MuonSFWeight* muonSFWeightID_M = new MuonSFWeight(CaliPath+"LeptonSF/"+"MuonID_Z_RunD_Reco74X_Nov20.root", "NUM_MediumID_DEN_genTracks_PAR_pt_spliteta_bin1/abseta_pt_ratio",true,  printLeptonSF, printLeptonSF);
+        MuonSFWeight* muonSFWeightID_L = new MuonSFWeight(CaliPath+"LeptonSF/"+"MuonID_Z_RunD_Reco74X_Nov20.root", "NUM_LooseID_DEN_genTracks_PAR_pt_spliteta_bin1/abseta_pt_ratio", true, printLeptonSF, printLeptonSF);
+        MuonSFWeight* muonSFWeightIso_TT = new MuonSFWeight(CaliPath+"LeptonSF/"+"MuonIso_Z_RunD_Reco74X_Nov20.root", "NUM_TightRelIso_DEN_TightID_PAR_pt_spliteta_bin1/abseta_pt_ratio",true, printLeptonSF,printLeptonSF);  // Tight RelIso, Tight ID
+        MuonSFWeight* muonSFWeightIso_TM = new MuonSFWeight(CaliPath+"LeptonSF/"+"MuonIso_Z_RunD_Reco74X_Nov20.root", "NUM_TightRelIso_DEN_MediumID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true,printLeptonSF, printLeptonSF);  // Tight RelIso, Medium ID
+        MuonSFWeight* muonSFWeightIso_LT = new MuonSFWeight(CaliPath+"LeptonSF/"+"MuonIso_Z_RunD_Reco74X_Nov20.root", "NUM_LooseRelIso_DEN_TightID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true,printLeptonSF, printLeptonSF);  // Loose RelIso, Tight ID
+        MuonSFWeight* muonSFWeightIso_LM = new MuonSFWeight(CaliPath+"LeptonSF/"+"MuonIso_Z_RunD_Reco74X_Nov20.root", "NUM_LooseRelIso_DEN_MediumID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true,printLeptonSF, printLeptonSF);  // Loose RelIso, Medium ID
+            
+        string electronFile= "Elec_SF_TopEA.root";
+        ElectronSFWeight* electronSFWeight = new ElectronSFWeight (CaliPath+"LeptonSF/"+electronFile,"GlobalSF", true,printLeptonSF, printLeptonSF); // (... , ... , debug, print warning)  
+      
 
         ////////////////////////////////////////////////////////////
         // Setup Date string and nTuple for output  
@@ -711,11 +725,14 @@ int main (int argc, char *argv[])
 	    selectedJets.clear(); 
 	    selectedJets  = selection.GetSelectedJets(jet_pt_cut,jet_eta_cut, true, "Tight"); 
 	    selectedMuons.clear();
-	    selectedMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut, "Tight", "Spring15"); 
+            if(TightMu)  selectedMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut, "Tight", "Spring15"); 
+            if(MediumMu)  selectedMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut, "Medium", "Spring15");
+            if(LooseMu)  selectedMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut, "Loose", "Spring15");
 	    // pt, eta, iso // run normally
 	    selectedElectrons.clear();
-	    selectedElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Medium","Spring15_25ns",true);// pt, eta
-
+	    if(TightEl) selectedElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Tight","Spring15_25ns",true);// pt, eta
+            if(MediumEl) selectedElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Medium","Spring15_25ns",true);// pt, eta
+            if(LooseEl) selectedElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Loose","Spring15_25ns",true);// pt, eta
             /// For MC Information
             mcParticles.clear();
             treeLoader.LoadMCEvent(ievt, 0,  mcParticles, false);
@@ -786,12 +803,12 @@ int main (int argc, char *argv[])
 	   //   Event Weights               ///
 	   ///////////////////////////////////
 	   float btagWeight  =  1;
-           if(applyBtagReweight && fillBtagHisto && !isData)
+           if( fillBtagHisto && !isData)
            {
 		btwt->FillMCEfficiencyHistos(selectedJets);
 
 	   } 
-           else if(applyBtagReweight && !fillBtagHisto && !isData)
+           else if( !fillBtagHisto && !isData)
 	   {
  		btagWeight =  btwt->getMCEventWeight(selectedJets);
 
@@ -805,6 +822,7 @@ int main (int argc, char *argv[])
 
 
            }
+
             //////////////////////////////////////////////////////
             // Applying baseline selection
             //////////////////////////////////////////////////////
@@ -830,6 +848,26 @@ int main (int argc, char *argv[])
 	   
 	    if(eventSelected) 
 	    {
+
+           	float MUweight = 1;
+           	if(!isData)
+           	{
+                	for(unsigned int iMu =0 ; iMu < selectedMuons.size(); iMu++)
+                	{
+             		       	if(TightMu) MUweight *= muonSFWeightIso_TT->at(selectedMuons[iMu]->Eta(), selectedMuons[iMu]->Pt(), 0)* muonSFWeightID_T->at(selectedMuons[iMu]->Eta(), selectedMuons[iMu]->Pt(), 0);
+                    		if(MediumMu) MUweight *= muonSFWeightIso_TM->at(selectedMuons[iMu]->Eta(), selectedMuons[iMu]->Pt(), 0)* muonSFWeightID_M->at(selectedMuons[iMu]->Eta(), selectedMuons[iMu]->Pt(), 0); // needs to be checked                     
+                    		if(LooseMu) MUweight *= muonSFWeightIso_LM->at(selectedMuons[iMu]->Eta(), selectedMuons[iMu]->Pt(), 0)* muonSFWeightID_L->at(selectedMuons[iMu]->Eta(), selectedMuons[iMu]->Pt(), 0); // needs to be checked
+                	}
+           	}
+           	float ELweight = 1;
+           	if(!isData)
+           	{
+                	for(unsigned int iEl = 0; iEl < selectedElectrons.size(); iEl++)
+                	{
+                    	    ELweight *= electronSFWeight->at(selectedElectrons[iEl]->Eta(),selectedElectrons[iEl]->Pt(),0);
+
+                	}	
+           	}
 	       nbSelectedEvents++; 
 	       myTree->Fill(); 
 	       
