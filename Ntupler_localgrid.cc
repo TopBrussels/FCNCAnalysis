@@ -81,6 +81,12 @@ struct HighestCSVBtag
     }
 };
 
+//Initializing CSVv2 b-tag WP
+float workingpointvalue_Loose = 0.605;//working points updated to 2015 BTV-POG recommendations.
+float workingpointvalue_Medium = 0.890;//working points updated to 2015 BTV-POG recommendations.
+float workingpointvalue_Tight = 0.970;//working points updated to 2015 BTV-POG recommendations.
+
+
 
 string ConvertIntToString(int Number, bool pad)
 {
@@ -147,7 +153,10 @@ int main (int argc, char *argv[])
   bool hasEl = false; 
   bool dilep =false; 
   bool singlelep = false;
-  bool applyJetCleaning = true;  
+  bool applyJetCleaning = true; 
+  bool applyBtagReweight = true;
+  bool fillBtagHisto = false; 
+  bool applyPUReweight = false;  
   bool printTrigger = false; 
   string Channel = ""; 
   string xmlFileName = ""; 
@@ -202,14 +211,16 @@ int main (int argc, char *argv[])
   const float PreselEff 	  = strtod(argv[10], NULL);
   string fileName		  = argv[11];
   // if there only two arguments after the fileName, the jobNum will be set to 0 by default as an integer is expected and it will get a string (lastfile of the list) 
+  const int FillBtagHisto	 =  strtol(argv[argc-5], NULL,10);
   string chanName		  = argv[argc-4];
   const int JobNum		  = strtol(argv[argc-3], NULL, 10);
   const int startEvent  	  = strtol(argv[argc-2], NULL, 10);
   const int endEvent		  = strtol(argv[argc-1], NULL, 10);
 
+  fillBtagHisto = FillBtagHisto; 
   // all the files are stored from arg 11 to argc-2
   vector<string> vecfileNames;
-  for(int args = 11; args < argc-4; args++)
+  for(int args = 11; args < argc-5; args++)
   {
     vecfileNames.push_back(argv[args]);
   }
@@ -273,7 +284,7 @@ int main (int argc, char *argv[])
   eemu << endl; 
   infoFile << "xmlfile: " << xmlFileName.c_str()  << endl; 
   infoFile << "Jetcleaning on? " <<  applyJetCleaning << endl; 
-
+  infoFile << "BtagReweighting on? " << applyBtagReweight << " FillHisto? " << fillBtagHisto << endl; 
   
   
 
@@ -322,6 +333,16 @@ int main (int argc, char *argv[])
   if(verbose == 0) cout << "Initializing trigger" << endl;    
   Trigger* trigger = new Trigger(hasMu, hasEl, singlelep, dilep);
 
+  ////////////////////////
+  // intialize  Calibrations      //
+  ///////////////////////
+  BTagCalibration *btagcalib; 
+  BTagCalibrationReader *btagreader; 
+  BTagWeightTools *btwt; 
+
+  // for pu
+  LumiReWeighting LumiWeights;
+ 
 
   ///////////////////////////////
   //  Set up Output ROOT file  ///
@@ -337,7 +358,7 @@ int main (int argc, char *argv[])
   string rootFileName (histo_dir_date+"/FCNC_3L_"+Channel+".root");
   if (strJobNum != "0")
   {
-    cout << "strJobNum is " << strJobNum << endl;
+    if(verbose == 0) cout << "strJobNum is " << strJobNum << endl;
     rootFileName = histo_dir_date+"/FCNC_3L_"+Channel+"_"+strJobNum+".root";
   }
   TFile *fout = new TFile (rootFileName.c_str(), "RECREATE");
@@ -470,8 +491,37 @@ int main (int argc, char *argv[])
         float normfactor = datasets[d]->NormFactor();
 	cout <<"found sample " << daName.c_str() << " with equivalent lumi "<<  theDataset->EquivalentLumi() <<endl;
 	infoFile <<"found sample " << daName.c_str() << " with equivalent lumi "<<  theDataset->EquivalentLumi() <<endl;
-	
-	
+        if(daName.find("Data")!=string::npos || daName.find("data")!=string::npos || daName.find("DATA")!=string::npos){
+   	   isData = true;
+    	    //cout << "running on data !!!!" << endl;
+            //cout << "luminosity is " << dataLumi << endl;
+         }	
+
+        /////////////////////////////////////////
+        ///    Calibrations                  ///
+        ////////////////////////////////////////
+        string CaliPath = "../TopTreeAnalysisBase/Calibrations/"; 
+        string BCaliPath = CaliPath + "BTagging/CSVv2_13TeV_25ns_combToMujets.csv";
+        if(applyBtagReweight && !isData)
+	{
+           // documentation at http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
+	   btagcalib = new BTagCalibration("CSVv2", "../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_13TeV_25ns_combToMujets.csv"); 
+	   btagreader = new BTagCalibrationReader(btagcalib, BTagEntry::OP_MEDIUM, "mujets","central");         	
+	   if(fillBtagHisto)  // before btag reweighting can be apply, you first have to make the histograms
+	   {
+		btwt = new BTagWeightTools(btagreader,"BTagHistosPtEta/HistosPtEta_"+daName+ "_" + strJobNum +"_mujets_central.root",30,999,2.4);
+	   }
+	   else
+	   {
+	//	cout << "CAVEAT!!! Using the BTagHistosPtEta/HistosPtEta_TTJets_mujets_central.root as standard PtEta histo for b-tag reweighing" << endl;
+                btwt = new BTagWeightTools(btagreader,"BTagHistosPtEta/HistosPtEta_TTJets_mujets_central.root",false,30,999,2.4);
+
+	   }
+
+
+        }
+
+        LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring15DR74-Asympt25ns.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2015Data74X_25ns-Run254231-258750Cert/nominal.root", "pileup60", "pileup");      	
 
         ////////////////////////////////////////////////////////////
         // Setup Date string and nTuple for output  
@@ -567,6 +617,9 @@ int main (int argc, char *argv[])
         vector<TRootJet*>      selectedCSVLBJets;
         vector<TRootJet*>      selectedCSVMBJets;
         vector<TRootJet*>      selectedCSVTBJets;
+	vector<TRootJet*>      selectedCSVLLJets;
+        vector<TRootJet*>      selectedCSVMLJets;
+        vector<TRootJet*>      selectedCSVTLJets;
         vector<TRootMCParticle*> mcParticles;
 
 
@@ -708,6 +761,50 @@ int main (int argc, char *argv[])
            }
 
 
+            //////////////////////////////////////
+            //   B jet selection	       ////
+            ///////////////////////////////////////
+
+	    selectedCSVLBJets.clear(); 
+	    selectedCSVMBJets.clear();
+	    selectedCSVTBJets.clear(); 
+            selectedCSVLLJets.clear();
+            selectedCSVMLJets.clear();
+            selectedCSVTLJets.clear();
+	    for(unsigned int iJ = 0; iJ < selectedJets.size(); iJ++)
+	    {
+		if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose) selectedCSVLBJets.push_back(selectedJets[iJ]); 
+	        else selectedCSVLLJets.push_back(selectedJets[iJ]);
+                if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium) selectedCSVMBJets.push_back(selectedJets[iJ]);
+                else selectedCSVMLJets.push_back(selectedJets[iJ]);
+                if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight) selectedCSVTBJets.push_back(selectedJets[iJ]);
+                else selectedCSVTLJets.push_back(selectedJets[iJ]);
+
+	    }
+
+	   ////////////////////////////////////
+	   //   Event Weights               ///
+	   ///////////////////////////////////
+	   float btagWeight  =  1;
+           if(applyBtagReweight && fillBtagHisto && !isData)
+           {
+		btwt->FillMCEfficiencyHistos(selectedJets);
+
+	   } 
+           else if(applyBtagReweight && !fillBtagHisto && !isData)
+	   {
+ 		btagWeight =  btwt->getMCEventWeight(selectedJets);
+
+            }
+
+
+           float PUweight = 1; 
+	   if(!isData)
+           {
+                PUweight = LumiWeights.ITweight((int)event->nTruePU()); 
+
+
+           }
             //////////////////////////////////////////////////////
             // Applying baseline selection
             //////////////////////////////////////////////////////
@@ -755,6 +852,7 @@ int main (int argc, char *argv[])
 	 tupfile->Write();   
     	tupfile->Close();
         delete tupfile;
+        delete btwt; 
         treeLoader.UnLoadDataset();
     } //End Loop on Datasets
 
