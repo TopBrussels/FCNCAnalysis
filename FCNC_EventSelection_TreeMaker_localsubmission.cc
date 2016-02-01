@@ -204,7 +204,7 @@ int main (int argc, char *argv[])
     bool bTagReweight_PreReweighting = false; //Needs to be set only once to true in order to produce the EtaPtHistos
     string btagger = "CSVM";
     bool printTriggers = false;
-    bool applyTriggers = true;
+    bool applyTriggers = false;
 	  float Luminosity = 2094.087; //pb^-1 Muon  = 2196.422335, Electron = 2094.087
     string channelpostfix = "";
     string xmlFileName = "";
@@ -248,16 +248,12 @@ int main (int argc, char *argv[])
     anaEnv.MuonCollection = "Muons_slimmedMuons";
     anaEnv.ElectronCollection = "Electrons_slimmedElectrons";
     anaEnv.GenJetCollection   = "GenJets_slimmedGenJets";
-    anaEnv.TrackMETCollection = "";
-    anaEnv.GenEventCollection = "GenEvent";
     anaEnv.NPGenEventCollection = "NPGenEvent";
     anaEnv.MCParticlesCollection = "MCParticles";
     anaEnv.loadFatJetCollection = true;
     anaEnv.loadGenJetCollection = false;
-    anaEnv.loadGenEventCollection = false;
     anaEnv.loadNPGenEventCollection = false;
     anaEnv.loadMCParticles = true;
-    anaEnv.loadTrackMETCollection = false;
     anaEnv.JetType = 2;
     anaEnv.METType = 2;
 
@@ -863,7 +859,8 @@ int main (int argc, char *argv[])
 
         string channel_dir = "TreeMakerOutput/Ntuples"+channelpostfix;
         string date_dir = channel_dir+"/Ntuples_" + date_str +"/";
-        int mkdirstatus__ = mkdir(channel_dir.c_str(),0777);
+        int mkdirstatus__ = mkdir("TreeMakerOutput",0777);
+        mkdirstatus__ = mkdir(channel_dir.c_str(),0777);
         mkdirstatus__ = mkdir(date_dir.c_str(),0777);
 
         string jobNumString = static_cast<ostringstream*>( &(ostringstream() << JobNum) )->str();
@@ -1075,7 +1072,7 @@ int main (int argc, char *argv[])
 				if (debug)cout<<"Getting Jets"<<endl;
 				selectedJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Tight"); // ApplyJetId
 				if (debug)cout<<"Getting Tight Muons"<<endl;
-				selectedMuons                                       = r2selection.GetSelectedMuons(30,2.4,0.15, "Tight", "Spring15"); //Selected
+				selectedMuons                                       = r2selection.GetSelectedMuons(30,2.1,0.15, "Tight", "Spring15"); //Selected
 				if (debug)cout<<"Getting Loose Electrons"<<endl;
 				selectedElectrons                                   = r2selection.GetSelectedElectrons(20,2.5,"Loose", "Spring15_25ns", true); //Vetoed  
 				if (debug)cout<<"Getting Loose Muons"<<endl;
@@ -1088,7 +1085,7 @@ int main (int argc, char *argv[])
 				if (debug)cout<<"Getting Loose Muons"<<endl;
 				selectedMuons                                       = r2selection.GetSelectedMuons(20, 2.4, 0.20,"Loose","Spring15"); //Vetoed
 				if (debug)cout<<"Getting Medium Electrons"<<endl;
-				selectedElectrons                                   = r2selection.GetSelectedElectrons(30,2.5,"Medium", "Spring15_25ns", true); //Selected                       
+				selectedElectrons                                   = r2selection.GetSelectedElectrons(30,2.1,"Medium", "Spring15_25ns", true); //Selected                       
 				if (debug)cout<<"Getting Loose Electrons"<<endl;
 				selectedExtraElectrons                              = r2selection.GetSelectedElectrons(20,2.5,"Loose", "Spring15_25ns", true); //Vetoed
             }
@@ -1138,6 +1135,7 @@ int main (int argc, char *argv[])
               trigged = trigger->checkIfFired();
               
             }
+            else trigged = true;
              if(dName.find("NP")!=string::npos)//JER smearing only feasible for non-data samples
             {
                 trigged = true;
@@ -1805,7 +1803,7 @@ int main (int argc, char *argv[])
             
             if(dName != "data" && dName != "Data" && dName != "Data" && dName != "D_ata")
             {
-                treeLoader.LoadMCEvent(ievt, 0, 0, mcParticles, false);
+                treeLoader.LoadMCEvent(ievt, 0, mcParticles, false);
                 sort(mcParticles.begin(),mcParticles.end(),HighestPt()); // HighestPt() is included from the Selection class
                   
                 mcParticlesMatching_.clear();
