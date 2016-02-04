@@ -1,18 +1,20 @@
 <?xml version="1.0"?>
-<!--<data>-->
+<data>
 <datasets>
- <!--
+ 
   <!-- Double Muons -->
-    <d name="Data_Run2015D"     title="Data"    add="0"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="552.672886226" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DoubleMuon/crab_DoubleMuon-Run2015D-PromptReco-v3-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155057/0000/TOPTREE_*.root"/>
-    
-    <d name="Data_Run2015D"     title="Data"    add="0"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="711.213094010" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DoubleMuon/crab_DoubleMuon-Run2015D-PromptReco-v4-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155106/0000/TOPTREE_*.root"/>
+  
+ <!--
+    <d name="Data_Run2015Dv10Gold_DiMu"     title="Data"    add="1"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="17.225935728" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v10-GOLD/DoubleMuon/crab_DoubleMuon-Run2015D-05Oct2015-v1-CMSSW_74X_v10-GOLD-74X_dataRun2_Prompt_v2/160118_191354/0000/TOPTREE_*.root"/>
+  -->
+    <d name="Data_Run2015Dv10Gold_DiMu"     title="Data"    add="1"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="1622.084071651" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v10-GOLD/DoubleMuon/crab_DoubleMuon-Run2015D-PromptReco-v4-CMSSW_74X_v10-GOLD-74X_dataRun2_Prompt_v2/160118_191409/0001/TOPTREE_*.root"/>
 
 <!-- Double EG -->
 <!--
-    <d name="Data_Run2015D"     title="Data"    add="0"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="552.672886226" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DoubleEG/crab_DoubleEG-Run2015D-PromptReco-v3-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155031/0000/TOPTREE_*.root"/>
+    <d name="Data_Run2015D"     title="Data"    add="1"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="552.672886226" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DoubleEG/crab_DoubleEG-Run2015D-PromptReco-v3-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155031/0000/TOPTREE_*.root"/>
     
-    <d name="Data_Run2015D"     title="Data"    add="0"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="711.213094010" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DoubleEG/crab_DoubleEG-Run2015D-PromptReco-v4-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155039/0000/TOPTREE_*.root"/>
--->
+    <d name="Data_Run2015D"     title="Data"    add="1"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="711.213094010" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DoubleEG/crab_DoubleEG-Run2015D-PromptReco-v4-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155039/0000/TOPTREE_*.root"/>
+-->   
 <!-- MuonEG -->
 <!--
 <d name="Data_Run2015D"     title="Data"    add="0"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="552.672886226" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/MuonEG/crab_MuonEG-Run2015D-PromptReco-v3-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155127/0000/TOPTREE_*.root"/>
@@ -23,31 +25,37 @@
 
 
 <!-- backgrounds -->
-<!--
-    <d name="DYJets"  title="DY+jets"   add="1"   color="kBlue-7"  ls="1"  lw="2" normf="1"  EqLumi="1502.46813384" xsection="6025.2"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1-CMSSW_74X_v8-MCRUN2_74_V9/151020_154341/0000/TOPTREE_*.root" />
-    
+
+    <d name="DYJets50"  title="DY+jets"   add="1"   color="kBlue-7"  ls="1"  lw="2" normf="1"  EqLumi="4661.84624577" xsection="6025.2"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v10/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_LM50TuneCUETP8M113TeVamcatnloFXFXpythia8RunIISpring15DR74Asympt25nsMCRUN274V9v3CMSSW74Xv10MCRUN274V9/160118_192209/0000/TOPTREE_*.root" />
+  <!--
+    <d name="DYJets10-50"  title="DY+jets10-50"   add="1"   color="kBlue-7"  ls="1"  lw="2" normf="1"  EqLumi="1594.21316497" xsection="18610"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v10/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_LLM10to50TuneCUETP8M113TeVamcatnloFXFXpythia8Spring15DR74Asympt25nsMCRUN274V9v1CMSSW74Xv10MCRUN274V9/160120_220059/0000/TOPTREE_*.root" />
+   
     <d name="WJets"  title="WJets"   add="1"   color="413"  ls="1"  lw="2" normf="1"  EqLumi="392.537626369" xsection="61526"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1-CMSSW_74X_v8-MCRUN2_74_V9/151020_161108/0000/TOPTREE_*.root"  />
-    
-    <d name="TTJets"  title="t\bar{t}+jets Madgraph MLM"   add="1"   color="kCyan-7"  ls="1"  lw="2" normf="1"  EqLumi="13632.8171588" xsection="831.76"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2-CMSSW_74X_v8-MCRUN2_74_V9/151020_160750/0000/TOPTREE_*.root"/>
-  
-    <d name="WZ" title="WZtolllnu" add="1" color="4" ls="1" lw="2" normf="1" EqLumi="1315789.47368" xsection="1.463" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/crab_WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1-CMSSW_74X_v8-MCRUN2_74_V9/151020_161555/0000/*.root"/>
--->
-</datasets>
+   -->
+    <d name="TTJets"  title="ttbar+jets"   add="1"   color="kCyan-7"  ls="1"  lw="2" normf="1"  EqLumi="10944.3048476" xsection="831.76"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v10/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJetsTuneCUETP8M113TeVmadgraphMLMpythia8Spring15DR74Asympt25nsMCRUN274V9v2CMSSW74Xv10MCRUN274V9/160120_221023/0000/TOPTREE_*.root"/>
+
+    <d name="WZ" title="WZtolllnu" add="1" color="4" ls="1" lw="2" normf="1" EqLumi="434571.580147" xsection="4.42965" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v10/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/crab_WZTo3LNuTuneCUETP8M113TeVpowhegpythia8RunIISpring15DR74Asympt25nsMCRUN274V9v1CMSSW74Xv10MCRUN274V9/160118_200657/0000/*.root"/>
+ <!--
+    <d name="WW" title="WW" add="1" color="4" ls="1" lw="2" normf="1" EqLumi="1315789.47368" xsection="63.21" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/WW_TuneCUETP8M1_13TeV-pythia8/crab_WW_TuneCUETP8M1_13TeV-pythia8-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1-CMSSW_74X_v8-MCRUN2_74_V9/151020_161401/0000/*.root"/>
+-->   
+
+<!--</datasets>-->
 
 
 
 <!-- SIGNALS -->
+<!--
+<d name="NP_overlay_TTtoTHToWW-Kappa-hct"  title="tt-tcH"  add="1"   color="kPink+4"  ls="1"  lw="2" normf="1"  EqLumi="1897601.75842" xsection="0.525927"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/sabuzeid/FCNC_MCSamples_13TeV_Kirill/tHFCNC13TeV/Kappa_ttbar_hct/tHFCNC13TeV/crab_TopTree_FCNC_ttbarWW_tcH_Correct/160114_134541/0000/*.root"/>
 
-<d name="NP_overlay_TTtoTHToWW-Kappa-hct"  title="tt \rightarrow tcH"  add="1"   color="kPink+4"  ls="1"  lw="2" normf="1"  EqLumi="261651.676206" xsection="0.779"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/sabuzeid/FCNC_MCSamples_13TeV_Kirill/tHFCNC13TeV/kskovpen-kskovpen_TTtoTHToWW_1L_Kappa_hct_AODFASTSIM_4d8f2bc2e6b46f86d9c660f8ab1d998e_USER-881b16c8bee650855968d7f6ca374946/USER/tHFCNC13TeV/crab_TopTree_FCNC_tHWW_4/151027_161145/0000/*.root"/>
+<d name="NP_overlay_TTtoTHToWW-Kappa-hut"  title="tt-tuH"  add="1"   color="kPink+5"  ls="1"  lw="2" normf="1"  EqLumi="1897601.75842" xsection="0.525927"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/sabuzeid/FCNC_MCSamples_13TeV_Kirill/tHFCNC13TeV/Kappa_ttbar_hut/tHFCNC13TeV/crab_TopTree_FCNC_ttbarWW_tuH_Correct/160114_133948/0000/*.root"/>
 
-<d name="NP_overlay_TTtoTHToWW-Kappa-hut"  title="tt \rightarrow tuH"  add="1"   color="kPink+5"  ls="1"  lw="2" normf="1"  EqLumi="228945.21668" xsection="0.526"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/sabuzeid/FCNC_MCSamples_13TeV_Kirill/tHFCNC13TeV/kskovpen-kskovpen_TTtoTHToWW_1L_Kappa_hut_AODFASTSIM_4d8f2bc2e6b46f86d9c660f8ab1d998e_USER-881b16c8bee650855968d7f6ca374946/USER/tHFCNC13TeV/crab_TopTree_FCNC_tHWW_3/151027_160409/0000/*.root"/>
+<d name="NP_overlay_tHToWW_Kappa_hut"  title="tH-tuH"  add="1"   color="kPink+8"  ls="1"  lw="2" normf="1"  EqLumi="1037826.70785" xsection="0.963552"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/sabuzeid/FCNC_MCSamples_13TeV_Kirill/tHFCNC13TeV/Kappa_tHWW_hut_Correct/tHFCNC13TeV/crab_TopTree_FCNC_tHWW_tuH_Corrected/160114_133244/0000/*.root"/>
 
-<d name="NP_overlay_tHToWW_Kappa_hut"  title="tt \rightarrow tuH"  add="1"   color="kPink+8"  ls="1"  lw="2" normf="1"  EqLumi="185614.849188" xsection="0.963552"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/sabuzeid/FCNC_MCSamples_13TeV_Kirill/tHFCNC13TeV/kskovpen-kskovpen_tHToWW_1L_Kappa_hut_AODFASTSIM_4d8f2bc2e6b46f86d9c660f8ab1d998e_USER-881b16c8bee650855968d7f6ca374946/USER/tHFCNC13TeV/crab_TopTree_FCNC_tHWW_1_Resubmitted/151027_112422/0000/*.root"/>
-
-<d name="NP_overlay_tHToWW_Kappa_hct"  title="tt \rightarrow tuH"  add="1"   color="kPink+7"  ls="1"  lw="2" normf="1"  EqLumi="2065727.69953" xsection="0.143191"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/sabuzeid/FCNC_MCSamples_13TeV_Kirill/tHFCNC13TeV/kskovpen-kskovpen_TTtoTHToWW_1L_Kappa_hct_AODFASTSIM_4d8f2bc2e6b46f86d9c660f8ab1d998e_USER-881b16c8bee650855968d7f6ca374946/USER/tHFCNC13TeV/crab_TopTree_FCNC_tHWW_4/151027_161145/0000/*.root"/>
-
+<d name="NP_overlay_tHToWW_Kappa_hct"  title="tH-tcH"  add="1"   color="kPink+7"  ls="1"  lw="2" normf="1"  EqLumi="6983679.14185" xsection="0.143191"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/sabuzeid/FCNC_MCSamples_13TeV_Kirill/tHFCNC13TeV/Kappa_tHWW_hct_Correct/tHFCNC13TeV/crab_TopTree_FCNC_tHWW_tcH_Correct/160114_133648/0000/*.root"/>
+ -->
+ </datasets>
 
 <analysis>
 <a type="Collections" PVCollection="PrimaryVertex" JetType="2" JetCollection="PFJets_slimmedJets" METType="2" METCollection="PFMET_slimmedMETs" MuonCollection="Muons_slimmedMuons" ElectronCollection="Electrons_slimmedElectrons" loadGenJetCollection="0" GenJetCollection="GenJets_slimmedGenJets" loadGenEventCollection="0" GenEventCollection="GenEvent" loadNPGenEventCollection="0" NPGenEventCollection="NPGenEvent" loadMCParticles="1" MCParticlesCollection="MCParticles" TrackMETCollection="" loadTrackMET="0"/>
 </analysis>
-<!--</data>-->
+</data>
