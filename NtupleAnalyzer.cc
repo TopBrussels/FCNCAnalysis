@@ -260,15 +260,14 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 		  
      FileObj[dataSetName.c_str()] = new TFile((filepath).c_str(),"READ"); //create TFile for each dataset      
      string TTreename = sbaselinetree;	
-     string globalTTreename = sglobaltree; 
+
      
      ttree[dataSetName.c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename.c_str()); //get ttre for each dataset
      nEntries = (int)ttree[dataSetName.c_str()]->GetEntries();
      cout<<"                 nEntries: "<<nEntries<<endl;     
      
-     // get tree for global events
-     globalttree[dataSetName.c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(globalTTreename.c_str());
-    
+
+
      // bo logic to set the right branch address depending on the string given as argument of the datasetplotter  (int or double[n] )
       if (v.size() == 2){
 	ttree[dataSetName.c_str()]->SetBranchAddress(v[1].c_str(),&varofInterest); 
@@ -318,10 +317,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
       Int_t nMu;
       ttree[dataSetName.c_str()]->SetBranchAddress("nMuons",&nMu);
       
-      Int_t nofHLTv2; 
-      globalttree[dataSetName.c_str()]->SetBranchAddress("nofEventsHLTv2";&nofHLTv2); 
-      Int_t nofHLTv3; 
-      globalttree[dataSetName.c_str()]->SetBranchAddress("nofEventsHLTv3";&nofHLTv3); 
+
       
       if(debug) cout << "done setting SF addresses " << endl; 
       
@@ -355,7 +351,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 		   if(debug) cout << "Muon trig v2 sf at index " << i << " is " << muonTrigv2[i] << endl;
 		   if(debug) cout << "Muon trig v3 sf at index " << i << " is " << muonTrigv3[i] << endl;
 		   
-		   globalScaleFactor *= muonID[i] *  muonIso[i] ;
+		   globalScaleFactor *= muonID[i] *  muonIso[i]  ;
 		   if(debug) cout << "the globalScaleFactor is " << globalScaleFactor << endl;
 	  	}
 	      }
