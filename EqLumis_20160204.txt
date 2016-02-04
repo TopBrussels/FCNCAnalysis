@@ -1,0 +1,195 @@
+[?1034hLoading FW Lite setup.
+TClass::Init:0: RuntimeWarning: no dictionary for class TopTree::TRootRun is available
+TClass::Init:0: RuntimeWarning: no dictionary for class TopTree::TRootHLTInfo is available
+TClass::Init:0: RuntimeWarning: no dictionary for class TopTree::TRootWeightInfo is available
+TClass::Init:0: RuntimeWarning: no dictionary for class TopTree::TRootEvent is available
+TClass::Init:0: RuntimeWarning: no dictionary for class TopTree::TRootMCParticle is available
+TClass::Init:0: RuntimeWarning: no dictionary for class TopTree::TRootParticle is available
+TClass::Init:0: RuntimeWarning: no dictionary for class TopTree::TRootGenJet is available
+TClass::Init:0: RuntimeWarning: no dictionary for class TopTree::TRootPFJet is available
+TClass::Init:0: RuntimeWarning: no dictionary for class TopTree::TRootJet is available
+TClass::Init:0: RuntimeWarning: no dictionary for class TopTree::TRootSubstructureJet is available
+TClass::Init:0: RuntimeWarning: no dictionary for class TopTree::TRootNPGenEvent is available
+TClass::Init:0: RuntimeWarning: no dictionary for class TopTree::TRootMuon is available
+TClass::Init:0: RuntimeWarning: no dictionary for class TopTree::TRootLepton is available
+TClass::Init:0: RuntimeWarning: no dictionary for class TopTree::TRootElectron is available
+TClass::Init:0: RuntimeWarning: no dictionary for class TopTree::TRootPhoton is available
+TClass::Init:0: RuntimeWarning: no dictionary for class TopTree::TRootPFMET is available
+TClass::Init:0: RuntimeWarning: no dictionary for class TopTree::TRootMET is available
+TClass::Init:0: RuntimeWarning: no dictionary for class TopTree::TRootVertex is available
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/DoubleMuon/crab_DoubleMuon-Run2015C_25ns-16Dec2015-v1-76X_dataRun2_v15/160201_152934/0000/*.root
+added files
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/DoubleMuon/crab_DoubleMuon-Run2015C_25ns-16Dec2015-v1-76X_dataRun2_v15/160201_152934/0000/*.root  contains  709232  events!
+***************************
+****End of sample *********
+***************************
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/DoubleMuon/crab_DoubleMuon-Run2015D-16Dec2015-v1-76X_dataRun2_v15/160201_152942/000*/*.root
+added files
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/DoubleMuon/crab_DoubleMuon-Run2015D-16Dec2015-v1-76X_dataRun2_v15/160201_152942/000*/*.root  contains  47327565  events!
+***************************
+****End of sample *********
+***************************
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/WWTo2L2Nu_13TeV-powheg/crab_WWTo2L2Nu13TeVpowhegFall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153827/0000/*.root
+added files
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/WWTo2L2Nu_13TeV-powheg/crab_WWTo2L2Nu13TeVpowhegFall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153827/0000/*.root  contains  1979988  events!
+ xsections is  12.178
+Eqlumi is N/xsect ---> 1979988 / 12.178  =  162587.288553
+***************************
+****End of sample *********
+***************************
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/crab_WZTo3LNu13TeVpowhegpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153907/0000/*.root
+added files
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/crab_WZTo3LNu13TeVpowhegpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153907/0000/*.root  contains  2000000  events!
+ xsections is  4.42965
+Eqlumi is N/xsect ---> 2000000 / 4.42965  =  451502.940413
+***************************
+****End of sample *********
+***************************
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/ZZTo2L2Nu_13TeV_powheg_pythia8/crab_ZZTo2L2Nu13TeVpowhegpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153924/0000/*.root
+added files
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/ZZTo2L2Nu_13TeV_powheg_pythia8/crab_ZZTo2L2Nu13TeVpowhegpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153924/0000/*.root  contains  8785050  events!
+ xsections is  0.564
+Eqlumi is N/xsect ---> 8785050 / 0.564  =  15576329.7872
+***************************
+****End of sample *********
+***************************
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/ZZTo4L_13TeV_powheg_pythia8/crab_ZZTo4L13TeVpowhegpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153943/0000/*.root
+added files
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/ZZTo4L_13TeV_powheg_pythia8/crab_ZZTo4L13TeVpowhegpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153943/0000/*.root  contains  6669188  events!
+ xsections is  1.212
+Eqlumi is N/xsect ---> 6669188 / 1.212  =  5502630.36304
+***************************
+****End of sample *********
+***************************
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/crab_tWtop5f13TeVpowhegpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153348/0000/*.root
+added files
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/crab_tWtop5f13TeVpowhegpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153348/0000/*.root  contains  1000000  events!
+ xsections is  35.6
+Eqlumi is N/xsect ---> 1000000 / 35.6  =  28089.8876404
+***************************
+****End of sample *********
+***************************
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/crab_tWantitop5f13TeVpowhegpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153301/0000/*.root
+added files
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/crab_tWantitop5f13TeVpowhegpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153301/0000/*.root  contains  999400  events!
+ xsections is  35.6
+Eqlumi is N/xsect ---> 999400 / 35.6  =  28073.0337079
+***************************
+****End of sample *********
+***************************
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/crab_leptonDecays13TeVamcatnlopythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v276XmcRun2asymptoticv12/160201_153201/0000/*.root
+added files
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/crab_leptonDecays13TeVamcatnlopythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v276XmcRun2asymptoticv12/160201_153201/0000/*.root  contains  998400  events!
+ xsections is  3.3623
+Eqlumi is N/xsect ---> 998400 / 3.3623  =  296939.59492
+***************************
+****End of sample *********
+***************************
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/crab_leptonDecays13TeVamcatnlopythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153210/0000/*.root
+added files
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/crab_leptonDecays13TeVamcatnlopythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153210/0000/*.root  contains  19938230  events!
+ xsections is  44.33
+Eqlumi is N/xsect ---> 19938230 / 44.33  =  449768.328446
+***************************
+****End of sample *********
+***************************
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/ST_t-channel_antitop_4f_leptonDecays_13TeV-powheg-pythia8_TuneCUETP8M1/crab_4fleptonDecays13TeVpowhegpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153236/0000/*.root
+added files
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/ST_t-channel_antitop_4f_leptonDecays_13TeV-powheg-pythia8_TuneCUETP8M1/crab_4fleptonDecays13TeVpowhegpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153236/0000/*.root  contains  1630900  events!
+ xsections is  26.38
+Eqlumi is N/xsect ---> 1630900 / 26.38  =  61823.3510235
+***************************
+****End of sample *********
+***************************
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/TTTo2L2Nu_13TeV-powheg/crab_TTTo2L2Nu13TeVpowhegFall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153604/0000/*.root
+added files
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/TTTo2L2Nu_13TeV-powheg/crab_TTTo2L2Nu13TeVpowhegFall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153604/0000/*.root  contains  4995600  events!
+ xsections is  87.31
+Eqlumi is N/xsect ---> 4995600 / 87.31  =  57216.8136525
+***************************
+****End of sample *********
+***************************
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_u13TeVamcatnloFXFXmadspinpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153612/0000/*.root
+added files
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_u13TeVamcatnloFXFXmadspinpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153612/0000/*.root  contains  250307  events!
+ xsections is  0.2043
+Eqlumi is N/xsect ---> 250307 / 0.2043  =  1225193.34312
+***************************
+****End of sample *********
+***************************
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_tsToLLM5013TeVmadgraphMLMpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_152356/0000/*.root
+added files
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_tsToLLM5013TeVmadgraphMLMpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_152356/0000/*.root  contains  9004328  events!
+ xsections is  6025.2
+Eqlumi is N/xsect ---> 9004328 / 6025.2  =  1494.44466574
+***************************
+****End of sample *********
+***************************
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_LM5013TeVamcatnloFXFXpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12ext1v176XmcRun2asymptoticv12/160201_152343/0000/*.root
+added files
+
+
+/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_LM5013TeVamcatnloFXFXpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12ext1v176XmcRun2asymptoticv12/160201_152343/0000/*.root  contains  1719818  events!
+ xsections is  6025.2
+Eqlumi is N/xsect ---> 1719818 / 6025.2  =  285.437495851
+***************************
+****End of sample *********
+***************************
+
+
