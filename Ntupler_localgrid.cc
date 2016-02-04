@@ -73,6 +73,8 @@ using namespace reweight;
 map<string,TH1F*> histo1D;
 map<string,TH2F*> histo2D;
 
+
+
 struct HighestCSVBtag
 {
     bool operator()( TRootJet* j1, TRootJet* j2 ) const
@@ -117,7 +119,7 @@ string MakeTimeStamp()
   string min_str = ConvertIntToString(min, true);
   //string sec_str = ConvertIntToString(sec, true);
   
-  string date_str = year_str + month_str + day_str + "_" + hour_str + min_str;
+  string date_str = year_str + month_str + day_str; //+ "_" + hour_str + min_str;
   return date_str;
 };
 
@@ -158,7 +160,10 @@ int main (int argc, char *argv[])
   bool printTrigger = false;
   bool printLeptonSF = false; 
   bool applyJER = false; 
-  bool applyJES = false;  
+  bool applyJES = false; 
+  bool applyNegWeightCorrection = false; 
+  bool applyPU = true; 
+  bool applyLeptonSF = false;  
   string Channel = ""; 
   string xmlFileName = ""; 
   if(mumumu)
@@ -189,7 +194,7 @@ int main (int argc, char *argv[])
 	std:: cerr << "  - arg number " << n_arg << " is " << argv[n_arg] << std::endl;
      }
   }
-  if(argc < 15)
+  if(argc < 19)
   {
     std::cerr << "TOO FEW INPUTs FROM XMLFILE.  CHECK XML INPUT FROM SCRIPT.  " << argc << " ARGUMENTS HAVE BEEN PASSED." << std::endl;
     for (int n_arg=1; n_arg<argc; n_arg++)
@@ -240,12 +245,15 @@ int main (int argc, char *argv[])
   }
   
   // Print information to a textfile
-  ofstream infoFile; 
-  string infoName =  "Information/information"; 
+  ofstream infoFile;
+  string info_dir = "Information/"+Channel +"/";
+  string info_date_dir = info_dir +  dateString +"/";
+  mkdir(info_dir.c_str(),0777);
+  mkdir(info_date_dir.c_str(),0777); 
+  string infoName = info_date_dir + "information"; 
   infoName += "_"+ Channel;
   infoName += "_" + dName;
   infoName += "_" + JobNum; 
-  infoName += "_" + dateString;
   infoName += ".txt"; 
   infoFile.open(infoName.c_str());
   
@@ -291,8 +299,8 @@ int main (int argc, char *argv[])
   infoFile << "Jetcleaning on? " <<  applyJetCleaning << endl; 
   infoFile << "BtagReweighting  FillHisto? " << fillBtagHisto << endl; 
   infoFile << "JES? " << applyJES << " JER? " << applyJER << endl; 
-  if(applyJER) infoFile << "WARNING: JER is on but not implemented in 76X " << endl; 
-
+  infoFile << "Neg Weight correction? " << applyNegWeightCorrection << endl;
+  infoFile  << "Lepton SF? " << applyLeptonSF	 << endl; 
 
   /////////////////////////////////
   //  Set up AnalysisEnvironment 
@@ -364,11 +372,11 @@ int main (int argc, char *argv[])
   mkdir(histo_dir.c_str(),0777);
   mkdir(histo_dir_date.c_str(),0777);
   
-  string rootFileName (histo_dir_date+"/FCNC_3L_"+Channel+".root");
+  string rootFileName (histo_dir_date+"/FCNC_3L_"+Channel+"_"+dName+".root");
   if (strJobNum != "0")
   {
     if(verbose == 0) cout << "strJobNum is " << strJobNum << endl;
-    rootFileName = histo_dir_date+"/FCNC_3L_"+Channel+"_"+strJobNum+".root";
+    rootFileName = histo_dir_date+"/FCNC_3L_"+Channel+"_"+dName + "_"+strJobNum+".root";
   }
   TFile *fout = new TFile (rootFileName.c_str(), "RECREATE");
   
@@ -427,9 +435,13 @@ int main (int argc, char *argv[])
     ////////////////////////////////////////////////////////////////////
     //////////////////  1D plots  //////////////////////////////
     ////////////////////////////////////////////////////////////////////
-/*
     histo1D["NbOfVertices"]                                  = new TH1F("NbOfVertices", "Nb. of vertices", 60, 0, 60);
     histo1D["cutFlow"]                                  = new TH1F( "cutFlow", "cutFlow", 15, -0.5, 14.5);
+    histo1D["weightIndex"]				= new TH1F("weightIndex", "weightIndex", 5, -2.5,2.5); // 0: None; 1: scale_variation 1; 2: Central scale variation 1
+    histo1D["nloweight"]				= new TH1F("nloweight", "nloweight", 200, -2.0, 2.0);
+    histo1D["init_nPVs_before"]	                       = new TH1F("init_nPVs_before", "init_nPVs_before", 41,-0.5,40.5);  
+    histo1D["init_nPVs_after"]                        = new TH1F("init_nPVs_after", "init_nPVs_after", 41,-0.5,40.5);
+/*
     //Muons
     histo1D["MuonPt"]                                        = new TH1F( "MuonPt", "PT_{#mu}", 30, 0, 300);
     histo1D["LeptonPt"]                                        = new TH1F( "LeptonPt", "PT_{lep}", 30, 0, 300);
@@ -492,13 +504,17 @@ int main (int argc, char *argv[])
     //       Loop on datasets      //
     /////////////////////////////////
     cout << " - Loop over datasets ... " << datasets.size () << " datasets !" << endl;
-
-
+    bool nlo = false;
     for (unsigned int d = 0; d < datasets.size(); d++)
     {
         cout<<"Load Dataset"<<endl;    
 	treeLoader.LoadDataset (datasets[d], anaEnv);  //open files and load dataset	
 
+
+	double nloSF = 1; 
+        double sumWeights = 0; 
+        nlo = false; 
+       /////////
         string daName = datasets[d]->Name();
         float normfactor = datasets[d]->NormFactor();
 	cout <<"found sample " << daName.c_str() << " with equivalent lumi "<<  theDataset->EquivalentLumi() <<endl;
@@ -507,6 +523,8 @@ int main (int argc, char *argv[])
    	   isData = true;
          }	
 
+
+        if(daName.find("amc")!=string::npos) nlo = true; 
         /////////////////////////////////////////
         ///    Calibrations                  ///
         ////////////////////////////////////////
@@ -542,6 +560,12 @@ int main (int argc, char *argv[])
         MuonSFWeight* muonSFWeightIso_TM = new MuonSFWeight(CaliPath+"LeptonSF/"+"MuonIso_Z_RunD_Reco74X_Nov20.root", "NUM_TightRelIso_DEN_MediumID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true,printLeptonSF, printLeptonSF);  // Tight RelIso, Medium ID
         MuonSFWeight* muonSFWeightIso_LT = new MuonSFWeight(CaliPath+"LeptonSF/"+"MuonIso_Z_RunD_Reco74X_Nov20.root", "NUM_LooseRelIso_DEN_TightID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true,printLeptonSF, printLeptonSF);  // Loose RelIso, Tight ID
         MuonSFWeight* muonSFWeightIso_LM = new MuonSFWeight(CaliPath+"LeptonSF/"+"MuonIso_Z_RunD_Reco74X_Nov20.root", "NUM_LooseRelIso_DEN_MediumID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true,printLeptonSF, printLeptonSF);  // Loose RelIso, Medium ID
+        double weightMuonHLTv2, weightMuonHLTv3;
+        MuonSFWeight *muonSFWeightTrigHLTv4p2 = new MuonSFWeight(CaliPath+"LeptonSF/"+"SingleMuonTrigger_Z_RunCD_Reco74X_Dec1.root", "runD_IsoMu20_OR_IsoTkMu20_HLTv4p2_PtEtaBins/abseta_pt_ratio", true, false, false);
+        MuonSFWeight *muonSFWeightTrigHLTv4p3 = new MuonSFWeight(CaliPath+"LeptonSF/"+"SingleMuonTrigger_Z_RunCD_Reco74X_Dec1.root", "runD_IsoMu20_OR_IsoTkMu20_HLTv4p3_PtEtaBins/abseta_pt_ratio", true, false, false);
+  
+
+
             
         string electronFile= "Elec_SF_TopEA.root";
         ElectronSFWeight* electronSFWeight = new ElectronSFWeight (CaliPath+"LeptonSF/"+electronFile,"GlobalSF", true,printLeptonSF, printLeptonSF); // (... , ... , debug, print warning)  
@@ -581,12 +605,13 @@ int main (int argc, char *argv[])
         mkdir(date_dir.c_str(),0777);
 
         
-        string Ntupname = date_dir +"FCNC_3L_" +Channel + "_" + strJobNum + ".root";
+        string Ntupname = date_dir +"FCNC_3L_" +Channel + "_" + dName + "_"+  strJobNum + ".root";
 
         TFile * tupfile = new TFile(Ntupname.c_str(),"RECREATE");
 	tupfile->cd();
 	TTree* myTree = new TTree("tree","tree");
-                    
+        TTree* baselineTree = new TTree("baselinetree","baselinetree");           
+	TTree* globalTree = new TTree("gobaltree","globaltree"); 
 	///////////////////////////
        /// output tree
        ///////////////////////////
@@ -596,16 +621,254 @@ int main (int argc, char *argv[])
        Int_t lumi_num;
        Int_t nvtx;
        Int_t npu;
+       Int_t cutstep[10];
+       Int_t nCuts; 
        Double_t puSF;
+       Double_t btagSF;
+       Double_t MuonIDSF[10]; 
+       Double_t MuonIsoSF[10]; 
+       Double_t MuonTrigSFv2[10];
+       Double_t MuonTrigSFv3[10]; 
+       Double_t ElectronSF[10]; 
+       Int_t nofPosWeights;
+       Int_t nofNegWeights;
+       Double_t nloWeight; // for amc@nlo samples
+       
+       Int_t nLeptons;
+	// variables for electrons
+        Int_t nElectrons;
+        Double_t pt_electron[10];
+        Double_t phi_electron[10];
+        Double_t eta_electron[10];
+        Double_t eta_superCluster_electron[10];
+        Double_t E_electron[10];
+        Double_t d0_electron[10];
+        Double_t d0BeamSpot_electron[10];
+        Double_t chargedHadronIso_electron[10];
+        Double_t neutralHadronIso_electron[10];
+        Double_t photonIso_electron[10];
+        Double_t pfIso_electron[10];
+        Int_t charge_electron[10];
+
+        Double_t sigmaIEtaIEta_electron[10];
+	Double_t deltaEtaIn_electron[10];
+	Double_t deltaPhiIn_electron[10];
+	Double_t hadronicOverEm_electron[10];
+	Int_t missingHits_electron[10];
+	Bool_t passConversion_electron[10];
+	Bool_t isId_electron[10];
+	Bool_t isIso_electron[10];
+
+        Bool_t isEBEEGap[10]; 
+	Double_t sf_electron[10];
+
+       //variable for muons
+        Int_t nMuons;
+        Double_t pt_muon[10];
+        Double_t phi_muon[10];
+        Double_t eta_muon[10];
+        Double_t E_muon[10];
+        Double_t d0_muon[10];
+        Double_t d0BeamSpot_muon[10];
+        Double_t chargedHadronIso_muon[10];
+        Double_t neutralHadronIso_muon[10];
+        Double_t photonIso_muon[10];
+        Double_t relIso_muon[10];
+	Bool_t isId_muon[10];
+	Bool_t isIso_muon[10];
+        Double_t pfIso_muon[10];
+	Double_t sf_muon[10];
+        Int_t charge_muon[10];
+  
+        //variable for jets 
+        Int_t nJets;
+	Int_t nCSVLBJets; 
+        Int_t nCSVMBJets;
+        Int_t nCSVTBJets;
+        Double_t pt_jet[20];
+        Double_t phi_jet[20];
+        Double_t eta_jet[20];
+        Double_t E_jet[20];
+        Int_t charge_jet[20];
+        Double_t bdisc_jet[20];
+
+
+        // variables for Zboson
+/*        Double_t Zboson_M; 
+	Double_t Zboson_Px; 
+        Double_t Zboson_Py;
+        Double_t Zboson_Pz;
+	Double_t Zboson_Energy;
+*/
+        // met 
+        Double_t met_Pt; 
+	Double_t met_Phi; 
+	Double_t met_Eta; 
+       
+        // global data set variables
+	Int_t nofEventsHLTv2; 
+	Int_t nofEventsHLTv3; 
+	globalTree->Branch("nofEventsHLTv2",&nofEventsHLTv2,"nofEventsHLTv2/I"); 
+	globalTree->Branch("nofEventsHLTv3",&nofEventsHLTv3,"nofEventsHLTv3/I");
+        globalTree->Branch("nofPosWeights",&nofPosWeights,"nofPosWeights/I");  
+	globalTree->Branch("nofNegWeights",&nofPosWeights,"nofNegWeights/I");
+ 
+
+
+
        // event related variables
+       myTree->Branch("nCuts",&nCuts, "nCuts/I");
+       myTree->Branch("cutstep",&cutstep,"cutstep[nCuts]/I"); 
+       myTree->Branch("nloWeight",&nloWeight,"nloWeight/D"); 
        myTree->Branch("run_num",&run_num,"run_num/I");
        myTree->Branch("evt_num",&evt_num,"evt_num/I");
        myTree->Branch("lumi_num",&lumi_num,"lumi_num/I");
        myTree->Branch("nvtx",&nvtx,"nvtx/I");
        myTree->Branch("npu",&npu,"npu/I");
        myTree->Branch("puSF",&puSF,"puSF/D");  
+       myTree->Branch("btagSF",&btagSF,"btagSF/D");         
+       myTree->Branch("nLeptons",&nLeptons, "nLeptons/I");//
 
-       //////////////////////////
+       baselineTree->Branch("nCuts",&nCuts, "nCuts/I");
+       baselineTree->Branch("cutstep",&cutstep,"cutstep[nCuts]/I");
+       baselineTree->Branch("nloWeight",&nloWeight,"nloWeight/D");
+       baselineTree->Branch("run_num",&run_num,"run_num/I");
+       baselineTree->Branch("evt_num",&evt_num,"evt_num/I");
+       baselineTree->Branch("lumi_num",&lumi_num,"lumi_num/I");
+       baselineTree->Branch("nvtx",&nvtx,"nvtx/I");
+       baselineTree->Branch("npu",&npu,"npu/I");
+       baselineTree->Branch("puSF",&puSF,"puSF/D");
+       baselineTree->Branch("btagSF",&btagSF,"btagSF/D");
+       baselineTree->Branch("nLeptons",&nLeptons, "nLeptons/I");//
+        	// electrons
+       myTree->Branch("nElectrons",&nElectrons, "nElectrons/I");//	
+       myTree->Branch("ElectronSF",&ElectronSF,"ElectronSF[nElectrons]/D");						      
+       myTree->Branch("pt_electron",pt_electron,"pt_electron[nElectrons]/D");
+       myTree->Branch("phi_electron",phi_electron,"phi_electron[nElectrons]/D");
+       myTree->Branch("eta_electron",eta_electron,"eta_electron[nElectrons]/D");
+       myTree->Branch("eta_superCluster_electron",eta_superCluster_electron,"eta_superCluster_electron[nElectrons]/D");
+       myTree->Branch("E_electron",E_electron,"E_electron[nElectrons]/D");
+       myTree->Branch("chargedHadronIso_electron",chargedHadronIso_electron,"chargedHadronIso_electron[nElectrons]/D");
+       myTree->Branch("neutralHadronIso_electron",neutralHadronIso_electron,"neutralHadronIso_electron[nElectrons]/D");
+       myTree->Branch("photonIso_electron",photonIso_electron,"photonIso_electron[nElectrons]/D");
+       myTree->Branch("pfIso_electron",pfIso_electron,"pfIso_electron[nElectrons]/D");
+       myTree->Branch("charge_electron",charge_electron,"charge_electron[nElectrons]/I");
+       myTree->Branch("d0_electron",d0_electron,"d0_electron[nElectrons]/D");
+       myTree->Branch("d0BeamSpot_electron",d0BeamSpot_electron,"d0BeamSpot_electron[nElectrons]/D");
+       myTree->Branch("sigmaIEtaIEta_electron",sigmaIEtaIEta_electron,"sigmaIEtaIEta_electron[nElectrons]/D");
+       myTree->Branch("deltaEtaIn_electron",deltaEtaIn_electron,"deltaEtaIn_electron[nElectrons]/D");
+       myTree->Branch("deltaPhiIn_electron",deltaPhiIn_electron,"deltaPhiIn_electron[nElectrons]/D");
+       myTree->Branch("hadronicOverEm_electron",hadronicOverEm_electron,"hadronicOverEm_electron[nElectrons]/D");
+       myTree->Branch("missingHits_electron",missingHits_electron,"missingHits_electron[nElectrons]/I");
+       myTree->Branch("passConversion_electron",passConversion_electron,"passConversion_electron[nElectrons]/O)");
+       myTree->Branch("isId_electron",isId_electron,"isId_electron[nElectrons]/O)");
+       myTree->Branch("isIso_electron",isIso_electron,"isIso_electron[nElectrons]/O)");
+       myTree->Branch("isEBEEGap",isEBEEGap,"isEBEEGap[nElectrons]/O)");
+       myTree->Branch("sf_electron",sf_electron,"sf_electron[nElectrons]/D");
+
+       baselineTree->Branch("nElectrons",&nElectrons, "nElectrons/I");//
+       baselineTree->Branch("ElectronSF",&ElectronSF,"ElectronSF[nElectrons]/D");							      
+       baselineTree->Branch("pt_electron",pt_electron,"pt_electron[nElectrons]/D");
+       baselineTree->Branch("phi_electron",phi_electron,"phi_electron[nElectrons]/D");
+       baselineTree->Branch("eta_electron",eta_electron,"eta_electron[nElectrons]/D");
+       baselineTree->Branch("eta_superCluster_electron",eta_superCluster_electron,"eta_superCluster_electron[nElectrons]/D");
+       baselineTree->Branch("E_electron",E_electron,"E_electron[nElectrons]/D");
+       baselineTree->Branch("chargedHadronIso_electron",chargedHadronIso_electron,"chargedHadronIso_electron[nElectrons]/D");
+       baselineTree->Branch("neutralHadronIso_electron",neutralHadronIso_electron,"neutralHadronIso_electron[nElectrons]/D");
+       baselineTree->Branch("photonIso_electron",photonIso_electron,"photonIso_electron[nElectrons]/D");
+       baselineTree->Branch("pfIso_electron",pfIso_electron,"pfIso_electron[nElectrons]/D");
+       baselineTree->Branch("charge_electron",charge_electron,"charge_electron[nElectrons]/I");
+       baselineTree->Branch("d0_electron",d0_electron,"d0_electron[nElectrons]/D");
+       baselineTree->Branch("d0BeamSpot_electron",d0BeamSpot_electron,"d0BeamSpot_electron[nElectrons]/D");
+       baselineTree->Branch("sigmaIEtaIEta_electron",sigmaIEtaIEta_electron,"sigmaIEtaIEta_electron[nElectrons]/D");
+       baselineTree->Branch("deltaEtaIn_electron",deltaEtaIn_electron,"deltaEtaIn_electron[nElectrons]/D");
+       baselineTree->Branch("deltaPhiIn_electron",deltaPhiIn_electron,"deltaPhiIn_electron[nElectrons]/D");
+       baselineTree->Branch("hadronicOverEm_electron",hadronicOverEm_electron,"hadronicOverEm_electron[nElectrons]/D");
+       baselineTree->Branch("missingHits_electron",missingHits_electron,"missingHits_electron[nElectrons]/I");
+       baselineTree->Branch("passConversion_electron",passConversion_electron,"passConversion_electron[nElectrons]/O)");
+       baselineTree->Branch("isId_electron",isId_electron,"isId_electron[nElectrons]/O)");
+       baselineTree->Branch("isIso_electron",isIso_electron,"isIso_electron[nElectrons]/O)");
+       baselineTree->Branch("isEBEEGap",isEBEEGap,"isEBEEGap[nElectrons]/O)");
+       baselineTree->Branch("sf_electron",sf_electron,"sf_electron[nElectrons]/D");
+
+       // muons
+       myTree->Branch("nMuons",&nMuons, "nMuons/I");
+       myTree->Branch("MuonIDSF",&MuonIDSF,"MuonIDSF[nMuons]/D"); 
+       myTree->Branch("MuonIsoSF",&MuonIsoSF, "MuonIsoSF[nMuons]/D"); 
+       myTree->Branch("MuonTrigSFv2",&MuonTrigSFv2,"MuonTrigSFv2[nMuons]/D");
+       myTree->Branch("MuonTrigSFv3",&MuonTrigSFv3,"MuonTrigSFv3[nMuons]/D");  
+       myTree->Branch("pt_muon",pt_muon,"pt_muon[nMuons]/D");
+       myTree->Branch("phi_muon",phi_muon,"phi_muon[nMuons]/D");
+       myTree->Branch("eta_muon",eta_muon,"eta_muon[nMuons]/D");
+       myTree->Branch("E_muon",E_muon,"E_muon[nMuons]/D");
+       myTree->Branch("chargedHadronIso_muon",chargedHadronIso_muon,"chargedHadronIso_muon[nMuons]/D");
+       myTree->Branch("neutralHadronIso_muon",neutralHadronIso_muon,"neutralHadronIso_muon[nMuons]/D");
+       myTree->Branch("photonIso_muon",photonIso_muon,"photonIso_muon[nMuons]/D");
+       myTree->Branch("isId_muon",isId_muon,"isId_muon[nMuons]/O");
+       myTree->Branch("isIso_muon",isIso_muon,"isIso_muon[nMuons]/O");
+       myTree->Branch("pfIso_muon",pfIso_muon,"pfIso_muon[nMuons]/D");
+       myTree->Branch("charge_muon",charge_muon,"charge_muon[nMuons]/I");
+       myTree->Branch("d0_muon",d0_muon,"d0_muon[nMuons]/D");
+       myTree->Branch("d0BeamSpot_muon",d0BeamSpot_muon,"d0BeamSpot_muon[nMuons]/D");
+       myTree->Branch("sf_muon",sf_muon,"sf_muon[nMuons]/D");
+       
+       baselineTree->Branch("nMuons",&nMuons, "nMuons/I");
+       baselineTree->Branch("MuonIDSF",&MuonIDSF,"MuonIDSF[nMuons]/D"); 
+       baselineTree->Branch("MuonIsoSF",&MuonIsoSF, "MuonIsoSF[nMuons]/D"); 
+       baselineTree->Branch("MuonTrigSFv2",&MuonTrigSFv2,"MuonTrigSFv2[nMuons]/D");
+       baselineTree->Branch("MuonTrigSFv3",&MuonTrigSFv3,"MuonTrigSFv3[nMuons]/D"); 
+       baselineTree->Branch("pt_muon",pt_muon,"pt_muon[nMuons]/D");
+       baselineTree->Branch("phi_muon",phi_muon,"phi_muon[nMuons]/D");
+       baselineTree->Branch("eta_muon",eta_muon,"eta_muon[nMuons]/D");
+       baselineTree->Branch("E_muon",E_muon,"E_muon[nMuons]/D");
+       baselineTree->Branch("chargedHadronIso_muon",chargedHadronIso_muon,"chargedHadronIso_muon[nMuons]/D");
+       baselineTree->Branch("neutralHadronIso_muon",neutralHadronIso_muon,"neutralHadronIso_muon[nMuons]/D");
+       baselineTree->Branch("photonIso_muon",photonIso_muon,"photonIso_muon[nMuons]/D");
+       baselineTree->Branch("isId_muon",isId_muon,"isId_muon[nMuons]/O");
+       baselineTree->Branch("isIso_muon",isIso_muon,"isIso_muon[nMuons]/O");
+       baselineTree->Branch("pfIso_muon",pfIso_muon,"pfIso_muon[nMuons]/D");
+       baselineTree->Branch("charge_muon",charge_muon,"charge_muon[nMuons]/I");
+       baselineTree->Branch("d0_muon",d0_muon,"d0_muon[nMuons]/D");
+       baselineTree->Branch("d0BeamSpot_muon",d0BeamSpot_muon,"d0BeamSpot_muon[nMuons]/D");
+       baselineTree->Branch("sf_muon",sf_muon,"sf_muon[nMuons]/D");
+
+       // jets
+       myTree->Branch("nJets",&nJets,"nJets/I");
+       myTree->Branch("pt_jet",pt_jet,"pt_jet[nJets]/D");
+       myTree->Branch("phi_jet",phi_jet,"phi_jet[nJets]/D");
+       myTree->Branch("eta_jet",eta_jet,"eta_jet[nJets]/D");
+       myTree->Branch("E_jet",E_jet,"E_jet[nJets]/D");
+       myTree->Branch("charge_jet",charge_jet,"charge_jet[nJets]/I");	    
+       myTree->Branch("bdisc_jet",bdisc_jet,"bdisc_jet[nJets]/D");
+       
+       baselineTree->Branch("nJets",&nJets,"nJets/I");
+       baselineTree->Branch("pt_jet",pt_jet,"pt_jet[nJets]/D");
+       baselineTree->Branch("phi_jet",phi_jet,"phi_jet[nJets]/D");
+       baselineTree->Branch("eta_jet",eta_jet,"eta_jet[nJets]/D");
+       baselineTree->Branch("E_jet",E_jet,"E_jet[nJets]/D");
+       baselineTree->Branch("charge_jet",charge_jet,"charge_jet[nJets]/I");	    
+       baselineTree->Branch("bdisc_jet",bdisc_jet,"bdisc_jet[nJets]/D");
+
+       // Zboson
+/*       myTree->Branch("Zboson_M",&Zboson_M,"Zboson_M/D"); 
+       myTree->Branch("Zboson_Px",&Zboson_Px,"Zboson_Px/D"); 
+       myTree->Branch("Zboson_Py",&Zboson_Py,"Zboson_Py/D");
+       myTree->Branch("Zboson_Pz",&Zboson_Pz,"Zboson_Pz/D");
+       myTree->Branch("Zboson_Energy",&Zboson_Energy,"Zboson_Energy/D");
+*/
+
+        // met 
+       myTree->Branch("met_Pt", &met_Pt, "met_Pt/D"); 
+       myTree->Branch("met_Eta", &met_Eta,"met_Eta/D"); 
+       myTree->Branch("met_Phi", &met_Phi, "met_Phi/D"); 
+     
+       baselineTree->Branch("met_Pt", &met_Pt, "met_Pt/D"); 
+       baselineTree->Branch("met_Eta", &met_Eta,"met_Eta/D"); 
+       baselineTree->Branch("met_Phi", &met_Phi, "met_Phi/D"); 
+
+       
+
+       /////////////////////////
        //// Corrections/trigger ///
        ///////////////////////////
 
@@ -676,11 +939,18 @@ int main (int argc, char *argv[])
         // Begin Event Loop
         //////////////////////////////////////
 	nbEvents = 0; 
+        nofEventsHLTv2 = 0; 
+        nofEventsHLTv3 = 0;
+        nofPosWeights = 0; 
+        nofNegWeights = 0; 
+        float eventweight = 1; 
         for (unsigned int ievt = event_start; ievt < end_d; ievt++)
         {
+           nCuts = 0; 
+	   eventweight = 1; 
            if(verbose == 0 ) cout << "new event " << ievt << endl; 
            double ievt_d = ievt;
-	    
+	   if(!isData) eventweight *= dataLumi / datasets[d]->EquivalentLumi(); 
 	    bool debug = false; 
 	    if (verbose == 0 ) debug = true; 
 	    currentfrac = ievt_d/end_d;
@@ -718,6 +988,84 @@ int main (int argc, char *argv[])
 	    nvtx = vertex.size();
 	    npu = (int) event->nTruePU(); 
 
+           if(isData)
+           {
+                 if(currentRun >= 256630 && currentRun <= 257819 )  // run nbrs need to be checked
+        	{
+        	  nofEventsHLTv2++;
+        	}
+           	else
+        	{
+        	  nofEventsHLTv3++;
+        	}
+
+           }
+
+
+           /////////////////////////////////////
+           //  fix negative weights for amc@nlo/// 
+           /////////////////////////////////////
+	   double hasNegWeight = false; 
+           double mc_baseweight = 1; 
+	   if(!isData && (event->getWeight(1001) != -9999.))
+           {
+		mc_baseweight =  event->getWeight(1001)/abs(event->originalXWGTUP());
+    	        //mc_scaleupweight = event->getWeight(1005)/abs(event->originalXWGTUP());
+         	//mc_scaledownweight = event->getWeight(1009)/abs(event->originalXWGTUP());	
+         	if(mc_baseweight >= 0)
+		{
+		   nofPosWeights++; 
+		   histo1D["weightIndex"]->Fill(1.,1.); 
+
+		}
+		else 
+		{
+		   if(nlo) hasNegWeight = true;
+		   nofNegWeights++; 
+                   histo1D["weightIndex"]->Fill(-1.,1.); 
+		}
+           }
+	   if( !isData && (event->getWeight(1) != -9999. )) 
+           {
+		mc_baseweight =  event->getWeight(1)/abs(event->originalXWGTUP());
+                //mc_scaleupweight = event->getWeight(5)/abs(event->originalXWGTUP());
+                //mc_scaledownweight = event->getWeight(9)/abs(event->originalXWGTUP());       
+                if(mc_baseweight >= 0)
+                {
+                   nofPosWeights++;
+                   histo1D["weightIndex"]->Fill(2.,1.);
+
+                }
+                else
+                {
+                   if(nlo) hasNegWeight = true;
+                   nofNegWeights++;
+                   histo1D["weightIndex"]->Fill(-2.,1.);
+                }
+	  
+
+           }
+	   if(!isData)
+	   {
+		if ( event->getWeight(1001) == -9999. && event->getWeight(1) == -9999. )
+        	{
+          	  cout << "WARNING: No weight found for event " << ievt << " in dataset " << dName << endl;
+        	  cout << "         Event Id: " << event->eventId() << "  Run Id: " << event->runId() << "  Lumi block Id: " << event->lumiBlockId() << endl;
+       		  cout << "         Weight type is different from 'scale_variation' (1001) or 'Central scale variation' (1)." << endl;
+        	}
+        	if ( event->getWeight(1001) != -9999. && event->getWeight(1) != -9999. )
+        	{
+        	    cout << "WARNING: Two weight types found for event " << ievt << " in dataset " << dName << endl;
+          	    cout << "         Event Id: " << event->eventId() << "  Run Id: " << event->runId() << "  Lumi block Id: " << event->lumiBlockId() << endl;
+                     cout << "         Check which weight type should be used when." << endl;
+        	}
+        
+        	nloWeight = mc_baseweight;
+ 		histo1D["nloweight"]->Fill(mc_baseweight, 1.);
+        	sumWeights += mc_baseweight;
+      
+
+           }
             ///////////////////////////////////////////
 	  //  Trigger
 	  ///////////////////////////////////////////
@@ -754,7 +1102,7 @@ int main (int argc, char *argv[])
 	   //////////////////////////
 	   if(applyJER && !isData)
 	   {
-	//	jetTools->correctJER(init_jets_corrected, genjets, mets[0], "nominal", false);
+		jetTools->correctJetJER(init_jets_corrected, genjets, mets[0], "nominal", false);
            }
 	   if(applyJES && !isData)
 	   {
@@ -857,7 +1205,7 @@ int main (int argc, char *argv[])
 	   {
  		btagWeight =  btwt->getMCEventWeight(selectedJets);
 
-            }
+           }
 
 
            float PUweight = 1; 
@@ -868,56 +1216,254 @@ int main (int argc, char *argv[])
 
            }
 
+	    ////////////////////////////////////
+	    //   Determine eventweight        ///
+	    /////////////////////////////////
+            if(hasNegWeight && applyNegWeightCorrection && !isData) eventweight *= -1.; 
+	    histo1D["init_nPVs_before"]->Fill(vertex.size(), eventweight); 
+            if(applyPU && !isData)  eventweight *= PUweight;
+	    histo1D["init_nPVs_after"]->Fill(vertex.size(), eventweight);
+/*            double muonSFID = 1.; 
+	    double muonSFIso = 1.;
+	    double muonSFTrig = 1. ;  
+            double muonSFID1 = 1.;
+            double muonSFIso1 = 1.;
+            double muonSFTrig1 = 1. ;
+	    double muonSFID2 = 1.;
+            double muonSFIso2 = 1.;
+            double muonSFTrig2 = 1. ;
+            if(selectedMuons.size() > 0 )
+            {
+               muonSFID = muonSFWeightID_T->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);  // eta, pt, shiftUpDown
+               muonSFIso = muonSFWeightIso_TT->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);  // eta, pt, shiftUpDown
+//               muonSFTrig = weightMuonTrigv2 * muonSFWeightTrigHLTv4p2->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0) + weightMuonHLTv3 * muonSFWeightTrigHLTv4p3->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
+            
+               histo2D["muon_SF_ID"]->Fill(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), muonSFID);
+               histo2D["muon_SF_Iso"]->Fill(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), muonSFIso);
+               histo2D["muon_SF_Trig"]->Fill(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), muonSFTrig);
+            }
+	    if(selectedMuons.size() > 1)
+            {
+               muonSFID1 = muonSFWeightID_T->at(selectedMuons[1]->Eta(), selectedMuons[1]->Pt(), 0);  // eta, pt, shiftUpDown
+               muonSFIso1 = muonSFWeightIso_TT->at(selectedMuons[1]->Eta(), selectedMuons[1]->Pt(), 0);  // eta, pt, shiftUpDown
+//               muonSFTrig1 = weightMuonTrigv2 * muonSFWeightTrigHLTv4p2->at(selectedMuons[1]->Eta(), selectedMuons[1]->Pt(), 0) + weightMuonHLTv3 * muonSFWeightTrigHLTv4p3->at(selectedMuons[1]->Eta(), selectedMuons[1]->Pt(), 0);
+
+               histo2D["muon_SF_ID"]->Fill(selectedMuons[1]->Eta(), selectedMuons[1]->Pt(), muonSFID1);
+               histo2D["muon_SF_Iso"]->Fill(selectedMuons[1]->Eta(), selectedMuons[1]->Pt(), muonSFIso1);
+               histo2D["muon_SF_Trig"]->Fill(selectedMuons[1]->Eta(), selectedMuons[1]->Pt(), muonSFTrig1);
+            }
+            if(selectedMuons.size() > 1)
+            {
+               muonSFID2 = muonSFWeightID_T->at(selectedMuons[2]->Eta(), selectedMuons[2]->Pt(), 0);  // eta, pt, shiftUpDown
+               muonSFIso2 = muonSFWeightIso_TT->at(selectedMuons[2]->Eta(), selectedMuons[2]->Pt(), 0);  // eta, pt, shiftUpDown
+//               muonSFTrig2 = weightMuonTrigv2 * muonSFWeightTrigHLTv4p2->at(selectedMuons[2]->Eta(), selectedMuons[2]->Pt(), 0) + weightMuonHLTv3 * muonSFWeightTrigHLTv4p3->at(selectedMuons[2]->Eta(), selectedMuons[2]->Pt(), 0);
+
+               histo2D["muon_SF_ID"]->Fill(selectedMuons[2]->Eta(), selectedMuons[2]->Pt(), muonSFID2);
+               histo2D["muon_SF_Iso"]->Fill(selectedMuons[2]->Eta(), selectedMuons[2]->Pt(), muonSFIso2);
+//               histo2D["muon_SF_Trig"]->Fill(selectedMuons[2]->Eta(), selectedMuons[2]->Pt(), muonSFTrig2);
+            }
+            eventweight*= muonSFID*muonSFIso*muonSFTrig* muonSFID1*muonSFIso1*muonSFTrig1* muonSFID2*muonSFIso2*muonSFTrig2;
+             
+*/
+
             //////////////////////////////////////////////////////
             // Applying baseline selection
             //////////////////////////////////////////////////////
-	    nbEvents++; 
+	    nbEvents++;
+	    eventweight = 1.;  
 	    if(!isGoodPV) continue;
             nbGPV++; 
             if(verbose == 0) cout << "good pv" << endl;  
 	    if(!trigged) continue; 
             nbTrig++; 
             if(verbose == 0 ) cout << "trigger" << endl; 
-	    if(mumumu && !hasMu &&  selectedMuons.size() < 2) continue; 
-	    if(mumue && hasMu && !hasEl && selectedMuons.size() < 2) continue; 
-	    if(eemu && hasEl && !hasMu &&selectedElectrons.size() < 2) continue; 
-	    if(mumue && hasMu && hasEl && (selectedMuons.size() < 1 || selectedElectrons.size() < 1) ) continue; 
-	    if(eemu && hasEl && !hasMu && (selectedElectrons.size() < 1 || selectedMuons.size() <1)) continue; 
-	    if(eee && hasEl &&  selectedElectrons.size() < 2) continue;
-            nbBaseline++;  
+            histo1D["cutFlow"]->Fill(0., eventweight);
+            nCuts++; 
+            cutstep[nCuts]++;
+	    if(mumumu &&  selectedMuons.size() < 2) continue; 
+	    if(mumue &&  selectedMuons.size() < 2) continue; 
+	    if(eemu  && selectedElectrons.size() < 2) continue; 
+	    if(eee  &&  selectedElectrons.size() < 2) continue;
 	    if(verbose == 0 ) cout << "baseline" << endl;
+	    histo1D["cutFlow"]->Fill(1., eventweight); 
+            nCuts++;  
+            cutstep[nCuts]++;
+	    nElectrons=0;
+            for (Int_t selel =0; selel < selectedElectrons.size() ; selel++ )
+	    {
+	      
+              pt_electron[nElectrons]=selectedElectrons[selel]->Pt();
+	      phi_electron[nElectrons]=selectedElectrons[selel]->Phi();
+	      eta_electron[nElectrons]=selectedElectrons[selel]->Eta();
+	      eta_superCluster_electron[nElectrons]=selectedElectrons[selel]->superClusterEta();
+	      E_electron[nElectrons]=selectedElectrons[selel]->E();
+	      d0_electron[nElectrons]=selectedElectrons[selel]->d0();
+	      d0BeamSpot_electron[nElectrons]=selectedElectrons[selel]->d0BeamSpot();
+	      chargedHadronIso_electron[nElectrons]=selectedElectrons[selel]->chargedHadronIso(3);
+	      neutralHadronIso_electron[nElectrons]=selectedElectrons[selel]->neutralHadronIso(3);
+	      photonIso_electron[nElectrons]=selectedElectrons[selel]->photonIso(3);
+	      pfIso_electron[nElectrons]=selectedElectrons[selel]->relPfIso(3,0);
+	      charge_electron[nElectrons]=selectedElectrons[selel]->charge();
+	      sigmaIEtaIEta_electron[nElectrons]=selectedElectrons[selel]->sigmaIEtaIEta();
+	      deltaEtaIn_electron[nElectrons]=selectedElectrons[selel]->deltaEtaIn();
+	      deltaPhiIn_electron[nElectrons]=selectedElectrons[selel]->deltaPhiIn();
+	      hadronicOverEm_electron[nElectrons]=selectedElectrons[selel]->hadronicOverEm();
+	      missingHits_electron[nElectrons]=selectedElectrons[selel]->missingHits();
+	      passConversion_electron[nElectrons]=selectedElectrons[selel]->passConversion();
+	      isEBEEGap[nElectrons]=selectedElectrons[selel]->isEBEEGap();
+	      if(!isData) sf_electron[nElectrons]=electronSFWeight->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0); 
+	      else sf_electron[nElectrons] = 1.; 
+	      if(!isData) ElectronSF[nElectrons] = electronSFWeight->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0);
+              else ElectronSF[nElectrons] = 1.; 
+              nElectrons++;
+            }
+
+
+            //////////////////////
+            // Muon Based Plots //
+            //////////////////////
+            nMuons = 0; 
+            for (Int_t selmu =0; selmu < selectedMuons.size() ; selmu++ )
+            {
+              
+              pt_muon[nMuons]=selectedMuons[selmu]->Pt();
+	      phi_muon[nMuons]=selectedMuons[selmu]->Phi();
+	      eta_muon[nMuons]=selectedMuons[selmu]->Eta();
+	      E_muon[nMuons]=selectedMuons[selmu]->E();
+	      d0_muon[nMuons]=selectedMuons[selmu]->d0();
+	      d0BeamSpot_muon[nMuons]=selectedMuons[selmu]->d0BeamSpot();
+	      chargedHadronIso_muon[nMuons]=selectedMuons[selmu]->chargedHadronIso(4);
+	      neutralHadronIso_muon[nMuons]=selectedMuons[selmu]->neutralHadronIso(4);
+	      photonIso_muon[nMuons]=selectedMuons[selmu]->photonIso(4);
+              pfIso_muon[nMuons]=selectedMuons[selmu]->relPfIso(4,0);
+	      charge_muon[nMuons]=selectedMuons[selmu]->charge();
+	      if(!isData) sf_muon[nMuons]= muonSFWeightIso_TT->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0)* muonSFWeightID_T->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+	      else sf_muon[nMuons] = 1.;
+	      if(!isData)
+	      {
+		MuonIDSF[nMuons] = muonSFWeightID_T->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+		MuonIsoSF[nMuons] =  muonSFWeightIso_TT->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0); 
+		MuonTrigSFv2[nMuons] = muonSFWeightTrigHLTv4p2->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0); 
+		MuonTrigSFv3[nMuons] = muonSFWeightTrigHLTv4p3->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0); 
+	      }
+	      else
+	      {
+		MuonIDSF[nMuons] = 1.; 
+		MuonIsoSF[nMuons] = 1.; 
+		MuonTrigSFv2[nMuons] = 1.;
+		MuonTrigSFv3[nMuons] = 1.; 
+              }
+              nMuons++;
+            }
+   
+            nLeptons = nMuons + nElectrons; 
+	    ///////////////////////
+	    //   Jet based plots //
+	    //////////////////////
+	    nJets = 0; 
+            for(Int_t seljet = 0; seljet < selectedJets.size(); seljet++)
+            {
+                 
+                pt_jet[nJets]=selectedJets[seljet]->Pt(); 
+                phi_jet[nJets]=selectedJets[seljet]->Phi();
+                eta_jet[nJets]=selectedJets[seljet]->Eta();
+                E_jet[nJets]=selectedJets[seljet]->E();
+                charge_jet[nJets]=selectedJets[seljet]->charge();
+                bdisc_jet[nJets]=selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags() ;
+                nJets++;
+
+            }
+	    nCSVTBJets = selectedCSVTBJets.size(); 
+	    nCSVMBJets = selectedCSVMBJets.size();
+ 	    nCSVLBJets = selectedCSVLBJets.size();
+	    double met_px = mets[0]->Px();
+	    double met_py = mets[0]->Py();
+            met_Pt = sqrt(met_px*met_px + met_py*met_py);
+	    met_Phi = mets[0]->Phi(); 
+	    met_Eta = mets[0]->Eta();
+	    puSF = PUweight;
+	    btagSF = btagWeight;  
+	    
+//	    baselineTree->Fill(); 
+	   
+/*          if(mumumu && selectedMuons.size() < 3) continue; 
+            if(eee && selectedElectrons.size() < 3) continue;
+            if(mumue && selectedMuons.size() < 2 || selectedElectrons.size() < 1) continue;
+            if(mumue && selectedMuons.size() < 1 || selectedElectrons.size() < 2) continue;
+	    if(selectedMuons.size() + selectedElectrons.size() != 3) continue; 
+ */
+            histo1D["cutFlow"]->Fill(2., eventweight); 
+            nCuts++;  
+            cutstep[nCuts]++;
+            if(selectedJets.size() < 2) continue; 
+	    histo1D["cutFlow"]->Fill(3., eventweight);
+            nCuts++;  
+            cutstep[nCuts]++;
+            if(selectedCSVLBJets.size() < 1) continue; 
+	    histo1D["cutFlow"]->Fill(4., eventweight);
+            nCuts++;  
+            cutstep[nCuts]++;
+            baselineTree->Fill();
+            nbBaseline++;
+	    //check flavour
+	    if(mumumu && selectedMuons.size() != 3) continue; 
+	    if(eee && selectedElectrons.size() != 3) continue; 
+            if(mumue && selectedMuons.size() != 2) continue; 
+            if(eemu && selectedElectrons.size() != 2) continue;
+            histo1D["cutFlow"]->Fill(5., eventweight);
+            nCuts++;  
+            cutstep[nCuts]++;            
+
+           
+            
+
+	    TLorentzVector ZBoson; 
+	    ZBoson.Clear(); 
+	    TLorentzVector Zlep0; 
+	    TLorentzVector Zlep1; 
+	    // check sign
+	    if(mumue && (selectedMuons[0]->charge() == selectedMuons[1]->charge())) continue;
+	    if(mumue) Zlep0.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(), selectedMuons[0]->Pz(), selectedMuons[0]->Energy());
+            if(mumue) Zlep1.SetPxPyPzE(selectedMuons[1]->Px(), selectedMuons[1]->Py(), selectedMuons[1]->Pz(), selectedMuons[1]->Energy());
+            if(eemu && (selectedElectrons[0]->charge() == selectedElectrons[1]->charge())) continue;	    
+            if(eemu)  Zlep0.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(), selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy());
+            if(eemu) Zlep1.SetPxPyPzE(selectedElectrons[1]->Px(), selectedElectrons[1]->Py(), selectedElectrons[1]->Pz(), selectedElectrons[1]->Energy());
+	    bool OS = false; 
+	    if(mumumu)
+	    {
+	       if(selectedMuons[0]->charge() != selectedMuons[1]->charge()) OS = true; 
+	       else if(selectedMuons[2]->charge() != selectedMuons[1]->charge()) OS = true; 
+               else if(selectedMuons[0]->charge() != selectedMuons[2]->charge()) OS = true; 
+	       
+            }
+            if(eee)
+            {
+               if(selectedElectrons[0]->charge() != selectedElectrons[1]->charge()) OS = true;
+               else if(selectedElectrons[2]->charge() != selectedElectrons[1]->charge()) OS = true;
+               else if(selectedElectrons[0]->charge() != selectedElectrons[2]->charge()) OS = true;
+               
+            }
+	    if(!OS) continue; 
+            histo1D["cutFlow"]->Fill(6., eventweight); 
+            nCuts++;  
+            cutstep[nCuts]++;
+
+	    if(fabs(ZBoson.M() - 90.0 ) > 15) continue; 
+	    histo1D["cutFlow"]->Fill(7., eventweight);
+            nCuts++;  
+            cutstep[nCuts]++;	     
 	    eventSelected = true; 
 	    
-	    
-	    
-	   
-	    if(eventSelected) 
-	    {
-
-           	float MUweight = 1;
-           	if(!isData)
-           	{
-                	for(unsigned int iMu =0 ; iMu < selectedMuons.size(); iMu++)
-                	{
-             		       	if(TightMu) MUweight *= muonSFWeightIso_TT->at(selectedMuons[iMu]->Eta(), selectedMuons[iMu]->Pt(), 0)* muonSFWeightID_T->at(selectedMuons[iMu]->Eta(), selectedMuons[iMu]->Pt(), 0);
-                    		if(MediumMu) MUweight *= muonSFWeightIso_TM->at(selectedMuons[iMu]->Eta(), selectedMuons[iMu]->Pt(), 0)* muonSFWeightID_M->at(selectedMuons[iMu]->Eta(), selectedMuons[iMu]->Pt(), 0); // needs to be checked                     
-                    		if(LooseMu) MUweight *= muonSFWeightIso_LM->at(selectedMuons[iMu]->Eta(), selectedMuons[iMu]->Pt(), 0)* muonSFWeightID_L->at(selectedMuons[iMu]->Eta(), selectedMuons[iMu]->Pt(), 0); // needs to be checked
-                	}
-           	}
-           	float ELweight = 1;
-           	if(!isData)
-           	{
-                	for(unsigned int iEl = 0; iEl < selectedElectrons.size(); iEl++)
-                	{
-                    	    ELweight *= electronSFWeight->at(selectedElectrons[iEl]->Eta(),selectedElectrons[iEl]->Pt(),0);
-
-                	}	
-           	}
-	       nbSelectedEvents++; 
-	       myTree->Fill(); 
+	    //////////////////////////////////////
+	    //  DO STUFF WITH SELECTED EVENTS ////
+	    ////////////////////////////////////// 
+	    if(!eventSelected) continue;
+	    nbSelectedEvents++; 
+	    myTree->Fill(); 
 	       
-	    }
+	    
 	} // end eventloop
+	globalTree->Fill(); 
         if(verbose == 0) cout << "end eventloop" << endl; 
 	infoFile << nbSelectedEvents << " events out of initial " << nbEvents <<  " selected " << endl;
         infoFile << nbSelectedEvents << " events out of trigged  " << nbTrig <<  " selected " << endl;
@@ -931,11 +1477,21 @@ int main (int argc, char *argv[])
         cout << setprecision(2) << ((double)nbGPV/(double)nbEvents)*100 << " % of the initial events stay after Good PV" << endl; 
 	cout << setprecision(2) << ((double)nbTrig/(double)nbEvents)*100 << " % of the initial events stay after Trigger" << endl;
         cout << setprecision(2) << ((double)nbTrig/(double)nbGPV)*100 << " % of the GPV  events stay after Trigger" << endl;
-	infoFile.close(); 
-	 tupfile->Write();   
+	if (! isData  ) 
+        {
+      		infoFile << "Data set " << datasets[d]->Title() << " has " << nofPosWeights << " events with positive weights and " << nofNegWeights << " events with negative weights." << endl;
+      		infoFile << "         Pos - neg is " << nofPosWeights - nofNegWeights << ", pos + neg is " << nofPosWeights + nofNegWeights << endl;
+      		infoFile << "The sum of the weights is " << ((int)sumWeights) << ", whereas the total number of events is " << ((int)nEvents) << endl;
+      
+                // Determine scale factor due to negative weights
+            	nloSF = ((double) (nofPosWeights - nofNegWeights))/((double) (nofPosWeights + nofNegWeights));
+                infoFile << "This corresponds to an event scale factor of " << nloSF  << endl; 
+        }
+	infoFile.close();
+	tupfile->Write();   
     	tupfile->Close();
         delete tupfile;
-        delete btwt; 
+        if(!isData) delete btwt; 
         treeLoader.UnLoadDataset();
     } //End Loop on Datasets
 
@@ -948,26 +1504,29 @@ int main (int argc, char *argv[])
     cout << " - Writing outputs to the files ..." << endl;
 
 
-/*
 
+  fout-> cd(); 
   for (map<string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
   {
     cout << "1D Plot: " << it->first << endl;
-   // TCanvas ctemp = 
-    
+    TCanvas *ctemp = new TCanvas();  
+    ctemp->cd();
     TH1F *temp = it->second;
     temp->Draw();  
+    delete ctemp;
   }
   for (map<string,TH2F*>::const_iterator it = histo2D.begin(); it != histo2D.end(); it++)
   {
      cout << "2D Plot: " << it->first << endl;
-   
+     TCanvas *ctemp = new TCanvas();
+     ctemp->cd();  
      TH2F *temp = it->second;
      temp->Draw();
+     delete ctemp;
   }
-
-
-*/
+ fout->Write();
+ fout->Close(); 
+ delete fout; 
 
 
     cout << "It took us " << ((double)clock() - start) / CLOCKS_PER_SEC << " to run the program" << endl;
@@ -976,4 +1535,9 @@ int main (int argc, char *argv[])
     cout << "********************************************" << endl;
     
     return 0;
-}
+}; 
+
+
+
+
+
