@@ -5,3 +5,5 @@ NtupleMakerOutput/
 Ntupler_localgrid
 BTagHistosPtEta/
 LocalGridSubmission/SubmitScripts/**/**
+NtupleAnalyzer
+myOutput/**
