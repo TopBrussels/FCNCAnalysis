@@ -83,10 +83,13 @@ Bool_t debug = false;
 bool mumumu  = false;
 string channelpostfix = "";
 double DataLumi = -1; 
-
+bool elecPlot = false; 
+bool muPlot = false; 
 //applying all appropriate scale factors for individual objects if the bool is set to true
-Bool_t applyElectronSF, applyMuonSF , applyPUSF, applyGlobalSF;
-
+Bool_t applyElectronSF = false; 
+Bool_t applyMuonSF = false; 
+Bool_t applyPUSF = false; 
+Bool_t applyGlobalSF = false; 
 
 
 
@@ -123,7 +126,7 @@ int main(int argc, char* argv[])
       channelpostfix = "_mumumu";
       xmlFileName = "config/Run2TriLepton_samples_analyzer_mumumu.xml";
       mumumu = true; 
-      DataLumi  = 10000;
+      DataLumi  = 2612.180735004;//  pb-1
       CraneenPath += "mumumu/";  
     }
   else
@@ -132,7 +135,8 @@ int main(int argc, char* argv[])
       exit(1);
     }
     string dateString = MakeTimeStamp(); 
-    CraneenPath += dateString + "/"; 
+//    CraneenPath += dateString + "/"; 
+    CraneenPath += "160204/";
     string pathPNG = "myOutput";
     mkdir(pathPNG.c_str(),0777); 
     pathPNG += "/" + dateString + "/"; 
@@ -154,35 +158,33 @@ int main(int argc, char* argv[])
           
       // event plots
     DatasetPlotter(70, -0.5, 69.5, "npu", xmlFileName,CraneenPath,pathPNG);
-      //    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,CraneenPath);
+    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,CraneenPath,pathPNG);
           
      
-      /*
-      // electron plots
-      //    DatasetPlotter(11, -0.5, 10.5, "nElectrons_mumu", xmlFileName,CraneenPath);
-      DatasetPlotter(100, 0, 1000, "pt_electron_mumu[nElectrons_mumu]", xmlFileName,CraneenPath);
-      DatasetPlotter(50, -3.15, 3.15, "eta_electron_mumu[nElectrons_mumu]", xmlFileName,CraneenPath);
-      DatasetPlotter(30, -3.15, 3.15, "phi_electron_mumu[nElectrons_mumu]", xmlFileName,CraneenPath);
-      //    DatasetPlotter(100, -0.1, 0.1, "d0_electron_mumu[nElectrons_mumu]", xmlFileName,CraneenPath);
-      DatasetPlotter(100, -0.015, 0.015, "d0BeamSpot_electron_mumu[nElectrons_mumu]", xmlFileName,CraneenPath);
-      DatasetPlotter(100, 0.0, 0.2, "pfIso_electron_mumu[nElectrons_mumu]", xmlFileName,CraneenPath);
-      */
       
- 
+    // electron plots
+    elecPlot = true;
+    DatasetPlotter(11, -0.5, 10.5, "nElectrons", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(100, 0, 1000, "pt_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(50, -3.15, 3.15, "eta_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(30, -3.15, 3.15, "phi_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(100, -0.1, 0.1, "d0_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(100, -0.015, 0.015, "d0BeamSpot_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(100, 0.0, 0.2, "pfIso_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG);
+    
+      
       // muon plots
-      //    DatasetPlotter(11, -0.5, 10.5, "nMuons", xmlFileName,CraneenPath);
-//      DataddsetPlotter(100, 0, 1000, "pt_muon_mumu[nMuons_mumu]", xmlFileName,CraneenPath);
-      //	DatasetPlotter(20, 10, 50, "pt_muon_mumu[nMuons_mumu]", xmlFileName,CraneenPath);
-  //    DatasetPlotter(50, -3.15, 3.15, "eta_muon_mumu[nMuons_mumu]", xmlFileName,CraneenPath);
-   //   DatasetPlotter(30, -3.15, 3.15, "phi_muon_mumu[nMuons_mumu]", xmlFileName,CraneenPath);
-      //    DatasetPlotter(100, -0.1, 0.1, "d0_muon[nMuons]", xmlFileName,CraneenPath);
-     // DatasetPlotter(100, -10, 10, "vz_muon_mumu[nMuons_mumu]", xmlFileName,CraneenPath);
-     // DatasetPlotter(100, -0.015, 0.015, "d0BeamSpot_muon_mumu[nMuons_mumu]", xmlFileName,CraneenPath);
-     // DatasetPlotter(100, 0.0, 0.2, "pfIso_muon_mumu[nMuons_mumu]", xmlFileName,CraneenPath);
+    muPlot = true; 
+    elecPlot = false; 
+    DatasetPlotter(11, -0.5, 10.5, "nMuons", xmlFileName,CraneenPath,pathPNG);
+   DatasetPlotter(20, 10, 50, "pt_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(50, -3.15, 3.15, "eta_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(30, -3.15, 3.15, "phi_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(100, -0.1, 0.1, "d0_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(100, -0.015, 0.015, "d0BeamSpot_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(100, 0.0, 0.2, "pfIso_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
 
 
-
-  // eo selecting the right plots and/or variables depending on the final state  
 
 
   // calling the function that writtes all the MSPlots in a root file
@@ -231,7 +233,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
   vector<string> v;
   // to avoid modifying original string
   // first duplicate the original string and return a char pointer then free the memory
-  
+  if(debug) cout << "LOOKING at " << sVarofinterest.c_str() << endl;
   char delim[] = " []";
   char * dup = strdup(sVarofinterest.c_str());
   char * token = strtok(dup, delim);
@@ -287,11 +289,12 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
       bool isData= false;
       if(dataSetName.find("Data")!=string::npos || dataSetName.find("data")!=string::npos || dataSetName.find("DATA")!=string::npos) isData =true;
       if(debug) cout << "isData? " << isData << endl; 
-      if(isData) applyGlobalSF = false;
+
       ///////////////////////////////////
       // determine event scalefactor ///
       //////////////////////////////////
-      if(applyGlobalSF) cout << "                 Applying scale factors " << endl; 
+
+      if(applyGlobalSF) cout << "                 Applying scale factors (not for data)" << endl; 
       
       // get the SF from the corresponding branch
       Double_t puSF = 1. ;
@@ -314,6 +317,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
       
       Int_t nEl; 
       ttree[dataSetName.c_str()]->SetBranchAddress("nElectrons",&nEl);
+ 
       Int_t nMu;
       ttree[dataSetName.c_str()]->SetBranchAddress("nMuons",&nMu);
       
@@ -323,44 +327,47 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
       
       // -----------
       // eo of event SF
-      
       double globalScaleFactor; 
       for (int j = 0; j<nEntries; j++)
       {
 	  ttree[(dataSetName).c_str()]->GetEntry(j);
+//          cout << "nEl " << nEl << " nMu " << nMu << endl; 
           globalScaleFactor = 1.; 
-	  
-	  if(applyGlobalSF) // sf on and not data
+
+	  if(v.size() == 1 && sVarofinterest.find("nElectrons")!=string::npos) {varofInterest = nEl;} 
+          if(v.size() == 1 && sVarofinterest.find("nMuons")!=string::npos) {varofInterest = nMu;}
+
+	  if(applyGlobalSF && !isData) // sf on and not data
 	  {
 	      // Electron scale factors
 	      if(applyElectronSF)
 	      {
 	  	for(unsigned int i = 0; i < nEl ; i ++)
 		{
-		   if(debug) cout << "lepton sf at index " << i << " is " << electronSF[i] << endl;
+		  // if(debug) cout << "lepton sf at index " << i << " is " << electronSF[i] << endl;
 		   globalScaleFactor *= electronSF[i];
-		   if(debug) cout << "the globalScaleFactor is " << globalScaleFactor << endl;
+		   //if(debug) cout << "the globalScaleFactor is " << globalScaleFactor << endl;
 	  	}
 	      }
 	      if(applyMuonSF)
 	      {
 	  	for(unsigned int i = 0; i < nMu ; i ++)
 		{
-		   if(debug) cout << "Muon ID sf at index " << i << " is " << muonID[i] << endl;
-		   if(debug) cout << "Muon Iso sf at index " << i << " is " << muonIso[i] << endl;
-		   if(debug) cout << "Muon trig v2 sf at index " << i << " is " << muonTrigv2[i] << endl;
-		   if(debug) cout << "Muon trig v3 sf at index " << i << " is " << muonTrigv3[i] << endl;
+	//	   if(debug) cout << "Muon ID sf at index " << i << " is " << muonID[i] << endl;
+	//	   if(debug) cout << "Muon Iso sf at index " << i << " is " << muonIso[i] << endl;
+	//	   if(debug) cout << "Muon trig v2 sf at index " << i << " is " << muonTrigv2[i] << endl;
+	//	   if(debug) cout << "Muon trig v3 sf at index " << i << " is " << muonTrigv3[i] << endl;
 		   
 		   globalScaleFactor *= muonID[i] *  muonIso[i]  ;
-		   if(debug) cout << "the globalScaleFactor is " << globalScaleFactor << endl;
+	//	   if(debug) cout << "the globalScaleFactor is " << globalScaleFactor << endl;
 	  	}
 	      }
 	      if(applyPUSF)
 	      {
 	           globalScaleFactor *= puSF;
 	           if (debug){
-	        	cout << "puSF is " << puSF << endl;
-		        cout << "the globalScaleFactor is " << globalScaleFactor << endl;
+	  //      	cout << "puSF is " << puSF << endl;
+	//	        cout << "the globalScaleFactor is " << globalScaleFactor << endl;
 	           }
 	      
 	      }
@@ -368,7 +375,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 	  }
 	  // ----------------
 	  // eo event SF
-	  
+          	  
 	  // make MS plot for single value
 	  if (v.size() == 1){
 	    if (isData) 
@@ -386,9 +393,11 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 	  if (v.size() == 2){
 
 	    // bo of loop over the number of object per entry
-	    for (int i_object =0 ; i_object < varofInterest ;i_object ++ )
+            if(elecPlot) varofInterest = nEl; 
+            if(muPlot) varofInterest = nMu;
+             for (int i_object =0 ; i_object < varofInterest ;i_object ++ )
 	      {
-		if (debug) cout << "varofInterest is " << varofInterest << endl;
+		if (debug) cout << "varofInterest is " << varofInterest_double[i_object] << endl;
 		if (isData) 
 		  {
 		    // for data, fill once per event, weighted with the event scale factor 
@@ -452,19 +461,20 @@ void MSPCreator (string pathPNG)
   // Loop over all the MSPlots
   for(map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
     {
+      
       string name = "MyMSP_" + it->first;
+      cout << " name " << name << endl; 
       MultiSamplePlot *temp = it->second;
       if (debug){
 	cout << "Saving the MSP" << endl;
 	cout << " and it->first is " << it->first << endl;
       }
       temp->Draw("MyMSP", 1, false, false, false, 10);
-      
       if(!applyGlobalSF) name += "_noSF";
       if(!applyPUSF) name += "_noPUSF";
       if(!applyElectronSF) name += "_noElSF"; 
       if(!applyMuonSF) name+= "_noMuSF"; 
-
+      cout << "name " << name << endl; 
 	    temp->Write(outfile, name, true,pathPNG.c_str() , "png");
      //      vector<string> temp_histo = it->GetTH1FNames();
       //      for (int i_hist=0; i_hist < temp_histo.size();i_hist++  ){
