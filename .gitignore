@@ -7,3 +7,4 @@ BTagHistosPtEta/
 LocalGridSubmission/SubmitScripts/**/**
 NtupleAnalyzer
 myOutput/**
+config/*analyzer*
