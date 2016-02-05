@@ -611,7 +611,7 @@ int main (int argc, char *argv[])
 	tupfile->cd();
 	TTree* myTree = new TTree("tree","tree");
         TTree* baselineTree = new TTree("baselinetree","baselinetree");           
-	TTree* globalTree = new TTree("gobaltree","globaltree"); 
+	TTree* globalTree = new TTree("globaltree","globaltree"); 
 	///////////////////////////
        /// output tree
        ///////////////////////////
@@ -632,6 +632,8 @@ int main (int argc, char *argv[])
        Double_t ElectronSF[10]; 
        Int_t nofPosWeights;
        Int_t nofNegWeights;
+       Int_t sumW; 
+       Int_t nEv; 
        Double_t nloWeight; // for amc@nlo samples
        
        Int_t nLeptons;
@@ -711,8 +713,9 @@ int main (int argc, char *argv[])
 	globalTree->Branch("nofEventsHLTv2",&nofEventsHLTv2,"nofEventsHLTv2/I"); 
 	globalTree->Branch("nofEventsHLTv3",&nofEventsHLTv3,"nofEventsHLTv3/I");
         globalTree->Branch("nofPosWeights",&nofPosWeights,"nofPosWeights/I");  
-	globalTree->Branch("nofNegWeights",&nofPosWeights,"nofNegWeights/I");
- 
+	globalTree->Branch("nofNegWeights",&nofNegWeights,"nofNegWeights/I");
+        globalTree->Branch("nEv" , &nEv, "nEv/I"); 
+        globalTree->Branch("sumW", &sumW, "sumW/I"); 
 
 
 
@@ -1463,6 +1466,8 @@ int main (int argc, char *argv[])
 	       
 	    
 	} // end eventloop
+        sumW = (int) sumWeights; 
+        nEv = (int) nEvents; 
 	globalTree->Fill(); 
         if(verbose == 0) cout << "end eventloop" << endl; 
 	infoFile << nbSelectedEvents << " events out of initial " << nbEvents <<  " selected " << endl;
@@ -1479,13 +1484,13 @@ int main (int argc, char *argv[])
         cout << setprecision(2) << ((double)nbTrig/(double)nbGPV)*100 << " % of the GPV  events stay after Trigger" << endl;
 	if (! isData  ) 
         {
-      		infoFile << "Data set " << datasets[d]->Title() << " has " << nofPosWeights << " events with positive weights and " << nofNegWeights << " events with negative weights." << endl;
-      		infoFile << "         Pos - neg is " << nofPosWeights - nofNegWeights << ", pos + neg is " << nofPosWeights + nofNegWeights << endl;
-      		infoFile << "The sum of the weights is " << ((int)sumWeights) << ", whereas the total number of events is " << ((int)nEvents) << endl;
+      		cout << "Data set " << datasets[d]->Title() << " has " << nofPosWeights << " events with positive weights and " << nofNegWeights << " events with negative weights." << endl;
+      		cout << "         Pos - neg is " << nofPosWeights - nofNegWeights << ", pos + neg is " << nofPosWeights + nofNegWeights << endl;
+      		cout << "The sum of the weights is " << ((int)sumWeights) << ", whereas the total number of events is " << ((int)nEvents) << endl;
       
                 // Determine scale factor due to negative weights
             	nloSF = ((double) (nofPosWeights - nofNegWeights))/((double) (nofPosWeights + nofNegWeights));
-                infoFile << "This corresponds to an event scale factor of " << nloSF  << endl; 
+                cout << "This corresponds to an event scale factor of " << nloSF  << endl; 
         }
 	infoFile.close();
 	tupfile->Write();   

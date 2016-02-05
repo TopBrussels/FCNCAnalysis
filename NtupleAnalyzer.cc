@@ -29,6 +29,7 @@ using namespace TopTree;
 map<string,TH1F*> histo1D;
 map<string,TH2F*> histo2D;
 map<string,TFile*> FileObj;
+map<string,TFile*> globalFileObj;
 map<string,TNtuple*> nTuple;
 map<string,TTree*> ttree;
 map<string,TTree*> globalttree;
@@ -90,7 +91,7 @@ Bool_t applyElectronSF = false;
 Bool_t applyMuonSF = false; 
 Bool_t applyPUSF = false; 
 Bool_t applyGlobalSF = false; 
-
+Bool_t applyAMC = false; 
 
 
 int main(int argc, char* argv[])
@@ -102,7 +103,7 @@ int main(int argc, char* argv[])
 	cout << "argv[" << i << "] = " << argv[i] << endl; 
       }
   }
-  if(argc < 5) cout << " ERROR: 5 arguments expected" << endl; 
+  if(argc < 7) cout << " ERROR: 6 arguments expected" << endl; 
 
 
   //Placing arguments in properly typed variables
@@ -117,6 +118,7 @@ int main(int argc, char* argv[])
   applyMuonSF = strtol(argv[4],NULL,10);
   applyPUSF = strtol(argv[5],NULL,10);
   applyGlobalSF = strtol(argv[6],NULL,10);
+  applyAMC = strtol(argv[7],NULL,10);
   string xmlFileName;
   string CraneenPath; 
   CraneenPath = "NtupleMakerOutput/MergedTuples/";
@@ -158,7 +160,7 @@ int main(int argc, char* argv[])
           
       // event plots
     DatasetPlotter(70, -0.5, 69.5, "npu", xmlFileName,CraneenPath,pathPNG);
-    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,CraneenPath,pathPNG);
+/*    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,CraneenPath,pathPNG);
           
      
       
@@ -183,7 +185,7 @@ int main(int argc, char* argv[])
     DatasetPlotter(100, -0.1, 0.1, "d0_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(100, -0.015, 0.015, "d0BeamSpot_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(100, 0.0, 0.2, "pfIso_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
-
+*/
 
 
 
@@ -196,7 +198,7 @@ int main(int argc, char* argv[])
 void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinterest, string xmlNom, string TreePath, string PathPNG)
 {
   cout<<""<<endl;
-  cout<<"RUNNING NOMINAL DATASETS"<<endl;
+  cout<<"RUNNING NOMINAL DATASETS: "<< sVarofinterest <<endl;
   cout<<""<<endl;
 
   const char *xmlfile = xmlNom.c_str();
@@ -254,7 +256,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
      
      // get the tree corresponding to the final state of interest
      string stree = "tree";
-     string sglobaltree = "globaltree"; 
+     string sglobaltree = "gobaltree"; 
      string sbaselinetree = "baselinetree"; 
      filepath = TreePath + dataSetName + ".root"; 
      string dataN = "DataRunD";
@@ -268,6 +270,17 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
      nEntries = (int)ttree[dataSetName.c_str()]->GetEntries();
      cout<<"                 nEntries: "<<nEntries<<endl;     
      
+
+     globalFileObj[dataSetName.c_str()] = new TFile((filepath).c_str(),"READ"); //create TFile for each dataset      
+     string globalTTreename = sglobaltree;
+
+     if(debug) cout << "globalTTreename: " << globalTTreename.c_str() << endl; 
+     if(debug) cout << "globalFileObj " << globalFileObj[dataSetName.c_str()] << endl;
+     globalttree[dataSetName.c_str()] = (TTree*)globalFileObj[dataSetName.c_str()]->Get(globalTTreename.c_str()); //get ttre for each dataset
+     if(debug) cout << "globalttree " << globalttree[dataSetName.c_str()]<< endl; 
+     int globalnEntries = (int)globalttree[dataSetName.c_str()]->GetEntries();
+      cout<<"                 nEntries gt: "<<globalnEntries<<endl;
+
 
 
      // bo logic to set the right branch address depending on the string given as argument of the datasetplotter  (int or double[n] )
@@ -321,13 +334,48 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
       Int_t nMu;
       ttree[dataSetName.c_str()]->SetBranchAddress("nMuons",&nMu);
       
+      Int_t nPosW;
+      globalttree[dataSetName.c_str()]->SetBranchAddress("nofPosWeights",&nPosW); 
+
+      Int_t nNegW;
+      globalttree[dataSetName.c_str()]->SetBranchAddress("nofNegWeights",&nNegW);
+
+      Int_t nEvents;
+      globalttree[dataSetName.c_str()]->SetBranchAddress("nEv",&nEvents);
+ 
+      Int_t SumW; 
+      globalttree[dataSetName.c_str()]->SetBranchAddress("sumW",&SumW);
+
 
       
       if(debug) cout << "done setting SF addresses " << endl; 
       
       // -----------
       // eo of event SF
-      double globalScaleFactor; 
+      double globalScaleFactor;
+      double nloSF = 1.;
+      int nPos = 0; 
+      int nNeg = 0;
+      int Ev = 0; 
+      int Weights = 0;  
+      if(applyAMC)
+      {
+         
+          for (int k = 0; k<globalnEntries; k++)
+          {
+             globalttree[(dataSetName).c_str()]->GetEntry(k);
+             nPos += nPosW;
+             nNeg += nNegW;
+             Ev += nEvents; 
+             cout << Ev << endl ;
+	     Weights += SumW; 
+              cout << "nPos " << nPos << " vs " << nPosW << " nNeg " << nNeg << " vs " << nNegW << " + " << nPos + nNeg << " - " << nPos - nNeg  << endl;
+              cout << "nEvents " << nEvents << " vs " << Ev << " sumWeights " << SumW << " vs " << Weights << endl; 
+           }
+//          if(!isData) nloSF *= (double) Weights/(double) Ev; // 
+          if(!isData) nloSF *= ((double) (nPos - nNeg))/((double) (nPos + nNeg));
+       }
+ 
       for (int j = 0; j<nEntries; j++)
       {
 	  ttree[(dataSetName).c_str()]->GetEntry(j);
@@ -373,6 +421,9 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 	      }
 	  
 	  }
+
+	  if(applyAMC && !isData) globalScaleFactor *= nloSF ;
+//          if(!isData) cout << "nloSF: " << nloSF << endl;  
 	  // ----------------
 	  // eo event SF
           	  
