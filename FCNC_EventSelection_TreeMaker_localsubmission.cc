@@ -34,7 +34,6 @@
 #include "TopTreeProducer/interface/TRootRun.h"
 #include "TopTreeProducer/interface/TRootEvent.h"
 #include "TopTreeAnalysisBase/Selection/interface/SelectionTable.h"
-//#include "TopTreeAnalysisBase/Selection/interface/FCNC_1L3BSelectionTable.h"
 #include "TopTreeAnalysisBase/Selection/interface/Run2Selection.h"
 
 #include "TopTreeAnalysisBase/Content/interface/AnalysisEnvironment.h"
@@ -107,6 +106,7 @@ int main (int argc, char *argv[])
     const float PreselEff           = strtod(argv[10], NULL);
     string fileName                 = argv[11];
     // if there only two arguments after the fileName, the jobNum will be set to 0 by default as an integer is expected and it will get a string (lastfile of the list) 
+    const string channel            = argv[argc-4];
     const int JobNum                = strtol(argv[argc-3], NULL, 10);
     const int startEvent            = strtol(argv[argc-2], NULL, 10);
     const int endEvent              = strtol(argv[argc-1], NULL, 10);
@@ -127,6 +127,7 @@ int main (int argc, char *argv[])
     cout << "Dataset EqLumi: " << EqLumi << endl;
     cout << "Dataset xSect: " << xSect << endl;
     cout << "Dataset File Name: " << vecfileNames[0] << endl;
+    cout << "Channel: " << channel << endl;
     cout << "Beginning Event: " << startEvent << endl;
     cout << "Ending Event: " << endEvent << endl;
     cout << "JobNum: " << JobNum << endl;
@@ -199,41 +200,42 @@ int main (int argc, char *argv[])
     ///////////////////////////////////////
 
     bool debug = false;
+    bool bTagReweight_PreReweighting = true; //Needs to be set only once to true in order to produce the EtaPtHistos
     bool Muon = false;
-    bool Electron = true;
-    bool bTagReweight_PreReweighting = false; //Needs to be set only once to true in order to produce the EtaPtHistos
+    bool Electron = false;
     string btagger = "CSVM";
     bool printTriggers = false;
-    bool applyTriggers = false;
+    bool applyTriggers = true;
 	  float Luminosity = 2094.087; //pb^-1 Muon  = 2196.422335, Electron = 2094.087
     string channelpostfix = "";
-    string xmlFileName = "";
 
     //Setting Lepton Channels
+    if(channel == "Mu") Muon = true;
+    else if (channel == "El") Electron = true;
+    else 
+    {
+        cerr<<"Correct lepton Channel not selected."<<endl;
+        exit(1);
+    }
    	FILE* eventlist;
 
     if(Muon && !Electron)
     {
         cout << " --> Using the Muon channel..." << endl;
         channelpostfix = "_Mu";
-        xmlFileName = "config/Run2SingleLepton_samples.xml";
     	eventlist = fopen("EventInfo_mu.txt","w");
     }
     else if(!Muon && Electron)
     {
         cout << " --> Using the Electron channel..." << endl;
         channelpostfix = "_El";
-        xmlFileName = "config/Run2SingleLepton_samples.xml";
     	eventlist = fopen("EventInfo_El.txt","w");
     }
-    else
+    else 
     {
         cerr<<"Correct lepton Channel not selected."<<endl;
         exit(1);
     }
-
-    const char *xmlfile = xmlFileName.c_str();
-    cout << "used config file: " << xmlfile << endl;
 
     /////////////////////////////////
     //  Set up AnalysisEnvironment 
@@ -250,8 +252,8 @@ int main (int argc, char *argv[])
     anaEnv.GenJetCollection   = "GenJets_slimmedGenJets";
     anaEnv.NPGenEventCollection = "NPGenEvent";
     anaEnv.MCParticlesCollection = "MCParticles";
-    anaEnv.loadFatJetCollection = true;
-    anaEnv.loadGenJetCollection = false;
+    anaEnv.loadFatJetCollection = false;
+    anaEnv.loadGenJetCollection = true;
     anaEnv.loadNPGenEventCollection = false;
     anaEnv.loadMCParticles = true;
     anaEnv.JetType = 2;
@@ -333,11 +335,26 @@ int main (int argc, char *argv[])
         }       
     }
 
-    MuonSFWeight* muonSFWeight;   
+    /////////////////////////////////////////////////
+    //                   Lepton SF                 //
+    /////////////////////////////////////////////////
+    MuonSFWeight* muonSFWeightID_TT;   
+    MuonSFWeight* muonSFWeightIso_TT;
+    MuonSFWeight* muonSFWeightTrigC_TT;
+    MuonSFWeight* muonSFWeightTrigD1_TT;
+    MuonSFWeight* muonSFWeightTrigD2_TT;
+
+
     ElectronSFWeight* electronSFWeight; 
     if(bLeptonSF){
-        if(Muon){
-            muonSFWeight = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/Muon_SF_TopEA.root","SF_totErr",false,false);
+        if(Muon){ 
+            // muonSFWeight = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/Muon_SF_TopEA.root","SF_totErr",false,false);  OLD SF WEIGHT
+            muonSFWeightID_TT = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonID_Z_RunD_Reco74X_Nov20.root", "NUM_TightIDandIPCut_DEN_genTracks_PAR_pt_spliteta_bin1/abseta_pt_ratio", true, false, false);
+            muonSFWeightIso_TT = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonIso_Z_RunD_Reco74X_Nov20.root", "NUM_TightRelIso_DEN_TightID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true, false, false);  // Tight RelIso, Tight ID
+            muonSFWeightTrigC_TT = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/SingleMuonTrigger_Z_RunCD_Reco74X_Dec1.root", "runCreRECO_IsoMu20_OR_IsoTkMu20_PtEtaBins/abseta_pt_ratio", true, false, false);
+            muonSFWeightTrigD1_TT = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/SingleMuonTrigger_Z_RunCD_Reco74X_Dec1.root", "runD_IsoMu20_OR_IsoTkMu20_HLTv4p2_PtEtaBins/abseta_pt_ratio", true, false, false);
+            muonSFWeightTrigD2_TT = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/SingleMuonTrigger_Z_RunCD_Reco74X_Dec1.root", "runD_IsoMu20_OR_IsoTkMu20_HLTv4p3_PtEtaBins/abseta_pt_ratio", true, false, false);
+
         }
         else if(Electron){
             electronSFWeight = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/Elec_SF_TopEA.root","GlobalSF",false,false);    
@@ -346,7 +363,7 @@ int main (int argc, char *argv[])
 
     LumiReWeighting LumiWeights;
 //    LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring15DR74-Asympt25ns.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2015Data74X_25ns-Run246908-260627Cert_norm.root", "pileup50", "pileup");    
-    LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring15DR74-Asympt25ns.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2015Data74X_25ns-Run254231-258750Cert/nominal.root", "pileup60", "pileup");    
+    LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIIFall15DR76-Asympt25ns.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2015Data74X_25ns-Run254231-258750Cert/nominal.root", "pileup", "pileup");    
 //    LumiWeights = LumiReWeighting("/user/lbeck/CMSSW_7_6_0/src/TopBrussels/TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring15DR74-Asympt25ns.root", "/user/lbeck/CMSSW_7_6_0/src/TopBrussels/TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2015Data74X_25ns-Run246908-260627Cert_Silver.root", "pileup50", "pileup");    
 
     ////////////////////////////
@@ -1009,7 +1026,6 @@ int main (int argc, char *argv[])
             if(dName.find("Data")==string::npos)//JER smearing only feasible for non-data samples
             {
                 //JER
-                doJERShift == 0;
                 if(doJERShift == 1)
                     jetTools->correctJetJER(init_jets, genjets, mets[0], "minus");
                 else if(doJERShift == 2)
@@ -1102,6 +1118,74 @@ int main (int argc, char *argv[])
               		nLooseEl = selectedExtraElectrons.size(); //Number of loose electrons  (loose only)
             }
 
+        //////////////////////////////////////////////////
+        // Apply scale factors
+        //////////////////////////////////////////////////
+        if(dName.find("Data")!=string::npos) //If sample is data, no PU reweighting
+        {
+            lumiWeight=1;
+        }
+        else
+        {
+            lumiWeight = LumiWeights.ITweight( (int)event->nTruePU() );
+        }
+        if(debug) cout << "lumiweight: " << lumiWeight << endl;
+            /////////////////////////////////////////////////
+            //                   Lepton SF                 //
+            /////////////////////////////////////////////////
+
+            float fleptonSF = 1;
+            if(bLeptonSF){
+                if(Muon && nMu>0){
+                    fleptonSF = muonSFWeightID_TT->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0) * muonSFWeightIso_TT->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
+                }
+                else if(Electron && nEl>0){
+                    fleptonSF = electronSFWeight->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0);
+                }
+            }
+
+            float trigSFC = 1;
+            float trigSFD1 = 1;
+            float trigSFD2 = 1;
+            float trigSFTot = 1;
+            if(bLeptonSF){
+                if(dName.find("Data")==string::npos && Muon && nMu>0){
+                    trigSFC = muonSFWeightTrigC_TT->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
+                    trigSFD1 = muonSFWeightTrigD1_TT->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
+                    trigSFD2 = muonSFWeightTrigD2_TT->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);       
+                    trigSFTot =( (trigSFC*17.2) + (trigSFD1*923.88) + (trigSFD2*1639.20) )/Luminosity;  
+                }
+                fleptonSF*=trigSFTot;
+            }
+
+            if(debug) cout<<"lepton SF:  "<<fleptonSF<<endl;
+            if(dName.find("Data")==string::npos)   scaleFactor *= fleptonSF;
+
+            /////////////////////////////////////////////////
+            //                   Btag SF                    //
+            /////////////////////////////////////////////////
+            if(bTagReweight && !bTagReweight_PreReweighting)
+            {
+                if(dName.find("Data")==string::npos) //If sample is data, no PU reweighting
+                {
+                    if(debug) cout << "Applying b-tag weights " << endl;
+//                    btagWeight_comb_central =  btwt_comb_central->getMCEventWeight(selectedJets, false);
+//                    btagWeight_comb_up =  btwt_comb_up->getMCEventWeight(selectedJets, false);
+//                    btagWeight_comb_down =  btwt_comb_down->getMCEventWeight(selectedJets, false);
+                    btagWeight_mujets_central =  btwt_mujets_central->getMCEventWeight(selectedJets, false);
+//                    btagWeight_mujets_up =  btwt_mujets_up->getMCEventWeight(selectedJets, false);
+//                    btagWeight_mujets_down =  btwt_mujets_down->getMCEventWeight(selectedJets, false);
+//                    btagWeight_ttbar_central =  btwt_ttbar_central->getMCEventWeight(selectedJets, false);
+//                    btagWeight_ttbar_up =  btwt_ttbar_up->getMCEventWeight(selectedJets, false);
+//                    btagWeight_ttbar_down =  btwt_ttbar_down->getMCEventWeight(selectedJets, false);
+                }
+            }
+            if(debug) cout<<"btag SF:  "<< endl;
+
+            scaleFactor = scaleFactor * lumiWeight * fleptonSF;
+
+
+
 
 
             ////////////////////////////////////////////////
@@ -1114,7 +1198,7 @@ int main (int argc, char *argv[])
             if (debug)	cout <<"PrimaryVertexBit: " << isGoodPV <<endl;
 //            if (debug) cin.get();
 
-            histo1D["cutFlow"]->Fill(0., 1. );
+            histo1D["cutFlow"]->Fill(0., scaleFactor * Luminosity/EqLumi);
 
  //           weightCount += scaleFactor;
             eventCount++;
@@ -1146,10 +1230,10 @@ int main (int argc, char *argv[])
 
 
           if (!isGoodPV) continue; // Check that there is a good Primary Vertex
-          histo1D["cutFlow"]->Fill(1., 1. );//goodPV
+          histo1D["cutFlow"]->Fill(1., scaleFactor * Luminosity/EqLumi );//goodPV
 
           if(!trigged) continue;
-          histo1D["cutFlow"]->Fill(2., 1. );//trigger
+          histo1D["cutFlow"]->Fill(2., scaleFactor * Luminosity/EqLumi );//trigger
 
            if (debug)
           {
@@ -1175,7 +1259,7 @@ int main (int argc, char *argv[])
               cerr<<"Correct Channel not selected."<<endl;
               exit(1);
           }
-          histo1D["cutFlow"]->Fill(3., 1. );//1lepton
+          histo1D["cutFlow"]->Fill(3., scaleFactor * Luminosity/EqLumi );//1lepton
 
 			if(Muon && !Electron)
 			{
@@ -1187,7 +1271,7 @@ int main (int argc, char *argv[])
 				if(nLooseEl != 1) continue;
 	            if (debug)	cout <<"Vetoed extra electrons..."<<endl;
 			}
-			histo1D["cutFlow"]->Fill(4., 1. ); //LooseLepton removal
+			histo1D["cutFlow"]->Fill(4., scaleFactor * Luminosity/EqLumi ); //LooseLepton removal
 			
 			////////////////////////////////////////////////////////////////////////////////
 			// Clean jet collection from jets overlapping with lepton
@@ -1219,7 +1303,7 @@ int main (int argc, char *argv[])
 			        }
 			    }
 			}
-			histo1D["cutFlow"]->Fill(5., 1. ); // JetCleaning
+			histo1D["cutFlow"]->Fill(5., scaleFactor * Luminosity/EqLumi ); // JetCleaning
 			
 			/////////////////////////////////////////////
 			// Make TLorentzVectors //
@@ -1260,8 +1344,8 @@ int main (int argc, char *argv[])
 
             sort(selectedJets.begin(),selectedJets.end(),HighestPt()); //order Jets wrt Pt for tuple output
 			////////////////////////////////////
-		    //Fill b-jet collections
-            ////////////////////////////////////
+		  //Fill b-jet collections
+      ////////////////////////////////////
 		    for (Int_t seljet =0; seljet < selectedJets.size(); seljet++ )
 		    {
 		     	if (selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose   )
@@ -1291,50 +1375,6 @@ int main (int argc, char *argv[])
 		  	}
 		  	
       	histo2D["NJet_vs_Nbjet"]->Fill(selectedJets.size(),selectedMBJets.size());
-
-            //////////////////////////////////////////////////
-            // Apply scale factors
-            //////////////////////////////////////////////////
-            if(dName.find("Data")!=string::npos) //If sample is data, no PU reweighting
-            {
-                lumiWeight=1;
-            }
-            else
-            {
-                lumiWeight = LumiWeights.ITweight( (int)event->nTruePU() );
-            }
-            if(debug) cout << "lumiweight: " << lumiWeight << endl;
-            //cout << "lumiweight: " << lumiWeight << ", nTruePU: " << (int)event->nTruePU() << endl;
-            if(bLeptonSF){
-                if(Muon){
-                    fleptonSF = muonSFWeight->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
-                }
-                else if(Electron){
-                    fleptonSF = electronSFWeight->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0);
-                }
-            }
-            if(debug) cout<<"lepton SF:  "<<fleptonSF<<endl;
-            if(bTagReweight && !bTagReweight_PreReweighting)
-            {
-                if(dName.find("Data")==string::npos) //If sample is data, no PU reweighting
-                {
-                    if(debug) cout << "Applying b-tag weights " << endl;
-//                    btagWeight_comb_central =  btwt_comb_central->getMCEventWeight(selectedJets, false);
-//                    btagWeight_comb_up =  btwt_comb_up->getMCEventWeight(selectedJets, false);
-//                    btagWeight_comb_down =  btwt_comb_down->getMCEventWeight(selectedJets, false);
-                    btagWeight_mujets_central =  btwt_mujets_central->getMCEventWeight(selectedJets, false);
-//                    btagWeight_mujets_up =  btwt_mujets_up->getMCEventWeight(selectedJets, false);
-//                    btagWeight_mujets_down =  btwt_mujets_down->getMCEventWeight(selectedJets, false);
-//                    btagWeight_ttbar_central =  btwt_ttbar_central->getMCEventWeight(selectedJets, false);
-//                    btagWeight_ttbar_up =  btwt_ttbar_up->getMCEventWeight(selectedJets, false);
-//                    btagWeight_ttbar_down =  btwt_ttbar_down->getMCEventWeight(selectedJets, false);
-                }
-            }
-            if(debug) cout<<"btag SF:  "<< endl;
-
-            scaleFactor = scaleFactor * lumiWeight * fleptonSF;
-
-
 
 
 			//////////////////////////////////////
@@ -1742,8 +1782,8 @@ int main (int argc, char *argv[])
             //////////////////////////////////////////////////////////////////////
             // Cut on nb of jets and b-jets
             //////////////////////////////////////////////////////////////////////
-			if(selectedJets.size() < 2)  continue;
-			histo1D["cutFlow"]->Fill(6., 1. );//n Jets
+			if(selectedJets.size() < 3)  continue;
+			histo1D["cutFlow"]->Fill(6., scaleFactor * Luminosity/EqLumi );//n Jets
 	        if (debug)	cout <<"Cut on nb jets..."<<endl;
 
             ///////////////////////////////////////////////////
@@ -1770,11 +1810,11 @@ int main (int argc, char *argv[])
 
 
 
-		  	if(selectedMBJets.size() < 1) continue;
+		  	if(selectedMBJets.size() < 3) continue;
 	        if (debug)	cout <<"Cut on nb b-jets..."<<endl;
-			histo1D["cutFlow"]->Fill(7., 1. ); //n BJets
+			histo1D["cutFlow"]->Fill(7., scaleFactor * Luminosity/EqLumi  ); //n BJets
 
-			histo1D["cutFlow"]->Fill(8., 1. );
+			histo1D["cutFlow"]->Fill(8., scaleFactor * Luminosity/EqLumi );
 
             if(debug)
             {
