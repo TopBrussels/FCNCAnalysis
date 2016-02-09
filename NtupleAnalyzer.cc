@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
     }
     string dateString = MakeTimeStamp(); 
 //    CraneenPath += dateString + "/"; 
-    CraneenPath += "160204/";
+    CraneenPath += "160205/";
     string pathPNG = "myOutput";
     mkdir(pathPNG.c_str(),0777); 
     pathPNG += "/" + dateString + "/"; 
@@ -248,7 +248,8 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
   free(dup);
 
 //  if (debug) cout << v[0] << "  " << v[1] << endl;
-  
+  double weightv2 = 0. ; 
+  double weightv3 = 0.; 
    for (int d = 0; d < datasets.size(); d++)   //Loop through datasets  
    {
      dataSetName = datasets[d]->Name();
@@ -300,9 +301,10 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
       // eo logic to set the right branch address depending on the string given as argument of the datasetplotter
 
       bool isData= false;
+      bool isAMC = false; 
       if(dataSetName.find("Data")!=string::npos || dataSetName.find("data")!=string::npos || dataSetName.find("DATA")!=string::npos) isData =true;
       if(debug) cout << "isData? " << isData << endl; 
-
+      if(dataSetName.find("amc")!=string::npos) isAMC =true;
       ///////////////////////////////////
       // determine event scalefactor ///
       //////////////////////////////////
@@ -346,6 +348,11 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
       Int_t SumW; 
       globalttree[dataSetName.c_str()]->SetBranchAddress("sumW",&SumW);
 
+      Int_t nbHLTv2; 
+      globalttree[dataSetName.c_str()]->SetBranchAddress("nofEventsHLTv2",&nbHLTv2); 
+
+      Int_t nbHLTv3; 
+      globalttree[dataSetName.c_str()]->SetBranchAddress("nofEventsHLTv3", &nbHLTv3);   
 
       
       if(debug) cout << "done setting SF addresses " << endl; 
@@ -358,7 +365,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
       int nNeg = 0;
       int Ev = 0; 
       int Weights = 0;  
-      if(applyAMC)
+      if(applyAMC && isAMC && !isData)
       {
          
           for (int k = 0; k<globalnEntries; k++)
@@ -367,15 +374,15 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
              nPos += nPosW;
              nNeg += nNegW;
              Ev += nEvents; 
-             cout << Ev << endl ;
 	     Weights += SumW; 
-              cout << "nPos " << nPos << " vs " << nPosW << " nNeg " << nNeg << " vs " << nNegW << " + " << nPos + nNeg << " - " << nPos - nNeg  << endl;
-              cout << "nEvents " << nEvents << " vs " << Ev << " sumWeights " << SumW << " vs " << Weights << endl; 
+             // cout << "nPos " << nPos << " vs " << nPosW << " nNeg " << nNeg << " vs " << nNegW << " + " << nPos + nNeg << " - " << nPos - nNeg  << endl;
+             // cout << "nEvents " << nEvents << " vs " << Ev << " sumWeights " << SumW << " vs " << Weights << endl; 
            }
 //          if(!isData) nloSF *= (double) Weights/(double) Ev; // 
           if(!isData) nloSF *= ((double) (nPos - nNeg))/((double) (nPos + nNeg));
+          
        }
- 
+      if(debug) cout << "nloSF " << nloSF << endl; 
       for (int j = 0; j<nEntries; j++)
       {
 	  ttree[(dataSetName).c_str()]->GetEntry(j);
@@ -405,7 +412,9 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 	//	   if(debug) cout << "Muon Iso sf at index " << i << " is " << muonIso[i] << endl;
 	//	   if(debug) cout << "Muon trig v2 sf at index " << i << " is " << muonTrigv2[i] << endl;
 	//	   if(debug) cout << "Muon trig v3 sf at index " << i << " is " << muonTrigv3[i] << endl;
-		   
+		   if(isData) weightv2 = (double) nbHLTv2 / (double) (nbHLTv2 + nbHLTv3); 
+                   if(isData) weightv3 = (double) nbHLTv3 / (double) (nbHLTv2 + nbHLTv3);
+//		   cout << "weightv2 " << weightv2 << " weightv3 " << weightv3 << endl; 
 		   globalScaleFactor *= muonID[i] *  muonIso[i]  ;
 	//	   if(debug) cout << "the globalScaleFactor is " << globalScaleFactor << endl;
 	  	}
@@ -521,10 +530,12 @@ void MSPCreator (string pathPNG)
 	cout << " and it->first is " << it->first << endl;
       }
       temp->Draw("MyMSP", 1, false, false, false, 10);
+//      name += "_test";
       if(!applyGlobalSF) name += "_noSF";
       if(!applyPUSF) name += "_noPUSF";
       if(!applyElectronSF) name += "_noElSF"; 
-      if(!applyMuonSF) name+= "_noMuSF"; 
+      if(!applyMuonSF) name+= "_noMuSF";
+      if(!applyAMC) name+= "_noAMCcor";  
       cout << "name " << name << endl; 
 	    temp->Write(outfile, name, true,pathPNG.c_str() , "png");
      //      vector<string> temp_histo = it->GetTH1FNames();
