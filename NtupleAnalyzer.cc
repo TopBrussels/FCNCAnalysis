@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
     }
     string dateString = MakeTimeStamp(); 
 //    CraneenPath += dateString + "/"; 
-    CraneenPath += "160205/";
+    CraneenPath += "160212/";
     string pathPNG = "myOutput";
     mkdir(pathPNG.c_str(),0777); 
     pathPNG += "/" + dateString + "/"; 
@@ -153,6 +153,8 @@ int main(int argc, char* argv[])
     if(applyElectronSF) cout << "Electron SF on " << endl;
     if(applyMuonSF) cout << "Muon SF on " << endl; 
     if(applyPUSF) cout << "PU SF on" <<endl; 
+    if(applyAMC) cout << "nlo reweight on " << endl; 
+    if(!applyElectronSF && !applyMuonSF && !applyPUSF && !applyAMC) applyGlobalSF = false;
     if(applyGlobalSF) cout << "applying SF " << endl; 
 
 
@@ -160,34 +162,42 @@ int main(int argc, char* argv[])
           
       // event plots
     DatasetPlotter(70, -0.5, 69.5, "npu", xmlFileName,CraneenPath,pathPNG);
-/*    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,CraneenPath,pathPNG);
-          
-     
+    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(10, -0.5, 9.5, "nLeptons", xmlFileName,CraneenPath,pathPNG);
+
       
-    // electron plots
-    elecPlot = true;
-    DatasetPlotter(11, -0.5, 10.5, "nElectrons", xmlFileName,CraneenPath,pathPNG);
-    DatasetPlotter(100, 0, 1000, "pt_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG);
+          
+    elecPlot = true;  
+    muPlot = false; 
+     DatasetPlotter(11, -0.5, 10.5, "nElectrons", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(50, 0, 500, "pt_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(50, -3.15, 3.15, "eta_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(30, -3.15, 3.15, "phi_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(100, -0.1, 0.1, "d0_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG);
-    DatasetPlotter(100, -0.015, 0.015, "d0BeamSpot_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(100, 0.0, 0.2, "pfIso_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(100, 0, 1000, "E_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG);
     
-      
+     
       // muon plots
-    muPlot = true; 
+   muPlot = true; 
     elecPlot = false; 
     DatasetPlotter(11, -0.5, 10.5, "nMuons", xmlFileName,CraneenPath,pathPNG);
-   DatasetPlotter(20, 10, 50, "pt_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
+   DatasetPlotter(50, 0, 500, "pt_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(50, -3.15, 3.15, "eta_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(30, -3.15, 3.15, "phi_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(100, -0.1, 0.1, "d0_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(100, -0.015, 0.015, "d0BeamSpot_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(100, 0.0, 0.2, "pfIso_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
-*/
 
-
+    elecPlot = false; 
+    muPlot = false;
+    DatasetPlotter(11, -0.5, 10.5, "nJets", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(70, 0, 700, "pt_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(50, -3.15, 3.15, "eta_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(30, -3.15, 3.15, "phi_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(50, 0, 1, "bdisc_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(50,-1, 1, "cdiscCvsL_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(50,-1, 1, "cdiscCvsB_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
 
   // calling the function that writtes all the MSPlots in a root file
   MSPCreator (pathPNG);
@@ -223,7 +233,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 
   
   //***********************************************OPEN FILES & GET NTUPLES**********************************************
-  string dataSetName, filepath ,fileDatapath, slumi;
+  string dataSetName, filepath , slumi;
   
   int nEntries;
   float ScaleFactor, NormFactor;
@@ -257,14 +267,13 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
      
      // get the tree corresponding to the final state of interest
      string stree = "tree";
-     string sglobaltree = "gobaltree"; 
+     string sglobaltree = "globaltree"; 
      string sbaselinetree = "baselinetree"; 
      filepath = TreePath + dataSetName + ".root"; 
-     string dataN = "DataRunD";
-     fileDatapath = TreePath + dataN + ".root"; 
+
 		  
      FileObj[dataSetName.c_str()] = new TFile((filepath).c_str(),"READ"); //create TFile for each dataset      
-     string TTreename = sbaselinetree;	
+     string TTreename = stree;	
 
      
      ttree[dataSetName.c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename.c_str()); //get ttre for each dataset
@@ -352,8 +361,11 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
       globalttree[dataSetName.c_str()]->SetBranchAddress("nofEventsHLTv2",&nbHLTv2); 
 
       Int_t nbHLTv3; 
-      globalttree[dataSetName.c_str()]->SetBranchAddress("nofEventsHLTv3", &nbHLTv3);   
-
+      globalttree[dataSetName.c_str()]->SetBranchAddress("nofEventsHLTv3", &nbHLTv3); 
+      
+        
+      Int_t NbCuts; 
+      ttree[dataSetName.c_str()]->SetBranchAddress("nCuts", &NbCuts);
       
       if(debug) cout << "done setting SF addresses " << endl; 
       
@@ -530,7 +542,7 @@ void MSPCreator (string pathPNG)
 	cout << " and it->first is " << it->first << endl;
       }
       temp->Draw("MyMSP", 1, false, false, false, 10);
-//      name += "_test";
+      name += "_3L";
       if(!applyGlobalSF) name += "_noSF";
       if(!applyPUSF) name += "_noPUSF";
       if(!applyElectronSF) name += "_noElSF"; 
