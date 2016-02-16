@@ -84,11 +84,12 @@ struct HighestCSVBtag
 };
 
 //Initializing CSVv2 b-tag WP
-float workingpointvalue_Loose = 0.605;//working points updated to 2015 BTV-POG recommendations.
-float workingpointvalue_Medium = 0.890;//working points updated to 2015 BTV-POG recommendations.
-float workingpointvalue_Tight = 0.970;//working points updated to 2015 BTV-POG recommendations.
+float workingpointvalue_Loose = 0.460;//working points updated to 2015 BTV-POG recommendations.
+float workingpointvalue_Medium = 0.800;//working points updated to 2015 BTV-POG recommendations.
+float workingpointvalue_Tight = 0.935;//working points updated to 2015 BTV-POG recommendations.
 
 
+TLorentzVector FCNCjetCalculator(std::vector<TRootJet*> nonBJets,std::vector<TRootJet*> BJets, TLorentzVector recoZ ,int verb); 
 
 string ConvertIntToString(int Number, bool pad)
 {
@@ -171,7 +172,7 @@ int main (int argc, char *argv[])
       cout << " --> Using the TriMuon channel <-- " << endl; 
       Channel = "MuMuMu"; 
       xmlFileName = "config/Run2TriLepton_MuMuMu.xml" ; 
-      dataLumi = 1200; //pb
+      dataLumi = 2700; //pb
       hasMu = true; 
       dilep = true; 
   }
@@ -392,16 +393,16 @@ int main (int argc, char *argv[])
   // electron
   float el_pt_cut =20.; // 42
   float el_eta_cut = 2.4;
-  bool TightEl = true; 
+  bool TightEl = false; 
   bool MediumEl = false; 
-  bool LooseEl = false; 
+  bool LooseEl = true;  
   // muon
   float mu_pt_cut = 20.; // 40
   float mu_eta_cut = 2.4;
   float mu_iso_cut = 0.15;
-  bool TightMu = true; 
+  bool TightMu = false; 
   bool MediumMu = false; 
-  bool LooseMu = false;  
+  bool LooseMu = true;  
   //jets
   float jet_pt_cut = 30.;
   float jet_eta_cut = 2.4;
@@ -441,6 +442,9 @@ int main (int argc, char *argv[])
     histo1D["nloweight"]				= new TH1F("nloweight", "nloweight", 200, -2.0, 2.0);
     histo1D["init_nPVs_before"]	                       = new TH1F("init_nPVs_before", "init_nPVs_before", 41,-0.5,40.5);  
     histo1D["init_nPVs_after"]                        = new TH1F("init_nPVs_after", "init_nPVs_after", 41,-0.5,40.5);
+
+    histo1D["nbMuons"]					= new TH1F("nbMuons","nbMuons",10,-0.5,9.5); 
+    histo1D["nbElectrons"]                                  = new TH1F("nbElectrons","nbElectrons",10,-0.5,9.5);
 /*
     //Muons
     histo1D["MuonPt"]                                        = new TH1F( "MuonPt", "PT_{#mu}", 30, 0, 300);
@@ -533,7 +537,8 @@ int main (int argc, char *argv[])
         if(!isData)
 	{
            // documentation at http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
-	   btagcalib = new BTagCalibration("CSVv2", "../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_13TeV_25ns_combToMujets.csv"); 
+//	   btagcalib = new BTagCalibration("CSVv2", "../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_13TeV_25ns_combToMujets.csv"); 
+           btagcalib = new BTagCalibration("CSVv2", "../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_76X_combToMujets.csv"); 
 	   btagreader = new BTagCalibrationReader(btagcalib, BTagEntry::OP_MEDIUM, "mujets","central");         	
 	   if(fillBtagHisto)  // before btag reweighting can be apply, you first have to make the histograms
 	   {
@@ -541,15 +546,15 @@ int main (int argc, char *argv[])
 	   }
 	   else
 	   {
-                btwt = new BTagWeightTools(btagreader,"BTagHistosPtEta/HistosPtEta_TTJets_mujets_central.root",false,30,999,2.4);
-
+//                btwt = new BTagWeightTools(btagreader,"BTagHistosPtEta/HistosPtEta_"+daName+"_mujets_central.root",false,30,999,2.4);
+                 btwt = new BTagWeightTools(btagreader,"BTagHistosPtEta/HistosPtEta_TTJets_mujets_central.root",false,30,999,2.4);
 	   }
 
 
         }
 
-        LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring15DR74-Asympt25ns.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2015Data74X_25ns-Run254231-258750Cert/nominal.root", "pileup60", "pileup");      	
-
+        LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIIFall15DR76-Asympt25ns.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2015Data74X_25ns-Run246908-260627Cert.root", "pileup", "pileup");      	
+//          LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIIFall15DR76-Asympt25ns.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2015Data76X_25ns-Run246908-260627Cert.root", "pileup", "pileup");  
 
        //MuonSFWeight (const string &sfFile, const string &dataOverMC, const bool &extendRange, const bool &debug, const bool &printWarning)
 
@@ -621,7 +626,7 @@ int main (int argc, char *argv[])
        Int_t lumi_num;
        Int_t nvtx;
        Int_t npu;
-       Int_t cutstep[10];
+       Double_t cutstep[10];
        Int_t nCuts; 
        Double_t puSF;
        Double_t btagSF;
@@ -635,6 +640,17 @@ int main (int argc, char *argv[])
        Int_t sumW; 
        Int_t nEv; 
        Double_t nloWeight; // for amc@nlo samples
+       
+       Double_t pt_electron_1; 
+       Double_t pt_electron_2;
+       Double_t pt_electron_3;
+       Double_t pt_muon_1;
+       Double_t pt_muon_2;
+       Double_t pt_muon_3;
+       Double_t pt_jet_1;
+       Double_t pt_jet_2;
+       Double_t pt_jet_3;
+
        
        Int_t nLeptons;
 	// variables for electrons
@@ -687,17 +703,22 @@ int main (int argc, char *argv[])
 	Int_t nCSVLBJets; 
         Int_t nCSVMBJets;
         Int_t nCSVTBJets;
+	Int_t nJets_CSVL; 
+	Int_t nJets_CSVM; 
+	Int_t nJets_CSVT;
         Double_t pt_jet[20];
         Double_t phi_jet[20];
         Double_t eta_jet[20];
         Double_t E_jet[20];
         Int_t charge_jet[20];
         Double_t bdisc_jet[20];
+        Double_t cdiscCvsL_jet[20]; 
+	Double_t cdiscCvsB_jet[20]; 
 
 
         // variables for Zboson
-/*        Double_t Zboson_M; 
-	Double_t Zboson_Px; 
+        Double_t Zboson_M; 
+/*	Double_t Zboson_Px; 
         Double_t Zboson_Py;
         Double_t Zboson_Pz;
 	Double_t Zboson_Energy;
@@ -706,7 +727,10 @@ int main (int argc, char *argv[])
         Double_t met_Pt; 
 	Double_t met_Phi; 
 	Double_t met_Eta; 
-       
+
+	Double_t mWt; 
+        Double_t FCNCtop_M; 
+        Double_t SMtop_M;
         // global data set variables
 	Int_t nofEventsHLTv2; 
 	Int_t nofEventsHLTv3; 
@@ -715,13 +739,12 @@ int main (int argc, char *argv[])
         globalTree->Branch("nofPosWeights",&nofPosWeights,"nofPosWeights/I");  
 	globalTree->Branch("nofNegWeights",&nofNegWeights,"nofNegWeights/I");
         globalTree->Branch("nEv" , &nEv, "nEv/I"); 
-        globalTree->Branch("sumW", &sumW, "sumW/I"); 
-
+        globalTree->Branch("sumW", &sumW, "sumW/I");
+        globalTree->Branch("nCuts",&nCuts, "nCuts/I"); 
+        globalTree->Branch("cutstep",&cutstep,"cutstep[nCuts]/D");
 
 
        // event related variables
-       myTree->Branch("nCuts",&nCuts, "nCuts/I");
-       myTree->Branch("cutstep",&cutstep,"cutstep[nCuts]/I"); 
        myTree->Branch("nloWeight",&nloWeight,"nloWeight/D"); 
        myTree->Branch("run_num",&run_num,"run_num/I");
        myTree->Branch("evt_num",&evt_num,"evt_num/I");
@@ -732,8 +755,6 @@ int main (int argc, char *argv[])
        myTree->Branch("btagSF",&btagSF,"btagSF/D");         
        myTree->Branch("nLeptons",&nLeptons, "nLeptons/I");//
 
-       baselineTree->Branch("nCuts",&nCuts, "nCuts/I");
-       baselineTree->Branch("cutstep",&cutstep,"cutstep[nCuts]/I");
        baselineTree->Branch("nloWeight",&nloWeight,"nloWeight/D");
        baselineTree->Branch("run_num",&run_num,"run_num/I");
        baselineTree->Branch("evt_num",&evt_num,"evt_num/I");
@@ -768,6 +789,10 @@ int main (int argc, char *argv[])
        myTree->Branch("isIso_electron",isIso_electron,"isIso_electron[nElectrons]/O)");
        myTree->Branch("isEBEEGap",isEBEEGap,"isEBEEGap[nElectrons]/O)");
        myTree->Branch("sf_electron",sf_electron,"sf_electron[nElectrons]/D");
+       myTree->Branch("pt_electron_1",&pt_electron_1,"pt_electron_1/D");
+       myTree->Branch("pt_electron_2",&pt_electron_2,"pt_electron_2/D");
+       myTree->Branch("pt_electron_3",&pt_electron_3,"pt_electron_3/D");
+      
 
        baselineTree->Branch("nElectrons",&nElectrons, "nElectrons/I");//
        baselineTree->Branch("ElectronSF",&ElectronSF,"ElectronSF[nElectrons]/D");							      
@@ -793,6 +818,9 @@ int main (int argc, char *argv[])
        baselineTree->Branch("isIso_electron",isIso_electron,"isIso_electron[nElectrons]/O)");
        baselineTree->Branch("isEBEEGap",isEBEEGap,"isEBEEGap[nElectrons]/O)");
        baselineTree->Branch("sf_electron",sf_electron,"sf_electron[nElectrons]/D");
+       baselineTree->Branch("pt_electron_1",&pt_electron_1,"pt_electron_1/D");
+       baselineTree->Branch("pt_electron_2",&pt_electron_2,"pt_electron_2/D");
+       baselineTree->Branch("pt_electron_3",&pt_electron_3,"pt_electron_3/D");
 
        // muons
        myTree->Branch("nMuons",&nMuons, "nMuons/I");
@@ -814,6 +842,9 @@ int main (int argc, char *argv[])
        myTree->Branch("d0_muon",d0_muon,"d0_muon[nMuons]/D");
        myTree->Branch("d0BeamSpot_muon",d0BeamSpot_muon,"d0BeamSpot_muon[nMuons]/D");
        myTree->Branch("sf_muon",sf_muon,"sf_muon[nMuons]/D");
+       myTree->Branch("pt_muon_1",&pt_muon_1,"pt_muon_1/D");
+       myTree->Branch("pt_muon_2",&pt_muon_2,"pt_muon_2/D");
+       myTree->Branch("pt_muon_3",&pt_muon_3,"pt_muon_3/D");
        
        baselineTree->Branch("nMuons",&nMuons, "nMuons/I");
        baselineTree->Branch("MuonIDSF",&MuonIDSF,"MuonIDSF[nMuons]/D"); 
@@ -834,27 +865,52 @@ int main (int argc, char *argv[])
        baselineTree->Branch("d0_muon",d0_muon,"d0_muon[nMuons]/D");
        baselineTree->Branch("d0BeamSpot_muon",d0BeamSpot_muon,"d0BeamSpot_muon[nMuons]/D");
        baselineTree->Branch("sf_muon",sf_muon,"sf_muon[nMuons]/D");
+       baselineTree->Branch("pt_muon_1",&pt_muon_1,"pt_muon_1/D");
+       baselineTree->Branch("pt_muon_2",&pt_muon_2,"pt_muon_2/D");
+       baselineTree->Branch("pt_muon_3",&pt_muon_3,"pt_muon_3/D");
 
        // jets
        myTree->Branch("nJets",&nJets,"nJets/I");
+       myTree->Branch("nJets_CSVL",&nJets_CSVL,"nJets_CSVL/I");
+       myTree->Branch("nJets_CSVM",&nJets_CSVM,"nJets_CSVM/I");
+       myTree->Branch("nJets_CSVT",&nJets_CSVT,"nJets_CSVT/I");
        myTree->Branch("pt_jet",pt_jet,"pt_jet[nJets]/D");
        myTree->Branch("phi_jet",phi_jet,"phi_jet[nJets]/D");
        myTree->Branch("eta_jet",eta_jet,"eta_jet[nJets]/D");
        myTree->Branch("E_jet",E_jet,"E_jet[nJets]/D");
        myTree->Branch("charge_jet",charge_jet,"charge_jet[nJets]/I");	    
        myTree->Branch("bdisc_jet",bdisc_jet,"bdisc_jet[nJets]/D");
+       myTree->Branch("cdiscCvsL_jet",cdiscCvsL_jet,"cdiscCvsL_jet[nJets]/D");
+       myTree->Branch("cdiscCvsB_jet",cdiscCvsB_jet,"cdiscCvsB_jet[nJets]/D");
+       myTree->Branch("pt_jet_1",&pt_jet_1,"pt_jet_1/D");
+       myTree->Branch("pt_jet_2",&pt_jet_2,"pt_jet_2/D");
+       myTree->Branch("pt_jet_3",&pt_jet_3,"pt_jet_3/D");
        
        baselineTree->Branch("nJets",&nJets,"nJets/I");
+       baselineTree->Branch("nJets_CSVL",&nJets_CSVL,"nJets_CSVL/I");
+       baselineTree->Branch("nJets_CSVM",&nJets_CSVM,"nJets_CSVM/I");
+       baselineTree->Branch("nJets_CSVT",&nJets_CSVT,"nJets_CSVT/I");
        baselineTree->Branch("pt_jet",pt_jet,"pt_jet[nJets]/D");
        baselineTree->Branch("phi_jet",phi_jet,"phi_jet[nJets]/D");
        baselineTree->Branch("eta_jet",eta_jet,"eta_jet[nJets]/D");
        baselineTree->Branch("E_jet",E_jet,"E_jet[nJets]/D");
        baselineTree->Branch("charge_jet",charge_jet,"charge_jet[nJets]/I");	    
        baselineTree->Branch("bdisc_jet",bdisc_jet,"bdisc_jet[nJets]/D");
+       baselineTree->Branch("cdiscCvsL_jet",cdiscCvsL_jet,"cdiscCvsL_jet[nJets]/D");
+       baselineTree->Branch("cdiscCvsB_jet",cdiscCvsB_jet,"cdiscCvsB_jet[nJets]/D");
+       baselineTree->Branch("pt_jet_1",&pt_jet_1,"pt_jet_1/D");
+       baselineTree->Branch("pt_jet_2",&pt_jet_2,"pt_jet_2/D");
+       baselineTree->Branch("pt_jet_3",&pt_jet_3,"pt_jet_3/D");
 
        // Zboson
-/*       myTree->Branch("Zboson_M",&Zboson_M,"Zboson_M/D"); 
-       myTree->Branch("Zboson_Px",&Zboson_Px,"Zboson_Px/D"); 
+       myTree->Branch("Zboson_M",&Zboson_M,"Zboson_M/D");
+       baselineTree->Branch("Zboson_M",&Zboson_M,"Zboson_M/D");
+       myTree->Branch("mWt",&mWt,"mWt/D"); 
+       baselineTree->Branch("mWt",&mWt,"mWt/D");
+       myTree->Branch("FCNCtop_M",&FCNCtop_M,"FCNCtop_M/D");
+       myTree->Branch("SMtop_M",&SMtop_M, "SMtop_M/D"); 
+       baselineTree->Branch("SMtop_M",&SMtop_M, "SMtop_M/D");
+ /*      myTree->Branch("Zboson_Px",&Zboson_Px,"Zboson_Px/D"); 
        myTree->Branch("Zboson_Py",&Zboson_Py,"Zboson_Py/D");
        myTree->Branch("Zboson_Pz",&Zboson_Pz,"Zboson_Pz/D");
        myTree->Branch("Zboson_Energy",&Zboson_Energy,"Zboson_Energy/D");
@@ -935,9 +991,14 @@ int main (int argc, char *argv[])
         vector<TRootJet*>      selectedCSVMLJets;
         vector<TRootJet*>      selectedCSVTLJets;
         vector<TRootMCParticle*> mcParticles;
+        vector <TRootJet*>     selectednonCSVLJets; 
 
-
-
+       TLorentzVector Zboson;
+       TLorentzVector Zlep0;
+       TLorentzVector Zlep1;
+       TLorentzVector Wlep;
+       TLorentzVector SMbjet;
+       TLorentzVector cjet;
         //////////////////////////////////////
         // Begin Event Loop
         //////////////////////////////////////
@@ -946,15 +1007,27 @@ int main (int argc, char *argv[])
         nofEventsHLTv3 = 0;
         nofPosWeights = 0; 
         nofNegWeights = 0; 
-        float eventweight = 1; 
+        float eventweight = 1;
+        int nbEvents_0 = 0; 
+        int nbEvents_1 = 0;
+        int nbEvents_2 = 0;
+        int nbEvents_3 = 0;
+        int nbEvents_4 = 0;
+        int nbEvents_5 = 0;
+        int nbEvents_6 = 0;
+	int nbEvents_7 = 0; 
+	int nbEvents_8 = 0; 
+	int nbEvents_9 = 0; 
+        bool debug = false;  
         for (unsigned int ievt = event_start; ievt < end_d; ievt++)
         {
-           nCuts = 0; 
+	   Zboson_M = -10.;
+           nCuts = 0;
 	   eventweight = 1; 
            if(verbose == 0 ) cout << "new event " << ievt << endl; 
            double ievt_d = ievt;
-	   if(!isData) eventweight *= dataLumi / datasets[d]->EquivalentLumi(); 
-	    bool debug = false; 
+//	   if(!isData) eventweight *= dataLumi / datasets[d]->EquivalentLumi(); 
+	     debug = false; 
 	    if (verbose == 0 ) debug = true; 
 	    currentfrac = ievt_d/end_d;
 	    if (debug)cout << endl << endl << "Starting a new event loop!"<<endl;
@@ -1184,6 +1257,7 @@ int main (int argc, char *argv[])
             selectedCSVLLJets.clear();
             selectedCSVMLJets.clear();
             selectedCSVTLJets.clear();
+	    selectednonCSVLJets.clear();
 	    for(unsigned int iJ = 0; iJ < selectedJets.size(); iJ++)
 	    {
 		if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose) selectedCSVLBJets.push_back(selectedJets[iJ]); 
@@ -1281,16 +1355,18 @@ int main (int argc, char *argv[])
             nbTrig++; 
             if(verbose == 0 ) cout << "trigger" << endl; 
             histo1D["cutFlow"]->Fill(0., eventweight);
-            nCuts++; 
-            cutstep[nCuts]++;
+	    nCuts++;
+            nbEvents_0++; 
+//            cout << " after " << nCuts << " " << nbEvents_0 << endl;
 	    if(mumumu &&  selectedMuons.size() < 2) continue; 
 	    if(mumue &&  selectedMuons.size() < 2) continue; 
 	    if(eemu  && selectedElectrons.size() < 2) continue; 
 	    if(eee  &&  selectedElectrons.size() < 2) continue;
 	    if(verbose == 0 ) cout << "baseline" << endl;
-	    histo1D["cutFlow"]->Fill(1., eventweight); 
-            nCuts++;  
-            cutstep[nCuts]++;
+	    histo1D["cutFlow"]->Fill(1., eventweight);   
+            nCuts++;
+            nbEvents_1++;  
+//            cout << " after " << nCuts << " " << nbEvents_1 << endl;
 	    nElectrons=0;
             for (Int_t selel =0; selel < selectedElectrons.size() ; selel++ )
 	    {
@@ -1318,9 +1394,12 @@ int main (int argc, char *argv[])
 	      else sf_electron[nElectrons] = 1.; 
 	      if(!isData) ElectronSF[nElectrons] = electronSFWeight->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0);
               else ElectronSF[nElectrons] = 1.; 
+	     
               nElectrons++;
             }
-
+	    if(selectedElectrons.size()>0) pt_electron_1 = selectedElectrons[0]->Pt(); 
+	    if(selectedElectrons.size()>1) pt_electron_2 = selectedElectrons[1]->Pt(); 
+	    if(selectedElectrons.size()>2) pt_electron_3 = selectedElectrons[2]->Pt(); 
 
             //////////////////////
             // Muon Based Plots //
@@ -1358,7 +1437,9 @@ int main (int argc, char *argv[])
               }
               nMuons++;
             }
-   
+            if(selectedMuons.size()>0) pt_muon_1 = selectedMuons[0]->Pt(); 
+	    if(selectedMuons.size()>1) pt_muon_2 = selectedMuons[1]->Pt(); 
+	    if(selectedMuons.size()>2) pt_muon_3 = selectedMuons[2]->Pt();
             nLeptons = nMuons + nElectrons; 
 	    ///////////////////////
 	    //   Jet based plots //
@@ -1373,12 +1454,20 @@ int main (int argc, char *argv[])
                 E_jet[nJets]=selectedJets[seljet]->E();
                 charge_jet[nJets]=selectedJets[seljet]->charge();
                 bdisc_jet[nJets]=selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags() ;
+                cdiscCvsB_jet[nJets]=selectedJets[seljet]->ctag_pfCombinedCvsBJetTags() ;
+                cdiscCvsL_jet[nJets]=selectedJets[seljet]->ctag_pfCombinedCvsLJetTags() ;
                 nJets++;
 
             }
-	    nCSVTBJets = selectedCSVTBJets.size(); 
+	    if(selectedJets.size()>0) pt_jet_1 = selectedJets[0]->Pt(); 
+	    if(selectedJets.size()>1) pt_jet_2 = selectedJets[1]->Pt(); 
+	    if(selectedJets.size()>2) pt_jet_3 = selectedJets[2]->Pt();
+	    nCSVTBJets = selectedCSVTBJets.size();
+            nJets_CSVT = nCSVTBJets; 
 	    nCSVMBJets = selectedCSVMBJets.size();
+	    nJets_CSVM = nCSVMBJets;
  	    nCSVLBJets = selectedCSVLBJets.size();
+            nJets_CSVL = nCSVLBJets;
 	    double met_px = mets[0]->Px();
 	    double met_py = mets[0]->Py();
             met_Pt = sqrt(met_px*met_px + met_py*met_py);
@@ -1396,68 +1485,138 @@ int main (int argc, char *argv[])
 	    if(selectedMuons.size() + selectedElectrons.size() != 3) continue; 
  */
             histo1D["cutFlow"]->Fill(2., eventweight); 
-            nCuts++;  
-            cutstep[nCuts]++;
+            nCuts++;
+            nbEvents_2++;  
+//            cout << " after " << nCuts << " " << nbEvents_2 << endl;
             if(selectedJets.size() < 2) continue; 
 	    histo1D["cutFlow"]->Fill(3., eventweight);
-            nCuts++;  
-            cutstep[nCuts]++;
+            nCuts++;
+            nbEvents_3++;  
+//            cout << " after " << nCuts << " " << nbEvents_3 << endl;
             if(selectedCSVLBJets.size() < 1) continue; 
 	    histo1D["cutFlow"]->Fill(4., eventweight);
-            nCuts++;  
-            cutstep[nCuts]++;
+            nCuts++;
+            nbEvents_4++;  
+//            cout << " after " << nCuts << " " << nbEvents_4 << endl;
             baselineTree->Fill();
             nbBaseline++;
 	    //check flavour
-	    if(mumumu && selectedMuons.size() != 3) continue; 
+/*	    if(mumumu && selectedMuons.size() != 3) continue; 
 	    if(eee && selectedElectrons.size() != 3) continue; 
             if(mumue && selectedMuons.size() != 2) continue; 
             if(eemu && selectedElectrons.size() != 2) continue;
+*/
+            histo1D["nbMuons"]->Fill(selectedMuons.size(), eventweight);
+            histo1D["nbElectrons"]->Fill(selectedElectrons.size(), eventweight);
+
+            if(selectedElectrons.size() + selectedMuons.size() <3) continue;
             histo1D["cutFlow"]->Fill(5., eventweight);
-            nCuts++;  
-            cutstep[nCuts]++;            
+            nCuts++;
+            nbEvents_5++; 
+            if(mumumu && selectedMuons.size() <3) continue;
+            histo1D["cutFlow"]->Fill(6., eventweight);
+            nCuts++;
+            nbEvents_6++;  
+//            cout << " after " << nCuts << " " << nbEvents_5 << endl;            
 
-           
-            
+	    Zlep0.Clear(); 
+	    Zlep1.Clear();
+            Wlep.Clear();  
 
-	    TLorentzVector ZBoson; 
-	    ZBoson.Clear(); 
-	    TLorentzVector Zlep0; 
-	    TLorentzVector Zlep1; 
 	    // check sign
-	    if(mumue && (selectedMuons[0]->charge() == selectedMuons[1]->charge())) continue;
-	    if(mumue) Zlep0.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(), selectedMuons[0]->Pz(), selectedMuons[0]->Energy());
-            if(mumue) Zlep1.SetPxPyPzE(selectedMuons[1]->Px(), selectedMuons[1]->Py(), selectedMuons[1]->Pz(), selectedMuons[1]->Energy());
-            if(eemu && (selectedElectrons[0]->charge() == selectedElectrons[1]->charge())) continue;	    
-            if(eemu)  Zlep0.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(), selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy());
-            if(eemu) Zlep1.SetPxPyPzE(selectedElectrons[1]->Px(), selectedElectrons[1]->Py(), selectedElectrons[1]->Pz(), selectedElectrons[1]->Energy());
 	    bool OS = false; 
+	    if(eemu && (selectedElectrons[0]->charge() == selectedElectrons[1]->charge())) continue;
+	    else if(eemu) OS = true;
+            if(mumue && (selectedMuons[0]->charge() == selectedMuons[1]->charge())) continue;
+            else if(mumue) OS = true; 
 	    if(mumumu)
 	    {
-	       if(selectedMuons[0]->charge() != selectedMuons[1]->charge()) OS = true; 
-	       else if(selectedMuons[2]->charge() != selectedMuons[1]->charge()) OS = true; 
-               else if(selectedMuons[0]->charge() != selectedMuons[2]->charge()) OS = true; 
-	       
+	       if(selectedMuons[0]->charge() != selectedMuons[1]->charge()){
+ 			 OS = true;
+ 			 Zlep0.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(), selectedMuons[0]->Pz(), selectedMuons[0]->Energy());
+  			 Zlep1.SetPxPyPzE(selectedMuons[1]->Px(), selectedMuons[1]->Py(), selectedMuons[1]->Pz(), selectedMuons[1]->Energy());
+			 if(selectedMuons.size() > 2) Wlep.SetPxPyPzE(selectedMuons[2]->Px(), selectedMuons[2]->Py(), selectedMuons[2]->Pz(), selectedMuons[2]->Energy());
+  			 else Wlep.SetPxPyPzE(selectedElectrons[0]->Px(),selectedElectrons[0]->Py(), selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy());
+               } 
+	       if(selectedMuons.size() > 2) {
+		if(selectedMuons[2]->charge() != selectedMuons[1]->charge()){
+			 OS = true; 
+			 Zlep0.SetPxPyPzE(selectedMuons[1]->Px(), selectedMuons[1]->Py(), selectedMuons[1]->Pz(), selectedMuons[1]->Energy());
+              		 Zlep1.SetPxPyPzE(selectedMuons[2]->Px(), selectedMuons[2]->Py(), selectedMuons[2]->Pz(), selectedMuons[2]->Energy());
+			 Wlep.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(), selectedMuons[0]->Pz(), selectedMuons[0]->Energy());
+		}
+                 else if(selectedMuons[0]->charge() != selectedMuons[2]->charge()){
+			 OS = true; 
+			 Zlep0.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(), selectedMuons[0]->Pz(), selectedMuons[0]->Energy());
+			 Zlep1.SetPxPyPzE(selectedMuons[2]->Px(), selectedMuons[2]->Py(), selectedMuons[2]->Pz(), selectedMuons[2]->Energy());
+			 Wlep.SetPxPyPzE(selectedMuons[1]->Px(), selectedMuons[1]->Py(), selectedMuons[1]->Pz(), selectedMuons[1]->Energy());
+		}
+	       }
             }
             if(eee)
             {
-               if(selectedElectrons[0]->charge() != selectedElectrons[1]->charge()) OS = true;
-               else if(selectedElectrons[2]->charge() != selectedElectrons[1]->charge()) OS = true;
-               else if(selectedElectrons[0]->charge() != selectedElectrons[2]->charge()) OS = true;
-               
+               if(selectedElectrons[0]->charge() != selectedElectrons[1]->charge()){
+ 			 OS = true;
+ 			 Zlep0.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(), selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy());
+  			 Zlep1.SetPxPyPzE(selectedElectrons[1]->Px(), selectedElectrons[1]->Py(), selectedElectrons[1]->Pz(), selectedElectrons[1]->Energy());
+			 if(selectedElectrons.size() > 2) Wlep.SetPxPyPzE(selectedElectrons[2]->Px(), selectedElectrons[2]->Py(), selectedElectrons[2]->Pz(), selectedElectrons[2]->Energy());
+  			 else Wlep.SetPxPyPzE(selectedElectrons[0]->Px(),selectedElectrons[0]->Py(), selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy());
+               } 
+	       if(selectedElectrons.size() > 2) {
+		if(selectedElectrons[2]->charge() != selectedElectrons[1]->charge()){
+			 OS = true; 
+			 Zlep0.SetPxPyPzE(selectedElectrons[1]->Px(), selectedElectrons[1]->Py(), selectedElectrons[1]->Pz(), selectedElectrons[1]->Energy());
+              		 Zlep1.SetPxPyPzE(selectedElectrons[2]->Px(), selectedElectrons[2]->Py(), selectedElectrons[2]->Pz(), selectedElectrons[2]->Energy());
+			 Wlep.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(), selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy());
+		}
+                 else if(selectedElectrons[0]->charge() != selectedElectrons[2]->charge()){
+			 OS = true; 
+			 Zlep0.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(), selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy());
+			 Zlep1.SetPxPyPzE(selectedElectrons[2]->Px(), selectedElectrons[2]->Py(), selectedElectrons[2]->Pz(), selectedElectrons[2]->Energy());
+			 Wlep.SetPxPyPzE(selectedElectrons[1]->Px(), selectedElectrons[1]->Py(), selectedElectrons[1]->Pz(), selectedElectrons[1]->Energy());
+		}
+	       }   
             }
 	    if(!OS) continue; 
-            histo1D["cutFlow"]->Fill(6., eventweight); 
-            nCuts++;  
-            cutstep[nCuts]++;
+            if(mumue) Zlep0.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(), selectedMuons[0]->Pz(), selectedMuons[0]->Energy());
+            if(mumue) Zlep1.SetPxPyPzE(selectedMuons[1]->Px(), selectedMuons[1]->Py(), selectedMuons[1]->Pz(), selectedMuons[1]->Energy());
+            if(mumue) Wlep.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(), selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy());
 
-	    if(fabs(ZBoson.M() - 90.0 ) > 15) continue; 
-	    histo1D["cutFlow"]->Fill(7., eventweight);
-            nCuts++;  
-            cutstep[nCuts]++;	     
-	    eventSelected = true; 
-	    
-	    //////////////////////////////////////
+            if(eemu)  Zlep0.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(), selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy());
+            if(eemu) Zlep1.SetPxPyPzE(selectedElectrons[1]->Px(), selectedElectrons[1]->Py(), selectedElectrons[1]->Pz(), selectedElectrons[1]->Energy());
+            if(eemu) Wlep.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(), selectedMuons[0]->Pz(), selectedMuons[0]->Energy());
+
+            histo1D["cutFlow"]->Fill(7., eventweight); 
+            nCuts++;
+            nbEvents_7++;  
+            eventSelected = true;
+
+
+            //Make event variables
+	    Zboson.Clear(); 
+            Zboson.SetPxPyPzE(( Zlep0 + Zlep1).Px() ,( Zlep0 + Zlep1).Py(),( Zlep0 + Zlep1).Py(),( Zlep0 + Zlep1).Energy()) ;
+            Zboson_M = (Zlep0+Zlep1).M();
+
+ 	    SMbjet.Clear(); 
+	    SMbjet.SetPxPyPzE(selectedCSVLBJets[0]->Px(),selectedCSVLBJets[0]->Py(),selectedCSVLBJets[0]->Pz(),selectedCSVLBJets[0]->Energy());
+
+	    cjet.Clear(); 
+	    cjet = FCNCjetCalculator(selectedCSVLLJets,selectedCSVLBJets, Zboson ,3);
+
+            FCNCtop_M = (Zboson+cjet).M();
+	    SMtop_M = (Wlep+SMbjet).M();  
+
+            mWt = TMath::Sqrt((Wlep.Pt() + met_Pt)*(Wlep.Pt() +met_Pt)-(Wlep.Px() + met_px)*(Wlep.Px() + met_px) - (Wlep.Py() + met_py)* (Wlep.Py() + met_py)); 
+
+	    if(fabs((Zlep0+Zlep1).M() - 90.0 ) > 15) continue; 
+	    histo1D["cutFlow"]->Fill(8., eventweight);
+            nCuts++;
+	    nbEvents_8++; 
+            if(fabs((Wlep+SMbjet).M() - 173.0) > 35 ) continue; 
+            histo1D["cutFlow"]->Fill(9., eventweight);
+            nCuts++;
+            nbEvents_9++;	    
+             //////////////////////////////////////
 	    //  DO STUFF WITH SELECTED EVENTS ////
 	    ////////////////////////////////////// 
 	    if(!eventSelected) continue;
@@ -1466,6 +1625,17 @@ int main (int argc, char *argv[])
 	       
 	    
 	} // end eventloop
+        cutstep[0] = nbEvents_0; 
+        cutstep[1] = nbEvents_1;
+        cutstep[2] = nbEvents_2;
+        cutstep[3] = nbEvents_3;
+        cutstep[4] = nbEvents_4;
+        cutstep[5] = nbEvents_5;
+        cutstep[6] = nbEvents_6;
+        cutstep[7] = nbEvents_7; 
+        cutstep[8] = nbEvents_8; 
+	cutstep[9] = nbEvents_9; 
+	if(debug)	for(int j = 0; j < 7; j++){       cout << cutstep[j] << endl; }
         sumW = (int) sumWeights; 
         nEv = (int) nEvents; 
 	globalTree->Fill(); 
@@ -1545,4 +1715,54 @@ int main (int argc, char *argv[])
 
 
 
+TLorentzVector FCNCjetCalculator(std::vector<TRootJet*> nonBJets,std::vector<TRootJet*> BJets, TLorentzVector recoZ ,int verb)
+{
+    TLorentzVector FCNCjet; 
+    FCNCjet.Clear(); 
 
+
+     double TempMinMass = 100000.00;
+     double TopMass = 172.9;
+     TLorentzVector Jetcandidate;
+     int NbInColl = -1;
+     if(nonBJets.size() != 0){
+
+       for(unsigned int iJ = 0; iJ < nonBJets.size(); iJ++)
+       {
+     	  TLorentzVector Jet;
+     	  Jet.SetPxPyPzE(nonBJets[iJ]->Px(),nonBJets[iJ]->Py(),nonBJets[iJ]->Pz(),nonBJets[iJ]->Energy());
+
+     	  if(fabs((recoZ+Jet).M() - TopMass) < TempMinMass)
+     	  {
+     	    TempMinMass = fabs((recoZ+Jet).M() - TopMass);
+     	    Jetcandidate.SetPxPyPzE(Jet.Px(), Jet.Py(), Jet.Pz(), Jet.E());
+     	    NbInColl = iJ;
+
+     	  }
+
+
+       }
+       FCNCjet.SetPxPyPzE(nonBJets[NbInColl]->Px(),nonBJets[NbInColl]->Py(),nonBJets[NbInColl]->Pz(),nonBJets[NbInColl]->Energy());
+     }
+     else {
+       for(unsigned int iJ = 1; iJ < BJets.size(); iJ++)
+       {
+     	  TLorentzVector Jet;
+     	  Jet.SetPxPyPzE(BJets[iJ]->Px(),BJets[iJ]->Py(),BJets[iJ]->Pz(),BJets[iJ]->Energy());
+
+     	  if(fabs((recoZ+Jet).M() - TopMass) < TempMinMass)
+     	  {
+     	    TempMinMass = fabs((recoZ+Jet).M() - TopMass);
+     	    Jetcandidate.SetPxPyPzE(Jet.Px(), Jet.Py(), Jet.Pz(), Jet.E());
+     	    NbInColl = iJ;
+
+     	  }
+
+       }
+
+       FCNCjet.SetPxPyPzE(BJets[NbInColl]->Px(),BJets[NbInColl]->Py(),BJets[NbInColl]->Pz(),BJets[NbInColl]->Energy());
+     }
+
+
+    return FCNCjet;
+}
