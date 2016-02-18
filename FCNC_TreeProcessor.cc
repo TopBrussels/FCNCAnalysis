@@ -33,12 +33,12 @@ map<string,TTree*> ttree;
 map<string,MultiSamplePlot*> MSPlot;
 
 
-float Luminosity = 2196.422335; // pb-1 Muon  = 2196.422335, Electron = 2094.087
-TString slumi = "2196.422335";
+float Luminosity = 2628.727204156; // pb-1 Muon  = 2628.727204156, Electron = 2094.087
+TString slumi = "2628.727204156";
 std::string channel = "_Mu";
-std::string date = "_20_1_2016";
+std::string date = "_16_2_2016";
 Bool_t debug = false;
-
+bool applyAMC;
 
 // functions prototype
 std::string intToStr (int number);
@@ -54,9 +54,10 @@ int main()
 
     string xmlFileName;
     string CraneenPath;
+    
 
 
-	xmlFileName = "config/FullMcBkgdSamplesV8_TreeProcessor.xml";
+    xmlFileName = "config/FullMcBkgdSamplesV8_TreeProcessor.xml";
     cout << "xmlFileName is " << xmlFileName << endl;
 
 
@@ -74,6 +75,18 @@ int main()
     DatasetPlotter(40, 0., 1, "bdisc1", xmlFileName,CraneenPath,"ObjectVarsTree");
     DatasetPlotter(40, 0., 1, "bdisc2", xmlFileName,CraneenPath,"ObjectVarsTree");
     DatasetPlotter(40, 0., 1, "bdisc3", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(40, 0., 1, "bdisc4", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(40, 0., 1, "bdisc5", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(40, -1., 1, "c_vsL_disc1", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(40, -1., 1, "c_vsL_disc2", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(40, -1., 1, "c_vsL_disc3", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(40, -1., 1, "c_vsL_disc4", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(40, -1., 1, "c_vsL_disc5", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(40, -1., 1, "c_vsB_disc1", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(40, -1., 1, "c_vsB_disc2", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(40, -1., 1, "c_vsB_disc3", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(40, -1., 1, "c_vsB_disc4", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(40, -1., 1, "c_vsB_disc5", xmlFileName,CraneenPath,"ObjectVarsTree");
     DatasetPlotter(40, -4.5, 4.5, "leptoneta", xmlFileName,CraneenPath,"ObjectVarsTree");
     DatasetPlotter(40, 0., 500., "MTlepmet", xmlFileName,CraneenPath,"AdvancedVarsTree");
     DatasetPlotter(40, 0., 500., "MLepTop_GenMatch", xmlFileName,CraneenPath,"AdvancedVarsTree");
@@ -153,7 +166,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
   	free(dup);
 
 
-  	TString CraneenPath = "/localgrid/kderoove/FCNC/TopTreeFramework/CMSSW_7_6_0/src/TopBrussels/FCNCAnalysis/Merged/Ntuples" + channel + "/Ntuples" + date;
+  	TString CraneenPath = "Merged/Ntuples" + channel + "/Ntuples" + date;
 
   
 	for (int d = 0; d < datasets.size(); d++)   //Loop through datasets  
@@ -190,20 +203,44 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 		  
 
 		bool isData= false;
-		if(dataSetName.find("Data")!=string::npos || dataSetName.find("data")!=string::npos || dataSetName.find("DATA")!=string::npos) isData =true;
+		bool isAMC = true;
+		if(dataSetName.find("Data")!=string::npos || dataSetName.find("data")!=string::npos || dataSetName.find("DATA")!=string::npos)
+		{
+		  if(debug) cout << "Data found" << endl;
+		  isData =true;
+	  }
+    if(dataSetName.find("NLO") != std::string::npos || dataSetName.find("nlo") !=std::string::npos || dataSetName.find("amc") !=std::string::npos) isAMC = true;
 
 
-        ////////////////////////////////////////////////////////////
-        // Tree for reweighting
-        ////////////////////////////////////////////////////////////		  
+    ////////////////////////////////////////////////////////////
+    // Tree for reweighting
+    ////////////////////////////////////////////////////////////		  
 		string TTreename_Weights = "Weights";	
 		ttree[(dataSetName + "weights").c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename_Weights.c_str()); //get ttre for each dataset
 		
-        float lumiweight, LeptonSF, bTagSF;
-        ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("lumiWeight",&lumiweight);
-        ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("fleptonSF",&LeptonSF);
-        ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("btagWeight_mujets_central",&bTagSF);
-		
+    float lumiweight, LeptonSF, bTagSF, negWeights;
+    ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("lumiWeight",&lumiweight);
+    ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("fleptonSF",&LeptonSF);
+    ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("btagWeight_mujets_central",&bTagSF);
+    ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("nloWeight",&negWeights);
+
+      double nloSF = 1.;
+      int nPos = 0; 
+      int nNeg = 0;
+      int Ev = 0; 
+      if(applyAMC && isAMC && !isData)
+      {
+         
+          for (int k = 0; k<nEntries; k++)
+          {
+             ttree[(dataSetName + "weights").c_str()]->GetEntry(k);
+             if(negWeights > 0) nPos++;
+             else if(negWeights < 0) nNeg ++;
+             Ev ++; 
+           }
+           
+           nloSF *= ((double) (nPos - nNeg))/((double) (nPos + nNeg));
+       }		
 		
 		//////////////////////////////////////////////////////////
 		// Making MS plots
@@ -212,7 +249,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 		{
     		ScaleFactor = 1.; // event scale factor
 			ttree[(dataSetName + "weights").c_str()]->GetEntry(j);
-			ScaleFactor = ScaleFactor * lumiweight * LeptonSF * bTagSF;
+			ScaleFactor = ScaleFactor * lumiweight * LeptonSF * bTagSF * nloSF;
 			ttree[dataSetName.c_str()]->GetEntry(j);
 
 			if (debug) cout << "varofInterest is " << varofInterest << endl;

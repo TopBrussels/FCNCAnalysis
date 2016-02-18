@@ -141,14 +141,15 @@ int main (int argc, char *argv[])
     int passed = 0;
     int preTrig = 0;
     int postTrig = 0;
-    int negWeights = 0;
+    int nofNegWeights = 0;
+    int nofPosWeights = 0;
     float weightCount = 0.0;
     int eventCount = 0;
 
     //Initializing CSVv2 b-tag WP
-	  float workingpointvalue_Loose = 0.605;//working points updated to 2015 BTV-POG recommendations.
-	  float workingpointvalue_Medium = 0.890;//working points updated to 2015 BTV-POG recommendations.
-	  float workingpointvalue_Tight = 0.970;//working points updated to 2015 BTV-POG recommendations.
+	  float workingpointvalue_Loose = 0.460;//working points updated to 2016 BTV-POG recommendations.
+	  float workingpointvalue_Medium = 0.800;//working points updated to 2016 BTV-POG recommendations.
+	  float workingpointvalue_Tight = 0.935;//working points updated to 2016 BTV-POG recommendations.
 
     clock_t start = clock();
     cout << "*************************************************************" << endl;
@@ -200,13 +201,14 @@ int main (int argc, char *argv[])
     ///////////////////////////////////////
 
     bool debug = false;
-    bool bTagReweight_PreReweighting = true; //Needs to be set only once to true in order to produce the EtaPtHistos
+    bool bTagReweight_PreReweighting = false; //Needs to be set only once to true in order to produce the EtaPtHistos
     bool Muon = false;
     bool Electron = false;
     string btagger = "CSVM";
     bool printTriggers = false;
     bool applyTriggers = true;
-	  float Luminosity = 2094.087; //pb^-1 Muon  = 2196.422335, Electron = 2094.087
+    bool applyJER = true;
+	  float Luminosity = 2628.727204156; //pb^-1 Muon  = 2628.727204156, Electron = 2094.087
     string channelpostfix = "";
 
     //Setting Lepton Channels
@@ -324,8 +326,8 @@ int main (int argc, char *argv[])
 //                btwt_comb_central = new BTagWeightTools(bTagReader_comb_central,"BTagHistosPtEta/HistosPtEta_"+dName + "_comb_central.root",false,30,999,2.4);
 //                btwt_comb_up = new BTagWeightTools(bTagReader_comb_up,"BTagHistosPtEta/HistosPtEta_"+dName +"_comb_up.root",false,30,999,2.4);
 //                btwt_comb_down = new BTagWeightTools(bTagReader_comb_down,"BTagHistosPtEta/HistosPtEta_"+dName+"_comb_down.root",false,30,999,2.4);
-					cout << "CAVEAT!!! Using the BTagHistosPtEta/HistosPtEta_TTJets_mujets_central.root as standard PtEta histo for b-tag reweighing" << endl;
-                btwt_mujets_central = new BTagWeightTools(bTagReader_mujets_central,"BTagHistosPtEta/HistosPtEta_TTJets_mujets_central.root",false,30,999,2.4);
+//					cout << "CAVEAT!!! Using the BTagHistosPtEta/HistosPtEta_TTJets_mujets_central.root as standard PtEta histo for b-tag reweighing" << endl;
+                btwt_mujets_central = new BTagWeightTools(bTagReader_mujets_central,"BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_central.root",false,30,999,2.4);
 //                btwt_mujets_up = new BTagWeightTools(bTagReader_mujets_up,"BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_up.root",false,30,999,2.4);
 //                btwt_mujets_down = new BTagWeightTools(bTagReader_mujets_down,"BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_down.root",false,30,999,2.4);
 //                btwt_ttbar_central = new BTagWeightTools(bTagReader_ttbar_central,"BTagHistosPtEta/HistosPtEta_"+dName+"_ttbar_central.root",false,30,999,2.4);
@@ -362,9 +364,7 @@ int main (int argc, char *argv[])
     }
 
     LumiReWeighting LumiWeights;
-//    LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring15DR74-Asympt25ns.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2015Data74X_25ns-Run246908-260627Cert_norm.root", "pileup50", "pileup");    
-    LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIIFall15DR76-Asympt25ns.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2015Data74X_25ns-Run254231-258750Cert/nominal.root", "pileup", "pileup");    
-//    LumiWeights = LumiReWeighting("/user/lbeck/CMSSW_7_6_0/src/TopBrussels/TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring15DR74-Asympt25ns.root", "/user/lbeck/CMSSW_7_6_0/src/TopBrussels/TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2015Data74X_25ns-Run246908-260627Cert_Silver.root", "pileup50", "pileup");    
+    LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIIFall15DR76-Asympt25ns.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2015Data74X_25ns-Run246908-260627Cert.root", "pileup", "pileup");    
 
     ////////////////////////////
     ///  Initialise trigger  ///
@@ -378,15 +378,7 @@ int main (int argc, char *argv[])
     /////////////////////////////////
     //  Loop over Datasets
     /////////////////////////////////
-/*    cout <<"found sample with equivalent lumi "<<  theDataset->EquivalentLumi() <<endl;
-    if(dName.find("Data")==string::npos)
-    {
-        Luminosity = theDataset->EquivalentLumi();
-        cout <<"found DATA sample with equivalent lumi "<<  theDataset->EquivalentLumi() <<endl;
-    }
-
-    cout << "Rescaling to an integrated luminosity of "<< Luminosity <<" pb^-1" << endl;
-*/    int ndatasets = datasets.size() - 1 ;
+    int ndatasets = datasets.size() - 1 ;
 
     double currentLumi;
     double newlumi;
@@ -848,7 +840,7 @@ int main (int argc, char *argv[])
     /////////////////////////////////
     cout << " - Loop over datasets ... " << datasets.size () << " datasets !" << endl;
 
-    string btagHisto_str = "BTagHistosPtEta/HistosPtEta"+dName+"_mujets_central.root";
+    string btagHisto_str = "BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_central.root";
     TFile * btaghistos = new TFile(btagHisto_str.c_str());
 
     for (unsigned int d = 0; d < datasets.size(); d++)
@@ -857,9 +849,10 @@ int main (int argc, char *argv[])
 
         bool nlo = false;
         bool isData = false;
+        double nloSF = 1; 
+        double sumWeights = 0;
 
-
-        if(dName.find("NLO") != std::string::npos || dName.find("nlo") !=std::string::npos) nlo = true;
+        if(dName.find("NLO") != std::string::npos || dName.find("nlo") !=std::string::npos || dName.find("amc") !=std::string::npos) nlo = true;
         else nlo = false;
 
         if(nlo) cout << "NLO Dataset!" <<endl;
@@ -889,9 +882,9 @@ int main (int argc, char *argv[])
 
         TFile * tupfile = new TFile(Ntupname.c_str(),"RECREATE");
         TNtuple * tup      = new TNtuple(Ntuptitle_AdvancedVars.c_str(), Ntuptitle_AdvancedVars.c_str(), "Mbb:MTlepmet:MLepTop_GenMatch:MHadTop_GenMatch:EtaLepTop_GenMatch:EtaHadTop_GenMatch:MassW_GenMatch:EtaW_GenMatch:dR_lepJet_min:MLepTop:MHadTop:EtaLepTop:EtaHadTop:MassW:EtaW");
-        TNtuple * tup_ObjectVars      = new TNtuple(Ntuptitle_ObjectVars.c_str(), Ntuptitle_ObjectVars.c_str(), "qlepton:leptonpt:leptoneta:leptonX:leptonY:leptonZ:leptonE:bdisc1:bdisc2:bdisc3:bdisc4:bdisc5:jet1_Pt:jet2_Pt:jet3_Pt:jet4_Pt:jet5_Pt:jet1_Eta:jet2_Eta:jet3_Eta:jet4_Eta:jet5_Eta:jet1_x:jet2_x:jet3_x:jet4_x:jet5_x:jet1_y:jet2_y:jet3_y:jet4_y:jet5_y:jet1_z:jet2_z:jet3_z:jet4_z:jet5_z:jet1_E:jet2_E:jet3_E:jet4_E:jet5_E:MissingEt");
-        TNtuple * tup_EventInfo      = new TNtuple(Ntuptitle_EventInfo.c_str(), Ntuptitle_EventInfo.c_str(), "nbVertices:nb_jets:nb_bjets");
-        TNtuple * tup_Weights      = new TNtuple(Ntuptitle_Weights.c_str(), Ntuptitle_Weights.c_str(), "lumiWeight:fleptonSF:btagWeight_comb_central:btagWeight_comb_up:btagWeight_comb_down:btagWeight_mujets_central:btagWeight_mujets_up:btagWeight_mujets_down:btagWeight_ttbar_central:btagWeight_ttbar_up:btagWeight_ttbar_down");
+        TNtuple * tup_ObjectVars      = new TNtuple(Ntuptitle_ObjectVars.c_str(), Ntuptitle_ObjectVars.c_str(), "qlepton:leptonpt:leptoneta:leptonX:leptonY:leptonZ:leptonE:bdisc1:bdisc2:bdisc3:bdisc4:bdisc5:jet1_Pt:jet2_Pt:jet3_Pt:jet4_Pt:jet5_Pt:jet1_Eta:jet2_Eta:jet3_Eta:jet4_Eta:jet5_Eta:jet1_x:jet2_x:jet3_x:jet4_x:jet5_x:jet1_y:jet2_y:jet3_y:jet4_y:jet5_y:jet1_z:jet2_z:jet3_z:jet4_z:jet5_z:jet1_E:jet2_E:jet3_E:jet4_E:jet5_E:MissingEt:c_vsL_disc1:c_vsL_disc2:c_vsL_disc3:c_vsL_disc4:c_vsL_disc5:c_vsB_disc1:c_vsB_disc2:c_vsB_disc3:c_vsB_disc4:c_vsB_disc5");
+        TNtuple * tup_EventInfo      = new TNtuple(Ntuptitle_EventInfo.c_str(), Ntuptitle_EventInfo.c_str(), "nbVertices:nb_jets:nb_bjets_CSVM:nb_bjets_CSVL:nb_bjets_CSVT");
+        TNtuple * tup_Weights      = new TNtuple(Ntuptitle_Weights.c_str(), Ntuptitle_Weights.c_str(), "lumiWeight:fleptonSF:btagWeight_comb_central:btagWeight_comb_up:btagWeight_comb_down:btagWeight_mujets_central:btagWeight_mujets_up:btagWeight_mujets_down:btagWeight_ttbar_central:btagWeight_ttbar_up:btagWeight_ttbar_down:nloWeight:weight1:weight2:weight3:weight4:weight5:weight6:weight7:weight8");
                     
         
         
@@ -915,11 +908,11 @@ int main (int argc, char *argv[])
         }
         else
         {
-            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_MC_L1FastJet_AK4PFchs.txt");
+            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV7_MC_L1FastJet_AK4PFchs.txt");
             vCorrParam.push_back(*L1JetCorPar);
-            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_MC_L2Relative_AK4PFchs.txt");
+            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV7_MC_L2Relative_AK4PFchs.txt");
             vCorrParam.push_back(*L2JetCorPar);
-            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_MC_L3Absolute_AK4PFchs.txt");
+            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV7_MC_L3Absolute_AK4PFchs.txt");
             vCorrParam.push_back(*L3JetCorPar);
         }
         JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_DATA_Uncertainty_AK4PFchs.txt");
@@ -945,20 +938,19 @@ int main (int argc, char *argv[])
 
         if (debug) cout << " - Loop over events " << endl;
 
-        float qlepton,leptonpt,bdisc1,bdisc2,bdisc3,bdisc4,bdisc5,nb_jets,nb_bjets,jet1_Pt,jet2_Pt,jet3_Pt,MissingEt,leptoneta,Mbb,MTlepmet,MLepTop_GenMatch,MHadTop_GenMatch,EtaLepTop_GenMatch,EtaHadTop_GenMatch,MassW_GenMatch,EtaW_GenMatch,dR_lepJet_min,MLepTop,MHadTop,EtaLepTop,EtaHadTop,MassW,EtaW,nbVertices;
+        float qlepton,leptonpt,bdisc1,bdisc2,bdisc3,bdisc4,bdisc5,nb_jets,nb_bjets_CSVM,nb_bjets_CSVL,nb_bjets_CSVT,jet1_Pt,jet2_Pt,jet3_Pt,MissingEt,leptoneta,Mbb,MTlepmet,MLepTop_GenMatch,MHadTop_GenMatch,EtaLepTop_GenMatch,EtaHadTop_GenMatch,MassW_GenMatch,EtaW_GenMatch,dR_lepJet_min,MLepTop,MHadTop,EtaLepTop,EtaHadTop,MassW,EtaW,nbVertices;
         float leptonX,leptonY,leptonZ,leptonE,jet4_Pt,jet5_Pt,jet1_Eta,jet2_Eta,jet3_Eta,jet4_Eta,jet5_Eta,jet1_x,jet2_x,jet3_x,jet4_x,jet5_x,jet1_y,jet2_y,jet3_y,jet4_y,jet5_y,jet1_z,jet2_z,jet3_z,jet4_z,jet5_z,jet1_E,jet2_E,jet3_E,jet4_E,jet5_E;
         float lumiWeight, fleptonSF;
         float btagWeight_comb_central,btagWeight_comb_up,btagWeight_comb_down,btagWeight_mujets_central,btagWeight_mujets_up,btagWeight_mujets_down,btagWeight_ttbar_central,btagWeight_ttbar_up,btagWeight_ttbar_down;
-
-
         double end_d = ending;
         if(endEvent > ending) end_d = ending;
         else end_d = endEvent;
 
         double EqLumi = 1.;
-        if(dName.find("Data")==string::npos) EqLumi = end_d/xSect;
+        int nEvents = end_d - event_start;
+        if(dName.find("Data")==string::npos) EqLumi = nEvents/xSect;
         cout <<"Equivalent Lumi: "<<  EqLumi  << endl;
-        cout <<"Will run over "<<  end_d<< " events..."<<endl;    cout <<"Starting event = = = = "<< event_start  << endl;
+        cout <<"Will run over "<<  nEvents << " events..."<<endl;    cout <<"Starting event = = = = "<< event_start  << endl;
 
 
         //////////////////////////////////////
@@ -966,7 +958,7 @@ int main (int argc, char *argv[])
         //////////////////////////////////////
         for (unsigned int ievt = event_start; ievt < end_d; ievt++)
         {
-	        qlepton = 0; leptonpt = -1.; bdisc1 = -1.; bdisc2 = -1.; bdisc3 = -1.; bdisc4 = -1.; bdisc5 = -1.; nb_jets = -1; nb_bjets = -1.; jet1_Pt = -1; jet2_Pt = -1.;jet3_Pt = -1.; MissingEt = -1.;
+	          qlepton = 0; leptonpt = -1.; bdisc1 = -1.; bdisc2 = -1.; bdisc3 = -1.; bdisc4 = -1.; bdisc5 = -1.; nb_jets = -1; nb_bjets_CSVM = -1.; nb_bjets_CSVL = -1.; nb_bjets_CSVT = -1.; jet1_Pt = -1; jet2_Pt = -1.;jet3_Pt = -1.; MissingEt = -1.;
             leptoneta = -99999.; Mbb=-1.; MTlepmet = -1.; MLepTop_GenMatch = -1.; MHadTop_GenMatch = -1.; EtaLepTop_GenMatch = -99999.;
             EtaHadTop_GenMatch = -99999.; MassW_GenMatch = -1.; EtaW_GenMatch = -99999.; dR_lepJet_min = 99999.;
             MLepTop = -1.; MHadTop = -1.; EtaLepTop = -99999.; EtaHadTop = -99999.; MassW = -1.; EtaW = -99999.; nbVertices = -1;
@@ -978,6 +970,8 @@ int main (int argc, char *argv[])
             lumiWeight = 1.; fleptonSF = 1.;
             btagWeight_comb_central = 1.;btagWeight_comb_up = 1.;btagWeight_comb_down = 1.;btagWeight_mujets_central = 1.;
             btagWeight_mujets_up = 1.;btagWeight_mujets_down = 1.;btagWeight_ttbar_central = 1.;btagWeight_ttbar_up = 1.;btagWeight_ttbar_down = 1.;
+            float nloWeight = 1, mc_scaleupweight = 1, mc_scaledownweight = 1, weight1=1, weight2=1, weight3=1, weight4=1, weight5=1, weight6=1, weight7=1, weight8=1;
+            float c_vsL_disc1= 1.,c_vsL_disc2= 1.,c_vsL_disc3= 1.,c_vsL_disc4= 1.,c_vsL_disc5= 1.,c_vsB_disc1= 1.,c_vsB_disc2= 1.,c_vsB_disc3= 1.,c_vsB_disc4= 1.,c_vsB_disc5=1.;
 
             double ievt_d = ievt;
             if (debug)cout <<"event loop 1"<<endl;
@@ -1022,28 +1016,85 @@ int main (int argc, char *argv[])
             ///////////////////////
             // JER smearing
             //////////////////////
-
-            if(dName.find("Data")==string::npos)//JER smearing only feasible for non-data samples
+            if(applyJER)
             {
-                //JER
-                if(doJERShift == 1)
-                    jetTools->correctJetJER(init_jets, genjets, mets[0], "minus");
-                else if(doJERShift == 2)
-                    jetTools->correctJetJER(init_jets, genjets, mets[0], "plus");
-                else
-                    jetTools->correctJetJER(init_jets, genjets, mets[0], "nominal");
+                if(dName.find("Data")==string::npos)//JER smearing only feasible for non-data samples
+                {
+                    //JER
+                    if(doJERShift == 1)
+                        jetTools->correctJetJER(init_jets, genjets, mets[0], "minus");
+                    else if(doJERShift == 2)
+                        jetTools->correctJetJER(init_jets, genjets, mets[0], "plus");
+                    else
+                        jetTools->correctJetJER(init_jets, genjets, mets[0], "nominal");
 
-                //     coutObjectsFourVector(init_muons,init_electrons,init_jets,mets,"After JER correction:");
+                    //     coutObjectsFourVector(init_muons,init_electrons,init_jets,mets,"After JER correction:");
 
-                // JES sysematic!
-                if (doJESShift == 1)
-                    jetTools->correctJetJESUnc(init_jets, mets[0], "minus");
-                else if (doJESShift == 2)
-                    jetTools->correctJetJESUnc(init_jets, mets[0], "plus");
+                    // JES sysematic!
+                    if (doJESShift == 1)
+                        jetTools->correctJetJESUnc(init_jets, mets[0], "minus");
+                    else if (doJESShift == 2)
+                        jetTools->correctJetJESUnc(init_jets, mets[0], "plus");
 
-                //            coutObjectsFourVector(init_muons,init_electrons,init_jets,mets,"Before JES correction:");
+                    //            coutObjectsFourVector(init_muons,init_electrons,init_jets,mets,"Before JES correction:");
 
+                }
             }
+            /////////////////////////////////////
+            //  fix negative weights for amc@nlo/// 
+            /////////////////////////////////////
+	          double hasNegWeight = false; 
+            double mc_baseweight = 1; 
+	          if(!isData && (event->getWeight(1001) != -9999.))
+            {
+		          mc_baseweight =  event->getWeight(1001)/abs(event->originalXWGTUP());
+      	      //mc_scaleupweight = event->getWeight(1005)/abs(event->originalXWGTUP());
+           	  //mc_scaledownweight = event->getWeight(1009)/abs(event->originalXWGTUP());	
+           	  if(mc_baseweight >= 0)
+		          {
+		            nofPosWeights++; 
+		          }
+		          else 
+		          {
+		            if(nlo) hasNegWeight = true;
+		            nofNegWeights++; 
+		          }
+            }
+	          if( !isData && (event->getWeight(1) != -9999. )) 
+            {
+		          mc_baseweight =  event->getWeight(1)/abs(event->originalXWGTUP());
+              //mc_scaleupweight = event->getWeight(5)/abs(event->originalXWGTUP());
+              //mc_scaledownweight = event->getWeight(9)/abs(event->originalXWGTUP());       
+              if(mc_baseweight >= 0)
+              {
+                nofPosWeights++;
+               }
+               else
+               {
+                 if(nlo) hasNegWeight = true;
+                 nofNegWeights++;
+                }
+              }
+	            if(!isData)
+	            {
+		            if ( event->getWeight(1001) == -9999. && event->getWeight(1) == -9999. )
+          	    {
+            	    cout << "WARNING: No weight found for event " << ievt << " in dataset " << dName << endl;
+          	      cout << "         Event Id: " << event->eventId() << "  Run Id: " << event->runId() << "  Lumi block Id: " << event->lumiBlockId() << endl;
+         		      cout << "         Weight type is different from 'scale_variation' (1001) or 'Central scale variation' (1)." << endl;
+          	    }
+          	    if ( event->getWeight(1001) != -9999. && event->getWeight(1) != -9999. )
+          	    {
+          	      cout << "WARNING: Two weight types found for event " << ievt << " in dataset " << dName << endl;
+            	    cout << "         Event Id: " << event->eventId() << "  Run Id: " << event->runId() << "  Lumi block Id: " << event->lumiBlockId() << endl;
+                  cout << "         Check which weight type should be used when." << endl;
+          	    }
+          
+          	    nloWeight = mc_baseweight;
+          	    sumWeights += mc_baseweight;
+        
+
+              }
             ///////////////////////////////////////////////////////////
             // Event selection
             ///////////////////////////////////////////////////////////
@@ -1085,25 +1136,25 @@ int main (int argc, char *argv[])
             /////////////////////////////////////////////
             if (Muon)
             {
-				if (debug)cout<<"Getting Jets"<<endl;
-				selectedJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Tight"); // ApplyJetId
-				if (debug)cout<<"Getting Tight Muons"<<endl;
-				selectedMuons                                       = r2selection.GetSelectedMuons(30,2.1,0.15, "Tight", "Spring15"); //Selected
-				if (debug)cout<<"Getting Loose Electrons"<<endl;
-				selectedElectrons                                   = r2selection.GetSelectedElectrons(20,2.5,"Loose", "Spring15_25ns", true); //Vetoed  
-				if (debug)cout<<"Getting Loose Muons"<<endl;
-				selectedExtraMuons                                  = r2selection.GetSelectedMuons(20, 2.4, 0.20,"Loose","Spring15"); //Vetoed         
+				        if (debug)cout<<"Getting Jets"<<endl;
+				        selectedJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Tight"); // ApplyJetId
+				        if (debug)cout<<"Getting Tight Muons"<<endl;
+				        selectedMuons                                       = r2selection.GetSelectedMuons(30,2.1,0.15, "Tight", "Spring15"); //Selected
+				        if (debug)cout<<"Getting Loose Electrons"<<endl;
+				        selectedElectrons                                   = r2selection.GetSelectedElectrons(20,2.5,"Loose", "Spring15_25ns", true); //Vetoed  
+				        if (debug)cout<<"Getting Loose Muons"<<endl;
+				        selectedExtraMuons                                  = r2selection.GetSelectedMuons(20, 2.4, 0.20,"Loose","Spring15"); //Vetoed         
             }
             if (Electron)
             {
-				if (debug)cout<<"Getting Jets"<<endl;
-				selectedJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Tight"); // ApplyJetId
-				if (debug)cout<<"Getting Loose Muons"<<endl;
-				selectedMuons                                       = r2selection.GetSelectedMuons(20, 2.4, 0.20,"Loose","Spring15"); //Vetoed
-				if (debug)cout<<"Getting Medium Electrons"<<endl;
-				selectedElectrons                                   = r2selection.GetSelectedElectrons(30,2.1,"Medium", "Spring15_25ns", true); //Selected                       
-				if (debug)cout<<"Getting Loose Electrons"<<endl;
-				selectedExtraElectrons                              = r2selection.GetSelectedElectrons(20,2.5,"Loose", "Spring15_25ns", true); //Vetoed
+				        if (debug)cout<<"Getting Jets"<<endl;
+				        selectedJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Tight"); // ApplyJetId
+				        if (debug)cout<<"Getting Loose Muons"<<endl;
+				        selectedMuons                                       = r2selection.GetSelectedMuons(20, 2.4, 0.20,"Loose","Spring15"); //Vetoed
+				        if (debug)cout<<"Getting Medium Electrons"<<endl;
+				        selectedElectrons                                   = r2selection.GetSelectedElectrons(30,2.1,"Medium", "Spring15_25ns", true); //Selected                       
+				        if (debug)cout<<"Getting Loose Electrons"<<endl;
+				        selectedExtraElectrons                              = r2selection.GetSelectedElectrons(20,2.5,"Loose", "Spring15_25ns", true); //Vetoed
             }
             if(Muon)
             {
@@ -1135,7 +1186,8 @@ int main (int argc, char *argv[])
             /////////////////////////////////////////////////
 
             float fleptonSF = 1;
-            if(bLeptonSF){
+            if(bLeptonSF)
+            {
                 if(Muon && nMu>0){
                     fleptonSF = muonSFWeightID_TT->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0) * muonSFWeightIso_TT->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
                 }
@@ -1148,8 +1200,10 @@ int main (int argc, char *argv[])
             float trigSFD1 = 1;
             float trigSFD2 = 1;
             float trigSFTot = 1;
-            if(bLeptonSF){
-                if(dName.find("Data")==string::npos && Muon && nMu>0){
+            if(bLeptonSF)
+            {
+                if(dName.find("Data")==string::npos && Muon && nMu>0)
+                {
                     trigSFC = muonSFWeightTrigC_TT->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
                     trigSFD1 = muonSFWeightTrigD1_TT->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
                     trigSFD2 = muonSFWeightTrigD2_TT->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);       
@@ -1198,7 +1252,7 @@ int main (int argc, char *argv[])
             if (debug)	cout <<"PrimaryVertexBit: " << isGoodPV <<endl;
 //            if (debug) cin.get();
 
-            histo1D["cutFlow"]->Fill(0., scaleFactor * Luminosity/EqLumi);
+            histo1D["cutFlow"]->Fill(0., scaleFactor * Luminosity);
 
  //           weightCount += scaleFactor;
             eventCount++;
@@ -1230,10 +1284,10 @@ int main (int argc, char *argv[])
 
 
           if (!isGoodPV) continue; // Check that there is a good Primary Vertex
-          histo1D["cutFlow"]->Fill(1., scaleFactor * Luminosity/EqLumi );//goodPV
+          histo1D["cutFlow"]->Fill(1., scaleFactor * Luminosity );//goodPV
 
           if(!trigged) continue;
-          histo1D["cutFlow"]->Fill(2., scaleFactor * Luminosity/EqLumi );//trigger
+          histo1D["cutFlow"]->Fill(2., scaleFactor * Luminosity );//trigger
 
            if (debug)
           {
@@ -1259,7 +1313,7 @@ int main (int argc, char *argv[])
               cerr<<"Correct Channel not selected."<<endl;
               exit(1);
           }
-          histo1D["cutFlow"]->Fill(3., scaleFactor * Luminosity/EqLumi );//1lepton
+          histo1D["cutFlow"]->Fill(3., scaleFactor * Luminosity );//1lepton
 
 			if(Muon && !Electron)
 			{
@@ -1271,7 +1325,7 @@ int main (int argc, char *argv[])
 				if(nLooseEl != 1) continue;
 	            if (debug)	cout <<"Vetoed extra electrons..."<<endl;
 			}
-			histo1D["cutFlow"]->Fill(4., scaleFactor * Luminosity/EqLumi ); //LooseLepton removal
+			histo1D["cutFlow"]->Fill(4., scaleFactor * Luminosity ); //LooseLepton removal
 			
 			////////////////////////////////////////////////////////////////////////////////
 			// Clean jet collection from jets overlapping with lepton
@@ -1303,7 +1357,7 @@ int main (int argc, char *argv[])
 			        }
 			    }
 			}
-			histo1D["cutFlow"]->Fill(5., scaleFactor * Luminosity/EqLumi ); // JetCleaning
+			histo1D["cutFlow"]->Fill(5., scaleFactor * Luminosity ); // JetCleaning
 			
 			/////////////////////////////////////////////
 			// Make TLorentzVectors //
@@ -1335,8 +1389,8 @@ int main (int argc, char *argv[])
 			}
 			else cout << "Wrong channel (1)" << endl;
 
-			histo1D["MT_LepMET_preCut"] ->Fill(MT, Luminosity/EqLumi*scaleFactor );
-			histo1D["MET_preCut"] ->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor );
+			histo1D["MT_LepMET_preCut"] ->Fill(MT, Luminosity*scaleFactor );
+			histo1D["MET_preCut"] ->Fill(mets[0]->Et(), Luminosity*scaleFactor );
 
 //			if(MT <= 50) continue;
 //			histo1D["cutFlow"]->Fill(???., 1. );
@@ -1400,390 +1454,390 @@ int main (int argc, char *argv[])
 
 			if(selectedJets.size() >= 0 && selectedMBJets.size() >=0)
 			{
-				histo1D["NbJets_0J0B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_0J0B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_0J0B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_0J0B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_0J0B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_0J0B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_0J0B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_0J0B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_0J0B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_0J0B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_0J0B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_0J0B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_0J0B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_0J0B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_0J0B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_0J0B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_0J0B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_0J0B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_0J0B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_0J0B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_0J0B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_0J0B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_0J0B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_0J0B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_0J0B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_0J0B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_0J0B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_0J0B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_0J0B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_0J0B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_0J0B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_0J0B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 0 && selectedMBJets.size() >=1)
 			{
-				histo1D["NbJets_0J1B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_0J1B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_0J1B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_0J1B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_0J1B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_0J1B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_0J1B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_0J1B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_0J1B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_0J1B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_0J1B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_0J1B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_0J1B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_0J1B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_0J1B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_0J1B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_0J1B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_0J1B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_0J1B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_0J1B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_0J1B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_0J1B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_0J1B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_0J1B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_0J1B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_0J1B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_0J1B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_0J1B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_0J1B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_0J1B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_0J1B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_0J1B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 0 && selectedMBJets.size() >=2)
 			{
-				histo1D["NbJets_0J2B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_0J2B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_0J2B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_0J2B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_0J2B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_0J2B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_0J2B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_0J2B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_0J2B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_0J2B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_0J2B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_0J2B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_0J2B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_0J2B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_0J2B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_0J2B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_0J2B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_0J2B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_0J2B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_0J2B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_0J2B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_0J2B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_0J2B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_0J2B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_0J2B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_0J2B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_0J2B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_0J2B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_0J2B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_0J2B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_0J2B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_0J2B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 0 && selectedMBJets.size() >=3)
 			{
-				histo1D["NbJets_0J3B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_0J3B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_0J3B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_0J3B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_0J3B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_0J3B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_0J3B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_0J3B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_0J3B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_0J3B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_0J3B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_0J3B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_0J3B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_0J3B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_0J3B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_0J3B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_0J3B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_0J3B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_0J3B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_0J3B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_0J3B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_0J3B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_0J3B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_0J3B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_0J3B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_0J3B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_0J3B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_0J3B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_0J3B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_0J3B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_0J3B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_0J3B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 1 && selectedMBJets.size() >=0)
 			{
-				histo1D["NbJets_1J0B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_1J0B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_1J0B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_1J0B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_1J0B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_1J0B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_1J0B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_1J0B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_1J0B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_1J0B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_1J0B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_1J0B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_1J0B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_1J0B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_1J0B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_1J0B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_1J0B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_1J0B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_1J0B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_1J0B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_1J0B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_1J0B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_1J0B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_1J0B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_1J0B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_1J0B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_1J0B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_1J0B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_1J0B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_1J0B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_1J0B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_1J0B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 1 && selectedMBJets.size() >=1)
 			{
-				histo1D["NbJets_1J1B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_1J1B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_1J1B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_1J1B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_1J1B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_1J1B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_1J1B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_1J1B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_1J1B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_1J1B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_1J1B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_1J1B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_1J1B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_1J1B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_1J1B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_1J1B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_1J1B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_1J1B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_1J1B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_1J1B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_1J1B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_1J1B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_1J1B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_1J1B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_1J1B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_1J1B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_1J1B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_1J1B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_1J1B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_1J1B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_1J1B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_1J1B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 1 && selectedMBJets.size() >=2)
 			{
-				histo1D["NbJets_1J2B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_1J2B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_1J2B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_1J2B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_1J2B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_1J2B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_1J2B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_1J2B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_1J2B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_1J2B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_1J2B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_1J2B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_1J2B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_1J2B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_1J2B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_1J2B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_1J2B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_1J2B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_1J2B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_1J2B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_1J2B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_1J2B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_1J2B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_1J2B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_1J2B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_1J2B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_1J2B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_1J2B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_1J2B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_1J2B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_1J2B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_1J2B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 1 && selectedMBJets.size() >=3)
 			{
-				histo1D["NbJets_1J3B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_1J3B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_1J3B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_1J3B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_1J3B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_1J3B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_1J3B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_1J3B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_1J3B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_1J3B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_1J3B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_1J3B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_1J3B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_1J3B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_1J3B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_1J3B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_1J3B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_1J3B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_1J3B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_1J3B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_1J3B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_1J3B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_1J3B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_1J3B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_1J3B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_1J3B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_1J3B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_1J3B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_1J3B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_1J3B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_1J3B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_1J3B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 2 && selectedMBJets.size() >=0)
 			{
-				histo1D["NbJets_2J0B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_2J0B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_2J0B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_2J0B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_2J0B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_2J0B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_2J0B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_2J0B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_2J0B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_2J0B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_2J0B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_2J0B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_2J0B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_2J0B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_2J0B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_2J0B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_2J0B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_2J0B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_2J0B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_2J0B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_2J0B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_2J0B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_2J0B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_2J0B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_2J0B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_2J0B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_2J0B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_2J0B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_2J0B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_2J0B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_2J0B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_2J0B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 2 && selectedMBJets.size() >=1)
 			{
-				histo1D["NbJets_2J1B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_2J1B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_2J1B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_2J1B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_2J1B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_2J1B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_2J1B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_2J1B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_2J1B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_2J1B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_2J1B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_2J1B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_2J1B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_2J1B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_2J1B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_2J1B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_2J1B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_2J1B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_2J1B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_2J1B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_2J1B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_2J1B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_2J1B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_2J1B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_2J1B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_2J1B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_2J1B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_2J1B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_2J1B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_2J1B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_2J1B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_2J1B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 2 && selectedMBJets.size() >=2)
 			{
-				histo1D["NbJets_2J2B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_2J2B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_2J2B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_2J2B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_2J2B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_2J2B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_2J2B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_2J2B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_2J2B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_2J2B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_2J2B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_2J2B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_2J2B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_2J2B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_2J2B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_2J2B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_2J2B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_2J2B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_2J2B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_2J2B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_2J2B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_2J2B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_2J2B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_2J2B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_2J2B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_2J2B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_2J2B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_2J2B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_2J2B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_2J2B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_2J2B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_2J2B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 2 && selectedMBJets.size() >=3)
 			{
-				histo1D["NbJets_2J3B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_2J3B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_2J3B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_2J3B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_2J3B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_2J3B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_2J3B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_2J3B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_2J3B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_2J3B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_2J3B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_2J3B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_2J3B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_2J3B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_2J3B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_2J3B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_2J3B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_2J3B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_2J3B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_2J3B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_2J3B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_2J3B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_2J3B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_2J3B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_2J3B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_2J3B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_2J3B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_2J3B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_2J3B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_2J3B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_2J3B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_2J3B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 3 && selectedMBJets.size() >=0)
 			{
-				histo1D["NbJets_3J0B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_3J0B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_3J0B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_3J0B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_3J0B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_3J0B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_3J0B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_3J0B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_3J0B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_3J0B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_3J0B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_3J0B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_3J0B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_3J0B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_3J0B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_3J0B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_3J0B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_3J0B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_3J0B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_3J0B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_3J0B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_3J0B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_3J0B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_3J0B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_3J0B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_3J0B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_3J0B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_3J0B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_3J0B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_3J0B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_3J0B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_3J0B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 3 && selectedMBJets.size() >=1)
 			{
-				histo1D["NbJets_3J1B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_3J1B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_3J1B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_3J1B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_3J1B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_3J1B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_3J1B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_3J1B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_3J1B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_3J1B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_3J1B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_3J1B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_3J1B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_3J1B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_3J1B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_3J1B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_3J1B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_3J1B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_3J1B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_3J1B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_3J1B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_3J1B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_3J1B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_3J1B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_3J1B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_3J1B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_3J1B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_3J1B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_3J1B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_3J1B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_3J1B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_3J1B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 3 && selectedMBJets.size() >=2)
 			{
-				histo1D["NbJets_3J2B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_3J2B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_3J2B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_3J2B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_3J2B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_3J2B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_3J2B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_3J2B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_3J2B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_3J2B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_3J2B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_3J2B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_3J2B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_3J2B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_3J2B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_3J2B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_3J2B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_3J2B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_3J2B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_3J2B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_3J2B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_3J2B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_3J2B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_3J2B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_3J2B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_3J2B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_3J2B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_3J2B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_3J2B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_3J2B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_3J2B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_3J2B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 3 && selectedMBJets.size() >=3)
 			{
-				histo1D["NbJets_3J3B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_3J3B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_3J3B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_3J3B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_3J3B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_3J3B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_3J3B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_3J3B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_3J3B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_3J3B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_3J3B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_3J3B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_3J3B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_3J3B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_3J3B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_3J3B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_3J3B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_3J3B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_3J3B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_3J3B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_3J3B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_3J3B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_3J3B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_3J3B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_3J3B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_3J3B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_3J3B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_3J3B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_3J3B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_3J3B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_3J3B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_3J3B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 4 && selectedMBJets.size() >=0)
 			{
-				histo1D["NbJets_4J0B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_4J0B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_4J0B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_4J0B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_4J0B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_4J0B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_4J0B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_4J0B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_4J0B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_4J0B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_4J0B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_4J0B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_4J0B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_4J0B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_4J0B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_4J0B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_4J0B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_4J0B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_4J0B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_4J0B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_4J0B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_4J0B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_4J0B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_4J0B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_4J0B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_4J0B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_4J0B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_4J0B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_4J0B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_4J0B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_4J0B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_4J0B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 4 && selectedMBJets.size() >=1)
 			{
-				histo1D["NbJets_4J1B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_4J1B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_4J1B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_4J1B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_4J1B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_4J1B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_4J1B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_4J1B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_4J1B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_4J1B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_4J1B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_4J1B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_4J1B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_4J1B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_4J1B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_4J1B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_4J1B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_4J1B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_4J1B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_4J1B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_4J1B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_4J1B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_4J1B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_4J1B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_4J1B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_4J1B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_4J1B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_4J1B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_4J1B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_4J1B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_4J1B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_4J1B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 4 && selectedMBJets.size() >=2)
 			{
-				histo1D["NbJets_4J2B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_4J2B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_4J2B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_4J2B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_4J2B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_4J2B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_4J2B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_4J2B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_4J2B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_4J2B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_4J2B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_4J2B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_4J2B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_4J2B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_4J2B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_4J2B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_4J2B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_4J2B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_4J2B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_4J2B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_4J2B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_4J2B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_4J2B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_4J2B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_4J2B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_4J2B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_4J2B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_4J2B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_4J2B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_4J2B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_4J2B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_4J2B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 4 && selectedMBJets.size() >=3)
 			{
-				histo1D["NbJets_4J3B"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVLJets_4J3B"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVMJets_4J3B"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbCSVTJets_4J3B"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
-				histo1D["NbLightJets_4J3B"] ->Fill(selectedLightJets_MWP.size(), Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet1_4J3B"]->Fill(bdisc_jet1, Luminosity/EqLumi*scaleFactor);
-    			histo1D["Bdisc_CSV_jet2_4J3B"]->Fill(bdisc_jet2, Luminosity/EqLumi*scaleFactor);
-		    	histo1D["Bdisc_CSV_jet3_4J3B"]->Fill(bdisc_jet3, Luminosity/EqLumi*scaleFactor);
-				if(Electron) histo1D["ElectronPt_4J3B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-				if(Muon) histo1D["MuonPt_4J3B"]->Fill(selectedMuons[0]->Pt(),  Luminosity/EqLumi*scaleFactor);
-    			histo1D["1stJetPt_4J3B"]->Fill(jet1Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["2ndJetPt_4J3B"]->Fill(jet2Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["3rdJetPt_4J3B"]->Fill(jet3Pt, Luminosity/EqLumi*scaleFactor);
-    			histo1D["4thJetPt_4J3B"]->Fill(jet4Pt, Luminosity/EqLumi*scaleFactor);
-				histo1D["MET_4J3B"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["HT_SelectedJets_4J3B"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+				histo1D["NbJets_4J3B"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVLJets_4J3B"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVMJets_4J3B"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbCSVTJets_4J3B"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
+				histo1D["NbLightJets_4J3B"] ->Fill(selectedLightJets_MWP.size(), Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet1_4J3B"]->Fill(bdisc_jet1, Luminosity*scaleFactor);
+    			histo1D["Bdisc_CSV_jet2_4J3B"]->Fill(bdisc_jet2, Luminosity*scaleFactor);
+		    	histo1D["Bdisc_CSV_jet3_4J3B"]->Fill(bdisc_jet3, Luminosity*scaleFactor);
+				if(Electron) histo1D["ElectronPt_4J3B"]->Fill(selectedElectrons[0]->Pt(),  Luminosity*scaleFactor);
+				if(Muon) histo1D["MuonPt_4J3B"]->Fill(selectedMuons[0]->Pt(),  Luminosity*scaleFactor);
+    			histo1D["1stJetPt_4J3B"]->Fill(jet1Pt, Luminosity*scaleFactor);
+    			histo1D["2ndJetPt_4J3B"]->Fill(jet2Pt, Luminosity*scaleFactor);
+    			histo1D["3rdJetPt_4J3B"]->Fill(jet3Pt, Luminosity*scaleFactor);
+    			histo1D["4thJetPt_4J3B"]->Fill(jet4Pt, Luminosity*scaleFactor);
+				histo1D["MET_4J3B"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["HT_SelectedJets_4J3B"]->Fill(HT, Luminosity*scaleFactor);
 			}
 
             //////////////////////////////////////////////////////////////////////
             // Cut on nb of jets and b-jets
             //////////////////////////////////////////////////////////////////////
-			if(selectedJets.size() < 3)  continue;
-			histo1D["cutFlow"]->Fill(6., scaleFactor * Luminosity/EqLumi );//n Jets
+			if(selectedJets.size() < 2)  continue;
+			histo1D["cutFlow"]->Fill(6., scaleFactor * Luminosity );//n Jets
 	        if (debug)	cout <<"Cut on nb jets..."<<endl;
 
             ///////////////////////////////////////////////////
@@ -1810,11 +1864,11 @@ int main (int argc, char *argv[])
 
 
 
-		  	if(selectedMBJets.size() < 3) continue;
+		  	if(selectedLBJets.size() < 2) continue;
 	        if (debug)	cout <<"Cut on nb b-jets..."<<endl;
-			histo1D["cutFlow"]->Fill(7., scaleFactor * Luminosity/EqLumi  ); //n BJets
+			histo1D["cutFlow"]->Fill(7., scaleFactor * Luminosity  ); //n BJets
 
-			histo1D["cutFlow"]->Fill(8., scaleFactor * Luminosity/EqLumi );
+			histo1D["cutFlow"]->Fill(8., scaleFactor * Luminosity );
 
             if(debug)
             {
@@ -1942,7 +1996,7 @@ int main (int argc, char *argv[])
             // Filling histograms / plotting //
             //////////////////////////////////////////////////
 
-            histo1D["NbOfVertices"]->Fill(vertex.size(), Luminosity/EqLumi*scaleFactor);
+            histo1D["NbOfVertices"]->Fill(vertex.size(), Luminosity*scaleFactor);
 
 
 
@@ -1952,10 +2006,10 @@ int main (int argc, char *argv[])
             /////////////////////////////////////
             for (Int_t selmu =0; selmu < selectedMuons.size(); selmu++ )
             {
-                histo1D["MuonPt"]->Fill(selectedMuons[selmu]->Pt(), Luminosity/EqLumi*scaleFactor);
-                histo1D["LeptonPt"]->Fill(selectedMuons[selmu]->Pt(), Luminosity/EqLumi*scaleFactor);
+                histo1D["MuonPt"]->Fill(selectedMuons[selmu]->Pt(), Luminosity*scaleFactor);
+                histo1D["LeptonPt"]->Fill(selectedMuons[selmu]->Pt(), Luminosity*scaleFactor);
                 float reliso = selectedMuons[selmu]->relPfIso(4, 0.5);
-                histo1D["MuonRelIsolation"]->Fill(reliso, Luminosity/EqLumi*scaleFactor);
+                histo1D["MuonRelIsolation"]->Fill(reliso, Luminosity*scaleFactor);
             }
 
             //////////////////////////////////////////
@@ -1965,89 +2019,89 @@ int main (int argc, char *argv[])
             for (Int_t selel =0; selel < selectedElectrons.size(); selel++ )
             {
                 float reliso = selectedElectrons[selel]->relPfIso(3, 0.5);
-                histo1D["ElectronRelIsolation"]->Fill(reliso, Luminosity/EqLumi*scaleFactor);
-                histo1D["ElectronPt"]->Fill(selectedElectrons[selel]->Pt(), Luminosity/EqLumi*scaleFactor);
-                histo1D["LeptonPt"]->Fill(selectedElectrons[selel]->Pt(), Luminosity/EqLumi*scaleFactor);
+                histo1D["ElectronRelIsolation"]->Fill(reliso, Luminosity*scaleFactor);
+                histo1D["ElectronPt"]->Fill(selectedElectrons[selel]->Pt(), Luminosity*scaleFactor);
+                histo1D["LeptonPt"]->Fill(selectedElectrons[selel]->Pt(), Luminosity*scaleFactor);
             }
 
             //////////////////////////////////
             // Jets Based Plots //
             //////////////////////////////////
-			histo1D["NbJets"]->Fill(selectedJets.size(), Luminosity/EqLumi*scaleFactor);
-			histo1D["NbCSVLJets"]->Fill(selectedLBJets.size(), Luminosity/EqLumi*scaleFactor);
-			histo1D["NbCSVMJets"]->Fill(selectedMBJets.size(), Luminosity/EqLumi*scaleFactor);
-			histo1D["NbCSVTJets"]->Fill(selectedTBJets.size(), Luminosity/EqLumi*scaleFactor);
+			histo1D["NbJets"]->Fill(selectedJets.size(), Luminosity*scaleFactor);
+			histo1D["NbCSVLJets"]->Fill(selectedLBJets.size(), Luminosity*scaleFactor);
+			histo1D["NbCSVMJets"]->Fill(selectedMBJets.size(), Luminosity*scaleFactor);
+			histo1D["NbCSVTJets"]->Fill(selectedTBJets.size(), Luminosity*scaleFactor);
 
 			if(selectedJets.size() >= 1)
 			{
-				histo1D["Bdisc_CSV_jet1"]->Fill(selectedJets[0]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity/EqLumi*scaleFactor);
-				histo1D["1stJetPt"]->Fill(selectedJets[0]->Pt(), Luminosity/EqLumi*scaleFactor);
+				histo1D["Bdisc_CSV_jet1"]->Fill(selectedJets[0]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["1stJetPt"]->Fill(selectedJets[0]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 2)
 			{
-				histo1D["Bdisc_CSV_jet2"]->Fill(selectedJets[1]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity/EqLumi*scaleFactor);
-				histo1D["2ndJetPt"]->Fill(selectedJets[1]->Pt(), Luminosity/EqLumi*scaleFactor);
+				histo1D["Bdisc_CSV_jet2"]->Fill(selectedJets[1]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["2ndJetPt"]->Fill(selectedJets[1]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 3)
 			{
-				histo1D["Bdisc_CSV_jet3"]->Fill(selectedJets[2]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity/EqLumi*scaleFactor);
-				histo1D["3rdJetPt"]->Fill(selectedJets[2]->Pt(), Luminosity/EqLumi*scaleFactor);
+				histo1D["Bdisc_CSV_jet3"]->Fill(selectedJets[2]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["3rdJetPt"]->Fill(selectedJets[2]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 4)
 			{
-				histo1D["Bdisc_CSV_jet4"]->Fill(selectedJets[3]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity/EqLumi*scaleFactor);
-				histo1D["4thJetPt"]->Fill(selectedJets[3]->Pt(), Luminosity/EqLumi*scaleFactor);
+				histo1D["Bdisc_CSV_jet4"]->Fill(selectedJets[3]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["4thJetPt"]->Fill(selectedJets[3]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 5)
 			{
-				histo1D["Bdisc_CSV_jet5"]->Fill(selectedJets[4]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity/EqLumi*scaleFactor);
-				histo1D["5thJetPt"]->Fill(selectedJets[4]->Pt(), Luminosity/EqLumi*scaleFactor);
+				histo1D["Bdisc_CSV_jet5"]->Fill(selectedJets[4]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["5thJetPt"]->Fill(selectedJets[4]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedJets.size() >= 6)
 			{
-				histo1D["Bdisc_CSV_jet6"]->Fill(selectedJets[5]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity/EqLumi*scaleFactor);
-				histo1D["6thJetPt"]->Fill(selectedJets[5]->Pt(), Luminosity/EqLumi*scaleFactor);
+				histo1D["Bdisc_CSV_jet6"]->Fill(selectedJets[5]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["6thJetPt"]->Fill(selectedJets[5]->Pt(), Luminosity*scaleFactor);
 			}
 			//B-jets
 			if(debug) cout << "selectedMBJets.size() = "<< selectedMBJets.size() << endl;
 			if(selectedMBJets.size() >= 1)
 			{
-				histo1D["Bdisc_CSV_Bjet1"]->Fill(selectedMBJets[0]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity/EqLumi*scaleFactor);
-				histo1D["1stBJetPt"]->Fill(selectedMBJets[0]->Pt(), Luminosity/EqLumi*scaleFactor);
+				histo1D["Bdisc_CSV_Bjet1"]->Fill(selectedMBJets[0]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["1stBJetPt"]->Fill(selectedMBJets[0]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedMBJets.size() >= 2)
 			{
-				histo1D["Bdisc_CSV_Bjet2"]->Fill(selectedMBJets[1]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity/EqLumi*scaleFactor);
-				histo1D["2ndBJetPt"]->Fill(selectedMBJets[1]->Pt(), Luminosity/EqLumi*scaleFactor);
+				histo1D["Bdisc_CSV_Bjet2"]->Fill(selectedMBJets[1]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["2ndBJetPt"]->Fill(selectedMBJets[1]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedMBJets.size() >= 3)
 			{
-				histo1D["Bdisc_CSV_Bjet3"]->Fill(selectedMBJets[2]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity/EqLumi*scaleFactor);
-				histo1D["3rdBJetPt"]->Fill(selectedMBJets[2]->Pt(), Luminosity/EqLumi*scaleFactor);
+				histo1D["Bdisc_CSV_Bjet3"]->Fill(selectedMBJets[2]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["3rdBJetPt"]->Fill(selectedMBJets[2]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedMBJets.size() >= 4)
 			{
-				histo1D["Bdisc_CSV_Bjet4"]->Fill(selectedMBJets[3]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity/EqLumi*scaleFactor);
-				histo1D["4thBJetPt"]->Fill(selectedMBJets[3]->Pt(), Luminosity/EqLumi*scaleFactor);
+				histo1D["Bdisc_CSV_Bjet4"]->Fill(selectedMBJets[3]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["4thBJetPt"]->Fill(selectedMBJets[3]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedMBJets.size() >= 5)
 			{
-				histo1D["Bdisc_CSV_Bjet5"]->Fill(selectedMBJets[4]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity/EqLumi*scaleFactor);
-				histo1D["5thBJetPt"]->Fill(selectedMBJets[4]->Pt(), Luminosity/EqLumi*scaleFactor);
+				histo1D["Bdisc_CSV_Bjet5"]->Fill(selectedMBJets[4]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["5thBJetPt"]->Fill(selectedMBJets[4]->Pt(), Luminosity*scaleFactor);
 			}
 			if(selectedMBJets.size() >= 6)
 			{
-				histo1D["Bdisc_CSV_Bjet6"]->Fill(selectedMBJets[5]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity/EqLumi*scaleFactor);
-				histo1D["6thBJetPt"]->Fill(selectedMBJets[5]->Pt(), Luminosity/EqLumi*scaleFactor);
+				histo1D["Bdisc_CSV_Bjet6"]->Fill(selectedMBJets[5]->btag_combinedInclusiveSecondaryVertexV2BJetTags(), Luminosity*scaleFactor);
+				histo1D["6thBJetPt"]->Fill(selectedMBJets[5]->Pt(), Luminosity*scaleFactor);
 			}
 
 			for(unsigned int i = 0; i < selectedJets.size(); i++)
 			{
-				histo1D["JetEta"]->Fill(selectedJets[i]->Eta(), Luminosity/EqLumi*scaleFactor);
+				histo1D["JetEta"]->Fill(selectedJets[i]->Eta(), Luminosity*scaleFactor);
 			}
 
 
-            histo1D["HT_SelectedJets"]->Fill(HT, Luminosity/EqLumi*scaleFactor);
+            histo1D["HT_SelectedJets"]->Fill(HT, Luminosity*scaleFactor);
 
 
             float nvertices = vertex.size();
@@ -2057,8 +2111,8 @@ int main (int argc, char *argv[])
             //MET Based Plots//
             /////////////////////////////////
 
-            histo1D["MET"]->Fill(mets[0]->Et(), Luminosity/EqLumi*scaleFactor);
-            histo1D["MT_LepMET"]->Fill(MT, Luminosity/EqLumi*scaleFactor);
+            histo1D["MET"]->Fill(mets[0]->Et(), Luminosity*scaleFactor);
+            histo1D["MT_LepMET"]->Fill(MT, Luminosity*scaleFactor);
 
             /////////////////////////////////////////////////////////
             //Topology Reconstructions (truth level)
@@ -2164,7 +2218,9 @@ int main (int argc, char *argv[])
 			bdisc2 = selectedJets[1]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
 			if(selectedJets.size() >= 3)bdisc3 = selectedJets[2]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
 			nb_jets = selectedJets.size();
-			nb_bjets = selectedMBJets.size();
+			nb_bjets_CSVM = selectedMBJets.size();
+			nb_bjets_CSVL = selectedLBJets.size();
+			nb_bjets_CSVT = selectedTBJets.size();
 			jet1_Pt = selectedJets[0]->Pt();
 			jet2_Pt = selectedJets[1]->Pt();
 			if(selectedJets.size() >= 3)			jet3_Pt = selectedJets[2]->Pt();
@@ -2183,6 +2239,12 @@ int main (int argc, char *argv[])
 			jet1_E = selectedJets[0]->E();
 			jet2_E = selectedJets[1]->E();
 			if(selectedJets.size() >= 3)			jet3_E = selectedJets[2]->E();
+      c_vsL_disc1 = selectedJets[0]->ctag_pfCombinedCvsLJetTags();
+      c_vsL_disc2 = selectedJets[1]->ctag_pfCombinedCvsLJetTags();
+      if(selectedJets.size() >= 3) c_vsL_disc3 = selectedJets[2]->ctag_pfCombinedCvsLJetTags();
+      c_vsB_disc1 = selectedJets[0]->ctag_pfCombinedCvsBJetTags();
+      c_vsB_disc2 = selectedJets[1]->ctag_pfCombinedCvsBJetTags();
+      if(selectedJets.size() >= 3) c_vsB_disc3 = selectedJets[2]->ctag_pfCombinedCvsBJetTags();
 			if(selectedJets.size() >= 4)
 			{
 			    jet4_Pt = selectedJets[3]->Pt();
@@ -2192,6 +2254,8 @@ int main (int argc, char *argv[])
 			    jet4_z = selectedJets[3]->Z();
 			    jet4_E = selectedJets[3]->E();
 			    bdisc4 = selectedJets[3]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
+          c_vsL_disc4 = selectedJets[3]->ctag_pfCombinedCvsLJetTags();
+          c_vsB_disc4 = selectedJets[3]->ctag_pfCombinedCvsBJetTags();
 			}
 			if(selectedJets.size() >= 5)
 			{
@@ -2202,6 +2266,8 @@ int main (int argc, char *argv[])
 			    jet5_z = selectedJets[4]->Z();
 			    jet5_E = selectedJets[4]->E();
 			    bdisc5 = selectedJets[4]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
+          c_vsL_disc5 = selectedJets[4]->ctag_pfCombinedCvsLJetTags();
+          c_vsB_disc5 = selectedJets[4]->ctag_pfCombinedCvsBJetTags();
 			}
 			MissingEt = mets[0]->Et();
 			MTlepmet = MT;
@@ -2213,9 +2279,9 @@ int main (int argc, char *argv[])
 
 
             float vals[15] = {Mbb,MTlepmet,MLepTop_GenMatch,MHadTop_GenMatch,EtaLepTop_GenMatch,EtaHadTop_GenMatch,MassW_GenMatch,EtaW_GenMatch,dR_lepJet_min,MLepTop,MHadTop,EtaLepTop,EtaHadTop,MassW,EtaW};
-            float vals_ObjectVars[43] = {qlepton,leptonpt,leptoneta,leptonX,leptonY,leptonZ,leptonE,bdisc1,bdisc2,bdisc3,bdisc4,bdisc5,jet1_Pt,jet2_Pt,jet3_Pt,jet4_Pt,jet5_Pt,jet1_Eta,jet2_Eta,jet3_Eta,jet4_Eta,jet5_Eta,jet1_x,jet2_x,jet3_x,jet4_x,jet5_x,jet1_y,jet2_y,jet3_y,jet4_y,jet5_y,jet1_z,jet2_z,jet3_z,jet4_z,jet5_z,jet1_E,jet2_E,jet3_E,jet4_E,jet5_E,MissingEt};
-            float vals_EventInfo[3] = {nbVertices,nb_jets,nb_bjets};
-            float vals_Weights[11] = {lumiWeight,fleptonSF,btagWeight_comb_central,btagWeight_comb_up,btagWeight_comb_down,btagWeight_mujets_central,btagWeight_mujets_up,btagWeight_mujets_down,btagWeight_ttbar_central,btagWeight_ttbar_up,btagWeight_ttbar_down};
+            float vals_ObjectVars[53] = {qlepton,leptonpt,leptoneta,leptonX,leptonY,leptonZ,leptonE,bdisc1,bdisc2,bdisc3,bdisc4,bdisc5,jet1_Pt,jet2_Pt,jet3_Pt,jet4_Pt,jet5_Pt,jet1_Eta,jet2_Eta,jet3_Eta,jet4_Eta,jet5_Eta,jet1_x,jet2_x,jet3_x,jet4_x,jet5_x,jet1_y,jet2_y,jet3_y,jet4_y,jet5_y,jet1_z,jet2_z,jet3_z,jet4_z,jet5_z,jet1_E,jet2_E,jet3_E,jet4_E,jet5_E,MissingEt,c_vsL_disc1,c_vsL_disc2,c_vsL_disc3,c_vsL_disc4,c_vsL_disc5,c_vsB_disc1,c_vsB_disc2,c_vsB_disc3,c_vsB_disc4,c_vsB_disc5};
+            float vals_EventInfo[5] = {nbVertices,nb_jets,nb_bjets_CSVM,nb_bjets_CSVL,nb_bjets_CSVT};
+            float vals_Weights[22] = {lumiWeight,fleptonSF,btagWeight_comb_central,btagWeight_comb_up,btagWeight_comb_down,btagWeight_mujets_central,btagWeight_mujets_up,btagWeight_mujets_down,btagWeight_ttbar_central,btagWeight_ttbar_up,btagWeight_ttbar_down,nloWeight,weight1,weight2,weight3,weight4,weight5,weight6,weight7,weight8};
             tup->Fill(vals);
             tup_ObjectVars->Fill(vals_ObjectVars);
             tup_EventInfo->Fill(vals_EventInfo);
@@ -2232,6 +2298,16 @@ int main (int argc, char *argv[])
 
 
         } //End Loop on Events
+	      if (! isData  ) 
+        {
+            cout << "Data set " << datasets[d]->Title() << " has " << nofPosWeights << " events with positive weights and " << nofNegWeights << " events with negative weights." << endl;
+            cout << "         Pos - neg is " << nofPosWeights - nofNegWeights << ", pos + neg is " << nofPosWeights + nofNegWeights << endl;
+            cout << "The sum of the weights is " << ((int)sumWeights) << ", whereas the total number of events is " << ((int)nEvents) << endl;
+            
+            // Determine scale factor due to negative weights
+            nloSF = ((double) (nofPosWeights - nofNegWeights))/((double) (nofPosWeights + nofNegWeights));
+            cout << "This corresponds to an event scale factor of " << nloSF  << endl; 
+        }
 
 		tup->Write();
 		tup_ObjectVars->Write();
@@ -2239,7 +2315,6 @@ int main (int argc, char *argv[])
        	tup_Weights->Write();
        	tupfile->Close();
         cout <<"n events passed  =  "<<passed <<endl;
-        cout <<"n events with negative weights = "<<negWeights << endl;
         cout << "Event Count: " << eventCount << endl;
 //        cout << "Weight Count: " << weightCount << endl;
         //important: free memory
@@ -2255,28 +2330,6 @@ int main (int argc, char *argv[])
     cout << " - Writing outputs to the files ..." << endl;
 
   fout->cd();
-
-/* 	TDirectory* _0J0Bdir = fout->mkdir("0J0B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _0J1Bdir = fout->mkdir("0J1B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _0J2Bdir = fout->mkdir("0J2B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _0J3Bdir = fout->mkdir("0J3B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _1J0Bdir = fout->mkdir("1J0B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _1J1Bdir = fout->mkdir("1J1B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _1J2Bdir = fout->mkdir("1J2B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _1J3Bdir = fout->mkdir("1J3B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _2J0Bdir = fout->mkdir("2J0B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _2J1Bdir = fout->mkdir("2J1B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _2J2Bdir = fout->mkdir("2J2B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _2J3Bdir = fout->mkdir("2J3B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _3J0Bdir = fout->mkdir("3J0B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _3J1Bdir = fout->mkdir("3J1B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _3J2Bdir = fout->mkdir("3J2B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _3J3Bdir = fout->mkdir("3J3B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _4J0Bdir = fout->mkdir("4J0B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _4J1Bdir = fout->mkdir("4J1B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _4J2Bdir = fout->mkdir("4J2B"); //Makes different subdirectories in outputfile for every variable
- 	TDirectory* _4J3Bdir = fout->mkdir("4J3B"); //Makes different subdirectories in outputfile for every variable
-*/
 
   for (map<string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
   {

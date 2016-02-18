@@ -19,7 +19,7 @@
 
 
 
-void MakePlots(string channel = "El", string date = "14_1_2016", bool plotData = true) {
+void MakePlots(string channel = "Mu", string date = "12_2_2016", bool plotData = true) {
 
  string dirname_ = "../Merged/ControlPlots_"+channel+"/ControlPlots_"+date+"/";
  const char * dirname = dirname_.c_str();
@@ -280,7 +280,7 @@ cout << "DEBUG: " << Vmyprocess[i] << endl;
     pdfname += listHisto[iVar];
     pdfname += "Ratio.pdf";
     c1->SaveAs(pngname.c_str());
-    c1->SaveAs(pdfname.c_str());
+//    c1->SaveAs(pdfname.c_str());
 
     pad1->SetLogy(1); 
     string pngnamelogy = PlotsDir__;
@@ -290,7 +290,7 @@ cout << "DEBUG: " << Vmyprocess[i] << endl;
     pdfnamelogy += listHisto[iVar];
     pdfnamelogy += "Ratio_logy.pdf";
     c1->SaveAs(pngnamelogy.c_str());
-    c1->SaveAs(pdfnamelogy.c_str());   
+//    c1->SaveAs(pdfnamelogy.c_str());   
   }
   else{
    cout << " NOT PLOTTING DATA " << endl; 
@@ -313,7 +313,7 @@ cout << "DEBUG: " << Vmyprocess[i] << endl;
     pdfname += listHisto[iVar];
     pdfname += ".pdf";
     c1->SaveAs(pngname.c_str());
-    c1->SaveAs(pdfname.c_str()); 
+//    c1->SaveAs(pdfname.c_str()); 
 
     c1->SetLogy(); 
     string pngnamelogy = PlotsDir__;
@@ -323,7 +323,7 @@ cout << "DEBUG: " << Vmyprocess[i] << endl;
     pdfnamelogy += listHisto[iVar];
     pdfnamelogy += "logy.pdf";
     c1->SaveAs(pngnamelogy.c_str());
-    c1->SaveAs(pdfnamelogy.c_str()); 
+//    c1->SaveAs(pdfnamelogy.c_str()); 
 
 
 

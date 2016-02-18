@@ -24,7 +24,7 @@ date = dd+"_"+mm+"_"+yyyy
 
 
 # pick one of the following
-channels = ["Mu"] 
+channels = ["Mu","El"] 
 #channels = ["MuMu"] 
 #channels = ["ElEl"] 
 #channels=["test"]
