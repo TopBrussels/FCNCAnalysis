@@ -380,6 +380,7 @@ int main (int argc, char *argv[])
     if(verbose == 0) cout << "strJobNum is " << strJobNum << endl;
     rootFileName = histo_dir_date+"/FCNC_3L_"+Channel+"_"+dName + "_"+strJobNum+".root";
   }
+  cout << "Histofile: " << rootFileName << endl; 
   TFile *fout = new TFile (rootFileName.c_str(), "RECREATE");
   
   ///////////////////////////
@@ -446,6 +447,7 @@ int main (int argc, char *argv[])
 
     histo1D["nbMuons"]					= new TH1F("nbMuons","nbMuons",10,-0.5,9.5); 
     histo1D["nbElectrons"]                                  = new TH1F("nbElectrons","nbElectrons",10,-0.5,9.5);
+     histo1D["nbJets"]                                  = new TH1F("nbJets","nbJets",10,-0.5,9.5);
 /*
     //Muons
     histo1D["MuonPt"]                                        = new TH1F( "MuonPt", "PT_{#mu}", 30, 0, 300);
@@ -588,25 +590,25 @@ int main (int argc, char *argv[])
 	vCorrParam.clear();
 	if (isData)
         {
-   	   JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters(pathCalJEC+"Summer15_25nsV6_DATA_L1FastJet_AK4PFchs.txt");
+   	   JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters(pathCalJEC+"Fall15_25nsV2_DATA_L1FastJet_AK4PFchs.txt");
       	   vCorrParam.push_back(*L1JetCorPar);
-           JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters(pathCalJEC+"Summer15_25nsV6_DATA_L2Relative_AK4PFchs.txt");
+           JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters(pathCalJEC+"Fall15_25nsV2_DATA_L2Relative_AK4PFchs.txt");
            vCorrParam.push_back(*L2JetCorPar);
-           JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters(pathCalJEC+"Summer15_25nsV6_DATA_L3Absolute_AK4PFchs.txt");
+           JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters(pathCalJEC+"Fall15_25nsV2_DATA_L3Absolute_AK4PFchs.txt");
            vCorrParam.push_back(*L3JetCorPar);
-           JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters(pathCalJEC+"Summer15_25nsV6_DATA_L2L3Residual_AK4PFchs.txt");
+           JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters(pathCalJEC+"Fall15_25nsV2_DATA_L2L3Residual_AK4PFchs.txt");
            vCorrParam.push_back(*L2L3ResJetCorPar);
      	}
      	else
      	{
-      	   JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters(pathCalJEC+"Summer15_25nsV6_MC_L1FastJet_AK4PFchs.txt");
+      	   JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters(pathCalJEC+"Fall15_25nsV2_MC_L1FastJet_AK4PFchs.txt");
       	   vCorrParam.push_back(*L1JetCorPar);
-      	   JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters(pathCalJEC+"Summer15_25nsV6_MC_L2Relative_AK4PFchs.txt");
+      	   JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters(pathCalJEC+"Fall15_25nsV2_MC_L2Relative_AK4PFchs.txt");
       	   vCorrParam.push_back(*L2JetCorPar);
-           JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters(pathCalJEC+"Summer15_25nsV6_MC_L3Absolute_AK4PFchs.txt");
+           JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters(pathCalJEC+"Fall15_25nsV2_MC_L3Absolute_AK4PFchs.txt");
            vCorrParam.push_back(*L3JetCorPar);
      	}
-     	JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty(pathCalJEC+"Summer15_25nsV6_MC_Uncertainty_AK4PFchs.txt");
+     	JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty(pathCalJEC+"Fall15_25nsV2_MC_Uncertainty_AK4PFchs.txt");
     
      	JetTools *jetTools = new JetTools(vCorrParam, jecUnc, true); //true means redo also L1    
 
@@ -650,7 +652,13 @@ int main (int argc, char *argv[])
        Int_t sumW; 
        Int_t nEv; 
        Double_t nloWeight; // for amc@nlo samples
-       
+       Int_t JERon; 
+       Int_t JESon; 
+       Double_t WPb_L; 
+       Double_t WPb_M; 
+       Double_t WPb_T;       
+
+ 
        Double_t pt_electron_1; 
        Double_t pt_electron_2;
        Double_t pt_electron_3;
@@ -749,7 +757,11 @@ int main (int argc, char *argv[])
         globalTree->Branch("sumW", &sumW, "sumW/I");
         globalTree->Branch("nCuts",&nCuts, "nCuts/I"); 
         globalTree->Branch("cutstep",&cutstep,"cutstep[nCuts]/D");
-
+        globalTree->Branch("JERon",&JERon,"JERon/I"); 
+        globalTree->Branch("JESon", &JESon, "JESon/I");
+        globalTree->Branch("WPb_L", &WPb_L, "WPb_L/D"); 
+        globalTree->Branch("WPb_M", &WPb_M, "WPb_M/D");
+        globalTree->Branch("WPb_T", &WPb_T, "WPb_T/D");
 
        // event related variables
        myTree->Branch("nloWeight",&nloWeight,"nloWeight/D"); 
@@ -1181,13 +1193,17 @@ int main (int argc, char *argv[])
 	   ////////////////////////////
 	   ///// JES - JER smearing     ////
 	   //////////////////////////
+	   JERon = 0; 
 	   if(applyJER && !isData)
 	   {
 		jetTools->correctJetJER(init_jets_corrected, genjets, mets[0], "nominal", false);
+                JERon = 1; 
            }
+           JESon = 0; 
 	   if(applyJES && !isData)
 	   {
 		 jetTools->correctJets(init_jets_corrected,event->fixedGridRhoFastjetAll() ,false);
+                 JESon = 1;
            }
 
             ///////////////////////////////////////////////////////////
@@ -1273,6 +1289,9 @@ int main (int argc, char *argv[])
                 else selectedCSVTLJets.push_back(selectedJets[iJ]);
 
 	    }
+           WPb_L =  workingpointvalue_Loose; 
+           WPb_M =  workingpointvalue_Medium; 
+           WPb_T =  workingpointvalue_Tight; 
 
 	   ////////////////////////////////////
 	   //   Event Weights               ///
@@ -1294,6 +1313,7 @@ int main (int argc, char *argv[])
                 for(int intJet = 0; intJet < selectedJets.size(); intJet++)
                 {
                     float jetpt = selectedJets[intJet]->Pt();
+		    if(jetpt > 1000.) jetpt = 999.; 
                     float jeteta = selectedJets[intJet]->Eta();
                     float jetdisc = selectedJets[intJet]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
                     BTagEntry::JetFlavor jflav;
@@ -1491,6 +1511,7 @@ int main (int argc, char *argv[])
 	    //check flavour
             histo1D["nbMuons"]->Fill(selectedMuons.size(), eventweight);
             histo1D["nbElectrons"]->Fill(selectedElectrons.size(), eventweight);
+            histo1D["nbJets"]->Fill(selectedJets.size(), eventweight);
 
             if(selectedElectrons.size() + selectedMuons.size() <3) continue;
             histo1D["cutFlow"]->Fill(5., eventweight);
@@ -1560,8 +1581,8 @@ int main (int argc, char *argv[])
 	       }   
             }
 	
-	    if(mumumu && !OS) continue; 
-	    if(eee && !OS) continue; 
+
+             eventSelected = true; 
             if(mumue) Zlep0.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(), selectedMuons[0]->Pz(), selectedMuons[0]->Energy());
             if(mumue) Zlep1.SetPxPyPzE(selectedMuons[1]->Px(), selectedMuons[1]->Py(), selectedMuons[1]->Pz(), selectedMuons[1]->Energy());
             if(mumue) Wlep.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(), selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy());
@@ -1569,7 +1590,8 @@ int main (int argc, char *argv[])
             if(eemu)  Zlep0.SetPxPyPzE(selectedElectrons[0]->Px(), selectedElectrons[0]->Py(), selectedElectrons[0]->Pz(), selectedElectrons[0]->Energy());
             if(eemu) Zlep1.SetPxPyPzE(selectedElectrons[1]->Px(), selectedElectrons[1]->Py(), selectedElectrons[1]->Pz(), selectedElectrons[1]->Energy());
             if(eemu) Wlep.SetPxPyPzE(selectedMuons[0]->Px(), selectedMuons[0]->Py(), selectedMuons[0]->Pz(), selectedMuons[0]->Energy());
-              
+            if(mumumu && !OS) continue;
+            if(eee && !OS) continue;
             histo1D["cutFlow"]->Fill(7., eventweight); 
             nCuts++;
             nbEvents_7++;  
