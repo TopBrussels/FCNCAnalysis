@@ -36,7 +36,7 @@ map<string,MultiSamplePlot*> MSPlot;
 float Luminosity = 2628.727204156; // pb-1 Muon  = 2628.727204156, Electron = 2094.087
 TString slumi = "2628.727204156";
 std::string channel = "_Mu";
-std::string date = "_16_2_2016";
+std::string date = "_17_2_2016";
 Bool_t debug = false;
 bool applyAMC;
 
@@ -66,7 +66,9 @@ int main()
 
     // electron plots
     DatasetPlotter(11, -0.5, 10.5, "nb_jets", xmlFileName,CraneenPath,"EventInfoTree");
-   	DatasetPlotter(11, -0.5, 10.5, "nb_bjets", xmlFileName,CraneenPath,"EventInfoTree");
+   	DatasetPlotter(11, -0.5, 10.5, "nb_bjets_CSVM", xmlFileName,CraneenPath,"EventInfoTree");
+   	DatasetPlotter(11, -0.5, 10.5, "nb_bjets_CSVL", xmlFileName,CraneenPath,"EventInfoTree");
+   	DatasetPlotter(11, -0.5, 10.5, "nb_bjets_CSVT", xmlFileName,CraneenPath,"EventInfoTree");
     DatasetPlotter(40, 0, 400, "leptonpt", xmlFileName,CraneenPath,"ObjectVarsTree");
     DatasetPlotter(40, 0, 400, "jet1_Pt", xmlFileName,CraneenPath,"ObjectVarsTree");
     DatasetPlotter(40, 0, 400, "jet2_Pt", xmlFileName,CraneenPath,"ObjectVarsTree");

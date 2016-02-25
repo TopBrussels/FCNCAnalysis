@@ -201,7 +201,7 @@ int main (int argc, char *argv[])
     ///////////////////////////////////////
 
     bool debug = false;
-    bool bTagReweight_PreReweighting = false; //Needs to be set only once to true in order to produce the EtaPtHistos
+    bool bTagReweight_PreReweighting = true; //Needs to be set only once to true in order to produce the EtaPtHistos
     bool Muon = false;
     bool Electron = false;
     string btagger = "CSVM";
@@ -299,7 +299,7 @@ int main (int argc, char *argv[])
     {
         if(dName.find("Data")==string::npos)        //Btag documentation : http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
         {
-            bTagCalib = new BTagCalibration("CSVv2","../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_13TeV_25ns_combToMujets.csv");
+            bTagCalib = new BTagCalibration("CSVv2","../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_76X_combToMujets.csv");
             bTagReader_mujets_central = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"mujets","central"); //mujets
 //            bTagReader_mujets_up = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"mujets","up"); //mujets
 //            bTagReader_mujets_down = new BTagCalibrationReader(bTagCalib,BTagEntry::OP_MEDIUM,"mujets","down"); //mujets
@@ -351,11 +351,11 @@ int main (int argc, char *argv[])
     if(bLeptonSF){
         if(Muon){ 
             // muonSFWeight = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/Muon_SF_TopEA.root","SF_totErr",false,false);  OLD SF WEIGHT
-            muonSFWeightID_TT = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonID_Z_RunD_Reco74X_Nov20.root", "NUM_TightIDandIPCut_DEN_genTracks_PAR_pt_spliteta_bin1/abseta_pt_ratio", true, false, false);
-            muonSFWeightIso_TT = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonIso_Z_RunD_Reco74X_Nov20.root", "NUM_TightRelIso_DEN_TightID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true, false, false);  // Tight RelIso, Tight ID
-            muonSFWeightTrigC_TT = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/SingleMuonTrigger_Z_RunCD_Reco74X_Dec1.root", "runCreRECO_IsoMu20_OR_IsoTkMu20_PtEtaBins/abseta_pt_ratio", true, false, false);
-            muonSFWeightTrigD1_TT = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/SingleMuonTrigger_Z_RunCD_Reco74X_Dec1.root", "runD_IsoMu20_OR_IsoTkMu20_HLTv4p2_PtEtaBins/abseta_pt_ratio", true, false, false);
-            muonSFWeightTrigD2_TT = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/SingleMuonTrigger_Z_RunCD_Reco74X_Dec1.root", "runD_IsoMu20_OR_IsoTkMu20_HLTv4p3_PtEtaBins/abseta_pt_ratio", true, false, false);
+            muonSFWeightID_TT = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonID_Z_RunCD_Reco76X_Feb15.root", "MC_NUM_TightIDandIPCut_DEN_genTracks_PAR_pt_spliteta_bin1/abseta_pt_ratio", true, false, false);
+            muonSFWeightIso_TT = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonIso_Z_RunCD_Reco76X_Feb15.root", "MC_NUM_TightRelIso_DEN_TightID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true, false, false);  // Tight RelIso, Tight ID
+            muonSFWeightTrigC_TT = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/SingleMuonTrigger_Z_RunCD_Reco76X_Feb15.root", "runC_IsoMu20_OR_IsoTkMu20_PtEtaBins/abseta_pt_ratio", true, false, false);
+            muonSFWeightTrigD1_TT = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/SingleMuonTrigger_Z_RunCD_Reco76X_Feb15.root", "runD_IsoMu20_OR_IsoTkMu20_HLTv4p2_PtEtaBins/abseta_pt_ratio", true, false, false);
+            muonSFWeightTrigD2_TT = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/SingleMuonTrigger_Z_RunCD_Reco76X_Feb15.root", "runD_IsoMu20_OR_IsoTkMu20_HLTv4p3_PtEtaBins/abseta_pt_ratio", true, false, false);
 
         }
         else if(Electron){
@@ -896,26 +896,26 @@ int main (int argc, char *argv[])
 
         if(dName.find("Data")!=string::npos)
         {
-            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_DATA_L1FastJet_AK4PFchs.txt");
+            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Fall15_25nsV2_DATA_L1FastJet_AK4PFchs.txt");
             vCorrParam.push_back(*L1JetCorPar);
-            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_DATA_L2Relative_AK4PFchs.txt");
+            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Fall15_25nsV2_DATA_L2Relative_AK4PFchs.txt");
             vCorrParam.push_back(*L2JetCorPar);
-            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_DATA_L3Absolute_AK4PFchs.txt");
+            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Fall15_25nsV2_DATA_L3Absolute_AK4PFchs.txt");
             vCorrParam.push_back(*L3JetCorPar);
-            JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_DATA_L2L3Residual_AK4PFchs.txt");
+            JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Fall15_25nsV2_DATA_L2L3Residual_AK4PFchs.txt");
             vCorrParam.push_back(*L2L3ResJetCorPar);
             isData = true;
         }
         else
         {
-            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV7_MC_L1FastJet_AK4PFchs.txt");
+            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Fall15_25nsV2_MC_L1FastJet_AK4PFchs.txt");
             vCorrParam.push_back(*L1JetCorPar);
-            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV7_MC_L2Relative_AK4PFchs.txt");
+            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Fall15_25nsV2_MC_L2Relative_AK4PFchs.txt");
             vCorrParam.push_back(*L2JetCorPar);
-            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV7_MC_L3Absolute_AK4PFchs.txt");
+            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Fall15_25nsV2_MC_L3Absolute_AK4PFchs.txt");
             vCorrParam.push_back(*L3JetCorPar);
         }
-        JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer15_25nsV6_DATA_Uncertainty_AK4PFchs.txt");
+        JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Fall15_25nsV2_DATA_Uncertainty_AK4PFchs.txt");
 
         JetTools *jetTools = new JetTools(vCorrParam, jecUnc, true);
 
@@ -1102,6 +1102,7 @@ int main (int argc, char *argv[])
             //define object containers
             vector<TRootElectron*> selectedElectrons;
             vector<TRootPFJet*>    selectedJets;
+            vector<TRootPFJet*>    selectedOrigJets;
             vector<TRootMuon*>     selectedMuons;
             vector<TRootElectron*> selectedExtraElectrons;
             vector<TRootMuon*>     selectedExtraMuons;
@@ -1137,7 +1138,7 @@ int main (int argc, char *argv[])
             if (Muon)
             {
 				        if (debug)cout<<"Getting Jets"<<endl;
-				        selectedJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Tight"); // ApplyJetId
+				        selectedOrigJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Tight"); // ApplyJetId
 				        if (debug)cout<<"Getting Tight Muons"<<endl;
 				        selectedMuons                                       = r2selection.GetSelectedMuons(30,2.1,0.15, "Tight", "Spring15"); //Selected
 				        if (debug)cout<<"Getting Loose Electrons"<<endl;
@@ -1148,7 +1149,7 @@ int main (int argc, char *argv[])
             if (Electron)
             {
 				        if (debug)cout<<"Getting Jets"<<endl;
-				        selectedJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Tight"); // ApplyJetId
+				        selectedOrigJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Tight"); // ApplyJetId
 				        if (debug)cout<<"Getting Loose Muons"<<endl;
 				        selectedMuons                                       = r2selection.GetSelectedMuons(20, 2.4, 0.20,"Loose","Spring15"); //Vetoed
 				        if (debug)cout<<"Getting Medium Electrons"<<endl;
@@ -1223,15 +1224,15 @@ int main (int argc, char *argv[])
                 if(dName.find("Data")==string::npos) //If sample is data, no PU reweighting
                 {
                     if(debug) cout << "Applying b-tag weights " << endl;
-//                    btagWeight_comb_central =  btwt_comb_central->getMCEventWeight(selectedJets, false);
-//                    btagWeight_comb_up =  btwt_comb_up->getMCEventWeight(selectedJets, false);
-//                    btagWeight_comb_down =  btwt_comb_down->getMCEventWeight(selectedJets, false);
-                    btagWeight_mujets_central =  btwt_mujets_central->getMCEventWeight(selectedJets, false);
-//                    btagWeight_mujets_up =  btwt_mujets_up->getMCEventWeight(selectedJets, false);
-//                    btagWeight_mujets_down =  btwt_mujets_down->getMCEventWeight(selectedJets, false);
-//                    btagWeight_ttbar_central =  btwt_ttbar_central->getMCEventWeight(selectedJets, false);
-//                    btagWeight_ttbar_up =  btwt_ttbar_up->getMCEventWeight(selectedJets, false);
-//                    btagWeight_ttbar_down =  btwt_ttbar_down->getMCEventWeight(selectedJets, false);
+//                    btagWeight_comb_central =  btwt_comb_central->getMCEventWeight(selectedOrigJets, false);
+//                    btagWeight_comb_up =  btwt_comb_up->getMCEventWeight(selectedOrigJets, false);
+//                    btagWeight_comb_down =  btwt_comb_down->getMCEventWeight(selectedOrigJets, false);
+                    btagWeight_mujets_central =  btwt_mujets_central->getMCEventWeight(selectedOrigJets, false);
+//                    btagWeight_mujets_up =  btwt_mujets_up->getMCEventWeight(selectedOrigJets, false);
+//                    btagWeight_mujets_down =  btwt_mujets_down->getMCEventWeight(selectedOrigJets, false);
+//                    btagWeight_ttbar_central =  btwt_ttbar_central->getMCEventWeight(selectedOrigJets, false);
+//                    btagWeight_ttbar_up =  btwt_ttbar_up->getMCEventWeight(selectedOrigJets, false);
+//                    btagWeight_ttbar_down =  btwt_ttbar_down->getMCEventWeight(selectedOrigJets, false);
                 }
             }
             if(debug) cout<<"btag SF:  "<< endl;
@@ -1298,13 +1299,13 @@ int main (int argc, char *argv[])
           //Apply the lepton, btag and HT selections
           if (Muon && !Electron)
           {
-            if  (  !( nMu ==1 && nEl == 0)) continue; // Muon Channel Selection
+            if  (  !( nMu ==1 && nEl == 0)) continue; // Muon Channel Selection + veto on electrons
             if (selectedMuons[0]->Pt() < 30) continue;
             if (debug)	cout <<"Muon selection passed..."<<endl;
           }
           else if (!Muon && Electron)
           {
-              if  (  !( nMu == 0 && nEl == 1)) continue; // Electron Channel Selection
+              if  (  !( nMu == 0 && nEl == 1)) continue; // Electron Channel Selection + veto on muons
               if (selectedElectrons[0]->Pt() < 30) continue;
            if (debug)	cout <<"Electron selection passed..."<<endl;
           }
@@ -1326,38 +1327,33 @@ int main (int argc, char *argv[])
 	            if (debug)	cout <<"Vetoed extra electrons..."<<endl;
 			}
 			histo1D["cutFlow"]->Fill(4., scaleFactor * Luminosity ); //LooseLepton removal
-			
-			////////////////////////////////////////////////////////////////////////////////
-			// Clean jet collection from jets overlapping with lepton
-      ////////////////////////////////////////////////////////////////////////////////
-			float clean_dR = 0.4;
-			if(Muon)
-			{
-			    for(unsigned int iJet = 0; iJet < selectedJets.size(); iJet++)
-			    {
-			        float tmp_dR = 5.;
-			        tmp_dR = sqrt(pow(selectedMuons[0]->Phi()-selectedJets[iJet]->Phi(),2)+pow(selectedMuons[0]->Eta()-selectedJets[iJet]->Eta(),2));
-			        if(tmp_dR < clean_dR)
-			        {
-			            selectedJets.erase(selectedJets.begin() + iJet);
-			            if(debug) cout << "Cleaned jet collection from overlapping lepton" << endl;
-			        }
-			    }
-			}
-			if(Electron)
-			{
-			    for(unsigned int iJet = 0; iJet < selectedJets.size(); iJet++)
-			    {
-			        float tmp_dR = 5.;
-			        tmp_dR = sqrt(pow(selectedElectrons[0]->Phi()-selectedJets[iJet]->Phi(),2)+pow(selectedElectrons[0]->Eta()-selectedJets[iJet]->Eta(),2));
-			        if(tmp_dR < clean_dR)
-			        {
-			            selectedJets.erase(selectedJets.begin() + iJet);
-			            if(debug) cout << "Cleaned jet collection from overlapping lepton" << endl;
-			        }
-			    }
+
+
+      /////////////////////////////////////////////////
+      //            Jet lepton cleaning          //
+      /////////////////////////////////////////////////
+      selectedJets.clear();
+		 
+		  float clean_dR = 0.4;
+      for (int origJets=0; origJets<selectedOrigJets.size(); origJets++)
+      {
+          if(Electron)
+          {
+              if(selectedOrigJets[origJets]->DeltaR(*selectedExtraElectrons[0])>clean_dR)
+              {
+                  selectedJets.push_back(selectedOrigJets[origJets]);
+              }
+          }                    
+          else if(Muon)
+          {
+              if(selectedOrigJets[origJets]->DeltaR(*selectedExtraMuons[0])>clean_dR)
+              {
+                  selectedJets.push_back(selectedOrigJets[origJets]);
+              }
+          }                    
 			}
 			histo1D["cutFlow"]->Fill(5., scaleFactor * Luminosity ); // JetCleaning
+			
 			
 			/////////////////////////////////////////////
 			// Make TLorentzVectors //
@@ -2333,7 +2329,7 @@ int main (int argc, char *argv[])
 
   for (map<string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
   {
-    cout << "1D Plot: " << it->first << endl;
+    //cout << "1D Plot: " << it->first << endl;
    // TCanvas ctemp = 
     
     TH1F *temp = it->second;
@@ -2341,7 +2337,7 @@ int main (int argc, char *argv[])
   }
   for (map<string,TH2F*>::const_iterator it = histo2D.begin(); it != histo2D.end(); it++)
   {
-     cout << "2D Plot: " << it->first << endl;
+     //cout << "2D Plot: " << it->first << endl;
    
      TH2F *temp = it->second;
      temp->Draw();

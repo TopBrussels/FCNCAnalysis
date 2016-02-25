@@ -17,9 +17,9 @@
 
 <!--DATA-->
 
-<d name="Data_Run2015C"     title="Data"    add="1"   color="1"  ls="1"  lw="2" normf="1" xsection="45819.920175195"  EqLumi=" 17.225935728" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/SingleElectron/crab_SingleElectron-Run2015C_25ns-16Dec2015-v1-76X_dataRun2_v15/160201_153420/0000/TOPTREE_*.root"/>
+<d name="Data_Run2015C"     title="Data"    add="0"   color="1"  ls="1"  lw="2" normf="1" xsection="45819.920175195"  EqLumi=" 17.225935728" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/SingleElectron/crab_SingleElectron-Run2015C_25ns-16Dec2015-v1-76X_dataRun2_v15/160201_153420/0000/TOPTREE_*.root"/>
 
-<d name="Data_Run2015D"     title="Data"    add="1"   color="1"  ls="1"  lw="2" normf="1" xsection="47520.995365998"  EqLumi="2611.621348504" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/SingleElectron/crab_SingleElectron-Run2015D-16Dec2015-v1-76X_dataRun2_v15/160201_153427/000*/TOPTREE_*.root"/>
+<d name="Data_Run2015D"     title="Data"    add="0"   color="1"  ls="1"  lw="2" normf="1" xsection="47520.995365998"  EqLumi="2611.621348504" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/SingleElectron/crab_SingleElectron-Run2015D-16Dec2015-v1-76X_dataRun2_v15/160201_153427/000*/TOPTREE_*.root"/>
 
 <!-- Main backrounds -->
 
