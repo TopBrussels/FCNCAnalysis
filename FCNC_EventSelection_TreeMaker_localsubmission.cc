@@ -201,7 +201,7 @@ int main (int argc, char *argv[])
     ///////////////////////////////////////
 
     bool debug = false;
-    bool bTagReweight_PreReweighting = true; //Needs to be set only once to true in order to produce the EtaPtHistos
+    bool bTagReweight_PreReweighting = false; //Needs to be set only once to true in order to produce the EtaPtHistos
     bool Muon = false;
     bool Electron = false;
     string btagger = "CSVM";
