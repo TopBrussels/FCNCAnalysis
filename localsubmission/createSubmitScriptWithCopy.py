@@ -73,12 +73,18 @@ for chan in channels:
     FilePerJob=0 # add dccap...
     addPrefix=True
     N_processed=0
+    Luminosity_=0.;
+    
+
+    for d in datasets:
+        if "Data" in str(d.attrib['name']):
+            Luminosity_=Luminosity_+float(d.attrib['EqLumi'])
     
     # loop over all the dataset with add="1"
     for d in datasets:
         if d.attrib['add'] == '1':
             print "found dataset to be added..." + str(d.attrib['name'])
-            commandString = "./TreeMaker "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff'])
+            commandString = "./TreeMaker "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff']) +" "+ str(Luminosity_)
             topTrees = glob.glob(d.attrib['filenames'])
 
             # setting the number of file per job depending whether it is data sample or not
