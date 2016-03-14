@@ -202,7 +202,6 @@ int main (int argc, char *argv[])
     string btagger = "CSVM";
     bool printTriggers = false;
     bool applyTriggers = true;
-    bool applyJER = true;
     string channelpostfix = "";
 
     //Setting Lepton Channels
@@ -437,7 +436,7 @@ int main (int argc, char *argv[])
 
         TFile * tupfile = new TFile(Ntupname.c_str(),"RECREATE");
 	      tupfile->cd();
-	      TTree* tup = new TTree(Ntuptitle_AdvancedVars.c_str(), Ntuptitle_AdvancedVars.c_str(),Ntuptitle_AdvancedVars.c_str(), Ntuptitle_AdvancedVars.c_str());
+	      TTree* tup = new TTree(Ntuptitle_AdvancedVars.c_str(), Ntuptitle_AdvancedVars.c_str());
         TTree* tup_ObjectVars      = new TTree(Ntuptitle_ObjectVars.c_str(), Ntuptitle_ObjectVars.c_str());
 	      TTree* tup_ntupleinfo      = new TTree(Ntuptitle_NtupleInfo.c_str(), Ntuptitle_NtupleInfo.c_str());
         TTree* tup_Weights      = new TTree(Ntuptitle_Weights.c_str(), Ntuptitle_Weights.c_str());
@@ -468,7 +467,7 @@ int main (int argc, char *argv[])
         Int_t nvtx;
         Int_t npu;
         Double_t cutstep[10]; //0: no cut, 1: PV cleaning, 2: trigger, 3: lepton selection, 4: loose lepton veto, 5: nb jets, 6: nb b-jets
-        Int_t nCuts = 0; //REDEFINE if ncuts change
+        Int_t nCuts = 7; //REDEFINE if ncuts change
         Int_t nofPosWeights = 0;
         Int_t nofNegWeights = 0;
         Int_t sumW = 0; 
@@ -558,7 +557,24 @@ int main (int argc, char *argv[])
         // met 
         Double_t met_Pt; 
 	      Double_t met_Phi; 
-	      Double_t met_Eta; 
+	      Double_t met_Eta;
+	      
+	      //Reconstructed variables
+	      Double_t Mbb;
+	      Double_t MTlepmet;
+	      Double_t MLepTop_GenMatch;
+	      Double_t MHadTop_GenMatch;
+	      Double_t EtaLepTop_GenMatch;
+	      Double_t EtaHadTop_GenMatch;
+	      Double_t MassW_GenMatch;
+	      Double_t EtaW_GenMatch;
+	      Double_t dR_lepJet_min;
+	      Double_t MLepTop;
+	      Double_t MHadTop;
+	      Double_t EtaLepTop;
+	      Double_t EtaHadTop;
+	      Double_t MassW;
+	      Double_t EtaW;
 
         // global data set variables
         tup_ntupleinfo->Branch("nofPosWeights",&nofPosWeights,"nofPosWeights/I");  
@@ -598,65 +614,82 @@ int main (int argc, char *argv[])
         tup_Weights->Branch("MuonTrigSF",&MuonTrigSF,"MuonTrigSF/D");  
 
         // electrons
-        tup_ObjectVars->Branch("pt_electron",pt_electron,"pt_electron/D");
-        tup_ObjectVars->Branch("phi_electron",phi_electron,"phi_electron/D");
-        tup_ObjectVars->Branch("eta_electron",eta_electron,"eta_electron/D");
-        tup_ObjectVars->Branch("eta_superCluster_electron",eta_superCluster_electron,"eta_superCluster_electron/D");
-        tup_ObjectVars->Branch("E_electron",E_electron,"E_electron/D");
-        tup_ObjectVars->Branch("chargedHadronIso_electron",chargedHadronIso_electron,"chargedHadronIso_electron/D");
-        tup_ObjectVars->Branch("neutralHadronIso_electron",neutralHadronIso_electron,"neutralHadronIso_electron/D");
-        tup_ObjectVars->Branch("photonIso_electron",photonIso_electron,"photonIso_electron/D");
-        tup_ObjectVars->Branch("pfIso_electron",pfIso_electron,"pfIso_electron/D");
-        tup_ObjectVars->Branch("charge_electron",charge_electron,"charge_electron/I");
-        tup_ObjectVars->Branch("d0_electron",d0_electron,"d0_electron/D");
-        tup_ObjectVars->Branch("d0BeamSpot_electron",d0BeamSpot_electron,"d0BeamSpot_electron/D");
-        tup_ObjectVars->Branch("sigmaIEtaIEta_electron",sigmaIEtaIEta_electron,"sigmaIEtaIEta_electron/D");
-        tup_ObjectVars->Branch("deltaEtaIn_electron",deltaEtaIn_electron,"deltaEtaIn_electron/D");
-        tup_ObjectVars->Branch("deltaPhiIn_electron",deltaPhiIn_electron,"deltaPhiIn_electron/D");
-        tup_ObjectVars->Branch("hadronicOverEm_electron",hadronicOverEm_electron,"hadronicOverEm_electron/D");
-        tup_ObjectVars->Branch("missingHits_electron",missingHits_electron,"missingHits_electron/I");
-        tup_ObjectVars->Branch("passConversion_electron",passConversion_electron,"passConversion_electron/O)");
-        tup_ObjectVars->Branch("isId_electron",isId_electron,"isId_electron/O)");
-        tup_ObjectVars->Branch("isIso_electron",isIso_electron,"isIso_electron/O)");
-        tup_ObjectVars->Branch("isEBEEGap",isEBEEGap,"isEBEEGap/O)");
+        tup_ObjectVars->Branch("pt_electron",&pt_electron,"pt_electron/D");
+        tup_ObjectVars->Branch("phi_electron",&phi_electron,"phi_electron/D");
+        tup_ObjectVars->Branch("eta_electron",&eta_electron,"eta_electron/D");
+        tup_ObjectVars->Branch("eta_superCluster_electron",&eta_superCluster_electron,"eta_superCluster_electron/D");
+        tup_ObjectVars->Branch("E_electron",&E_electron,"E_electron/D");
+        tup_ObjectVars->Branch("chargedHadronIso_electron",&chargedHadronIso_electron,"chargedHadronIso_electron/D");
+        tup_ObjectVars->Branch("neutralHadronIso_electron",&neutralHadronIso_electron,"neutralHadronIso_electron/D");
+        tup_ObjectVars->Branch("photonIso_electron",&photonIso_electron,"photonIso_electron/D");
+        tup_ObjectVars->Branch("pfIso_electron",&pfIso_electron,"pfIso_electron/D");
+        tup_ObjectVars->Branch("charge_electron",&charge_electron,"charge_electron/I");
+        tup_ObjectVars->Branch("d0_electron",&d0_electron,"d0_electron/D");
+        tup_ObjectVars->Branch("d0BeamSpot_electron",&d0BeamSpot_electron,"d0BeamSpot_electron/D");
+        tup_ObjectVars->Branch("sigmaIEtaIEta_electron",&sigmaIEtaIEta_electron,"sigmaIEtaIEta_electron/D");
+        tup_ObjectVars->Branch("deltaEtaIn_electron",&deltaEtaIn_electron,"deltaEtaIn_electron/D");
+        tup_ObjectVars->Branch("deltaPhiIn_electron",&deltaPhiIn_electron,"deltaPhiIn_electron/D");
+        tup_ObjectVars->Branch("hadronicOverEm_electron",&hadronicOverEm_electron,"hadronicOverEm_electron/D");
+        tup_ObjectVars->Branch("missingHits_electron",&missingHits_electron,"missingHits_electron/I");
+        tup_ObjectVars->Branch("passConversion_electron",&passConversion_electron,"passConversion_electron/O)");
+        tup_ObjectVars->Branch("isId_electron",&isId_electron,"isId_electron/O)");
+        tup_ObjectVars->Branch("isIso_electron",&isIso_electron,"isIso_electron/O)");
+        tup_ObjectVars->Branch("isEBEEGap",&isEBEEGap,"isEBEEGap/O)");
       
 
         // muons
-        tup_ObjectVars->Branch("pt_muon",pt_muon,"pt_muon/D");
-        tup_ObjectVars->Branch("phi_muon",phi_muon,"phi_muon/D");
-        tup_ObjectVars->Branch("eta_muon",eta_muon,"eta_muon/D");
-        tup_ObjectVars->Branch("E_muon",E_muon,"E_muon/D");
-        tup_ObjectVars->Branch("chargedHadronIso_muon",chargedHadronIso_muon,"chargedHadronIso_muon/D");
-        tup_ObjectVars->Branch("neutralHadronIso_muon",neutralHadronIso_muon,"neutralHadronIso_muon/D");
-        tup_ObjectVars->Branch("photonIso_muon",photonIso_muon,"photonIso_muon/D");
-        tup_ObjectVars->Branch("isId_muon",isId_muon,"isId_muon/O");
-        tup_ObjectVars->Branch("isIso_muon",isIso_muon,"isIso_muon/O");
-        tup_ObjectVars->Branch("pfIso_muon",pfIso_muon,"pfIso_muon/D");
-        tup_ObjectVars->Branch("charge_muon",charge_muon,"charge_muon/I");
-        tup_ObjectVars->Branch("d0_muon",d0_muon,"d0_muon/D");
-        tup_ObjectVars->Branch("d0BeamSpot_muon",d0BeamSpot_muon,"d0BeamSpot_muon/D");
+        tup_ObjectVars->Branch("pt_muon",&pt_muon,"pt_muon/D");
+        tup_ObjectVars->Branch("phi_muon",&phi_muon,"phi_muon/D");
+        tup_ObjectVars->Branch("eta_muon",&eta_muon,"eta_muon/D");
+        tup_ObjectVars->Branch("E_muon",&E_muon,"E_muon/D");
+        tup_ObjectVars->Branch("chargedHadronIso_muon",&chargedHadronIso_muon,"chargedHadronIso_muon/D");
+        tup_ObjectVars->Branch("neutralHadronIso_muon",&neutralHadronIso_muon,"neutralHadronIso_muon/D");
+        tup_ObjectVars->Branch("photonIso_muon",&photonIso_muon,"photonIso_muon/D");
+        tup_ObjectVars->Branch("isId_muon",&isId_muon,"isId_muon/O");
+        tup_ObjectVars->Branch("isIso_muon",&isIso_muon,"isIso_muon/O");
+        tup_ObjectVars->Branch("pfIso_muon",&pfIso_muon,"pfIso_muon/D");
+        tup_ObjectVars->Branch("charge_muon",&charge_muon,"charge_muon/I");
+        tup_ObjectVars->Branch("d0_muon",&d0_muon,"d0_muon/D");
+        tup_ObjectVars->Branch("d0BeamSpot_muon",&d0BeamSpot_muon,"d0BeamSpot_muon/D");
 
         // jets
         tup_ObjectVars->Branch("nJets",&nJets,"nJets/I");
         tup_ObjectVars->Branch("nJets_CSVL",&nJets_CSVL,"nJets_CSVL/I");
         tup_ObjectVars->Branch("nJets_CSVM",&nJets_CSVM,"nJets_CSVM/I");
         tup_ObjectVars->Branch("nJets_CSVT",&nJets_CSVT,"nJets_CSVT/I");
-        tup_ObjectVars->Branch("pt_jet",pt_jet,"pt_jet[nJets]/D");
-        tup_ObjectVars->Branch("phi_jet",phi_jet,"phi_jet[nJets]/D");
-        tup_ObjectVars->Branch("eta_jet",eta_jet,"eta_jet[nJets]/D");
-        tup_ObjectVars->Branch("E_jet",E_jet,"E_jet[nJets]/D");
-        tup_ObjectVars->Branch("charge_jet",charge_jet,"charge_jet[nJets]/I");	    
-        tup_ObjectVars->Branch("bdisc_jet",bdisc_jet,"bdisc_jet[nJets]/D");
-        tup_ObjectVars->Branch("cdiscCvsL_jet",cdiscCvsL_jet,"cdiscCvsL_jet[nJets]/D");
-        tup_ObjectVars->Branch("cdiscCvsB_jet",cdiscCvsB_jet,"cdiscCvsB_jet[nJets]/D");
-        tup_ObjectVars->Branch("jet_matchedMC_pdgID",jet_matchedMC_pdgID,"jet_matchedMC_pdgID[nJets]/D");
-        tup_ObjectVars->Branch("jet_matchedMC_motherpdgID",jet_matchedMC_motherpdgID,"jet_matchedMC_motherpdgID/D");
-        tup_ObjectVars->Branch("jet_matchedMC_grannypdgID",jet_matchedMC_grannypdgID,"jet_matchedMC_grannypdgID[nJets]/D");
+        tup_ObjectVars->Branch("pt_jet",&pt_jet,"pt_jet[nJets]/D");
+        tup_ObjectVars->Branch("phi_jet",&phi_jet,"phi_jet[nJets]/D");
+        tup_ObjectVars->Branch("eta_jet",&eta_jet,"eta_jet[nJets]/D");
+        tup_ObjectVars->Branch("E_jet",&E_jet,"E_jet[nJets]/D");
+        tup_ObjectVars->Branch("charge_jet",&charge_jet,"charge_jet[nJets]/I");	    
+        tup_ObjectVars->Branch("bdisc_jet",&bdisc_jet,"bdisc_jet[nJets]/D");
+        tup_ObjectVars->Branch("cdiscCvsL_jet",&cdiscCvsL_jet,"cdiscCvsL_jet[nJets]/D");
+        tup_ObjectVars->Branch("cdiscCvsB_jet",&cdiscCvsB_jet,"cdiscCvsB_jet[nJets]/D");
+        tup_ObjectVars->Branch("jet_matchedMC_pdgID",&jet_matchedMC_pdgID,"jet_matchedMC_pdgID[nJets]/D");
+        tup_ObjectVars->Branch("jet_matchedMC_motherpdgID",&jet_matchedMC_motherpdgID,"jet_matchedMC_motherpdgID/D");
+        tup_ObjectVars->Branch("jet_matchedMC_grannypdgID",&jet_matchedMC_grannypdgID,"jet_matchedMC_grannypdgID[nJets]/D");
        
         // met 
         tup_ObjectVars->Branch("met_Pt", &met_Pt, "met_Pt/D"); 
         tup_ObjectVars->Branch("met_Eta", &met_Eta,"met_Eta/D"); 
         tup_ObjectVars->Branch("met_Phi", &met_Phi, "met_Phi/D"); 
+
+        // Advanced variables
+        tup->Branch("Mbb",&Mbb,"Mbb/D");
+        tup->Branch("MTlepmet",&MTlepmet,"MTlepmet/D");
+        tup->Branch("MLepTop_GenMatch",&MLepTop_GenMatch,"MLepTop_GenMatch/D");
+        tup->Branch("MHadTop_GenMatch",&MHadTop_GenMatch,"MHadTop_GenMatch/D");
+        tup->Branch("EtaLepTop_GenMatch",&EtaLepTop_GenMatch,"EtaLepTop_GenMatch/D");
+        tup->Branch("EtaHadTop_GenMatch",&EtaHadTop_GenMatch,"EtaHadTop_GenMatch/D");
+        tup->Branch("MassW_GenMatch",&MassW_GenMatch,"MassW_GenMatch/D");
+        tup->Branch("EtaW_GenMatch",&EtaW_GenMatch,"EtaW_GenMatch/D");
+        tup->Branch("dR_lepJet_min",&dR_lepJet_min,"dR_lepJet_min/D");
+        tup->Branch("MLepTop",&MLepTop,"MLepTop/D");
+        tup->Branch("MHadTop",&MHadTop,"MHadTop/D");
+        tup->Branch("EtaLepTop",&EtaLepTop,"EtaLepTop/D");
+        tup->Branch("EtaHadTop",&EtaHadTop,"EtaHadTop/D");
+        tup->Branch("MassW",&MassW,"MassW/D");
+        tup->Branch("EtaW",&EtaW,"EtaW/D");
 
         if(debug)cout<<"created ntuples"<<endl;
         ///////////////////////////////////////////////////////////////
@@ -1006,9 +1039,8 @@ int main (int argc, char *argv[])
             if (debug)	cout <<"PrimaryVertexBit: " << isGoodPV <<endl;
             //            if (debug) cin.get();
 
-            if(debug) cout << "Past cut " << nCuts <<": NO CUTS" << endl;
-            cutstep[nCuts]++; //Order of appearance of cutstep & nCuts is important here
-            nCuts++;
+            if(debug) cout << "Past cut 0: NO CUTS" << endl;
+            cutstep[0]++; //Order of appearance of cutstep & nCuts is important here
 
             eventCount++;
 
@@ -1037,14 +1069,12 @@ int main (int argc, char *argv[])
 
 
             if (!isGoodPV) continue; // Check that there is a good Primary Vertex
-            if(debug) cout << "Past cut " << nCuts <<": good PV selection" << endl;
-            cutstep[nCuts]++; //Order of appearance of cutstep & nCuts is important here
-            nCuts++;
+            if(debug) cout << "Past cut 1: good PV selection" << endl;
+            cutstep[1]++; //Order of appearance of cutstep & nCuts is important here
 
             if(!trigged) continue;
-            if(debug) cout << "Past cut " << nCuts <<": Passed trigger" << endl;
-            cutstep[nCuts]++; //Order of appearance of cutstep & nCuts is important here
-            nCuts++;
+            if(debug) cout << "Past cut 2: Passed trigger" << endl;
+            cutstep[2]++; //Order of appearance of cutstep & nCuts is important here
 
             if (debug)
             {
@@ -1070,9 +1100,8 @@ int main (int argc, char *argv[])
                 cerr<<"Correct Channel not selected."<<endl;
                 exit(1);
             }
-            if(debug) cout << "Past cut " << nCuts <<": Single lepton selected" << endl;
-            cutstep[nCuts]++; //Order of appearance of cutstep & nCuts is important here
-            nCuts++;
+            if(debug) cout << "Past cut 3: Single lepton selected" << endl;
+            cutstep[3]++; //Order of appearance of cutstep & nCuts is important here
 
 			      if(Muon && !Electron)
 			      {
@@ -1084,9 +1113,8 @@ int main (int argc, char *argv[])
 				          if(nLooseEl != 1) continue;
 	                if (debug)	cout <<"Vetoed extra electrons..."<<endl;
 			      }
-            if(debug) cout << "Past cut " << nCuts <<": Vetoed extra loose leptons" << endl;
-            cutstep[nCuts]++; //Order of appearance of cutstep & nCuts is important here
-            nCuts++;
+            if(debug) cout << "Past cut 4: Vetoed extra loose leptons" << endl;
+            cutstep[4]++; //Order of appearance of cutstep & nCuts is important here
             
             if(Electron)
             {
@@ -1230,9 +1258,9 @@ int main (int argc, char *argv[])
                 cdiscCvsL_jet[nJets]=selectedJets[seljet]->ctag_pfCombinedCvsLJetTags() ;
                 nJets++;
             }
-            nJets_CSVT =  selectedCSVTBJets.size(); 
-	          nJets_CSVM =  selectedCSVMBJets.size();
-            nJets_CSVL =  selectedCSVLBJets.size();
+            nJets_CSVT =  selectedTBJets.size(); 
+	          nJets_CSVM =  selectedMBJets.size();
+            nJets_CSVL =  selectedLBJets.size();
 	          double met_px = mets[0]->Px();
 	          double met_py = mets[0]->Py();
             met_Pt = sqrt(met_px*met_px + met_py*met_py);
@@ -1252,9 +1280,8 @@ int main (int argc, char *argv[])
             // Cut on nb of jets and b-jets
             //////////////////////////////////////////////////////////////////////
 			      if(selectedJets.size() < 2)  continue;
-            if(debug) cout << "Past cut " << nCuts <<": Passed number of jets cut" << endl;
-            cutstep[nCuts]++; //Order of appearance of cutstep & nCuts is important here
-            nCuts++;
+            if(debug) cout << "Past cut 5: Passed number of jets cut" << endl;
+            cutstep[5]++; //Order of appearance of cutstep & nCuts is important here
 
             ///////////////////////////////////////////////////
             // Fill b-tag histos for scale factors
@@ -1278,9 +1305,8 @@ int main (int argc, char *argv[])
 
 		  	    if(selectedLBJets.size() < 2) continue;
 	          if (debug)	cout <<"Cut on nb b-jets..."<<endl;
-            if(debug) cout << "Past cut " << nCuts <<": Passed cut on number of b-jets" << endl;
-            cutstep[nCuts]++; //Order of appearance of cutstep & nCuts is important here
-            nCuts++;
+            if(debug) cout << "Past cut 6: Passed cut on number of b-jets" << endl;
+            cutstep[6]++; //Order of appearance of cutstep & nCuts is important here
 
 
             if(debug)
@@ -1532,6 +1558,12 @@ int main (int argc, char *argv[])
         }
 
         tup_ntupleinfo->Fill();
+        tup_ntupleinfo->Print("all");	          
+        tup->Print("all");
+        tup_ObjectVars->Print("all");
+        tup_Weights->Print("all");
+
+	      tupfile->Write();   
        	tupfile->Close();
         delete tupfile;
         cout <<"n events passed  =  "<<passed <<endl;
