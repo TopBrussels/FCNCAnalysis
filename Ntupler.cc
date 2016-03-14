@@ -577,6 +577,7 @@ int main (int argc, char *argv[])
 	      Double_t EtaW;
 
         // global data set variables
+        tup_ntupleinfo->Branch("Luminosity",&Luminosity,"Luminosity/I");  
         tup_ntupleinfo->Branch("nofPosWeights",&nofPosWeights,"nofPosWeights/I");  
 	      tup_ntupleinfo->Branch("nofNegWeights",&nofNegWeights,"nofNegWeights/I");
         tup_ntupleinfo->Branch("nEvents" , &nEvents, "nEvents/I"); 
