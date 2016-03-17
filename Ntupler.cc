@@ -466,13 +466,14 @@ int main (int argc, char *argv[])
         Int_t lumi_num;
         Int_t nvtx;
         Int_t npu;
-        Double_t cutstep[10]; //0: no cut, 1: PV cleaning, 2: trigger, 3: lepton selection, 4: loose lepton veto, 5: nb jets, 6: nb b-jets
+        Int_t cutstep[10]; //0: no cut, 1: PV cleaning, 2: trigger, 3: lepton selection, 4: loose lepton veto, 5: nb jets, 6: nb b-jets
         Int_t nCuts = 7; //REDEFINE if ncuts change
         Int_t nofPosWeights = 0;
         Int_t nofNegWeights = 0;
         Int_t sumW = 0; 
         Int_t JERon = 0; // -1: not on, 0: nominal, 1: minus, 2: plus
         Int_t JESon = 0; // -1: not on, 0: nominal, 1: minus, 2: plus
+        Double_t Luminosity_ = Luminosity;
 
         //Weights
         Double_t puSF;
@@ -508,7 +509,7 @@ int main (int argc, char *argv[])
         Double_t neutralHadronIso_electron;
         Double_t photonIso_electron;
         Double_t pfIso_electron;
-        Int_t charge_electron;
+        Double_t charge_electron;
         Double_t sigmaIEtaIEta_electron;
 	      Double_t deltaEtaIn_electron;
 	      Double_t deltaPhiIn_electron;
@@ -535,7 +536,7 @@ int main (int argc, char *argv[])
 	      Bool_t isId_muon;
 	      Bool_t isIso_muon;
         Double_t pfIso_muon;
-        Int_t charge_muon;
+        Double_t charge_muon;
   
         //variable for jets 
         Int_t nJets;
@@ -546,7 +547,7 @@ int main (int argc, char *argv[])
         Double_t phi_jet[20];
         Double_t eta_jet[20];
         Double_t E_jet[20];
-        Int_t charge_jet[20];
+        Double_t charge_jet[20];
         Double_t bdisc_jet[20];
         Double_t cdiscCvsL_jet[20]; 
 	      Double_t cdiscCvsB_jet[20];
@@ -577,23 +578,23 @@ int main (int argc, char *argv[])
 	      Double_t EtaW;
 
         // global data set variables
-        tup_ntupleinfo->Branch("Luminosity",&Luminosity,"Luminosity/I");  
-        tup_ntupleinfo->Branch("nofPosWeights",&nofPosWeights,"nofPosWeights/I");  
-	      tup_ntupleinfo->Branch("nofNegWeights",&nofNegWeights,"nofNegWeights/I");
-        tup_ntupleinfo->Branch("nEvents" , &nEvents, "nEvents/I"); 
-        tup_ntupleinfo->Branch("sumW", &sumW, "sumW/I");
-        tup_ntupleinfo->Branch("nCuts",&nCuts, "nCuts/I"); 
-        tup_ntupleinfo->Branch("cutstep",&cutstep,"cutstep[nCuts]/D");
-        tup_ntupleinfo->Branch("JERon",&JERon,"JERon/I"); 
-        tup_ntupleinfo->Branch("JESon", &JESon, "JESon/I");
+        tup_ntupleinfo->Branch("Luminosity_",&Luminosity_,"Luminosity_/D");  
+        tup_ntupleinfo->Branch("I_nofPosWeights",&nofPosWeights,"nofPosWeights/I");  
+	      tup_ntupleinfo->Branch("I_nofNegWeights",&nofNegWeights,"nofNegWeights/I");
+        tup_ntupleinfo->Branch("I_nEvents" , &nEvents, "nEvents/I"); 
+        tup_ntupleinfo->Branch("I_sumW", &sumW, "sumW/I");
+        tup_ntupleinfo->Branch("I_nCuts",&nCuts, "nCuts/I"); 
+        tup_ntupleinfo->Branch("I_cutstep",&cutstep,"cutstep[nCuts]/I");
+        tup_ntupleinfo->Branch("I_JERon",&JERon,"JERon/I"); 
+        tup_ntupleinfo->Branch("I_JESon", &JESon, "JESon/I");
         tup_ntupleinfo->Branch("workingpointvalue_Loose", &workingpointvalue_Loose, "workingpointvalue_Loose/D"); 
         tup_ntupleinfo->Branch("workingpointvalue_Medium", &workingpointvalue_Medium, "workingpointvalue_Medium/D");
         tup_ntupleinfo->Branch("workingpointvalue_Tight", &workingpointvalue_Tight, "workingpointvalue_Tight/D");
-        tup_ntupleinfo->Branch("run_num",&run_num,"run_num/I");
-        tup_ntupleinfo->Branch("evt_num",&evt_num,"evt_num/I");
-        tup_ntupleinfo->Branch("lumi_num",&lumi_num,"lumi_num/I");
-        tup_ntupleinfo->Branch("nvtx",&nvtx,"nvtx/I");
-        tup_ntupleinfo->Branch("npu",&npu,"npu/I");
+        tup_ntupleinfo->Branch("I_run_num",&run_num,"run_num/I");
+        tup_ntupleinfo->Branch("I_evt_num",&evt_num,"evt_num/I");
+        tup_ntupleinfo->Branch("I_lumi_num",&lumi_num,"lumi_num/I");
+        tup_ObjectVars->Branch("I_nvtx",&nvtx,"nvtx/I");
+        tup_ObjectVars->Branch("I_npu",&npu,"npu/I");
 
         // Weights
         tup_Weights->Branch("fleptonSF",&fleptonSF,"fleptonSF/D"); //Contains, if muon, the  isoSF, idSF & trigSF
@@ -624,18 +625,18 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("neutralHadronIso_electron",&neutralHadronIso_electron,"neutralHadronIso_electron/D");
         tup_ObjectVars->Branch("photonIso_electron",&photonIso_electron,"photonIso_electron/D");
         tup_ObjectVars->Branch("pfIso_electron",&pfIso_electron,"pfIso_electron/D");
-        tup_ObjectVars->Branch("charge_electron",&charge_electron,"charge_electron/I");
+        tup_ObjectVars->Branch("charge_electron",&charge_electron,"charge_electron/D");
         tup_ObjectVars->Branch("d0_electron",&d0_electron,"d0_electron/D");
         tup_ObjectVars->Branch("d0BeamSpot_electron",&d0BeamSpot_electron,"d0BeamSpot_electron/D");
         tup_ObjectVars->Branch("sigmaIEtaIEta_electron",&sigmaIEtaIEta_electron,"sigmaIEtaIEta_electron/D");
         tup_ObjectVars->Branch("deltaEtaIn_electron",&deltaEtaIn_electron,"deltaEtaIn_electron/D");
         tup_ObjectVars->Branch("deltaPhiIn_electron",&deltaPhiIn_electron,"deltaPhiIn_electron/D");
         tup_ObjectVars->Branch("hadronicOverEm_electron",&hadronicOverEm_electron,"hadronicOverEm_electron/D");
-        tup_ObjectVars->Branch("missingHits_electron",&missingHits_electron,"missingHits_electron/I");
-        tup_ObjectVars->Branch("passConversion_electron",&passConversion_electron,"passConversion_electron/O)");
-        tup_ObjectVars->Branch("isId_electron",&isId_electron,"isId_electron/O)");
-        tup_ObjectVars->Branch("isIso_electron",&isIso_electron,"isIso_electron/O)");
-        tup_ObjectVars->Branch("isEBEEGap",&isEBEEGap,"isEBEEGap/O)");
+        tup_ObjectVars->Branch("I_missingHits_electron",&missingHits_electron,"missingHits_electron/I");
+        tup_ObjectVars->Branch("I_passConversion_electron",&passConversion_electron,"passConversion_electron/O)");
+        tup_ObjectVars->Branch("I_isId_electron",&isId_electron,"isId_electron/O)");
+        tup_ObjectVars->Branch("I_isIso_electron",&isIso_electron,"isIso_electron/O)");
+        tup_ObjectVars->Branch("I_isEBEEGap",&isEBEEGap,"isEBEEGap/O)");
       
 
         // muons
@@ -646,23 +647,23 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("chargedHadronIso_muon",&chargedHadronIso_muon,"chargedHadronIso_muon/D");
         tup_ObjectVars->Branch("neutralHadronIso_muon",&neutralHadronIso_muon,"neutralHadronIso_muon/D");
         tup_ObjectVars->Branch("photonIso_muon",&photonIso_muon,"photonIso_muon/D");
-        tup_ObjectVars->Branch("isId_muon",&isId_muon,"isId_muon/O");
-        tup_ObjectVars->Branch("isIso_muon",&isIso_muon,"isIso_muon/O");
+        tup_ObjectVars->Branch("I_isId_muon",&isId_muon,"isId_muon/O");
+        tup_ObjectVars->Branch("I_isIso_muon",&isIso_muon,"isIso_muon/O");
         tup_ObjectVars->Branch("pfIso_muon",&pfIso_muon,"pfIso_muon/D");
-        tup_ObjectVars->Branch("charge_muon",&charge_muon,"charge_muon/I");
+        tup_ObjectVars->Branch("charge_muon",&charge_muon,"charge_muon/D");
         tup_ObjectVars->Branch("d0_muon",&d0_muon,"d0_muon/D");
         tup_ObjectVars->Branch("d0BeamSpot_muon",&d0BeamSpot_muon,"d0BeamSpot_muon/D");
 
         // jets
-        tup_ObjectVars->Branch("nJets",&nJets,"nJets/I");
-        tup_ObjectVars->Branch("nJets_CSVL",&nJets_CSVL,"nJets_CSVL/I");
-        tup_ObjectVars->Branch("nJets_CSVM",&nJets_CSVM,"nJets_CSVM/I");
-        tup_ObjectVars->Branch("nJets_CSVT",&nJets_CSVT,"nJets_CSVT/I");
+        tup_ObjectVars->Branch("I_nJets",&nJets,"nJets/I");
+        tup_ObjectVars->Branch("I_nJets_CSVL",&nJets_CSVL,"nJets_CSVL/I");
+        tup_ObjectVars->Branch("I_nJets_CSVM",&nJets_CSVM,"nJets_CSVM/I");
+        tup_ObjectVars->Branch("I_nJets_CSVT",&nJets_CSVT,"nJets_CSVT/I");
         tup_ObjectVars->Branch("pt_jet",&pt_jet,"pt_jet[nJets]/D");
         tup_ObjectVars->Branch("phi_jet",&phi_jet,"phi_jet[nJets]/D");
         tup_ObjectVars->Branch("eta_jet",&eta_jet,"eta_jet[nJets]/D");
         tup_ObjectVars->Branch("E_jet",&E_jet,"E_jet[nJets]/D");
-        tup_ObjectVars->Branch("charge_jet",&charge_jet,"charge_jet[nJets]/I");	    
+        tup_ObjectVars->Branch("charge_jet",&charge_jet,"charge_jet[nJets]/D");	    
         tup_ObjectVars->Branch("bdisc_jet",&bdisc_jet,"bdisc_jet[nJets]/D");
         tup_ObjectVars->Branch("cdiscCvsL_jet",&cdiscCvsL_jet,"cdiscCvsL_jet[nJets]/D");
         tup_ObjectVars->Branch("cdiscCvsB_jet",&cdiscCvsB_jet,"cdiscCvsB_jet[nJets]/D");
@@ -735,9 +736,13 @@ int main (int argc, char *argv[])
         cout <<"Will run over "<<  nEvents << " events..."<<endl;    cout <<"Starting event = = = = "<< event_start  << endl;
         for (unsigned int ievt = event_start; ievt < end_d; ievt++)
         {
+            if(debug)
+            {
+                cout << " " << endl;
+                cout << "------------NEW EVENT: " << ievt << " --------------" << endl;
+            }
 
             double ievt_d = ievt;
-            if (debug)cout <<"event loop 1"<<endl;
 
             if(ievt%10000 == 0)
             {
@@ -763,7 +768,6 @@ int main (int argc, char *argv[])
             MuonIDSF = 1; 
             MuonIsoSF = 1; 
             MuonTrigSF = 1;
-            nCuts = 0;
 
             if(debug)cout<<"before tree load"<<endl;
             event = treeLoader.LoadEvent (ievt, vertex, init_muons, init_electrons, init_jets, mets, debug);  //load event
@@ -962,6 +966,15 @@ int main (int argc, char *argv[])
               		nMu = selectedMuons.size(); //Number of Muons in Event (tight and loose)
               		nEl = selectedElectrons.size(); //Number of Electrons in Event (Tight only)
               		nLooseEl = selectedExtraElectrons.size(); //Number of loose electrons  (loose only)
+            }
+            
+            if(debug)
+            {
+                cout << "Number of jets: " << selectedOrigJets.size() << endl;
+                cout << "Number of selected muons: " << nMu << endl;
+                cout << "Number of selected electrons: " << nEl << endl;
+                cout << "Number of loose muons: " << nLooseMu << endl;
+                cout << "Number of loose electrons: " << nLooseEl << endl;
             }
 
             //////////////////////////////////////////////////
