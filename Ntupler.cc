@@ -156,7 +156,7 @@ int main (int argc, char *argv[])
     //////////////////////////////////////////////////////////////
     bool bTagReweight = true;
     bool bLeptonSF = true;
-    bool bTagReweight_PreReweighting = true; //Needs to be set only once to true in order to produce the EtaPtHistos
+    bool bTagReweight_PreReweighting = false; //Needs to be set only once to true in order to produce the BTagEtaPtHistos
     bool applyJES = true;
     bool applyJER = true;
     
@@ -198,7 +198,7 @@ int main (int argc, char *argv[])
     bool debug = false;
     bool Muon = false;
     bool Electron = false;
-    string electronID = "";
+    string electronID = "Medium";
     string btagger = "CSVM";
     bool printTriggers = false;
     bool applyTriggers = true;
@@ -551,9 +551,9 @@ int main (int argc, char *argv[])
         Double_t bdisc_jet[20];
         Double_t cdiscCvsL_jet[20]; 
 	      Double_t cdiscCvsB_jet[20];
-	      Int_t jet_matchedMC_pdgID[20];
-	      Int_t jet_matchedMC_motherpdgID[20];
-	      Int_t jet_matchedMC_grannypdgID[20];
+	      Double_t jet_matchedMC_pdgID[20];
+	      Double_t jet_matchedMC_motherpdgID[20];
+	      Double_t jet_matchedMC_grannypdgID[20];
       
         // met 
         Double_t met_Pt; 
@@ -668,7 +668,7 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("cdiscCvsL_jet",&cdiscCvsL_jet,"cdiscCvsL_jet[nJets]/D");
         tup_ObjectVars->Branch("cdiscCvsB_jet",&cdiscCvsB_jet,"cdiscCvsB_jet[nJets]/D");
         tup_ObjectVars->Branch("jet_matchedMC_pdgID",&jet_matchedMC_pdgID,"jet_matchedMC_pdgID[nJets]/D");
-        tup_ObjectVars->Branch("jet_matchedMC_motherpdgID",&jet_matchedMC_motherpdgID,"jet_matchedMC_motherpdgID/D");
+        tup_ObjectVars->Branch("jet_matchedMC_motherpdgID",&jet_matchedMC_motherpdgID,"jet_matchedMC_motherpdgID[nJets]/D");
         tup_ObjectVars->Branch("jet_matchedMC_grannypdgID",&jet_matchedMC_grannypdgID,"jet_matchedMC_grannypdgID[nJets]/D");
        
         // met 
@@ -768,6 +768,7 @@ int main (int argc, char *argv[])
             MuonIDSF = 1; 
             MuonIsoSF = 1; 
             MuonTrigSF = 1;
+            dR_lepJet_min = 99999.;
 
             if(debug)cout<<"before tree load"<<endl;
             event = treeLoader.LoadEvent (ievt, vertex, init_muons, init_electrons, init_jets, mets, debug);  //load event
@@ -923,7 +924,7 @@ int main (int argc, char *argv[])
 
 
             // Declare selection instance
-            Run2Selection r2selection(init_jets, init_muons, init_electrons, mets);
+            Run2Selection r2selection(init_jets, init_muons, init_electrons, mets, rho);
 
             // Define object selection cuts
 
@@ -931,27 +932,27 @@ int main (int argc, char *argv[])
             nMu = 0, nEl = 0, nLooseMu=0, nLooseEl=0;
 
             /////////////////////////////////////////////
-            // Define object selection cuts
+            // Define object selection cuts: https://twiki.cern.ch/twiki/bin/view/CMS/TTbarXSecSynchronization#Lepton_jets
             /////////////////////////////////////////////
             if (Muon)
             {
 				        if (debug)cout<<"Getting Jets"<<endl;
 				        selectedOrigJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Tight"); // ApplyJetId
 				        if (debug)cout<<"Getting Tight Muons"<<endl;
-				        selectedMuons                                       = r2selection.GetSelectedMuons(30,2.1,0.15, "Tight", "Spring15"); //Selected
+				        selectedMuons                                       = r2selection.GetSelectedMuons(26,2.1,0.15, "Tight", "Spring15"); //Selected
 				        if (debug)cout<<"Getting Loose Electrons"<<endl;
 				        selectedElectrons                                   = r2selection.GetSelectedElectrons(20,2.5,"Loose", "Spring15_25ns", true); //Vetoed  
 				        if (debug)cout<<"Getting Loose Muons"<<endl;
-				        selectedExtraMuons                                  = r2selection.GetSelectedMuons(20, 2.4, 0.20,"Loose","Spring15"); //Vetoed         
+				        selectedExtraMuons                                  = r2selection.GetSelectedMuons(10, 2.4, 0.25,"Loose","Spring15"); //Vetoed         
             }
             else if (Electron)
             {
 				        if (debug)cout<<"Getting Jets"<<endl;
 				        selectedOrigJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Tight"); // ApplyJetId
 				        if (debug)cout<<"Getting Loose Muons"<<endl;
-				        selectedMuons                                       = r2selection.GetSelectedMuons(20, 2.4, 0.20,"Loose","Spring15"); //Vetoed
+				        selectedMuons                                       = r2selection.GetSelectedMuons(10, 2.4, 0.25,"Loose","Spring15"); //Vetoed
 				        if (debug)cout<<"Getting Electrons"<<endl;
-				        selectedElectrons                                   = r2selection.GetSelectedElectrons(30,2.1,electronID, "Spring15_25ns", true); //Selected                       
+				        selectedElectrons                                   = r2selection.GetSelectedElectrons(30,2.4,electronID, "Spring15_25ns", true); //Selected                       
 				        if (debug)cout<<"Getting Loose Electrons"<<endl;
 				        selectedExtraElectrons                              = r2selection.GetSelectedElectrons(20,2.5,"Loose", "Spring15_25ns", true); //Vetoed
             }
@@ -992,8 +993,7 @@ int main (int argc, char *argv[])
             /////////////////////////////////////////////////
             //                   Lepton SF                 //
             /////////////////////////////////////////////////
-            float fleptonSF = 1;
-            if(bLeptonSF)
+            if(bLeptonSF && !isData)
             {
                 if(Muon && nMu>0){
                     fleptonSF = muonSFWeightID_TT->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0) * muonSFWeightIso_TT->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
@@ -1008,9 +1008,9 @@ int main (int argc, char *argv[])
             float trigSFC = 1;
             float trigSFD1 = 1;
             float trigSFD2 = 1;
-            if(bLeptonSF)
+            if(bLeptonSF && !isData)
             {
-                if(dName.find("Data")==string::npos && Muon && nMu>0)
+                if(Muon && nMu>0)
                 {
                     trigSFC = muonSFWeightTrigC_TT->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
                     trigSFD1 = muonSFWeightTrigD1_TT->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
@@ -1018,9 +1018,10 @@ int main (int argc, char *argv[])
                     MuonTrigSF =( (trigSFC*17.2) + (trigSFD1*923.88) + (trigSFD2*1639.20) )/Luminosity;  
                 }
                 fleptonSF*=MuonTrigSF;
+                if(debug) cout << "Muon trigger SF exists? " << trigSFC << endl;
             }
 
-            if(debug) cout<<"lepton SF:  "<<fleptonSF<<endl;
+            if(debug) cout<<"lepton SF:  "<<fleptonSF  << ", " << trigSFD1 << ", " << trigSFD2 <<endl;
 
             /////////////////////////////////////////////////
             //                   Btag SF                    //
@@ -1051,7 +1052,6 @@ int main (int argc, char *argv[])
             // Apply primary vertex selection
             bool isGoodPV = r2selection.isPVSelected(vertex, 4, 24., 2);
             if (debug)	cout <<"PrimaryVertexBit: " << isGoodPV <<endl;
-            //            if (debug) cin.get();
 
             if(debug) cout << "Past cut 0: NO CUTS" << endl;
             cutstep[0]++; //Order of appearance of cutstep & nCuts is important here
@@ -1293,7 +1293,7 @@ int main (int argc, char *argv[])
             //////////////////////////////////////////////////////////////////////
             // Cut on nb of jets and b-jets
             //////////////////////////////////////////////////////////////////////
-			      if(selectedJets.size() < 2)  continue;
+			      if(selectedJets.size() < 3)  continue;
             if(debug) cout << "Past cut 5: Passed number of jets cut" << endl;
             cutstep[5]++; //Order of appearance of cutstep & nCuts is important here
 
@@ -1315,9 +1315,10 @@ int main (int argc, char *argv[])
 //                    btwt_ttbar_up->FillMCEfficiencyHistos(selectedJets);
 //                    btwt_ttbar_down->FillMCEfficiencyHistos(selectedJets);
                 }
+                continue;
             }
 
-		  	    if(selectedLBJets.size() < 2) continue;
+		  	    if(selectedMBJets.size() < 3) continue;
 	          if (debug)	cout <<"Cut on nb b-jets..."<<endl;
             if(debug) cout << "Past cut 6: Passed cut on number of b-jets" << endl;
             cutstep[6]++; //Order of appearance of cutstep & nCuts is important here
@@ -1326,7 +1327,6 @@ int main (int argc, char *argv[])
             if(debug)
             {
                 cout<<"Selection Passed."<<endl;
-                cin.get();
             }
             passed++;
 
@@ -1411,6 +1411,7 @@ int main (int argc, char *argv[])
                     
                     //Storing matched MC pdgid's in ntuples
             	      jet_matchedMC_pdgID[JetPartonPair[i].first] = mcParticlesMatching_[j]->type();
+            	      if(debug) cout << "matched MCparticle of jet " << JetPartonPair[i].first << " has pdgID: " << jet_matchedMC_pdgID[JetPartonPair[i].first] << endl;
 	                  jet_matchedMC_motherpdgID[JetPartonPair[i].first] = mcParticlesMatching_[j]->motherType();
 	                  jet_matchedMC_grannypdgID[JetPartonPair[i].first] = mcParticlesMatching_[j]->grannyType();
                       
@@ -1452,6 +1453,7 @@ int main (int argc, char *argv[])
                 }  /// End loop over Jet Parton Pairs
             
             }// End MC matching (end of data-if-statement)
+
 
 
             /////////////////////////////////////////////////////////
@@ -1531,15 +1533,22 @@ int main (int argc, char *argv[])
                 float tmp_dR_lepJet = 99999.;
                 if(Muon) tmp_dR_lepJet = selectedMuonsTLV[0].DeltaR(selectedJetsTLV[iJet]);
                 if(Electron) tmp_dR_lepJet= selectedElectronsTLV[0].DeltaR(selectedJetsTLV[iJet]);
-                
+                if(debug) cout << "Min DeltaR lep jet: " << tmp_dR_lepJet << endl;
                 if(tmp_dR_lepJet < dR_lepJet_min) dR_lepJet_min = tmp_dR_lepJet;
             }
 			      MTlepmet = MT;
 
 
-            if(selectedBJetsTLV.size()>=2)   Mbb = (selectedBJetsTLV[0]+selectedBJetsTLV[1]).M();
+            if(selectedBJetsTLV.size()>=3)   Mbb = (selectedBJetsTLV[1]+selectedBJetsTLV[2]).M();
             if(selectedLightJetsTLV.size()>=2) MassW = (selectedLightJetsTLV[0]+selectedLightJetsTLV[1]).M();
 
+            for( unsigned int nj = 0; nj < selectedJets.size(); nj++)
+            {
+                  if(debug)
+                  {
+                      cout << "Outside Matching loop, jet " << nj << " has a matched pdgID of " << jet_matchedMC_pdgID[nj] << endl;
+                  }
+            }
 
 	          tup->Fill();
             tup_ObjectVars->Fill();
@@ -1554,7 +1563,11 @@ int main (int argc, char *argv[])
 			      else if(!Muon && Electron)
 			      fprintf(eventlist,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %6.1f  %+4.2f    %d %d \n", event->runId(), event->lumiBlockId(), event->eventId(), selectedElectrons[0]->type(), selectedElectrons[0]->Pt(), selectedElectrons[0]->Eta(), selectedElectrons[0]->Phi(),mets[0]->Et(), mets[0]->Phi(),selectedJets.size(), selectedMBJets.size());
 
-
+            if(debug)
+            {
+                cout << "End selected event" << endl;
+                cin.get();
+            }
 
         } //End Loop on Events
         

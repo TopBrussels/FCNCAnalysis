@@ -13,3 +13,5 @@ localsubmission/SubmitScripts/
 localsubmission/Terminal_Output/
 nohup*
 myOutput_MSPlots*/
+MSPlots_El/*
+MSPlots_Mu/*

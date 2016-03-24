@@ -33,10 +33,9 @@ map<string,TTree*> ttree;
 map<string,MultiSamplePlot*> MSPlot;
 
 
-float Luminosity = 2628.727204156; // pb-1 Muon  = 2628.727204156, Electron = 2094.087
-TString slumi = "2628.727204156";
+float Luminosity = 0.; // pb-1 Muon  = 2628.727204156, Electron = 2094.087
 std::string channel = "_El";
-std::string date = "_17_3_2016";
+std::string date = "_24_3_2016";
 int maxNumbObjToPlot = 5;
 Bool_t debug = false;
 bool applyAMC;
@@ -66,12 +65,22 @@ int main()
     // calling datasetPlotter to create MSPplots
 
     // electron plots
-    /*DatasetPlotter(11, -0.5, 10.5, "I_nJets", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(11, -0.5, 10.5, "I_nJets", xmlFileName,CraneenPath,"ObjectVarsTree");
    	DatasetPlotter(11, -0.5, 10.5, "I_nJets_CSVL", xmlFileName,CraneenPath,"ObjectVarsTree");
    	DatasetPlotter(11, -0.5, 10.5, "I_nJets_CSVM", xmlFileName,CraneenPath,"ObjectVarsTree");
    	DatasetPlotter(11, -0.5, 10.5, "I_nJets_CSVT", xmlFileName,CraneenPath,"ObjectVarsTree");
-    //if(channel == "_Mu") DatasetPlotter(40, 0, 400, "pt_muon", xmlFileName,CraneenPath,"ObjectVarsTree");
-    //else if(channel == "_El") DatasetPlotter(40, 0, 400, "pt_electron", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(40, 0, 400, "pt_muon", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(40, 0, 400, "pt_electron", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(35, -0.5, 34.5, "I_nvtx", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(70, 0, 700, "pt_jet[I_nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(50, -3.15, 3.15, "eta_jet[I_nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(30, -3.15, 3.15, "phi_jet[I_nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(25, 0, 1, "bdisc_jet[I_nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(59,-29.5, 29.5, "jet_matchedMC_pdgID[I_nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(59,-29.5, 29.5, "jet_matchedMC_motherpdgID[I_nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(59,-29.5, 29.5, "jet_matchedMC_grannypdgID[I_nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(25,-1, 1, "cdiscCvsB_jet[I_nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
+    DatasetPlotter(25,-1, 1, "cdiscCvsB_jet[I_nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
     DatasetPlotter(40, 0., 500., "MTlepmet", xmlFileName,CraneenPath,"AdvancedVarsTree");
     DatasetPlotter(40, 0., 500., "MLepTop_GenMatch", xmlFileName,CraneenPath,"AdvancedVarsTree");
     DatasetPlotter(40, 0., 500., "MHadTop_GenMatch", xmlFileName,CraneenPath,"AdvancedVarsTree");
@@ -86,13 +95,6 @@ int main()
     DatasetPlotter(40, 0., 500., "MassW", xmlFileName,CraneenPath,"AdvancedVarsTree");
     DatasetPlotter(40, 0., 500., "Mbb", xmlFileName,CraneenPath,"AdvancedVarsTree");
     DatasetPlotter(40, -5., 5., "EtaW", xmlFileName,CraneenPath,"AdvancedVarsTree");
-    DatasetPlotter(35, -0.5, 34.5, "I_nvtx", xmlFileName,CraneenPath,"ObjectVarsTree");
-    */DatasetPlotter(70, 0, 700, "pt_jet[nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
-    DatasetPlotter(50, -3.15, 3.15, "eta_jet[nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
-    DatasetPlotter(30, -3.15, 3.15, "phi_jet[nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
-    DatasetPlotter(25, 0, 1, "bdisc_jet[nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
-    DatasetPlotter(25,-1, 1, "cdiscCvsL_jet[nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
-    DatasetPlotter(25,-1, 1, "cdiscCvsB_jet[nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
 
     // calling the function that writtes all the MSPlots in a root file
 	MSPCreator ();
@@ -112,6 +114,8 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string s_varofInte
   	string pathPNG = "";
   	pathPNG += "MSPlots";
   	pathPNG += channel;
+  	pathPNG += "/";
+  	pathPNG += date;
   	mkdir(pathPNG.c_str(),0777);
   	cout <<"Making directory :"<< pathPNG  <<endl;		//make directory
   
@@ -163,7 +167,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string s_varofInte
                           conv << (iToPlot);      // insert the textual representation of 'Number' in the characters in the stream
                           conv_str = "_"+conv.str(); // set 'Result' to the contents of the stream
 
-                          MSPlot[(plotname+conv_str).c_str()] = new MultiSamplePlot(datasets, (plotname+conv_str).c_str(), nBins, plotLow, plotHigh, s_varofInterest.c_str()); 
+                          MSPlot[(v[0]+conv_str).c_str()] = new MultiSamplePlot(datasets, (plotname+conv_str).c_str(), nBins, plotLow, plotHigh, s_varofInterest.c_str()); 
                 }                
 
   
@@ -177,7 +181,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string s_varofInte
 
 		              FileObj[dataSetName.c_str()] = new TFile((filepath).c_str(),"READ"); //create TFile for each dataset      
 		              string TTreename = NTupleName;	
-		              ttree[dataSetName.c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename.c_str()); //get ttre for each dataset
+		              ttree[dataSetName.c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename.c_str()); //get ttree for each dataset
 		              nEntries = ttree[dataSetName.c_str()]->GetEntries();
 		              cout<<"                 nEntries: "<<nEntries<<endl;
 		                
@@ -201,11 +205,15 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string s_varofInte
                   // Tree for reweighting
                   ////////////////////////////////////////////////////////////		  
 		              string TTreename_Weights = "Weights";	
-		              ttree[(dataSetName + "weights").c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename_Weights.c_str()); //get ttre for each dataset
+		              string TTreename_NtupleInfo = "NtupleInfoTree";	
+		              ttree[(dataSetName + "weights").c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename_Weights.c_str()); //get ttree for each dataset
+		              ttree[(dataSetName + "NtupleInfoTree").c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename_NtupleInfo.c_str()); //get ttree for each dataset
 		
                   Double_t lumiweight, LeptonSF, bTagSF, luminosity_;
                   Double_t  nloweight;
-                  //ttree[(dataSetName + "NtupleInfoTree").c_str()]->SetBranchAddress("Luminosity_",&luminosity_);
+                  ttree[(dataSetName + "NtupleInfoTree").c_str()]->SetBranchAddress("Luminosity_",&luminosity_);
+                  ttree[(dataSetName + "NtupleInfoTree").c_str()]->GetEntry(0);
+                  Luminosity = luminosity_;
                   ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("puSF",&lumiweight);
                   ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("fleptonSF",&LeptonSF);
                   ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("btagWeight_mujets_central",&bTagSF);
@@ -250,12 +258,12 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string s_varofInte
 			                    if(isData)
 			                    {// for data, fill once per event, weighted with the event scale factor
 				                    MSPlot[plotname.c_str()]->Fill(v_d_varofInterest_double[i_obj], datasets[d], true, 1.);
-				                    if(i_obj< maxNumbObjToPlot) MSPlot[(plotname+conversion_str).c_str()]->Fill(v_d_varofInterest_double[i_obj], datasets[d], true, 1.);//Fill MSPlot for first 5 variables
+				                    if(i_obj< maxNumbObjToPlot) MSPlot[(v[0]+conversion_str).c_str()]->Fill(v_d_varofInterest_double[i_obj], datasets[d], true, 1.);//Fill MSPlot for first 5 variables
 			                    }
 			                    else
 			                    {// for MC, fill once per event and multiply by the event scale factor. Then reweigt by Lumi/Eqlumi where Eqlumi is gotten from the xml file
 				                    MSPlot[plotname.c_str()]->Fill(v_d_varofInterest_double[i_obj], datasets[d], true, ScaleFactor*Luminosity);
-				                    if(i_obj<maxNumbObjToPlot) MSPlot[(plotname+conversion_str).c_str()]->Fill(v_d_varofInterest_double[i_obj], datasets[d], true,  ScaleFactor*Luminosity);//Fill MSPlot for first 5 variables
+				                    if(i_obj<maxNumbObjToPlot) MSPlot[(v[0]+conversion_str).c_str()]->Fill(v_d_varofInterest_double[i_obj], datasets[d], true,  ScaleFactor*Luminosity);//Fill MSPlot for first 5 variables
 			                    }
 			                }
 			                
@@ -309,11 +317,15 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string s_varofInte
                   // Tree for reweighting
                   ////////////////////////////////////////////////////////////		  
 		              string TTreename_Weights = "Weights";	
-		              ttree[(dataSetName + "weights").c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename_Weights.c_str()); //get ttre for each dataset
+		              string TTreename_NtupleInfo = "NtupleInfoTree";	
+		              ttree[(dataSetName + "weights").c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename_Weights.c_str()); //get ttree for each dataset
+		              ttree[(dataSetName + "NtupleInfoTree").c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename_NtupleInfo.c_str()); //get ttree for each dataset
 		
                   Double_t lumiweight, LeptonSF, bTagSF, luminosity_;
                   Double_t  nloweight;
-                  //ttree[(dataSetName + "NtupleInfoTree").c_str()]->SetBranchAddress("Luminosity_",&luminosity_);
+                  ttree[(dataSetName + "NtupleInfoTree").c_str()]->SetBranchAddress("Luminosity_",&luminosity_);
+                  ttree[(dataSetName + "NtupleInfoTree").c_str()]->GetEntry(0);
+                  Luminosity = luminosity_;
                   ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("puSF",&lumiweight);
                   ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("fleptonSF",&LeptonSF);
                   ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("btagWeight_mujets_central",&bTagSF);
@@ -382,9 +394,9 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string s_varofInte
      else 
      {
 	      cout << "Vector of string does not have the good size!!!" << endl;
-      }		  
-
-
+      }
+      
+      
 
 
 
@@ -407,9 +419,11 @@ void MSPCreator ()
 {
   	Bool_t debug = false;
 
-  	string pathPNG = "myOutput";
-  	pathPNG += "_MSPlots";
+  	string pathPNG = "";
+  	pathPNG += "MSPlots";
   	pathPNG += channel;
+  	pathPNG += "/";
+  	pathPNG += date;
   	mkdir(pathPNG.c_str(),0777);
   	cout <<"Making directory :"<< pathPNG  <<endl;		//make directory
   
