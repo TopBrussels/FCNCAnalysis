@@ -167,7 +167,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string s_varofInte
                           conv << (iToPlot);      // insert the textual representation of 'Number' in the characters in the stream
                           conv_str = "_"+conv.str(); // set 'Result' to the contents of the stream
 
-                          MSPlot[(v[0]+conv_str).c_str()] = new MultiSamplePlot(datasets, (plotname+conv_str).c_str(), nBins, plotLow, plotHigh, s_varofInterest.c_str()); 
+                          MSPlot[(v[0]+conv_str).c_str()] = new MultiSamplePlot(datasets, (v[0]+conv_str).c_str(), nBins, plotLow, plotHigh, (v[0]+conv_str).c_str()); 
                 }                
 
   
