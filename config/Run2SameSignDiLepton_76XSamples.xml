@@ -10,11 +10,13 @@
     <d name="Data_Run2015D_DiMu"     title="Data"    add="1"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="2612.180735004" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/DoubleMuon/crab_DoubleMuon-Run2015D-16Dec2015-v1-76X_dataRun2_v15/160201_152942/0001/TOPTREE_*.root"/>
 
 <!-- Double EG -->
+
 <!--
     <d name="Data_Run2015C_EG"     title="Data"    add="1"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="552.672886226" PreselEff="0.0" filenames="/TOPTREE_*.root"/>
     
     <d name="Data_Run2015D"     title="Data"    add="1"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="711.213094010" PreselEff="0.0" filenames="/TOPTREE_*.root"/>
--->   
+-->
+
 <!-- MuonEG -->
 <!--
 <d name="Data_Run2015D"     title="Data"    add="0"   color="1"  ls="1"  lw="2" normf="1" xsection="1"  EqLumi="552.672886226" PreselEff="0.0" filenames="/TOPTREE_*.root"/>
@@ -26,7 +28,7 @@
 
 <!-- backgrounds -->
 
-    <d name="DYJets50"  title="DYJets50"   add="1"   color="kBlue-7"  ls="1"  lw="2" normf="1"  EqLumi="4845.30588196" xsection="6025.2"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_3TeVamcatnloFXFXpythia8Fall15PU25nsData2015v1HCALDebug76XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_152349/0000/TOPTREE_*.root" />
+    <d name="DYJets50"  title="DY+Jets50"   add="1"   color="kBlue-7"  ls="1"  lw="2" normf="1"  EqLumi="4845.30588196" xsection="6025.2"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_3TeVamcatnloFXFXpythia8Fall15PU25nsData2015v1HCALDebug76XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_152349/0000/TOPTREE_*.root" />
   
    
    <d name="TTJets"  title="ttbar+jets"   add="1"   color="kCyan-7"  ls="1"  lw="2" normf="1"  EqLumi="12281.3443782" xsection="831.76"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets13TeVmadgraphMLMpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153523/0000/TOPTREE_*.root"/>
