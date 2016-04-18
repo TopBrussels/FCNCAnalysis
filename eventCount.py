@@ -1,10 +1,12 @@
 from ROOT import TChain
+
+from ROOT import TChain
 from glob import glob
 import xml.etree.cElementTree as ET
 import os
 
 # get filenames from the xml!!!
-tree = ET.ElementTree(file='config/Run2SameSignDiLepton_76XSamples.xml')
+tree = ET.ElementTree(file='config/Run2SameSignDiLepton_76X_MuMu_Samples.xml')
 
 root = tree.getroot()
 datasets = root.find('datasets')
