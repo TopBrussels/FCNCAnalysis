@@ -86,7 +86,7 @@ for chan in channels:
             # setting the number of file per job depending whether it is data sample or not
             # this ca be tweaked
             if "Data" in str(d.attrib['name']):
-                FilePerJob=20
+                FilePerJob=15
             else:
                 FilePerJob=2
 

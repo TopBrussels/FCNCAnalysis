@@ -2,7 +2,7 @@
 #!/bin/bash
 
 #PBS -q localgrid
-#PBS -l walltime=06:00:00
+#PBS -l walltime=07:00:00
 
 source /user/ivanpari/.bash_login
 source $VO_CMS_SW_DIR/cmsset_default.sh

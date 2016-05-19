@@ -140,10 +140,10 @@ int main(int argc, char* argv[])
     }
     string dateString = MakeTimeStamp(); 
 //    CraneenPath += dateString + "/"; 
-    CraneenPath += "160214_strict/";
+    CraneenPath += "160301_nonstrict/";
     string pathPNG = "myOutput";
     mkdir(pathPNG.c_str(),0777); 
-    pathPNG += "/" + dateString + "_strict_baselinev2/"; 
+    pathPNG += "/" + dateString + "/"; 
     mkdir(pathPNG.c_str(),0777);
     pathPNG += "MSPlots"+channelpostfix+"/";
     mkdir(pathPNG.c_str(),0777);
@@ -170,7 +170,7 @@ int main(int argc, char* argv[])
     DatasetPlotter(10, -0.5, 9.5, "nLeptons", xmlFileName,CraneenPath,pathPNG);
 
       
-/*          
+          
     elecPlot = true;  
     muPlot = false; 
      DatasetPlotter(11, -0.5, 10.5, "nElectrons", xmlFileName,CraneenPath,pathPNG);
@@ -202,8 +202,12 @@ int main(int argc, char* argv[])
     DatasetPlotter(25, 0, 1, "bdisc_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(25,-1, 1, "cdiscCvsL_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(25,-1, 1, "cdiscCvsB_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
-*/ /*
-DatasetPlotter(70, 0, 700, "met_Pt", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(11, -0.5, 10.5, "nJets_CSVL", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(11, -0.5, 10.5, "nJets_CSVM", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(11, -0.5, 10.5, "nJets_CSVT", xmlFileName,CraneenPath,pathPNG);
+
+
+    DatasetPlotter(70, 0, 700, "met_Pt", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(50,0, 500, "pt_electron_1", xmlFileName, CraneenPath, pathPNG); 
    DatasetPlotter(20, 0, 200, "Zboson_M", xmlFileName,CraneenPath,pathPNG);
    DatasetPlotter(20, 0, 400, "mWt", xmlFileName,CraneenPath,pathPNG);
@@ -215,7 +219,7 @@ DatasetPlotter(70, 0, 700, "met_Pt", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(50,0, 500, "pt_jet_1", xmlFileName, CraneenPath, pathPNG); 
     DatasetPlotter(50,0, 500, "pt_jet_2", xmlFileName, CraneenPath, pathPNG);
     DatasetPlotter(50,0, 500, "pt_jet_3", xmlFileName, CraneenPath, pathPNG);
- *///    DatasetPlotter(10,-0.5, 9.5, "cutstep[nCuts], xmlFileName,, CraneenPath, pathPNG);
+  //    DatasetPlotter(10,-0.5, 9.5, "cutstep[nCuts], xmlFileName,, CraneenPath, pathPNG);
 
   // calling the function that writtes all the MSPlots in a root file
   MSPCreator (pathPNG);
@@ -255,7 +259,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
   
   int nEntries;
   float ScaleFactor, NormFactor;
- int  varofInterest;
+  int  varofInterest;
   double varofInterest_double [20];
 
 
@@ -328,10 +332,12 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
       // eo logic to set the right branch address depending on the string given as argument of the datasetplotter
 
       bool isData= false;
-      bool isAMC = false; 
+      bool isAMC = false;
+      double extra = 1.;  
       if(dataSetName.find("Data")!=string::npos || dataSetName.find("data")!=string::npos || dataSetName.find("DATA")!=string::npos) isData =true;
       if(debug) cout << "isData? " << isData << endl; 
       if(dataSetName.find("amc")!=string::npos) isAMC =true;
+      if(dataSetName.find("DY") !=string::npos) {extra = 1.15;}
 //      cout << "isAMC? " << isAMC << endl; 
       ///////////////////////////////////
       // determine event scalefactor ///
@@ -424,7 +430,8 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
       {
 	  ttree[(dataSetName).c_str()]->GetEntry(j);
 //          cout << "nEl " << nEl << " nMu " << nMu << endl; 
-          globalScaleFactor = 1.; 
+          globalScaleFactor = 1.;
+          globalScaleFactor *= extra;  
 	  if(v.size() == 1 && sVarofinterest.find("nElectrons")!=string::npos) {varofInterest = nEl;} 
           if(v.size() == 1 && sVarofinterest.find("nMuons")!=string::npos) {varofInterest = nMu;}
 

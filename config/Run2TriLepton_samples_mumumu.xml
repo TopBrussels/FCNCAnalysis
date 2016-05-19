@@ -11,6 +11,9 @@
 <data>
 <datasets>
 
+<d name="TTZToLLNuNu_amc" title="ttZ" add="1" color="12" ls="1" lw="2" normf="1"  xsection="0.2529" EqLumi="39525065.9631" PreselEff="0.0" filenames="/user/ivanpari/CMSSW_7_6_3/src/TopBrussels/TopTreeProducer/prod/TOPTREEsmall.root"/>
+
+
 <!-- bo Signal -->
 <!-- ********* -->
 
@@ -124,7 +127,7 @@
 
 <d name="ZZ" title="Diboson" add="1" color="390"  ls="1"  lw="2" normf="1" EqLumi="" xsection="16.523" PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/ZZ_TuneCUETP8M1_13TeV-pythia8/crab_ZZ__13TeV-pythia8-Fall15-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1-76X_mcRun2_asymptotic_v12/160201_153950//0000/*.root"/>
 
-<d name="ZZTo2L2Nu" title="Diboson" add="1" color="390"  ls="1"  lw="2" normf="1" EqLumi="14550088.6525" xsection="0.564" PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/ZZTo2L2Nu_13TeV_powheg_pythia8/crab_ZZTo2L2Nu13TeVpowhegpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153924/0000/*.root"/>
+<d name="ZZTo2L2Nu" title="Diboson" add="0" color="390"  ls="1"  lw="2" normf="1" EqLumi="14550088.6525" xsection="0.564" PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/ZZTo2L2Nu_13TeV_powheg_pythia8/crab_ZZTo2L2Nu13TeVpowhegpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153924/0000/*.root"/>
 
 <d name="ZZTo4Lamc" title="Diboson" add="1" color="390"  ls="1"  lw="2" normf="1" EqLumi="8867273.92739" xsection="1.212" PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/ZZTo4L_13TeV-amcatnloFXFX-pythia8/crab_ZZTo4L13TeVamcatnloFXFXpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153934/0000/*.root"/>
 
@@ -164,7 +167,7 @@
 <!-- hadronic -->
 <d name="TTJets_Madgrap" title="TTJets_Madgraph" add="1" color="872"  ls="1"  lw="2" normf="1" EqLumi="12281.3443782" xsection="831.76" PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets13TeVmadgraphMLMpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153523/0000/*.root"/>
 
-<d name="TTJets_amc" title="TTJets_amc" add="1" color="872"  ls="1"  lw="2" normf="1" EqLumi="47484.8790516" xsection="831.76" PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-scaledown-pythia8/crab_3TeVamcatnloFXFXscaledownpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153514/0000/*.root"/>
+<d name="TTJets_amc" title="TTJets_amc" add="0" color="872"  ls="1"  lw="2" normf="1" EqLumi="47484.8790516" xsection="831.76" PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v0/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-scaledown-pythia8/crab_3TeVamcatnloFXFXscaledownpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12v176XmcRun2asymptoticv12/160201_153514/0000/*.root"/>
 
 <!-- leptonic -->
 <d name="TTJets_Dilept" title="TTJets_Dilept" add="0" color="872"  ls="1"  lw="2" normf="1" EqLumi="" xsection="88.288" PreselEff="0.0"   filenames=""/>
