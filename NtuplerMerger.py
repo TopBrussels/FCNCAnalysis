@@ -12,30 +12,36 @@ dd = str(now.day)
 mm = str(now.month)
 yyyy = str(now.year)
 # pick one of the two above
-date = "160301"
+date = "160602"
 #date = "17_1_2016"
 
 #channels = ["_MuMu","_ElEl"]
 #channels = ["_ElEl"]
-channels = ["_MuMuMu"]
+channels = ["_All"] #,"_ElElEl"]
 
 for chan in channels:
     
     #Define path where ntuples are stored
     pathNonMerged = "NtupleMakerOutput/Ntuples"+chan+"/Ntuples_"+date+"/"
     if "MuMuMu" in chan:
-        pathMerged = "NtupleMakerOutput/MergedTuples/mumumu/"+date+"_nonstrict/"
+        pathMerged = "NtupleMakerOutput/MergedTuples/mumumu/"+"160530"+"/"
+    if "ElElEl" in chan:
+        pathMerged = "NtupleMakerOutput/MergedTuples/eee/"+"160530"+"/"
+    if "All" in chan:
+        pathMerged = "NtupleMakerOutput/MergedTuples/all/"+date+"_new"+"/"
     
     if not os.path.exists(pathMerged):
         os.makedirs(pathMerged)
     
     # get filenames from the xml!!!    
     if "MuMuMu" in chan:
-        tree = ET.ElementTree(file='config/Run2TriLepton_samples_mumumu.xml')
+        tree = ET.ElementTree(file='config/Run2TriLepton_samples_extra.xml')
     elif "ElEl" in chan:
-        tree = ET.ElementTree(file='config/FullSamplesElElV0.xml')
+        tree = ET.ElementTree(file='config/Run2TriLepton_samples_eee.xml')
     elif "ElMu" in chan:
         tree = ET.ElementTree(file='config/FullSamplesElMuV0.xml')
+    elif "All" in chan:
+        tree = ET.ElementTree(file='config/Run2TriLepton_samples.xml')
     else:
         print "No tree has been loaded!!! Make sure the correct xml file are in the right directories!!!"
         sys.exit()

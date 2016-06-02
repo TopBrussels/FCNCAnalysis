@@ -33,7 +33,7 @@ for chan in channels:
     print "\nSearching list of sample used for ", chan, " channel!"
     # getting the appropriate xml file
     if "mumumu" in chan:
-        tree = ET.ElementTree(file='../config/Run2TriLepton_samples_mumumu.xml')
+        tree = ET.ElementTree(file='../config/Run2TriLepton_samples.xml')
 #        tree = ET.ElementTree(file='../config/test.xml')
     elif "ElEl" in chan:
         tree = ET.ElementTree(file='../config/FullSamplesElElV10.xml')
@@ -80,7 +80,7 @@ for chan in channels:
     for d in datasets:
         if d.attrib['add'] == '1':
             print "found dataset to be added..." + str(d.attrib['name'])
-            commandString = "./Ntupler_localgrid "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff'])
+            commandString = "./Ntupler "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff'])
             topTrees = glob.glob(d.attrib['filenames'])
 
             # setting the number of file per job depending whether it is data sample or not

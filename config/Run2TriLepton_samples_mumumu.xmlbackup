@@ -14,6 +14,17 @@
 <!-- data D -->
 <d name="data" title="dataElElrerecorun2015D" add="0" color="1" ls="1" lw="2" normf="1" EqLumi="552.672886226" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DoubleEG/crab_DoubleEG-Run2015D-05Oct2015-v1-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151020_153539/0000/*.root"/>
 
+<d name="dataDoubleEGGoldrunD" title="data" add="0" color="1" ls="1" lw="2" normf="1" EqLumi="552.672886226" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v3-GOLD/DoubleEG/crab_DoubleEG-Run2015D-16Dec2015-v2crab26/160531_180451/000*/*.root"/>
+
+<d name="dataDoubleEGGoldrunC" title="data" add="0" color="1" ls="1" lw="2" normf="1" EqLumi="552.672886226" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v3-GOLD/DoubleEG/crab_DoubleEG-Run2015C_25ns-16Dec2015-v1crab25/160531_180444/0000/*.root"/>
+
+<d name="dataDoubleMuGoldrunD" title="data" add="0" color="1" ls="1" lw="2" normf="1" EqLumi="552.672886226" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v3-GOLD/DoubleMuon/crab_DoubleMuon-Run2015D-16Dec2015-v1crab22/160531_180516/000*/*.root"/>
+
+<d name="dataDoubleMuGoldrunC" title="data" add="0" color="1" ls="1" lw="2" normf="1" EqLumi="552.672886226" xsection="1" PreselEff="0.0" filenames=" /pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_76X_v3-GOLD/DoubleMuon/crab_DoubleMuon-Run2015C_25ns-16Dec2015-v1crab21/160531_180506/0000/*.root"/>
+
+
+
+
 <d name="dataRR" title="dataMuMurerecorun2015D" add="0" color="1" ls="1" lw="2" normf="1" EqLumi="552.672886226" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_74X_v8/DoubleMuon/crab_DoubleMuon-Run2015D-05Oct2015-v1-CMSSW_74X_v8-74X_dataRun2_Prompt_v2/151028_155049/0000/*.root"/>
 
 

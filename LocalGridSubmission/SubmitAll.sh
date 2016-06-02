@@ -1,4 +1,6 @@
-f [[ -n $1 ]] #check if variable is not empty
+#!/bin/bash 
+
+if [[ -n $1 ]] #check if variable is not empty
 then
     if [[ $1 == "test" ]]
     then
