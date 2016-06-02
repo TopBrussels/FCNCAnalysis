@@ -466,7 +466,7 @@ int main (int argc, char *argv[])
         Int_t lumi_num;
         Int_t nvtx;
         Int_t npu;
-        Int_t cutstep[10]; //0: no cut, 1: PV cleaning, 2: trigger, 3: lepton selection, 4: loose lepton veto, 5: nb jets, 6: nb b-jets
+        Double_t cutstep[10]; //0: no cut, 1: PV cleaning, 2: trigger, 3: lepton selection, 4: loose other-flavoured lepton veto, 5: veto extra loose leptons, 6: nb jets, 7: nb b-jets
         Int_t nCuts = 7; //REDEFINE if ncuts change
         Int_t nofPosWeights = 0;
         Int_t nofNegWeights = 0;
@@ -584,7 +584,7 @@ int main (int argc, char *argv[])
         tup_ntupleinfo->Branch("I_nEvents" , &nEvents, "nEvents/I"); 
         tup_ntupleinfo->Branch("I_sumW", &sumW, "sumW/I");
         tup_ntupleinfo->Branch("I_nCuts",&nCuts, "nCuts/I"); 
-        tup_ntupleinfo->Branch("I_cutstep",&cutstep,"cutstep[nCuts]/I");
+        tup_ntupleinfo->Branch("cutstep",&cutstep,"cutstep[nCuts]/D");
         tup_ntupleinfo->Branch("I_JERon",&JERon,"JERon/I"); 
         tup_ntupleinfo->Branch("I_JESon", &JESon, "JESon/I");
         tup_ntupleinfo->Branch("workingpointvalue_Loose", &workingpointvalue_Loose, "workingpointvalue_Loose/D"); 
@@ -738,6 +738,7 @@ int main (int argc, char *argv[])
         {
             if(debug)
             {
+                cin.get();
                 cout << " " << endl;
                 cout << "------------NEW EVENT: " << ievt << " --------------" << endl;
             }
@@ -1045,6 +1046,7 @@ int main (int argc, char *argv[])
             if(debug) cout<<"btag SF:  "<< btagWeight_mujets_central << endl;
 
             scaleFactor = scaleFactor * puSF * fleptonSF * btagWeight_mujets_central;
+            if(isData) scaleFactor = 1;
             ////////////////////////////////////////////////
             // Pre-baseline initializations
             ////////////////////////////////////////////////           
@@ -1054,7 +1056,7 @@ int main (int argc, char *argv[])
             if (debug)	cout <<"PrimaryVertexBit: " << isGoodPV <<endl;
 
             if(debug) cout << "Past cut 0: NO CUTS" << endl;
-            cutstep[0]++; //Order of appearance of cutstep & nCuts is important here
+            cutstep[0]=cutstep[0]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
 
             eventCount++;
 
@@ -1084,11 +1086,11 @@ int main (int argc, char *argv[])
 
             if (!isGoodPV) continue; // Check that there is a good Primary Vertex
             if(debug) cout << "Past cut 1: good PV selection" << endl;
-            cutstep[1]++; //Order of appearance of cutstep & nCuts is important here
+            cutstep[1]=cutstep[1]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
 
             if(!trigged) continue;
             if(debug) cout << "Past cut 2: Passed trigger" << endl;
-            cutstep[2]++; //Order of appearance of cutstep & nCuts is important here
+            cutstep[2]=cutstep[2]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
 
             if (debug)
             {
@@ -1099,23 +1101,29 @@ int main (int argc, char *argv[])
             //Apply the lepton, btag and HT selections
             if (Muon && !Electron)
             {
-                if  (  !( nMu ==1 && nEl == 0)) continue; // Muon Channel Selection + veto on electrons
-                if (selectedMuons[0]->Pt() < 30) continue;
-                if (debug)	cout <<"Muon selection passed..."<<endl;
+                if  (  !( nMu ==1)) continue; // Muon Channel Selection
+                //if (selectedMuons[0]->Pt() < 26) continue;
+                cutstep[3]=cutstep[3]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
+                if(debug) cout << "Past cut 3: Single Muon selected" << endl;
+                if( !(nEl == 0)) continue;
+                cutstep[4]=cutstep[4]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
+                if(debug) cout << "Past cut 4: vetoed electrons" << endl;
             }
             else if (!Muon && Electron)
             {
-                  if  (  !( nMu == 0 && nEl == 1)) continue; // Electron Channel Selection + veto on muons
-                  if (selectedElectrons[0]->Pt() < 30) continue;
-                  if (debug)	cout <<"Electron selection passed..."<<endl;
+                if  (  !( nEl ==1)) continue; // Electron Channel Selection
+                //if (selectedMuons[0]->Pt() < 26) continue;
+                cutstep[3]=cutstep[3]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
+                if(debug) cout << "Past cut 3: Single Electron selected" << endl;
+                if( !(nMu == 0)) continue;
+                cutstep[4]=cutstep[4]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
+                if(debug) cout << "Past cut 4: vetoed muons" << endl;
             }
             else
             {
                 cerr<<"Correct Channel not selected."<<endl;
                 exit(1);
             }
-            if(debug) cout << "Past cut 3: Single lepton selected" << endl;
-            cutstep[3]++; //Order of appearance of cutstep & nCuts is important here
 
 			      if(Muon && !Electron)
 			      {
@@ -1127,8 +1135,8 @@ int main (int argc, char *argv[])
 				          if(nLooseEl != 1) continue;
 	                if (debug)	cout <<"Vetoed extra electrons..."<<endl;
 			      }
-            if(debug) cout << "Past cut 4: Vetoed extra loose leptons" << endl;
-            cutstep[4]++; //Order of appearance of cutstep & nCuts is important here
+            if(debug) cout << "Past cut 5: Vetoed extra loose leptons" << endl;
+            cutstep[5]=cutstep[5]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
             
             if(Electron)
             {
@@ -1295,7 +1303,7 @@ int main (int argc, char *argv[])
             //////////////////////////////////////////////////////////////////////
 			      if(selectedJets.size() < 3)  continue;
             if(debug) cout << "Past cut 5: Passed number of jets cut" << endl;
-            cutstep[5]++; //Order of appearance of cutstep & nCuts is important here
+            cutstep[6]=cutstep[6]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
 
             ///////////////////////////////////////////////////
             // Fill b-tag histos for scale factors
@@ -1320,8 +1328,8 @@ int main (int argc, char *argv[])
 
 		  	    if(selectedMBJets.size() < 3) continue;
 	          if (debug)	cout <<"Cut on nb b-jets..."<<endl;
-            if(debug) cout << "Past cut 6: Passed cut on number of b-jets" << endl;
-            cutstep[6]++; //Order of appearance of cutstep & nCuts is important here
+            if(debug) cout << "Past cut 7: Passed cut on number of b-jets" << endl;
+            cutstep[7]=cutstep[7]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
 
 
             if(debug)
@@ -1566,7 +1574,6 @@ int main (int argc, char *argv[])
             if(debug)
             {
                 cout << "End selected event" << endl;
-                cin.get();
             }
 
         } //End Loop on Events

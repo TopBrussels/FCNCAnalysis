@@ -35,25 +35,24 @@ map<string,MultiSamplePlot*> MSPlot;
 
 float Luminosity = 0.; // pb-1 Muon  = 2628.727204156, Electron = 2094.087
 std::string channel = "_El";
-std::string date = "_24_3_2016";
+std::string date = "_17_5_2016";
 int maxNumbObjToPlot = 5;
 Bool_t debug = false;
 bool applyAMC;
 
 // functions prototype
 std::string intToStr (int number);
-void DatasetPlotter(int nBins, float plotLow, float plotHigh, string s_varofInterest, string xmlNom, string TreePath, string NTupleName);
+void DatasetPlotter(int nBins, float plotLow, float plotHigh, string s_varofInterest, string xmlNom, TString CraneenPath, string NTupleName);
 void MSPCreator ();
 
 
 
 int main()
 {
-    int NumberOfBins = 3;	//fixed width nBins
 
 
     string xmlFileName;
-    string CraneenPath;
+  	TString TreePath = "Merged/Ntuples" + channel + "/Ntuples" + date;
     
 
 
@@ -65,44 +64,45 @@ int main()
     // calling datasetPlotter to create MSPplots
 
     // electron plots
-    DatasetPlotter(11, -0.5, 10.5, "I_nJets", xmlFileName,CraneenPath,"ObjectVarsTree");
-   	DatasetPlotter(11, -0.5, 10.5, "I_nJets_CSVL", xmlFileName,CraneenPath,"ObjectVarsTree");
-   	DatasetPlotter(11, -0.5, 10.5, "I_nJets_CSVM", xmlFileName,CraneenPath,"ObjectVarsTree");
-   	DatasetPlotter(11, -0.5, 10.5, "I_nJets_CSVT", xmlFileName,CraneenPath,"ObjectVarsTree");
-    DatasetPlotter(40, 0, 400, "pt_muon", xmlFileName,CraneenPath,"ObjectVarsTree");
-    DatasetPlotter(40, 0, 400, "pt_electron", xmlFileName,CraneenPath,"ObjectVarsTree");
-    DatasetPlotter(35, -0.5, 34.5, "I_nvtx", xmlFileName,CraneenPath,"ObjectVarsTree");
-    DatasetPlotter(70, 0, 700, "pt_jet[I_nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
-    DatasetPlotter(50, -3.15, 3.15, "eta_jet[I_nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
-    DatasetPlotter(30, -3.15, 3.15, "phi_jet[I_nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
-    DatasetPlotter(25, 0, 1, "bdisc_jet[I_nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
-    DatasetPlotter(59,-29.5, 29.5, "jet_matchedMC_pdgID[I_nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
-    DatasetPlotter(59,-29.5, 29.5, "jet_matchedMC_motherpdgID[I_nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
-    DatasetPlotter(59,-29.5, 29.5, "jet_matchedMC_grannypdgID[I_nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
-    DatasetPlotter(25,-1, 1, "cdiscCvsB_jet[I_nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
-    DatasetPlotter(25,-1, 1, "cdiscCvsB_jet[I_nJets]", xmlFileName,CraneenPath,"ObjectVarsTree");
-    DatasetPlotter(40, 0., 500., "MTlepmet", xmlFileName,CraneenPath,"AdvancedVarsTree");
-    DatasetPlotter(40, 0., 500., "MLepTop_GenMatch", xmlFileName,CraneenPath,"AdvancedVarsTree");
-    DatasetPlotter(40, 0., 500., "MHadTop_GenMatch", xmlFileName,CraneenPath,"AdvancedVarsTree");
-    DatasetPlotter(40, -5., 5., "EtaLepTop_GenMatch", xmlFileName,CraneenPath,"AdvancedVarsTree");
-    DatasetPlotter(40, -5., 5., "EtaHadTop_GenMatch", xmlFileName,CraneenPath,"AdvancedVarsTree");
-    DatasetPlotter(40, 0., 500., "MassW_GenMatch", xmlFileName,CraneenPath,"AdvancedVarsTree");
-    DatasetPlotter(40, -5., 5., "EtaW_GenMatch", xmlFileName,CraneenPath,"AdvancedVarsTree");
-    DatasetPlotter(40, 0., 5., "dR_lepJet_min", xmlFileName,CraneenPath,"AdvancedVarsTree");
-    DatasetPlotter(40, 0., 500., "MHadTop", xmlFileName,CraneenPath,"AdvancedVarsTree");
-    DatasetPlotter(40, -5., 5., "EtaLepTop", xmlFileName,CraneenPath,"AdvancedVarsTree");
-    DatasetPlotter(40, -5., 5., "EtaHadTop", xmlFileName,CraneenPath,"AdvancedVarsTree");
-    DatasetPlotter(40, 0., 500., "MassW", xmlFileName,CraneenPath,"AdvancedVarsTree");
-    DatasetPlotter(40, 0., 500., "Mbb", xmlFileName,CraneenPath,"AdvancedVarsTree");
-    DatasetPlotter(40, -5., 5., "EtaW", xmlFileName,CraneenPath,"AdvancedVarsTree");
-
+    DatasetPlotter(11, -0.5, 10.5, "I_nJets", xmlFileName,TreePath,"ObjectVarsTree");
+/*   	DatasetPlotter(11, -0.5, 10.5, "I_nJets_CSVL", xmlFileName,TreePath,"ObjectVarsTree");
+   	DatasetPlotter(11, -0.5, 10.5, "I_nJets_CSVM", xmlFileName,TreePath,"ObjectVarsTree");
+   	DatasetPlotter(11, -0.5, 10.5, "I_nJets_CSVT", xmlFileName,TreePath,"ObjectVarsTree");
+    DatasetPlotter(40, 0, 400, "pt_muon", xmlFileName,TreePath,"ObjectVarsTree");
+    DatasetPlotter(40, 0, 400, "pt_electron", xmlFileName,TreePath,"ObjectVarsTree");
+    DatasetPlotter(35, -0.5, 34.5, "I_nvtx", xmlFileName,TreePath,"ObjectVarsTree");
+    DatasetPlotter(70, 0, 700, "pt_jet[I_nJets]", xmlFileName,TreePath,"ObjectVarsTree");
+    DatasetPlotter(50, -3.15, 3.15, "eta_jet[I_nJets]", xmlFileName,TreePath,"ObjectVarsTree");
+    DatasetPlotter(30, -3.15, 3.15, "phi_jet[I_nJets]", xmlFileName,TreePath,"ObjectVarsTree");
+    DatasetPlotter(21, -10.5, 10.5, "charge_jet[I_nJets]", xmlFileName,TreePath,"ObjectVarsTree");
+    DatasetPlotter(25, 0, 1, "bdisc_jet[I_nJets]", xmlFileName,TreePath,"ObjectVarsTree");
+    DatasetPlotter(59,-29.5, 29.5, "jet_matchedMC_pdgID[I_nJets]", xmlFileName,TreePath,"ObjectVarsTree");
+    DatasetPlotter(59,-29.5, 29.5, "jet_matchedMC_motherpdgID[I_nJets]", xmlFileName,TreePath,"ObjectVarsTree");
+    DatasetPlotter(59,-29.5, 29.5, "jet_matchedMC_grannypdgID[I_nJets]", xmlFileName,TreePath,"ObjectVarsTree");
+    DatasetPlotter(25,-1, 1, "cdiscCvsB_jet[I_nJets]", xmlFileName,TreePath,"ObjectVarsTree");
+    DatasetPlotter(25,-1, 1, "cdiscCvsB_jet[I_nJets]", xmlFileName,TreePath,"ObjectVarsTree");
+    DatasetPlotter(40, 0., 500., "MTlepmet", xmlFileName,TreePath,"AdvancedVarsTree");
+    DatasetPlotter(40, 0., 500., "MLepTop_GenMatch", xmlFileName,TreePath,"AdvancedVarsTree");
+    DatasetPlotter(40, 0., 500., "MHadTop_GenMatch", xmlFileName,TreePath,"AdvancedVarsTree");
+    DatasetPlotter(40, -5., 5., "EtaLepTop_GenMatch", xmlFileName,TreePath,"AdvancedVarsTree");
+    DatasetPlotter(40, -5., 5., "EtaHadTop_GenMatch", xmlFileName,TreePath,"AdvancedVarsTree");
+    DatasetPlotter(40, 0., 500., "MassW_GenMatch", xmlFileName,TreePath,"AdvancedVarsTree");
+    DatasetPlotter(40, -5., 5., "EtaW_GenMatch", xmlFileName,TreePath,"AdvancedVarsTree");
+    DatasetPlotter(40, 0., 5., "dR_lepJet_min", xmlFileName,TreePath,"AdvancedVarsTree");
+    DatasetPlotter(40, 0., 500., "MHadTop", xmlFileName,TreePath,"AdvancedVarsTree");
+    DatasetPlotter(40, -5., 5., "EtaLepTop", xmlFileName,TreePath,"AdvancedVarsTree");
+    DatasetPlotter(40, -5., 5., "EtaHadTop", xmlFileName,TreePath,"AdvancedVarsTree");
+    DatasetPlotter(40, 0., 500., "MassW", xmlFileName,TreePath,"AdvancedVarsTree");
+    DatasetPlotter(40, 0., 500., "Mbb", xmlFileName,TreePath,"AdvancedVarsTree");
+    DatasetPlotter(40, -5., 5., "EtaW", xmlFileName,TreePath,"AdvancedVarsTree");
+*/
     // calling the function that writtes all the MSPlots in a root file
 	MSPCreator ();
 
 }
 
 
-void DatasetPlotter(int nBins, float plotLow, float plotHigh, string s_varofInterest, string xmlNom, string TreePath, string NTupleName)
+void DatasetPlotter(int nBins, float plotLow, float plotHigh, string s_varofInterest, string xmlNom, TString CraneenPath, string NTupleName)
 {
   	cout<<""<<endl;
   	cout<<"RUNNING NOMINAL DATASETS"<<endl;
@@ -110,14 +110,6 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string s_varofInte
 
   	const char *xmlfile = xmlNom.c_str();
   	cout << "used config file: " << xmlfile << endl;
-  
-  	string pathPNG = "";
-  	pathPNG += "MSPlots";
-  	pathPNG += channel;
-  	pathPNG += "/";
-  	pathPNG += date;
-  	mkdir(pathPNG.c_str(),0777);
-  	cout <<"Making directory :"<< pathPNG  <<endl;		//make directory
   
   	///////////////////////////////////////////////////////////// Load Datasets //////////////////////////////////////////////////////////////////////cout<<"loading...."<<endl;
   	TTreeLoader treeLoader;
@@ -153,8 +145,6 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string s_varofInte
   	}
   	free(dup);
 
-
-  	TString CraneenPath = "Merged/Ntuples" + channel + "/Ntuples" + date;
 
      if (v.size() == 2)//Meaning we have a variable of the form "var[n_obj]", which is an array of values for the variable 'var'
      {
@@ -245,6 +235,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string s_varofInte
                   		ScaleFactor = 1.; // event scale factor
 			                ttree[(dataSetName + "weights").c_str()]->GetEntry(j);
 			                ScaleFactor = ScaleFactor * lumiweight * LeptonSF * bTagSF * nloSF;
+			                if(ScaleFactor < 0) ScaleFactor = 0;
 			                ttree[dataSetName.c_str()]->GetEntry(j);
 
                       for(int i_obj = 0; i_obj < n_object;  i_obj++)
@@ -419,9 +410,11 @@ void MSPCreator ()
 {
   	Bool_t debug = false;
 
-  	string pathPNG = "";
+  	string pathPNG = "MSPlots/";
+  	mkdir(pathPNG.c_str(),0777);
   	pathPNG += "MSPlots";
   	pathPNG += channel;
+  	mkdir(pathPNG.c_str(),0777);
   	pathPNG += "/";
   	pathPNG += date;
   	mkdir(pathPNG.c_str(),0777);
@@ -455,7 +448,7 @@ void MSPCreator ()
           int scaleNPSignal = 20; //determines the factor with which the new physics signal samples are scaled, only on the canvas (note that the TH1F histogram in the MSPlot output root file itself is not scaled with this factor!)
           bool savePNG = false; //automatically save png files of MSPlots.
           */
-		temp->Draw("MyMSP_"+it->first, 1, false, false, false, 1);
+		    temp->Draw("MyMSP_"+it->first, 1, false, false, false, 1);
       	temp->Write(outfile, it->first, true,pathPNG, "png");
 	}
   
