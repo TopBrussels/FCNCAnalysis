@@ -176,7 +176,7 @@ int main (int argc, char *argv[])
   bool btagShape = true; 
   string Channel = ""; 
   string xmlFileName = ""; 
-  
+   
   
   //////////////////////////////////////////////
   /// Set up everything for local submission ////
@@ -616,15 +616,13 @@ int main (int argc, char *argv[])
         MuonSFWeight* muonSFWeightIso_TM = new MuonSFWeight(CaliPath+"LeptonSF/"+"MuonIso_Z_RunCD_Reco76X_Feb15.root", "MC_NUM_TightRelIso_DEN_MediumID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true,printLeptonSF, printLeptonSF);  // Tight RelIso, Medium ID
         MuonSFWeight* muonSFWeightIso_LT = new MuonSFWeight(CaliPath+"LeptonSF/"+"MuonIso_Z_RunCD_Reco76X_Feb15.root", "MC_NUM_LooseRelIso_DEN_TightID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true,printLeptonSF, printLeptonSF);  // Loose RelIso, Tight ID
         MuonSFWeight* muonSFWeightIso_LM = new MuonSFWeight(CaliPath+"LeptonSF/"+"MuonIso_Z_RunCD_Reco76X_Feb15.root", "MC_NUM_LooseRelIso_DEN_MediumID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true,printLeptonSF, printLeptonSF);  // Loose RelIso, Medium ID
-//        double weightMuonHLTv2, weightMuonHLTv3 ; // for run C should also something like this be done
-//        MuonSFWeight *muonSFWeightTrigHLTv4p2 = new MuonSFWeight(CaliPath+"LeptonSF/"+"SingleMuonTrigger_Z_RunCD_Reco76X_Dec1.root", "runD_IsoMu20_OR_IsoTkMu20_HLTv4p2_PtEtaBins/abseta_pt_ratio", true, false, false);
-//        MuonSFWeight *muonSFWeightTrigHLTv4p3 = new MuonSFWeight(CaliPath+"LeptonSF/"+"SingleMuonTrigger_Z_RunCD_Reco76X_Dec1.root", "runD_IsoMu20_OR_IsoTkMu20_HLTv4p3_PtEtaBins/abseta_pt_ratio", true, false, false);
   
 
 
             
-        string electronFile= "Elec_SF_TopEA.root";
-        ElectronSFWeight* electronSFWeight = new ElectronSFWeight (CaliPath+"LeptonSF/"+electronFile,"GlobalSF", true,printLeptonSF, printLeptonSF); // (... , ... , debug, print warning)  
+        string electronFile= "CutBasedID_TightWP_76X_18Feb.txt_SF2D.root";
+        string elecHistName = "EGamma_SF2D";
+        ElectronSFWeight* electronSFWeight = new ElectronSFWeight (CaliPath+"LeptonSF/"+electronFile,elecHistName, true,printLeptonSF, printLeptonSF); // (... , ... , debug, print warning)  
 
 	vCorrParam.clear();
 	if (isData)
@@ -697,7 +695,7 @@ int main (int argc, char *argv[])
        Double_t WPb_L; 
        Double_t WPb_M; 
        Double_t WPb_T;       
-
+       Int_t PassedMET; 
  
        Double_t pt_electron_1; 
        Double_t pt_electron_2;
@@ -736,7 +734,6 @@ int main (int argc, char *argv[])
 	Bool_t isIso_electron[10];
 
         Bool_t isEBEEGap[10]; 
-	Double_t sf_electron[10];
 
        //variable for muons
         Int_t nMuons;
@@ -753,7 +750,6 @@ int main (int argc, char *argv[])
 	Bool_t isId_muon[10];
 	Bool_t isIso_muon[10];
         Double_t pfIso_muon[10];
-	Double_t sf_muon[10];
         Int_t charge_muon[10];
   
         //variable for jets 
@@ -849,7 +845,6 @@ int main (int argc, char *argv[])
        myTree->Branch("isId_electron",isId_electron,"isId_electron[nElectrons]/O)");
        myTree->Branch("isIso_electron",isIso_electron,"isIso_electron[nElectrons]/O)");
        myTree->Branch("isEBEEGap",isEBEEGap,"isEBEEGap[nElectrons]/O)");
-       myTree->Branch("sf_electron",sf_electron,"sf_electron[nElectrons]/D");
        myTree->Branch("pt_electron_1",&pt_electron_1,"pt_electron_1/D");
        myTree->Branch("pt_electron_2",&pt_electron_2,"pt_electron_2/D");
        myTree->Branch("pt_electron_3",&pt_electron_3,"pt_electron_3/D");
@@ -878,7 +873,6 @@ int main (int argc, char *argv[])
        baselineTree->Branch("isId_electron",isId_electron,"isId_electron[nElectrons]/O)");
        baselineTree->Branch("isIso_electron",isIso_electron,"isIso_electron[nElectrons]/O)");
        baselineTree->Branch("isEBEEGap",isEBEEGap,"isEBEEGap[nElectrons]/O)");
-       baselineTree->Branch("sf_electron",sf_electron,"sf_electron[nElectrons]/D");
        baselineTree->Branch("pt_electron_1",&pt_electron_1,"pt_electron_1/D");
        baselineTree->Branch("pt_electron_2",&pt_electron_2,"pt_electron_2/D");
        baselineTree->Branch("pt_electron_3",&pt_electron_3,"pt_electron_3/D");
@@ -902,7 +896,6 @@ int main (int argc, char *argv[])
        myTree->Branch("charge_muon",charge_muon,"charge_muon[nMuons]/I");
        myTree->Branch("d0_muon",d0_muon,"d0_muon[nMuons]/D");
        myTree->Branch("d0BeamSpot_muon",d0BeamSpot_muon,"d0BeamSpot_muon[nMuons]/D");
-       myTree->Branch("sf_muon",sf_muon,"sf_muon[nMuons]/D");
        myTree->Branch("pt_muon_1",&pt_muon_1,"pt_muon_1/D");
        myTree->Branch("pt_muon_2",&pt_muon_2,"pt_muon_2/D");
        myTree->Branch("pt_muon_3",&pt_muon_3,"pt_muon_3/D");
@@ -925,7 +918,6 @@ int main (int argc, char *argv[])
        baselineTree->Branch("charge_muon",charge_muon,"charge_muon[nMuons]/I");
        baselineTree->Branch("d0_muon",d0_muon,"d0_muon[nMuons]/D");
        baselineTree->Branch("d0BeamSpot_muon",d0BeamSpot_muon,"d0BeamSpot_muon[nMuons]/D");
-       baselineTree->Branch("sf_muon",sf_muon,"sf_muon[nMuons]/D");
        baselineTree->Branch("pt_muon_1",&pt_muon_1,"pt_muon_1/D");
        baselineTree->Branch("pt_muon_2",&pt_muon_2,"pt_muon_2/D");
        baselineTree->Branch("pt_muon_3",&pt_muon_3,"pt_muon_3/D");
@@ -1115,6 +1107,7 @@ int main (int argc, char *argv[])
 	float met;  
         for (unsigned int ievt = event_start; ievt < end_d; ievt++)
         {
+	   eventSelected = false; 
 	   continueFlow = true; 
            lep3 = false; 
 	   leading_jetPt = 0.; 
@@ -1651,7 +1644,6 @@ int main (int argc, char *argv[])
             else{
                selections.push_back(0);
                continueFlow = false;
-               // continue;
             }
              if(dName.find("DoubleEG")!=string::npos && selectedElectrons.size() < 2) { continueFlow = false; }
              else if(dName.find("DoubleEG")!=string::npos) { nbEvents_test++ ;}
@@ -2098,6 +2090,79 @@ int main (int argc, char *argv[])
              //////////////////////////////////////
 	    //  DO STUFF WITH SELECTED EVENTS ////
 	    ////////////////////////////////////// 
+	    // fill the tree
+           if(eventSelected){
+              nJets = 0;
+               for(Int_t seljet = 0; seljet < selectedJets.size(); seljet++)
+               {
+
+                   pt_jet[nJets]=selectedJets[seljet]->Pt();
+                   phi_jet[nJets]=selectedJets[seljet]->Phi();
+                   eta_jet[nJets]=selectedJets[seljet]->Eta();
+                   E_jet[nJets]=selectedJets[seljet]->E();
+                   charge_jet[nJets]=selectedJets[seljet]->charge();
+                   bdisc_jet[nJets]=selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags() ;
+                   cdiscCvsB_jet[nJets]=selectedJets[seljet]->ctag_pfCombinedCvsBJetTags() ;
+                   cdiscCvsL_jet[nJets]=selectedJets[seljet]->ctag_pfCombinedCvsLJetTags() ;
+                   nJets++;
+               }
+               if(selectedJets.size()>0) pt_jet_1 = selectedJets[0]->Pt();
+               if(selectedJets.size()>1) pt_jet_2 = selectedJets[1]->Pt();
+               if(selectedJets.size()>2) pt_jet_3 = selectedJets[2]->Pt();
+               nJets_CSVT =  selectedCSVTBJets.size();
+               nJets_CSVM =  selectedCSVMBJets.size();
+               nJets_CSVL =  selectedCSVLBJets.size();
+               nMuons = 0;
+               for (Int_t selmu =0; selmu < selectedMuons.size() ; selmu++ )
+               {
+
+        	 pt_muon[nMuons]=selectedMuons[selmu]->Pt();
+        	 phi_muon[nMuons]=selectedMuons[selmu]->Phi();
+        	 eta_muon[nMuons]=selectedMuons[selmu]->Eta();
+        	 E_muon[nMuons]=selectedMuons[selmu]->E();
+
+               pfIso_muon[nMuons]=selectedMuons[selmu]->relPfIso(4,0);
+               if(!isData)
+        	 {
+                   MuonIDSF[nMuons] = muonSFWeightID_T->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+                   MuonIsoSF[nMuons] =  muonSFWeightIso_TT->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0); 
+        	 }
+        	 else
+        	 {
+                   MuonIDSF[nMuons] = 1.;
+                   MuonIsoSF[nMuons] = 1.;
+        	 }
+        	 charge_muon[nMuons]=selectedMuons[selmu]->charge();
+        	 nMuons++;
+               }
+               if(selectedMuons.size()>0) pt_muon_1 = selectedMuons[0]->Pt();
+               if(selectedMuons.size()>1) pt_muon_2 = selectedMuons[1]->Pt();
+               if(selectedMuons.size()>2) pt_muon_3 = selectedMuons[2]->Pt();
+               nElectrons=0;
+               for (Int_t selel =0; selel < selectedElectrons.size() ; selel++ )
+               {
+
+        	 pt_electron[nElectrons]=selectedElectrons[selel]->Pt();
+        	 phi_electron[nElectrons]=selectedElectrons[selel]->Phi();
+        	 eta_electron[nElectrons]=selectedElectrons[selel]->Eta();
+        	 eta_superCluster_electron[nElectrons]=selectedElectrons[selel]->superClusterEta();
+        	 E_electron[nElectrons]=selectedElectrons[selel]->E();
+        	 pfIso_electron[nElectrons]=selectedElectrons[selel]->relPfIso(3,0);
+        	 charge_electron[nElectrons]=selectedElectrons[selel]->charge();
+        	 if(!isData) ElectronSF[nElectrons] = electronSFWeight->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0);
+        	 else ElectronSF[nElectrons] = 1.;
+
+        	 nElectrons++;
+               }
+               if(selectedElectrons.size()>0) pt_electron_1 = selectedElectrons[0]->Pt();
+               if(selectedElectrons.size()>1) pt_electron_2 = selectedElectrons[1]->Pt();
+               if(selectedElectrons.size()>2) pt_electron_3 = selectedElectrons[2]->Pt();
+
+
+               nLeptons = nMuons + nElectrons;
+
+             }
+
 	    if(eventSelected){ 
 	      nbSelectedEvents++; 
 	      myTree->Fill(); 
@@ -2107,6 +2172,12 @@ int main (int argc, char *argv[])
             {
                  selectionsnb << selections[inb];
             }
+
+
+
+           
+
+
 //            infoFile << "|" << evt_num << "|"  << TriggBits << "|"  <<channel << "|"  << pt_lept1 << "|" << pt_lept2 << "|" << pt_lept3 << "|" << iso_lept1 << "|" << iso_lept2 << "|" << iso_lept3 << "|" << id_lept1 << "|" << id_lept2 << "|" << id_lept3 << "|" << leading_jetPt << "|" << leading_jet_btagDiscr << "|" << met << "|" << selectionsnb.str() << endl;    
 	    infoFile << "|" << evt_num << "|"  << TriggBits << "|"  <<channel << "|"  << pt_lept1 << "|" << pt_lept2 << "|" << pt_lept3 << "|" << iso_lept1 << "|" << iso_lept2 << "|" << iso_lept3 << "|" << leading_jetPt << "|" << leading_jet_btagDiscr << "|" << met << "|" << selectionsnb.str() << endl;
 	} // end eventloop
@@ -2122,7 +2193,7 @@ int main (int argc, char *argv[])
 	cutstep[9] = nbEvents_9; 
 
         cout << "nbEvents_0 trigg: " << nbEvents_0 << endl;
-	cout << "2 lep " << nbEvents_test << endl; 
+	cout << "trigger req for data " << nbEvents_test << endl; 
         cout << "nbEvents_1 3 lep: " << nbEvents_1 << endl;
 	cout << "nbEvents_1m  veto mu: " << nbEvents_1m << endl;
         cout << "nbEvents_2m veto el: " << nbEvents_2m << endl; 

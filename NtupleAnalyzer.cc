@@ -80,8 +80,9 @@ string MakeTimeStamp()
 
 
 // CONFIGURATION
-Bool_t debug = false;
+Bool_t debug = true;
 bool mumumu  = false;
+bool eee = false; 
 string channelpostfix = "";
 double DataLumi = -1; 
 bool elecPlot = false; 
@@ -93,8 +94,8 @@ Bool_t applyPUSF = false;
 Bool_t applyGlobalSF = false; 
 Bool_t applyAMC = false; 
 Bool_t applyBtagSF = false; 
-
-
+Bool_t NewPhys = false; 
+Bool_t applyMET = false; 
 int main(int argc, char* argv[])
 {
   if (debug){
@@ -121,6 +122,10 @@ int main(int argc, char* argv[])
   applyBtagSF = strtol(argv[6],NULL,10);
   applyGlobalSF = strtol(argv[7],NULL,10);
   applyAMC = strtol(argv[8],NULL,10);
+  applyMET = strtol(argv[9],NULL,10);
+
+
+
   string xmlFileName;
   string CraneenPath; 
   CraneenPath = "NtupleMakerOutput/MergedTuples/";
@@ -129,10 +134,31 @@ int main(int argc, char* argv[])
       cout << " --> Using the TriMuon channel..." << endl;
       channelpostfix = "_mumumu";
       xmlFileName = "config/Run2TriLepton_samples_analyzer_mumumu.xml";
-      mumumu = true; 
+      mumumu = true;  
+      eee = false; 
       DataLumi  = 2612.180735004;//  pb-1
       CraneenPath += "mumumu/";  
     }
+  else if(channel=="ElElEl")
+    {
+      cout << " --> Using the TriElectron channel..." << endl;
+      channelpostfix = "_eee";
+      xmlFileName = "config/Run2TriLepton_samples_analyzer_eee.xml";
+      mumumu = false;
+      eee = true;
+      DataLumi  = 2612.180735004;//  pb-1
+      CraneenPath += "eee/";
+    }
+  else if(channel=="All")
+    {
+      cout << " --> Using the all channel..." << endl;
+      channelpostfix = "_all";
+      xmlFileName = "config/Run2TriLepton_samples_analy.xml";
+      mumumu = false;
+      eee = false;
+      DataLumi  = 2612.180735004;//  pb-1
+      CraneenPath += "all/";
+  }
   else
     {
       cerr << "The channel '" << channel << "' is not in the list of authorised channels !!" << endl;
@@ -140,10 +166,10 @@ int main(int argc, char* argv[])
     }
     string dateString = MakeTimeStamp(); 
 //    CraneenPath += dateString + "/"; 
-    CraneenPath += "160301_nonstrict/";
+    CraneenPath += "160602_new/";
     string pathPNG = "myOutput";
     mkdir(pathPNG.c_str(),0777); 
-    pathPNG += "/" + dateString + "/"; 
+    pathPNG += "/" + dateString + "_new/"; 
     mkdir(pathPNG.c_str(),0777);
     pathPNG += "MSPlots"+channelpostfix+"/";
     mkdir(pathPNG.c_str(),0777);
@@ -157,6 +183,7 @@ int main(int argc, char* argv[])
     if(applyPUSF) cout << "PU SF on" <<endl; 
     if(applyAMC) cout << "nlo reweight on " << endl; 
     if(applyBtagSF) cout << "BtagSF on" << endl; 
+    if(applyMET) cout << "MET filter on "<< endl; 
     if(!applyElectronSF && !applyMuonSF && !applyPUSF && !applyAMC) applyGlobalSF = false;
     if(applyGlobalSF) cout << "applying SF " << endl; 
     else cout << "not applying SF " << endl; 
@@ -165,10 +192,15 @@ int main(int argc, char* argv[])
     // calling datasetPlotter to create MSPplots
           
       // event plots
-    DatasetPlotter(70, -0.5, 69.5, "npu", xmlFileName,CraneenPath,pathPNG);
-    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,CraneenPath,pathPNG);
-    DatasetPlotter(10, -0.5, 9.5, "nLeptons", xmlFileName,CraneenPath,pathPNG);
-
+//    DatasetPlotter(70, -0.5, 69.5, "npu", xmlFileName,CraneenPath,pathPNG);
+//    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,CraneenPath,pathPNG);
+//    DatasetPlotter(10, -0.5, 9.5, "nLeptons", xmlFileName,CraneenPath,pathPNG);
+/*     DatasetPlotter(20, 0, 200, "Zboson_M", xmlFileName,CraneenPath,pathPNG);
+      DatasetPlotter(20, 0, 400, "mWt", xmlFileName,CraneenPath,pathPNG);
+      DatasetPlotter(30, 0, 300, "met_Pt", xmlFileName,CraneenPath,pathPNG);
+   */ DatasetPlotter(25,-1, 1, "cdiscCvsL_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
+   DatasetPlotter(25,-1, 1, "cdiscCvsB_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
+/*
       
           
     elecPlot = true;  
@@ -220,7 +252,7 @@ int main(int argc, char* argv[])
     DatasetPlotter(50,0, 500, "pt_jet_2", xmlFileName, CraneenPath, pathPNG);
     DatasetPlotter(50,0, 500, "pt_jet_3", xmlFileName, CraneenPath, pathPNG);
   //    DatasetPlotter(10,-0.5, 9.5, "cutstep[nCuts], xmlFileName,, CraneenPath, pathPNG);
-
+*/
   // calling the function that writtes all the MSPlots in a root file
   MSPCreator (pathPNG);
 
@@ -286,7 +318,8 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
    {
      dataSetName = datasets[d]->Name();
      cout<<"Dataset:  :"<<dataSetName<<endl;
-     
+     NewPhys = false; 
+     if(dataSetName.find("NP")!=string::npos) NewPhys = true; 
      // get the tree corresponding to the final state of interest
      string stree = "tree";
      string sglobaltree = "globaltree"; 
@@ -295,7 +328,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 
 		  
      FileObj[dataSetName.c_str()] = new TFile((filepath).c_str(),"READ"); //create TFile for each dataset      
-     string TTreename = sbaselinetree;
+     string TTreename = stree;
 //     string TTreename = stree; 	
      
      ttree[dataSetName.c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename.c_str()); //get ttre for each dataset
@@ -333,12 +366,10 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 
       bool isData= false;
       bool isAMC = false;
-      double extra = 1.;  
       if(dataSetName.find("Data")!=string::npos || dataSetName.find("data")!=string::npos || dataSetName.find("DATA")!=string::npos) isData =true;
       if(debug) cout << "isData? " << isData << endl; 
       if(dataSetName.find("amc")!=string::npos) isAMC =true;
-      if(dataSetName.find("DY") !=string::npos) {extra = 1.15;}
-//      cout << "isAMC? " << isAMC << endl; 
+      cout << "isAMC? " << isAMC << endl; 
       ///////////////////////////////////
       // determine event scalefactor ///
       //////////////////////////////////
@@ -346,9 +377,14 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
       if(applyGlobalSF) cout << "                 Applying scale factors (not for data)" << endl; 
       
       // get the SF from the corresponding branch
-      Double_t puSF = 1. ;
+    Int_t PassedMET = 0;
+    ttree[dataSetName.c_str()]->SetBranchAddress("PassedMETFilter",&PassedMET);  
+
+     Double_t puSF = 1. ;
       ttree[dataSetName.c_str()]->SetBranchAddress("puSF",&puSF);
 
+      Double_t nloW;
+      ttree[dataSetName.c_str()]->SetBranchAddress("nloWeight",&nloW);
       
       Double_t electronSF[10]; 
       ttree[dataSetName.c_str()]->SetBranchAddress("ElectronSF",&electronSF); 
@@ -403,6 +439,9 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
       
       // -----------
       // eo of event SF
+
+
+    
       double globalScaleFactor= 1.;
       double nloSF = 1.;
       int nPos = 0; 
@@ -424,17 +463,17 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
            }
 //          if(!isData) nloSF *= (double) Weights/(double) Ev; // 
           if(!isData) nloSF *= ((double) (nPos - nNeg))/((double) (nPos + nNeg));
-          cout << "                 1/nloSF: " << 1./nloSF << endl;  
+          cout << "                nloSF: " << nloSF << endl;  
        }
       for (int j = 0; j<nEntries; j++)
       {
 	  ttree[(dataSetName).c_str()]->GetEntry(j);
 //          cout << "nEl " << nEl << " nMu " << nMu << endl; 
           globalScaleFactor = 1.;
-          globalScaleFactor *= extra;  
 	  if(v.size() == 1 && sVarofinterest.find("nElectrons")!=string::npos) {varofInterest = nEl;} 
           if(v.size() == 1 && sVarofinterest.find("nMuons")!=string::npos) {varofInterest = nMu;}
 
+          if(applyMET && PassedMET == 0 ){continue; }
 	  if(applyGlobalSF && !isData) // sf on and not data
 	  {
 	      // Electron scale factors
@@ -480,7 +519,8 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
                
 	  }
 
-	  if(applyAMC && !isData) globalScaleFactor =globalScaleFactor/ nloSF ;
+	  if(applyAMC && !isData) globalScaleFactor =globalScaleFactor * nloSF ;
+          if(NewPhys) globalScaleFactor = 1.;
 	  //if(applyAMC && !isData && isAMC) globalScaleFactor *= nloW; 
 //          if(!isData) cout << "nloSF: " << nloSF << endl;  
 	  // ----------------
@@ -502,8 +542,8 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 	  if (v.size() == 2){
 
 	    // bo of loop over the number of object per entry
-            if(elecPlot) varofInterest = nEl; 
-            if(muPlot) varofInterest = nMu;
+//            if(elecPlot) varofInterest = nEl; 
+//            if(muPlot) varofInterest = nMu;
              for (int i_object =0 ; i_object < varofInterest ;i_object ++ )
 	      {
 		if (debug) cout << "varofInterest is " << varofInterest_double[i_object] << endl;
@@ -565,7 +605,7 @@ void MSPCreator (string pathPNG)
   
   TFile *outfile = new TFile((pathPNG+"/Output.root").c_str(),"recreate");
   outfile->cd();
-  
+  cout << "created " << (pathPNG+"/Output.root").c_str() << endl; 
   
   // Loop over all the MSPlots
   for(map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
@@ -578,7 +618,7 @@ void MSPCreator (string pathPNG)
 	cout << "Saving the MSP" << endl;
 	cout << " and it->first is " << it->first << endl;
       }
-      temp->Draw("MyMSP", 1, false, false, false, 10);
+      temp->Draw("MyMSP", 1, false, false, false, 10);// 0 = no ratio
   //    name += "_3L";
       if(!applyGlobalSF) name += "_noSF";
       if(!applyPUSF) name += "_noPUSF";
