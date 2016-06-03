@@ -89,6 +89,7 @@ float workingpointvalue_Loose = 0.460;//working points updated to 2015 BTV-POG r
 float workingpointvalue_Medium = 0.800;//working points updated to 2015 BTV-POG recommendations.
 float workingpointvalue_Tight = 0.935;//working points updated to 2015 BTV-POG recommendations.
 
+bool synchex = false; 
 
 TLorentzVector FCNCjetCalculator(std::vector<TRootJet*> nonBJets,std::vector<TRootJet*> BJets, TLorentzVector recoZ ,int verb); 
 double MEtz(bool mu, bool el, TLorentzVector Wlep, double MetPx, double MetPy);
@@ -323,66 +324,67 @@ int main (int argc, char *argv[])
   string info_date_dir = info_dir +  dateString +"/";
   string iso_date_dir = iso_dir +  dateString +"/";
   cout << "info dir " << info_dir.c_str() << endl; 
+  if(synchex){
   mkdir(info_dir.c_str(),0777);
   mkdir(info_date_dir.c_str(),0777); 
   mkdir(iso_dir.c_str(),0777);
-  mkdir(iso_date_dir.c_str(),0777);
+  mkdir(iso_date_dir.c_str(),0777);}
   string infoName = info_date_dir + "information"; 
   infoName += "_"+ Channel;
   infoName += "_" + dName;
   infoName += "_" + JobNum; 
   infoName += ".txt"; 
-  infoFile.open(infoName.c_str());
-  infoFile.precision(3);  
+  if(synchex)  infoFile.open(infoName.c_str());
+  if(synchex) infoFile.precision(3);  
   string isoName = iso_date_dir + "isolation";
   isoName += "_"+ Channel;
   isoName += "_" + dName;
   isoName += "_" + JobNum;
   isoName += ".txt";
-  isoFile.open(isoName.c_str());
+  if(synchex)  isoFile.open(isoName.c_str());
 //  isoFile.precision(3);
   string jetName = info_date_dir + "jetinfo"; 
   jetName += "_"+ Channel;
   jetName += "_" + dName;
   jetName += "_" + JobNum;
   jetName += ".txt";
-  jetFile.open(jetName.c_str());
+  if(synchex) jetFile.open(jetName.c_str());
   string jetJECName = info_date_dir + "jetinfoJEC"; 
   jetJECName += "_"+ Channel;
   jetJECName += "_" + dName;
   jetJECName += "_" + JobNum;
   jetJECName += ".txt";
-  jetJECFile.open(jetJECName.c_str());
+  if(synchex) jetJECFile.open(jetJECName.c_str());
   string jetSelName = info_date_dir + "jetinfoSel";
   jetSelName += "_"+ Channel;
   jetSelName += "_" + dName;
   jetSelName += "_" + JobNum;
   jetSelName += ".txt";
-  jetSelFile.open(jetSelName.c_str());
+  if(synchex) jetSelFile.open(jetSelName.c_str());
   string topName = info_date_dir + "topinfo";
   topName += "_"+ Channel;
   topName += "_" + dName;
   topName += "_" + JobNum;
   topName += ".txt";
-  topFile.open(topName.c_str());
+  if(synchex) topFile.open(topName.c_str());
   string mWtName = info_date_dir + "mWtinfo";
   mWtName += "_"+ Channel;
   mWtName += "_" + dName;
   mWtName += "_" + JobNum;
   mWtName += ".txt";
-  mWtFile.open(mWtName.c_str());
+  if(synchex) mWtFile.open(mWtName.c_str());
   string muSelName = info_date_dir + "muSelinfo";
   muSelName += "_"+ Channel;
   muSelName += "_" + dName;
   muSelName += "_" + JobNum;
   muSelName += ".txt";
-  muSelFile.open(muSelName.c_str());
+  if(synchex) muSelFile.open(muSelName.c_str());
   string muIniName = info_date_dir + "muIniinfo";
   muIniName += "_"+ Channel;
   muIniName += "_" + dName;
   muIniName += "_" + JobNum;
   muIniName += ".txt";
-  muIniFile.open(muIniName.c_str());
+  if(synchex) muIniFile.open(muIniName.c_str());
   cout << "---Dataset accepted from command line---" << endl;
   cout << "Dataset Name: " << dName << endl;
   cout << "Dataset Title: " << dTitle << endl;
@@ -1172,7 +1174,7 @@ int main (int argc, char *argv[])
             CSCTight = event->getCSCTightHalo2015Filter(); 
             EcalDead = event->getEcalDeadCellTriggerPrimitiveFilter();
             eeBad = event->getEEBadScFilter(); 
- 
+ 	   if(synchex){
            for(int iEl = 0 ; iEl < init_electrons.size() ; iEl ++){
               isoFile << evt_num << " sumChargedHadronPt=" << init_electrons[iEl]->chargedHadronIso(3) << ", sumNeutralHadronEt=" << init_electrons[iEl]->neutralHadronIso(3) << ", sumPhotonEt=" << init_electrons[iEl]->photonIso(3)<< ", effArea=" << EffectiveArea(init_electrons[iEl]) << endl;  
 	   }
@@ -1185,6 +1187,7 @@ int main (int argc, char *argv[])
 //              jetFile << "EvtNb="<< evt_num << " jet_pt=" << tempJet->Pt() << " jet_eta=" << tempJet->Eta() << " jet_phi=" << tempJet->Phi()  << endl;
 //              jetFile << "EvtNb="<< evt_num << " jet_pt=" << tempJet->Pt() << " jet_eta=" << init_jets[iJet]->Eta() << " jet_phi=" << init_jets[iJet]->Phi()  << endl;
            }
+	   }
 //            cout << "eeBadSc " << eeBadSc << endl;
 	    lumi_num=event->lumiBlockId(); 
 	    nvtx = vertex.size();
@@ -1338,12 +1341,13 @@ int main (int argc, char *argv[])
 		 jetTools->correctJets(init_jets_corrected,event->fixedGridRhoFastjetAll() ,false);
                  JESon = 1;
            }
+           if(synchex){
  	   for(int iJet = 0; iJet < init_jets_corrected.size(); iJet++){
               TRootPFJet* tempJ = (TRootPFJet*) init_jets_corrected[iJet];
 //              jetJECFile << "EvtNb="<< evt_num << " jet_pt=" << tempJ->Pt() <<" jet_eta=" << tempJ->Eta() << " jet_phi=" << tempJ->Phi() << " NEMfraction="  << tempJ->neutralEmEnergyFraction() << " CEMfraction=" << tempJ->chargedEmEnergyFraction() << " NHfraction=" << tempJ->neutralHadronEnergyFraction() << " CHfraction=" << tempJ->chargedHadronEnergyFraction() << " Cmult=" << tempJ->chargedMultiplicity() << " nConst=" << tempJ->nConstituents() << endl;
                jetJECFile << "EvtNb="<< evt_num << " jet_pt=" << tempJ->Pt() <<" jet_eta=" << tempJ->Eta() << " jet_phi=" << tempJ->Phi() << " jet_bDis=" << tempJ->btag_combinedInclusiveSecondaryVertexV2BJetTags() << endl;
    
-            }
+            } }
             ///////////////////////////////////////////////////////////
             // Event selection
             ///////////////////////////////////////////////////////////
@@ -1400,7 +1404,7 @@ int main (int argc, char *argv[])
 	    // Met filters 
 	    if(HBHEnoise && HBHEIso && CSCTight && EcalDead && eeBad && isGoodPV) passedMET = true;
 	    PassedMETFilter = passedMET; 
-	    
+	    if(synchex){ 
             for(int iJet = 0; iJet < selectedJets.size(); iJet++){
               TRootPFJet* tempJ = (TRootPFJet*) selectedJets[iJet];
               jetSelFile << "EvtNb="<< evt_num << " jet_pt=" << tempJ->Pt() <<" jet_eta=" << tempJ->Eta() << " jet_phi=" << tempJ->Phi() << " jet_bDis=" << tempJ->btag_combinedInclusiveSecondaryVertexV2BJetTags() << endl; 
@@ -1410,7 +1414,7 @@ int main (int argc, char *argv[])
            }
            for(int iMu = 0; iMu < init_muons.size(); iMu++){
               muIniFile << "EvtNb="<< evt_num << " mu_pt=" << init_muons[iMu]->Pt() <<" mu_eta=" << init_muons[iMu]->Eta() << " mu_phi=" << init_muons[iMu]->Phi() << " mu_iso=" << IsoDBeta(init_muons[iMu]) << endl;
-           } 
+           } }
             //////////////////////////////////////
             //   B jet selection	       ////
             ///////////////////////////////////////
@@ -2033,7 +2037,7 @@ int main (int argc, char *argv[])
 	    }
        
 	    else mWt = 0.;
-            mWtFile << "EvtNb="<< evt_num << " mWt=" << mWt << " met_Pt=" << met_Pt << " WlepPt=" << Wlep.Pt() << "CosPhi=" << TMath::Cos(Wlep.Phi() - met_Phi) << endl; //" second=" <<  mWtsecond << endl;   
+            if(synchex) mWtFile << "EvtNb="<< evt_num << " mWt=" << mWt << " met_Pt=" << met_Pt << " WlepPt=" << Wlep.Pt() << "CosPhi=" << TMath::Cos(Wlep.Phi() - met_Phi) << endl; //" second=" <<  mWtsecond << endl;   
             if(mWt < 20){
                selections.push_back(0); 
 	       continueFlow = false; 
@@ -2059,7 +2063,7 @@ int main (int argc, char *argv[])
 		  else SMtop_M = 0.; 
             }
 	    else  SMtop_M = 0. ;
-            if(continueFlow) topFile << "EvtNb="<< evt_num << " Bjet_pt=" << SMbjet.Pt() <<" Bjet_px=" << SMbjet.Px() << " Bjet_py=" << SMbjet.Py() << " Bjet_pz()=" << SMbjet.Pz() << " Bjet_Energy=" << SMbjet.Energy() << " Wlep_pt=" << Wlep.Pt() <<" Wlep_px=" << Wlep.Px() << " Wlep_py=" << Wlep.Py() << " Wlep_pz()=" << Wlep.Pz() << " Wlep_Energy=" << Wlep.Energy() << " met_Pt=" << metTLV.Pt() <<" met_px=" << metTLV.Px() << " met_py=" << metTLV.Py() << " met_pz()=" << metTLV.Pz() << " met_Energy=" << metTLV.Energy() << " topmass= " << SMtop_M << endl;  
+            if(continueFlow && synchex) topFile << "EvtNb="<< evt_num << " Bjet_pt=" << SMbjet.Pt() <<" Bjet_px=" << SMbjet.Px() << " Bjet_py=" << SMbjet.Py() << " Bjet_pz()=" << SMbjet.Pz() << " Bjet_Energy=" << SMbjet.Energy() << " Wlep_pt=" << Wlep.Pt() <<" Wlep_px=" << Wlep.Px() << " Wlep_py=" << Wlep.Py() << " Wlep_pz()=" << Wlep.Pz() << " Wlep_Energy=" << Wlep.Energy() << " met_Pt=" << metTLV.Pt() <<" met_px=" << metTLV.Px() << " met_py=" << metTLV.Py() << " met_pz()=" << metTLV.Pz() << " met_Energy=" << metTLV.Energy() << " topmass= " << SMtop_M << endl;  
 
 //	    cjet.Clear(); 
 //	    cjet = FCNCjetCalculator(selectedCSVLLJets,selectedCSVLBJets, Zboson ,3);
@@ -2179,7 +2183,7 @@ int main (int argc, char *argv[])
 
 
 //            infoFile << "|" << evt_num << "|"  << TriggBits << "|"  <<channel << "|"  << pt_lept1 << "|" << pt_lept2 << "|" << pt_lept3 << "|" << iso_lept1 << "|" << iso_lept2 << "|" << iso_lept3 << "|" << id_lept1 << "|" << id_lept2 << "|" << id_lept3 << "|" << leading_jetPt << "|" << leading_jet_btagDiscr << "|" << met << "|" << selectionsnb.str() << endl;    
-	    infoFile << "|" << evt_num << "|"  << TriggBits << "|"  <<channel << "|"  << pt_lept1 << "|" << pt_lept2 << "|" << pt_lept3 << "|" << iso_lept1 << "|" << iso_lept2 << "|" << iso_lept3 << "|" << leading_jetPt << "|" << leading_jet_btagDiscr << "|" << met << "|" << selectionsnb.str() << endl;
+	    if(synchex) infoFile << "|" << evt_num << "|"  << TriggBits << "|"  <<channel << "|"  << pt_lept1 << "|" << pt_lept2 << "|" << pt_lept3 << "|" << iso_lept1 << "|" << iso_lept2 << "|" << iso_lept3 << "|" << leading_jetPt << "|" << leading_jet_btagDiscr << "|" << met << "|" << selectionsnb.str() << endl;
 	} // end eventloop
         cutstep[0] = nbEvents_0; 
         cutstep[1] = nbEvents_1;
@@ -2232,15 +2236,17 @@ int main (int argc, char *argv[])
             	nloSF = ((double) (nofPosWeights - nofNegWeights))/((double) (nofPosWeights + nofNegWeights));
                 cout << "This corresponds to an event scale factor of " << nloSF  << endl; 
         }
-	infoFile.close();
-        isoFile.close();
-	topFile.close();
-        jetFile.close();
-	jetJECFile.close();
-	jetSelFile.close();
-	muSelFile.close();
-        mWtFile.close();  
-        muIniFile.close(); 
+	if(synchex){
+ 	 infoFile.close();
+         isoFile.close();
+	 topFile.close();
+         jetFile.close();
+	 jetJECFile.close();
+	 jetSelFile.close();
+	 muSelFile.close();
+         mWtFile.close();  
+         muIniFile.close();
+        } 
 	tupfile->Write();   
     	tupfile->Close();
         delete tupfile;

@@ -1391,7 +1391,7 @@ int main (int argc, char *argv[])
                 }
             }
             else if(!applyJetLeptonCleaning)   selectedJets = PreselectedJets;
-//	    cout << evt_num << " init " << init_jets_corrected.size() << " sel "  << selectedJets.size() << " bf cleaning " << PreselectedJets.size() << endl; 
+	    cout << evt_num << " init " << init_jets_corrected.size() << " sel "  << selectedJets.size() << " bf cleaning " << PreselectedJets.size() << endl; 
             
             ////////////////////////////////////////////////
             // Pre cut operations

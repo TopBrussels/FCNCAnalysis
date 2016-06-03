@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
       xmlFileName = "config/Run2TriLepton_samples_analyzer_mumumu.xml";
       mumumu = true;  
       eee = false; 
-      DataLumi  = 2612.180735004;//  pb-1
+      DataLumi  = 2100 ;//2612.180735004;//  pb-1
       CraneenPath += "mumumu/";  
     }
   else if(channel=="ElElEl")
@@ -169,7 +169,7 @@ int main(int argc, char* argv[])
     CraneenPath += "160602_new/";
     string pathPNG = "myOutput";
     mkdir(pathPNG.c_str(),0777); 
-    pathPNG += "/" + dateString + "_new/"; 
+    pathPNG += "/" + dateString + "/"; 
     mkdir(pathPNG.c_str(),0777);
     pathPNG += "MSPlots"+channelpostfix+"/";
     mkdir(pathPNG.c_str(),0777);
@@ -195,11 +195,11 @@ int main(int argc, char* argv[])
 //    DatasetPlotter(70, -0.5, 69.5, "npu", xmlFileName,CraneenPath,pathPNG);
 //    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,CraneenPath,pathPNG);
 //    DatasetPlotter(10, -0.5, 9.5, "nLeptons", xmlFileName,CraneenPath,pathPNG);
-/*     DatasetPlotter(20, 0, 200, "Zboson_M", xmlFileName,CraneenPath,pathPNG);
+     DatasetPlotter(20, 0, 200, "Zboson_M", xmlFileName,CraneenPath,pathPNG);
       DatasetPlotter(20, 0, 400, "mWt", xmlFileName,CraneenPath,pathPNG);
       DatasetPlotter(30, 0, 300, "met_Pt", xmlFileName,CraneenPath,pathPNG);
-   */ DatasetPlotter(25,-1, 1, "cdiscCvsL_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
-   DatasetPlotter(25,-1, 1, "cdiscCvsB_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
+  // DatasetPlotter(20,-1, 1, "cdiscCvsL_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
+  // DatasetPlotter(20,-1, 1, "cdiscCvsB_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
 /*
       
           
@@ -234,7 +234,7 @@ int main(int argc, char* argv[])
     DatasetPlotter(25, 0, 1, "bdisc_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(25,-1, 1, "cdiscCvsL_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(25,-1, 1, "cdiscCvsB_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
-    DatasetPlotter(11, -0.5, 10.5, "nJets_CSVL", xmlFileName,CraneenPath,pathPNG);
+   DatasetPlotter(11, -0.5, 10.5, "nJets_CSVL", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(11, -0.5, 10.5, "nJets_CSVM", xmlFileName,CraneenPath,pathPNG);
     DatasetPlotter(11, -0.5, 10.5, "nJets_CSVT", xmlFileName,CraneenPath,pathPNG);
 
@@ -291,7 +291,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
   
   int nEntries;
   float ScaleFactor, NormFactor;
-  int  varofInterest;
+  double  varofInterest;
   double varofInterest_double [20];
 
 
@@ -542,8 +542,8 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 	  if (v.size() == 2){
 
 	    // bo of loop over the number of object per entry
-//            if(elecPlot) varofInterest = nEl; 
-//            if(muPlot) varofInterest = nMu;
+            if(elecPlot) varofInterest = nEl; 
+            if(muPlot) varofInterest = nMu;
              for (int i_object =0 ; i_object < varofInterest ;i_object ++ )
 	      {
 		if (debug) cout << "varofInterest is " << varofInterest_double[i_object] << endl;
