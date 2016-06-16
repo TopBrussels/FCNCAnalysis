@@ -1395,6 +1395,9 @@ int main (int argc, char *argv[])
            for(int iMu = 0; iMu < init_muons.size(); iMu++){
               cout  << "EvtNb="<< evt_num << " mu_pt=" << init_muons[iMu]->Pt() <<" mu_eta=" << init_muons[iMu]->Eta() << " mu_phi=" << init_muons[iMu]->Phi() << " mu_iso=" << IsoDBeta(init_muons[iMu]) << endl;
            } */ }
+//for(int iMu = 0; iMu < selectedMuons.size(); iMu++){
+//              muSelFile << "EvtNb="<< evt_num << " mu_pt=" << selectedMuons[iMu]->Pt() <<" mu_eta=" << selectedMuons[iMu]->Eta() << " mu_phi=" << selectedMuons[iMu]->Phi() << " mu_iso=" << IsoDBeta(selectedMuons[iMu]) << endl;
+ //          }
             //////////////////////////////////////
             //   B jet selection	       ////
             ///////////////////////////////////////
@@ -1623,10 +1626,10 @@ int main (int argc, char *argv[])
                  histo1D["cutFlow"]->Fill(0., eventweight);
                  nCuts++;
                  nbEvents_0++;
-		 for(int iMu = 0; iMu < selectedMuons.size(); iMu++){
-              		muSelFile << "EvtNb="<< evt_num << " mu_pt=" << selectedMuons[iMu]->Pt() <<" mu_eta=" << selectedMuons[iMu]->Eta() << " mu_phi=" << selectedMuons[iMu]->Phi() << " mu_iso=" << IsoDBeta(selectedMuons[iMu]) << endl;
+/*		 for(int iMu = 0; iMu < selectedMuons.size(); iMu++){
+              	      muSelFile << "EvtNb="<< evt_num << " mu_pt=" << selectedMuons[iMu]->Pt() <<" mu_eta=" << selectedMuons[iMu]->Eta() << " mu_phi=" << selectedMuons[iMu]->Phi() << " mu_iso=" << IsoDBeta(selectedMuons[iMu]) << endl;
                  }
-		for(int iMu = 0; iMu < init_muons.size(); iMu++){
+*/		for(int iMu = 0; iMu < init_muons.size(); iMu++){
                         muIniFile  << "EvtNb="<< evt_num << " mu_pt=" << init_muons[iMu]->Pt() <<" mu_eta=" << init_muons[iMu]->Eta() << " mu_phi=" << init_muons[iMu]->Phi() << " mu_iso=" << IsoDBeta(init_muons[iMu]) << endl;
                  } 
                 }
@@ -1641,7 +1644,7 @@ int main (int argc, char *argv[])
              else if(dName.find("DoubleMu")!=string::npos) { nbEvents_test++ ;}
              if(dName.find("MuonEG")!=string::npos && (selectedElectrons.size() < 1 || selectedMuons.size() < 1)) { continueFlow = false; }
              else if(dName.find("MuonEG")!=string::npos){ nbEvents_test++ ;}
-	   
+
             if(all && ((selectedMuons.size() + selectedElectrons.size()) != 3)){
                selections.push_back(0);
 	       continueFlow = false; 
@@ -1655,7 +1658,7 @@ int main (int argc, char *argv[])
                }
                lep3 = true;  
             }
-            if(mumumu && (selectedMuons.size() != 3)){
+            if(mumumu && (selectedMuons.size() != 3 || selectedElectrons.size() != 0)){
                selections.push_back(0);
                continueFlow = false;
             }
@@ -1668,7 +1671,7 @@ int main (int argc, char *argv[])
                }
                lep3 = true;
             }
-            if(eee && (selectedElectrons.size() != 3)){
+            if(eee && (selectedElectrons.size() != 3 || selectedMuons.size() != 0)){
                selections.push_back(0);
                continueFlow = false;
             }
@@ -1720,6 +1723,9 @@ int main (int argc, char *argv[])
             }
 	    else {
 	     selections.push_back(1);
+             for(int iMu = 0; iMu < selectedMuons.size(); iMu++){
+                      muSelFile << "EvtNb="<< evt_num << " mu_pt=" << selectedMuons[iMu]->Pt() <<" mu_eta=" << selectedMuons[iMu]->Eta() << " mu_phi=" << selectedMuons[iMu]->Phi() << " mu_iso=" << IsoDBeta(selectedMuons[iMu]) << endl;
+             }
             }
 	    if(continueFlow) lepsel = true;
 	    double met_px = mets[0]->Px();
@@ -1740,7 +1746,7 @@ int main (int argc, char *argv[])
 
 	    // check sign
 	    bool OS = false;
-	    if(lep3) AssignedLeptons = LeptonAssigner(selectedElectrons, selectedMuons); 
+	    if(lep3){ AssignedLeptons = LeptonAssigner(selectedElectrons, selectedMuons); }
             if(Assigned){
                 OS = true;
              
@@ -2242,6 +2248,7 @@ vector <TLorentzVector> LeptonAssigner(std::vector<TRootElectron*> electrons,std
   
   if(electrons.size() + muons.size() != 3){
      cout << " WARNING: not 3 leptons " << endl;
+     cout << "muons " << muons.size() << " electrons " << electrons.size() << endl; 
       return ReturnColl;
  }
 
