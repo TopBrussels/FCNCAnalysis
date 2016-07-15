@@ -12,7 +12,7 @@ dd = str(now.day)
 mm = str(now.month)
 yyyy = str(now.year)
 # pick one of the two above
-date = "160602"
+date = "160705"
 #date = "17_1_2016"
 
 #channels = ["_MuMu","_ElEl"]
@@ -28,7 +28,7 @@ for chan in channels:
     if "ElElEl" in chan:
         pathMerged = "NtupleMakerOutput/MergedTuples/eee/"+"160530"+"/"
     if "All" in chan:
-        pathMerged = "NtupleMakerOutput/MergedTuples/all/"+date+"_new"+"/"
+        pathMerged = "NtupleMakerOutput/MergedTuples/all/"+date+"/"
     
     if not os.path.exists(pathMerged):
         os.makedirs(pathMerged)

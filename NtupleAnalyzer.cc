@@ -21,9 +21,6 @@
 //#include "../macros/Style.C"
 
 
-//inlcludes for TMVA
-#include "TopTreeAnalysisBase/Tools/interface/MVATrainer.h"
-#include "TopTreeAnalysisBase/Tools/interface/MVAComputer.h"
 
 
 using namespace std;
@@ -47,7 +44,6 @@ std::string intToStr (int number);
 void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinterest, string xmlNom, string TreePath, string pathPNG);
 void MSPCreator (string pathPNG);
 void TH2FPlotter (int nBinsX,float lowX, float highX, string sVarofinterestX );
-void MVAanalysis(bool doTraining, std::string MVAmethod, int skipEvents, std::string SignalName, std::string xmlNom_train,std::string xmlNom_evaluate , TString CraneenPath, std::string channel);
 string ConvertIntToString(int nb, bool pad);
 string MakeTimeStamp();
 
@@ -72,7 +68,6 @@ Bool_t applyAMC = false;
 Bool_t applyBtagSF = false;
 Bool_t NewPhys = false;
 Bool_t applyMET = false;
-Bool_t train_mva = false;
 string dateString;
 
 int main(int argc, char* argv[])
@@ -145,7 +140,7 @@ int main(int argc, char* argv[])
   }
   dateString = MakeTimeStamp();
   //    CraneenPath += dateString + "/";
-  CraneenPath += "160602_trial/";
+  CraneenPath += "160712/";
   string pathPNG = "myOutput";
   mkdir(pathPNG.c_str(),0777);
   pathPNG += "/" + dateString + "/";
@@ -169,13 +164,14 @@ int main(int argc, char* argv[])
   
   
   // calling datasetPlotter to create MSPplots
-  
+ // DatasetPlotter(25, -1, 1, "BDTscore", xmlFileName,CraneenPath,pathPNG); 
   // event plots
-  //    DatasetPlotter(70, -0.5, 69.5, "npu", xmlFileName,CraneenPath,pathPNG);
-  //    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,CraneenPath,pathPNG);
+//      DatasetPlotter(70, -0.5, 69.5, "npu", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,CraneenPath,pathPNG);
+ //
   //    DatasetPlotter(10, -0.5, 9.5, "nLeptons", xmlFileName,CraneenPath,pathPNG);
-  // DatasetPlotter(20, 0, 200, "Zboson_M", xmlFileName,CraneenPath,pathPNG);
-  //DatasetPlotter(20, 0, 400, "mWt", xmlFileName,CraneenPath,pathPNG);
+//  DatasetPlotter(20, 0, 200, "Zboson_M", xmlFileName,CraneenPath,pathPNG);
+ // DatasetPlotter(20, 0, 400, "mWt", xmlFileName,CraneenPath,pathPNG);
   //  DatasetPlotter(30, 0, 300, "met_Pt", xmlFileName,CraneenPath,pathPNG);
   // DatasetPlotter(20,-1, 1, "cdiscCvsL_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
   // DatasetPlotter(20,-1, 1, "cdiscCvsB_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
@@ -203,11 +199,11 @@ int main(int argc, char* argv[])
    DatasetPlotter(100, -0.1, 0.1, "d0_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
    DatasetPlotter(100, -0.015, 0.015, "d0BeamSpot_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
    DatasetPlotter(100, 0.0, 0.2, "pfIso_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
-   
+  
    elecPlot = false;
-   muPlot = false;
-   DatasetPlotter(11, -0.5, 10.5, "nJets", xmlFileName,CraneenPath,pathPNG);
-   DatasetPlotter(70, 0, 700, "pt_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
+   muPlot = false;*/
+  // DatasetPlotter(11, -0.5, 10.5, "nJets", xmlFileName,CraneenPath,pathPNG);
+/*   DatasetPlotter(70, 0, 700, "pt_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
    DatasetPlotter(50, -3.15, 3.15, "eta_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
    DatasetPlotter(30, -3.15, 3.15, "phi_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
    DatasetPlotter(25, 0, 1, "bdisc_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
@@ -216,12 +212,15 @@ int main(int argc, char* argv[])
    DatasetPlotter(11, -0.5, 10.5, "nJets_CSVL", xmlFileName,CraneenPath,pathPNG);
    DatasetPlotter(11, -0.5, 10.5, "nJets_CSVM", xmlFileName,CraneenPath,pathPNG);
    DatasetPlotter(11, -0.5, 10.5, "nJets_CSVT", xmlFileName,CraneenPath,pathPNG);
-   
-   
+  */
+
+  /*DatasetPlotter(25,-1, 1, "cdiscCvsL_jet_1", xmlFileName,CraneenPath,pathPNG);
+   DatasetPlotter(25,-1, 1, "cdiscCvsB_jet_1", xmlFileName,CraneenPath,pathPNG); 
    DatasetPlotter(70, 0, 700, "met_Pt", xmlFileName,CraneenPath,pathPNG);
    DatasetPlotter(50,0, 500, "pt_electron_1", xmlFileName, CraneenPath, pathPNG);
    DatasetPlotter(20, 0, 200, "Zboson_M", xmlFileName,CraneenPath,pathPNG);
    DatasetPlotter(20, 0, 400, "mWt", xmlFileName,CraneenPath,pathPNG);
+   DatasetPlotter(20, 0, 400, "SMtop_M", xmlFileName,CraneenPath,pathPNG);
    DatasetPlotter(50,0, 500, "pt_electron_2", xmlFileName, CraneenPath, pathPNG);
    DatasetPlotter(50,0, 500, "pt_electron_3", xmlFileName, CraneenPath, pathPNG);
    DatasetPlotter(50,0, 500, "pt_muon_1", xmlFileName, CraneenPath, pathPNG);
@@ -230,12 +229,9 @@ int main(int argc, char* argv[])
    DatasetPlotter(50,0, 500, "pt_jet_1", xmlFileName, CraneenPath, pathPNG);
    DatasetPlotter(50,0, 500, "pt_jet_2", xmlFileName, CraneenPath, pathPNG);
    DatasetPlotter(50,0, 500, "pt_jet_3", xmlFileName, CraneenPath, pathPNG);
-   //    DatasetPlotter(10,-0.5, 9.5, "cutstep[nCuts], xmlFileName,, CraneenPath, pathPNG);
-   */
-  // calling the function that writtes all the MSPlots in a root file
-  //void MVAanalysis(bool doTraining, std::string MVAmethod, int skipEvents, std::string SignalName, std::string xmlNom_train,std::string xmlNom_evaluate , TString CraneenPath, std::string channel)
-  MVAanalysis(train_mva, "BDT", 2, "tZq_amc", xmlFileName, xmlFileName, CraneenPath, channel); // divide sample in 2
-  if(!train_mva) MSPCreator (pathPNG);
+  *///    DatasetPlotter(10,-0.5, 9.5, "cutstep[nCuts], xmlFileName,, CraneenPath, pathPNG);
+  
+  MSPCreator (pathPNG);
   
 }
 
@@ -309,8 +305,8 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
     
 		  
     FileObj[dataSetName.c_str()] = new TFile((filepath).c_str(),"READ"); //create TFile for each dataset
-    string TTreename = stree;
-    //     string TTreename = stree;
+//    string TTreename = sbaselinetree;
+     string TTreename = stree;
     
     ttree[dataSetName.c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename.c_str()); //get ttre for each dataset
     nEntries = (int)ttree[dataSetName.c_str()]->GetEntries();
@@ -435,6 +431,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
       for (int k = 0; k<globalnEntries; k++)
       {
         globalttree[(dataSetName).c_str()]->GetEntry(k);
+	if(debug) cout << "get globaltree" << endl; 
         nPos += nPosW;
         nNeg += nNegW;
         Ev += nEvents;
@@ -598,7 +595,7 @@ void MSPCreator (string pathPNG)
       cout << "Saving the MSP" << endl;
       cout << " and it->first is " << it->first << endl;
     }
-    temp->Draw("MyMSP"+it->first, 1, false, false, false, 10);// 0 = no ratio
+    temp->Draw("MyMSP"+it->first, 0, false, false, false, 10);// 0 = no ratio 1 = ratio
     //    name += "_3L";
     if(!applyGlobalSF) name += "_noSF";
     if(!applyPUSF) name += "_noPUSF";
@@ -617,197 +614,6 @@ void MSPCreator (string pathPNG)
   
   outfile->Write("kOverwrite");
 }
-
-
-void MVAanalysis(bool doTraining, std::string MVAmethod, int skipEvents, std::string SignalName, std::string xmlNom_train,std::string xmlNom_evaluate , TString CraneenPath, std::string channel)
-{
-  
-  MVAComputer* Eventcomputer_ =0;
-  MVATrainer* Eventtrainer_ = 0;
-  if(doTraining) Eventtrainer_ = new MVATrainer(MVAmethod,"TrainedEventMVA"+channel, "TrainedEventMVA"+channel+".root");
-  vector<std::string> MVAvars;
-  if(debug) cout << "event trainier initialised " << endl;
-  
-  // the name of the variables to be used
-  MVAvars.push_back("NumberOfElectrons");
-  MVAvars.push_back("NumberOfMuons");
-  //   MVAvars.push_back("Zboson_M");
-  
-  
-  if(doTraining){
-    for(unsigned int N_var = 0; N_var < MVAvars.size(); N_var++)
-    {
-      Eventtrainer_->bookInputVar(MVAvars[N_var]);
-    }
-    if(debug) cout << "input variables booked" << endl;
-  }
-  if(!doTraining) Eventcomputer_ = new MVAComputer(MVAmethod,"TrainedEventMVA"+channel+".root", "TrainedEventMVA"+channel,MVAvars, "test");
-  
-  
-  
-  cout<<""<<endl;
-  cout<<"RUNNING MVA: ";
-  if(doTraining) cout << " training " <<endl;
-  else cout << "testing " << endl;
-  cout<<""<<endl;
-  
-  const char *xmlfile_train = xmlNom_train.c_str();
-  const char *xmlfile_eval = xmlNom_evaluate.c_str();
-  if(doTraining) cout << "used config file: " << xmlfile_train << endl;
-  else cout << "used config file: " << xmlfile_eval << endl;
-  
-  ///////////////////////////////////////////////////////////// Load Datasets //////////////////////////////////////////////////////////////////////cout<<"loading...."<<endl;
-  TTreeLoader treeLoader;
-  vector < Dataset* > datasets; 					//cout<<"vector filled"<<endl;
-  if(doTraining) treeLoader.LoadDatasets (datasets, xmlfile_train);	//cout<<"datasets loaded"<<endl;
-  else treeLoader.LoadDatasets(datasets, xmlfile_eval);
-  
-  //***************************************************CREATING PLOT****************************************************
-  //  MSPlot[MVAmethod.c_str()] = new MultiSamplePlot(datasets, MVAmethod.c_str() , 50, (float) -1, (float) 1, MVAmethod.c_str());
-  //  MSPlot[plotname.c_str()] = new MultiSamplePlot(datasets, plotname.c_str(), nBins, plotLow, plotHigh, sVarofinterest.c_str());
-  
-  
-  // ******************************************* outputfiles ************************************************************
-  
-//  string branchName = "BDT";
-//  string branchDescrip = channel + " additional " + branchName;
-//  TNtuple* output = new TNtuple(branchDescrip.c_str(), branchDescrip.c_str(), branchName.c_str());
-  
-  
-  //***********************************************OPEN FILES & GET NTUPLES**********************************************
-  string dataSetName, filepath;
-  int nEntries;
-  float ScaleFactor, NormFactor;
-  
-  
-  for (int d = 0; d < datasets.size(); d++)   //Loop through datasets
-  {
-    dataSetName = datasets[d]->Name();
-    cout<<"Dataset:  :"<<dataSetName<<endl;
-    filepath = CraneenPath+ dataSetName + ".root";
-    if (debug) cout<<"filepath: "<<filepath<<endl;
-    
-    
-   FileObj[dataSetName.c_str()] = new TFile((filepath).c_str(),"update"); //create TFile for each dataset
-    
-   string TTreename = "tree"; // tree containing the variablesi
-  // ttree[dataSetName.c_str()] = (TNtuple*) FileObj[dataSetName.c_str()]->Get(TTreename.c_str());
-   //string tupname = "MVAoutput/"+channel+"/"+dateString+"/"+dataSetName+"BDT.root"; 
-   //TFile *tupfile = new TFile(tupname.c_str(),"RECREATE");
-  //  TTree* BDTtree = new TTree("bdttree","bdttree");
-   // if(debug) cout << "got ntuple "<< endl;  
-    ttree[dataSetName.c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename.c_str()); //get ttree for each dataset
-    nEntries = ttree[dataSetName.c_str()]->GetEntries();
-    cout<<"                 nEntries: "<<nEntries<<endl;
-      
-    /////////////////////////////////////////
-    // Define variables relevant for MVA
-    ////////////////////////////////////////
-    int NumberOfElectrons;
-    int NumberOfMuons;
-    //    double Zmass;
-    ttree[(dataSetName).c_str()]->SetBranchAddress("nElectrons",&NumberOfElectrons);
-    ttree[(dataSetName).c_str()]->SetBranchAddress("nMuons",&NumberOfMuons);
-    //    ttree[(dataSetName).c_str()]->SetBranchAddress("Zboson_M", &Zmass);
-    
-    bool isData= false;
-    if(dataSetName.find("Data")!=string::npos || dataSetName.find("data")!=string::npos || dataSetName.find("DATA")!=string::npos)
-    {
-      if(debug) cout << "Data found" << endl;
-      isData =true;
-    }
-    
-    ////////////////////////////////////////////////////////////
-    // Tree for reweighting
-    ////////////////////////////////////////////////////////////
-    // put in reweighing
-    
-    
-//    int Train_nEntries = int(nEntries/skipEvents);
-//    if(isData && !doTraining) Train_nEntries = int(nEntries/skipEvents);
-    
-    cout << "Number of entries: " << nEntries << endl; //", number of train Entries: " << Train_nEntries << endl;
-    
-    //////////////////////////////////////////////////////////
-    // Running on events
-    //////////////////////////////////////////////////////////
-    
-    if(doTraining)
-    {
-      
-      if(isData && SignalName != "Data") continue;
-      
-      for (int j = 0; j<nEntries; j++)
-      {
-        ScaleFactor = 1.; // event scale factor
-        //   ttree[(dataSetName + "weights").c_str()]->GetEntry(j);
-        //   ScaleFactor = ScaleFactor * lumiweight * LeptonSF * bTagSF * nloSF;
-        //  if(ScaleFactor < 0) ScaleFactor = 0;
-        ttree[(dataSetName).c_str()]->GetEntry(j);
-        
-        if(dataSetName == SignalName)
-        {
-          Eventtrainer_->Fill("S","NumberOfElectrons", NumberOfElectrons);
-          Eventtrainer_->Fill("S","NumberOfMuons", NumberOfMuons);
-          //          Eventtrainer_->Fill("S","Zmass", Zmass);
-          
-        }
-        else
-        {
-
-          Eventtrainer_->Fill("B","NumberOfElectrons", NumberOfElectrons);
-          Eventtrainer_->Fill("B","NumberOfMuons", NumberOfMuons);
-          //           Eventtrainer_->Fill("B","Zmass", Zmass);
-        }
-      }//for-loop events
-    }//If-statement doTraining
-    else if(!doTraining) //not training but computing
-    {
-      double BDTscore;
-      TBranch *newb =  ttree[(dataSetName).c_str()]->Branch("BDTscore",&BDTscore,"BDTscore/D");;
-      for (int j = 0; j<nEntries; j++)
-      {
-        ScaleFactor = 1.; // event scale factor
-        //ttree[(dataSetName + "weights").c_str()]->GetEntry(j);
-        //ScaleFactor = ScaleFactor * lumiweight * LeptonSF * bTagSF * nloSF;
-        //if(ScaleFactor < 0) ScaleFactor = 0;
-        ttree[(dataSetName).c_str()]->GetEntry(j);
-        
-        if (Eventcomputer_ == 0) cout <<"null computer...." <<endl;
-        Eventcomputer_->FillVar("NumberOfElectrons", NumberOfElectrons);
-        Eventcomputer_->FillVar("NumberOfMuons", NumberOfMuons);
-        
-        
-        
-        
-       std::map<std::string,Float_t> MVAVals = Eventcomputer_->GetMVAValues();
-          
-       for (std::map<std::string,Float_t>::const_iterator it = MVAVals.begin(); it != MVAVals.end(); ++it)
-       {
-          if(fabs(it->second > 1)) cout <<"MVA Method : "<< it->first    <<" Score: "<< it->second <<endl;
-          BDTscore = it->second;
-       }
-    //   cout << "BDT score " << BDTscore << endl; 
-       newb->Fill();
-//        if(isData) MSPlot[MVAmethod.c_str()]->Fill(BDTscore, datasets[d], true, 1.);
-//        else  MSPlot[MVAmethod.c_str()]->Fill(BDTscore, datasets[d], true, ScaleFactor);
-      }
-    
-    }
-    ttree[(dataSetName).c_str()]->Write(); 
-  }//for-loop datasets
-  
-  if(doTraining) Eventtrainer_->TrainMVA("Random","",0,0,"",0,0,"test",false);
-  
-  delete Eventtrainer_;
-  delete Eventcomputer_;
-}
-
-
-
-
-
-
 
 
 

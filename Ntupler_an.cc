@@ -92,13 +92,14 @@ float workingpointvalue_Tight = 0.935;//working points updated to 2015 BTV-POG r
 bool synchex = true;
 bool Assigned = false;
 
-TLorentzVector FCNCjetCalculator(std::vector<TRootJet*> nonBJets,std::vector<TRootJet*> BJets, TLorentzVector recoZ ,int verb);
+TLorentzVector FCNCjetCalculator(std::vector<TRootPFJet*> nonBJets,std::vector<TRootPFJet*> BJets, TLorentzVector recoZ ,int verb);
 double MEtz(bool mu, bool el, TLorentzVector Wlep, double MetPx, double MetPy);
 float EffectiveAreaRho(TRootElectron *el, float _rho) ;
 float EffectiveArea(TRootElectron *el) ;
 float relPfIsoEl(TRootElectron *el, float _rho);
 float IsoDBeta(TRootMuon *mu);
 vector<TLorentzVector> LeptonAssigner(std::vector<TRootElectron*> electrons,std::vector<TRootMuon*> muons);
+TLorentzVector MetzCalculator(TLorentzVector leptW, TLorentzVector v_met);
 
 string ConvertIntToString(int Number, bool pad)
 {
@@ -304,7 +305,7 @@ int main (int argc, char *argv[])
     dilep = true;
     singlelep = true;
   }
-
+  
   
   // Print information to a textfile
   ofstream infoFile;
@@ -445,17 +446,17 @@ int main (int argc, char *argv[])
   ////////////////////////////
   ///  Initialise trigger  ///
   ////////////////////////////
-
-   if(verbose == 0) cout << "Initializing trigger" << endl;
-   Trigger* trigger_mumu  = new Trigger(1, 0, 0, 1,0); // mu , el, single, double, tri
-   Trigger* trigger_ee  = new Trigger(0, 1, 0, 1,0);
-   Trigger* trigger_emu  = new Trigger(1, 1, 0, 1,0) ;
-   Trigger* trigger_mumumu  = new Trigger(1, 0, 0, 0,1);
-   Trigger* trigger_eee  = new Trigger(0, 1, 0, 0,1);
-   Trigger* trigger_emumu_mumue  = new Trigger(1, 1, 0, 0,1) ;
-   Trigger* trigger_mu  = new Trigger(1, 0, 1, 0,0);
-   Trigger* trigger_e  = new Trigger(0, 1, 1, 0,0);
-
+  
+  if(verbose == 0) cout << "Initializing trigger" << endl;
+  Trigger* trigger_mumu  = new Trigger(1, 0, 0, 1,0); // mu , el, single, double, tri
+  Trigger* trigger_ee  = new Trigger(0, 1, 0, 1,0);
+  Trigger* trigger_emu  = new Trigger(1, 1, 0, 1,0) ;
+  Trigger* trigger_mumumu  = new Trigger(1, 0, 0, 0,1);
+  Trigger* trigger_eee  = new Trigger(0, 1, 0, 0,1);
+  Trigger* trigger_emumu_mumue  = new Trigger(1, 1, 0, 0,1) ;
+  Trigger* trigger_mu  = new Trigger(1, 0, 1, 0,0);
+  Trigger* trigger_e  = new Trigger(0, 1, 1, 0,0);
+  
   ///////////////////////
   // MET calculator ///
   /////////////////////
@@ -678,12 +679,12 @@ int main (int argc, char *argv[])
     ///////////////////////////
     // event related variables
     Int_t run_num;
-    Int_t evt_num;
+    Long64_t evt_num;
     Int_t lumi_num;
     Int_t nvtx;
     Int_t npu;
     Int_t PassedMETFilter;
-    Int_t PassedGoodPV; 
+    Int_t PassedGoodPV;
     Double_t cutstep[10];
     Int_t nCuts;
     Double_t puSF;
@@ -772,24 +773,42 @@ int main (int argc, char *argv[])
     Int_t charge_jet[20];
     Double_t bdisc_jet[20];
     Double_t cdiscCvsL_jet[20];
+    Double_t cdiscCvsL_jet_1;
+    Double_t cdiscCvsB_jet_1;
     Double_t cdiscCvsB_jet[20];
     
     
     // variables for Zboson
     Double_t Zboson_M;
-    /*	Double_t Zboson_Px;
-     Double_t Zboson_Py;
-     Double_t Zboson_Pz;
-     Double_t Zboson_Energy;
-     */
+    Double_t Zboson_Px;
+    Double_t Zboson_Py;
+    Double_t Zboson_Pz;
+    Double_t Zboson_Energy;
+    
     // met
     Double_t met_Pt;
+    Double_t met_Px;
+    Double_t met_Py;
+    Double_t met_Pz;
     Double_t met_Phi;
     Double_t met_Eta;
     
     Double_t mWt;
     Double_t FCNCtop_M;
     Double_t SMtop_M;
+    Double_t cjet_Pt;
+    Double_t mlb;
+    Double_t dRWlepc;
+    Double_t dRZb;
+    Double_t dRZc;
+    Double_t dRWlepb;
+    Double_t dRSMFCNCtop;
+    Double_t dPhiSMFCNCtop;
+    Double_t dPhiWlepb;
+    Double_t dPhiWlepc;
+    Double_t dPhiZb;
+    Double_t dPhiZc;
+    
     // global data set variables
     Int_t nofEventsHLTv2;
     Int_t nofEventsHLTv3;
@@ -810,7 +829,7 @@ int main (int argc, char *argv[])
     // event related variables
     myTree->Branch("nloWeight",&nloWeight,"nloWeight/D");
     myTree->Branch("run_num",&run_num,"run_num/I");
-    myTree->Branch("evt_num",&evt_num,"evt_num/I");
+    myTree->Branch("evt_num",&evt_num,"evt_num/L");
     myTree->Branch("lumi_num",&lumi_num,"lumi_num/I");
     myTree->Branch("nvtx",&nvtx,"nvtx/I");
     myTree->Branch("npu",&npu,"npu/I");
@@ -945,11 +964,15 @@ int main (int argc, char *argv[])
     myTree->Branch("bdisc_jet",bdisc_jet,"bdisc_jet[nJets]/D");
     myTree->Branch("cdiscCvsL_jet",cdiscCvsL_jet,"cdiscCvsL_jet[nJets]/D");
     myTree->Branch("cdiscCvsB_jet",cdiscCvsB_jet,"cdiscCvsB_jet[nJets]/D");
+    myTree->Branch("cdiscCvsL_jet_1",&cdiscCvsL_jet_1,"cdiscCvsL_jet_1/D");
+    myTree->Branch("cdiscCvsB_jet_1",&cdiscCvsB_jet_1,"cdiscCvsB_jet_1/D");
     myTree->Branch("pt_jet_1",&pt_jet_1,"pt_jet_1/D");
     myTree->Branch("pt_jet_2",&pt_jet_2,"pt_jet_2/D");
     myTree->Branch("pt_jet_3",&pt_jet_3,"pt_jet_3/D");
     
     baselineTree->Branch("nJets",&nJets,"nJets/I");
+    baselineTree->Branch("cdiscCvsL_jet_1",&cdiscCvsL_jet_1,"cdiscCvsL_jet_1/D");
+    baselineTree->Branch("cdiscCvsB_jet_1",&cdiscCvsB_jet_1,"cdiscCvsB_jet_1/D");
     baselineTree->Branch("nJets_CSVL",&nJets_CSVL,"nJets_CSVL/I");
     baselineTree->Branch("nJets_CSVM",&nJets_CSVM,"nJets_CSVM/I");
     baselineTree->Branch("nJets_CSVT",&nJets_CSVT,"nJets_CSVT/I");
@@ -973,18 +996,47 @@ int main (int argc, char *argv[])
     myTree->Branch("FCNCtop_M",&FCNCtop_M,"FCNCtop_M/D");
     myTree->Branch("SMtop_M",&SMtop_M, "SMtop_M/D");
     baselineTree->Branch("SMtop_M",&SMtop_M, "SMtop_M/D");
-    /*      myTree->Branch("Zboson_Px",&Zboson_Px,"Zboson_Px/D");
-     myTree->Branch("Zboson_Py",&Zboson_Py,"Zboson_Py/D");
-     myTree->Branch("Zboson_Pz",&Zboson_Pz,"Zboson_Pz/D");
-     myTree->Branch("Zboson_Energy",&Zboson_Energy,"Zboson_Energy/D");
-     */
+    myTree->Branch("Zboson_Px",&Zboson_Px,"Zboson_Px/D");
+    myTree->Branch("Zboson_Py",&Zboson_Py,"Zboson_Py/D");
+    myTree->Branch("Zboson_Pz",&Zboson_Pz,"Zboson_Pz/D");
+    myTree->Branch("Zboson_Energy",&Zboson_Energy,"Zboson_Energy/D");
+    myTree->Branch("cjet_Pt",&cjet_Pt,"cjet_Pt/D");
+    baselineTree->Branch("cjet_Pt",&cjet_Pt,"cjet_Pt/D");
+    myTree->Branch("mlb",&mlb,"mlb/D");
+    baselineTree->Branch("mlb",&mlb,"mlb/D");
+    myTree->Branch("dRSMFCNCtop",&dRSMFCNCtop,"dRSMFCNCtop/D");
+    myTree->Branch("dRWlepb",&dRWlepb,"dRWlepb/D");
+    myTree->Branch("dRWlepc",&dRWlepc,"dRWlepc/D");
+    myTree->Branch("dRZb",&dRZb,"dRZb/D");
+    myTree->Branch("dRZc",&dRZc,"dRZc/D");
+    myTree->Branch("dPhiSMFCNCtop",&dPhiSMFCNCtop,"dPhiSMFCNCtop/D");
+    myTree->Branch("dPhiWlepb",&dPhiWlepb,"dPhiWlepb/D");
+    myTree->Branch("dPhiWlepc",&dPhiWlepc,"dPhiWlepc/D");
+    myTree->Branch("dPhiZb",&dPhiZb,"dPhiZb/D");
+    myTree->Branch("dPhiZc",&dPhiZc,"dPhiZc/D");
+    baselineTree->Branch("dRSMFCNCtop",&dRSMFCNCtop,"dRSMFCNCtop/D");
+    baselineTree->Branch("dRWlepb",&dRWlepb,"dRWlepb/D");
+    baselineTree->Branch("dRWlepc",&dRWlepc,"dRWlepc/D");
+    baselineTree->Branch("dRZb",&dRZb,"dRZb/D");
+    baselineTree->Branch("dRZc",&dRZc,"dRZc/D");
+    baselineTree->Branch("dPhiSMFCNCtop",&dPhiSMFCNCtop,"dPhiSMFCNCtop/D");
+    baselineTree->Branch("dPhiWlepb",&dPhiWlepb,"dPhiWlepb/D");
+    baselineTree->Branch("dPhiWlepc",&dPhiWlepc,"dPhiWlepc/D");
+    baselineTree->Branch("dPhiZb",&dPhiZb,"dPhiZb/D");
+    baselineTree->Branch("dPhiZc",&dPhiZc,"dPhiZc/D");
     
     // met
     myTree->Branch("met_Pt", &met_Pt, "met_Pt/D");
     myTree->Branch("met_Eta", &met_Eta,"met_Eta/D");
     myTree->Branch("met_Phi", &met_Phi, "met_Phi/D");
+    myTree->Branch("met_Px", &met_Px, "met_Px/D");
+    myTree->Branch("met_Py", &met_Py, "met_Py/D");
+    myTree->Branch("met_Pz", &met_Pz, "met_Pz/D");
     
     baselineTree->Branch("met_Pt", &met_Pt, "met_Pt/D");
+    baselineTree->Branch("met_Px", &met_Px, "met_Px/D");
+    baselineTree->Branch("met_Py", &met_Py, "met_Py/D");
+    baselineTree->Branch("met_Pz", &met_Pz, "met_Pz/D");
     baselineTree->Branch("met_Eta", &met_Eta,"met_Eta/D");
     baselineTree->Branch("met_Phi", &met_Phi, "met_Phi/D");
     
@@ -1068,6 +1120,8 @@ int main (int argc, char *argv[])
     TLorentzVector Wlep;
     TLorentzVector SMbjet;
     TLorentzVector cjet;
+    TLorentzVector SMtop;
+    TLorentzVector FCNCtop;
     vector<TLorentzVector> AssignedLeptons;
     //////////////////////////////////////
     // Begin Event Loop
@@ -1104,6 +1158,7 @@ int main (int argc, char *argv[])
     bool    eeBad = false;
     bool   lep3 = false;
     TLorentzVector metTLV;
+    TLorentzVector metTLVbf;
     string TriggBits;
     string channel;
     float  pt_lept1;
@@ -1121,7 +1176,7 @@ int main (int argc, char *argv[])
     for (unsigned int ievt = event_start; ievt < end_d; ievt++)
     {
       eventSelected = false;
-      baseSelected = false; 
+      baseSelected = false;
       continueFlow = true;
       lep3 = false;
       AssignedLeptons.clear();
@@ -1132,6 +1187,7 @@ int main (int argc, char *argv[])
       channel = "";
       pt_lept1 = pt_lept2 = pt_lept3 = 0. ;
       metTLV.Clear();
+      metTLVbf.Clear();
       metTLV.SetPxPyPzE(0,0,0,0);
       selections.clear();
       bool lepsel = false;
@@ -1313,23 +1369,23 @@ int main (int argc, char *argv[])
         
         
         if(isData){
-         EM = (trigged_emumu_mumue|| trigged_emu);
-         MM = (trigged_mumu || trigged_mumumu ) ;
-         EE = (trigged_ee || trigged_eee );
-         M  = ( trigged_mu );
-         E  = (trigged_e);
+          EM = (trigged_emumu_mumue|| trigged_emu);
+          MM = (trigged_mumu || trigged_mumumu ) ;
+          EE = (trigged_ee || trigged_eee );
+          M  = ( trigged_mu );
+          E  = (trigged_e);
         }
-	else if(synchex && !isData){
-         EM = (trigged_emu);
-	 MM = trigged_mumu;
-	 EE = trigged_ee;
+        else if(synchex && !isData){
+          EM = (trigged_emu);
+          MM = trigged_mumu;
+          EE = trigged_ee;
         }
-	else{
-         EM = (trigged_emumu_mumue|| trigged_emu);
-         MM = (trigged_mumu || trigged_mumumu ) ;
-         EE = (trigged_ee || trigged_eee );
-         M  = ( trigged_mu );
-         E  = (trigged_e);
+        else{
+          EM = (trigged_emumu_mumue|| trigged_emu);
+          MM = (trigged_mumu || trigged_mumumu ) ;
+          EE = (trigged_ee || trigged_eee );
+          M  = ( trigged_mu );
+          E  = (trigged_e);
         }
         if ( EM &&                               (emdataset) ) result_trigger = 1;
         if ( MM && !EM &&                        (mmdataset) ) result_trigger = 1;
@@ -1337,21 +1393,21 @@ int main (int argc, char *argv[])
         if ( M  && !EM && !MM && !EE &&          (mdataset ) ) result_trigger = 1;
         if ( E  && !EM && !MM && !EE && !M &&    (edataset ) ) result_trigger = 1;
         if(!synchex){
-         if ( EM &&                               !isData ) result_trigger = 1;
-         if ( MM && !EM &&                        !isData ) result_trigger = 1;
-         if ( EE && !EM && !MM &&                 !isData ) result_trigger = 1;
-         if ( M  && !EM && !MM && !EE &&          !isData ) result_trigger = 1;
-         if ( E  && !EM && !MM && !EE && !M &&    !isData ) result_trigger = 1;
+          if ( EM &&                               !isData ) result_trigger = 1;
+          if ( MM && !EM &&                        !isData ) result_trigger = 1;
+          if ( EE && !EM && !MM &&                 !isData ) result_trigger = 1;
+          if ( M  && !EM && !MM && !EE &&          !isData ) result_trigger = 1;
+          if ( E  && !EM && !MM && !EE && !M &&    !isData ) result_trigger = 1;
         }
-	if(synchex && !isData){
-         if(EE && eee) result_trigger = 1; 
-         if(EM && (eemu || mumue) ) result_trigger = 1;
-         if(MM && mumumu) result_trigger = 1;
-         if( (EE||MM||EM) && all ) result_trigger = 1; 
-	}
-
-
-
+        if(synchex && !isData){
+          if(EE && eee) result_trigger = 1;
+          if(EM && (eemu || mumue) ) result_trigger = 1;
+          if(MM && mumumu) result_trigger = 1;
+          if( (EE||MM||EM) && all ) result_trigger = 1;
+        }
+        
+        
+        
         trigged = result_trigger;
         if(dName.find("NP")!=string::npos) trigged = true;
         
@@ -1388,7 +1444,7 @@ int main (int argc, char *argv[])
         jetTools->correctJets(init_jets_corrected,event->fixedGridRhoFastjetAll() ,false);
         JESon = 1;
       }
-
+      
       ///////////////////////////////////////////////////////////
       // Event selection
       ///////////////////////////////////////////////////////////
@@ -1445,7 +1501,7 @@ int main (int argc, char *argv[])
       // Met filters
       if(HBHEnoise && HBHEIso && CSCTight && EcalDead && eeBad && isGoodPV) passedMET = true;
       PassedMETFilter = passedMET;
-
+      
       //////////////////////////////////////
       //   B jet selection	       ////
       ///////////////////////////////////////
@@ -1531,136 +1587,136 @@ int main (int argc, char *argv[])
       //////////////////////////////////////////////////////
       // determine channels for synch
       //////////////////////////////////////////////////////
-     /* if(selectedJets.size() > 0){
-        leading_jetPt = selectedJets[0]->Pt();
-        leading_jet_btagDiscr = selectedJets[0]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
-      }
-      
-      if(selectedMuons.size() > 2 && selectedElectrons.size() <= 2) {
-        channel = "mmm";
-        pt_lept1 = selectedMuons[0]->Pt();
-        pt_lept2 = selectedMuons[1]->Pt();
-        pt_lept3 = selectedMuons[2]->Pt();
-        iso_lept1 = IsoDBeta( selectedMuons[0]);
-        iso_lept2 =  IsoDBeta(selectedMuons[1]);
-        iso_lept3 = IsoDBeta(selectedMuons[2]);
-      }
-      else if(selectedElectrons.size() > 2 && selectedMuons.size() <= 2){
-        channel = "eee";
-        pt_lept1 = selectedElectrons[0]->Pt();
-        pt_lept2 = selectedElectrons[1]->Pt();
-        pt_lept3 = selectedElectrons[2]->Pt();
-        iso_lept1 = relPfIsoEl(selectedElectrons[0],event->fixedGridRhoFastjetAll());
-        iso_lept2 = relPfIsoEl(selectedElectrons[1],event->fixedGridRhoFastjetAll());
-        iso_lept3 = relPfIsoEl(selectedElectrons[2],event->fixedGridRhoFastjetAll());
-        
-      }
-      else if(selectedElectrons.size() > 2 && selectedMuons.size() > 2){
-        cout << "SOMETHING IS WRONG " << endl;
-      }
-      else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1){
-        channel = "eem";
-        if(selectedMuons[0]->Pt() > selectedElectrons[0]->Pt()){
-          pt_lept1 = selectedMuons[0]->Pt();
-          pt_lept2 = selectedElectrons[0]->Pt();
-          pt_lept3 = selectedElectrons[1]->Pt();
-          iso_lept1 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt();
-          iso_lept2 = relPfIsoEl(selectedElectrons[0],event->fixedGridRhoFastjetAll());
-          iso_lept3 = relPfIsoEl(selectedElectrons[1],event->fixedGridRhoFastjetAll());
-        }
-        else  if(selectedMuons[0]->Pt() < selectedElectrons[1]->Pt()){
-          pt_lept3 = selectedMuons[0]->Pt();
-          pt_lept1 = selectedElectrons[0]->Pt();
-          pt_lept2 = selectedElectrons[1]->Pt();
-          iso_lept3 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt();
-          iso_lept1 = relPfIsoEl(selectedElectrons[0],event->fixedGridRhoFastjetAll());
-          iso_lept2 = relPfIsoEl(selectedElectrons[1],event->fixedGridRhoFastjetAll());
-        }
-        else {
-          pt_lept2 = selectedMuons[0]->Pt();
-          pt_lept1 = selectedElectrons[0]->Pt();
-          pt_lept3 = selectedElectrons[1]->Pt();
-          iso_lept2 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt();
-          iso_lept1 = relPfIsoEl(selectedElectrons[0],event->fixedGridRhoFastjetAll());
-          iso_lept3 = relPfIsoEl(selectedElectrons[1],event->fixedGridRhoFastjetAll());
-        }
-        
-      }
-      else if(selectedElectrons.size() == 1 && selectedMuons.size() == 2){
-        channel = "mme";
-        if(selectedElectrons[0]->Pt() > selectedMuons[0]->Pt()){
-          pt_lept1 = selectedElectrons[0]->Pt();
-          pt_lept2 = selectedMuons[0]->Pt();
-          pt_lept3 = selectedMuons[1]->Pt();
-          iso_lept1 = relPfIsoEl(selectedElectrons[0],event->fixedGridRhoFastjetAll());
-          iso_lept2 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt();
-          iso_lept3 = (selectedMuons[1]->chargedHadronIso(4) + std::max(0.0, selectedMuons[1]->neutralHadronIso(4) + selectedMuons[1]->photonIso(4) - 0.5*selectedMuons[1]->puChargedHadronIso(4)))/selectedMuons[1]->Pt();
-          
-          
-        }
-        else  if(selectedElectrons[0]->Pt() < selectedMuons[1]->Pt()){
-          pt_lept3 = selectedElectrons[0]->Pt();
-          pt_lept1 = selectedMuons[0]->Pt();
-          pt_lept2 = selectedMuons[1]->Pt();
-          iso_lept3 = relPfIsoEl(selectedElectrons[0],event->fixedGridRhoFastjetAll());
-          iso_lept1 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt();
-          iso_lept2 = (selectedMuons[1]->chargedHadronIso(4) + std::max(0.0, selectedMuons[1]->neutralHadronIso(4) + selectedMuons[1]->photonIso(4) - 0.5*selectedMuons[1]->puChargedHadronIso(4)))/selectedMuons[1]->Pt();
-        }
-        else {
-          pt_lept2 = selectedElectrons[0]->Pt();
-          pt_lept1 = selectedMuons[0]->Pt();
-          pt_lept3 = selectedMuons[1]->Pt();
-          iso_lept2 = relPfIsoEl(selectedElectrons[0],event->fixedGridRhoFastjetAll());
-          iso_lept1 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt();
-          iso_lept3 = (selectedMuons[1]->chargedHadronIso(4) + std::max(0.0, selectedMuons[1]->neutralHadronIso(4) + selectedMuons[1]->photonIso(4) - 0.5*selectedMuons[1]->puChargedHadronIso(4)))/selectedMuons[1]->Pt();
-        }
-      }
-      else{
-        if(selectedMuons.size() == 2)
-        {
-          id_lept3 = 0;
-          pt_lept1 = selectedMuons[0]->Pt();
-          pt_lept2 = selectedMuons[1]->Pt();
-          iso_lept1 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt(); // TO BE CHECKED
-          iso_lept2 = (selectedMuons[1]->chargedHadronIso(4) + std::max(0.0, selectedMuons[1]->neutralHadronIso(4) + selectedMuons[1]->photonIso(4) - 0.5*selectedMuons[1]->puChargedHadronIso(4)))/selectedMuons[1]->Pt();
-        }
-        else if(selectedElectrons.size() == 2){
-          id_lept3 = 0;
-          pt_lept1 = selectedElectrons[0]->Pt();
-          pt_lept2 = selectedElectrons[1]->Pt();
-          iso_lept1 = relPfIsoEl(selectedElectrons[0],event->fixedGridRhoFastjetAll()); // TO BE CHECKED
-          iso_lept2 = relPfIsoEl(selectedElectrons[1],event->fixedGridRhoFastjetAll());
-        }
-        else if(selectedMuons.size() == 1 && selectedElectrons.size() == 1){
-          id_lept3 = 0;
-          if(selectedMuons[0]->Pt() > selectedElectrons[0]->Pt()){
-            pt_lept1 = selectedMuons[0]->Pt();
-            pt_lept2 = selectedElectrons[0]->Pt();
-            iso_lept1 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt();
-            iso_lept2 = relPfIsoEl(selectedElectrons[0],event->fixedGridRhoFastjetAll());
-          }
-          else{
-            pt_lept2 = selectedMuons[0]->Pt();
-            pt_lept1 = selectedElectrons[0]->Pt();
-            iso_lept2 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt();
-            iso_lept1 = relPfIsoEl(selectedElectrons[0], event->fixedGridRhoFastjetAll());
-          }
-        }
-        else if(selectedMuons.size() == 1){
-          id_lept3 = 0;
-          id_lept2 = 0;
-          pt_lept1 = selectedMuons[0]->Pt();
-          iso_lept1 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt();
-        }
-        else if(selectedElectrons.size() == 1 && selectedMuons.size()==0){
-          id_lept3 = 0;
-          id_lept2 = 0;
-          pt_lept1 = selectedElectrons[0]->Pt();
-          iso_lept1 = relPfIsoEl(selectedElectrons[0], event->fixedGridRhoFastjetAll());
-          
-        }
-        channel = "nan";
-      } */
+      /* if(selectedJets.size() > 0){
+       leading_jetPt = selectedJets[0]->Pt();
+       leading_jet_btagDiscr = selectedJets[0]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
+       }
+       
+       if(selectedMuons.size() > 2 && selectedElectrons.size() <= 2) {
+       channel = "mmm";
+       pt_lept1 = selectedMuons[0]->Pt();
+       pt_lept2 = selectedMuons[1]->Pt();
+       pt_lept3 = selectedMuons[2]->Pt();
+       iso_lept1 = IsoDBeta( selectedMuons[0]);
+       iso_lept2 =  IsoDBeta(selectedMuons[1]);
+       iso_lept3 = IsoDBeta(selectedMuons[2]);
+       }
+       else if(selectedElectrons.size() > 2 && selectedMuons.size() <= 2){
+       channel = "eee";
+       pt_lept1 = selectedElectrons[0]->Pt();
+       pt_lept2 = selectedElectrons[1]->Pt();
+       pt_lept3 = selectedElectrons[2]->Pt();
+       iso_lept1 = relPfIsoEl(selectedElectrons[0],event->fixedGridRhoFastjetAll());
+       iso_lept2 = relPfIsoEl(selectedElectrons[1],event->fixedGridRhoFastjetAll());
+       iso_lept3 = relPfIsoEl(selectedElectrons[2],event->fixedGridRhoFastjetAll());
+       
+       }
+       else if(selectedElectrons.size() > 2 && selectedMuons.size() > 2){
+       cout << "SOMETHING IS WRONG " << endl;
+       }
+       else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1){
+       channel = "eem";
+       if(selectedMuons[0]->Pt() > selectedElectrons[0]->Pt()){
+       pt_lept1 = selectedMuons[0]->Pt();
+       pt_lept2 = selectedElectrons[0]->Pt();
+       pt_lept3 = selectedElectrons[1]->Pt();
+       iso_lept1 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt();
+       iso_lept2 = relPfIsoEl(selectedElectrons[0],event->fixedGridRhoFastjetAll());
+       iso_lept3 = relPfIsoEl(selectedElectrons[1],event->fixedGridRhoFastjetAll());
+       }
+       else  if(selectedMuons[0]->Pt() < selectedElectrons[1]->Pt()){
+       pt_lept3 = selectedMuons[0]->Pt();
+       pt_lept1 = selectedElectrons[0]->Pt();
+       pt_lept2 = selectedElectrons[1]->Pt();
+       iso_lept3 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt();
+       iso_lept1 = relPfIsoEl(selectedElectrons[0],event->fixedGridRhoFastjetAll());
+       iso_lept2 = relPfIsoEl(selectedElectrons[1],event->fixedGridRhoFastjetAll());
+       }
+       else {
+       pt_lept2 = selectedMuons[0]->Pt();
+       pt_lept1 = selectedElectrons[0]->Pt();
+       pt_lept3 = selectedElectrons[1]->Pt();
+       iso_lept2 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt();
+       iso_lept1 = relPfIsoEl(selectedElectrons[0],event->fixedGridRhoFastjetAll());
+       iso_lept3 = relPfIsoEl(selectedElectrons[1],event->fixedGridRhoFastjetAll());
+       }
+       
+       }
+       else if(selectedElectrons.size() == 1 && selectedMuons.size() == 2){
+       channel = "mme";
+       if(selectedElectrons[0]->Pt() > selectedMuons[0]->Pt()){
+       pt_lept1 = selectedElectrons[0]->Pt();
+       pt_lept2 = selectedMuons[0]->Pt();
+       pt_lept3 = selectedMuons[1]->Pt();
+       iso_lept1 = relPfIsoEl(selectedElectrons[0],event->fixedGridRhoFastjetAll());
+       iso_lept2 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt();
+       iso_lept3 = (selectedMuons[1]->chargedHadronIso(4) + std::max(0.0, selectedMuons[1]->neutralHadronIso(4) + selectedMuons[1]->photonIso(4) - 0.5*selectedMuons[1]->puChargedHadronIso(4)))/selectedMuons[1]->Pt();
+       
+       
+       }
+       else  if(selectedElectrons[0]->Pt() < selectedMuons[1]->Pt()){
+       pt_lept3 = selectedElectrons[0]->Pt();
+       pt_lept1 = selectedMuons[0]->Pt();
+       pt_lept2 = selectedMuons[1]->Pt();
+       iso_lept3 = relPfIsoEl(selectedElectrons[0],event->fixedGridRhoFastjetAll());
+       iso_lept1 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt();
+       iso_lept2 = (selectedMuons[1]->chargedHadronIso(4) + std::max(0.0, selectedMuons[1]->neutralHadronIso(4) + selectedMuons[1]->photonIso(4) - 0.5*selectedMuons[1]->puChargedHadronIso(4)))/selectedMuons[1]->Pt();
+       }
+       else {
+       pt_lept2 = selectedElectrons[0]->Pt();
+       pt_lept1 = selectedMuons[0]->Pt();
+       pt_lept3 = selectedMuons[1]->Pt();
+       iso_lept2 = relPfIsoEl(selectedElectrons[0],event->fixedGridRhoFastjetAll());
+       iso_lept1 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt();
+       iso_lept3 = (selectedMuons[1]->chargedHadronIso(4) + std::max(0.0, selectedMuons[1]->neutralHadronIso(4) + selectedMuons[1]->photonIso(4) - 0.5*selectedMuons[1]->puChargedHadronIso(4)))/selectedMuons[1]->Pt();
+       }
+       }
+       else{
+       if(selectedMuons.size() == 2)
+       {
+       id_lept3 = 0;
+       pt_lept1 = selectedMuons[0]->Pt();
+       pt_lept2 = selectedMuons[1]->Pt();
+       iso_lept1 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt(); // TO BE CHECKED
+       iso_lept2 = (selectedMuons[1]->chargedHadronIso(4) + std::max(0.0, selectedMuons[1]->neutralHadronIso(4) + selectedMuons[1]->photonIso(4) - 0.5*selectedMuons[1]->puChargedHadronIso(4)))/selectedMuons[1]->Pt();
+       }
+       else if(selectedElectrons.size() == 2){
+       id_lept3 = 0;
+       pt_lept1 = selectedElectrons[0]->Pt();
+       pt_lept2 = selectedElectrons[1]->Pt();
+       iso_lept1 = relPfIsoEl(selectedElectrons[0],event->fixedGridRhoFastjetAll()); // TO BE CHECKED
+       iso_lept2 = relPfIsoEl(selectedElectrons[1],event->fixedGridRhoFastjetAll());
+       }
+       else if(selectedMuons.size() == 1 && selectedElectrons.size() == 1){
+       id_lept3 = 0;
+       if(selectedMuons[0]->Pt() > selectedElectrons[0]->Pt()){
+       pt_lept1 = selectedMuons[0]->Pt();
+       pt_lept2 = selectedElectrons[0]->Pt();
+       iso_lept1 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt();
+       iso_lept2 = relPfIsoEl(selectedElectrons[0],event->fixedGridRhoFastjetAll());
+       }
+       else{
+       pt_lept2 = selectedMuons[0]->Pt();
+       pt_lept1 = selectedElectrons[0]->Pt();
+       iso_lept2 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt();
+       iso_lept1 = relPfIsoEl(selectedElectrons[0], event->fixedGridRhoFastjetAll());
+       }
+       }
+       else if(selectedMuons.size() == 1){
+       id_lept3 = 0;
+       id_lept2 = 0;
+       pt_lept1 = selectedMuons[0]->Pt();
+       iso_lept1 = (selectedMuons[0]->chargedHadronIso(4) + std::max(0.0, selectedMuons[0]->neutralHadronIso(4) + selectedMuons[0]->photonIso(4) - 0.5*selectedMuons[0]->puChargedHadronIso(4)))/selectedMuons[0]->Pt();
+       }
+       else if(selectedElectrons.size() == 1 && selectedMuons.size()==0){
+       id_lept3 = 0;
+       id_lept2 = 0;
+       pt_lept1 = selectedElectrons[0]->Pt();
+       iso_lept1 = relPfIsoEl(selectedElectrons[0], event->fixedGridRhoFastjetAll());
+       
+       }
+       channel = "nan";
+       } */
       
       //////////////////////////////////////////////////////
       // Applying baseline selection
@@ -1675,7 +1731,7 @@ int main (int argc, char *argv[])
           nCuts++;
           nbEvents_0++;
           for(int iMu = 0; iMu < init_muons.size(); iMu++){
-             muIniFile  << "EvtNb="<< evt_num << " mu_pt=" << init_muons[iMu]->Pt() <<" mu_eta=" << init_muons[iMu]->Eta() << " mu_phi=" << init_muons[iMu]->Phi() << " mu_iso=" << IsoDBeta(init_muons[iMu]) << endl;
+            muIniFile  << "EvtNb="<< evt_num << " mu_pt=" << init_muons[iMu]->Pt() <<" mu_eta=" << init_muons[iMu]->Eta() << " mu_phi=" << init_muons[iMu]->Phi() << " mu_iso=" << IsoDBeta(init_muons[iMu]) << endl;
           }
         }
       }
@@ -1778,9 +1834,9 @@ int main (int argc, char *argv[])
       }
       else {
         selections.push_back(1);
-        for(int iMu = 0; iMu < selectedMuons.size(); iMu++){
-          muSelFile << "EvtNb="<< evt_num << " mu_pt=" << selectedMuons[iMu]->Pt() <<" mu_eta=" << selectedMuons[iMu]->Eta() << " mu_phi=" << selectedMuons[iMu]->Phi() << " mu_iso=" << IsoDBeta(selectedMuons[iMu]) << endl;
-        }
+        /*        for(int iMu = 0; iMu < selectedMuons.size(); iMu++){
+         muSelFile << "EvtNb="<< evt_num << " mu_pt=" << selectedMuons[iMu]->Pt() <<" mu_eta=" << selectedMuons[iMu]->Eta() << " mu_phi=" << selectedMuons[iMu]->Phi() << " mu_iso=" << IsoDBeta(selectedMuons[iMu]) << endl;
+         }*/
       }
       if(continueFlow) lepsel = true;
       double met_px = mets[0]->Px();
@@ -1823,6 +1879,14 @@ int main (int argc, char *argv[])
       if(OS) Zboson_M = (Zlep0+Zlep1).M();
       else if(!OS) Zboson_M = 0;
       //            cout << " Zmass" << Zboson_M << endl;
+      Zboson_Px = Zboson.Px();
+      Zboson_Py = Zboson.Py();
+      Zboson_Pz = Zboson.Pz();
+      Zboson_Energy = Zboson.Energy();
+      
+      
+      
+      
       if(Zboson_M < 76 || Zboson_M > 106)
       {
         selections.push_back(0);
@@ -1832,12 +1896,12 @@ int main (int argc, char *argv[])
       }
       else{
         selections.push_back(1);
-	       if(continueFlow){
-           nCuts++;
-	          nbEvents_3++;
-	          histo1D["cutFlow"]->Fill(3., eventweight);
-           baseSelected = true;
-         }
+        if(continueFlow){
+          nCuts++;
+          nbEvents_3++;
+          histo1D["cutFlow"]->Fill(3., eventweight);
+          baseSelected = true;
+        }
       }
       
       if(selectedJets.size() == 0){
@@ -1903,20 +1967,55 @@ int main (int argc, char *argv[])
       }
       //            double met_pz =  MEtz(Wmu, Wel, Wlep, met_px, met_py);
       double met_pz = 0.; // has to be adapted !!!
-      metTLV.SetPxPyPzE(met_px,met_py,met_pz,TMath::Sqrt(met_px*met_px+met_py*met_py+met_pz*met_pz));
- 	    SMbjet.Clear();
+      metTLVbf.SetPxPyPzE(met_px,met_py,met_pz,TMath::Sqrt(met_px*met_px+met_py*met_py+met_pz*met_pz));
+      metTLV = MetzCalculator(Wlep, metTLVbf);
+      met_Px = metTLV.Px(); 
+      met_Py = metTLV.Py(); 
+      met_Pz = metTLV.Pz(); 
+      SMbjet.Clear();
+      SMtop.Clear();
       if(selectedCSVLBJets.size() > 0){
         SMbjet.SetPxPyPzE(selectedCSVLBJets[0]->Px(),selectedCSVLBJets[0]->Py(),selectedCSVLBJets[0]->Pz(),selectedCSVLBJets[0]->Energy());
-        if(Assigned)  SMtop_M = (Wlep+SMbjet+metTLV).M();
-        else SMtop_M = 0.;
+        if(Assigned)  {
+          SMtop_M = (Wlep+SMbjet+metTLV).M();
+          
+          SMtop.SetPxPyPzE((SMbjet.Px()+Wlep.Px()+metTLV.Px()),(SMbjet.Py()+Wlep.Py()+metTLV.Py()),(SMbjet.Pz()+Wlep.Pz()+metTLV.Pz()),(SMbjet.Energy()+Wlep.Energy()+metTLV.Energy()));
+          mlb = (Wlep+SMbjet).M();
+          dRWlepb = Wlep.DeltaR(SMbjet);
+          dRZb = Zboson.DeltaR(SMbjet);
+          dPhiWlepb = Wlep.DeltaPhi(SMbjet);
+          dPhiZb = Zboson.DeltaPhi(SMbjet);
+        }
+        else {
+          SMtop_M = 0.;
+          mlb = 0.;
+          dRWlepb = -5;
+          dRZb = -5;
+        }
       }
       else  SMtop_M = 0. ;
       /*            if(continueFlow && synchex) topFile << "EvtNb="<< evt_num << " Bjet_pt=" << SMbjet.Pt() <<" Bjet_px=" << SMbjet.Px() << " Bjet_py=" << SMbjet.Py() << " Bjet_pz()=" << SMbjet.Pz() << " Bjet_Energy=" << SMbjet.Energy() << " Wlep_pt=" << Wlep.Pt() <<" Wlep_px=" << Wlep.Px() << " Wlep_py=" << Wlep.Py() << " Wlep_pz()=" << Wlep.Pz() << " Wlep_Energy=" << Wlep.Energy() << " met_Pt=" << metTLV.Pt() <<" met_px=" << metTLV.Px() << " met_py=" << metTLV.Py() << " met_pz()=" << metTLV.Pz() << " met_Energy=" << metTLV.Energy() << " topmass= " << SMtop_M << endl;
        */
-      //	    cjet.Clear();
-      //	    cjet = FCNCjetCalculator(selectedCSVLLJets,selectedCSVLBJets, Zboson ,3);
-      
-      //           FCNCtop_M = (Zboson+cjet).M();
+      cjet.Clear();
+      FCNCtop.Clear();
+      if(Assigned) {
+        cjet = FCNCjetCalculator(selectedCSVLLJets,selectedCSVLBJets, Zboson ,3);
+        FCNCtop.SetPxPyPzE(cjet.Px()+Zboson.Px(),cjet.Py()+Zboson.Py(),cjet.Pz()+Zboson.Pz(),cjet.Energy()+Zboson.Energy());
+        FCNCtop_M = (Zboson+cjet).M();
+        cjet_Pt = TMath::Sqrt(cjet.Px()*cjet.Px()+cjet.Py()*cjet.Py());
+        dRZc = Zboson.DeltaR(cjet);
+        dRWlepc = Wlep.DeltaR(cjet);
+        dPhiZc = Zboson.DeltaPhi(cjet);
+        dPhiWlepc = Wlep.DeltaPhi(cjet);
+        dRSMFCNCtop = SMtop.DeltaR(FCNCtop);
+        dPhiSMFCNCtop = SMtop.DeltaPhi(FCNCtop);
+        
+      }
+      else {
+        FCNCtop_M = 0.;
+        dRZc = -5;
+        dRWlepc = -5;
+      }
       
       if(SMtop_M < 95 || SMtop_M > 200 ){
         selections.push_back(0);
@@ -1929,7 +2028,7 @@ int main (int argc, char *argv[])
           histo1D["cutFlow"]->Fill(7., eventweight);
           nCuts++;
           nbEvents_7++;
-           eventSelected = true;
+          eventSelected = true;
         }
       }
       
@@ -1959,6 +2058,8 @@ int main (int argc, char *argv[])
           cdiscCvsL_jet[nJets]=selectedJets[seljet]->ctag_pfCombinedCvsLJetTags() ;
           nJets++;
         }
+        if(selectedJets.size()>0) cdiscCvsB_jet_1 = selectedJets[0]->ctag_pfCombinedCvsBJetTags();
+        if(selectedJets.size()>0) cdiscCvsL_jet_1 = selectedJets[0]->ctag_pfCombinedCvsLJetTags();
         if(selectedJets.size()>0) pt_jet_1 = selectedJets[0]->Pt();
         if(selectedJets.size()>1) pt_jet_2 = selectedJets[1]->Pt();
         if(selectedJets.size()>2) pt_jet_3 = selectedJets[2]->Pt();
@@ -2020,7 +2121,7 @@ int main (int argc, char *argv[])
         nbSelectedEvents++;
         myTree->Fill();
  	    }
-      if(baseSelected){ baselineTree->Fill(); } 
+      if(baseSelected){ baselineTree->Fill(); }
       if(selections.size() != 8) cout << "ERROR SOMETHING WENT WRONG WITH THE SELECTIONS " << endl;
       for(int inb = 0; inb <selections.size(); inb++)
       {
@@ -2067,7 +2168,7 @@ int main (int argc, char *argv[])
     cout << nbSelectedEvents << " events out of initial " << nbEvents <<  " selected " << endl;
     cout << nbSelectedEvents << " events out of trigged  " << nbTrig <<  " selected " << endl;
     cout << setprecision(2) << ((double)nbTrig/(double)nbEvents)*100 << " % of the initial events stay after Trigger" << endl;
-
+    
     if (! isData  )
     {
       cout << "Data set " << datasets[d]->Title() << " has " << nofPosWeights << " events with positive weights and " << nofNegWeights << " events with negative weights." << endl;
@@ -2185,7 +2286,7 @@ double MEtz(bool mu, bool el, TLorentzVector Wlep, double MetPx, double MetPy)
 }
 ;
 
-TLorentzVector FCNCjetCalculator(std::vector<TRootJet*> nonBJets,std::vector<TRootJet*> BJets, TLorentzVector recoZ ,int verb)
+TLorentzVector FCNCjetCalculator(std::vector<TRootPFJet*> nonBJets,std::vector<TRootPFJet*> BJets, TLorentzVector recoZ ,int verb)
 {
   TLorentzVector FCNCjet;
   FCNCjet.Clear();
@@ -2196,12 +2297,12 @@ TLorentzVector FCNCjetCalculator(std::vector<TRootJet*> nonBJets,std::vector<TRo
   TLorentzVector Jetcandidate;
   int NbInColl = -1;
   if(nonBJets.size() != 0){
-    
+    //cout << " non bjets: " << nonBJets.size() << " possibilities " <<endl;  ;
     for(unsigned int iJ = 0; iJ < nonBJets.size(); iJ++)
     {
       TLorentzVector Jet;
       Jet.SetPxPyPzE(nonBJets[iJ]->Px(),nonBJets[iJ]->Py(),nonBJets[iJ]->Pz(),nonBJets[iJ]->Energy());
-      
+      //cout << iJ << " tempMinM " << TempMinMass << " newmass " << (recoZ+Jet).M() ;
       if(fabs((recoZ+Jet).M() - TopMass) < TempMinMass)
       {
         TempMinMass = fabs((recoZ+Jet).M() - TopMass);
@@ -2209,17 +2310,18 @@ TLorentzVector FCNCjetCalculator(std::vector<TRootJet*> nonBJets,std::vector<TRo
         NbInColl = iJ;
         
       }
-      
+      //cout << " NbInColl is " << iJ << endl;
       
     }
     FCNCjet.SetPxPyPzE(nonBJets[NbInColl]->Px(),nonBJets[NbInColl]->Py(),nonBJets[NbInColl]->Pz(),nonBJets[NbInColl]->Energy());
   }
-  else {
+  else if(BJets.size() > 1){ // due to selection criteria, this possibility is never there
+    //cout << " bjets: " << BJets.size()-1 << " possibilities " << endl;
     for(unsigned int iJ = 1; iJ < BJets.size(); iJ++)
     {
       TLorentzVector Jet;
       Jet.SetPxPyPzE(BJets[iJ]->Px(),BJets[iJ]->Py(),BJets[iJ]->Pz(),BJets[iJ]->Energy());
-      
+      //cout << iJ << " tempMinM " << TempMinMass << " newmass " << (recoZ+Jet).M() ;
       if(fabs((recoZ+Jet).M() - TopMass) < TempMinMass)
       {
         TempMinMass = fabs((recoZ+Jet).M() - TopMass);
@@ -2227,13 +2329,15 @@ TLorentzVector FCNCjetCalculator(std::vector<TRootJet*> nonBJets,std::vector<TRo
         NbInColl = iJ;
         
       }
-      
+      //cout << " NbInColl is " << iJ << endl;
     }
     
     FCNCjet.SetPxPyPzE(BJets[NbInColl]->Px(),BJets[NbInColl]->Py(),BJets[NbInColl]->Pz(),BJets[NbInColl]->Energy());
   }
-  
-  
+  else{
+    FCNCjet.SetPxPyPzE(0.,0.,0.,0.);
+    //cout << "no cjets available" << endl;
+  }
   return FCNCjet;
 };
 
@@ -2426,6 +2530,31 @@ vector <TLorentzVector> LeptonAssigner(std::vector<TRootElectron*> electrons,std
   
   
   return ReturnColl;
+}
+
+TLorentzVector MetzCalculator(TLorentzVector leptW, TLorentzVector v_met)
+{
+
+  double term1 = leptW.Pz() * ( leptW.Px()* v_met.Px() + leptW.Py()*v_met.Py() + pow(80.399, 2)/2.);
+  
+  double det = pow(leptW.Px() * v_met.Px() + leptW.Py() * v_met.Py() + pow(80.399, 2)/2., 2) - v_met.Pt()*v_met.Pt() * (leptW.E()*leptW.E() - leptW.Pz()*leptW.Pz() );
+  
+  if(det<0) det=0;
+  
+  double term2 = leptW.E() * pow(det, 0.5);
+  double denom = leptW.E()*leptW.E() - leptW.Pz()*leptW.Pz();
+  double sol1 = (term1 - term2) / denom;
+  //double sol2 = (term1 + term2) / denom;
+  double nu_E = 0;
+  
+  TLorentzVector neutrino;
+
+  nu_E = pow( pow(v_met.Px(),2) + pow(v_met.Py(),2) + pow(sol1,2), 0.5);//neglecting neutrino mass
+  neutrino.SetPxPyPzE( v_met.Px(), v_met.Py(), sol1, nu_E);
+  
+  return neutrino;
+  
+  
 }
 
 
