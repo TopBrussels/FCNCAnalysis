@@ -8,3 +8,12 @@ LocalGridSubmission/SubmitScripts/**/**
 NtupleAnalyzer
 myOutput/**
 config/*analyzer*
+*.txt
+config/*.xml
+config/*.root
+MVA*/*
+Ntupler
+Ntupler_an
+Ntupler_mwt
+Trigger.*
+*.root
