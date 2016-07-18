@@ -100,6 +100,10 @@ float relPfIsoEl(TRootElectron *el, float _rho);
 float IsoDBeta(TRootMuon *mu);
 vector<TLorentzVector> LeptonAssigner(std::vector<TRootElectron*> electrons,std::vector<TRootMuon*> muons);
 TLorentzVector MetzCalculator(TLorentzVector leptW, TLorentzVector v_met);
+vector< pair<unsigned int, unsigned int> > JetPartonPair;
+int nMatched = 0;
+int nNonMatched = 0;
+bool matching = false;
 
 string ConvertIntToString(int Number, bool pad)
 {
@@ -180,7 +184,7 @@ int main (int argc, char *argv[])
   bool btagShape = true;
   string Channel = "";
   string xmlFileName = "";
-  
+  int maxMCParticles = -1;
   
   //////////////////////////////////////////////
   /// Set up everything for local submission ////
@@ -555,6 +559,18 @@ int main (int argc, char *argv[])
   histo1D["nbMuons"]					= new TH1F("nbMuons","nbMuons",10,-0.5,9.5);
   histo1D["nbElectrons"]                                  = new TH1F("nbElectrons","nbElectrons",10,-0.5,9.5);
   histo1D["nbJets"]                                  = new TH1F("nbJets","nbJets",10,-0.5,9.5);
+  
+  
+  
+  /////////////////////////////////
+  /// Matching
+  ///////////////////////////////
+  vector<TLorentzVector> mcParticlesTLV, selectedJetsTLV;
+  // TLorentzVector cQuark, anticQuark;
+  
+  
+  
+  
   /////////////////////////////////
   //       Loop on datasets      //
   /////////////////////////////////
@@ -809,9 +825,63 @@ int main (int argc, char *argv[])
     Double_t dPhiZb;
     Double_t dPhiZc;
     
+    // mcparicles
+    Int_t nMCParticles;
+    Int_t mc_status[200];
+    Int_t mc_pdgId[200];
+    Int_t mc_mother[200];
+    Int_t mc_granny[200];
+    Double_t mc_pt[200];
+    Double_t mc_phi[200];
+    Double_t mc_eta[200];
+    Double_t mc_E[200];
+    Double_t mc_M[200];
+    
+    if(dName.find("NP_overlay_FCNC_TT")!=string::npos || dName.find("tZq")!=string::npos )
+    {
+      globalTree->Branch("nMatched",&nMatched,"nMatched/I");
+      globalTree->Branch("nNonMatched",&nNonMatched,"nNonMatched/I");
+      
+      myTree->Branch("nMCParticles",&nMCParticles,"nMCParticles/I");
+      myTree->Branch("mc_status",&mc_status,"mc_status[nMCParticles]/I");
+      myTree->Branch("mc_pdgId",&mc_pdgId,"mc_pdgId[nMCParticles]/I");
+      myTree->Branch("mc_mother",&mc_mother,"mc_mother[nMCParticles]/I");
+      myTree->Branch("mc_granny",&mc_granny,"mc_granny[nMCParticles]/I");
+      myTree->Branch("mc_pt",&mc_pt,"mc_pt[nMCParticles]/D");
+      myTree->Branch("mc_phi",&mc_phi,"mc_phi[nMCParticles]/D");
+      myTree->Branch("mc_eta",&mc_eta,"mc_eta[nMCParticles]/D");
+      myTree->Branch("mc_E",&mc_E,"mc_E[nMCParticles]/D");
+      myTree->Branch("mc_M",&mc_M,"mc_M[nMCParticles]/D");
+      
+      baselineTree->Branch("nMCParticles",&nMCParticles,"nMCParticles/I");
+      baselineTree->Branch("mc_status",&mc_status,"mc_status[nMCParticles]/I");
+      baselineTree->Branch("mc_pdgId",&mc_pdgId,"mc_pdgId[nMCParticles]/I");
+      baselineTree->Branch("mc_mother",&mc_mother,"mc_mother[nMCParticles]/I");
+      baselineTree->Branch("mc_granny",&mc_granny,"mc_granny[nMCParticles]/I");
+      baselineTree->Branch("mc_pt",&mc_pt,"mc_pt[nMCParticles]/D");
+      baselineTree->Branch("mc_phi",&mc_phi,"mc_phi[nMCParticles]/D");
+      baselineTree->Branch("mc_eta",&mc_eta,"mc_eta[nMCParticles]/D");
+      baselineTree->Branch("mc_E",&mc_E,"mc_E[nMCParticles]/D");
+      baselineTree->Branch("mc_M",&mc_M,"mc_M[nMCParticles]/D");
+    }
+    
+    
+    
+    
     // global data set variables
     Int_t nofEventsHLTv2;
     Int_t nofEventsHLTv3;
+    int nTrigg;
+    int n3lep;
+    int nVetoMu;
+    int nVetoEl;
+    int nOS;
+    int nZmass;
+    int nJet;
+    int nBJet;
+    int nMWT;
+    int nSMtop;
+    int nMET;
     globalTree->Branch("nofEventsHLTv2",&nofEventsHLTv2,"nofEventsHLTv2/I");
     globalTree->Branch("nofEventsHLTv3",&nofEventsHLTv3,"nofEventsHLTv3/I");
     globalTree->Branch("nofPosWeights",&nofPosWeights,"nofPosWeights/I");
@@ -825,6 +895,22 @@ int main (int argc, char *argv[])
     globalTree->Branch("WPb_L", &WPb_L, "WPb_L/D");
     globalTree->Branch("WPb_M", &WPb_M, "WPb_M/D");
     globalTree->Branch("WPb_T", &WPb_T, "WPb_T/D");
+    
+    globalTree->Branch("nTrigg", &nTrigg, "nTrigg/I");
+    globalTree->Branch("n3lep", &n3lep, "n3lep/I");
+    globalTree->Branch("nVetoMu", &nVetoMu, "nVetoMu/I");
+    globalTree->Branch("nVetoEl", &nVetoEl, "nVetoEl/I");
+    globalTree->Branch("nOS", &nOS, "nOS/I");
+    globalTree->Branch("nZmass",&nZmass, "nZmass/I");
+    globalTree->Branch("nJet", &nJet, "nJet/I");
+    globalTree->Branch("nBJet",&nBJet, "nBJet/I");
+    globalTree->Branch("nMWT", &nMWT, "nMWT/I");
+    globalTree->Branch("nSMtop",&nSMtop, "nSMtop/I");
+    globalTree->Branch("nMET",&nMET, "nMET/I");
+    
+    
+    
+    
     
     // event related variables
     myTree->Branch("nloWeight",&nloWeight,"nloWeight/D");
@@ -1173,8 +1259,11 @@ int main (int argc, char *argv[])
     float leading_jet_btagDiscr;
     float leading_jetPt;
     float met;
+    nMatched = 0;
+    nNonMatched = 0;
     for (unsigned int ievt = event_start; ievt < end_d; ievt++)
     {
+      
       eventSelected = false;
       baseSelected = false;
       continueFlow = true;
@@ -1193,6 +1282,21 @@ int main (int argc, char *argv[])
       bool lepsel = false;
       selectionsnb.clear();
       selectionsnb.str(std::string());
+      mcParticles.clear();
+      /// mcparticles
+      nMCParticles = -1;
+      for (Int_t i = 0; i < 200; i++)
+      {
+        mc_status[i] = -1;
+        mc_pdgId[i] = 0;
+        mc_mother[i] = 0;
+        mc_granny[i] = 0;
+        mc_pt[i] = 0.;
+        mc_phi[i] = 0.;
+        mc_eta[i] = 0.;
+        mc_E[i] = 0.;
+        mc_M[i] = 0.;
+      }
       nCuts = 0;
       passedMET = false;
       HBHEnoise = false;
@@ -1220,7 +1324,9 @@ int main (int argc, char *argv[])
       event = treeLoader.LoadEvent (ievt, vertex, init_muons, init_electrons, init_jets, mets, debug);  //load event
       if(debug) cout << "event loaded" << endl;
       genjets.clear();
-      if(!isData) genjets = treeLoader.LoadGenJet(ievt,false);  //needed for JER
+      if(!isData){
+        genjets = treeLoader.LoadGenJet(ievt,false);  //needed for JER
+      }
       init_jets_corrected = init_jets;
       
       if(verbose==0)
@@ -1259,7 +1365,7 @@ int main (int argc, char *argv[])
       if(debug) cout << "amc fixing" << endl;
       double hasNegWeight = false;
       double mc_baseweight = 1;
-      if(!isData && (event->getWeight(1001) != -9999.))
+      if((!isData && dName.find("NP")==string::npos) && (event->getWeight(1001) != -9999.))
       {
         mc_baseweight =  event->getWeight(1001)/abs(event->originalXWGTUP());
         //mc_scaleupweight = event->getWeight(1005)/abs(event->originalXWGTUP());
@@ -1277,7 +1383,7 @@ int main (int argc, char *argv[])
           histo1D["weightIndex"]->Fill(-1.,1.);
         }
       }
-      if( !isData && (event->getWeight(1) != -9999. ))
+      if( (!isData && dName.find("NP")==string::npos) && (event->getWeight(1) != -9999. ))
       {
         mc_baseweight =  event->getWeight(1)/abs(event->originalXWGTUP());
         //mc_scaleupweight = event->getWeight(5)/abs(event->originalXWGTUP());
@@ -1297,7 +1403,7 @@ int main (int argc, char *argv[])
         
         
       }
-      if(!isData)
+      if((!isData && dName.find("FCNC")==string::npos))
       {
         if ( event->getWeight(1001) == -9999. && event->getWeight(1) == -9999. )
         {
@@ -1464,8 +1570,25 @@ int main (int argc, char *argv[])
       selectedLooseElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Veto","Spring15_25ns",true);// pt, eta
       /// For MC Information
       mcParticles.clear();
-      treeLoader.LoadMCEvent(ievt, 0,  mcParticles, false);
-      sort(mcParticles.begin(),mcParticles.end(),HighestPt());
+      if(!isData) treeLoader.LoadMCEvent(ievt, 0,  mcParticles, false);
+      if(!isData) sort(mcParticles.begin(),mcParticles.end(),HighestPt());
+      if (dName.find("NP_overlay_FCNC_TT")!=string::npos || dName.find("tZq")!=string::npos )
+      {
+        nMCParticles = mcParticles.size();
+        if (nMCParticles > maxMCParticles) maxMCParticles = nMCParticles;
+        for (Int_t iMC = 0; iMC < nMCParticles; iMC++)
+        {
+          mc_status[iMC] = mcParticles[iMC]->status();
+          mc_pdgId[iMC] = mcParticles[iMC]->type();
+          mc_mother[iMC] = mcParticles[iMC]->motherType();
+          mc_granny[iMC] = mcParticles[iMC]->grannyType();
+          mc_pt[iMC] = mcParticles[iMC]->Pt();
+          mc_phi[iMC] = mcParticles[iMC]->Phi();
+          mc_eta[iMC] = mcParticles[iMC]->Eta();
+          mc_E[iMC] = mcParticles[iMC]->E();
+          mc_M[iMC] = mcParticles[iMC]->M();
+        }
+      }
       // void TTreeLoader::LoadMCEvent(int, TopTree::TRootNPGenEvent*, std::vector<TopTree::TRootMCParticle*>&, bool)
       if (verbose==0) cout <<"Number of Muons, Electrons, Jets  ===>  " << endl << selectedMuons.size() <<" "  << selectedElectrons.size()<<" "<< PreselectedJets.size()   << endl;
       selectedJets.clear();
@@ -1576,10 +1699,78 @@ int main (int argc, char *argv[])
         
       }
       
+      
+      ///////////////////////////////
+      //// Matching
+      //////////////////////////////
+      if(dName.find("NP_overlay_FCNC_TT")!=string::npos || dName.find("tZq")!=string::npos) matching = true;
+      //cout << "matching " << matching << endl;
+      
+      if(matching){
+        //cout << "in matching" << endl;
+        int pdgID_charm = 4;
+        vector<TRootMCParticle*> mcParticlesMatching_;
+        
+        if(dName.find("NP_overlay_FCNC_TT")!=string::npos || dName.find("tZq")!=string::npos){
+          mcParticlesTLV.clear(); selectedJetsTLV.clear();
+          
+          for (unsigned int i = 0; i < mcParticles.size(); i++)
+          {
+            if(verbose>3)  cout << setw(3) << right << i << "  Status: " << setw(2) << mcParticles[i]->status() << "  pdgId: " << setw(3) << mcParticles[i]->type() << "  Mother: " << setw(4) << mcParticles[i]->motherType() << "  Granny: " << setw(4) << mcParticles[i]->grannyType() << "  Pt: " << setw(7) << left << mcParticles[i]->Pt() << "  Eta: " << mcParticles[i]->Eta() << endl;
+            
+            if ( (mcParticles[i]->status() > 1 && mcParticles[i]->status() <= 20) || mcParticles[i]->status() >= 30 ) continue;  /// Final state particle or particle from hardest process
+            //if(fabs(mcParticles[i]->motherType()) == 23) cout << setw(3) << right << i << "  Status: " << setw(2) << mcParticles[i]->status() << "  pdgId: " << setw(3) << mcParticles[i]->type() << "  Mother: " << setw(4) << mcParticles[i]->motherType() << "  Granny: " << setw(4) << mcParticles[i]->grannyType() << "  Pt: " << setw(7) << left << mcParticles[i]->Pt() << "  Eta: " << mcParticles[i]->Eta() << endl;
+            
+            
+            //   if ( fabs(mcParticles[i]->type()) == pdgID_charm && fabs(mcParticles[i]->motherType()) == 6)
+            //     cQuark = *mcParticles[i];
+            
+            
+            
+            if ( fabs(mcParticles[i]->type()) == pdgID_charm && fabs(mcParticles[i]->motherType()) == 6){
+              mcParticlesTLV.push_back(*mcParticles[i]);
+              //mcParticlesMatching_.push_back(mcParticles[i]);
+              
+            }
+            
+            
+          }
+        }
+        
+        
+        
+        // take all the selectedJets_ to study the radiation stuff, selectedJets_ are already ordened in decreasing Pt()
+        for (unsigned int i = 0; i < selectedCSVLLJets.size(); i++)
+        {
+          selectedJetsTLV.push_back(*selectedCSVLLJets[i]);
+        }
+        //cout << "selectedJetsTLV.size() = " << selectedJetsTLV.size() << endl;
+        
+        JetPartonMatching matching = JetPartonMatching(mcParticlesTLV, selectedJetsTLV, 2, true, true, 0.3);		// partons, jets, choose algorithm, use maxDist, use dR, set maxDist=0.3
+        
+        if (matching.getNumberOfAvailableCombinations() != 1)
+          cerr << "matching.getNumberOfAvailableCombinations() = " << matching.getNumberOfAvailableCombinations() << " .  This should be equal to 1 !!!" << endl;
+        
+        JetPartonPair.clear(); // First one is jet number, second one is mcParticle number
+        //cout << "mcParticlesTLV.size() " << mcParticlesTLV.size() << endl;
+        
+        for (unsigned int i = 0; i < mcParticlesTLV.size(); i++)
+        {
+          
+          int matchedJetNumber = matching.getMatchForParton(i, 0);
+          if (matchedJetNumber > -1){
+            JetPartonPair.push_back( pair<unsigned int, unsigned int> (matchedJetNumber, i) );
+            //cout << "Matched Jet number " << matchedJetNumber << endl;
+          }
+        }
+        
+        
+      }
+      
       ////////////////////////////////////
       //   Determine eventweight        ///
       /////////////////////////////////
-      if(hasNegWeight && applyNegWeightCorrection && !isData) eventweight *= -1.;
+      
       histo1D["init_nPVs_before"]->Fill(vertex.size(), eventweight);
       if(applyPU && !isData)  eventweight *= PUweight;
       histo1D["init_nPVs_after"]->Fill(vertex.size(), eventweight);
@@ -1875,17 +2066,26 @@ int main (int argc, char *argv[])
         nbEvents_2++;
       }
       Zboson.Clear();
-      if(OS) Zboson.SetPxPyPzE(( Zlep0 + Zlep1).Px() ,( Zlep0 + Zlep1).Py(),( Zlep0 + Zlep1).Py(),( Zlep0 + Zlep1).Energy()) ;
-      if(OS) Zboson_M = (Zlep0+Zlep1).M();
-      else if(!OS) Zboson_M = 0;
+      if(OS && continueFlow){
+         Zboson.SetPxPyPzE(( Zlep0 + Zlep1).Px() ,( Zlep0 + Zlep1).Py(),( Zlep0 + Zlep1).Pz(),( Zlep0 + Zlep1).Energy()) ;
+         Zboson_M = (Zlep0+Zlep1).M();
+         Zboson_Px = ( Zlep0 + Zlep1).Px();
+         Zboson_Py = ( Zlep0 + Zlep1).Py();
+         Zboson_Pz = ( Zlep0 + Zlep1).Pz();
+         Zboson_Energy = ( Zlep0 + Zlep1).Energy();
+      }
+      else {
+         Zboson_M = 0;
+        Zboson_Px = -5;
+        Zboson_Py = -5;
+        Zboson_Pz = -5;
+        Zboson_Energy = -5;
+      }
       //            cout << " Zmass" << Zboson_M << endl;
-      Zboson_Px = Zboson.Px();
-      Zboson_Py = Zboson.Py();
-      Zboson_Pz = Zboson.Pz();
-      Zboson_Energy = Zboson.Energy();
       
       
-      
+      //if((Zlep0+Zlep1).M() < 0) cout << "evtnr " << evt_num << " - mass " << (Zlep0+Zlep1).M() << endl;
+      //if(Zboson.M() < 0) cout << "evtnr " << evt_num << " - mass " << Zboson.M() << endl;
       
       if(Zboson_M < 76 || Zboson_M > 106)
       {
@@ -1904,7 +2104,10 @@ int main (int argc, char *argv[])
         }
       }
       
-      if(selectedJets.size() == 0){
+     // if((Zlep0+Zlep1).M() < 0) cout << "continueFlow " << continueFlow << endl;
+     // if(Zboson.M() != (Zlep0+Zlep1).M() && continueFlow ) cout << "evt " << evt_num << " " << (Zlep0+Zlep1).M()  << " vs " << (double) Zboson.M() << endl;
+      
+      if(selectedJets.size() ==0){ //synch selectedJets.size() == 0
         selections.push_back(0);
         continueFlow = false;
         // continue;
@@ -1969,12 +2172,12 @@ int main (int argc, char *argv[])
       double met_pz = 0.; // has to be adapted !!!
       metTLVbf.SetPxPyPzE(met_px,met_py,met_pz,TMath::Sqrt(met_px*met_px+met_py*met_py+met_pz*met_pz));
       metTLV = MetzCalculator(Wlep, metTLVbf);
-      met_Px = metTLV.Px(); 
-      met_Py = metTLV.Py(); 
-      met_Pz = metTLV.Pz(); 
+      met_Px = metTLV.Px();
+      met_Py = metTLV.Py();
+      met_Pz = metTLV.Pz();
       SMbjet.Clear();
       SMtop.Clear();
-      if(selectedCSVLBJets.size() > 0){
+      if(selectedCSVLBJets.size() ==1 ){
         SMbjet.SetPxPyPzE(selectedCSVLBJets[0]->Px(),selectedCSVLBJets[0]->Py(),selectedCSVLBJets[0]->Pz(),selectedCSVLBJets[0]->Energy());
         if(Assigned)  {
           SMtop_M = (Wlep+SMbjet+metTLV).M();
@@ -1998,10 +2201,11 @@ int main (int argc, char *argv[])
        */
       cjet.Clear();
       FCNCtop.Clear();
-      if(Assigned) {
+      if(Assigned && continueFlow && selectedJets.size()>1) {
         cjet = FCNCjetCalculator(selectedCSVLLJets,selectedCSVLBJets, Zboson ,3);
-        FCNCtop.SetPxPyPzE(cjet.Px()+Zboson.Px(),cjet.Py()+Zboson.Py(),cjet.Pz()+Zboson.Pz(),cjet.Energy()+Zboson.Energy());
-        FCNCtop_M = (Zboson+cjet).M();
+        FCNCtop.SetPxPyPzE((cjet+Zboson).Px(), (cjet+Zboson).Py(), (cjet+Zboson).Pz(), (cjet+Zboson).Energy());
+        //if((Zboson+cjet).M() <0 ) cout << "event: " << evt_num << " - Zboson.M()= " << Zboson.M() << " - cjet.M()= " << cjet.M() << " - top.M()= " << (Zboson+cjet).M() << endl;
+        FCNCtop_M = (Zlep0+Zlep1+cjet).M();
         cjet_Pt = TMath::Sqrt(cjet.Px()*cjet.Px()+cjet.Py()*cjet.Py());
         dRZc = Zboson.DeltaR(cjet);
         dRWlepc = Wlep.DeltaR(cjet);
@@ -2013,9 +2217,17 @@ int main (int argc, char *argv[])
       }
       else {
         FCNCtop_M = 0.;
+       // cout << "event: " << evt_num << " - Zboson.M()= " << Zboson.M() << " - cjet.M()= " << cjet.M() << " - top.M()= " << (Zboson+cjet).M() << endl;
         dRZc = -5;
         dRWlepc = -5;
+        dPhiWlepc = -5;
+        dPhiZc = -5;
+        dRSMFCNCtop = -5 ;
+        dPhiSMFCNCtop = -5;
+        cjet_Pt = -5; 
       }
+      
+      
       
       if(SMtop_M < 95 || SMtop_M > 200 ){
         selections.push_back(0);
@@ -2159,9 +2371,29 @@ int main (int argc, char *argv[])
     cout << "nbEvents_6 mWt: " << nbEvents_6 << endl;
     cout << "nbEvents_7 SMtop: " << nbEvents_7 << endl;
     cout << "nbEvents_8 MET: " << nbEvents_8 << endl;
+    
+    
+    nTrigg = nbEvents_0;
+    n3lep = nbEvents_1;
+    nVetoMu = nbEvents_1m;
+    nVetoEl = nbEvents_2m;
+    nOS = nbEvents_2;
+    nZmass = nbEvents_3;
+    nJet = nbEvents_4;
+    nBJet = nbEvents_5;
+    nMWT = nbEvents_6;
+    nSMtop = nbEvents_7;
+    nMET= nbEvents_8;
+    
+    
+    
+    
+    
+    if(matching) cout << "Percentage matched: " << (double) nMatched / (nMatched + nNonMatched) << endl;
     //	for(int j = 0; j < 9; j++){       cout << cutstep[j] << endl; }
     sumW = (int) sumWeights;
     nEv = (int) nEvents;
+    
     globalTree->Fill();
     if(verbose == 0) cout << "end eventloop" << endl;
     
@@ -2314,8 +2546,12 @@ TLorentzVector FCNCjetCalculator(std::vector<TRootPFJet*> nonBJets,std::vector<T
       
     }
     FCNCjet.SetPxPyPzE(nonBJets[NbInColl]->Px(),nonBJets[NbInColl]->Py(),nonBJets[NbInColl]->Pz(),nonBJets[NbInColl]->Energy());
+    if(matching && JetPartonPair.size()>0) {
+      if(JetPartonPair[0].first == NbInColl)  nMatched++;
+      else nNonMatched++;
+    }
   }
-  else if(BJets.size() > 1){ // due to selection criteria, this possibility is never there
+  /*else if(BJets.size() > 1){ // due to selection criteria, this possibility is never there
     //cout << " bjets: " << BJets.size()-1 << " possibilities " << endl;
     for(unsigned int iJ = 1; iJ < BJets.size(); iJ++)
     {
@@ -2333,10 +2569,10 @@ TLorentzVector FCNCjetCalculator(std::vector<TRootPFJet*> nonBJets,std::vector<T
     }
     
     FCNCjet.SetPxPyPzE(BJets[NbInColl]->Px(),BJets[NbInColl]->Py(),BJets[NbInColl]->Pz(),BJets[NbInColl]->Energy());
-  }
+  }*/
   else{
     FCNCjet.SetPxPyPzE(0.,0.,0.,0.);
-    //cout << "no cjets available" << endl;
+    cout << "no cjets available" << endl;
   }
   return FCNCjet;
 };
@@ -2534,7 +2770,7 @@ vector <TLorentzVector> LeptonAssigner(std::vector<TRootElectron*> electrons,std
 
 TLorentzVector MetzCalculator(TLorentzVector leptW, TLorentzVector v_met)
 {
-
+  
   double term1 = leptW.Pz() * ( leptW.Px()* v_met.Px() + leptW.Py()*v_met.Py() + pow(80.399, 2)/2.);
   
   double det = pow(leptW.Px() * v_met.Px() + leptW.Py() * v_met.Py() + pow(80.399, 2)/2., 2) - v_met.Pt()*v_met.Pt() * (leptW.E()*leptW.E() - leptW.Pz()*leptW.Pz() );
@@ -2548,7 +2784,7 @@ TLorentzVector MetzCalculator(TLorentzVector leptW, TLorentzVector v_met)
   double nu_E = 0;
   
   TLorentzVector neutrino;
-
+  
   nu_E = pow( pow(v_met.Px(),2) + pow(v_met.Py(),2) + pow(sol1,2), 0.5);//neglecting neutrino mass
   neutrino.SetPxPyPzE( v_met.Px(), v_met.Py(), sol1, nu_E);
   
