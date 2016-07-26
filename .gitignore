@@ -15,3 +15,7 @@ nohup*
 myOutput_MSPlots*/
 MSPlots_El/*
 MSPlots_Mu/*
+MSPlots/
+MVA/
+*.png
+scripts/ST_trainingNormedHistos/

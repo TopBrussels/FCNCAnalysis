@@ -154,8 +154,8 @@ int main (int argc, char *argv[])
     ///////////////////////////////////////////////////////////////
     // Initialize scale&reweight-handlings
     //////////////////////////////////////////////////////////////
-    bool bTagReweight = true;
-    bool bLeptonSF = true;
+    bool bTagReweight = false;
+    bool bLeptonSF = false;
     bool bTagReweight_PreReweighting = false; //Needs to be set only once to true in order to produce the BTagEtaPtHistos
     bool applyJES = true;
     bool applyJER = true;
@@ -201,7 +201,7 @@ int main (int argc, char *argv[])
     string electronID = "Medium";
     string btagger = "CSVM";
     bool printTriggers = false;
-    bool applyTriggers = true;
+    bool applyTriggers = false;
     string channelpostfix = "";
 
     //Setting Lepton Channels
@@ -548,6 +548,7 @@ int main (int argc, char *argv[])
         Double_t eta_jet[20];
         Double_t E_jet[20];
         Double_t charge_jet[20];
+        Double_t incl_charge_jet[20];
         Double_t bdisc_jet[20];
         Double_t cdiscCvsL_jet[20]; 
 	      Double_t cdiscCvsB_jet[20];
@@ -556,6 +557,8 @@ int main (int argc, char *argv[])
 	      Double_t jet_matchedMC_grannypdgID[20];
       
         // met 
+        Double_t met_Px; 
+        Double_t met_Py; 
         Double_t met_Pt; 
 	      Double_t met_Phi; 
 	      Double_t met_Eta;
@@ -564,6 +567,7 @@ int main (int argc, char *argv[])
 	      Double_t Mbb;
 	      Double_t MTlepmet;
 	      Double_t MLepTop_GenMatch;
+	      Double_t MHiggs_GenMatch;
 	      Double_t MHadTop_GenMatch;
 	      Double_t EtaLepTop_GenMatch;
 	      Double_t EtaHadTop_GenMatch;
@@ -664,6 +668,7 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("eta_jet",&eta_jet,"eta_jet[nJets]/D");
         tup_ObjectVars->Branch("E_jet",&E_jet,"E_jet[nJets]/D");
         tup_ObjectVars->Branch("charge_jet",&charge_jet,"charge_jet[nJets]/D");	    
+        tup_ObjectVars->Branch("incl_charge_jet",&incl_charge_jet,"incl_charge_jet[nJets]/D");	    
         tup_ObjectVars->Branch("bdisc_jet",&bdisc_jet,"bdisc_jet[nJets]/D");
         tup_ObjectVars->Branch("cdiscCvsL_jet",&cdiscCvsL_jet,"cdiscCvsL_jet[nJets]/D");
         tup_ObjectVars->Branch("cdiscCvsB_jet",&cdiscCvsB_jet,"cdiscCvsB_jet[nJets]/D");
@@ -672,6 +677,8 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("jet_matchedMC_grannypdgID",&jet_matchedMC_grannypdgID,"jet_matchedMC_grannypdgID[nJets]/D");
        
         // met 
+        tup_ObjectVars->Branch("met_Px", &met_Px, "met_Px/D"); 
+        tup_ObjectVars->Branch("met_Py", &met_Py, "met_Py/D"); 
         tup_ObjectVars->Branch("met_Pt", &met_Pt, "met_Pt/D"); 
         tup_ObjectVars->Branch("met_Eta", &met_Eta,"met_Eta/D"); 
         tup_ObjectVars->Branch("met_Phi", &met_Phi, "met_Phi/D"); 
@@ -680,6 +687,7 @@ int main (int argc, char *argv[])
         tup->Branch("Mbb",&Mbb,"Mbb/D");
         tup->Branch("MTlepmet",&MTlepmet,"MTlepmet/D");
         tup->Branch("MLepTop_GenMatch",&MLepTop_GenMatch,"MLepTop_GenMatch/D");
+        tup->Branch("MHiggs_GenMatch",&MHiggs_GenMatch,"MHiggs_GenMatch/D");
         tup->Branch("MHadTop_GenMatch",&MHadTop_GenMatch,"MHadTop_GenMatch/D");
         tup->Branch("EtaLepTop_GenMatch",&EtaLepTop_GenMatch,"EtaLepTop_GenMatch/D");
         tup->Branch("EtaHadTop_GenMatch",&EtaHadTop_GenMatch,"EtaHadTop_GenMatch/D");
@@ -1275,6 +1283,7 @@ int main (int argc, char *argv[])
                 eta_jet[nJets]=selectedJets[seljet]->Eta();
                 E_jet[nJets]=selectedJets[seljet]->E();
                 charge_jet[nJets]=selectedJets[seljet]->charge();
+                incl_charge_jet[nJets]=selectedJets[seljet]->inclusiveJetCharge();
                 bdisc_jet[nJets]=selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags() ;
                 cdiscCvsB_jet[nJets]=selectedJets[seljet]->ctag_pfCombinedCvsBJetTags() ;
                 cdiscCvsL_jet[nJets]=selectedJets[seljet]->ctag_pfCombinedCvsLJetTags() ;
@@ -1286,6 +1295,8 @@ int main (int argc, char *argv[])
 	          double met_px = mets[0]->Px();
 	          double met_py = mets[0]->Py();
             met_Pt = sqrt(met_px*met_px + met_py*met_py);
+	          met_Px = mets[0]->Px(); 
+	          met_Py = mets[0]->Py(); 
 	          met_Phi = mets[0]->Phi(); 
 	          met_Eta = mets[0]->Eta();
 
@@ -1326,7 +1337,7 @@ int main (int argc, char *argv[])
                 continue;
             }
 
-		  	    if(selectedMBJets.size() < 3) continue;
+		  	    if(selectedMBJets.size() < 0) continue;
 	          if (debug)	cout <<"Cut on nb b-jets..."<<endl;
             if(debug) cout << "Past cut 7: Passed cut on number of b-jets" << endl;
             cutstep[7]=cutstep[7]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
@@ -1353,10 +1364,13 @@ int main (int argc, char *argv[])
             }
             
             pair<unsigned int, unsigned int> leptonicBJet_ = pair<unsigned int,unsigned int>(9999,9999);// First one is jet number, second one is mcParticle number
-            pair<unsigned int, unsigned int> hadronicBJet_ = pair<unsigned int,unsigned int>(9999,9999);
+            pair<unsigned int, unsigned int> hadronicTopJet = pair<unsigned int,unsigned int>(9999,9999);
+            pair<unsigned int, unsigned int> HiggsBJet1_ = pair<unsigned int,unsigned int>(9999,9999);
+            pair<unsigned int, unsigned int> HiggsBJet2_ = pair<unsigned int,unsigned int>(9999,9999);
             pair<unsigned int, unsigned int> hadronicWJet1_ = pair<unsigned int,unsigned int>(9999,9999);
             pair<unsigned int, unsigned int> hadronicWJet2_ = pair<unsigned int,unsigned int>(9999,9999);
-                  
+            
+            int HiggsBJetCounter = 0;                  
             int pdgID_top = 6; //top quark
                   
             bool Posleptonmatched = false;
@@ -1445,18 +1459,30 @@ int main (int argc, char *argv[])
                             }
                         }
                     }
-                    if ( fabs(mcParticlesMatching_[j]->type()) == 5 )
+                    if ( fabs(mcParticlesMatching_[j]->type()) == 5 || fabs(mcParticlesMatching_[j]->type()) == 4 || fabs(mcParticlesMatching_[j]->type()) == 2 )
                     {
                         if ( ( Posleptonmatched && mcParticlesMatching_[j]->motherType() == -pdgID_top )
                             || ( Negleptonmatched && mcParticlesMatching_[j]->motherType() == pdgID_top ) )  // if mu+ (top decay leptonic) and mother is antitop ---> hadronic b
                         {
-                            hadronicBJet_ = JetPartonPair[i];
+                            hadronicTopJet = JetPartonPair[i];
                         }
                         else if ( ( Posleptonmatched && mcParticlesMatching_[j]->motherType() == pdgID_top )
                                         || ( Negleptonmatched && mcParticlesMatching_[j]->motherType() == -pdgID_top ) )
                         {
                             leptonicBJet_ = JetPartonPair[i];
                         }
+                        
+                        if(mcParticlesMatching_[j]->motherType() == 25 && HiggsBJetCounter < 1)
+                        {
+                            HiggsBJet1_ = JetPartonPair[i];
+                            HiggsBJetCounter++;
+                        }
+                        else if(mcParticlesMatching_[j]->motherType() == 25 && HiggsBJetCounter == 1)
+                        {
+                            HiggsBJet2_ = JetPartonPair[i];
+                            HiggsBJetCounter++;
+                        }
+
                     }
                 }  /// End loop over Jet Parton Pairs
             
@@ -1480,14 +1506,22 @@ int main (int argc, char *argv[])
                 MassW_GenMatch = (selectedJetsTLV[ind_jet1] + selectedJetsTLV[ind_jet2]).M();
                 EtaW_GenMatch = (selectedJetsTLV[ind_jet1] + selectedJetsTLV[ind_jet2]).Eta();
 
-                if(int(hadronicBJet_.first) != 9999)/////////////////////// CHANGE TO HADRONIC TOP
+                if(int(hadronicTopJet.first) != 9999)/////////////////////// CHANGE TO HADRONIC TOP
                 {
-                    int ind_jet_top = hadronicBJet_.first;///////////////////// CHANGE TO LEPTONIC TOP
+                    int ind_jet_top = hadronicTopJet.first;///////////////////// CHANGE TO LEPTONIC TOP
                     MHadTop_GenMatch = (selectedJetsTLV[ind_jet1] + selectedJetsTLV[ind_jet2] + selectedJetsTLV[ind_jet_top]).M();
                     EtaHadTop_GenMatch = (selectedJetsTLV[ind_jet1] + selectedJetsTLV[ind_jet2] + selectedJetsTLV[ind_jet_top]).Eta();
                 }
                 
             }
+            if( int(HiggsBJet1_.first) != 9999 && int(HiggsBJet2_.first) != 9999 && int(hadronicTopJet.first) != 9999)
+            {
+                    MHadTop_GenMatch = (selectedJetsTLV[HiggsBJet1_.first] + selectedJetsTLV[HiggsBJet2_.first] + selectedJetsTLV[hadronicTopJet.first]).M();
+                    MHiggs_GenMatch = (selectedJetsTLV[HiggsBJet1_.first] + selectedJetsTLV[HiggsBJet2_.first]).M();            
+            }
+//            else continue;
+            
+            
             
             /////////////////////////////////////////////////////
             //Defining complexer ntuple variables

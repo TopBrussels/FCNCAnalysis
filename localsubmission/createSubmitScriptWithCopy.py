@@ -92,7 +92,7 @@ for chan in channels:
             if "Data" in str(d.attrib['name']):
                 FilePerJob=20
             else:
-                FilePerJob=2
+                FilePerJob=1
 
             # create a test job for each dataset
             # create a file for this job 
