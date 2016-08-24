@@ -4,7 +4,7 @@ BTagHistosPtEta/
 EventInfo_*.txt
 *.root
 MACRO_Output_*/
-MACRO_TreeProcessor
+MACRO_TreeProcessor*
 Merged*/
 Plots*/
 TreeMaker

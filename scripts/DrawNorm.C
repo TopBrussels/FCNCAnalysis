@@ -3,78 +3,138 @@ void DrawNorm()
 
 
 //  string VariableName = "MVA_BDT";
-//  string VariableName = "InclCharges_Hjets";
-//  string VariableName = "InclCharges_SMb_Lep";
-//  string VariableName = "Charges_Hjets";
-//  string VariableName = "Charges_SMb_Lep";
-//  string VariableName = "CvsL_Hjet1";
-//  string VariableName = "CvsL_Hjet2";
-//  string VariableName = "CvsL_SMTopJet";
-//  string VariableName = "CvsB_Hjet1";
-//  string VariableName = "CvsB_Hjet2";
-//  string VariableName = "CvsB_SMTopJet";
-//  string VariableName = "bDisc_Hjet1";
-//  string VariableName = "bDisc_Hjet2";
-//  string VariableName = "bDisc_SMTopJet";
-//  string VariableName = "InclCharges_jetTop_jetAntiTop";
-//  string VariableName = "inclCharges_JetFCNH_Lep";
-  string VariableName = "Charges_jetTop_jetAntiTop";
-//  string VariableName = "Charges_JetFCNH_Lep";
-//  string VariableName = "CvsL_FCNHJet";
-//  string VariableName = "CvsB_FCNHJet";
-//  string VariableName = "bDisc_FCNHJet";
-  
+  vector<std::string> MVAvars;
+
+
+      MVAvars.push_back("SumCharge_Hjets");
+//      MVAvars.push_back("SumCharge_SMbLep");
+      MVAvars.push_back("CvsL_Hjet1");
+      MVAvars.push_back("CvsL_Hjet2");
+      MVAvars.push_back("CvsL_SMb");
+      MVAvars.push_back("CvsB_Hjet1");
+      MVAvars.push_back("CvsB_Hjet2");
+      MVAvars.push_back("CvsB_SMb");
+      MVAvars.push_back("Hmass");
+      MVAvars.push_back("LepTopmass");
+      MVAvars.push_back("DR_H_LepTop");
+      MVAvars.push_back("DR_H_SMb");
+      MVAvars.push_back("DR_Hb1_Hb2");
+      MVAvars.push_back("DR_Lep_SMb");
+      MVAvars.push_back("DR_Lep_H");
+      MVAvars.push_back("Chi2");
+      MVAvars.push_back("LepTopPt");
+      MVAvars.push_back("HPt");
+/*
+      MVAvars.push_back("HadTopPt");
+      MVAvars.push_back("DR_Lep_HadTop");
+      MVAvars.push_back("HadTopmass");
+      MVAvars.push_back("CvsB_FCNHjet");
+      MVAvars.push_back("CvsL_FCNHjet");
+      MVAvars.push_back("SumCharge_FCNHJetLep");
+      MVAvars.push_back("SumCharge_TopJets");
+*/  
 //  gSystem->Load("$ROOTSYS/test/libEvent");
 
-  TFile *infile= new TFile("../MVA/TrainFilesTrainedJetCombMVA_El_NP_overlay_TTtoTHToBB-1L-Kappa-hct.root","READ");
+  TFile *infile= new TFile("../MVA/TrainFiles/TrainedJetCombMVA_STSignal_El_NP_overlay_ST_tHToBB_1L_Kappa_hct.root","READ");
   TFile *fout = new TFile("NormHistos.root","RECREATE");
 
- 
-  TH1F *HistoNorm_S = 0;
-  TH1F *HistoNorm_B = 0;
-	TH1F *histo_S( (TH1F*) infile->Get(("Method_BDT/BDT/"+VariableName+"__Signal").c_str()));
-	TH1F *histo_B( (TH1F*) infile->Get(("Method_BDT/BDT/"+VariableName+"__Background").c_str()));
+  for(int i_vars = 0; i_vars < MVAvars.size(); i_vars++)
+  {   
+      TH1F *HistoNorm_S = 0;
+      TH1F *HistoNorm_B = 0;
+	    TH1F *histo_S( (TH1F*) infile->Get(("Method_BDT/BDT/"+MVAvars[i_vars]+"__Signal").c_str()));
+	    TH1F *histo_B( (TH1F*) infile->Get(("Method_BDT/BDT/"+MVAvars[i_vars]+"__Background").c_str()));
 
-  if(histo_S)
-  {
-    HistoNorm_S = new TH1F(*histo_S);
+      if(histo_S)
+      {
+        HistoNorm_S = new TH1F(*histo_S);
+      }
+      else cout << "Input histo doesn't exist" << endl;
+      if(histo_B)
+      {
+        HistoNorm_B = new TH1F(*histo_B);
+      }
+      else cout << "Input histo doesn't exist" << endl;
+
+      Double_t norm_S = 1;
+      Double_t scale_S = norm_S/(HistoNorm_S->Integral());
+      HistoNorm_S->Scale(scale_S);
+      Double_t norm_B = 1;
+      Double_t scale_B = norm_B/(HistoNorm_B->Integral());
+      HistoNorm_B->Scale(scale_B);
+      
+      HistoNorm_S->GetXaxis()->SetTitle(MVAvars[i_vars].c_str());
+      HistoNorm_S->SetLineColor(4);
+      HistoNorm_B->SetLineColor(2);
+      HistoNorm_S->SetFillColor(4);
+      HistoNorm_B->SetFillColor(2);
+      HistoNorm_S->SetFillStyle(3004);
+      HistoNorm_B->SetFillStyle(3005);
+
+      TCanvas *c1 = new TCanvas();
+      c1->cd();
+      HistoNorm_S->Draw("hist");
+      HistoNorm_B->Draw("hist same");
+
+      TLegend *leg = new TLegend(0.7,0.75,0.98,0.95);
+       leg->AddEntry(HistoNorm_S,"Signal","f");
+       leg->AddEntry(HistoNorm_B,"Background","f");
+       leg->Draw();
+
+
+
+      c1->SaveAs((MVAvars[i_vars]+"_Norm.png").c_str());
+
+    delete c1;
   }
-  else cout << "Input histo doesn't exist" << endl;
-  if(histo_B)
-  {
-    HistoNorm_B = new TH1F(*histo_B);
-  }
-  else cout << "Input histo doesn't exist" << endl;
 
-  Double_t norm_S = 1;
-  Double_t scale_S = norm_S/(HistoNorm_S->Integral());
-  HistoNorm_S->Scale(scale_S);
-  Double_t norm_B = 1;
-  Double_t scale_B = norm_B/(HistoNorm_B->Integral());
-  HistoNorm_B->Scale(scale_B);
-  
-  HistoNorm_S->GetXaxis()->SetTitle(VariableName.c_str());
-  HistoNorm_S->SetLineColor(4);
-  HistoNorm_B->SetLineColor(2);
-  HistoNorm_S->SetFillColor(4);
-  HistoNorm_B->SetFillColor(2);
-  HistoNorm_S->SetFillStyle(3004);
-  HistoNorm_B->SetFillStyle(3005);
+      TH1F *HistoNorm_S = 0;
+      TH1F *HistoNorm_B = 0;
+	    TH1F *histo_S( (TH1F*) infile->Get("Method_BDT/BDT/MVA_BDT_S"));
+	    TH1F *histo_B( (TH1F*) infile->Get("Method_BDT/BDT/MVA_BDT_B"));
 
-  TCanvas *c1 = new TCanvas();
-  c1->cd();
-  HistoNorm_S->Draw("hist");
-  HistoNorm_B->Draw("hist same");
+      if(histo_S)
+      {
+        HistoNorm_S = new TH1F(*histo_S);
+      }
+      else cout << "Input histo doesn't exist" << endl;
+      if(histo_B)
+      {
+        HistoNorm_B = new TH1F(*histo_B);
+      }
+      else cout << "Input histo doesn't exist" << endl;
 
-   leg = new TLegend(0.7,0.75,0.98,0.95);
-   leg->AddEntry(HistoNorm_S,"Signal","f");
-   leg->AddEntry(HistoNorm_B,"Background","f");
-   leg->Draw();
+      Double_t norm_S = 1;
+      Double_t scale_S = norm_S/(HistoNorm_S->Integral());
+      HistoNorm_S->Scale(scale_S);
+      Double_t norm_B = 1;
+      Double_t scale_B = norm_B/(HistoNorm_B->Integral());
+      HistoNorm_B->Scale(scale_B);
+      
+      HistoNorm_S->GetXaxis()->SetTitle("BDT");
+      HistoNorm_S->SetLineColor(4);
+      HistoNorm_B->SetLineColor(2);
+      HistoNorm_S->SetFillColor(4);
+      HistoNorm_B->SetFillColor(2);
+      HistoNorm_S->SetFillStyle(3004);
+      HistoNorm_B->SetFillStyle(3005);
+
+      TCanvas *c1 = new TCanvas();
+      c1->cd();
+      HistoNorm_B->Draw("hist");
+      HistoNorm_S->Draw("hist same");
+
+      TLegend *leg = new TLegend(0.7,0.75,0.98,0.95);
+       leg->AddEntry(HistoNorm_S,"Signal","f");
+       leg->AddEntry(HistoNorm_B,"Background","f");
+       leg->Draw();
 
 
 
-  c1->SaveAs((VariableName+"_Norm.png").c_str());
-  
+      c1->SaveAs("BDT_Norm.png");
+
+    delete c1;
+
   fout->Write();
   
 

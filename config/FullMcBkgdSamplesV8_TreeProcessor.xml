@@ -35,11 +35,11 @@
 
 <d name="NP_overlay_TTtoTHToBB-1L-Kappa-hct"  title="TT-tcH"  add="1"   color="kCyan"  ls="1"  lw="2" normf="1"  EqLumi="261651.676206" xsection="2.446"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/76X_v4/76_v4_SIGNAL_TT_TcH_LepTop/TT_TopLeptonicDecay_TH_1L3B_Eta_Hct/crab_TOPTREE_76_v4_SIGNAL_TT_TcH_LepTop/160708_081332/0000/*.root"/>
 
-<d name="NP_overlay_TTtoTHToBB-1L-Kappa-hut"  title="TT-tuH"  add="1"   color="kCyan-7"  ls="1"  lw="2" normf="1"  EqLumi="228945.21668" xsection="2.446"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/76X_v4/76_v4_SIGNAL_TT_TuH_LepTop/TT_TopLeptonicDecay_TH_1L3B_Eta_Hut/crab_TOPTREE_76_v4_SIGNAL_TT_TuH_LepTop/160708_081129/0000/*.root"/>
+<d name="NP_overlay_TTtoTHToBB-1L-Kappa-hut"  title="TT-tuH"  add="0"   color="kCyan-7"  ls="1"  lw="2" normf="1"  EqLumi="228945.21668" xsection="2.446"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/76X_v4/76_v4_SIGNAL_TT_TuH_LepTop/TT_TopLeptonicDecay_TH_1L3B_Eta_Hut/crab_TOPTREE_76_v4_SIGNAL_TT_TuH_LepTop/160708_081129/0000/*.root"/>
 
 <d name="NP_overlay_ST_tHToBB_1L_Kappa_hct"  title="ST-tcH"  add="1"   color="kCyan+2"  ls="1"  lw="2" normf="1"  EqLumi="22636363.6364" xsection="0.11"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/76X_v4/76_v4_SIGNAL_ST_TcH/ST_TH_1L3B_Hct/crab_TOPTREE_76_v4_SIGNAL_ST_TcH/160708_081448/0000/*.root"/>
 
-<d name="NP_overlay_ST_tHToBB_1L_Kappa_hut"  title="ST-tuH"  add="1"   color="kCyan-6"  ls="1"  lw="2" normf="1"  EqLumi="2823863.63636" xsection="0.88"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/76X_v4/76_v4_SIGNAL_ST_TuH/ST_TH_1L3B/crab_TOPTREE_76_v4_SIGNAL_ST_TuH/160708_081650/0000/*.root"/>
+<d name="NP_overlay_ST_tHToBB_1L_Kappa_hut"  title="ST-tuH"  add="0"   color="kCyan-6"  ls="1"  lw="2" normf="1"  EqLumi="2823863.63636" xsection="0.88"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/76X_v4/76_v4_SIGNAL_ST_TuH/ST_TH_1L3B/crab_TOPTREE_76_v4_SIGNAL_ST_TuH/160708_081650/0000/*.root"/>
 
 
 

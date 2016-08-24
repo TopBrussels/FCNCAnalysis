@@ -1337,7 +1337,7 @@ int main (int argc, char *argv[])
                 continue;
             }
 
-		  	    if(selectedMBJets.size() < 0) continue;
+		  	    if(selectedMBJets.size() < 3) continue;
 	          if (debug)	cout <<"Cut on nb b-jets..."<<endl;
             if(debug) cout << "Past cut 7: Passed cut on number of b-jets" << endl;
             cutstep[7]=cutstep[7]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
