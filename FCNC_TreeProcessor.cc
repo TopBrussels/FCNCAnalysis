@@ -8,6 +8,7 @@
 #include <string>
 #include "TRandom3.h"
 #include "TNtuple.h"
+//#include <TF1.h>
 #include <sstream>
 
 //user code
@@ -116,9 +117,9 @@ int main()
 
   //MVAanalysis(train_mva, "BDT", 3, "NP_overlay_ST_tHToBB_1L_Kappa_hct", xmlFileName, TreePath);
   // calling the function that writtes all the MSPlots in a root file
-//    MVA_JetCombTraining( "BDT", 3, "NP_overlay_ST_tHToBB_1L_Kappa_hct", xmlFileName, TreePath, "STSignal");
-//    MVA_JetCombComputer( "BDT", 3, "NP_overlay_TTtoTHToBB-1L-Kappa-hct", xmlFileName, TreePath, "TTSignal");
-    MCAnalysis(xmlFileName, TreePath, "ALL");
+    MVA_JetCombTraining( "BDT", 3, "NP_overlay_TTtoTHToBB-1L-Kappa-hct", xmlFileName, TreePath, "STSignal");
+    MVA_JetCombComputer( "BDT", 3, "NP_overlay_TTtoTHToBB-1L-Kappa-hct", xmlFileName, TreePath, "STSignal");
+//    MCAnalysis(xmlFileName, TreePath, "STSignal");
   //  MVA_JetCombTraining( "BDT", 10, "NP_overlay_ST_tHToBB_1L_Kappa_hct", xmlFileName, TreePath);
 	MSPCreator ();
 
@@ -825,7 +826,7 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
   if (KinFitMethod ==   "STSignal")
   {
       kf_STSignal->Init(TOPHLEPBB);
-      kf_STSignal->SetPDF("TopWMass",pdfFileName_STSignal.c_str(),"TopWM_Fit");
+      kf_STSignal->SetPDF("TopLepWMass",pdfFileName_STSignal.c_str(),"TopLepWM_Gaus");
       kf_STSignal->SetPDF("TopMass",pdfFileName_STSignal.c_str(),"TopM_Fit");
       kf_STSignal->SetPDF("TopWHadMass",pdfFileName_STSignal.c_str(),"TopWHadRecM_Fit");
       kf_STSignal->SetPDF("HiggsMass",pdfFileName_TTSignal.c_str(),"MHiggs_GenMatch_Fit");
@@ -900,7 +901,7 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
   else if(KinFitMethod == "STSignal")
   {
       MVAvars.push_back("SumCharge_Hjets");
-//      MVAvars.push_back("SumCharge_SMbLep");
+//      MVAvars.push_back("SumCharge_SMbLep"); //Not part of any training
       MVAvars.push_back("CvsL_Hjet1");
       MVAvars.push_back("CvsL_Hjet2");
       MVAvars.push_back("CvsL_SMb");
@@ -909,13 +910,13 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
       MVAvars.push_back("CvsB_SMb");
       MVAvars.push_back("Hmass");
       MVAvars.push_back("LepTopmass");
-      MVAvars.push_back("DR_H_LepTop");
+//      MVAvars.push_back("DR_H_LepTop"); //Not part of 12 variable training or lower
       MVAvars.push_back("DR_H_SMb");
-      MVAvars.push_back("DR_Hb1_Hb2");
-      MVAvars.push_back("DR_Lep_SMb");
+//      MVAvars.push_back("DR_Hb1_Hb2"); //Not part of 12 variable training or lower
+//      MVAvars.push_back("DR_Lep_SMb"); //Not part of 12 variable training or lower
       MVAvars.push_back("DR_Lep_H");
-      MVAvars.push_back("Chi2");
-      MVAvars.push_back("LepTopPt");
+//      MVAvars.push_back("Chi2"); //Not part of 12 variable training or lower
+//      MVAvars.push_back("LepTopPt"); //Not part of 12 variable training or lower
       MVAvars.push_back("HPt");
   }
   
@@ -1535,13 +1536,13 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
                       double CvsB_SMb = CvsBJet[IndexAllJetColl_BJETLEP];
                       double Hmass = Higgs_.M(); //The second index indicates for idx=0 leptonic part and idx = 1 hadronic part
                       double LepTopmass = LepTop_.M();
-                      double DR_H_LepTop = Higgs_.DeltaR(LepTop_);
+//                      double DR_H_LepTop = Higgs_.DeltaR(LepTop_);
                       double DR_H_SMb = Higgs_.DeltaR(BJETLEP_);
-                      double DR_Hb1_Hb2 = BJET1_.DeltaR(BJET2_);
-                      double DR_Lep_SMb = LEP_.DeltaR(BJETLEP_);
+//                      double DR_Hb1_Hb2 = BJET1_.DeltaR(BJET2_);
+//                      double DR_Lep_SMb = LEP_.DeltaR(BJETLEP_);
                       double DR_Lep_H = LEP_.DeltaR(Higgs_);
-                      double Chi2 = chi2;
-                      double LepTopPt = LepTop_.Pt();
+//                      double Chi2 = chi2;
+//                      double LepTopPt = LepTop_.Pt();
                       double HPt = Higgs_.Pt();
 
                           if( (MotherpdgID[IndexAllJetColl_BJET1] == 25) && (MotherpdgID[IndexAllJetColl_BJET2]==25) && (fabs(MotherpdgID[IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[IndexAllJetColl_BJETLEP]) == 5) )
@@ -1556,13 +1557,13 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
                               Eventtrainer_->Fill("S","CvsB_SMb", CvsB_SMb);
                               Eventtrainer_->Fill("S","Hmass", Hmass);
                               Eventtrainer_->Fill("S","LepTopmass", LepTopmass);
-                              Eventtrainer_->Fill("S","DR_H_LepTop", DR_H_LepTop);
+//                              Eventtrainer_->Fill("S","DR_H_LepTop", DR_H_LepTop);
                               Eventtrainer_->Fill("S","DR_H_SMb", DR_H_SMb);
-                              Eventtrainer_->Fill("S","DR_Hb1_Hb2", DR_Hb1_Hb2);
-                              Eventtrainer_->Fill("S","DR_Lep_SMb", DR_Lep_SMb);
+//                              Eventtrainer_->Fill("S","DR_Hb1_Hb2", DR_Hb1_Hb2);
+//                              Eventtrainer_->Fill("S","DR_Lep_SMb", DR_Lep_SMb);
                               Eventtrainer_->Fill("S","DR_Lep_H", DR_Lep_H);
-                              Eventtrainer_->Fill("S","Chi2", Chi2);
-                              Eventtrainer_->Fill("S","LepTopPt", LepTopPt);
+//                              Eventtrainer_->Fill("S","Chi2", Chi2);
+//                              Eventtrainer_->Fill("S","LepTopPt", LepTopPt);
                               Eventtrainer_->Fill("S","HPt", HPt);
                           }
                           else
@@ -1577,13 +1578,13 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
                               Eventtrainer_->Fill("B","CvsB_SMb", CvsB_SMb);
                               Eventtrainer_->Fill("B","Hmass", Hmass);
                               Eventtrainer_->Fill("B","LepTopmass", LepTopmass);
-                              Eventtrainer_->Fill("B","DR_H_LepTop", DR_H_LepTop);
+//                              Eventtrainer_->Fill("B","DR_H_LepTop", DR_H_LepTop);
                               Eventtrainer_->Fill("B","DR_H_SMb", DR_H_SMb);
-                              Eventtrainer_->Fill("B","DR_Hb1_Hb2", DR_Hb1_Hb2);
-                              Eventtrainer_->Fill("B","DR_Lep_SMb", DR_Lep_SMb);
+//                              Eventtrainer_->Fill("B","DR_Hb1_Hb2", DR_Hb1_Hb2);
+//                              Eventtrainer_->Fill("B","DR_Lep_SMb", DR_Lep_SMb);
                               Eventtrainer_->Fill("B","DR_Lep_H", DR_Lep_H);
-                              Eventtrainer_->Fill("B","Chi2", Chi2);
-                              Eventtrainer_->Fill("B","LepTopPt", LepTopPt);
+//                              Eventtrainer_->Fill("B","Chi2", Chi2);
+//                              Eventtrainer_->Fill("B","LepTopPt", LepTopPt);
                               Eventtrainer_->Fill("B","HPt", HPt);
                           }
                   }
@@ -1765,13 +1766,13 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
       MVAvars.push_back("CvsB_SMb");
       MVAvars.push_back("Hmass");
       MVAvars.push_back("LepTopmass");
-      MVAvars.push_back("DR_H_LepTop");
+//      MVAvars.push_back("DR_H_LepTop");
       MVAvars.push_back("DR_H_SMb");
-      MVAvars.push_back("DR_Hb1_Hb2");
-      MVAvars.push_back("DR_Lep_SMb");
+//      MVAvars.push_back("DR_Hb1_Hb2");
+//      MVAvars.push_back("DR_Lep_SMb");
       MVAvars.push_back("DR_Lep_H");
-      MVAvars.push_back("Chi2");
-      MVAvars.push_back("LepTopPt");
+//      MVAvars.push_back("Chi2");
+//      MVAvars.push_back("LepTopPt");
       MVAvars.push_back("HPt");
   }
   
@@ -2327,13 +2328,13 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
                       double CvsB_SMb = CvsBJet[IndexAllJetColl_BJETLEP];
                       double Hmass = Higgs_.M(); //The second index indicates for idx=0 leptonic part and idx = 1 hadronic part
                       double LepTopmass = LepTop_.M();
-                      double DR_H_LepTop = Higgs_.DeltaR(LepTop_);
+//                      double DR_H_LepTop = Higgs_.DeltaR(LepTop_);
                       double DR_H_SMb = Higgs_.DeltaR(BJETLEP_);
-                      double DR_Hb1_Hb2 = BJET1_.DeltaR(BJET2_);
-                      double DR_Lep_SMb = LEP_.DeltaR(BJETLEP_);
+//                      double DR_Hb1_Hb2 = BJET1_.DeltaR(BJET2_);
+//                      double DR_Lep_SMb = LEP_.DeltaR(BJETLEP_);
                       double DR_Lep_H = LEP_.DeltaR(Higgs_);
-                      double Chi2 = chi2;
-                      double LepTopPt = LepTop_.Pt();
+//                      double Chi2 = chi2;
+//                      double LepTopPt = LepTop_.Pt();
                       double HPt = Higgs_.Pt();
 
                       Eventcomputer_->FillVar("SumCharge_Hjets", SumCharge_Hjets);
@@ -2346,13 +2347,13 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
                       Eventcomputer_->FillVar("CvsB_SMb", CvsB_SMb);
                       Eventcomputer_->FillVar("Hmass", Hmass);
                       Eventcomputer_->FillVar("LepTopmass", LepTopmass);
-                      Eventcomputer_->FillVar("DR_H_LepTop", DR_H_LepTop);
+//                      Eventcomputer_->FillVar("DR_H_LepTop", DR_H_LepTop);
                       Eventcomputer_->FillVar("DR_H_SMb", DR_H_SMb);
-                      Eventcomputer_->FillVar("DR_Hb1_Hb2", DR_Hb1_Hb2);
-                      Eventcomputer_->FillVar("DR_Lep_SMb", DR_Lep_SMb);
+//                      Eventcomputer_->FillVar("DR_Hb1_Hb2", DR_Hb1_Hb2);
+//                      Eventcomputer_->FillVar("DR_Lep_SMb", DR_Lep_SMb);
                       Eventcomputer_->FillVar("DR_Lep_H", DR_Lep_H);
-                      Eventcomputer_->FillVar("Chi2", Chi2);
-                      Eventcomputer_->FillVar("LepTopPt", LepTopPt);
+//                      Eventcomputer_->FillVar("Chi2", Chi2);
+//                      Eventcomputer_->FillVar("LepTopPt", LepTopPt);
                       Eventcomputer_->FillVar("HPt", HPt);
                           
                       double BDTscore_tmp;
