@@ -2,7 +2,9 @@ __init__.py
 *.pyc
 BTagHistosPtEta/
 EventInfo_*.txt
-*.root
+NtuplerOutput/*
+BTagHistosPtEta/*
+Merged/*
 MACRO_Output_*/
 MACRO_TreeProcessor*
 Merged*/

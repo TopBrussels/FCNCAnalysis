@@ -25,7 +25,7 @@
 #include "TopTreeAnalysisBase/Tools/interface/MVAComputer.h"
 
 //includes for Kinematic fitting
-#include "FCNCAnalysis/TopKinFit_final/kinfit.h"
+#include "FCNCAnalysis/TopKinFit/kinfit.h"
 
 
 using namespace std;
@@ -759,9 +759,9 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
   cout << "Initializing TopKinFit for MVA training of correct Jet combination" << endl;
   int nToys = 500;
 
-  std::string pdfFileName_SMtt = "TopKinFit_final/test/GenAnalysis/TopTopLepHad/pdf.root";
-  std::string pdfFileName_TTSignal = "TopKinFit_final/test/GenAnalysis/TopTopLepHbb/pdf.root";
-  std::string pdfFileName_STSignal = "TopKinFit_final/test/GenAnalysis/TopHLepbb/pdf.root";
+  std::string pdfFileName_SMtt = "TopKinFit/test/GenAnalysis/TopTopLepHad/pdf.root";
+  std::string pdfFileName_TTSignal = "TopKinFit/test/GenAnalysis/TopTopLepHbb/pdf.root";
+  std::string pdfFileName_STSignal = "TopKinFit/test/GenAnalysis/TopHLepbb/pdf.root";
 
   KINFIT::kfit *kf_SMtt = new KINFIT::kfit();
   KINFIT::kfit *kf_STSignal = new KINFIT::kfit();
@@ -1614,9 +1614,9 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
   cout << "Initializing TopKinFit for MVA training of correct Jet combination" << endl;
   int nToys = 500;
 
-  std::string pdfFileName_SMtt = "TopKinFit_final/test/GenAnalysis/TopTopLepHad/pdf.root";
-  std::string pdfFileName_TTSignal = "TopKinFit_final/test/GenAnalysis/TopTopLepHbb/pdf.root";
-  std::string pdfFileName_STSignal = "TopKinFit_final/test/GenAnalysis/TopHLepbb/pdf.root";
+  std::string pdfFileName_SMtt = "TopKinFit/test/GenAnalysis/TopTopLepHad/pdf.root";
+  std::string pdfFileName_TTSignal = "TopKinFit/test/GenAnalysis/TopTopLepHbb/pdf.root";
+  std::string pdfFileName_STSignal = "TopKinFit/test/GenAnalysis/TopHLepbb/pdf.root";
 
   KINFIT::kfit *kf_SMtt = new KINFIT::kfit();
   KINFIT::kfit *kf_STSignal = new KINFIT::kfit();
@@ -2535,9 +2535,9 @@ void MCAnalysis(std::string xmlNom, TString CraneenPath, string KinFitMethod)
  	const char *xmlfile = xmlNom.c_str();
  	cout << "used config file: " << xmlfile << endl;
 
-  std::string pdfFileName_SMtt = "TopKinFit_final/test/GenAnalysis/TopTopLepHad/pdf.root";
-  std::string pdfFileName_TTSignal = "TopKinFit_final/test/GenAnalysis/TopTopLepHbb/pdf.root";
-  std::string pdfFileName_STSignal = "TopKinFit_final/test/GenAnalysis/TopHLepbb/pdf.root";
+  std::string pdfFileName_SMtt = "TopKinFit/test/GenAnalysis/TopTopLepHad/pdf.root";
+  std::string pdfFileName_TTSignal = "TopKinFit/test/GenAnalysis/TopTopLepHbb/pdf.root";
+  std::string pdfFileName_STSignal = "TopKinFit/test/GenAnalysis/TopHLepbb/pdf.root";
 
   KINFIT::kfit *kf_SMtt = new KINFIT::kfit();
   KINFIT::kfit *kf_STSignal = new KINFIT::kfit();
