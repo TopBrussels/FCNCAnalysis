@@ -21,3 +21,6 @@ MSPlots/
 MVA/
 *.png
 scripts/ST_trainingNormedHistos/
+TopKinFit/kinfitDict_rdict.pcm
+TopKinFit/libKinFit.so
+scripts/*.root
