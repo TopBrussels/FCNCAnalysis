@@ -13,14 +13,14 @@ void DrawNorm()
       MVAvars.push_back("LepTopPt");
       MVAvars.push_back("HadTopPt");
       MVAvars.push_back("HadTopmass");
-//      MVAvars.push_back("CvsB_FCNHjet");
-//      MVAvars.push_back("CvsL_FCNHjet");
-//      MVAvars.push_back("SumCharge_FCNHJetLep");
-//      MVAvars.push_back("SumCharge_TopJets");
+      MVAvars.push_back("CvsB_FCNHjet");
+      MVAvars.push_back("CvsL_FCNHjet");
+      MVAvars.push_back("SumCharge_FCNHJetLep");
+      MVAvars.push_back("SumCharge_TopJets");
 
 //  gSystem->Load("$ROOTSYS/test/libEvent");
 
-  TFile *infile= new TFile("../MVA/TrainFiles/TrainedJetCombMVA_TThypo_TTtraining_7vars.root","READ");
+  TFile *infile= new TFile("../MVA/TrainFiles/TrainedJetCombMVA_TThypo_TTtraining_11vars.root","READ");
   TFile *fout = new TFile("NormHistos.root","RECREATE");
 
   for(int i_vars = 0; i_vars < MVAvars.size(); i_vars++)

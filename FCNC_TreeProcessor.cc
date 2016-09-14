@@ -115,9 +115,9 @@ int main()
 */
 
 
-//    MVA_JetCombTraining( "BDT", 4, "NP_overlay_TTtoTHToBB-1L-Kappa-hct", xmlFileName, TreePath, "TTSignal");
-//    MVA_JetCombComputer( "BDT", 4, "NP_overlay_TTtoTHToBB-1L-Kappa-hct", xmlFileName, TreePath, "TTSignal");
-    MCAnalysis(xmlFileName, TreePath, "SMtt");
+    MVA_JetCombTraining( "BDT", 4, "NP_overlay_TTtoTHToBB-1L-Kappa-hct", xmlFileName, TreePath, "TThypo");
+    MVA_JetCombComputer( "BDT", 4, "NP_overlay_TTtoTHToBB-1L-Kappa-hct", xmlFileName, TreePath, "TThypo");
+//    MCAnalysis(xmlFileName, TreePath, "SMttHypo");
 	MSPCreator ();
 
     cout << "It took us " << ((double)clock() - start) / CLOCKS_PER_SEC << " to run the program" << endl;
@@ -466,91 +466,91 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
   cout << "Initializing TopKinFit for MVA training of correct Jet combination" << endl;
   int nToys = 500;
 
-  std::string pdfFileName_SMtt = "TopKinFit/test/GenAnalysis/TopTopLepHad/pdf.root";
-  std::string pdfFileName_TTSignal = "TopKinFit/test/GenAnalysis/TopTopLepHbb/pdf.root";
-  std::string pdfFileName_STSignal = "TopKinFit/test/GenAnalysis/TopHLepbb/pdf.root";
+  std::string pdfFileName_SMttHypo = "TopKinFit/test/GenAnalysis/TopTopLepHad/pdf.root";
+  std::string pdfFileName_TThypo = "TopKinFit/test/GenAnalysis/TopTopLepHbb/pdf.root";
+  std::string pdfFileName_SThypo = "TopKinFit/test/GenAnalysis/TopHLepbb/pdf.root";
 
-  KINFIT::kfit *kf_SMtt = new KINFIT::kfit();
-  KINFIT::kfit *kf_STSignal = new KINFIT::kfit();
-  KINFIT::kfit *kf_TTSignal = new KINFIT::kfit();
+  KINFIT::kfit *kf_SMttHypo = new KINFIT::kfit();
+  KINFIT::kfit *kf_SThypo = new KINFIT::kfit();
+  KINFIT::kfit *kf_TThypo = new KINFIT::kfit();
 
   
 
-   if(KinFitMethod == "SMtt")
+   if(KinFitMethod == "SMttHypo")
    {
-      kf_SMtt->Init(TOPTOPLEPHAD);
-      kf_SMtt->SetPDF("TopWMass",pdfFileName_SMtt.c_str(),"TopLepWM_Fit");
-      kf_SMtt->SetPDF("TopMass",pdfFileName_SMtt.c_str(),"TopLepRecM_Fit");
-      kf_SMtt->SetPDF("TopWHadMass",pdfFileName_SMtt.c_str(),"TopHadWRecM_Fit");
-      kf_SMtt->SetPDF("TopHadMass",pdfFileName_SMtt.c_str(),"TopHadRecM_Fit");
-      kf_SMtt->SetPDF("MetPx",pdfFileName_SMtt.c_str(),"dMetPx_Gaus");
-      kf_SMtt->SetPDF("MetPy",pdfFileName_SMtt.c_str(),"dMetPy_Gaus");
-      kf_SMtt->SetPDF("BJetPx",pdfFileName_SMtt.c_str(),"dBJetPx_Fit");
-      kf_SMtt->SetPDF("BJetPy",pdfFileName_SMtt.c_str(),"dBJetPy_Fit");
-      kf_SMtt->SetPDF("BJetPz",pdfFileName_SMtt.c_str(),"dBJetPz_Fit");
-      kf_SMtt->SetPDF("BJetE",pdfFileName_SMtt.c_str(),"dBJetE_Fit");
-      kf_SMtt->SetPDF("ElecPx",pdfFileName_SMtt.c_str(),"dElecPx_Fit");
-      kf_SMtt->SetPDF("ElecPy",pdfFileName_SMtt.c_str(),"dElecPy_Fit");
-      kf_SMtt->SetPDF("ElecPz",pdfFileName_SMtt.c_str(),"dElecPz_Fit");
-      kf_SMtt->SetPDF("ElecE",pdfFileName_SMtt.c_str(),"dElecE_Fit");
-      kf_SMtt->SetPDF("MuonPx",pdfFileName_SMtt.c_str(),"dMuonPx_Fit");
-      kf_SMtt->SetPDF("MuonPy",pdfFileName_SMtt.c_str(),"dMuonPy_Fit");
-      kf_SMtt->SetPDF("MuonPz",pdfFileName_SMtt.c_str(),"dMuonPz_Fit");
-      kf_SMtt->SetPDF("MuonE",pdfFileName_SMtt.c_str(),"dMuonE_Fit");
-      kf_SMtt->SetPDF("NonBJetPx",pdfFileName_SMtt.c_str(),"dNonBJetPx_Fit");
-      kf_SMtt->SetPDF("NonBJetPy",pdfFileName_SMtt.c_str(),"dNonBJetPy_Fit");
-      kf_SMtt->SetPDF("NonBJetPz",pdfFileName_SMtt.c_str(),"dNonBJetPz_Fit");
-      kf_SMtt->SetPDF("NonBJetE",pdfFileName_SMtt.c_str(),"dNonBJetE_Fit");
-      kf_SMtt->SetNToy(nToys);
+      kf_SMttHypo->Init(TOPTOPLEPHAD);
+      kf_SMttHypo->SetPDF("TopWMass",pdfFileName_SMttHypo.c_str(),"TopLepWM_Fit");
+      kf_SMttHypo->SetPDF("TopMass",pdfFileName_SMttHypo.c_str(),"TopLepRecM_Fit");
+      kf_SMttHypo->SetPDF("TopWHadMass",pdfFileName_SMttHypo.c_str(),"TopHadWRecM_Fit");
+      kf_SMttHypo->SetPDF("TopHadMass",pdfFileName_SMttHypo.c_str(),"TopHadRecM_Fit");
+      kf_SMttHypo->SetPDF("MetPx",pdfFileName_SMttHypo.c_str(),"dMetPx_Gaus");
+      kf_SMttHypo->SetPDF("MetPy",pdfFileName_SMttHypo.c_str(),"dMetPy_Gaus");
+      kf_SMttHypo->SetPDF("BJetPx",pdfFileName_SMttHypo.c_str(),"dBJetPx_Fit");
+      kf_SMttHypo->SetPDF("BJetPy",pdfFileName_SMttHypo.c_str(),"dBJetPy_Fit");
+      kf_SMttHypo->SetPDF("BJetPz",pdfFileName_SMttHypo.c_str(),"dBJetPz_Fit");
+      kf_SMttHypo->SetPDF("BJetE",pdfFileName_SMttHypo.c_str(),"dBJetE_Fit");
+      kf_SMttHypo->SetPDF("ElecPx",pdfFileName_SMttHypo.c_str(),"dElecPx_Fit");
+      kf_SMttHypo->SetPDF("ElecPy",pdfFileName_SMttHypo.c_str(),"dElecPy_Fit");
+      kf_SMttHypo->SetPDF("ElecPz",pdfFileName_SMttHypo.c_str(),"dElecPz_Fit");
+      kf_SMttHypo->SetPDF("ElecE",pdfFileName_SMttHypo.c_str(),"dElecE_Fit");
+      kf_SMttHypo->SetPDF("MuonPx",pdfFileName_SMttHypo.c_str(),"dMuonPx_Fit");
+      kf_SMttHypo->SetPDF("MuonPy",pdfFileName_SMttHypo.c_str(),"dMuonPy_Fit");
+      kf_SMttHypo->SetPDF("MuonPz",pdfFileName_SMttHypo.c_str(),"dMuonPz_Fit");
+      kf_SMttHypo->SetPDF("MuonE",pdfFileName_SMttHypo.c_str(),"dMuonE_Fit");
+      kf_SMttHypo->SetPDF("NonBJetPx",pdfFileName_SMttHypo.c_str(),"dNonBJetPx_Fit");
+      kf_SMttHypo->SetPDF("NonBJetPy",pdfFileName_SMttHypo.c_str(),"dNonBJetPy_Fit");
+      kf_SMttHypo->SetPDF("NonBJetPz",pdfFileName_SMttHypo.c_str(),"dNonBJetPz_Fit");
+      kf_SMttHypo->SetPDF("NonBJetE",pdfFileName_SMttHypo.c_str(),"dNonBJetE_Fit");
+      kf_SMttHypo->SetNToy(nToys);
   }
-  if(KinFitMethod == "TTSignal")
+  if(KinFitMethod == "TThypo")
   {
-      kf_TTSignal->Init(TOPTOPLEPHBB);
-      kf_TTSignal->SetPDF("TopWMass",pdfFileName_TTSignal.c_str(),"TopLepWM_Fit");
-      kf_TTSignal->SetPDF("TopMass",pdfFileName_TTSignal.c_str(),"TopLepRecM_Fit");
-      kf_STSignal->SetPDF("HiggsMass",pdfFileName_TTSignal.c_str(),"HiggsRecM_Fit");
-      kf_TTSignal->SetPDF("TopHadMass",pdfFileName_TTSignal.c_str(),"TopHadRecM_Fit");
-      kf_TTSignal->SetPDF("MetPx",pdfFileName_TTSignal.c_str(),"dMetPx_Gaus");
-      kf_TTSignal->SetPDF("MetPy",pdfFileName_TTSignal.c_str(),"dMetPy_Gaus");
-      kf_TTSignal->SetPDF("BJetPx",pdfFileName_TTSignal.c_str(),"dBJetPx_Fit");
-      kf_TTSignal->SetPDF("BJetPy",pdfFileName_TTSignal.c_str(),"dBJetPy_Fit");
-      kf_TTSignal->SetPDF("BJetPz",pdfFileName_TTSignal.c_str(),"dBJetPz_Fit");
-      kf_TTSignal->SetPDF("BJetE",pdfFileName_TTSignal.c_str(),"dBJetE_Fit");
-      kf_TTSignal->SetPDF("ElecPx",pdfFileName_TTSignal.c_str(),"dElecPx_Fit");
-      kf_TTSignal->SetPDF("ElecPy",pdfFileName_TTSignal.c_str(),"dElecPy_Fit");
-      kf_TTSignal->SetPDF("ElecPz",pdfFileName_TTSignal.c_str(),"dElecPz_Fit");
-      kf_TTSignal->SetPDF("ElecE",pdfFileName_TTSignal.c_str(),"dElecE_Fit");
-      kf_TTSignal->SetPDF("MuonPx",pdfFileName_TTSignal.c_str(),"dMuonPx_Fit");
-      kf_TTSignal->SetPDF("MuonPy",pdfFileName_TTSignal.c_str(),"dMuonPy_Fit");
-      kf_TTSignal->SetPDF("MuonPz",pdfFileName_TTSignal.c_str(),"dMuonPz_Fit");
-      kf_TTSignal->SetPDF("MuonE",pdfFileName_TTSignal.c_str(),"dMuonE_Fit");
-      kf_TTSignal->SetPDF("NonBJetPx",pdfFileName_TTSignal.c_str(),"dNonBJetPx_Fit");
-      kf_TTSignal->SetPDF("NonBJetPy",pdfFileName_TTSignal.c_str(),"dNonBJetPy_Fit");
-      kf_TTSignal->SetPDF("NonBJetPz",pdfFileName_TTSignal.c_str(),"dNonBJetPz_Fit");
-      kf_TTSignal->SetPDF("NonBJetE",pdfFileName_TTSignal.c_str(),"dNonBJetE_Fit");
-      kf_TTSignal->SetNToy(nToys);
+      kf_TThypo->Init(TOPTOPLEPHBB);
+      kf_TThypo->SetPDF("TopWMass",pdfFileName_TThypo.c_str(),"TopLepWM_Fit");
+      kf_TThypo->SetPDF("TopMass",pdfFileName_TThypo.c_str(),"TopLepRecM_Fit");
+      kf_SThypo->SetPDF("HiggsMass",pdfFileName_TThypo.c_str(),"HiggsRecM_Fit");
+      kf_TThypo->SetPDF("TopHadMass",pdfFileName_TThypo.c_str(),"TopHadRecM_Fit");
+      kf_TThypo->SetPDF("MetPx",pdfFileName_TThypo.c_str(),"dMetPx_Gaus");
+      kf_TThypo->SetPDF("MetPy",pdfFileName_TThypo.c_str(),"dMetPy_Gaus");
+      kf_TThypo->SetPDF("BJetPx",pdfFileName_TThypo.c_str(),"dBJetPx_Fit");
+      kf_TThypo->SetPDF("BJetPy",pdfFileName_TThypo.c_str(),"dBJetPy_Fit");
+      kf_TThypo->SetPDF("BJetPz",pdfFileName_TThypo.c_str(),"dBJetPz_Fit");
+      kf_TThypo->SetPDF("BJetE",pdfFileName_TThypo.c_str(),"dBJetE_Fit");
+      kf_TThypo->SetPDF("ElecPx",pdfFileName_TThypo.c_str(),"dElecPx_Fit");
+      kf_TThypo->SetPDF("ElecPy",pdfFileName_TThypo.c_str(),"dElecPy_Fit");
+      kf_TThypo->SetPDF("ElecPz",pdfFileName_TThypo.c_str(),"dElecPz_Fit");
+      kf_TThypo->SetPDF("ElecE",pdfFileName_TThypo.c_str(),"dElecE_Fit");
+      kf_TThypo->SetPDF("MuonPx",pdfFileName_TThypo.c_str(),"dMuonPx_Fit");
+      kf_TThypo->SetPDF("MuonPy",pdfFileName_TThypo.c_str(),"dMuonPy_Fit");
+      kf_TThypo->SetPDF("MuonPz",pdfFileName_TThypo.c_str(),"dMuonPz_Fit");
+      kf_TThypo->SetPDF("MuonE",pdfFileName_TThypo.c_str(),"dMuonE_Fit");
+      kf_TThypo->SetPDF("NonBJetPx",pdfFileName_TThypo.c_str(),"dNonBJetPx_Fit");
+      kf_TThypo->SetPDF("NonBJetPy",pdfFileName_TThypo.c_str(),"dNonBJetPy_Fit");
+      kf_TThypo->SetPDF("NonBJetPz",pdfFileName_TThypo.c_str(),"dNonBJetPz_Fit");
+      kf_TThypo->SetPDF("NonBJetE",pdfFileName_TThypo.c_str(),"dNonBJetE_Fit");
+      kf_TThypo->SetNToy(nToys);
   }
-  if (KinFitMethod ==   "STSignal")
+  if (KinFitMethod ==   "SThypo")
   {
-      kf_STSignal->Init(TOPHLEPBB);
-      kf_STSignal->SetPDF("TopWMass",pdfFileName_STSignal.c_str(),"TopLepWM_Fit");
-      kf_STSignal->SetPDF("TopMass",pdfFileName_STSignal.c_str(),"TopLepRecM_Fit");
-      kf_STSignal->SetPDF("HiggsMass",pdfFileName_TTSignal.c_str(),"HiggsRecM_Fit");
-      kf_STSignal->SetPDF("MetPx",pdfFileName_STSignal.c_str(),"dMetPx_Gaus");
-      kf_STSignal->SetPDF("MetPy",pdfFileName_STSignal.c_str(),"dMetPy_Gaus");
-      kf_STSignal->SetPDF("BJetPx",pdfFileName_STSignal.c_str(),"dBJetPx_Fit");
-      kf_STSignal->SetPDF("BJetPy",pdfFileName_STSignal.c_str(),"dBJetPy_Fit");
-      kf_STSignal->SetPDF("BJetPz",pdfFileName_STSignal.c_str(),"dBJetPz_Fit");
-      kf_STSignal->SetPDF("BJetE",pdfFileName_STSignal.c_str(),"dBJetE_Fit");
-      kf_STSignal->SetPDF("ElecPx",pdfFileName_STSignal.c_str(),"dElecPx_Fit");
-      kf_STSignal->SetPDF("ElecPy",pdfFileName_STSignal.c_str(),"dElecPy_Fit");
-      kf_STSignal->SetPDF("ElecPz",pdfFileName_STSignal.c_str(),"dElecPz_Fit");
-      kf_STSignal->SetPDF("ElecE",pdfFileName_STSignal.c_str(),"dElecE_Fit");
-      kf_STSignal->SetPDF("MuonPx",pdfFileName_STSignal.c_str(),"dMuonPx_Fit");
-      kf_STSignal->SetPDF("MuonPy",pdfFileName_STSignal.c_str(),"dMuonPy_Fit");
-      kf_STSignal->SetPDF("MuonPz",pdfFileName_STSignal.c_str(),"dMuonPz_Fit");
-      kf_STSignal->SetPDF("MuonE",pdfFileName_STSignal.c_str(),"dMuonE_Fit");
-      kf_STSignal->SetNToy(nToys);
+      kf_SThypo->Init(TOPHLEPBB);
+      kf_SThypo->SetPDF("TopWMass",pdfFileName_SThypo.c_str(),"TopLepWM_Fit");
+      kf_SThypo->SetPDF("TopMass",pdfFileName_SThypo.c_str(),"TopLepRecM_Fit");
+      kf_SThypo->SetPDF("HiggsMass",pdfFileName_TThypo.c_str(),"HiggsRecM_Fit");
+      kf_SThypo->SetPDF("MetPx",pdfFileName_SThypo.c_str(),"dMetPx_Gaus");
+      kf_SThypo->SetPDF("MetPy",pdfFileName_SThypo.c_str(),"dMetPy_Gaus");
+      kf_SThypo->SetPDF("BJetPx",pdfFileName_SThypo.c_str(),"dBJetPx_Fit");
+      kf_SThypo->SetPDF("BJetPy",pdfFileName_SThypo.c_str(),"dBJetPy_Fit");
+      kf_SThypo->SetPDF("BJetPz",pdfFileName_SThypo.c_str(),"dBJetPz_Fit");
+      kf_SThypo->SetPDF("BJetE",pdfFileName_SThypo.c_str(),"dBJetE_Fit");
+      kf_SThypo->SetPDF("ElecPx",pdfFileName_SThypo.c_str(),"dElecPx_Fit");
+      kf_SThypo->SetPDF("ElecPy",pdfFileName_SThypo.c_str(),"dElecPy_Fit");
+      kf_SThypo->SetPDF("ElecPz",pdfFileName_SThypo.c_str(),"dElecPz_Fit");
+      kf_SThypo->SetPDF("ElecE",pdfFileName_SThypo.c_str(),"dElecE_Fit");
+      kf_SThypo->SetPDF("MuonPx",pdfFileName_SThypo.c_str(),"dMuonPx_Fit");
+      kf_SThypo->SetPDF("MuonPy",pdfFileName_SThypo.c_str(),"dMuonPy_Fit");
+      kf_SThypo->SetPDF("MuonPz",pdfFileName_SThypo.c_str(),"dMuonPz_Fit");
+      kf_SThypo->SetPDF("MuonE",pdfFileName_SThypo.c_str(),"dMuonE_Fit");
+      kf_SThypo->SetNToy(nToys);
   }
    
   ///////////////////////////////////////////////////////////////////
@@ -570,24 +570,24 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
 
   vector<std::string> MVAvars;
 
-  if(KinFitMethod == "TTSignal" || KinFitMethod == "SMtt")
+  if(KinFitMethod == "TThypo" || KinFitMethod == "SMttHypo")
   {
 //      MVAvars.push_back("SumCharge_Hjets");
 //      MVAvars.push_back("SumCharge_SMbLep");
-//      MVAvars.push_back("SumCharge_TopJets");
+      MVAvars.push_back("SumCharge_TopJets");
 //      MVAvars.push_back("SumCharge_FCNHJetLep");
 //      MVAvars.push_back("CvsL_Hjet1");
 //      MVAvars.push_back("CvsL_Hjet2");
 //      MVAvars.push_back("CvsL_SMb");
-//      MVAvars.push_back("CvsL_FCNHjet");
+      MVAvars.push_back("CvsL_FCNHjet");
 //      MVAvars.push_back("CvsB_Hjet1");
 //      MVAvars.push_back("CvsB_Hjet2");
 //      MVAvars.push_back("CvsB_SMb");
-//      MVAvars.push_back("CvsB_FCNHjet");
+      MVAvars.push_back("CvsB_FCNHjet");
       MVAvars.push_back("Hmass");
       MVAvars.push_back("LepTopmass");
-//      MVAvars.push_back("HadTopmass");
-//      MVAvars.push_back("DR_H_HadTop");
+      MVAvars.push_back("HadTopmass");
+      MVAvars.push_back("DR_H_HadTop");
       MVAvars.push_back("DR_H_LepTop");
 //      MVAvars.push_back("DR_H_SMb");
 //      MVAvars.push_back("DR_Hb1_Hb2");
@@ -597,9 +597,9 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
 //      MVAvars.push_back("Chi2");
       MVAvars.push_back("LepTopPt");
 //      MVAvars.push_back("HPt");
-//      MVAvars.push_back("HadTopPt");
+      MVAvars.push_back("HadTopPt");
   }
-  else if(KinFitMethod == "STSignal")
+  else if(KinFitMethod == "SThypo")
   {
 //      MVAvars.push_back("SumCharge_Hjets");
 //      MVAvars.push_back("SumCharge_SMbLep"); //Not part of any training
@@ -621,14 +621,14 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
 //      MVAvars.push_back("HPt"); //Not part of 7 variable training
   }
   
-  if(KinFitMethod == "TTSignal" || KinFitMethod == "SMtt")
+  if(KinFitMethod == "TThypo" || KinFitMethod == "SMttHypo")
   {
       for(unsigned int N_var = 0; N_var < MVAvars.size(); N_var++)
       {
           	Eventtrainer_->bookInputVar(MVAvars[N_var]);
       }
   }
-  if(KinFitMethod == "STSignal")
+  if(KinFitMethod == "SThypo")
   {
       for(unsigned int N_var = 0; N_var < MVAvars.size(); N_var++)
       {
@@ -786,199 +786,199 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
           /////////////////////////////////////////////////////////////////////////////
           // Section for the kinematic fit using the TOPTOPLEPHAD (selection: at least 2 -jets and at least 2 non-b jets)
           /////////////////////////////////////////////////////////////////////////////
-          if(KinFitMethod == "SMtt")
+          if(KinFitMethod == "SMttHypo")
           {
               if(BJetPt.size()>=2 && NonBJetPt.size()>=2)
               {
-              
 
-                  kf_SMtt->SetBJet(BJetPt,BJetEta,BJetPhi,BJetE);
-                  kf_SMtt->SetNonBJet(NonBJetPt,NonBJetEta,NonBJetPhi,NonBJetE);
-                  if(channel == "_El") kf_SMtt->SetElectron(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
-                  else if(channel == "_Mu") kf_SMtt->SetMuon(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
-                  kf_SMtt->SetMet(met_px,met_py);
-                            
-                            
-                  kf_SMtt->Run();
-                  int nPerm_SMtt = kf_SMtt->GetNPerm();
-                            
-                            
-                  for(int ip=0;ip<nPerm_SMtt;ip++)
+
+                  kf_SMttHypo->SetBJet(BJetPt,BJetEta,BJetPhi,BJetE);
+                  kf_SMttHypo->SetNonBJet(NonBJetPt,NonBJetEta,NonBJetPhi,NonBJetE);
+                  if(channel == "_El") kf_SMttHypo->SetElectron(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
+                  else if(channel == "_Mu") kf_SMttHypo->SetMuon(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
+                  kf_SMttHypo->SetMet(met_px,met_py);
+
+
+                  kf_SMttHypo->Run();
+                  int nPerm_SMttHypo = kf_SMttHypo->GetNPerm();
+
+
+                  for(int ip=0;ip<nPerm_SMttHypo;ip++)
                   {
-                      double chi2 = kf_SMtt->GetDisc(ip);
+                      double chi2 = kf_SMttHypo->GetDisc(ip);
 
                       if(chi2>10E+9)  continue;
-		                   
-		                  int IndexAllJetColl_BJETLEP = MapIndex_Bindex[kf_SMtt->GetIndex(BJETLEP_TOPTOPLEPHAD,ip)];
-		                  int IndexAllJetColl_BJETHAD = MapIndex_Bindex[kf_SMtt->GetIndex(BJETHAD_TOPTOPLEPHAD,ip)];
-		                  int IndexAllJetColl_NONBJET1 = MapIndex_NonBindex[kf_SMtt->GetIndex(NONBJET1_TOPTOPLEPHAD,ip)];
-		                  int IndexAllJetColl_NONBJET2 = MapIndex_NonBindex[kf_SMtt->GetIndex(NONBJET2_TOPTOPLEPHAD,ip)];
-		                  
 
-                      double nuPx = kf_SMtt->GetNuPx(ip,0);
-                      double nuPy = kf_SMtt->GetNuPy(ip,0);
-                      double nuPz = kf_SMtt->GetNuPz(ip,0);
+		                  int IndexAllJetColl_BJETLEP = MapIndex_Bindex[kf_SMttHypo->GetIndex(BJETLEP_TOPTOPLEPHAD,ip)];
+		                  int IndexAllJetColl_BJETHAD = MapIndex_Bindex[kf_SMttHypo->GetIndex(BJETHAD_TOPTOPLEPHAD,ip)];
+		                  int IndexAllJetColl_NONBJET1 = MapIndex_NonBindex[kf_SMttHypo->GetIndex(NONBJET1_TOPTOPLEPHAD,ip)];
+		                  int IndexAllJetColl_NONBJET2 = MapIndex_NonBindex[kf_SMttHypo->GetIndex(NONBJET2_TOPTOPLEPHAD,ip)];
+
+
+                      double nuPx = kf_SMttHypo->GetNuPx(ip,0);
+                      double nuPy = kf_SMttHypo->GetNuPy(ip,0);
+                      double nuPz = kf_SMttHypo->GetNuPz(ip,0);
                       TLorentzVector Nu_, LEP_, BJETLEP_, BJETHAD_, NONBJET1_, NONBJET2_;
                       TLorentzVector Higgs_, HadTop_, LepTop_;
-                      
+
                       Nu_.SetPxPyPzE(nuPx,nuPy,nuPz,sqrt(nuPx*nuPx+nuPy*nuPy+nuPz*nuPz));
                       LEP_.SetPtEtaPhiE(lepPt,lepEta,lepPhi,lepE);
                       BJETLEP_.SetPtEtaPhiE(pt_jet[IndexAllJetColl_BJETLEP],eta_jet[IndexAllJetColl_BJETLEP],phi_jet[IndexAllJetColl_BJETLEP],E_jet[IndexAllJetColl_BJETLEP]);
                       BJETHAD_.SetPtEtaPhiE(pt_jet[IndexAllJetColl_BJETHAD],eta_jet[IndexAllJetColl_BJETHAD],phi_jet[IndexAllJetColl_BJETHAD],E_jet[IndexAllJetColl_BJETHAD]);
                       NONBJET1_.SetPtEtaPhiE(pt_jet[IndexAllJetColl_NONBJET1],eta_jet[IndexAllJetColl_NONBJET1],phi_jet[IndexAllJetColl_NONBJET1],E_jet[IndexAllJetColl_NONBJET1]);
                       NONBJET2_.SetPtEtaPhiE(pt_jet[IndexAllJetColl_NONBJET2],eta_jet[IndexAllJetColl_NONBJET2],phi_jet[IndexAllJetColl_NONBJET2],E_jet[IndexAllJetColl_NONBJET2]);
-                      
+
                       Higgs_ = NONBJET1_+NONBJET2_;
                       HadTop_ = Higgs_+BJETHAD_;
                       LepTop_ = Nu_ + LEP_ + BJETLEP_;
 
-                      double SumCharge_Hjets = fabs(InclJetCharge[IndexAllJetColl_NONBJET1]-InclJetCharge[IndexAllJetColl_NONBJET2]);
+//                      double SumCharge_Hjets = fabs(InclJetCharge[IndexAllJetColl_NONBJET1]-InclJetCharge[IndexAllJetColl_NONBJET2]);
 //                      double SumCharge_SMbLep = fabs(InclJetCharge[IndexAllJetColl_BJETLEP]-lepCharge);
                       double SumCharge_TopJets = fabs(InclJetCharge[IndexAllJetColl_BJETLEP]-InclJetCharge[IndexAllJetColl_BJETHAD]);
-                      double SumCharge_FCNHJetLep = fabs(InclJetCharge[IndexAllJetColl_BJETHAD]-lepCharge);
+//                      double SumCharge_FCNHJetLep = fabs(InclJetCharge[IndexAllJetColl_BJETHAD]-lepCharge);
 //                      double CvsL_Hjet1 = CvsLJet[IndexAllJetColl_NONBJET1];
 //                      double CvsL_Hjet2 = CvsLJet[IndexAllJetColl_NONBJET2];
 //                      double CvsL_SMb = CvsLJet[IndexAllJetColl_BJETLEP];
                       double CvsL_FCNHjet = CvsLJet[IndexAllJetColl_BJETHAD];
-                      double CvsB_Hjet1 = CvsBJet[IndexAllJetColl_NONBJET1];
-                      double CvsB_Hjet2 = CvsBJet[IndexAllJetColl_NONBJET2];
-                      double CvsB_SMb = CvsBJet[IndexAllJetColl_BJETLEP];
-//                      double CvsB_FCNHjet = CvsBJet[IndexAllJetColl_BJETHAD];
+//                      double CvsB_Hjet1 = CvsBJet[IndexAllJetColl_NONBJET1];
+//                      double CvsB_Hjet2 = CvsBJet[IndexAllJetColl_NONBJET2];
+//                      double CvsB_SMb = CvsBJet[IndexAllJetColl_BJETLEP];
+                      double CvsB_FCNHjet = CvsBJet[IndexAllJetColl_BJETHAD];
                       double Hmass = Higgs_.M(); //The second index indicates for idx=0 leptonic part and idx = 1 hadronic part
-//                      double LepTopmass = LepTop_.M();
+                      double LepTopmass = LepTop_.M();
                       double HadTopmass = HadTop_.M();
-//                      double DR_H_HadTop = Higgs_.DeltaR(HadTop_);
-//                      double DR_H_LepTop = Higgs_.DeltaR(LepTop_);
+                      double DR_H_HadTop = Higgs_.DeltaR(HadTop_);
+                      double DR_H_LepTop = Higgs_.DeltaR(LepTop_);
 //                      double DR_H_SMb = Higgs_.DeltaR(BJETLEP_);
 //                      double DR_Hb1_Hb2 = NONBJET1_.DeltaR(NONBJET2_);
 //                      double DR_Lep_SMb = LEP_.DeltaR(BJETLEP_);
-                      double DR_Lep_H = LEP_.DeltaR(Higgs_);
-                      double DR_Lep_HadTop = LEP_.DeltaR(HadTop_);
+//                      double DR_Lep_H = LEP_.DeltaR(Higgs_);
+//                      double DR_Lep_HadTop = LEP_.DeltaR(HadTop_);
 //                      double Chi2 = chi2;
-//                      double LepTopPt = LepTop_.Pt();
+                      double LepTopPt = LepTop_.Pt();
 //                      double HPt = Higgs_.Pt();
-//                      double HadTopPt = HadTop_.Pt();
+                      double HadTopPt = HadTop_.Pt();
 
                       if(SingleTop)
                       {
                           if( (MotherpdgID[IndexAllJetColl_NONBJET1] == 25) && (MotherpdgID[IndexAllJetColl_NONBJET2]==25) && (fabs(MotherpdgID[IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[IndexAllJetColl_BJETLEP]) == 5) )
                           {
-                              Eventtrainer_->Fill("S","SumCharge_Hjets", SumCharge_Hjets);
+//                              Eventtrainer_->Fill("S","SumCharge_Hjets", SumCharge_Hjets);
 //                              Eventtrainer_->Fill("S","SumCharge_SMbLep", SumCharge_SMbLep);
                               Eventtrainer_->Fill("S","SumCharge_TopJets", SumCharge_TopJets);
-                              Eventtrainer_->Fill("S","SumCharge_FCNHJetLep", SumCharge_FCNHJetLep);
+//                              Eventtrainer_->Fill("S","SumCharge_FCNHJetLep", SumCharge_FCNHJetLep);
 //                              Eventtrainer_->Fill("S","CvsL_Hjet1", CvsL_Hjet1);
 //                              Eventtrainer_->Fill("S","CvsL_Hjet2", CvsL_Hjet2);
 //                              Eventtrainer_->Fill("S","CvsL_SMb", CvsL_SMb);
                               Eventtrainer_->Fill("S","CvsL_FCNHjet", CvsL_FCNHjet);
-                              Eventtrainer_->Fill("S","CvsB_Hjet1", CvsB_Hjet1);
-                              Eventtrainer_->Fill("S","CvsB_Hjet2", CvsB_Hjet2);
-                              Eventtrainer_->Fill("S","CvsB_SMb", CvsB_SMb);
-//                              Eventtrainer_->Fill("S","CvsB_FCNHjet", CvsB_FCNHjet);
+//                              Eventtrainer_->Fill("S","CvsB_Hjet1", CvsB_Hjet1);
+//                              Eventtrainer_->Fill("S","CvsB_Hjet2", CvsB_Hjet2);
+//                              Eventtrainer_->Fill("S","CvsB_SMb", CvsB_SMb);
+                              Eventtrainer_->Fill("S","CvsB_FCNHjet", CvsB_FCNHjet);
                               Eventtrainer_->Fill("S","Hmass", Hmass);
-//                              Eventtrainer_->Fill("S","LepTopmass", LepTopmass);
+                              Eventtrainer_->Fill("S","LepTopmass", LepTopmass);
                               Eventtrainer_->Fill("S","HadTopmass", HadTopmass);
-//                              Eventtrainer_->Fill("S","DR_H_HadTop", DR_H_HadTop);
-//                              Eventtrainer_->Fill("S","DR_H_LepTop", DR_H_LepTop);
+                              Eventtrainer_->Fill("S","DR_H_HadTop", DR_H_HadTop);
+                              Eventtrainer_->Fill("S","DR_H_LepTop", DR_H_LepTop);
 //                              Eventtrainer_->Fill("S","DR_H_SMb", DR_H_SMb);
 //                              Eventtrainer_->Fill("S","DR_Hb1_Hb2", DR_Hb1_Hb2);
 //                              Eventtrainer_->Fill("S","DR_Lep_SMb", DR_Lep_SMb);
-                              Eventtrainer_->Fill("S","DR_Lep_H", DR_Lep_H);
-                              Eventtrainer_->Fill("S","DR_Lep_HadTop", DR_Lep_HadTop);
+//                              Eventtrainer_->Fill("S","DR_Lep_H", DR_Lep_H);
+//                              Eventtrainer_->Fill("S","DR_Lep_HadTop", DR_Lep_HadTop);
 //                              Eventtrainer_->Fill("S","Chi2", Chi2);
-//                              Eventtrainer_->Fill("S","LepTopPt", LepTopPt);
+                              Eventtrainer_->Fill("S","LepTopPt", LepTopPt);
 //                              Eventtrainer_->Fill("S","HPt", HPt);
-//                              Eventtrainer_->Fill("S","HadTopPt", HadTopPt);
+                              Eventtrainer_->Fill("S","HadTopPt", HadTopPt);
                           }
                           else
                           {
-                              Eventtrainer_->Fill("B","SumCharge_Hjets", SumCharge_Hjets);
+//                              Eventtrainer_->Fill("B","SumCharge_Hjets", SumCharge_Hjets);
 //                              Eventtrainer_->Fill("B","SumCharge_SMbLep", SumCharge_SMbLep);
                               Eventtrainer_->Fill("B","SumCharge_TopJets", SumCharge_TopJets);
-                              Eventtrainer_->Fill("B","SumCharge_FCNHJetLep", SumCharge_FCNHJetLep);
+//                              Eventtrainer_->Fill("B","SumCharge_FCNHJetLep", SumCharge_FCNHJetLep);
 //                              Eventtrainer_->Fill("B","CvsL_Hjet1", CvsL_Hjet1);
 //                              Eventtrainer_->Fill("B","CvsL_Hjet2", CvsL_Hjet2);
 //                              Eventtrainer_->Fill("B","CvsL_SMb", CvsL_SMb);
                               Eventtrainer_->Fill("B","CvsL_FCNHjet", CvsL_FCNHjet);
-                              Eventtrainer_->Fill("B","CvsB_Hjet1", CvsB_Hjet1);
-                              Eventtrainer_->Fill("B","CvsB_Hjet2", CvsB_Hjet2);
-                              Eventtrainer_->Fill("B","CvsB_SMb", CvsB_SMb);
-//                              Eventtrainer_->Fill("B","CvsB_FCNHjet", CvsB_FCNHjet);
+//                              Eventtrainer_->Fill("B","CvsB_Hjet1", CvsB_Hjet1);
+//                              Eventtrainer_->Fill("B","CvsB_Hjet2", CvsB_Hjet2);
+//                              Eventtrainer_->Fill("B","CvsB_SMb", CvsB_SMb);
+                              Eventtrainer_->Fill("B","CvsB_FCNHjet", CvsB_FCNHjet);
                               Eventtrainer_->Fill("B","Hmass", Hmass);
-//                              Eventtrainer_->Fill("B","LepTopmass", LepTopmass);
+                              Eventtrainer_->Fill("B","LepTopmass", LepTopmass);
                               Eventtrainer_->Fill("B","HadTopmass", HadTopmass);
-//                              Eventtrainer_->Fill("B","DR_H_HadTop", DR_H_HadTop);
-//                              Eventtrainer_->Fill("B","DR_H_LepTop", DR_H_LepTop);
+                              Eventtrainer_->Fill("B","DR_H_HadTop", DR_H_HadTop);
+                              Eventtrainer_->Fill("B","DR_H_LepTop", DR_H_LepTop);
 //                              Eventtrainer_->Fill("B","DR_H_SMb", DR_H_SMb);
 //                              Eventtrainer_->Fill("B","DR_Hb1_Hb2", DR_Hb1_Hb2);
 //                              Eventtrainer_->Fill("B","DR_Lep_SMb", DR_Lep_SMb);
-                              Eventtrainer_->Fill("B","DR_Lep_H", DR_Lep_H);
-                              Eventtrainer_->Fill("B","DR_Lep_HadTop", DR_Lep_HadTop);
+//                              Eventtrainer_->Fill("B","DR_Lep_H", DR_Lep_H);
+//                              Eventtrainer_->Fill("B","DR_Lep_HadTop", DR_Lep_HadTop);
 //                              Eventtrainer_->Fill("B","Chi2", Chi2);
-//                              Eventtrainer_->Fill("B","LepTopPt", LepTopPt);
+                              Eventtrainer_->Fill("B","LepTopPt", LepTopPt);
 //                              Eventtrainer_->Fill("B","HPt", HPt);
-//                              Eventtrainer_->Fill("B","HadTopPt", HadTopPt);
+                              Eventtrainer_->Fill("B","HadTopPt", HadTopPt);
                           }
                       }
                       else
                       {
                           if( (MotherpdgID[IndexAllJetColl_NONBJET1] == 25) && (MotherpdgID[IndexAllJetColl_NONBJET2]==25) && (fabs(MotherpdgID[IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[IndexAllJetColl_BJETLEP]) == 5) && (fabs(MotherpdgID[IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[IndexAllJetColl_BJETHAD]) != 5) )
                           {
-                              Eventtrainer_->Fill("S","SumCharge_Hjets", SumCharge_Hjets);
+//                              Eventtrainer_->Fill("S","SumCharge_Hjets", SumCharge_Hjets);
 //                              Eventtrainer_->Fill("S","SumCharge_SMbLep", SumCharge_SMbLep);
                               Eventtrainer_->Fill("S","SumCharge_TopJets", SumCharge_TopJets);
-                              Eventtrainer_->Fill("S","SumCharge_FCNHJetLep", SumCharge_FCNHJetLep);
+//                              Eventtrainer_->Fill("S","SumCharge_FCNHJetLep", SumCharge_FCNHJetLep);
 //                              Eventtrainer_->Fill("S","CvsL_Hjet1", CvsL_Hjet1);
 //                              Eventtrainer_->Fill("S","CvsL_Hjet2", CvsL_Hjet2);
 //                              Eventtrainer_->Fill("S","CvsL_SMb", CvsL_SMb);
                               Eventtrainer_->Fill("S","CvsL_FCNHjet", CvsL_FCNHjet);
-                              Eventtrainer_->Fill("S","CvsB_Hjet1", CvsB_Hjet1);
-                              Eventtrainer_->Fill("S","CvsB_Hjet2", CvsB_Hjet2);
-                              Eventtrainer_->Fill("S","CvsB_SMb", CvsB_SMb);
-//                              Eventtrainer_->Fill("S","CvsB_FCNHjet", CvsB_FCNHjet);
+//                              Eventtrainer_->Fill("S","CvsB_Hjet1", CvsB_Hjet1);
+//                              Eventtrainer_->Fill("S","CvsB_Hjet2", CvsB_Hjet2);
+//                              Eventtrainer_->Fill("S","CvsB_SMb", CvsB_SMb);
+                              Eventtrainer_->Fill("S","CvsB_FCNHjet", CvsB_FCNHjet);
                               Eventtrainer_->Fill("S","Hmass", Hmass);
-//                              Eventtrainer_->Fill("S","LepTopmass", LepTopmass);
+                              Eventtrainer_->Fill("S","LepTopmass", LepTopmass);
                               Eventtrainer_->Fill("S","HadTopmass", HadTopmass);
-//                              Eventtrainer_->Fill("S","DR_H_HadTop", DR_H_HadTop);
-//                              Eventtrainer_->Fill("S","DR_H_LepTop", DR_H_LepTop);
+                              Eventtrainer_->Fill("S","DR_H_HadTop", DR_H_HadTop);
+                              Eventtrainer_->Fill("S","DR_H_LepTop", DR_H_LepTop);
 //                              Eventtrainer_->Fill("S","DR_H_SMb", DR_H_SMb);
 //                              Eventtrainer_->Fill("S","DR_Hb1_Hb2", DR_Hb1_Hb2);
 //                              Eventtrainer_->Fill("S","DR_Lep_SMb", DR_Lep_SMb);
-                              Eventtrainer_->Fill("S","DR_Lep_H", DR_Lep_H);
-                              Eventtrainer_->Fill("S","DR_Lep_HadTop", DR_Lep_HadTop);
+//                              Eventtrainer_->Fill("S","DR_Lep_H", DR_Lep_H);
+//                              Eventtrainer_->Fill("S","DR_Lep_HadTop", DR_Lep_HadTop);
 //                              Eventtrainer_->Fill("S","Chi2", Chi2);
-//                              Eventtrainer_->Fill("S","LepTopPt", LepTopPt);
+                              Eventtrainer_->Fill("S","LepTopPt", LepTopPt);
 //                              Eventtrainer_->Fill("S","HPt", HPt);
-//                              Eventtrainer_->Fill("S","HadTopPt", HadTopPt);
+                              Eventtrainer_->Fill("S","HadTopPt", HadTopPt);
                           }
                           else
                           {
-                              Eventtrainer_->Fill("B","SumCharge_Hjets", SumCharge_Hjets);
+//                              Eventtrainer_->Fill("B","SumCharge_Hjets", SumCharge_Hjets);
 //                              Eventtrainer_->Fill("B","SumCharge_SMbLep", SumCharge_SMbLep);
                               Eventtrainer_->Fill("B","SumCharge_TopJets", SumCharge_TopJets);
-                              Eventtrainer_->Fill("B","SumCharge_FCNHJetLep", SumCharge_FCNHJetLep);
+//                              Eventtrainer_->Fill("B","SumCharge_FCNHJetLep", SumCharge_FCNHJetLep);
 //                              Eventtrainer_->Fill("B","CvsL_Hjet1", CvsL_Hjet1);
 //                              Eventtrainer_->Fill("B","CvsL_Hjet2", CvsL_Hjet2);
 //                              Eventtrainer_->Fill("B","CvsL_SMb", CvsL_SMb);
                               Eventtrainer_->Fill("B","CvsL_FCNHjet", CvsL_FCNHjet);
-                              Eventtrainer_->Fill("B","CvsB_Hjet1", CvsB_Hjet1);
-                              Eventtrainer_->Fill("B","CvsB_Hjet2", CvsB_Hjet2);
-                              Eventtrainer_->Fill("B","CvsB_SMb", CvsB_SMb);
-//                              Eventtrainer_->Fill("B","CvsB_FCNHjet", CvsB_FCNHjet);
+//                              Eventtrainer_->Fill("B","CvsB_Hjet1", CvsB_Hjet1);
+//                              Eventtrainer_->Fill("B","CvsB_Hjet2", CvsB_Hjet2);
+//                              Eventtrainer_->Fill("B","CvsB_SMb", CvsB_SMb);
+                              Eventtrainer_->Fill("B","CvsB_FCNHjet", CvsB_FCNHjet);
                               Eventtrainer_->Fill("B","Hmass", Hmass);
-//                              Eventtrainer_->Fill("B","LepTopmass", LepTopmass);
+                              Eventtrainer_->Fill("B","LepTopmass", LepTopmass);
                               Eventtrainer_->Fill("B","HadTopmass", HadTopmass);
-//                              Eventtrainer_->Fill("B","DR_H_HadTop", DR_H_HadTop);
-//                              Eventtrainer_->Fill("B","DR_H_LepTop", DR_H_LepTop);
+                              Eventtrainer_->Fill("B","DR_H_HadTop", DR_H_HadTop);
+                              Eventtrainer_->Fill("B","DR_H_LepTop", DR_H_LepTop);
 //                              Eventtrainer_->Fill("B","DR_H_SMb", DR_H_SMb);
 //                              Eventtrainer_->Fill("B","DR_Hb1_Hb2", DR_Hb1_Hb2);
 //                              Eventtrainer_->Fill("B","DR_Lep_SMb", DR_Lep_SMb);
-                              Eventtrainer_->Fill("B","DR_Lep_H", DR_Lep_H);
-                              Eventtrainer_->Fill("B","DR_Lep_HadTop", DR_Lep_HadTop);
+//                              Eventtrainer_->Fill("B","DR_Lep_H", DR_Lep_H);
+//                              Eventtrainer_->Fill("B","DR_Lep_HadTop", DR_Lep_HadTop);
 //                              Eventtrainer_->Fill("B","Chi2", Chi2);
-//                              Eventtrainer_->Fill("B","LepTopPt", LepTopPt);
+                              Eventtrainer_->Fill("B","LepTopPt", LepTopPt);
 //                              Eventtrainer_->Fill("B","HPt", HPt);
-//                              Eventtrainer_->Fill("B","HadTopPt", HadTopPt);
+                              Eventtrainer_->Fill("B","HadTopPt", HadTopPt);
                           }
                       }
                   }
@@ -987,39 +987,39 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
           /////////////////////////////////////////////////////////////////////////////
           // Section for the kinematic fit using the TOPTOPLEPHBB (selection: at least 3 b-jets and at least 1 non-b jets)
           /////////////////////////////////////////////////////////////////////////////
-          if(KinFitMethod == "TTSignal")
+          if(KinFitMethod == "TThypo")
           {
               if(BJetPt.size()>=3 && NonBJetPt.size()>=1)
               {
-              
 
-                  kf_TTSignal->SetBJet(BJetPt,BJetEta,BJetPhi,BJetE);
-                  kf_TTSignal->SetNonBJet(NonBJetPt,NonBJetEta,NonBJetPhi,NonBJetE);
-                  if(channel == "_El") kf_TTSignal->SetElectron(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
-                  else if(channel == "_Mu") kf_TTSignal->SetMuon(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
-                  kf_TTSignal->SetMet(met_px,met_py);
-                            
-                            
-                  kf_TTSignal->Run();
-                  int nPerm_TTSignal = kf_TTSignal->GetNPerm();
-                            
-                            
-                  for(int ip=0;ip<nPerm_TTSignal;ip++)
+
+                  kf_TThypo->SetBJet(BJetPt,BJetEta,BJetPhi,BJetE);
+                  kf_TThypo->SetNonBJet(NonBJetPt,NonBJetEta,NonBJetPhi,NonBJetE);
+                  if(channel == "_El") kf_TThypo->SetElectron(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
+                  else if(channel == "_Mu") kf_TThypo->SetMuon(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
+                  kf_TThypo->SetMet(met_px,met_py);
+
+
+                  kf_TThypo->Run();
+                  int nPerm_TThypo = kf_TThypo->GetNPerm();
+
+
+                  for(int ip=0;ip<nPerm_TThypo;ip++)
                   {
-                      double chi2 = kf_TTSignal->GetDisc(ip);
+                      double chi2 = kf_TThypo->GetDisc(ip);
                       if(chi2>10E+9)  continue;
-		                   
-		                  int IndexAllJetColl_BJETLEP = MapIndex_Bindex[kf_TTSignal->GetIndex(BJETLEP_TOPTOPLEPHBB,ip)];
-		                  int IndexAllJetColl_NONBJETHAD = MapIndex_NonBindex[kf_TTSignal->GetIndex(NONBJETHAD_TOPTOPLEPHBB,ip)];
-		                  int IndexAllJetColl_BJET1 = MapIndex_Bindex[kf_TTSignal->GetIndex(BJET1_TOPTOPLEPHBB,ip)];
-		                  int IndexAllJetColl_BJET2 = MapIndex_Bindex[kf_TTSignal->GetIndex(BJET2_TOPTOPLEPHBB,ip)];
-                      
-                      double nuPx = kf_TTSignal->GetNuPx(ip,0);
-                      double nuPy = kf_TTSignal->GetNuPy(ip,0);
-                      double nuPz = kf_TTSignal->GetNuPz(ip,0);
+
+		                  int IndexAllJetColl_BJETLEP = MapIndex_Bindex[kf_TThypo->GetIndex(BJETLEP_TOPTOPLEPHBB,ip)];
+		                  int IndexAllJetColl_NONBJETHAD = MapIndex_NonBindex[kf_TThypo->GetIndex(NONBJETHAD_TOPTOPLEPHBB,ip)];
+		                  int IndexAllJetColl_BJET1 = MapIndex_Bindex[kf_TThypo->GetIndex(BJET1_TOPTOPLEPHBB,ip)];
+		                  int IndexAllJetColl_BJET2 = MapIndex_Bindex[kf_TThypo->GetIndex(BJET2_TOPTOPLEPHBB,ip)];
+
+                      double nuPx = kf_TThypo->GetNuPx(ip,0);
+                      double nuPy = kf_TThypo->GetNuPy(ip,0);
+                      double nuPz = kf_TThypo->GetNuPz(ip,0);
                       TLorentzVector Nu_, LEP_, BJETLEP_, NONBJETHAD_, BJET1_, BJET2_;
                       TLorentzVector Higgs_, HadTop_, LepTop_;
-                      
+
                       Nu_.SetPxPyPzE(nuPx,nuPy,nuPz,sqrt(nuPx*nuPx+nuPy*nuPy+nuPz*nuPz));
                       LEP_.SetPtEtaPhiE(lepPt,lepEta,lepPhi,lepE);
                       BJETLEP_.SetPtEtaPhiE(pt_jet[IndexAllJetColl_BJETLEP],eta_jet[IndexAllJetColl_BJETLEP],phi_jet[IndexAllJetColl_BJETLEP],E_jet[IndexAllJetColl_BJETLEP]);
@@ -1033,20 +1033,20 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
                       
 //                      double SumCharge_Hjets = fabs(InclJetCharge[IndexAllJetColl_BJET1]-InclJetCharge[IndexAllJetColl_BJET2]);
 //                      double SumCharge_SMbLep = fabs(InclJetCharge[IndexAllJetColl_BJETLEP]-lepCharge);
-//                      double SumCharge_TopJets = fabs(InclJetCharge[IndexAllJetColl_BJETLEP]-InclJetCharge[IndexAllJetColl_NONBJETHAD]);
+                      double SumCharge_TopJets = fabs(InclJetCharge[IndexAllJetColl_BJETLEP]-InclJetCharge[IndexAllJetColl_NONBJETHAD]);
 //                      double SumCharge_FCNHJetLep = fabs(InclJetCharge[IndexAllJetColl_NONBJETHAD]-lepCharge);
 //                      double CvsL_Hjet1 = CvsLJet[IndexAllJetColl_BJET1];
 //                      double CvsL_Hjet2 = CvsLJet[IndexAllJetColl_BJET2];
 //                      double CvsL_SMb = CvsLJet[IndexAllJetColl_BJETLEP];
-//                      double CvsL_FCNHjet = CvsLJet[IndexAllJetColl_NONBJETHAD];
+                      double CvsL_FCNHjet = CvsLJet[IndexAllJetColl_NONBJETHAD];
 //                      double CvsB_Hjet1 = CvsBJet[IndexAllJetColl_BJET1];
 //                      double CvsB_Hjet2 = CvsBJet[IndexAllJetColl_BJET2];
 //                      double CvsB_SMb = CvsBJet[IndexAllJetColl_BJETLEP];
-//                      double CvsB_FCNHjet = CvsBJet[IndexAllJetColl_NONBJETHAD];
+                      double CvsB_FCNHjet = CvsBJet[IndexAllJetColl_NONBJETHAD];
                       double Hmass = Higgs_.M(); //The second index indicates for idx=0 leptonic part and idx = 1 hadronic part
                       double LepTopmass = LepTop_.M();
-//                      double HadTopmass = HadTop_.M();
-//                      double DR_H_HadTop = Higgs_.DeltaR(HadTop_);
+                      double HadTopmass = HadTop_.M();
+                      double DR_H_HadTop = Higgs_.DeltaR(HadTop_);
                       double DR_H_LepTop = Higgs_.DeltaR(LepTop_);
 //                      double DR_H_SMb = Higgs_.DeltaR(BJETLEP_);
 //                      double DR_Hb1_Hb2 = BJET1_.DeltaR(BJET2_);
@@ -1056,7 +1056,7 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
 //                      double Chi2 = chi2;
                       double LepTopPt = LepTop_.Pt();
 //                      double HPt = Higgs_.Pt();
-//                      double HadTopPt = HadTop_.Pt();
+                      double HadTopPt = HadTop_.Pt();
 
                       if(SingleTop)
                       {
@@ -1064,20 +1064,20 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
                           {
 //                              Eventtrainer_->Fill("S","SumCharge_Hjets", SumCharge_Hjets);
 //                              Eventtrainer_->Fill("S","SumCharge_SMbLep", SumCharge_SMbLep);
-//                              Eventtrainer_->Fill("S","SumCharge_TopJets", SumCharge_TopJets);
+                              Eventtrainer_->Fill("S","SumCharge_TopJets", SumCharge_TopJets);
 //                              Eventtrainer_->Fill("S","SumCharge_FCNHJetLep", SumCharge_FCNHJetLep);
 //                              Eventtrainer_->Fill("S","CvsL_Hjet1", CvsL_Hjet1);
 //                              Eventtrainer_->Fill("S","CvsL_Hjet2", CvsL_Hjet2);
 //                              Eventtrainer_->Fill("S","CvsL_SMb", CvsL_SMb);
-//                              Eventtrainer_->Fill("S","CvsL_FCNHjet", CvsL_FCNHjet);
+                              Eventtrainer_->Fill("S","CvsL_FCNHjet", CvsL_FCNHjet);
 //                              Eventtrainer_->Fill("S","CvsB_Hjet1", CvsB_Hjet1);
 //                              Eventtrainer_->Fill("S","CvsB_Hjet2", CvsB_Hjet2);
 //                              Eventtrainer_->Fill("S","CvsB_SMb", CvsB_SMb);
-//                              Eventtrainer_->Fill("S","CvsB_FCNHjet", CvsB_FCNHjet);
+                              Eventtrainer_->Fill("S","CvsB_FCNHjet", CvsB_FCNHjet);
                               Eventtrainer_->Fill("S","Hmass", Hmass);
                               Eventtrainer_->Fill("S","LepTopmass", LepTopmass);
-//                              Eventtrainer_->Fill("S","HadTopmass", HadTopmass);
-//                              Eventtrainer_->Fill("S","DR_H_HadTop", DR_H_HadTop);
+                              Eventtrainer_->Fill("S","HadTopmass", HadTopmass);
+                              Eventtrainer_->Fill("S","DR_H_HadTop", DR_H_HadTop);
                               Eventtrainer_->Fill("S","DR_H_LepTop", DR_H_LepTop);
 //                              Eventtrainer_->Fill("S","DR_H_SMb", DR_H_SMb);
 //                              Eventtrainer_->Fill("S","DR_Hb1_Hb2", DR_Hb1_Hb2);
@@ -1087,26 +1087,26 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
 //                              Eventtrainer_->Fill("S","Chi2", Chi2);
                               Eventtrainer_->Fill("S","LepTopPt", LepTopPt);
 //                              Eventtrainer_->Fill("S","HPt", HPt);
-//                              Eventtrainer_->Fill("S","HadTopPt", HadTopPt);
+                              Eventtrainer_->Fill("S","HadTopPt", HadTopPt);
                           }
                           else
                           {
 //                              Eventtrainer_->Fill("B","SumCharge_Hjets", SumCharge_Hjets);
 //                              Eventtrainer_->Fill("B","SumCharge_SMbLep", SumCharge_SMbLep);
-//                              Eventtrainer_->Fill("B","SumCharge_TopJets", SumCharge_TopJets);
+                              Eventtrainer_->Fill("B","SumCharge_TopJets", SumCharge_TopJets);
 //                              Eventtrainer_->Fill("B","SumCharge_FCNHJetLep", SumCharge_FCNHJetLep);
 //                              Eventtrainer_->Fill("B","CvsL_Hjet1", CvsL_Hjet1);
 //                              Eventtrainer_->Fill("B","CvsL_Hjet2", CvsL_Hjet2);
 //                              Eventtrainer_->Fill("B","CvsL_SMb", CvsL_SMb);
-//                              Eventtrainer_->Fill("B","CvsL_FCNHjet", CvsL_FCNHjet);
+                              Eventtrainer_->Fill("B","CvsL_FCNHjet", CvsL_FCNHjet);
 //                              Eventtrainer_->Fill("B","CvsB_Hjet1", CvsB_Hjet1);
 //                              Eventtrainer_->Fill("B","CvsB_Hjet2", CvsB_Hjet2);
 //                              Eventtrainer_->Fill("B","CvsB_SMb", CvsB_SMb);
-//                              Eventtrainer_->Fill("B","CvsB_FCNHjet", CvsB_FCNHjet);
+                              Eventtrainer_->Fill("B","CvsB_FCNHjet", CvsB_FCNHjet);
                               Eventtrainer_->Fill("B","Hmass", Hmass);
                               Eventtrainer_->Fill("B","LepTopmass", LepTopmass);
-//                              Eventtrainer_->Fill("B","HadTopmass", HadTopmass);
-//                              Eventtrainer_->Fill("B","DR_H_HadTop", DR_H_HadTop);
+                              Eventtrainer_->Fill("B","HadTopmass", HadTopmass);
+                              Eventtrainer_->Fill("B","DR_H_HadTop", DR_H_HadTop);
                               Eventtrainer_->Fill("B","DR_H_LepTop", DR_H_LepTop);
 //                              Eventtrainer_->Fill("B","DR_H_SMb", DR_H_SMb);
 //                              Eventtrainer_->Fill("B","DR_Hb1_Hb2", DR_Hb1_Hb2);
@@ -1116,7 +1116,7 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
 //                              Eventtrainer_->Fill("B","Chi2", Chi2);
                               Eventtrainer_->Fill("B","LepTopPt", LepTopPt);
 //                              Eventtrainer_->Fill("B","HPt", HPt);
-//                              Eventtrainer_->Fill("B","HadTopPt", HadTopPt);
+                              Eventtrainer_->Fill("B","HadTopPt", HadTopPt);
                           }
                       }
                       else
@@ -1125,20 +1125,20 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
                           {
 //                              Eventtrainer_->Fill("S","SumCharge_Hjets", SumCharge_Hjets);
 //                              Eventtrainer_->Fill("S","SumCharge_SMbLep", SumCharge_SMbLep);
-//                              Eventtrainer_->Fill("S","SumCharge_TopJets", SumCharge_TopJets);
+                              Eventtrainer_->Fill("S","SumCharge_TopJets", SumCharge_TopJets);
 //                              Eventtrainer_->Fill("S","SumCharge_FCNHJetLep", SumCharge_FCNHJetLep);
 //                              Eventtrainer_->Fill("S","CvsL_Hjet1", CvsL_Hjet1);
 //                              Eventtrainer_->Fill("S","CvsL_Hjet2", CvsL_Hjet2);
 //                              Eventtrainer_->Fill("S","CvsL_SMb", CvsL_SMb);
-//                              Eventtrainer_->Fill("S","CvsL_FCNHjet", CvsL_FCNHjet);
+                              Eventtrainer_->Fill("S","CvsL_FCNHjet", CvsL_FCNHjet);
 //                              Eventtrainer_->Fill("S","CvsB_Hjet1", CvsB_Hjet1);
 //                              Eventtrainer_->Fill("S","CvsB_Hjet2", CvsB_Hjet2);
 //                              Eventtrainer_->Fill("S","CvsB_SMb", CvsB_SMb);
-//                              Eventtrainer_->Fill("S","CvsB_FCNHjet", CvsB_FCNHjet);
+                              Eventtrainer_->Fill("S","CvsB_FCNHjet", CvsB_FCNHjet);
                               Eventtrainer_->Fill("S","Hmass", Hmass);
                               Eventtrainer_->Fill("S","LepTopmass", LepTopmass);
-//                              Eventtrainer_->Fill("S","HadTopmass", HadTopmass);
-//                              Eventtrainer_->Fill("S","DR_H_HadTop", DR_H_HadTop);
+                              Eventtrainer_->Fill("S","HadTopmass", HadTopmass);
+                              Eventtrainer_->Fill("S","DR_H_HadTop", DR_H_HadTop);
                               Eventtrainer_->Fill("S","DR_H_LepTop", DR_H_LepTop);
 //                              Eventtrainer_->Fill("S","DR_H_SMb", DR_H_SMb);
 //                              Eventtrainer_->Fill("S","DR_Hb1_Hb2", DR_Hb1_Hb2);
@@ -1148,26 +1148,26 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
 //                              Eventtrainer_->Fill("S","Chi2", Chi2);
                               Eventtrainer_->Fill("S","LepTopPt", LepTopPt);
 //                              Eventtrainer_->Fill("S","HPt", HPt);
-//                              Eventtrainer_->Fill("S","HadTopPt", HadTopPt);
+                              Eventtrainer_->Fill("S","HadTopPt", HadTopPt);
                           }
                           else
                           {
 //                              Eventtrainer_->Fill("B","SumCharge_Hjets", SumCharge_Hjets);
 //                              Eventtrainer_->Fill("B","SumCharge_SMbLep", SumCharge_SMbLep);
-//                              Eventtrainer_->Fill("B","SumCharge_TopJets", SumCharge_TopJets);
+                              Eventtrainer_->Fill("B","SumCharge_TopJets", SumCharge_TopJets);
 //                              Eventtrainer_->Fill("B","SumCharge_FCNHJetLep", SumCharge_FCNHJetLep);
 //                              Eventtrainer_->Fill("B","CvsL_Hjet1", CvsL_Hjet1);
 //                              Eventtrainer_->Fill("B","CvsL_Hjet2", CvsL_Hjet2);
 //                              Eventtrainer_->Fill("B","CvsL_SMb", CvsL_SMb);
-//                              Eventtrainer_->Fill("B","CvsL_FCNHjet", CvsL_FCNHjet);
+                              Eventtrainer_->Fill("B","CvsL_FCNHjet", CvsL_FCNHjet);
 //                              Eventtrainer_->Fill("B","CvsB_Hjet1", CvsB_Hjet1);
 //                              Eventtrainer_->Fill("B","CvsB_Hjet2", CvsB_Hjet2);
 //                              Eventtrainer_->Fill("B","CvsB_SMb", CvsB_SMb);
-//                              Eventtrainer_->Fill("B","CvsB_FCNHjet", CvsB_FCNHjet);
+                              Eventtrainer_->Fill("B","CvsB_FCNHjet", CvsB_FCNHjet);
                               Eventtrainer_->Fill("B","Hmass", Hmass);
                               Eventtrainer_->Fill("B","LepTopmass", LepTopmass);
-//                              Eventtrainer_->Fill("B","HadTopmass", HadTopmass);
-//                              Eventtrainer_->Fill("B","DR_H_HadTop", DR_H_HadTop);
+                              Eventtrainer_->Fill("B","HadTopmass", HadTopmass);
+                              Eventtrainer_->Fill("B","DR_H_HadTop", DR_H_HadTop);
                               Eventtrainer_->Fill("B","DR_H_LepTop", DR_H_LepTop);
 //                              Eventtrainer_->Fill("B","DR_H_SMb", DR_H_SMb);
 //                              Eventtrainer_->Fill("B","DR_Hb1_Hb2", DR_Hb1_Hb2);
@@ -1177,7 +1177,7 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
 //                              Eventtrainer_->Fill("B","Chi2", Chi2);
                               Eventtrainer_->Fill("B","LepTopPt", LepTopPt);
 //                              Eventtrainer_->Fill("B","HPt", HPt);
-//                              Eventtrainer_->Fill("B","HadTopPt", HadTopPt);
+                              Eventtrainer_->Fill("B","HadTopPt", HadTopPt);
                           }
                       }
                   }
@@ -1186,35 +1186,35 @@ void MVA_JetCombTraining(std::string MVAmethod, int skipEvents, std::string Sign
           /////////////////////////////////////////////////////////////////////////////
           // Section for the kinematic fit using the TOPHLEPBB (selection: at least 3 b-jets)
           /////////////////////////////////////////////////////////////////////////////
-          if(KinFitMethod == "STSignal")
+          if(KinFitMethod == "SThypo")
           {
               if(BJetPt.size()>=3)
               {
               
 
-                  kf_STSignal->SetBJet(BJetPt,BJetEta,BJetPhi,BJetE);
-                  kf_STSignal->SetNonBJet(NonBJetPt,NonBJetEta,NonBJetPhi,NonBJetE);
-                  if(channel == "_El") kf_STSignal->SetElectron(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
-                  else if(channel == "_Mu") kf_STSignal->SetMuon(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
-                  kf_STSignal->SetMet(met_px,met_py);
+                  kf_SThypo->SetBJet(BJetPt,BJetEta,BJetPhi,BJetE);
+                  kf_SThypo->SetNonBJet(NonBJetPt,NonBJetEta,NonBJetPhi,NonBJetE);
+                  if(channel == "_El") kf_SThypo->SetElectron(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
+                  else if(channel == "_Mu") kf_SThypo->SetMuon(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
+                  kf_SThypo->SetMet(met_px,met_py);
                             
                             
-                  kf_STSignal->Run();
-                  int nPerm_STSignal = kf_STSignal->GetNPerm();
+                  kf_SThypo->Run();
+                  int nPerm_SThypo = kf_SThypo->GetNPerm();
                             
                             
-                  for(int ip=0;ip<nPerm_STSignal;ip++)
+                  for(int ip=0;ip<nPerm_SThypo;ip++)
                   {
-                      double chi2 = kf_STSignal->GetDisc(ip);
+                      double chi2 = kf_SThypo->GetDisc(ip);
                       if(chi2>10E+9)  continue;
 		                   
-		                  int IndexAllJetColl_BJETLEP = MapIndex_Bindex[kf_STSignal->GetIndex(BJETLEP_TOPHLEPBB,ip)];
-		                  int IndexAllJetColl_BJET1 = MapIndex_Bindex[kf_STSignal->GetIndex(BJET1_TOPHLEPBB,ip)];
-		                  int IndexAllJetColl_BJET2 = MapIndex_Bindex[kf_STSignal->GetIndex(BJET2_TOPHLEPBB,ip)];
+		                  int IndexAllJetColl_BJETLEP = MapIndex_Bindex[kf_SThypo->GetIndex(BJETLEP_TOPHLEPBB,ip)];
+		                  int IndexAllJetColl_BJET1 = MapIndex_Bindex[kf_SThypo->GetIndex(BJET1_TOPHLEPBB,ip)];
+		                  int IndexAllJetColl_BJET2 = MapIndex_Bindex[kf_SThypo->GetIndex(BJET2_TOPHLEPBB,ip)];
                       
-                      double nuPx = kf_STSignal->GetNuPx(ip,0);
-                      double nuPy = kf_STSignal->GetNuPy(ip,0);
-                      double nuPz = kf_STSignal->GetNuPz(ip,0);
+                      double nuPx = kf_SThypo->GetNuPx(ip,0);
+                      double nuPy = kf_SThypo->GetNuPy(ip,0);
+                      double nuPz = kf_SThypo->GetNuPz(ip,0);
                       TLorentzVector Nu_, LEP_, BJETLEP_, BJET1_, BJET2_;
                       TLorentzVector Higgs_, LepTop_;
                       
@@ -1315,90 +1315,90 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
   cout << "Initializing TopKinFit for MVA training of correct Jet combination" << endl;
   int nToys = 500;
 
-  std::string pdfFileName_SMtt = "TopKinFit/test/GenAnalysis/TopTopLepHad/pdf.root";
-  std::string pdfFileName_TTSignal = "TopKinFit/test/GenAnalysis/TopTopLepHbb/pdf.root";
-  std::string pdfFileName_STSignal = "TopKinFit/test/GenAnalysis/TopHLepbb/pdf.root";
+  std::string pdfFileName_SMttHypo = "TopKinFit/test/GenAnalysis/TopTopLepHad/pdf.root";
+  std::string pdfFileName_TThypo = "TopKinFit/test/GenAnalysis/TopTopLepHbb/pdf.root";
+  std::string pdfFileName_SThypo = "TopKinFit/test/GenAnalysis/TopHLepbb/pdf.root";
 
-  KINFIT::kfit *kf_SMtt = new KINFIT::kfit();
-  KINFIT::kfit *kf_STSignal = new KINFIT::kfit();
-  KINFIT::kfit *kf_TTSignal = new KINFIT::kfit();
+  KINFIT::kfit *kf_SMttHypo = new KINFIT::kfit();
+  KINFIT::kfit *kf_SThypo = new KINFIT::kfit();
+  KINFIT::kfit *kf_TThypo = new KINFIT::kfit();
 
   
-   if(KinFitMethod == "SMtt")
+   if(KinFitMethod == "SMttHypo")
    {
-      kf_SMtt->Init(TOPTOPLEPHAD);
-      kf_SMtt->SetPDF("TopWMass",pdfFileName_SMtt.c_str(),"TopLepWM_Fit");
-      kf_SMtt->SetPDF("TopMass",pdfFileName_SMtt.c_str(),"TopLepRecM_Fit");
-      kf_SMtt->SetPDF("TopWHadMass",pdfFileName_SMtt.c_str(),"TopHadWRecM_Fit");
-      kf_SMtt->SetPDF("TopHadMass",pdfFileName_SMtt.c_str(),"TopHadRecM_Fit");
-      kf_SMtt->SetPDF("MetPx",pdfFileName_SMtt.c_str(),"dMetPx_Gaus");
-      kf_SMtt->SetPDF("MetPy",pdfFileName_SMtt.c_str(),"dMetPy_Gaus");
-      kf_SMtt->SetPDF("BJetPx",pdfFileName_SMtt.c_str(),"dBJetPx_Fit");
-      kf_SMtt->SetPDF("BJetPy",pdfFileName_SMtt.c_str(),"dBJetPy_Fit");
-      kf_SMtt->SetPDF("BJetPz",pdfFileName_SMtt.c_str(),"dBJetPz_Fit");
-      kf_SMtt->SetPDF("BJetE",pdfFileName_SMtt.c_str(),"dBJetE_Fit");
-      kf_SMtt->SetPDF("ElecPx",pdfFileName_SMtt.c_str(),"dElecPx_Fit");
-      kf_SMtt->SetPDF("ElecPy",pdfFileName_SMtt.c_str(),"dElecPy_Fit");
-      kf_SMtt->SetPDF("ElecPz",pdfFileName_SMtt.c_str(),"dElecPz_Fit");
-      kf_SMtt->SetPDF("ElecE",pdfFileName_SMtt.c_str(),"dElecE_Fit");
-      kf_SMtt->SetPDF("MuonPx",pdfFileName_SMtt.c_str(),"dMuonPx_Fit");
-      kf_SMtt->SetPDF("MuonPy",pdfFileName_SMtt.c_str(),"dMuonPy_Fit");
-      kf_SMtt->SetPDF("MuonPz",pdfFileName_SMtt.c_str(),"dMuonPz_Fit");
-      kf_SMtt->SetPDF("MuonE",pdfFileName_SMtt.c_str(),"dMuonE_Fit");
-      kf_SMtt->SetPDF("NonBJetPx",pdfFileName_SMtt.c_str(),"dNonBJetPx_Fit");
-      kf_SMtt->SetPDF("NonBJetPy",pdfFileName_SMtt.c_str(),"dNonBJetPy_Fit");
-      kf_SMtt->SetPDF("NonBJetPz",pdfFileName_SMtt.c_str(),"dNonBJetPz_Fit");
-      kf_SMtt->SetPDF("NonBJetE",pdfFileName_SMtt.c_str(),"dNonBJetE_Fit");
-      kf_SMtt->SetNToy(nToys);
+      kf_SMttHypo->Init(TOPTOPLEPHAD);
+      kf_SMttHypo->SetPDF("TopWMass",pdfFileName_SMttHypo.c_str(),"TopLepWM_Fit");
+      kf_SMttHypo->SetPDF("TopMass",pdfFileName_SMttHypo.c_str(),"TopLepRecM_Fit");
+      kf_SMttHypo->SetPDF("TopWHadMass",pdfFileName_SMttHypo.c_str(),"TopHadWRecM_Fit");
+      kf_SMttHypo->SetPDF("TopHadMass",pdfFileName_SMttHypo.c_str(),"TopHadRecM_Fit");
+      kf_SMttHypo->SetPDF("MetPx",pdfFileName_SMttHypo.c_str(),"dMetPx_Gaus");
+      kf_SMttHypo->SetPDF("MetPy",pdfFileName_SMttHypo.c_str(),"dMetPy_Gaus");
+      kf_SMttHypo->SetPDF("BJetPx",pdfFileName_SMttHypo.c_str(),"dBJetPx_Fit");
+      kf_SMttHypo->SetPDF("BJetPy",pdfFileName_SMttHypo.c_str(),"dBJetPy_Fit");
+      kf_SMttHypo->SetPDF("BJetPz",pdfFileName_SMttHypo.c_str(),"dBJetPz_Fit");
+      kf_SMttHypo->SetPDF("BJetE",pdfFileName_SMttHypo.c_str(),"dBJetE_Fit");
+      kf_SMttHypo->SetPDF("ElecPx",pdfFileName_SMttHypo.c_str(),"dElecPx_Fit");
+      kf_SMttHypo->SetPDF("ElecPy",pdfFileName_SMttHypo.c_str(),"dElecPy_Fit");
+      kf_SMttHypo->SetPDF("ElecPz",pdfFileName_SMttHypo.c_str(),"dElecPz_Fit");
+      kf_SMttHypo->SetPDF("ElecE",pdfFileName_SMttHypo.c_str(),"dElecE_Fit");
+      kf_SMttHypo->SetPDF("MuonPx",pdfFileName_SMttHypo.c_str(),"dMuonPx_Fit");
+      kf_SMttHypo->SetPDF("MuonPy",pdfFileName_SMttHypo.c_str(),"dMuonPy_Fit");
+      kf_SMttHypo->SetPDF("MuonPz",pdfFileName_SMttHypo.c_str(),"dMuonPz_Fit");
+      kf_SMttHypo->SetPDF("MuonE",pdfFileName_SMttHypo.c_str(),"dMuonE_Fit");
+      kf_SMttHypo->SetPDF("NonBJetPx",pdfFileName_SMttHypo.c_str(),"dNonBJetPx_Fit");
+      kf_SMttHypo->SetPDF("NonBJetPy",pdfFileName_SMttHypo.c_str(),"dNonBJetPy_Fit");
+      kf_SMttHypo->SetPDF("NonBJetPz",pdfFileName_SMttHypo.c_str(),"dNonBJetPz_Fit");
+      kf_SMttHypo->SetPDF("NonBJetE",pdfFileName_SMttHypo.c_str(),"dNonBJetE_Fit");
+      kf_SMttHypo->SetNToy(nToys);
   }
-  if(KinFitMethod == "TTSignal")
+  if(KinFitMethod == "TThypo")
   {
-      kf_TTSignal->Init(TOPTOPLEPHBB);
-      kf_TTSignal->SetPDF("TopWMass",pdfFileName_TTSignal.c_str(),"TopLepWM_Fit");
-      kf_TTSignal->SetPDF("TopMass",pdfFileName_TTSignal.c_str(),"TopLepRecM_Fit");
-      kf_STSignal->SetPDF("HiggsMass",pdfFileName_TTSignal.c_str(),"HiggsRecM_Fit");
-      kf_TTSignal->SetPDF("TopHadMass",pdfFileName_TTSignal.c_str(),"TopHadRecM_Fit");
-      kf_TTSignal->SetPDF("MetPx",pdfFileName_TTSignal.c_str(),"dMetPx_Gaus");
-      kf_TTSignal->SetPDF("MetPy",pdfFileName_TTSignal.c_str(),"dMetPy_Gaus");
-      kf_TTSignal->SetPDF("BJetPx",pdfFileName_TTSignal.c_str(),"dBJetPx_Fit");
-      kf_TTSignal->SetPDF("BJetPy",pdfFileName_TTSignal.c_str(),"dBJetPy_Fit");
-      kf_TTSignal->SetPDF("BJetPz",pdfFileName_TTSignal.c_str(),"dBJetPz_Fit");
-      kf_TTSignal->SetPDF("BJetE",pdfFileName_TTSignal.c_str(),"dBJetE_Fit");
-      kf_TTSignal->SetPDF("ElecPx",pdfFileName_TTSignal.c_str(),"dElecPx_Fit");
-      kf_TTSignal->SetPDF("ElecPy",pdfFileName_TTSignal.c_str(),"dElecPy_Fit");
-      kf_TTSignal->SetPDF("ElecPz",pdfFileName_TTSignal.c_str(),"dElecPz_Fit");
-      kf_TTSignal->SetPDF("ElecE",pdfFileName_TTSignal.c_str(),"dElecE_Fit");
-      kf_TTSignal->SetPDF("MuonPx",pdfFileName_TTSignal.c_str(),"dMuonPx_Fit");
-      kf_TTSignal->SetPDF("MuonPy",pdfFileName_TTSignal.c_str(),"dMuonPy_Fit");
-      kf_TTSignal->SetPDF("MuonPz",pdfFileName_TTSignal.c_str(),"dMuonPz_Fit");
-      kf_TTSignal->SetPDF("MuonE",pdfFileName_TTSignal.c_str(),"dMuonE_Fit");
-      kf_TTSignal->SetPDF("NonBJetPx",pdfFileName_TTSignal.c_str(),"dNonBJetPx_Fit");
-      kf_TTSignal->SetPDF("NonBJetPy",pdfFileName_TTSignal.c_str(),"dNonBJetPy_Fit");
-      kf_TTSignal->SetPDF("NonBJetPz",pdfFileName_TTSignal.c_str(),"dNonBJetPz_Fit");
-      kf_TTSignal->SetPDF("NonBJetE",pdfFileName_TTSignal.c_str(),"dNonBJetE_Fit");
-      kf_TTSignal->SetNToy(nToys);
+      kf_TThypo->Init(TOPTOPLEPHBB);
+      kf_TThypo->SetPDF("TopWMass",pdfFileName_TThypo.c_str(),"TopLepWM_Fit");
+      kf_TThypo->SetPDF("TopMass",pdfFileName_TThypo.c_str(),"TopLepRecM_Fit");
+      kf_SThypo->SetPDF("HiggsMass",pdfFileName_TThypo.c_str(),"HiggsRecM_Fit");
+      kf_TThypo->SetPDF("TopHadMass",pdfFileName_TThypo.c_str(),"TopHadRecM_Fit");
+      kf_TThypo->SetPDF("MetPx",pdfFileName_TThypo.c_str(),"dMetPx_Gaus");
+      kf_TThypo->SetPDF("MetPy",pdfFileName_TThypo.c_str(),"dMetPy_Gaus");
+      kf_TThypo->SetPDF("BJetPx",pdfFileName_TThypo.c_str(),"dBJetPx_Fit");
+      kf_TThypo->SetPDF("BJetPy",pdfFileName_TThypo.c_str(),"dBJetPy_Fit");
+      kf_TThypo->SetPDF("BJetPz",pdfFileName_TThypo.c_str(),"dBJetPz_Fit");
+      kf_TThypo->SetPDF("BJetE",pdfFileName_TThypo.c_str(),"dBJetE_Fit");
+      kf_TThypo->SetPDF("ElecPx",pdfFileName_TThypo.c_str(),"dElecPx_Fit");
+      kf_TThypo->SetPDF("ElecPy",pdfFileName_TThypo.c_str(),"dElecPy_Fit");
+      kf_TThypo->SetPDF("ElecPz",pdfFileName_TThypo.c_str(),"dElecPz_Fit");
+      kf_TThypo->SetPDF("ElecE",pdfFileName_TThypo.c_str(),"dElecE_Fit");
+      kf_TThypo->SetPDF("MuonPx",pdfFileName_TThypo.c_str(),"dMuonPx_Fit");
+      kf_TThypo->SetPDF("MuonPy",pdfFileName_TThypo.c_str(),"dMuonPy_Fit");
+      kf_TThypo->SetPDF("MuonPz",pdfFileName_TThypo.c_str(),"dMuonPz_Fit");
+      kf_TThypo->SetPDF("MuonE",pdfFileName_TThypo.c_str(),"dMuonE_Fit");
+      kf_TThypo->SetPDF("NonBJetPx",pdfFileName_TThypo.c_str(),"dNonBJetPx_Fit");
+      kf_TThypo->SetPDF("NonBJetPy",pdfFileName_TThypo.c_str(),"dNonBJetPy_Fit");
+      kf_TThypo->SetPDF("NonBJetPz",pdfFileName_TThypo.c_str(),"dNonBJetPz_Fit");
+      kf_TThypo->SetPDF("NonBJetE",pdfFileName_TThypo.c_str(),"dNonBJetE_Fit");
+      kf_TThypo->SetNToy(nToys);
   }
-  if (KinFitMethod ==   "STSignal")
+  if (KinFitMethod ==   "SThypo")
   {
-      kf_STSignal->Init(TOPHLEPBB);
-      kf_STSignal->SetPDF("TopWMass",pdfFileName_STSignal.c_str(),"TopLepWM_Fit");
-      kf_STSignal->SetPDF("TopMass",pdfFileName_STSignal.c_str(),"TopLepRecM_Fit");
-      kf_STSignal->SetPDF("HiggsMass",pdfFileName_TTSignal.c_str(),"HiggsRecM_Fit");
-      kf_STSignal->SetPDF("MetPx",pdfFileName_STSignal.c_str(),"dMetPx_Gaus");
-      kf_STSignal->SetPDF("MetPy",pdfFileName_STSignal.c_str(),"dMetPy_Gaus");
-      kf_STSignal->SetPDF("BJetPx",pdfFileName_STSignal.c_str(),"dBJetPx_Fit");
-      kf_STSignal->SetPDF("BJetPy",pdfFileName_STSignal.c_str(),"dBJetPy_Fit");
-      kf_STSignal->SetPDF("BJetPz",pdfFileName_STSignal.c_str(),"dBJetPz_Fit");
-      kf_STSignal->SetPDF("BJetE",pdfFileName_STSignal.c_str(),"dBJetE_Fit");
-      kf_STSignal->SetPDF("ElecPx",pdfFileName_STSignal.c_str(),"dElecPx_Fit");
-      kf_STSignal->SetPDF("ElecPy",pdfFileName_STSignal.c_str(),"dElecPy_Fit");
-      kf_STSignal->SetPDF("ElecPz",pdfFileName_STSignal.c_str(),"dElecPz_Fit");
-      kf_STSignal->SetPDF("ElecE",pdfFileName_STSignal.c_str(),"dElecE_Fit");
-      kf_STSignal->SetPDF("MuonPx",pdfFileName_STSignal.c_str(),"dMuonPx_Fit");
-      kf_STSignal->SetPDF("MuonPy",pdfFileName_STSignal.c_str(),"dMuonPy_Fit");
-      kf_STSignal->SetPDF("MuonPz",pdfFileName_STSignal.c_str(),"dMuonPz_Fit");
-      kf_STSignal->SetPDF("MuonE",pdfFileName_STSignal.c_str(),"dMuonE_Fit");
-      kf_STSignal->SetNToy(nToys);
+      kf_SThypo->Init(TOPHLEPBB);
+      kf_SThypo->SetPDF("TopWMass",pdfFileName_SThypo.c_str(),"TopLepWM_Fit");
+      kf_SThypo->SetPDF("TopMass",pdfFileName_SThypo.c_str(),"TopLepRecM_Fit");
+      kf_SThypo->SetPDF("HiggsMass",pdfFileName_TThypo.c_str(),"HiggsRecM_Fit");
+      kf_SThypo->SetPDF("MetPx",pdfFileName_SThypo.c_str(),"dMetPx_Gaus");
+      kf_SThypo->SetPDF("MetPy",pdfFileName_SThypo.c_str(),"dMetPy_Gaus");
+      kf_SThypo->SetPDF("BJetPx",pdfFileName_SThypo.c_str(),"dBJetPx_Fit");
+      kf_SThypo->SetPDF("BJetPy",pdfFileName_SThypo.c_str(),"dBJetPy_Fit");
+      kf_SThypo->SetPDF("BJetPz",pdfFileName_SThypo.c_str(),"dBJetPz_Fit");
+      kf_SThypo->SetPDF("BJetE",pdfFileName_SThypo.c_str(),"dBJetE_Fit");
+      kf_SThypo->SetPDF("ElecPx",pdfFileName_SThypo.c_str(),"dElecPx_Fit");
+      kf_SThypo->SetPDF("ElecPy",pdfFileName_SThypo.c_str(),"dElecPy_Fit");
+      kf_SThypo->SetPDF("ElecPz",pdfFileName_SThypo.c_str(),"dElecPz_Fit");
+      kf_SThypo->SetPDF("ElecE",pdfFileName_SThypo.c_str(),"dElecE_Fit");
+      kf_SThypo->SetPDF("MuonPx",pdfFileName_SThypo.c_str(),"dMuonPx_Fit");
+      kf_SThypo->SetPDF("MuonPy",pdfFileName_SThypo.c_str(),"dMuonPy_Fit");
+      kf_SThypo->SetPDF("MuonPz",pdfFileName_SThypo.c_str(),"dMuonPz_Fit");
+      kf_SThypo->SetPDF("MuonE",pdfFileName_SThypo.c_str(),"dMuonE_Fit");
+      kf_SThypo->SetNToy(nToys);
   }
    
   ///////////////////////////////////////////////////////////////////
@@ -1419,24 +1419,24 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
   MVAComputer* Eventcomputer_ =0;   
   vector<std::string> MVAvars;
 
-  if(KinFitMethod == "TTSignal" || KinFitMethod == "SMtt")
+  if(KinFitMethod == "TThypo" || KinFitMethod == "SMttHypo")
   {
 //      MVAvars.push_back("SumCharge_Hjets");
 //      MVAvars.push_back("SumCharge_SMbLep");
-//      MVAvars.push_back("SumCharge_TopJets");
+      MVAvars.push_back("SumCharge_TopJets");
 //      MVAvars.push_back("SumCharge_FCNHJetLep");
 //      MVAvars.push_back("CvsL_Hjet1");
 //      MVAvars.push_back("CvsL_Hjet2");
 //      MVAvars.push_back("CvsL_SMb");
-//      MVAvars.push_back("CvsL_FCNHjet");
+      MVAvars.push_back("CvsL_FCNHjet");
 //      MVAvars.push_back("CvsB_Hjet1");
 //      MVAvars.push_back("CvsB_Hjet2");
 //      MVAvars.push_back("CvsB_SMb");
-//      MVAvars.push_back("CvsB_FCNHjet");
+      MVAvars.push_back("CvsB_FCNHjet");
       MVAvars.push_back("Hmass");
       MVAvars.push_back("LepTopmass");
-//      MVAvars.push_back("HadTopmass");
-//      MVAvars.push_back("DR_H_HadTop");
+      MVAvars.push_back("HadTopmass");
+      MVAvars.push_back("DR_H_HadTop");
       MVAvars.push_back("DR_H_LepTop");
 //      MVAvars.push_back("DR_H_SMb");
 //      MVAvars.push_back("DR_Hb1_Hb2");
@@ -1446,9 +1446,9 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
 //      MVAvars.push_back("Chi2");
       MVAvars.push_back("LepTopPt");
 //      MVAvars.push_back("HPt");
-//      MVAvars.push_back("HadTopPt");
+      MVAvars.push_back("HadTopPt");
   }
-  else if(KinFitMethod == "STSignal")
+  else if(KinFitMethod == "SThypo")
   {
 //      MVAvars.push_back("SumCharge_Hjets");
 //      MVAvars.push_back("SumCharge_SMbLep");
@@ -1492,43 +1492,43 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
 	                  int NumberOfEvents = 0;
 	                  
 	                  //TopTopLepHad initializations
-	                  int NSelectionPassedEvents_SMtt = 0;
-	                  int NMCIdentifiedEvents_SMtt_STsignal = 0;
-	                  int NMCIdentifiedEvents_SMtt_TTsignal = 0;
-	                  int NMCIdentifiedEvents_SMtt_TTbackground = 0;
-	                  int NMCIdentifiedEvents_SMtt_STsignal_TKF = 0;
-	                  int NMCIdentifiedEvents_SMtt_TTsignal_TKF = 0;
-	                  int NMCIdentifiedEvents_SMtt_TTbackground_TKF = 0;
+	                  int NSelectionPassedEvents_SMttHypo = 0;
+	                  int NMCIdentifiedEvents_SMttHypo_STsignal = 0;
+	                  int NMCIdentifiedEvents_SMttHypo_TTsignal = 0;
+	                  int NMCIdentifiedEvents_SMttHypo_TTbackground = 0;
+	                  int NMCIdentifiedEvents_SMttHypo_STsignal_TKF = 0;
+	                  int NMCIdentifiedEvents_SMttHypo_TTsignal_TKF = 0;
+	                  int NMCIdentifiedEvents_SMttHypo_TTbackground_TKF = 0;
 
 	                  //TopTopLepHbb initializations
-	                  int NSelectionPassedEvents_TTSignal = 0;
-	                  int NMCIdentifiedEvents_TTSignal_STsignal = 0;
-	                  int NMCIdentifiedEvents_TTSignal_TTsignal = 0;
-	                  int NMCIdentifiedEvents_TTSignal_TTbackground = 0;
-	                  int NMCIdentifiedEvents_TTSignal_STsignal_TKF = 0;
-	                  int NMCIdentifiedEvents_TTSignal_TTsignal_TKF = 0;
-	                  int NMCIdentifiedEvents_TTSignal_TTbackground_TKF = 0;
+	                  int NSelectionPassedEvents_TThypo = 0;
+	                  int NMCIdentifiedEvents_TThypo_STsignal = 0;
+	                  int NMCIdentifiedEvents_TThypo_TTsignal = 0;
+	                  int NMCIdentifiedEvents_TThypo_TTbackground = 0;
+	                  int NMCIdentifiedEvents_TThypo_STsignal_TKF = 0;
+	                  int NMCIdentifiedEvents_TThypo_TTsignal_TKF = 0;
+	                  int NMCIdentifiedEvents_TThypo_TTbackground_TKF = 0;
 
 	                  //TopHLepbb initializations
-	                  int NSelectionPassedEvents_STSignal = 0;
-	                  int NMCIdentifiedEvents_STSignal_STsignal = 0;
-	                  int NMCIdentifiedEvents_STSignal_TTsignal = 0;
-	                  int NMCIdentifiedEvents_STSignal_TTbackground = 0;
-	                  int NMCIdentifiedEvents_STSignal_STsignal_TKF = 0;
-	                  int NMCIdentifiedEvents_STSignal_TTsignal_TKF = 0;
-	                  int NMCIdentifiedEvents_STSignal_TTbackground_TKF = 0;
+	                  int NSelectionPassedEvents_SThypo = 0;
+	                  int NMCIdentifiedEvents_SThypo_STsignal = 0;
+	                  int NMCIdentifiedEvents_SThypo_TTsignal = 0;
+	                  int NMCIdentifiedEvents_SThypo_TTbackground = 0;
+	                  int NMCIdentifiedEvents_SThypo_STsignal_TKF = 0;
+	                  int NMCIdentifiedEvents_SThypo_TTsignal_TKF = 0;
+	                  int NMCIdentifiedEvents_SThypo_TTbackground_TKF = 0;
 
 
 	              
-                    int nMCMatchedPassedEvents_SMtt_TTbackground = 0;
-                    int nMCMatchedPassedEvents_SMtt_STsignal = 0;
-                    int nMCMatchedPassedEvents_SMtt_TTsignal = 0;
-                    int nMCMatchedPassedEvents_STSignal_TTbackground = 0;
-                    int nMCMatchedPassedEvents_STSignal_STsignal = 0;
-                    int nMCMatchedPassedEvents_STSignal_TTsignal = 0;
-                    int nMCMatchedPassedEvents_TTSignal_TTbackground = 0;
-                    int nMCMatchedPassedEvents_TTSignal_STsignal = 0;
-                    int nMCMatchedPassedEvents_TTSignal_TTsignal = 0;
+                    int nMCMatchedPassedEvents_SMttHypo_TTbackground = 0;
+                    int nMCMatchedPassedEvents_SMttHypo_STsignal = 0;
+                    int nMCMatchedPassedEvents_SMttHypo_TTsignal = 0;
+                    int nMCMatchedPassedEvents_SThypo_TTbackground = 0;
+                    int nMCMatchedPassedEvents_SThypo_STsignal = 0;
+                    int nMCMatchedPassedEvents_SThypo_TTsignal = 0;
+                    int nMCMatchedPassedEvents_TThypo_TTbackground = 0;
+                    int nMCMatchedPassedEvents_TThypo_STsignal = 0;
+                    int nMCMatchedPassedEvents_TThypo_TTsignal = 0;
 
               
 	
@@ -1672,71 +1672,71 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
           /////////////////////////////////////////////////////////////////////////////
           // Section for the kinematic fit using the TOPTOPLEPHAD (selection: at least 2 -jets and at least 2 non-b jets)
           /////////////////////////////////////////////////////////////////////////////
-          if(KinFitMethod == "SMtt")
+          if(KinFitMethod == "SMttHypo")
           {
               if(BJetPt.size()>=2 && NonBJetPt.size()>=2)
               {
               
-	                NSelectionPassedEvents_SMtt++;
-	                if(SMTT_Matched == 4) nMCMatchedPassedEvents_SMtt_TTbackground++;
-	                if(Signal_Matched == 4 && !SingleTop) nMCMatchedPassedEvents_SMtt_TTsignal++;
-	                if(Signal_Matched == 3 && SingleTop) nMCMatchedPassedEvents_SMtt_STsignal++;
+	                NSelectionPassedEvents_SMttHypo++;
+	                if(SMTT_Matched == 4) nMCMatchedPassedEvents_SMttHypo_TTbackground++;
+	                if(Signal_Matched == 4 && !SingleTop) nMCMatchedPassedEvents_SMttHypo_TTsignal++;
+	                if(Signal_Matched == 3 && SingleTop) nMCMatchedPassedEvents_SMttHypo_STsignal++;
 
-                  kf_SMtt->SetBJet(BJetPt,BJetEta,BJetPhi,BJetE);
-                  kf_SMtt->SetNonBJet(NonBJetPt,NonBJetEta,NonBJetPhi,NonBJetE);
-                  if(channel == "_El") kf_SMtt->SetElectron(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
-                  else if(channel == "_Mu") kf_SMtt->SetMuon(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
-                  kf_SMtt->SetMet(met_px,met_py);
+                  kf_SMttHypo->SetBJet(BJetPt,BJetEta,BJetPhi,BJetE);
+                  kf_SMttHypo->SetNonBJet(NonBJetPt,NonBJetEta,NonBJetPhi,NonBJetE);
+                  if(channel == "_El") kf_SMttHypo->SetElectron(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
+                  else if(channel == "_Mu") kf_SMttHypo->SetMuon(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
+                  kf_SMttHypo->SetMet(met_px,met_py);
                             
                             
-                  kf_SMtt->Run();
-                  int nPerm_SMtt = kf_SMtt->GetNPerm();
+                  kf_SMttHypo->Run();
+                  int nPerm_SMttHypo = kf_SMttHypo->GetNPerm();
                             
-                  double LowestDisc_SMtt = kf_SMtt->GetDisc(); //The minimum of likelihood == the best jet-combination
+                  double LowestDisc_SMttHypo = kf_SMttHypo->GetDisc(); //The minimum of likelihood == the best jet-combination
                   double BDTscore = -9999.;
                   int HighestBDT_IndexAllJetColl_BJETLEP = -1;
                   int HighestBDT_IndexAllJetColl_BJETHAD = -1;
                   int HighestBDT_IndexAllJetColl_NONBJET1 = -1;
                   int HighestBDT_IndexAllJetColl_NONBJET2 = -1;
                             
-                  for(int ip=0;ip<nPerm_SMtt;ip++)
+                  for(int ip=0;ip<nPerm_SMttHypo;ip++)
                   {
-                      double chi2 = kf_SMtt->GetDisc(ip);
+                      double chi2 = kf_SMttHypo->GetDisc(ip);
 
                       if(chi2>10E+9) continue;
                       
 		                   
-		                  int IndexAllJetColl_BJETLEP = MapIndex_Bindex[kf_SMtt->GetIndex(BJETLEP_TOPTOPLEPHAD,ip)];
-		                  int IndexAllJetColl_BJETHAD = MapIndex_Bindex[kf_SMtt->GetIndex(BJETHAD_TOPTOPLEPHAD,ip)];
-		                  int IndexAllJetColl_NONBJET1 = MapIndex_NonBindex[kf_SMtt->GetIndex(NONBJET1_TOPTOPLEPHAD,ip)];
-		                  int IndexAllJetColl_NONBJET2 = MapIndex_NonBindex[kf_SMtt->GetIndex(NONBJET2_TOPTOPLEPHAD,ip)];
+		                  int IndexAllJetColl_BJETLEP = MapIndex_Bindex[kf_SMttHypo->GetIndex(BJETLEP_TOPTOPLEPHAD,ip)];
+		                  int IndexAllJetColl_BJETHAD = MapIndex_Bindex[kf_SMttHypo->GetIndex(BJETHAD_TOPTOPLEPHAD,ip)];
+		                  int IndexAllJetColl_NONBJET1 = MapIndex_NonBindex[kf_SMttHypo->GetIndex(NONBJET1_TOPTOPLEPHAD,ip)];
+		                  int IndexAllJetColl_NONBJET2 = MapIndex_NonBindex[kf_SMttHypo->GetIndex(NONBJET2_TOPTOPLEPHAD,ip)];
 		                  
 		                  //Counting whether the TopKinFit method can match to the correct signal
-                      if(chi2 == LowestDisc_SMtt)
+                      if(chi2 == LowestDisc_SMttHypo)
                       {
                                       if(SingleTop)
                                       {
                                           if( (MotherpdgID[IndexAllJetColl_NONBJET1] == 25) && (MotherpdgID[IndexAllJetColl_NONBJET2]==25) && (fabs(MotherpdgID[IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[IndexAllJetColl_BJETLEP]) == 5) )
                                           {
-	                                            NMCIdentifiedEvents_SMtt_STsignal_TKF++;
+	                                            NMCIdentifiedEvents_SMttHypo_STsignal_TKF++;
                                           }
                                       }
                                       else
                                       {
                                           if( (MotherpdgID[IndexAllJetColl_NONBJET1] == 25) && (MotherpdgID[IndexAllJetColl_NONBJET2]==25) && (fabs(MotherpdgID[IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[IndexAllJetColl_BJETLEP]) == 5) && (fabs(MotherpdgID[IndexAllJetColl_BJETHAD]) == 6) && (fabs(pdgID[IndexAllJetColl_BJETHAD]) != 5) )
                                           {
-	                                          NMCIdentifiedEvents_SMtt_TTsignal_TKF++;
+	                                          NMCIdentifiedEvents_SMttHypo_TTsignal_TKF++;
 	                                        }
                                           if( (MotherpdgID[IndexAllJetColl_NONBJET1] == 24) && (MotherpdgID[IndexAllJetColl_NONBJET2]==24) && (fabs(MotherpdgID[IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[IndexAllJetColl_BJETLEP]) == 5) && (fabs(MotherpdgID[IndexAllJetColl_BJETHAD]) == 6) && (fabs(pdgID[IndexAllJetColl_BJETHAD]) == 5) )
                                           {
-	                                          NMCIdentifiedEvents_SMtt_TTbackground_TKF++;
+	                                          NMCIdentifiedEvents_SMttHypo_TTbackground_TKF++;
 	                                        }
                                       }                      
                       } 
 
-                      double nuPx = kf_SMtt->GetNuPx(ip,0);
-                      double nuPy = kf_SMtt->GetNuPy(ip,0);
-                      double nuPz = kf_SMtt->GetNuPz(ip,0);
+                      double nuPx = kf_SMttHypo->GetNuPx(ip,0);
+                      double nuPy = kf_SMttHypo->GetNuPy(ip,0);
+                      double nuPz = kf_SMttHypo->GetNuPz(ip,0);
                       TLorentzVector Nu_, LEP_, BJETLEP_, BJETHAD_, NONBJET1_, NONBJET2_;
                       TLorentzVector Higgs_, HadTop_, LepTop_;
                       
@@ -1751,59 +1751,59 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
                       HadTop_ = Higgs_+BJETHAD_;
                       LepTop_ = Nu_ + LEP_ + BJETLEP_;
 
-                      double SumCharge_Hjets = fabs(InclJetCharge[IndexAllJetColl_NONBJET1]-InclJetCharge[IndexAllJetColl_NONBJET2]);
+//                      double SumCharge_Hjets = fabs(InclJetCharge[IndexAllJetColl_NONBJET1]-InclJetCharge[IndexAllJetColl_NONBJET2]);
 //                      double SumCharge_SMbLep = fabs(InclJetCharge[IndexAllJetColl_BJETLEP]-lepCharge);
                       double SumCharge_TopJets = fabs(InclJetCharge[IndexAllJetColl_BJETLEP]-InclJetCharge[IndexAllJetColl_BJETHAD]);
-                      double SumCharge_FCNHJetLep = fabs(InclJetCharge[IndexAllJetColl_BJETHAD]-lepCharge);
+//                      double SumCharge_FCNHJetLep = fabs(InclJetCharge[IndexAllJetColl_BJETHAD]-lepCharge);
 //                      double CvsL_Hjet1 = CvsLJet[IndexAllJetColl_NONBJET1];
 //                      double CvsL_Hjet2 = CvsLJet[IndexAllJetColl_NONBJET2];
 //                      double CvsL_SMb = CvsLJet[IndexAllJetColl_BJETLEP];
                       double CvsL_FCNHjet = CvsLJet[IndexAllJetColl_BJETHAD];
-                      double CvsB_Hjet1 = CvsBJet[IndexAllJetColl_NONBJET1];
-                      double CvsB_Hjet2 = CvsBJet[IndexAllJetColl_NONBJET2];
-                      double CvsB_SMb = CvsBJet[IndexAllJetColl_BJETLEP];
-//                      double CvsB_FCNHjet = CvsBJet[IndexAllJetColl_BJETHAD];
+//                      double CvsB_Hjet1 = CvsBJet[IndexAllJetColl_NONBJET1];
+//                      double CvsB_Hjet2 = CvsBJet[IndexAllJetColl_NONBJET2];
+//                      double CvsB_SMb = CvsBJet[IndexAllJetColl_BJETLEP];
+                      double CvsB_FCNHjet = CvsBJet[IndexAllJetColl_BJETHAD];
                       double Hmass = Higgs_.M(); //The second index indicates for idx=0 leptonic part and idx = 1 hadronic part
-//                      double LepTopmass = LepTop_.M();
+                      double LepTopmass = LepTop_.M();
                       double HadTopmass = HadTop_.M();
-//                      double DR_H_HadTop = Higgs_.DeltaR(HadTop_);
-//                      double DR_H_LepTop = Higgs_.DeltaR(LepTop_);
+                      double DR_H_HadTop = Higgs_.DeltaR(HadTop_);
+                      double DR_H_LepTop = Higgs_.DeltaR(LepTop_);
 //                      double DR_H_SMb = Higgs_.DeltaR(BJETLEP_);
 //                      double DR_Hb1_Hb2 = NONBJET1_.DeltaR(NONBJET2_);
 //                      double DR_Lep_SMb = LEP_.DeltaR(BJETLEP_);
-                      double DR_Lep_H = LEP_.DeltaR(Higgs_);
-                      double DR_Lep_HadTop = LEP_.DeltaR(HadTop_);
+//                      double DR_Lep_H = LEP_.DeltaR(Higgs_);
+//                      double DR_Lep_HadTop = LEP_.DeltaR(HadTop_);
 //                      double Chi2 = chi2;
-//                      double LepTopPt = LepTop_.Pt();
+                      double LepTopPt = LepTop_.Pt();
 //                      double HPt = Higgs_.Pt();
-//                      double HadTopPt = HadTop_.Pt();
+                      double HadTopPt = HadTop_.Pt();
 
-                      Eventcomputer_->FillVar("SumCharge_Hjets", SumCharge_Hjets);
+//                      Eventcomputer_->FillVar("SumCharge_Hjets", SumCharge_Hjets);
 //                      Eventcomputer_->FillVar("SumCharge_SMbLep", SumCharge_SMbLep);
                       Eventcomputer_->FillVar("SumCharge_TopJets", SumCharge_TopJets);
-                      Eventcomputer_->FillVar("SumCharge_FCNHJetLep", SumCharge_FCNHJetLep);
+//                      Eventcomputer_->FillVar("SumCharge_FCNHJetLep", SumCharge_FCNHJetLep);
 //                      Eventcomputer_->FillVar("CvsL_Hjet1", CvsL_Hjet1);
 //                      Eventcomputer_->FillVar("CvsL_Hjet2", CvsL_Hjet2);
 //                      Eventcomputer_->FillVar("CvsL_SMb", CvsL_SMb);
                       Eventcomputer_->FillVar("CvsL_FCNHjet", CvsL_FCNHjet);
-                      Eventcomputer_->FillVar("CvsB_Hjet1", CvsB_Hjet1);
-                      Eventcomputer_->FillVar("CvsB_Hjet2", CvsB_Hjet2);
-                      Eventcomputer_->FillVar("CvsB_SMb", CvsB_SMb);
-//                      Eventcomputer_->FillVar("CvsB_FCNHjet", CvsB_FCNHjet);
+//                      Eventcomputer_->FillVar("CvsB_Hjet1", CvsB_Hjet1);
+//                      Eventcomputer_->FillVar("CvsB_Hjet2", CvsB_Hjet2);
+//                      Eventcomputer_->FillVar("CvsB_SMb", CvsB_SMb);
+                      Eventcomputer_->FillVar("CvsB_FCNHjet", CvsB_FCNHjet);
                       Eventcomputer_->FillVar("Hmass", Hmass);
-//                      Eventcomputer_->FillVar("LepTopmass", LepTopmass);
+                      Eventcomputer_->FillVar("LepTopmass", LepTopmass);
                       Eventcomputer_->FillVar("HadTopmass", HadTopmass);
-//                      Eventcomputer_->FillVar("DR_H_HadTop", DR_H_HadTop);
-//                      Eventcomputer_->FillVar("DR_H_LepTop", DR_H_LepTop);
+                      Eventcomputer_->FillVar("DR_H_HadTop", DR_H_HadTop);
+                      Eventcomputer_->FillVar("DR_H_LepTop", DR_H_LepTop);
 //                      Eventcomputer_->FillVar("DR_H_SMb", DR_H_SMb);
  //                     Eventcomputer_->FillVar("DR_Hb1_Hb2", DR_Hb1_Hb2);
 //                      Eventcomputer_->FillVar("DR_Lep_SMb", DR_Lep_SMb);
-                      Eventcomputer_->FillVar("DR_Lep_H", DR_Lep_H);
-                      Eventcomputer_->FillVar("DR_Lep_HadTop", DR_Lep_HadTop);
+//                      Eventcomputer_->FillVar("DR_Lep_H", DR_Lep_H);
+//                      Eventcomputer_->FillVar("DR_Lep_HadTop", DR_Lep_HadTop);
 //                      Eventcomputer_->FillVar("Chi2", Chi2);
-//                      Eventcomputer_->FillVar("LepTopPt", LepTopPt);
+                      Eventcomputer_->FillVar("LepTopPt", LepTopPt);
 //                      Eventcomputer_->FillVar("HPt", HPt);
-//                      Eventcomputer_->FillVar("HadTopPt", HadTopPt);
+                      Eventcomputer_->FillVar("HadTopPt", HadTopPt);
 
 
                       double BDTscore_tmp;
@@ -1833,18 +1833,18 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
                                       {
                                           if( (MotherpdgID[HighestBDT_IndexAllJetColl_NONBJET1] == 25) && (MotherpdgID[HighestBDT_IndexAllJetColl_NONBJET2]==25) && (fabs(MotherpdgID[HighestBDT_IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[HighestBDT_IndexAllJetColl_BJETLEP]) == 5) )
                                           {
-	                                            NMCIdentifiedEvents_SMtt_STsignal++;
+	                                            NMCIdentifiedEvents_SMttHypo_STsignal++;
                                           }
                                       }
                                       else
                                       {
                                           if( (MotherpdgID[HighestBDT_IndexAllJetColl_NONBJET1] == 25) && (MotherpdgID[HighestBDT_IndexAllJetColl_NONBJET2]==25) && (fabs(MotherpdgID[HighestBDT_IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[HighestBDT_IndexAllJetColl_BJETLEP]) == 5) && (fabs(MotherpdgID[HighestBDT_IndexAllJetColl_BJETHAD]) == 6) && (fabs(pdgID[HighestBDT_IndexAllJetColl_BJETHAD]) != 5) )
                                           {
-	                                          NMCIdentifiedEvents_SMtt_TTsignal++;
+	                                          NMCIdentifiedEvents_SMttHypo_TTsignal++;
 	                                        }
                                           if( (MotherpdgID[HighestBDT_IndexAllJetColl_NONBJET1] == 24) && (MotherpdgID[HighestBDT_IndexAllJetColl_NONBJET2]==24) && (fabs(MotherpdgID[HighestBDT_IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[HighestBDT_IndexAllJetColl_BJETLEP]) == 5) && (fabs(MotherpdgID[HighestBDT_IndexAllJetColl_BJETHAD]) == 6) && (fabs(pdgID[HighestBDT_IndexAllJetColl_BJETHAD]) == 5) )
                                           {
-	                                          NMCIdentifiedEvents_SMtt_TTbackground++;
+	                                          NMCIdentifiedEvents_SMttHypo_TTbackground++;
 	                                        }
                                       }
 
@@ -1853,28 +1853,28 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
           /////////////////////////////////////////////////////////////////////////////
           // Section for the kinematic fit using the TOPTOPLEPHBB (selection: at least 3 b-jets and at least 1 non-b jets)
           /////////////////////////////////////////////////////////////////////////////
-          else if(KinFitMethod == "TTSignal")
+          else if(KinFitMethod == "TThypo")
           {
               if(BJetPt.size()>=3 && NonBJetPt.size()>=1)
               {
-	                NSelectionPassedEvents_TTSignal++;
-	                if(SMTT_Matched == 4) nMCMatchedPassedEvents_TTSignal_TTbackground++;
-	                if(Signal_Matched == 4 && !SingleTop) nMCMatchedPassedEvents_TTSignal_TTsignal++;
-	                if(Signal_Matched == 3 && SingleTop) nMCMatchedPassedEvents_TTSignal_STsignal++;
+	                NSelectionPassedEvents_TThypo++;
+	                if(SMTT_Matched == 4) nMCMatchedPassedEvents_TThypo_TTbackground++;
+	                if(Signal_Matched == 4 && !SingleTop) nMCMatchedPassedEvents_TThypo_TTsignal++;
+	                if(Signal_Matched == 3 && SingleTop) nMCMatchedPassedEvents_TThypo_STsignal++;
               
 
-                  kf_TTSignal->SetBJet(BJetPt,BJetEta,BJetPhi,BJetE);
-                  kf_TTSignal->SetNonBJet(NonBJetPt,NonBJetEta,NonBJetPhi,NonBJetE);
-                  if(channel == "_El") kf_TTSignal->SetElectron(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
-                  else if(channel == "_Mu") kf_TTSignal->SetMuon(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
-                  kf_TTSignal->SetMet(met_px,met_py);
+                  kf_TThypo->SetBJet(BJetPt,BJetEta,BJetPhi,BJetE);
+                  kf_TThypo->SetNonBJet(NonBJetPt,NonBJetEta,NonBJetPhi,NonBJetE);
+                  if(channel == "_El") kf_TThypo->SetElectron(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
+                  else if(channel == "_Mu") kf_TThypo->SetMuon(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
+                  kf_TThypo->SetMet(met_px,met_py);
                             
                             
-                  kf_TTSignal->Run();
-                  int nPerm_TTSignal = kf_TTSignal->GetNPerm();
+                  kf_TThypo->Run();
+                  int nPerm_TThypo = kf_TThypo->GetNPerm();
                             
 
-                  double LowestDisc_TTSignal = kf_TTSignal->GetDisc(); //The minimum of likelihood == the best jet-combination
+                  double LowestDisc_TThypo = kf_TThypo->GetDisc(); //The minimum of likelihood == the best jet-combination
                   double BDTscore = -9999.;
                   int HighestBDT_IndexAllJetColl_BJETLEP = -1;
                   int HighestBDT_IndexAllJetColl_NONBJETHAD = -1;
@@ -1882,42 +1882,42 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
                   int HighestBDT_IndexAllJetColl_BJET2 = -1;
 
                             
-                  for(int ip=0;ip<nPerm_TTSignal;ip++)
+                  for(int ip=0;ip<nPerm_TThypo;ip++)
                   {
-                      double chi2 = kf_TTSignal->GetDisc(ip);
+                      double chi2 = kf_TThypo->GetDisc(ip);
                       if(chi2>10E+9)  continue;
 		                   
-		                  int IndexAllJetColl_BJETLEP = MapIndex_Bindex[kf_TTSignal->GetIndex(BJETLEP_TOPTOPLEPHBB,ip)];
-		                  int IndexAllJetColl_NONBJETHAD = MapIndex_NonBindex[kf_TTSignal->GetIndex(NONBJETHAD_TOPTOPLEPHBB,ip)];
-		                  int IndexAllJetColl_BJET1 = MapIndex_Bindex[kf_TTSignal->GetIndex(BJET1_TOPTOPLEPHBB,ip)];
-		                  int IndexAllJetColl_BJET2 = MapIndex_Bindex[kf_TTSignal->GetIndex(BJET2_TOPTOPLEPHBB,ip)];
+		                  int IndexAllJetColl_BJETLEP = MapIndex_Bindex[kf_TThypo->GetIndex(BJETLEP_TOPTOPLEPHBB,ip)];
+		                  int IndexAllJetColl_NONBJETHAD = MapIndex_NonBindex[kf_TThypo->GetIndex(NONBJETHAD_TOPTOPLEPHBB,ip)];
+		                  int IndexAllJetColl_BJET1 = MapIndex_Bindex[kf_TThypo->GetIndex(BJET1_TOPTOPLEPHBB,ip)];
+		                  int IndexAllJetColl_BJET2 = MapIndex_Bindex[kf_TThypo->GetIndex(BJET2_TOPTOPLEPHBB,ip)];
 
-                      if(chi2 == LowestDisc_TTSignal)
+                      if(chi2 == LowestDisc_TThypo)
                       {
                                       if(SingleTop)
                                       {
                                           if( (MotherpdgID[IndexAllJetColl_BJET1] == 25) && (MotherpdgID[IndexAllJetColl_BJET2]==25) && (fabs(MotherpdgID[IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[IndexAllJetColl_BJETLEP]) == 5) )
                                           {
-	                                            NMCIdentifiedEvents_TTSignal_STsignal_TKF++;
+	                                            NMCIdentifiedEvents_TThypo_STsignal_TKF++;
                                           }
                                       }
                                       else
                                       {
                                           if( (MotherpdgID[IndexAllJetColl_BJET1] == 25) && (MotherpdgID[IndexAllJetColl_BJET2]==25) && (fabs(MotherpdgID[IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[IndexAllJetColl_BJETLEP]) == 5) && (fabs(MotherpdgID[IndexAllJetColl_NONBJETHAD]) == 6) && (fabs(pdgID[IndexAllJetColl_NONBJETHAD]) != 5) )
                                           {
-	                                          NMCIdentifiedEvents_TTSignal_TTsignal_TKF++;
+	                                          NMCIdentifiedEvents_TThypo_TTsignal_TKF++;
 	                                        }
                                           if( (MotherpdgID[IndexAllJetColl_BJET1] == 24) && (MotherpdgID[IndexAllJetColl_BJET2]==24) && (fabs(MotherpdgID[IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[IndexAllJetColl_BJETLEP]) == 5) && (fabs(MotherpdgID[IndexAllJetColl_NONBJETHAD]) == 6) && (fabs(pdgID[IndexAllJetColl_NONBJETHAD]) == 5) )
                                           {
-	                                          NMCIdentifiedEvents_TTSignal_TTbackground_TKF++;
+	                                          NMCIdentifiedEvents_TThypo_TTbackground_TKF++;
 	                                        }
                                       }
                       }
 
                       
-                      double nuPx = kf_TTSignal->GetNuPx(ip,0);
-                      double nuPy = kf_TTSignal->GetNuPy(ip,0);
-                      double nuPz = kf_TTSignal->GetNuPz(ip,0);
+                      double nuPx = kf_TThypo->GetNuPx(ip,0);
+                      double nuPy = kf_TThypo->GetNuPy(ip,0);
+                      double nuPz = kf_TThypo->GetNuPz(ip,0);
                       TLorentzVector Nu_, LEP_, BJETLEP_, NONBJETHAD_, BJET1_, BJET2_;
                       TLorentzVector Higgs_, HadTop_, LepTop_;
                       
@@ -1934,20 +1934,20 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
                       
 //                      double SumCharge_Hjets = fabs(InclJetCharge[IndexAllJetColl_BJET1]-InclJetCharge[IndexAllJetColl_BJET2]);
 //                      double SumCharge_SMbLep = fabs(InclJetCharge[IndexAllJetColl_BJETLEP]-lepCharge);
-//                      double SumCharge_TopJets = fabs(InclJetCharge[IndexAllJetColl_BJETLEP]-InclJetCharge[IndexAllJetColl_NONBJETHAD]);
+                      double SumCharge_TopJets = fabs(InclJetCharge[IndexAllJetColl_BJETLEP]-InclJetCharge[IndexAllJetColl_NONBJETHAD]);
 //                      double SumCharge_FCNHJetLep = fabs(InclJetCharge[IndexAllJetColl_NONBJETHAD]-lepCharge);
 //                      double CvsL_Hjet1 = CvsLJet[IndexAllJetColl_BJET1];
 //                      double CvsL_Hjet2 = CvsLJet[IndexAllJetColl_BJET2];
 //                      double CvsL_SMb = CvsLJet[IndexAllJetColl_BJETLEP];
-//                      double CvsL_FCNHjet = CvsLJet[IndexAllJetColl_NONBJETHAD];
+                      double CvsL_FCNHjet = CvsLJet[IndexAllJetColl_NONBJETHAD];
 //                      double CvsB_Hjet1 = CvsBJet[IndexAllJetColl_BJET1];
 //                      double CvsB_Hjet2 = CvsBJet[IndexAllJetColl_BJET2];
 //                      double CvsB_SMb = CvsBJet[IndexAllJetColl_BJETLEP];
-//                      double CvsB_FCNHjet = CvsBJet[IndexAllJetColl_NONBJETHAD];
+                      double CvsB_FCNHjet = CvsBJet[IndexAllJetColl_NONBJETHAD];
                       double Hmass = Higgs_.M(); //The second index indicates for idx=0 leptonic part and idx = 1 hadronic part
                       double LepTopmass = LepTop_.M();
-//                      double HadTopmass = HadTop_.M();
-//                      double DR_H_HadTop = Higgs_.DeltaR(HadTop_);
+                      double HadTopmass = HadTop_.M();
+                      double DR_H_HadTop = Higgs_.DeltaR(HadTop_);
                       double DR_H_LepTop = Higgs_.DeltaR(LepTop_);
 //                      double DR_H_SMb = Higgs_.DeltaR(BJETLEP_);
 //                      double DR_Hb1_Hb2 = BJET1_.DeltaR(BJET2_);
@@ -1957,24 +1957,24 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
 //                      double Chi2 = chi2;
                       double LepTopPt = LepTop_.Pt();
 //                      double HPt = Higgs_.Pt();
-//                      double HadTopPt = HadTop_.Pt();
+                      double HadTopPt = HadTop_.Pt();
 
 //                      Eventcomputer_->FillVar("SumCharge_Hjets", SumCharge_Hjets);
 //                      Eventcomputer_->FillVar("SumCharge_SMbLep", SumCharge_SMbLep);
-//                      Eventcomputer_->FillVar("SumCharge_TopJets", SumCharge_TopJets);
+                      Eventcomputer_->FillVar("SumCharge_TopJets", SumCharge_TopJets);
 //                      Eventcomputer_->FillVar("SumCharge_FCNHJetLep", SumCharge_FCNHJetLep);
 //                      Eventcomputer_->FillVar("CvsL_Hjet1", CvsL_Hjet1);
 //                      Eventcomputer_->FillVar("CvsL_Hjet2", CvsL_Hjet2);
 //                      Eventcomputer_->FillVar("CvsL_SMb", CvsL_SMb);
-//                      Eventcomputer_->FillVar("CvsL_FCNHjet", CvsL_FCNHjet);
+                      Eventcomputer_->FillVar("CvsL_FCNHjet", CvsL_FCNHjet);
 //                      Eventcomputer_->FillVar("CvsB_Hjet1", CvsB_Hjet1);
 //                      Eventcomputer_->FillVar("CvsB_Hjet2", CvsB_Hjet2);
 //                      Eventcomputer_->FillVar("CvsB_SMb", CvsB_SMb);
-//                      Eventcomputer_->FillVar("CvsB_FCNHjet", CvsB_FCNHjet);
+                      Eventcomputer_->FillVar("CvsB_FCNHjet", CvsB_FCNHjet);
                       Eventcomputer_->FillVar("Hmass", Hmass);
                       Eventcomputer_->FillVar("LepTopmass", LepTopmass);
-//                      Eventcomputer_->FillVar("HadTopmass", HadTopmass);
-//                      Eventcomputer_->FillVar("DR_H_HadTop", DR_H_HadTop);
+                      Eventcomputer_->FillVar("HadTopmass", HadTopmass);
+                      Eventcomputer_->FillVar("DR_H_HadTop", DR_H_HadTop);
                       Eventcomputer_->FillVar("DR_H_LepTop", DR_H_LepTop);
 //                      Eventcomputer_->FillVar("DR_H_SMb", DR_H_SMb);
 //                      Eventcomputer_->FillVar("DR_Hb1_Hb2", DR_Hb1_Hb2);
@@ -1984,7 +1984,7 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
 //                      Eventcomputer_->FillVar("Chi2", Chi2);
                       Eventcomputer_->FillVar("LepTopPt", LepTopPt);
 //                      Eventcomputer_->FillVar("HPt", HPt);
-//                      Eventcomputer_->FillVar("HadTopPt", HadTopPt);
+                      Eventcomputer_->FillVar("HadTopPt", HadTopPt);
                           
                       double BDTscore_tmp;
                               std::map<std::string,Float_t> MVAVals = Eventcomputer_->GetMVAValues();
@@ -2013,18 +2013,18 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
                                       {
                                           if( (MotherpdgID[HighestBDT_IndexAllJetColl_BJET1] == 25) && (MotherpdgID[HighestBDT_IndexAllJetColl_BJET2]==25) && (fabs(MotherpdgID[HighestBDT_IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[HighestBDT_IndexAllJetColl_BJETLEP]) == 5) )
                                           {
-	                                            NMCIdentifiedEvents_TTSignal_STsignal++;
+	                                            NMCIdentifiedEvents_TThypo_STsignal++;
                                           }
                                       }
                                       else
                                       {
                                           if( (MotherpdgID[HighestBDT_IndexAllJetColl_BJET1] == 25) && (MotherpdgID[HighestBDT_IndexAllJetColl_BJET2]==25) && (fabs(MotherpdgID[HighestBDT_IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[HighestBDT_IndexAllJetColl_BJETLEP]) == 5) && (fabs(MotherpdgID[HighestBDT_IndexAllJetColl_NONBJETHAD]) == 6) && (fabs(pdgID[HighestBDT_IndexAllJetColl_NONBJETHAD]) != 5) )
                                           {
-	                                          NMCIdentifiedEvents_TTSignal_TTsignal++;
+	                                          NMCIdentifiedEvents_TThypo_TTsignal++;
 	                                        }
                                           if( (MotherpdgID[HighestBDT_IndexAllJetColl_BJET1] == 24) && (MotherpdgID[HighestBDT_IndexAllJetColl_BJET2]==24) && (fabs(MotherpdgID[HighestBDT_IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[HighestBDT_IndexAllJetColl_BJETLEP]) == 5) && (fabs(MotherpdgID[HighestBDT_IndexAllJetColl_NONBJETHAD]) == 6) && (fabs(pdgID[HighestBDT_IndexAllJetColl_NONBJETHAD]) == 5) )
                                           {
-	                                          NMCIdentifiedEvents_TTSignal_TTbackground++;
+	                                          NMCIdentifiedEvents_TThypo_TTbackground++;
 	                                        }
                                       }
 
@@ -2033,57 +2033,57 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
           /////////////////////////////////////////////////////////////////////////////
           // Section for the kinematic fit using the TOPHLEPBB (selection: at least 3 b-jets)
           /////////////////////////////////////////////////////////////////////////////
-          else if(KinFitMethod == "STSignal")
+          else if(KinFitMethod == "SThypo")
           {
               if(BJetPt.size()>=3)
               {
-	                NSelectionPassedEvents_STSignal++;
-	                if(SMTT_Matched >= 3) nMCMatchedPassedEvents_STSignal_TTbackground++;
-	                if(Signal_Matched >= 3 && !SingleTop) nMCMatchedPassedEvents_STSignal_TTsignal++;
-	                if(Signal_Matched == 3 && SingleTop) nMCMatchedPassedEvents_STSignal_STsignal++;
+	                NSelectionPassedEvents_SThypo++;
+	                if(SMTT_Matched >= 3) nMCMatchedPassedEvents_SThypo_TTbackground++;
+	                if(Signal_Matched >= 3 && !SingleTop) nMCMatchedPassedEvents_SThypo_TTsignal++;
+	                if(Signal_Matched == 3 && SingleTop) nMCMatchedPassedEvents_SThypo_STsignal++;
               
 
-                  kf_STSignal->SetBJet(BJetPt,BJetEta,BJetPhi,BJetE);
-                  kf_STSignal->SetNonBJet(NonBJetPt,NonBJetEta,NonBJetPhi,NonBJetE);
-                  if(channel == "_El") kf_STSignal->SetElectron(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
-                  else if(channel == "_Mu") kf_STSignal->SetMuon(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
-                  kf_STSignal->SetMet(met_px,met_py);
+                  kf_SThypo->SetBJet(BJetPt,BJetEta,BJetPhi,BJetE);
+                  kf_SThypo->SetNonBJet(NonBJetPt,NonBJetEta,NonBJetPhi,NonBJetE);
+                  if(channel == "_El") kf_SThypo->SetElectron(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
+                  else if(channel == "_Mu") kf_SThypo->SetMuon(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
+                  kf_SThypo->SetMet(met_px,met_py);
                             
                             
-                  kf_STSignal->Run();
-                  int nPerm_STSignal = kf_STSignal->GetNPerm();
+                  kf_SThypo->Run();
+                  int nPerm_SThypo = kf_SThypo->GetNPerm();
                             
-                  double LowestDisc_STSignal = kf_STSignal->GetDisc(); //The minimum of likelihood == the best jet-combination
+                  double LowestDisc_SThypo = kf_SThypo->GetDisc(); //The minimum of likelihood == the best jet-combination
                   double BDTscore = -9999.;
                   int HighestBDT_IndexAllJetColl_BJETLEP = -1;
                   int HighestBDT_IndexAllJetColl_BJET1 = -1;
                   int HighestBDT_IndexAllJetColl_BJET2 = -1;
                             
-                  for(int ip=0;ip<nPerm_STSignal;ip++)
+                  for(int ip=0;ip<nPerm_SThypo;ip++)
                   {
-                      double chi2 = kf_STSignal->GetDisc(ip);
+                      double chi2 = kf_SThypo->GetDisc(ip);
                       if(chi2>10E+9)  continue;
 		                   
-		                  int IndexAllJetColl_BJETLEP = MapIndex_Bindex[kf_STSignal->GetIndex(BJETLEP_TOPHLEPBB,ip)];
-		                  int IndexAllJetColl_BJET1 = MapIndex_Bindex[kf_STSignal->GetIndex(BJET1_TOPHLEPBB,ip)];
-		                  int IndexAllJetColl_BJET2 = MapIndex_Bindex[kf_STSignal->GetIndex(BJET2_TOPHLEPBB,ip)];
+		                  int IndexAllJetColl_BJETLEP = MapIndex_Bindex[kf_SThypo->GetIndex(BJETLEP_TOPHLEPBB,ip)];
+		                  int IndexAllJetColl_BJET1 = MapIndex_Bindex[kf_SThypo->GetIndex(BJET1_TOPHLEPBB,ip)];
+		                  int IndexAllJetColl_BJET2 = MapIndex_Bindex[kf_SThypo->GetIndex(BJET2_TOPHLEPBB,ip)];
 
-                      if(chi2 == LowestDisc_STSignal)
+                      if(chi2 == LowestDisc_SThypo)
                       {
                                           if( (MotherpdgID[IndexAllJetColl_BJET1] == 25) && (MotherpdgID[IndexAllJetColl_BJET2]==25) && (fabs(MotherpdgID[IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[IndexAllJetColl_BJETLEP]) == 5))
                                           {
-	                                          if(SingleTop) NMCIdentifiedEvents_STSignal_STsignal_TKF++;
-	                                          else NMCIdentifiedEvents_STSignal_TTsignal_TKF++;
+	                                          if(SingleTop) NMCIdentifiedEvents_SThypo_STsignal_TKF++;
+	                                          else NMCIdentifiedEvents_SThypo_TTsignal_TKF++;
 	                                        }
                                           if( (MotherpdgID[IndexAllJetColl_BJET1] == 24) && (MotherpdgID[IndexAllJetColl_BJET2]==24) && (fabs(MotherpdgID[IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[IndexAllJetColl_BJETLEP]) == 5))
                                           {
-	                                          NMCIdentifiedEvents_STSignal_TTbackground_TKF++;
+	                                          NMCIdentifiedEvents_SThypo_TTbackground_TKF++;
 	                                        }
                       }
                       
-                      double nuPx = kf_STSignal->GetNuPx(ip,0);
-                      double nuPy = kf_STSignal->GetNuPy(ip,0);
-                      double nuPz = kf_STSignal->GetNuPz(ip,0);
+                      double nuPx = kf_SThypo->GetNuPx(ip,0);
+                      double nuPy = kf_SThypo->GetNuPy(ip,0);
+                      double nuPz = kf_SThypo->GetNuPz(ip,0);
                       TLorentzVector Nu_, LEP_, BJETLEP_, BJET1_, BJET2_;
                       TLorentzVector Higgs_, LepTop_;
                       
@@ -2158,12 +2158,12 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
                   //Counting whether the jet combination with the highest BDT score is matched to the GenLevel correct jet combination
                                           if( (MotherpdgID[HighestBDT_IndexAllJetColl_BJET1] == 25) && (MotherpdgID[HighestBDT_IndexAllJetColl_BJET2]==25) && (fabs(MotherpdgID[HighestBDT_IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[HighestBDT_IndexAllJetColl_BJETLEP]) == 5))
                                           {
-	                                          if(SingleTop) NMCIdentifiedEvents_STSignal_STsignal++;
-	                                          else NMCIdentifiedEvents_STSignal_TTsignal++;
+	                                          if(SingleTop) NMCIdentifiedEvents_SThypo_STsignal++;
+	                                          else NMCIdentifiedEvents_SThypo_TTsignal++;
 	                                        }
                                           if( (MotherpdgID[HighestBDT_IndexAllJetColl_BJET1] == 24) && (MotherpdgID[HighestBDT_IndexAllJetColl_BJET2]==24) && (fabs(MotherpdgID[HighestBDT_IndexAllJetColl_BJETLEP]) == 6) && (fabs(pdgID[HighestBDT_IndexAllJetColl_BJETLEP]) == 5))
                                           {
-	                                          NMCIdentifiedEvents_STSignal_TTbackground++;
+	                                          NMCIdentifiedEvents_SThypo_TTbackground++;
 	                                        }
 
 
@@ -2172,163 +2172,163 @@ void MVA_JetCombComputer(std::string MVAmethod, int skipEvents, std::string Sign
 		}//for-loop events
 		              
 
-    if(KinFitMethod == "SMtt")
+    if(KinFitMethod == "SMttHypo")
     {
 		    cout << "************ TOPTOPLEPHAD ************" << endl;
         
         //cout efficiencies for TopKinFit method
-        cout << " TOPTOPLEPHAD & " << 100*double(NSelectionPassedEvents_SMtt)/double(NumberOfEvents) << " & ";//selection efficiency
+        cout << " TOPTOPLEPHAD & " << 100*double(NSelectionPassedEvents_SMttHypo)/double(NumberOfEvents) << " & ";//selection efficiency
         if(dataSetName.find("NP")!=string::npos)
         {
             if(SingleTop)
             {
-                if(NSelectionPassedEvents_SMtt != 0) cout << 100*double(nMCMatchedPassedEvents_SMtt_STsignal)/double(NSelectionPassedEvents_SMtt) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_SMtt_STsignal != 0) cout << 100*double(NMCIdentifiedEvents_SMtt_STsignal_TKF)/double(nMCMatchedPassedEvents_SMtt_STsignal) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_SMtt_STsignal_TKF)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_SMttHypo != 0) cout << 100*double(nMCMatchedPassedEvents_SMttHypo_STsignal)/double(NSelectionPassedEvents_SMttHypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_SMttHypo_STsignal != 0) cout << 100*double(NMCIdentifiedEvents_SMttHypo_STsignal_TKF)/double(nMCMatchedPassedEvents_SMttHypo_STsignal) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_SMttHypo_STsignal_TKF)/double(NumberOfEvents) << endl;//Total efficiency
             }
             else
             {
-                if(NSelectionPassedEvents_SMtt != 0) cout << 100*double(nMCMatchedPassedEvents_SMtt_TTsignal)/double(NSelectionPassedEvents_SMtt) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_SMtt_TTsignal != 0) cout << 100*double(NMCIdentifiedEvents_SMtt_TTsignal_TKF)/double(nMCMatchedPassedEvents_SMtt_TTsignal) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_SMtt_TTsignal_TKF)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_SMttHypo != 0) cout << 100*double(nMCMatchedPassedEvents_SMttHypo_TTsignal)/double(NSelectionPassedEvents_SMttHypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_SMttHypo_TTsignal != 0) cout << 100*double(NMCIdentifiedEvents_SMttHypo_TTsignal_TKF)/double(nMCMatchedPassedEvents_SMttHypo_TTsignal) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_SMttHypo_TTsignal_TKF)/double(NumberOfEvents) << endl;//Total efficiency
             }
         }
         else
         {
-                if(NSelectionPassedEvents_SMtt != 0) cout << 100*double(nMCMatchedPassedEvents_SMtt_TTbackground)/double(NSelectionPassedEvents_SMtt) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_SMtt_TTbackground != 0) cout << 100*double(NMCIdentifiedEvents_SMtt_TTbackground_TKF)/double(nMCMatchedPassedEvents_SMtt_TTbackground) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_SMtt_TTbackground_TKF)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_SMttHypo != 0) cout << 100*double(nMCMatchedPassedEvents_SMttHypo_TTbackground)/double(NSelectionPassedEvents_SMttHypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_SMttHypo_TTbackground != 0) cout << 100*double(NMCIdentifiedEvents_SMttHypo_TTbackground_TKF)/double(nMCMatchedPassedEvents_SMttHypo_TTbackground) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_SMttHypo_TTbackground_TKF)/double(NumberOfEvents) << endl;//Total efficiency
         }    
 
 
         //cout efficiencies for MVA method
-        cout << " MVA & " << 100*double(NSelectionPassedEvents_SMtt)/double(NumberOfEvents) << " & ";//selection efficiency
+        cout << " MVA & " << 100*double(NSelectionPassedEvents_SMttHypo)/double(NumberOfEvents) << " & ";//selection efficiency
         if(dataSetName.find("NP")!=string::npos)
         {
             if(SingleTop)
             {
-                if(NSelectionPassedEvents_SMtt != 0) cout << 100*double(nMCMatchedPassedEvents_SMtt_STsignal)/double(NSelectionPassedEvents_SMtt) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_SMtt_STsignal != 0) cout << 100*double(NMCIdentifiedEvents_SMtt_STsignal)/double(nMCMatchedPassedEvents_SMtt_STsignal) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_SMtt_STsignal)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_SMttHypo != 0) cout << 100*double(nMCMatchedPassedEvents_SMttHypo_STsignal)/double(NSelectionPassedEvents_SMttHypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_SMttHypo_STsignal != 0) cout << 100*double(NMCIdentifiedEvents_SMttHypo_STsignal)/double(nMCMatchedPassedEvents_SMttHypo_STsignal) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_SMttHypo_STsignal)/double(NumberOfEvents) << endl;//Total efficiency
             }
             else
             {
-                if(NSelectionPassedEvents_SMtt != 0) cout << 100*double(nMCMatchedPassedEvents_SMtt_TTsignal)/double(NSelectionPassedEvents_SMtt) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_SMtt_TTsignal != 0) cout << 100*double(NMCIdentifiedEvents_SMtt_TTsignal)/double(nMCMatchedPassedEvents_SMtt_TTsignal) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_SMtt_TTsignal)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_SMttHypo != 0) cout << 100*double(nMCMatchedPassedEvents_SMttHypo_TTsignal)/double(NSelectionPassedEvents_SMttHypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_SMttHypo_TTsignal != 0) cout << 100*double(NMCIdentifiedEvents_SMttHypo_TTsignal)/double(nMCMatchedPassedEvents_SMttHypo_TTsignal) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_SMttHypo_TTsignal)/double(NumberOfEvents) << endl;//Total efficiency
             }
         }
         else
         {
-                if(NSelectionPassedEvents_SMtt != 0) cout << 100*double(nMCMatchedPassedEvents_SMtt_TTbackground)/double(NSelectionPassedEvents_SMtt) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_SMtt_TTbackground != 0) cout << 100*double(NMCIdentifiedEvents_SMtt_TTbackground)/double(nMCMatchedPassedEvents_SMtt_TTbackground) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_SMtt_TTbackground)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_SMttHypo != 0) cout << 100*double(nMCMatchedPassedEvents_SMttHypo_TTbackground)/double(NSelectionPassedEvents_SMttHypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_SMttHypo_TTbackground != 0) cout << 100*double(NMCIdentifiedEvents_SMttHypo_TTbackground)/double(nMCMatchedPassedEvents_SMttHypo_TTbackground) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_SMttHypo_TTbackground)/double(NumberOfEvents) << endl;//Total efficiency
         }    
     }
-    else if(KinFitMethod == "TTSignal")
+    else if(KinFitMethod == "TThypo")
     {
 		    cout << "************ TOPTOPLEPHBB ************" << endl;
 
         //cout TopKinFit method
-        cout << " TOPTOPLEPHBB & " << 100*double(NSelectionPassedEvents_TTSignal)/double(NumberOfEvents) << " & ";//selection efficiency
+        cout << " TOPTOPLEPHBB & " << 100*double(NSelectionPassedEvents_TThypo)/double(NumberOfEvents) << " & ";//selection efficiency
         if(dataSetName.find("NP")!=string::npos)
         {
             if(SingleTop)
             {
-                if(NSelectionPassedEvents_TTSignal != 0) cout << 100*double(nMCMatchedPassedEvents_TTSignal_STsignal)/double(NSelectionPassedEvents_TTSignal) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_TTSignal_STsignal != 0) cout << 100*double(NMCIdentifiedEvents_TTSignal_STsignal_TKF)/double(nMCMatchedPassedEvents_TTSignal_STsignal) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_TTSignal_STsignal_TKF)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_TThypo != 0) cout << 100*double(nMCMatchedPassedEvents_TThypo_STsignal)/double(NSelectionPassedEvents_TThypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_TThypo_STsignal != 0) cout << 100*double(NMCIdentifiedEvents_TThypo_STsignal_TKF)/double(nMCMatchedPassedEvents_TThypo_STsignal) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_TThypo_STsignal_TKF)/double(NumberOfEvents) << endl;//Total efficiency
             }
             else
             {
-                if(NSelectionPassedEvents_TTSignal != 0) cout << 100*double(nMCMatchedPassedEvents_TTSignal_TTsignal)/double(NSelectionPassedEvents_TTSignal) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_TTSignal_TTsignal != 0) cout << 100*double(NMCIdentifiedEvents_TTSignal_TTsignal_TKF)/double(nMCMatchedPassedEvents_TTSignal_TTsignal) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_TTSignal_TTsignal_TKF)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_TThypo != 0) cout << 100*double(nMCMatchedPassedEvents_TThypo_TTsignal)/double(NSelectionPassedEvents_TThypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_TThypo_TTsignal != 0) cout << 100*double(NMCIdentifiedEvents_TThypo_TTsignal_TKF)/double(nMCMatchedPassedEvents_TThypo_TTsignal) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_TThypo_TTsignal_TKF)/double(NumberOfEvents) << endl;//Total efficiency
             }
         }
         else
         {
-                if(NSelectionPassedEvents_TTSignal != 0) cout << 100*double(nMCMatchedPassedEvents_TTSignal_TTbackground)/double(NSelectionPassedEvents_TTSignal) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_TTSignal_TTbackground != 0) cout << 100*double(NMCIdentifiedEvents_TTSignal_TTbackground_TKF)/double(nMCMatchedPassedEvents_TTSignal_TTbackground) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_TTSignal_TTbackground_TKF)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_TThypo != 0) cout << 100*double(nMCMatchedPassedEvents_TThypo_TTbackground)/double(NSelectionPassedEvents_TThypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_TThypo_TTbackground != 0) cout << 100*double(NMCIdentifiedEvents_TThypo_TTbackground_TKF)/double(nMCMatchedPassedEvents_TThypo_TTbackground) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_TThypo_TTbackground_TKF)/double(NumberOfEvents) << endl;//Total efficiency
         }    
 
 
         //cout MVA method
-        cout << " MVA & " << 100*double(NSelectionPassedEvents_TTSignal)/double(NumberOfEvents) << " & ";//selection efficiency
+        cout << " MVA & " << 100*double(NSelectionPassedEvents_TThypo)/double(NumberOfEvents) << " & ";//selection efficiency
         if(dataSetName.find("NP")!=string::npos)
         {
             if(SingleTop)
             {
-                if(NSelectionPassedEvents_TTSignal != 0) cout << 100*double(nMCMatchedPassedEvents_TTSignal_STsignal)/double(NSelectionPassedEvents_TTSignal) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_TTSignal_STsignal != 0) cout << 100*double(NMCIdentifiedEvents_TTSignal_STsignal)/double(nMCMatchedPassedEvents_TTSignal_STsignal) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_TTSignal_STsignal)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_TThypo != 0) cout << 100*double(nMCMatchedPassedEvents_TThypo_STsignal)/double(NSelectionPassedEvents_TThypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_TThypo_STsignal != 0) cout << 100*double(NMCIdentifiedEvents_TThypo_STsignal)/double(nMCMatchedPassedEvents_TThypo_STsignal) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_TThypo_STsignal)/double(NumberOfEvents) << endl;//Total efficiency
             }
             else
             {
-                if(NSelectionPassedEvents_TTSignal != 0) cout << 100*double(nMCMatchedPassedEvents_TTSignal_TTsignal)/double(NSelectionPassedEvents_TTSignal) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_TTSignal_TTsignal != 0) cout << 100*double(NMCIdentifiedEvents_TTSignal_TTsignal)/double(nMCMatchedPassedEvents_TTSignal_TTsignal) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_TTSignal_TTsignal)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_TThypo != 0) cout << 100*double(nMCMatchedPassedEvents_TThypo_TTsignal)/double(NSelectionPassedEvents_TThypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_TThypo_TTsignal != 0) cout << 100*double(NMCIdentifiedEvents_TThypo_TTsignal)/double(nMCMatchedPassedEvents_TThypo_TTsignal) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_TThypo_TTsignal)/double(NumberOfEvents) << endl;//Total efficiency
             }
         }
         else
         {
-                if(NSelectionPassedEvents_TTSignal != 0) cout << 100*double(nMCMatchedPassedEvents_TTSignal_TTbackground)/double(NSelectionPassedEvents_TTSignal) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_TTSignal_TTbackground != 0) cout << 100*double(NMCIdentifiedEvents_TTSignal_TTbackground)/double(nMCMatchedPassedEvents_TTSignal_TTbackground) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_TTSignal_TTbackground)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_TThypo != 0) cout << 100*double(nMCMatchedPassedEvents_TThypo_TTbackground)/double(NSelectionPassedEvents_TThypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_TThypo_TTbackground != 0) cout << 100*double(NMCIdentifiedEvents_TThypo_TTbackground)/double(nMCMatchedPassedEvents_TThypo_TTbackground) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_TThypo_TTbackground)/double(NumberOfEvents) << endl;//Total efficiency
         }    
     }
-    else if(KinFitMethod == "STSignal")
+    else if(KinFitMethod == "SThypo")
     {
 		    cout << "************ TOPHLEPBB ************" << endl;
 
         //cout TopKinFit method efficiencies
-        cout << " TOPHLEPBB & " << 100*double(NSelectionPassedEvents_STSignal)/double(NumberOfEvents) << " & ";//selection efficiency
+        cout << " TOPHLEPBB & " << 100*double(NSelectionPassedEvents_SThypo)/double(NumberOfEvents) << " & ";//selection efficiency
         if(dataSetName.find("NP")!=string::npos)
         {
             if(SingleTop)
             {
-                if(NSelectionPassedEvents_STSignal != 0) cout << 100*double(nMCMatchedPassedEvents_STSignal_STsignal)/double(NSelectionPassedEvents_STSignal) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_STSignal_STsignal != 0) cout << 100*double(NMCIdentifiedEvents_STSignal_STsignal_TKF)/double(nMCMatchedPassedEvents_STSignal_STsignal) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_STSignal_STsignal_TKF)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_SThypo != 0) cout << 100*double(nMCMatchedPassedEvents_SThypo_STsignal)/double(NSelectionPassedEvents_SThypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_SThypo_STsignal != 0) cout << 100*double(NMCIdentifiedEvents_SThypo_STsignal_TKF)/double(nMCMatchedPassedEvents_SThypo_STsignal) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_SThypo_STsignal_TKF)/double(NumberOfEvents) << endl;//Total efficiency
             }
             else
             {
-                if(NSelectionPassedEvents_STSignal != 0) cout << 100*double(nMCMatchedPassedEvents_STSignal_TTsignal)/double(NSelectionPassedEvents_STSignal) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_STSignal_TTsignal != 0) cout << 100*double(NMCIdentifiedEvents_STSignal_TTsignal_TKF)/double(nMCMatchedPassedEvents_STSignal_TTsignal) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_STSignal_TTsignal_TKF)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_SThypo != 0) cout << 100*double(nMCMatchedPassedEvents_SThypo_TTsignal)/double(NSelectionPassedEvents_SThypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_SThypo_TTsignal != 0) cout << 100*double(NMCIdentifiedEvents_SThypo_TTsignal_TKF)/double(nMCMatchedPassedEvents_SThypo_TTsignal) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_SThypo_TTsignal_TKF)/double(NumberOfEvents) << endl;//Total efficiency
             }
         }
         else
         {
-                if(NSelectionPassedEvents_STSignal != 0) cout << 100*double(nMCMatchedPassedEvents_STSignal_TTbackground)/double(NSelectionPassedEvents_STSignal) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_STSignal_TTbackground != 0) cout << 100*double(NMCIdentifiedEvents_STSignal_TTbackground_TKF)/double(nMCMatchedPassedEvents_STSignal_TTbackground) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_STSignal_TTbackground_TKF)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_SThypo != 0) cout << 100*double(nMCMatchedPassedEvents_SThypo_TTbackground)/double(NSelectionPassedEvents_SThypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_SThypo_TTbackground != 0) cout << 100*double(NMCIdentifiedEvents_SThypo_TTbackground_TKF)/double(nMCMatchedPassedEvents_SThypo_TTbackground) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_SThypo_TTbackground_TKF)/double(NumberOfEvents) << endl;//Total efficiency
         }
 
 
         //cout MVA method efficiencies
-        cout << " MVA & " << 100*double(NSelectionPassedEvents_STSignal)/double(NumberOfEvents) << " & ";//selection efficiency
+        cout << " MVA & " << 100*double(NSelectionPassedEvents_SThypo)/double(NumberOfEvents) << " & ";//selection efficiency
         if(dataSetName.find("NP")!=string::npos)
         {
             if(SingleTop)
             {
-                if(NSelectionPassedEvents_STSignal != 0) cout << 100*double(nMCMatchedPassedEvents_STSignal_STsignal)/double(NSelectionPassedEvents_STSignal) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_STSignal_STsignal != 0) cout << 100*double(NMCIdentifiedEvents_STSignal_STsignal)/double(nMCMatchedPassedEvents_STSignal_STsignal) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_STSignal_STsignal)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_SThypo != 0) cout << 100*double(nMCMatchedPassedEvents_SThypo_STsignal)/double(NSelectionPassedEvents_SThypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_SThypo_STsignal != 0) cout << 100*double(NMCIdentifiedEvents_SThypo_STsignal)/double(nMCMatchedPassedEvents_SThypo_STsignal) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_SThypo_STsignal)/double(NumberOfEvents) << endl;//Total efficiency
             }
             else
             {
-                if(NSelectionPassedEvents_STSignal != 0) cout << 100*double(nMCMatchedPassedEvents_STSignal_TTsignal)/double(NSelectionPassedEvents_STSignal) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_STSignal_TTsignal != 0) cout << 100*double(NMCIdentifiedEvents_STSignal_TTsignal)/double(nMCMatchedPassedEvents_STSignal_TTsignal) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_STSignal_TTsignal)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_SThypo != 0) cout << 100*double(nMCMatchedPassedEvents_SThypo_TTsignal)/double(NSelectionPassedEvents_SThypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_SThypo_TTsignal != 0) cout << 100*double(NMCIdentifiedEvents_SThypo_TTsignal)/double(nMCMatchedPassedEvents_SThypo_TTsignal) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_SThypo_TTsignal)/double(NumberOfEvents) << endl;//Total efficiency
             }
         }
         else
         {
-                if(NSelectionPassedEvents_STSignal != 0) cout << 100*double(nMCMatchedPassedEvents_STSignal_TTbackground)/double(NSelectionPassedEvents_STSignal) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_STSignal_TTbackground != 0) cout << 100*double(NMCIdentifiedEvents_STSignal_TTbackground)/double(nMCMatchedPassedEvents_STSignal_TTbackground) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_STSignal_TTbackground)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_SThypo != 0) cout << 100*double(nMCMatchedPassedEvents_SThypo_TTbackground)/double(NSelectionPassedEvents_SThypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_SThypo_TTbackground != 0) cout << 100*double(NMCIdentifiedEvents_SThypo_TTbackground)/double(nMCMatchedPassedEvents_SThypo_TTbackground) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_SThypo_TTbackground)/double(NumberOfEvents) << endl;//Total efficiency
         }
     }
     cout << " " << endl;		              
@@ -2356,90 +2356,90 @@ void MCAnalysis(std::string xmlNom, TString CraneenPath, string KinFitMethod)
  	const char *xmlfile = xmlNom.c_str();
  	cout << "used config file: " << xmlfile << endl;
 
-  std::string pdfFileName_SMtt = "TopKinFit/test/GenAnalysis/TopTopLepHad/pdf.root";
-  std::string pdfFileName_TTSignal = "TopKinFit/test/GenAnalysis/TopTopLepHbb/pdf.root";
-  std::string pdfFileName_STSignal = "TopKinFit/test/GenAnalysis/TopHLepbb/pdf.root";
+  std::string pdfFileName_SMttHypo = "TopKinFit/test/GenAnalysis/TopTopLepHad/pdf.root";
+  std::string pdfFileName_TThypo = "TopKinFit/test/GenAnalysis/TopTopLepHbb/pdf.root";
+  std::string pdfFileName_SThypo = "TopKinFit/test/GenAnalysis/TopHLepbb/pdf.root";
 
-  KINFIT::kfit *kf_SMtt = new KINFIT::kfit();
-  KINFIT::kfit *kf_STSignal = new KINFIT::kfit();
-  KINFIT::kfit *kf_TTSignal = new KINFIT::kfit();
+  KINFIT::kfit *kf_SMttHypo = new KINFIT::kfit();
+  KINFIT::kfit *kf_SThypo = new KINFIT::kfit();
+  KINFIT::kfit *kf_TThypo = new KINFIT::kfit();
 
   
-   if(KinFitMethod == "SMtt" || KinFitMethod == "ALL")
+   if(KinFitMethod == "SMttHypo" || KinFitMethod == "ALL")
    {
-      kf_SMtt->Init(TOPTOPLEPHAD);
-      kf_SMtt->SetPDF("TopWMass",pdfFileName_SMtt.c_str(),"TopLepWM_Fit");
-      kf_SMtt->SetPDF("TopMass",pdfFileName_SMtt.c_str(),"TopLepRecM_Fit");
-      kf_SMtt->SetPDF("TopWHadMass",pdfFileName_SMtt.c_str(),"TopHadWRecM_Fit");
-      kf_SMtt->SetPDF("TopHadMass",pdfFileName_SMtt.c_str(),"TopHadRecM_Fit");
-      kf_SMtt->SetPDF("MetPx",pdfFileName_SMtt.c_str(),"dMetPx_Gaus");
-      kf_SMtt->SetPDF("MetPy",pdfFileName_SMtt.c_str(),"dMetPy_Gaus");
-      kf_SMtt->SetPDF("BJetPx",pdfFileName_SMtt.c_str(),"dBJetPx_Fit");
-      kf_SMtt->SetPDF("BJetPy",pdfFileName_SMtt.c_str(),"dBJetPy_Fit");
-      kf_SMtt->SetPDF("BJetPz",pdfFileName_SMtt.c_str(),"dBJetPz_Fit");
-      kf_SMtt->SetPDF("BJetE",pdfFileName_SMtt.c_str(),"dBJetE_Fit");
-      kf_SMtt->SetPDF("ElecPx",pdfFileName_SMtt.c_str(),"dElecPx_Fit");
-      kf_SMtt->SetPDF("ElecPy",pdfFileName_SMtt.c_str(),"dElecPy_Fit");
-      kf_SMtt->SetPDF("ElecPz",pdfFileName_SMtt.c_str(),"dElecPz_Fit");
-      kf_SMtt->SetPDF("ElecE",pdfFileName_SMtt.c_str(),"dElecE_Fit");
-      kf_SMtt->SetPDF("MuonPx",pdfFileName_SMtt.c_str(),"dMuonPx_Fit");
-      kf_SMtt->SetPDF("MuonPy",pdfFileName_SMtt.c_str(),"dMuonPy_Fit");
-      kf_SMtt->SetPDF("MuonPz",pdfFileName_SMtt.c_str(),"dMuonPz_Fit");
-      kf_SMtt->SetPDF("MuonE",pdfFileName_SMtt.c_str(),"dMuonE_Fit");
-      kf_SMtt->SetPDF("NonBJetPx",pdfFileName_SMtt.c_str(),"dNonBJetPx_Fit");
-      kf_SMtt->SetPDF("NonBJetPy",pdfFileName_SMtt.c_str(),"dNonBJetPy_Fit");
-      kf_SMtt->SetPDF("NonBJetPz",pdfFileName_SMtt.c_str(),"dNonBJetPz_Fit");
-      kf_SMtt->SetPDF("NonBJetE",pdfFileName_SMtt.c_str(),"dNonBJetE_Fit");
-      kf_SMtt->SetNToy(nToys);
+      kf_SMttHypo->Init(TOPTOPLEPHAD);
+      kf_SMttHypo->SetPDF("TopWMass",pdfFileName_SMttHypo.c_str(),"TopLepWM_Fit");
+      kf_SMttHypo->SetPDF("TopMass",pdfFileName_SMttHypo.c_str(),"TopLepRecM_Fit");
+      kf_SMttHypo->SetPDF("TopWHadMass",pdfFileName_SMttHypo.c_str(),"TopHadWRecM_Fit");
+      kf_SMttHypo->SetPDF("TopHadMass",pdfFileName_SMttHypo.c_str(),"TopHadRecM_Fit");
+      kf_SMttHypo->SetPDF("MetPx",pdfFileName_SMttHypo.c_str(),"dMetPx_Gaus");
+      kf_SMttHypo->SetPDF("MetPy",pdfFileName_SMttHypo.c_str(),"dMetPy_Gaus");
+      kf_SMttHypo->SetPDF("BJetPx",pdfFileName_SMttHypo.c_str(),"dBJetPx_Fit");
+      kf_SMttHypo->SetPDF("BJetPy",pdfFileName_SMttHypo.c_str(),"dBJetPy_Fit");
+      kf_SMttHypo->SetPDF("BJetPz",pdfFileName_SMttHypo.c_str(),"dBJetPz_Fit");
+      kf_SMttHypo->SetPDF("BJetE",pdfFileName_SMttHypo.c_str(),"dBJetE_Fit");
+      kf_SMttHypo->SetPDF("ElecPx",pdfFileName_SMttHypo.c_str(),"dElecPx_Fit");
+      kf_SMttHypo->SetPDF("ElecPy",pdfFileName_SMttHypo.c_str(),"dElecPy_Fit");
+      kf_SMttHypo->SetPDF("ElecPz",pdfFileName_SMttHypo.c_str(),"dElecPz_Fit");
+      kf_SMttHypo->SetPDF("ElecE",pdfFileName_SMttHypo.c_str(),"dElecE_Fit");
+      kf_SMttHypo->SetPDF("MuonPx",pdfFileName_SMttHypo.c_str(),"dMuonPx_Fit");
+      kf_SMttHypo->SetPDF("MuonPy",pdfFileName_SMttHypo.c_str(),"dMuonPy_Fit");
+      kf_SMttHypo->SetPDF("MuonPz",pdfFileName_SMttHypo.c_str(),"dMuonPz_Fit");
+      kf_SMttHypo->SetPDF("MuonE",pdfFileName_SMttHypo.c_str(),"dMuonE_Fit");
+      kf_SMttHypo->SetPDF("NonBJetPx",pdfFileName_SMttHypo.c_str(),"dNonBJetPx_Fit");
+      kf_SMttHypo->SetPDF("NonBJetPy",pdfFileName_SMttHypo.c_str(),"dNonBJetPy_Fit");
+      kf_SMttHypo->SetPDF("NonBJetPz",pdfFileName_SMttHypo.c_str(),"dNonBJetPz_Fit");
+      kf_SMttHypo->SetPDF("NonBJetE",pdfFileName_SMttHypo.c_str(),"dNonBJetE_Fit");
+      kf_SMttHypo->SetNToy(nToys);
   }
-  if(KinFitMethod == "TTSignal" || KinFitMethod == "ALL")
+  if(KinFitMethod == "TThypo" || KinFitMethod == "ALL")
   {
-      kf_TTSignal->Init(TOPTOPLEPHBB);
-      kf_TTSignal->SetPDF("TopWMass",pdfFileName_TTSignal.c_str(),"TopLepWM_Fit");
-      kf_TTSignal->SetPDF("TopMass",pdfFileName_TTSignal.c_str(),"TopLepRecM_Fit");
-      kf_STSignal->SetPDF("HiggsMass",pdfFileName_TTSignal.c_str(),"HiggsRecM_Fit");
-      kf_TTSignal->SetPDF("TopHadMass",pdfFileName_TTSignal.c_str(),"TopHadRecM_Fit");
-      kf_TTSignal->SetPDF("MetPx",pdfFileName_TTSignal.c_str(),"dMetPx_Gaus");
-      kf_TTSignal->SetPDF("MetPy",pdfFileName_TTSignal.c_str(),"dMetPy_Gaus");
-      kf_TTSignal->SetPDF("BJetPx",pdfFileName_TTSignal.c_str(),"dBJetPx_Fit");
-      kf_TTSignal->SetPDF("BJetPy",pdfFileName_TTSignal.c_str(),"dBJetPy_Fit");
-      kf_TTSignal->SetPDF("BJetPz",pdfFileName_TTSignal.c_str(),"dBJetPz_Fit");
-      kf_TTSignal->SetPDF("BJetE",pdfFileName_TTSignal.c_str(),"dBJetE_Fit");
-      kf_TTSignal->SetPDF("ElecPx",pdfFileName_TTSignal.c_str(),"dElecPx_Fit");
-      kf_TTSignal->SetPDF("ElecPy",pdfFileName_TTSignal.c_str(),"dElecPy_Fit");
-      kf_TTSignal->SetPDF("ElecPz",pdfFileName_TTSignal.c_str(),"dElecPz_Fit");
-      kf_TTSignal->SetPDF("ElecE",pdfFileName_TTSignal.c_str(),"dElecE_Fit");
-      kf_TTSignal->SetPDF("MuonPx",pdfFileName_TTSignal.c_str(),"dMuonPx_Fit");
-      kf_TTSignal->SetPDF("MuonPy",pdfFileName_TTSignal.c_str(),"dMuonPy_Fit");
-      kf_TTSignal->SetPDF("MuonPz",pdfFileName_TTSignal.c_str(),"dMuonPz_Fit");
-      kf_TTSignal->SetPDF("MuonE",pdfFileName_TTSignal.c_str(),"dMuonE_Fit");
-      kf_TTSignal->SetPDF("NonBJetPx",pdfFileName_TTSignal.c_str(),"dNonBJetPx_Fit");
-      kf_TTSignal->SetPDF("NonBJetPy",pdfFileName_TTSignal.c_str(),"dNonBJetPy_Fit");
-      kf_TTSignal->SetPDF("NonBJetPz",pdfFileName_TTSignal.c_str(),"dNonBJetPz_Fit");
-      kf_TTSignal->SetPDF("NonBJetE",pdfFileName_TTSignal.c_str(),"dNonBJetE_Fit");
-      kf_TTSignal->SetNToy(nToys);
+      kf_TThypo->Init(TOPTOPLEPHBB);
+      kf_TThypo->SetPDF("TopWMass",pdfFileName_TThypo.c_str(),"TopLepWM_Fit");
+      kf_TThypo->SetPDF("TopMass",pdfFileName_TThypo.c_str(),"TopLepRecM_Fit");
+      kf_SThypo->SetPDF("HiggsMass",pdfFileName_TThypo.c_str(),"HiggsRecM_Fit");
+      kf_TThypo->SetPDF("TopHadMass",pdfFileName_TThypo.c_str(),"TopHadRecM_Fit");
+      kf_TThypo->SetPDF("MetPx",pdfFileName_TThypo.c_str(),"dMetPx_Gaus");
+      kf_TThypo->SetPDF("MetPy",pdfFileName_TThypo.c_str(),"dMetPy_Gaus");
+      kf_TThypo->SetPDF("BJetPx",pdfFileName_TThypo.c_str(),"dBJetPx_Fit");
+      kf_TThypo->SetPDF("BJetPy",pdfFileName_TThypo.c_str(),"dBJetPy_Fit");
+      kf_TThypo->SetPDF("BJetPz",pdfFileName_TThypo.c_str(),"dBJetPz_Fit");
+      kf_TThypo->SetPDF("BJetE",pdfFileName_TThypo.c_str(),"dBJetE_Fit");
+      kf_TThypo->SetPDF("ElecPx",pdfFileName_TThypo.c_str(),"dElecPx_Fit");
+      kf_TThypo->SetPDF("ElecPy",pdfFileName_TThypo.c_str(),"dElecPy_Fit");
+      kf_TThypo->SetPDF("ElecPz",pdfFileName_TThypo.c_str(),"dElecPz_Fit");
+      kf_TThypo->SetPDF("ElecE",pdfFileName_TThypo.c_str(),"dElecE_Fit");
+      kf_TThypo->SetPDF("MuonPx",pdfFileName_TThypo.c_str(),"dMuonPx_Fit");
+      kf_TThypo->SetPDF("MuonPy",pdfFileName_TThypo.c_str(),"dMuonPy_Fit");
+      kf_TThypo->SetPDF("MuonPz",pdfFileName_TThypo.c_str(),"dMuonPz_Fit");
+      kf_TThypo->SetPDF("MuonE",pdfFileName_TThypo.c_str(),"dMuonE_Fit");
+      kf_TThypo->SetPDF("NonBJetPx",pdfFileName_TThypo.c_str(),"dNonBJetPx_Fit");
+      kf_TThypo->SetPDF("NonBJetPy",pdfFileName_TThypo.c_str(),"dNonBJetPy_Fit");
+      kf_TThypo->SetPDF("NonBJetPz",pdfFileName_TThypo.c_str(),"dNonBJetPz_Fit");
+      kf_TThypo->SetPDF("NonBJetE",pdfFileName_TThypo.c_str(),"dNonBJetE_Fit");
+      kf_TThypo->SetNToy(nToys);
   }
-  if (KinFitMethod ==   "STSignal" || KinFitMethod == "ALL")
+  if (KinFitMethod ==   "SThypo" || KinFitMethod == "ALL")
   {
-      kf_STSignal->Init(TOPHLEPBB);
-      kf_STSignal->SetPDF("TopWMass",pdfFileName_STSignal.c_str(),"TopLepWM_Fit");
-      kf_STSignal->SetPDF("TopMass",pdfFileName_STSignal.c_str(),"TopLepRecM_Fit");
-      kf_STSignal->SetPDF("HiggsMass",pdfFileName_TTSignal.c_str(),"HiggsRecM_Fit");
-      kf_STSignal->SetPDF("MetPx",pdfFileName_STSignal.c_str(),"dMetPx_Gaus");
-      kf_STSignal->SetPDF("MetPy",pdfFileName_STSignal.c_str(),"dMetPy_Gaus");
-      kf_STSignal->SetPDF("BJetPx",pdfFileName_STSignal.c_str(),"dBJetPx_Fit");
-      kf_STSignal->SetPDF("BJetPy",pdfFileName_STSignal.c_str(),"dBJetPy_Fit");
-      kf_STSignal->SetPDF("BJetPz",pdfFileName_STSignal.c_str(),"dBJetPz_Fit");
-      kf_STSignal->SetPDF("BJetE",pdfFileName_STSignal.c_str(),"dBJetE_Fit");
-      kf_STSignal->SetPDF("ElecPx",pdfFileName_STSignal.c_str(),"dElecPx_Fit");
-      kf_STSignal->SetPDF("ElecPy",pdfFileName_STSignal.c_str(),"dElecPy_Fit");
-      kf_STSignal->SetPDF("ElecPz",pdfFileName_STSignal.c_str(),"dElecPz_Fit");
-      kf_STSignal->SetPDF("ElecE",pdfFileName_STSignal.c_str(),"dElecE_Fit");
-      kf_STSignal->SetPDF("MuonPx",pdfFileName_STSignal.c_str(),"dMuonPx_Fit");
-      kf_STSignal->SetPDF("MuonPy",pdfFileName_STSignal.c_str(),"dMuonPy_Fit");
-      kf_STSignal->SetPDF("MuonPz",pdfFileName_STSignal.c_str(),"dMuonPz_Fit");
-      kf_STSignal->SetPDF("MuonE",pdfFileName_STSignal.c_str(),"dMuonE_Fit");
-      kf_STSignal->SetNToy(nToys);
+      kf_SThypo->Init(TOPHLEPBB);
+      kf_SThypo->SetPDF("TopWMass",pdfFileName_SThypo.c_str(),"TopLepWM_Fit");
+      kf_SThypo->SetPDF("TopMass",pdfFileName_SThypo.c_str(),"TopLepRecM_Fit");
+      kf_SThypo->SetPDF("HiggsMass",pdfFileName_TThypo.c_str(),"HiggsRecM_Fit");
+      kf_SThypo->SetPDF("MetPx",pdfFileName_SThypo.c_str(),"dMetPx_Gaus");
+      kf_SThypo->SetPDF("MetPy",pdfFileName_SThypo.c_str(),"dMetPy_Gaus");
+      kf_SThypo->SetPDF("BJetPx",pdfFileName_SThypo.c_str(),"dBJetPx_Fit");
+      kf_SThypo->SetPDF("BJetPy",pdfFileName_SThypo.c_str(),"dBJetPy_Fit");
+      kf_SThypo->SetPDF("BJetPz",pdfFileName_SThypo.c_str(),"dBJetPz_Fit");
+      kf_SThypo->SetPDF("BJetE",pdfFileName_SThypo.c_str(),"dBJetE_Fit");
+      kf_SThypo->SetPDF("ElecPx",pdfFileName_SThypo.c_str(),"dElecPx_Fit");
+      kf_SThypo->SetPDF("ElecPy",pdfFileName_SThypo.c_str(),"dElecPy_Fit");
+      kf_SThypo->SetPDF("ElecPz",pdfFileName_SThypo.c_str(),"dElecPz_Fit");
+      kf_SThypo->SetPDF("ElecE",pdfFileName_SThypo.c_str(),"dElecE_Fit");
+      kf_SThypo->SetPDF("MuonPx",pdfFileName_SThypo.c_str(),"dMuonPx_Fit");
+      kf_SThypo->SetPDF("MuonPy",pdfFileName_SThypo.c_str(),"dMuonPy_Fit");
+      kf_SThypo->SetPDF("MuonPz",pdfFileName_SThypo.c_str(),"dMuonPz_Fit");
+      kf_SThypo->SetPDF("MuonE",pdfFileName_SThypo.c_str(),"dMuonE_Fit");
+      kf_SThypo->SetNToy(nToys);
   }
    
    
@@ -2459,35 +2459,35 @@ void MCAnalysis(std::string xmlNom, TString CraneenPath, string KinFitMethod)
 	                int NumberOfEvents = 0;
 	              
 	              
-	                int NSelectionPassedEvents_SMtt = 0;
-	                int NMCIdentifiedEvents_SMtt_STsignal = 0;
-	                int NMCIdentifiedEvents_SMtt_TTsignal = 0;
-	                int NMCIdentifiedEvents_SMtt_TTbackground = 0;
-	                int NSelectionPassedEvents_TTSignal = 0;
-	                int NMCIdentifiedEvents_TTSignal_STsignal = 0;
-	                int NMCIdentifiedEvents_TTSignal_TTsignal = 0;
-	                int NMCIdentifiedEvents_TTSignal_TTbackground = 0;
-	                int NSelectionPassedEvents_STSignal = 0;
-	                int NMCIdentifiedEvents_STSignal_STsignal = 0;
-	                int NMCIdentifiedEvents_STSignal_TTsignal = 0;
-	                int NMCIdentifiedEvents_STSignal_TTbackground = 0;
+	                int NSelectionPassedEvents_SMttHypo = 0;
+	                int NMCIdentifiedEvents_SMttHypo_STsignal = 0;
+	                int NMCIdentifiedEvents_SMttHypo_TTsignal = 0;
+	                int NMCIdentifiedEvents_SMttHypo_TTbackground = 0;
+	                int NSelectionPassedEvents_TThypo = 0;
+	                int NMCIdentifiedEvents_TThypo_STsignal = 0;
+	                int NMCIdentifiedEvents_TThypo_TTsignal = 0;
+	                int NMCIdentifiedEvents_TThypo_TTbackground = 0;
+	                int NSelectionPassedEvents_SThypo = 0;
+	                int NMCIdentifiedEvents_SThypo_STsignal = 0;
+	                int NMCIdentifiedEvents_SThypo_TTsignal = 0;
+	                int NMCIdentifiedEvents_SThypo_TTbackground = 0;
 	              
-                  int nMCMatchedPassedEvents_SMtt_TTbackground = 0;
-                  int nMCMatchedPassedEvents_SMtt_STsignal = 0;
-                  int nMCMatchedPassedEvents_SMtt_TTsignal = 0;
-                  int nMCMatchedPassedEvents_STSignal_TTbackground = 0;
-                  int nMCMatchedPassedEvents_STSignal_STsignal = 0;
-                  int nMCMatchedPassedEvents_STSignal_TTsignal = 0;
-                  int nMCMatchedPassedEvents_TTSignal_TTbackground = 0;
-                  int nMCMatchedPassedEvents_TTSignal_STsignal = 0;
-                  int nMCMatchedPassedEvents_TTSignal_TTsignal = 0;
+                  int nMCMatchedPassedEvents_SMttHypo_TTbackground = 0;
+                  int nMCMatchedPassedEvents_SMttHypo_STsignal = 0;
+                  int nMCMatchedPassedEvents_SMttHypo_TTsignal = 0;
+                  int nMCMatchedPassedEvents_SThypo_TTbackground = 0;
+                  int nMCMatchedPassedEvents_SThypo_STsignal = 0;
+                  int nMCMatchedPassedEvents_SThypo_TTsignal = 0;
+                  int nMCMatchedPassedEvents_TThypo_TTbackground = 0;
+                  int nMCMatchedPassedEvents_TThypo_STsignal = 0;
+                  int nMCMatchedPassedEvents_TThypo_TTsignal = 0;
                     
-                  int fracNoNeutrino_SMtt = 0;
-                  int fracNoNeutrino_TTSignal = 0;
-                  int fracNoNeutrino_STSignal = 0;
-                  int fracNoNeutrino_SMtt_signalMatched = 0;
-                  int fracNoNeutrino_TTSignal_signalMatched = 0;
-                  int fracNoNeutrino_STSignal_signalMatched = 0;
+                  int fracNoNeutrino_SMttHypo = 0;
+                  int fracNoNeutrino_TThypo = 0;
+                  int fracNoNeutrino_SThypo = 0;
+                  int fracNoNeutrino_SMttHypo_signalMatched = 0;
+                  int fracNoNeutrino_TThypo_signalMatched = 0;
+                  int fracNoNeutrino_SThypo_signalMatched = 0;
 	              
 		              dataSetName = datasets[d]->Name();
 
@@ -2664,68 +2664,68 @@ void MCAnalysis(std::string xmlNom, TString CraneenPath, string KinFitMethod)
                         /////////////////////////////////////////////////////////////////////////////
                         // Section for the kinematic fit using the TOPTOPLEPHAD (selection: at least 2 -jets and at least 2 non-b jets)
                         /////////////////////////////////////////////////////////////////////////////
-                        if(KinFitMethod ==   "SMtt" || KinFitMethod == "ALL")
+                        if(KinFitMethod ==   "SMttHypo" || KinFitMethod == "ALL")
                         {
                             if(BJetPt.size()>=2 && NonBJetPt.size()>=2)
                             {
 
                                   //cout <<  "Passed Event: " << j << ", Number of Bjets: " << BJetPt.size() << ", Number of NonBjets: " << NonBJetPt.size() << "Number of leptons" << LeptonPt.size() << endl;
                                   
-	                                NSelectionPassedEvents_SMtt++;
-	                                if(SMTT_Matched) nMCMatchedPassedEvents_SMtt_TTbackground++;
-	                                if(SignalTT_Matched) nMCMatchedPassedEvents_SMtt_TTsignal++;
-	                                if(SignalST_Matched) nMCMatchedPassedEvents_SMtt_STsignal++;
+	                                NSelectionPassedEvents_SMttHypo++;
+	                                if(SMTT_Matched) nMCMatchedPassedEvents_SMttHypo_TTbackground++;
+	                                if(SignalTT_Matched) nMCMatchedPassedEvents_SMttHypo_TTsignal++;
+	                                if(SignalST_Matched) nMCMatchedPassedEvents_SMttHypo_STsignal++;
 
-                                      kf_SMtt->SetBJet(BJetPt,BJetEta,BJetPhi,BJetE);
-                                      kf_SMtt->SetNonBJet(NonBJetPt,NonBJetEta,NonBJetPhi,NonBJetE);
-                                      if(channel == "_El") kf_SMtt->SetElectron(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
-                                      else if(channel == "_Mu") kf_SMtt->SetMuon(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
-                                      kf_SMtt->SetMet(met_px,met_py);
+                                      kf_SMttHypo->SetBJet(BJetPt,BJetEta,BJetPhi,BJetE);
+                                      kf_SMttHypo->SetNonBJet(NonBJetPt,NonBJetEta,NonBJetPhi,NonBJetE);
+                                      if(channel == "_El") kf_SMttHypo->SetElectron(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
+                                      else if(channel == "_Mu") kf_SMttHypo->SetMuon(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
+                                      kf_SMttHypo->SetMet(met_px,met_py);
 
 
-                                      kf_SMtt->Run();
-                                      int nPerm_SMtt = kf_SMtt->GetNPerm();
+                                      kf_SMttHypo->Run();
+                                      int nPerm_SMttHypo = kf_SMttHypo->GetNPerm();
 
-                                      double LowestDisc_SMtt = kf_SMtt->GetDisc(); //The minimum of likelihood == the best jet-combination
-                                      int IndexBJETLEP_SMtt = -1;
-                                      int IndexBJETHAD_SMtt = -1;
-                                      int IndexNonBJET1HAD_SMtt = -1;
-                                      int IndexNonBJET2HAD_SMtt = -1;
+                                      double LowestDisc_SMttHypo = kf_SMttHypo->GetDisc(); //The minimum of likelihood == the best jet-combination
+                                      int IndexBJETLEP_SMttHypo = -1;
+                                      int IndexBJETHAD_SMttHypo = -1;
+                                      int IndexNonBJET1HAD_SMttHypo = -1;
+                                      int IndexNonBJET2HAD_SMttHypo = -1;
 
-                                      for(int ip=0;ip<nPerm_SMtt;ip++)
+                                      for(int ip=0;ip<nPerm_SMttHypo;ip++)
                                       {
-                                           double d = kf_SMtt->GetDisc(ip);
+                                           double d = kf_SMttHypo->GetDisc(ip);
 //                                           if(d>10E+9)  continue;
-//                                           if(LowestDisc_SMtt != d) continue;
+//                                           if(LowestDisc_SMttHypo != d) continue;
 
-                                            if(d>10E+9) fracNoNeutrino_SMtt++;
+                                            if(d>10E+9) fracNoNeutrino_SMttHypo++;
 
-		                                        IndexBJETLEP_SMtt = kf_SMtt->GetIndex(BJETLEP_TOPTOPLEPHAD,ip);
-		                                        IndexBJETHAD_SMtt = kf_SMtt->GetIndex(BJETHAD_TOPTOPLEPHAD,ip);
-		                                        IndexNonBJET1HAD_SMtt = kf_SMtt->GetIndex(NONBJET1_TOPTOPLEPHAD,ip);
-		                                        IndexNonBJET2HAD_SMtt = kf_SMtt->GetIndex(NONBJET2_TOPTOPLEPHAD,ip);
+		                                        IndexBJETLEP_SMttHypo = kf_SMttHypo->GetIndex(BJETLEP_TOPTOPLEPHAD,ip);
+		                                        IndexBJETHAD_SMttHypo = kf_SMttHypo->GetIndex(BJETHAD_TOPTOPLEPHAD,ip);
+		                                        IndexNonBJET1HAD_SMttHypo = kf_SMttHypo->GetIndex(NONBJET1_TOPTOPLEPHAD,ip);
+		                                        IndexNonBJET2HAD_SMttHypo = kf_SMttHypo->GetIndex(NONBJET2_TOPTOPLEPHAD,ip);
 
 
                                           //Seeing if the kinematic fit can be matched to the ST-signal
                                           if(SingleTop)
                                           {
-                                              if( (MotherpdgID[MapIndex_NonBindex[IndexNonBJET1HAD_SMtt]] == 25) && (MotherpdgID[MapIndex_NonBindex[IndexNonBJET2HAD_SMtt]]==25) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETLEP_SMtt]]) == 6) && (fabs(pdgID[MapIndex_Bindex[IndexBJETLEP_SMtt]]) == 5) )
+                                              if( (MotherpdgID[MapIndex_NonBindex[IndexNonBJET1HAD_SMttHypo]] == 25) && (MotherpdgID[MapIndex_NonBindex[IndexNonBJET2HAD_SMttHypo]]==25) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETLEP_SMttHypo]]) == 6) && (fabs(pdgID[MapIndex_Bindex[IndexBJETLEP_SMttHypo]]) == 5) )
                                               {
-	                                                if(LowestDisc_SMtt == d) NMCIdentifiedEvents_SMtt_STsignal++;
-                                                  if(d>10E+9) fracNoNeutrino_SMtt_signalMatched++;
+	                                                if(LowestDisc_SMttHypo == d) NMCIdentifiedEvents_SMttHypo_STsignal++;
+                                                  if(d>10E+9) fracNoNeutrino_SMttHypo_signalMatched++;
                                               }
                                           }
                                           else
                                           {
-                                              if( (MotherpdgID[MapIndex_NonBindex[IndexNonBJET1HAD_SMtt]] == 25) && (MotherpdgID[MapIndex_NonBindex[IndexNonBJET2HAD_SMtt]]==25) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETLEP_SMtt]]) == 6) && (fabs(pdgID[MapIndex_Bindex[IndexBJETLEP_SMtt]]) == 5) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETHAD_SMtt]]) == 6) && (fabs(pdgID[MapIndex_Bindex[IndexBJETHAD_SMtt]]) != 5) )
+                                              if( (MotherpdgID[MapIndex_NonBindex[IndexNonBJET1HAD_SMttHypo]] == 25) && (MotherpdgID[MapIndex_NonBindex[IndexNonBJET2HAD_SMttHypo]]==25) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETLEP_SMttHypo]]) == 6) && (fabs(pdgID[MapIndex_Bindex[IndexBJETLEP_SMttHypo]]) == 5) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETHAD_SMttHypo]]) == 6) && (fabs(pdgID[MapIndex_Bindex[IndexBJETHAD_SMttHypo]]) != 5) )
                                               {
-	                                                if(LowestDisc_SMtt == d) NMCIdentifiedEvents_SMtt_TTsignal++;
-                                                  if(d>10E+9) fracNoNeutrino_SMtt_signalMatched++;
+	                                                if(LowestDisc_SMttHypo == d) NMCIdentifiedEvents_SMttHypo_TTsignal++;
+                                                  if(d>10E+9) fracNoNeutrino_SMttHypo_signalMatched++;
 	                                            }
-                                              if( (MotherpdgID[MapIndex_NonBindex[IndexNonBJET1HAD_SMtt]] == 24) && (MotherpdgID[MapIndex_NonBindex[IndexNonBJET2HAD_SMtt]]==24) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETLEP_SMtt]]) == 6) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETHAD_SMtt]]) == 6) )
+                                              if( (MotherpdgID[MapIndex_NonBindex[IndexNonBJET1HAD_SMttHypo]] == 24) && (MotherpdgID[MapIndex_NonBindex[IndexNonBJET2HAD_SMttHypo]]==24) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETLEP_SMttHypo]]) == 6) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETHAD_SMttHypo]]) == 6) )
                                               {
-	                                                if(LowestDisc_SMtt == d) NMCIdentifiedEvents_SMtt_TTbackground++;
-                                                  if(d>10E+9) fracNoNeutrino_SMtt_signalMatched++;
+	                                                if(LowestDisc_SMttHypo == d) NMCIdentifiedEvents_SMttHypo_TTbackground++;
+                                                  if(d>10E+9) fracNoNeutrino_SMttHypo_signalMatched++;
 	                                            }
                                           }
                                       }
@@ -2734,64 +2734,64 @@ void MCAnalysis(std::string xmlNom, TString CraneenPath, string KinFitMethod)
                         /////////////////////////////////////////////////////////////////////////////
                         // Section for the kinematic fit using the TOPTOPLEPHbb (selection: at least 3 b-jets and at least 1 non-b jets)
                         /////////////////////////////////////////////////////////////////////////////
-                        if(KinFitMethod ==   "TTSignal" || KinFitMethod == "ALL")
+                        if(KinFitMethod ==   "TThypo" || KinFitMethod == "ALL")
                         {
                             if(BJetPt.size()>=3 && NonBJetPt.size()>=1)
                             {
-	                                NSelectionPassedEvents_TTSignal++;
-	                                if(SMTT_Matched) nMCMatchedPassedEvents_SMtt_TTbackground++;
-	                                if(SignalTT_Matched) nMCMatchedPassedEvents_SMtt_TTsignal++;
-	                                if(SignalST_Matched) nMCMatchedPassedEvents_SMtt_STsignal++;
+	                                NSelectionPassedEvents_TThypo++;
+	                                if(SMTT_Matched) nMCMatchedPassedEvents_SMttHypo_TTbackground++;
+	                                if(SignalTT_Matched) nMCMatchedPassedEvents_SMttHypo_TTsignal++;
+	                                if(SignalST_Matched) nMCMatchedPassedEvents_SMttHypo_STsignal++;
 
-                                      kf_TTSignal->SetBJet(BJetPt,BJetEta,BJetPhi,BJetE);
-                                      kf_TTSignal->SetNonBJet(NonBJetPt,NonBJetEta,NonBJetPhi,NonBJetE);
-                                      if(channel == "_El") kf_TTSignal->SetElectron(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
-                                      else if(channel == "_Mu") kf_TTSignal->SetMuon(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
-                                      kf_TTSignal->SetMet(met_px,met_py);
+                                      kf_TThypo->SetBJet(BJetPt,BJetEta,BJetPhi,BJetE);
+                                      kf_TThypo->SetNonBJet(NonBJetPt,NonBJetEta,NonBJetPhi,NonBJetE);
+                                      if(channel == "_El") kf_TThypo->SetElectron(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
+                                      else if(channel == "_Mu") kf_TThypo->SetMuon(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
+                                      kf_TThypo->SetMet(met_px,met_py);
 
 
-                                      kf_TTSignal->Run();
-                                      int nPerm_TTSignal = kf_TTSignal->GetNPerm();
+                                      kf_TThypo->Run();
+                                      int nPerm_TThypo = kf_TThypo->GetNPerm();
 
-                                      double LowestDisc_TTSignal = kf_TTSignal->GetDisc(); //The minimum of likelihood == the best jet-combination
-                                      int IndexBJETLEP_TTSignal = -1;
-                                      int IndexBJETHAD_TTSignal = -1;
-                                      int IndexNonBJET1HAD_TTSignal = -1;
-                                      int IndexNonBJET2HAD_TTSignal = -1;
+                                      double LowestDisc_TThypo = kf_TThypo->GetDisc(); //The minimum of likelihood == the best jet-combination
+                                      int IndexBJETLEP_TThypo = -1;
+                                      int IndexBJETHAD_TThypo = -1;
+                                      int IndexNonBJET1HAD_TThypo = -1;
+                                      int IndexNonBJET2HAD_TThypo = -1;
 
-                                      for(int ip=0;ip<nPerm_TTSignal;ip++)
+                                      for(int ip=0;ip<nPerm_TThypo;ip++)
                                       {
-                                           double d = kf_TTSignal->GetDisc(ip);
+                                           double d = kf_TThypo->GetDisc(ip);
 //                                           if(d>10E+9)  continue;
-//                                           if(LowestDisc_TTSignal != d) continue;
+//                                           if(LowestDisc_TThypo != d) continue;
 
-                                            if(d>10E+9) fracNoNeutrino_TTSignal++;
+                                            if(d>10E+9) fracNoNeutrino_TThypo++;
 
-		                                        IndexBJETLEP_TTSignal = kf_TTSignal->GetIndex(BJETLEP_TOPTOPLEPHBB,ip);
-		                                        IndexBJETHAD_TTSignal = kf_TTSignal->GetIndex(NONBJETHAD_TOPTOPLEPHBB,ip);
-		                                        IndexNonBJET1HAD_TTSignal = kf_TTSignal->GetIndex(BJET1_TOPTOPLEPHBB,ip);
-		                                        IndexNonBJET2HAD_TTSignal = kf_TTSignal->GetIndex(BJET2_TOPTOPLEPHBB,ip);
+		                                        IndexBJETLEP_TThypo = kf_TThypo->GetIndex(BJETLEP_TOPTOPLEPHBB,ip);
+		                                        IndexBJETHAD_TThypo = kf_TThypo->GetIndex(NONBJETHAD_TOPTOPLEPHBB,ip);
+		                                        IndexNonBJET1HAD_TThypo = kf_TThypo->GetIndex(BJET1_TOPTOPLEPHBB,ip);
+		                                        IndexNonBJET2HAD_TThypo = kf_TThypo->GetIndex(BJET2_TOPTOPLEPHBB,ip);
 
                                           //Seeing if the kinematic fit can be matched to the ST-signal
                                           if(SingleTop)
                                           {
-                                              if( (MotherpdgID[MapIndex_Bindex[IndexNonBJET1HAD_TTSignal]] == 25) && (MotherpdgID[MapIndex_Bindex[IndexNonBJET2HAD_TTSignal]]==25) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETLEP_TTSignal]]) == 6) && (fabs(pdgID[MapIndex_Bindex[IndexBJETLEP_TTSignal]]) == 5) )
+                                              if( (MotherpdgID[MapIndex_Bindex[IndexNonBJET1HAD_TThypo]] == 25) && (MotherpdgID[MapIndex_Bindex[IndexNonBJET2HAD_TThypo]]==25) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETLEP_TThypo]]) == 6) && (fabs(pdgID[MapIndex_Bindex[IndexBJETLEP_TThypo]]) == 5) )
                                               {
-	                                                if(LowestDisc_TTSignal == d) NMCIdentifiedEvents_TTSignal_STsignal++;
-                                                  if(d>10E+9) fracNoNeutrino_TTSignal_signalMatched++;
+	                                                if(LowestDisc_TThypo == d) NMCIdentifiedEvents_TThypo_STsignal++;
+                                                  if(d>10E+9) fracNoNeutrino_TThypo_signalMatched++;
                                               }
                                           }
                                           else
                                           {
-                                              if( (MotherpdgID[MapIndex_Bindex[IndexNonBJET1HAD_TTSignal]] == 25) && (MotherpdgID[MapIndex_Bindex[IndexNonBJET2HAD_TTSignal]]==25) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETLEP_TTSignal]]) == 6) && (fabs(pdgID[MapIndex_Bindex[IndexBJETLEP_TTSignal]]) == 5) && (fabs(MotherpdgID[MapIndex_NonBindex[IndexBJETHAD_TTSignal]]) == 6) && (fabs(pdgID[MapIndex_NonBindex[IndexBJETHAD_TTSignal]]) != 5) )
+                                              if( (MotherpdgID[MapIndex_Bindex[IndexNonBJET1HAD_TThypo]] == 25) && (MotherpdgID[MapIndex_Bindex[IndexNonBJET2HAD_TThypo]]==25) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETLEP_TThypo]]) == 6) && (fabs(pdgID[MapIndex_Bindex[IndexBJETLEP_TThypo]]) == 5) && (fabs(MotherpdgID[MapIndex_NonBindex[IndexBJETHAD_TThypo]]) == 6) && (fabs(pdgID[MapIndex_NonBindex[IndexBJETHAD_TThypo]]) != 5) )
                                               {
-	                                                if(LowestDisc_TTSignal == d) NMCIdentifiedEvents_TTSignal_TTsignal++;
-                                                  if(d>10E+9) fracNoNeutrino_TTSignal_signalMatched++;
+	                                                if(LowestDisc_TThypo == d) NMCIdentifiedEvents_TThypo_TTsignal++;
+                                                  if(d>10E+9) fracNoNeutrino_TThypo_signalMatched++;
 	                                            }
-                                              if( (MotherpdgID[MapIndex_Bindex[IndexNonBJET1HAD_TTSignal]] == 24) && (MotherpdgID[MapIndex_Bindex[IndexNonBJET2HAD_TTSignal]]==24) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETLEP_TTSignal]]) == 6) && (fabs(MotherpdgID[MapIndex_NonBindex[IndexBJETHAD_TTSignal]]) == 6) )
+                                              if( (MotherpdgID[MapIndex_Bindex[IndexNonBJET1HAD_TThypo]] == 24) && (MotherpdgID[MapIndex_Bindex[IndexNonBJET2HAD_TThypo]]==24) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETLEP_TThypo]]) == 6) && (fabs(MotherpdgID[MapIndex_NonBindex[IndexBJETHAD_TThypo]]) == 6) )
                                               {
-	                                                if(LowestDisc_TTSignal == d) NMCIdentifiedEvents_TTSignal_TTbackground++;
-                                                  if(d>10E+9) fracNoNeutrino_TTSignal_signalMatched++;
+	                                                if(LowestDisc_TThypo == d) NMCIdentifiedEvents_TThypo_TTbackground++;
+                                                  if(d>10E+9) fracNoNeutrino_TThypo_signalMatched++;
 	                                            }
                                           }
                                       }
@@ -2800,61 +2800,61 @@ void MCAnalysis(std::string xmlNom, TString CraneenPath, string KinFitMethod)
                         /////////////////////////////////////////////////////////////////////////////
                         // Section for the kinematic fit using the TOPHLEPbb (selection: at least 3 b-jets)
                         /////////////////////////////////////////////////////////////////////////////
-                        if(KinFitMethod ==   "STSignal" || KinFitMethod == "ALL")
+                        if(KinFitMethod ==   "SThypo" || KinFitMethod == "ALL")
                         {
                             if(BJetPt.size()>=3)
                             {
-	                                NSelectionPassedEvents_STSignal++;
-	                                if(SMTT_Matched) nMCMatchedPassedEvents_SMtt_TTbackground++;
-	                                if(SignalST_Matched) nMCMatchedPassedEvents_SMtt_TTsignal++;
-	                                if(SignalST_Matched) nMCMatchedPassedEvents_SMtt_STsignal++;
+	                                NSelectionPassedEvents_SThypo++;
+	                                if(SMTT_Matched) nMCMatchedPassedEvents_SMttHypo_TTbackground++;
+	                                if(SignalST_Matched) nMCMatchedPassedEvents_SMttHypo_TTsignal++;
+	                                if(SignalST_Matched) nMCMatchedPassedEvents_SMttHypo_STsignal++;
 
-                                      kf_STSignal->SetBJet(BJetPt,BJetEta,BJetPhi,BJetE);
-                                      kf_STSignal->SetNonBJet(NonBJetPt,NonBJetEta,NonBJetPhi,NonBJetE);
-                                      if(channel == "_El") kf_STSignal->SetElectron(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
-                                      else if(channel == "_Mu") kf_STSignal->SetMuon(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
-                                      kf_STSignal->SetMet(met_px,met_py);
+                                      kf_SThypo->SetBJet(BJetPt,BJetEta,BJetPhi,BJetE);
+                                      kf_SThypo->SetNonBJet(NonBJetPt,NonBJetEta,NonBJetPhi,NonBJetE);
+                                      if(channel == "_El") kf_SThypo->SetElectron(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
+                                      else if(channel == "_Mu") kf_SThypo->SetMuon(LeptonPt,LeptonEta,LeptonPhi,LeptonE);
+                                      kf_SThypo->SetMet(met_px,met_py);
 
 
-                                      kf_STSignal->Run();
-                                      int nPerm_STSignal = kf_STSignal->GetNPerm();
+                                      kf_SThypo->Run();
+                                      int nPerm_SThypo = kf_SThypo->GetNPerm();
 
-                                      double LowestDisc_STSignal = kf_STSignal->GetDisc(); //The minimum of likelihood == the best jet-combination
-                                      int IndexBJETLEP_STSignal = -1;
-                                      int IndexNonBJET1HAD_STSignal = -1;
-                                      int IndexNonBJET2HAD_STSignal = -1;
+                                      double LowestDisc_SThypo = kf_SThypo->GetDisc(); //The minimum of likelihood == the best jet-combination
+                                      int IndexBJETLEP_SThypo = -1;
+                                      int IndexNonBJET1HAD_SThypo = -1;
+                                      int IndexNonBJET2HAD_SThypo = -1;
 
-                                      for(int ip=0;ip<nPerm_STSignal;ip++)
+                                      for(int ip=0;ip<nPerm_SThypo;ip++)
                                       {
-                                           double d = kf_STSignal->GetDisc(ip);
+                                           double d = kf_SThypo->GetDisc(ip);
 //                                           if(d>10E+9)  continue;
-//                                           if(LowestDisc_STSignal != d) continue;
+//                                           if(LowestDisc_SThypo != d) continue;
 
-                                            if(d>10E+9) fracNoNeutrino_STSignal++;
+                                            if(d>10E+9) fracNoNeutrino_SThypo++;
 
-		                                        IndexBJETLEP_STSignal = kf_STSignal->GetIndex(BJETLEP_TOPHLEPBB,ip);
-		                                        IndexNonBJET1HAD_STSignal = kf_STSignal->GetIndex(BJET1_TOPHLEPBB,ip);
-		                                        IndexNonBJET2HAD_STSignal = kf_STSignal->GetIndex(BJET2_TOPHLEPBB,ip);
+		                                        IndexBJETLEP_SThypo = kf_SThypo->GetIndex(BJETLEP_TOPHLEPBB,ip);
+		                                        IndexNonBJET1HAD_SThypo = kf_SThypo->GetIndex(BJET1_TOPHLEPBB,ip);
+		                                        IndexNonBJET2HAD_SThypo = kf_SThypo->GetIndex(BJET2_TOPHLEPBB,ip);
                                           //Seeing if the kinematic fit can be matched to the ST-signal
                                           if(SingleTop)
                                           {
-                                              if( (MotherpdgID[MapIndex_Bindex[IndexNonBJET1HAD_STSignal]] == 25) && (MotherpdgID[MapIndex_Bindex[IndexNonBJET2HAD_STSignal]]==25) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETLEP_STSignal]]) == 6) && (fabs(pdgID[MapIndex_Bindex[IndexBJETLEP_STSignal]]) == 5) )
+                                              if( (MotherpdgID[MapIndex_Bindex[IndexNonBJET1HAD_SThypo]] == 25) && (MotherpdgID[MapIndex_Bindex[IndexNonBJET2HAD_SThypo]]==25) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETLEP_SThypo]]) == 6) && (fabs(pdgID[MapIndex_Bindex[IndexBJETLEP_SThypo]]) == 5) )
                                               {
-	                                                if(LowestDisc_STSignal == d) NMCIdentifiedEvents_STSignal_STsignal++;
-                                                  if(d>10E+9) fracNoNeutrino_STSignal_signalMatched++;
+	                                                if(LowestDisc_SThypo == d) NMCIdentifiedEvents_SThypo_STsignal++;
+                                                  if(d>10E+9) fracNoNeutrino_SThypo_signalMatched++;
                                               }
                                           }
                                           else
                                           {
-                                              if( (MotherpdgID[MapIndex_Bindex[IndexNonBJET1HAD_STSignal]] == 25) && (MotherpdgID[MapIndex_Bindex[IndexNonBJET2HAD_STSignal]]==25) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETLEP_STSignal]]) == 6) && (fabs(pdgID[MapIndex_Bindex[IndexBJETLEP_STSignal]]) == 5))
+                                              if( (MotherpdgID[MapIndex_Bindex[IndexNonBJET1HAD_SThypo]] == 25) && (MotherpdgID[MapIndex_Bindex[IndexNonBJET2HAD_SThypo]]==25) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETLEP_SThypo]]) == 6) && (fabs(pdgID[MapIndex_Bindex[IndexBJETLEP_SThypo]]) == 5))
                                               {
-      	                                          if(LowestDisc_STSignal == d) NMCIdentifiedEvents_STSignal_TTsignal++;
-                                                  if(d>10E+9) fracNoNeutrino_STSignal_signalMatched++;
+      	                                          if(LowestDisc_SThypo == d) NMCIdentifiedEvents_SThypo_TTsignal++;
+                                                  if(d>10E+9) fracNoNeutrino_SThypo_signalMatched++;
 	                                            }
-                                              if( (MotherpdgID[MapIndex_Bindex[IndexNonBJET1HAD_STSignal]] == 24) && (MotherpdgID[MapIndex_Bindex[IndexNonBJET2HAD_STSignal]]==24) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETLEP_STSignal]]) == 6) )
+                                              if( (MotherpdgID[MapIndex_Bindex[IndexNonBJET1HAD_SThypo]] == 24) && (MotherpdgID[MapIndex_Bindex[IndexNonBJET2HAD_SThypo]]==24) && (fabs(MotherpdgID[MapIndex_Bindex[IndexBJETLEP_SThypo]]) == 6) )
                                               {
-      	                                          if(LowestDisc_STSignal == d) NMCIdentifiedEvents_STSignal_TTbackground++;
-                                                  if(d>10E+9) fracNoNeutrino_STSignal_signalMatched++;
+      	                                          if(LowestDisc_SThypo == d) NMCIdentifiedEvents_SThypo_TTbackground++;
+                                                  if(d>10E+9) fracNoNeutrino_SThypo_signalMatched++;
 	                                            }
                                           }
                                       }
@@ -2862,96 +2862,96 @@ void MCAnalysis(std::string xmlNom, TString CraneenPath, string KinFitMethod)
                         }
 		              }//for-loop events
 
-    if(KinFitMethod == "SMtt" || KinFitMethod == "ALL")
+    if(KinFitMethod == "SMttHypo" || KinFitMethod == "ALL")
     {
 		    cout << "************ TOPTOPLEPHAD ************" << endl;
 		    cout << " TopKinFit-method$_{bTagWP}$ & $\epsilon_{selection}$ (\%) & $\epsilon_{MCmatched}$ (\%) & $\epsilon_{Method}$ (\%) & $\epsilon_{Total}$ (\%)" << endl;
-        cout << " TOPTOPLEPHAD & " << 100*double(NSelectionPassedEvents_SMtt)/double(NumberOfEvents ) << " & ";//selection efficiency
+        cout << " TOPTOPLEPHAD & " << 100*double(NSelectionPassedEvents_SMttHypo)/double(NumberOfEvents ) << " & ";//selection efficiency
 
         if(dataSetName.find("NP")!=string::npos)
         {
             if(SingleTop)
             {
-                if(NSelectionPassedEvents_SMtt != 0) cout << 100*double(nMCMatchedPassedEvents_SMtt_STsignal)/double(NSelectionPassedEvents_SMtt) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_SMtt_STsignal != 0) cout << 100*double(NMCIdentifiedEvents_SMtt_STsignal)/double(nMCMatchedPassedEvents_SMtt_STsignal) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_SMtt_STsignal)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_SMttHypo != 0) cout << 100*double(nMCMatchedPassedEvents_SMttHypo_STsignal)/double(NSelectionPassedEvents_SMttHypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_SMttHypo_STsignal != 0) cout << 100*double(NMCIdentifiedEvents_SMttHypo_STsignal)/double(nMCMatchedPassedEvents_SMttHypo_STsignal) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_SMttHypo_STsignal)/double(NumberOfEvents) << endl;//Total efficiency
             }
             else
             {
-                if(NSelectionPassedEvents_SMtt != 0) cout << 100*double(nMCMatchedPassedEvents_SMtt_TTsignal)/double(NSelectionPassedEvents_SMtt) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_SMtt_TTsignal != 0) cout << 100*double(NMCIdentifiedEvents_SMtt_TTsignal)/double(nMCMatchedPassedEvents_SMtt_TTsignal) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_SMtt_TTsignal)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_SMttHypo != 0) cout << 100*double(nMCMatchedPassedEvents_SMttHypo_TTsignal)/double(NSelectionPassedEvents_SMttHypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_SMttHypo_TTsignal != 0) cout << 100*double(NMCIdentifiedEvents_SMttHypo_TTsignal)/double(nMCMatchedPassedEvents_SMttHypo_TTsignal) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_SMttHypo_TTsignal)/double(NumberOfEvents) << endl;//Total efficiency
             }
         }
         else
         {
-                if(NSelectionPassedEvents_SMtt != 0) cout << 100*double(nMCMatchedPassedEvents_SMtt_TTbackground)/double(NSelectionPassedEvents_SMtt) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_SMtt_TTbackground != 0) cout << 100*double(NMCIdentifiedEvents_SMtt_TTbackground)/double(nMCMatchedPassedEvents_SMtt_TTbackground) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_SMtt_TTbackground)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_SMttHypo != 0) cout << 100*double(nMCMatchedPassedEvents_SMttHypo_TTbackground)/double(NSelectionPassedEvents_SMttHypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_SMttHypo_TTbackground != 0) cout << 100*double(NMCIdentifiedEvents_SMttHypo_TTbackground)/double(nMCMatchedPassedEvents_SMttHypo_TTbackground) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_SMttHypo_TTbackground)/double(NumberOfEvents) << endl;//Total efficiency
         }
         
-        cout << "Number of combinations where no neutrino is reconstructed: " << fracNoNeutrino_SMtt << endl;
-        cout << "Number of combinations where no neutrino is reconstructed and matched: " << fracNoNeutrino_SMtt_signalMatched << endl;
+        cout << "Number of combinations where no neutrino is reconstructed: " << fracNoNeutrino_SMttHypo << endl;
+        cout << "Number of combinations where no neutrino is reconstructed and matched: " << fracNoNeutrino_SMttHypo_signalMatched << endl;
     }
-    if(KinFitMethod == "TTSignal" || KinFitMethod == "ALL")
+    if(KinFitMethod == "TThypo" || KinFitMethod == "ALL")
     {
 		    cout << "************ TOPTOPLEPHBB ************" << endl;
 		    cout << " TopKinFit-method$_{bTagWP}$ & $\epsilon_{selection}$ (\%) & $\epsilon_{MCmatched}$ (\%) & $\epsilon_{Method}$ (\%) & $\epsilon_{Total}$ (\%)" << endl;
-        cout << " TOPTOPLEPHBB & " << 100*double(NSelectionPassedEvents_TTSignal)/double(NumberOfEvents ) << " & ";//selection efficiency
+        cout << " TOPTOPLEPHBB & " << 100*double(NSelectionPassedEvents_TThypo)/double(NumberOfEvents ) << " & ";//selection efficiency
 
         if(dataSetName.find("NP")!=string::npos)
         {
             if(SingleTop)
             {
-                if(NSelectionPassedEvents_TTSignal != 0) cout << 100*double(nMCMatchedPassedEvents_TTSignal_STsignal)/double(NSelectionPassedEvents_TTSignal) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_TTSignal_STsignal != 0) cout << 100*double(NMCIdentifiedEvents_TTSignal_STsignal)/double(nMCMatchedPassedEvents_TTSignal_STsignal) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_TTSignal_STsignal)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_TThypo != 0) cout << 100*double(nMCMatchedPassedEvents_TThypo_STsignal)/double(NSelectionPassedEvents_TThypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_TThypo_STsignal != 0) cout << 100*double(NMCIdentifiedEvents_TThypo_STsignal)/double(nMCMatchedPassedEvents_TThypo_STsignal) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_TThypo_STsignal)/double(NumberOfEvents) << endl;//Total efficiency
             }
             else
             {
-                if(NSelectionPassedEvents_TTSignal != 0) cout << 100*double(nMCMatchedPassedEvents_TTSignal_TTsignal)/double(NSelectionPassedEvents_TTSignal) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_TTSignal_TTsignal != 0) cout << 100*double(NMCIdentifiedEvents_TTSignal_TTsignal)/double(nMCMatchedPassedEvents_TTSignal_TTsignal) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_TTSignal_TTsignal)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_TThypo != 0) cout << 100*double(nMCMatchedPassedEvents_TThypo_TTsignal)/double(NSelectionPassedEvents_TThypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_TThypo_TTsignal != 0) cout << 100*double(NMCIdentifiedEvents_TThypo_TTsignal)/double(nMCMatchedPassedEvents_TThypo_TTsignal) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_TThypo_TTsignal)/double(NumberOfEvents) << endl;//Total efficiency
             }
         }
         else
         {
-                if(NSelectionPassedEvents_TTSignal != 0) cout << 100*double(nMCMatchedPassedEvents_TTSignal_TTbackground)/double(NSelectionPassedEvents_TTSignal) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_TTSignal_TTbackground != 0) cout << 100*double(NMCIdentifiedEvents_TTSignal_TTbackground)/double(nMCMatchedPassedEvents_TTSignal_TTbackground) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_TTSignal_TTbackground)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_TThypo != 0) cout << 100*double(nMCMatchedPassedEvents_TThypo_TTbackground)/double(NSelectionPassedEvents_TThypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_TThypo_TTbackground != 0) cout << 100*double(NMCIdentifiedEvents_TThypo_TTbackground)/double(nMCMatchedPassedEvents_TThypo_TTbackground) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_TThypo_TTbackground)/double(NumberOfEvents) << endl;//Total efficiency
         }    
-        cout << "Number of combinations where no neutrino is reconstructed: " << fracNoNeutrino_TTSignal << endl;
-        cout << "Number of combinations where no neutrino is reconstructed and matched: " << fracNoNeutrino_TTSignal_signalMatched << endl;
+        cout << "Number of combinations where no neutrino is reconstructed: " << fracNoNeutrino_TThypo << endl;
+        cout << "Number of combinations where no neutrino is reconstructed and matched: " << fracNoNeutrino_TThypo_signalMatched << endl;
     }
-    if(KinFitMethod == "STSignal" || KinFitMethod == "ALL")
+    if(KinFitMethod == "SThypo" || KinFitMethod == "ALL")
     {
 		    cout << "************ TOPHLEPBB ************" << endl;
 		    cout << " TopKinFit-method$_{bTagWP}$ & $\epsilon_{selection}$ (\%) & $\epsilon_{MCmatched}$ (\%) & $\epsilon_{Method}$ (\%) & $\epsilon_{Total}$ (\%)" << endl;
-        cout << " TOPHLEPBB & " << 100*double(NSelectionPassedEvents_STSignal)/double(NumberOfEvents) << " & ";//selection efficiency
+        cout << " TOPHLEPBB & " << 100*double(NSelectionPassedEvents_SThypo)/double(NumberOfEvents) << " & ";//selection efficiency
 
         if(dataSetName.find("NP")!=string::npos)
         {
             if(SingleTop)
             {
-                if(NSelectionPassedEvents_STSignal != 0) cout << 100*double(nMCMatchedPassedEvents_STSignal_STsignal)/double(NSelectionPassedEvents_STSignal) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_STSignal_STsignal != 0) cout << 100*double(NMCIdentifiedEvents_STSignal_STsignal)/double(nMCMatchedPassedEvents_STSignal_STsignal) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_STSignal_STsignal)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_SThypo != 0) cout << 100*double(nMCMatchedPassedEvents_SThypo_STsignal)/double(NSelectionPassedEvents_SThypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_SThypo_STsignal != 0) cout << 100*double(NMCIdentifiedEvents_SThypo_STsignal)/double(nMCMatchedPassedEvents_SThypo_STsignal) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_SThypo_STsignal)/double(NumberOfEvents) << endl;//Total efficiency
             }
             else
             {
-                if(NSelectionPassedEvents_STSignal != 0) cout << 100*double(nMCMatchedPassedEvents_STSignal_TTsignal)/double(NSelectionPassedEvents_STSignal) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_STSignal_TTsignal != 0) cout << 100*double(NMCIdentifiedEvents_STSignal_TTsignal)/double(nMCMatchedPassedEvents_STSignal_TTsignal) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_STSignal_TTsignal)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_SThypo != 0) cout << 100*double(nMCMatchedPassedEvents_SThypo_TTsignal)/double(NSelectionPassedEvents_SThypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_SThypo_TTsignal != 0) cout << 100*double(NMCIdentifiedEvents_SThypo_TTsignal)/double(nMCMatchedPassedEvents_SThypo_TTsignal) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_SThypo_TTsignal)/double(NumberOfEvents) << endl;//Total efficiency
             }
         }
         else
         {
-                if(NSelectionPassedEvents_STSignal != 0) cout << 100*double(nMCMatchedPassedEvents_STSignal_TTbackground)/double(NSelectionPassedEvents_STSignal) << " & ";//reconstruction efficiency
-                if(nMCMatchedPassedEvents_STSignal_TTbackground != 0) cout << 100*double(NMCIdentifiedEvents_STSignal_TTbackground)/double(nMCMatchedPassedEvents_STSignal_TTbackground) << " & ";//method efficiency
-                cout << 100*double(NMCIdentifiedEvents_STSignal_TTbackground)/double(NumberOfEvents) << endl;//Total efficiency
+                if(NSelectionPassedEvents_SThypo != 0) cout << 100*double(nMCMatchedPassedEvents_SThypo_TTbackground)/double(NSelectionPassedEvents_SThypo) << " & ";//reconstruction efficiency
+                if(nMCMatchedPassedEvents_SThypo_TTbackground != 0) cout << 100*double(NMCIdentifiedEvents_SThypo_TTbackground)/double(nMCMatchedPassedEvents_SThypo_TTbackground) << " & ";//method efficiency
+                cout << 100*double(NMCIdentifiedEvents_SThypo_TTbackground)/double(NumberOfEvents) << endl;//Total efficiency
         }
-        cout << "Number of combinations where no neutrino is reconstructed: " << fracNoNeutrino_STSignal << endl;
-        cout << "Number of combinations where no neutrino is reconstructed and matched: " << fracNoNeutrino_STSignal_signalMatched << endl;
+        cout << "Number of combinations where no neutrino is reconstructed: " << fracNoNeutrino_SThypo << endl;
+        cout << "Number of combinations where no neutrino is reconstructed and matched: " << fracNoNeutrino_SThypo_signalMatched << endl;
     }
     cout << " " << endl;		              
 		              
@@ -3069,61 +3069,61 @@ void MVAanalysis(bool doTraining, std::string MVAmethod, int skipEvents, std::st
   if(debug) cout << "Initializing KinFit instances" << endl;
    int nToys = 500;
 
-  std::string pdfFileName_TTSignal = "TopKinFit/test/GenAnalysis/TopTopLepHbb/pdf.root";
-  std::string pdfFileName_STSignal = "TopKinFit/test/GenAnalysis/TopHLepbb/pdf.root";
+  std::string pdfFileName_TThypo = "TopKinFit/test/GenAnalysis/TopTopLepHbb/pdf.root";
+  std::string pdfFileName_SThypo = "TopKinFit/test/GenAnalysis/TopHLepbb/pdf.root";
 
-  KINFIT::kfit *kf_STSignal = new KINFIT::kfit();
-  KINFIT::kfit *kf_TTSignal = new KINFIT::kfit();
+  KINFIT::kfit *kf_SThypo = new KINFIT::kfit();
+  KINFIT::kfit *kf_TThypo = new KINFIT::kfit();
 
   
   if(JetCombSelection == "TThypo")
   {
-      kf_TTSignal->Init(TOPTOPLEPHBB);
-      kf_TTSignal->SetPDF("TopWMass",pdfFileName_TTSignal.c_str(),"TopLepWM_Fit");
-      kf_TTSignal->SetPDF("TopMass",pdfFileName_TTSignal.c_str(),"TopLepRecM_Fit");
-      kf_STSignal->SetPDF("HiggsMass",pdfFileName_TTSignal.c_str(),"HiggsRecM_Fit");
-      kf_TTSignal->SetPDF("TopHadMass",pdfFileName_TTSignal.c_str(),"TopHadRecM_Fit");
-      kf_TTSignal->SetPDF("MetPx",pdfFileName_TTSignal.c_str(),"dMetPx_Gaus");
-      kf_TTSignal->SetPDF("MetPy",pdfFileName_TTSignal.c_str(),"dMetPy_Gaus");
-      kf_TTSignal->SetPDF("BJetPx",pdfFileName_TTSignal.c_str(),"dBJetPx_Fit");
-      kf_TTSignal->SetPDF("BJetPy",pdfFileName_TTSignal.c_str(),"dBJetPy_Fit");
-      kf_TTSignal->SetPDF("BJetPz",pdfFileName_TTSignal.c_str(),"dBJetPz_Fit");
-      kf_TTSignal->SetPDF("BJetE",pdfFileName_TTSignal.c_str(),"dBJetE_Fit");
-      kf_TTSignal->SetPDF("ElecPx",pdfFileName_TTSignal.c_str(),"dElecPx_Fit");
-      kf_TTSignal->SetPDF("ElecPy",pdfFileName_TTSignal.c_str(),"dElecPy_Fit");
-      kf_TTSignal->SetPDF("ElecPz",pdfFileName_TTSignal.c_str(),"dElecPz_Fit");
-      kf_TTSignal->SetPDF("ElecE",pdfFileName_TTSignal.c_str(),"dElecE_Fit");
-      kf_TTSignal->SetPDF("MuonPx",pdfFileName_TTSignal.c_str(),"dMuonPx_Fit");
-      kf_TTSignal->SetPDF("MuonPy",pdfFileName_TTSignal.c_str(),"dMuonPy_Fit");
-      kf_TTSignal->SetPDF("MuonPz",pdfFileName_TTSignal.c_str(),"dMuonPz_Fit");
-      kf_TTSignal->SetPDF("MuonE",pdfFileName_TTSignal.c_str(),"dMuonE_Fit");
-      kf_TTSignal->SetPDF("NonBJetPx",pdfFileName_TTSignal.c_str(),"dNonBJetPx_Fit");
-      kf_TTSignal->SetPDF("NonBJetPy",pdfFileName_TTSignal.c_str(),"dNonBJetPy_Fit");
-      kf_TTSignal->SetPDF("NonBJetPz",pdfFileName_TTSignal.c_str(),"dNonBJetPz_Fit");
-      kf_TTSignal->SetPDF("NonBJetE",pdfFileName_TTSignal.c_str(),"dNonBJetE_Fit");
-      kf_TTSignal->SetNToy(nToys);
+      kf_TThypo->Init(TOPTOPLEPHBB);
+      kf_TThypo->SetPDF("TopWMass",pdfFileName_TThypo.c_str(),"TopLepWM_Fit");
+      kf_TThypo->SetPDF("TopMass",pdfFileName_TThypo.c_str(),"TopLepRecM_Fit");
+      kf_SThypo->SetPDF("HiggsMass",pdfFileName_TThypo.c_str(),"HiggsRecM_Fit");
+      kf_TThypo->SetPDF("TopHadMass",pdfFileName_TThypo.c_str(),"TopHadRecM_Fit");
+      kf_TThypo->SetPDF("MetPx",pdfFileName_TThypo.c_str(),"dMetPx_Gaus");
+      kf_TThypo->SetPDF("MetPy",pdfFileName_TThypo.c_str(),"dMetPy_Gaus");
+      kf_TThypo->SetPDF("BJetPx",pdfFileName_TThypo.c_str(),"dBJetPx_Fit");
+      kf_TThypo->SetPDF("BJetPy",pdfFileName_TThypo.c_str(),"dBJetPy_Fit");
+      kf_TThypo->SetPDF("BJetPz",pdfFileName_TThypo.c_str(),"dBJetPz_Fit");
+      kf_TThypo->SetPDF("BJetE",pdfFileName_TThypo.c_str(),"dBJetE_Fit");
+      kf_TThypo->SetPDF("ElecPx",pdfFileName_TThypo.c_str(),"dElecPx_Fit");
+      kf_TThypo->SetPDF("ElecPy",pdfFileName_TThypo.c_str(),"dElecPy_Fit");
+      kf_TThypo->SetPDF("ElecPz",pdfFileName_TThypo.c_str(),"dElecPz_Fit");
+      kf_TThypo->SetPDF("ElecE",pdfFileName_TThypo.c_str(),"dElecE_Fit");
+      kf_TThypo->SetPDF("MuonPx",pdfFileName_TThypo.c_str(),"dMuonPx_Fit");
+      kf_TThypo->SetPDF("MuonPy",pdfFileName_TThypo.c_str(),"dMuonPy_Fit");
+      kf_TThypo->SetPDF("MuonPz",pdfFileName_TThypo.c_str(),"dMuonPz_Fit");
+      kf_TThypo->SetPDF("MuonE",pdfFileName_TThypo.c_str(),"dMuonE_Fit");
+      kf_TThypo->SetPDF("NonBJetPx",pdfFileName_TThypo.c_str(),"dNonBJetPx_Fit");
+      kf_TThypo->SetPDF("NonBJetPy",pdfFileName_TThypo.c_str(),"dNonBJetPy_Fit");
+      kf_TThypo->SetPDF("NonBJetPz",pdfFileName_TThypo.c_str(),"dNonBJetPz_Fit");
+      kf_TThypo->SetPDF("NonBJetE",pdfFileName_TThypo.c_str(),"dNonBJetE_Fit");
+      kf_TThypo->SetNToy(nToys);
   }
   else if (JetCombSelection ==   "SThypo")
   {
-      kf_STSignal->Init(TOPHLEPBB);
-      kf_STSignal->SetPDF("TopWMass",pdfFileName_STSignal.c_str(),"TopLepWM_Fit");
-      kf_STSignal->SetPDF("TopMass",pdfFileName_STSignal.c_str(),"TopLepRecM_Fit");
-      kf_STSignal->SetPDF("HiggsMass",pdfFileName_TTSignal.c_str(),"HiggsRecM_Fit");
-      kf_STSignal->SetPDF("MetPx",pdfFileName_STSignal.c_str(),"dMetPx_Gaus");
-      kf_STSignal->SetPDF("MetPy",pdfFileName_STSignal.c_str(),"dMetPy_Gaus");
-      kf_STSignal->SetPDF("BJetPx",pdfFileName_STSignal.c_str(),"dBJetPx_Fit");
-      kf_STSignal->SetPDF("BJetPy",pdfFileName_STSignal.c_str(),"dBJetPy_Fit");
-      kf_STSignal->SetPDF("BJetPz",pdfFileName_STSignal.c_str(),"dBJetPz_Fit");
-      kf_STSignal->SetPDF("BJetE",pdfFileName_STSignal.c_str(),"dBJetE_Fit");
-      kf_STSignal->SetPDF("ElecPx",pdfFileName_STSignal.c_str(),"dElecPx_Fit");
-      kf_STSignal->SetPDF("ElecPy",pdfFileName_STSignal.c_str(),"dElecPy_Fit");
-      kf_STSignal->SetPDF("ElecPz",pdfFileName_STSignal.c_str(),"dElecPz_Fit");
-      kf_STSignal->SetPDF("ElecE",pdfFileName_STSignal.c_str(),"dElecE_Fit");
-      kf_STSignal->SetPDF("MuonPx",pdfFileName_STSignal.c_str(),"dMuonPx_Fit");
-      kf_STSignal->SetPDF("MuonPy",pdfFileName_STSignal.c_str(),"dMuonPy_Fit");
-      kf_STSignal->SetPDF("MuonPz",pdfFileName_STSignal.c_str(),"dMuonPz_Fit");
-      kf_STSignal->SetPDF("MuonE",pdfFileName_STSignal.c_str(),"dMuonE_Fit");
-      kf_STSignal->SetNToy(nToys);
+      kf_SThypo->Init(TOPHLEPBB);
+      kf_SThypo->SetPDF("TopWMass",pdfFileName_SThypo.c_str(),"TopLepWM_Fit");
+      kf_SThypo->SetPDF("TopMass",pdfFileName_SThypo.c_str(),"TopLepRecM_Fit");
+      kf_SThypo->SetPDF("HiggsMass",pdfFileName_TThypo.c_str(),"HiggsRecM_Fit");
+      kf_SThypo->SetPDF("MetPx",pdfFileName_SThypo.c_str(),"dMetPx_Gaus");
+      kf_SThypo->SetPDF("MetPy",pdfFileName_SThypo.c_str(),"dMetPy_Gaus");
+      kf_SThypo->SetPDF("BJetPx",pdfFileName_SThypo.c_str(),"dBJetPx_Fit");
+      kf_SThypo->SetPDF("BJetPy",pdfFileName_SThypo.c_str(),"dBJetPy_Fit");
+      kf_SThypo->SetPDF("BJetPz",pdfFileName_SThypo.c_str(),"dBJetPz_Fit");
+      kf_SThypo->SetPDF("BJetE",pdfFileName_SThypo.c_str(),"dBJetE_Fit");
+      kf_SThypo->SetPDF("ElecPx",pdfFileName_SThypo.c_str(),"dElecPx_Fit");
+      kf_SThypo->SetPDF("ElecPy",pdfFileName_SThypo.c_str(),"dElecPy_Fit");
+      kf_SThypo->SetPDF("ElecPz",pdfFileName_SThypo.c_str(),"dElecPz_Fit");
+      kf_SThypo->SetPDF("ElecE",pdfFileName_SThypo.c_str(),"dElecE_Fit");
+      kf_SThypo->SetPDF("MuonPx",pdfFileName_SThypo.c_str(),"dMuonPx_Fit");
+      kf_SThypo->SetPDF("MuonPy",pdfFileName_SThypo.c_str(),"dMuonPy_Fit");
+      kf_SThypo->SetPDF("MuonPz",pdfFileName_SThypo.c_str(),"dMuonPz_Fit");
+      kf_SThypo->SetPDF("MuonE",pdfFileName_SThypo.c_str(),"dMuonE_Fit");
+      kf_SThypo->SetNToy(nToys);
   }
   if(debug) cout << "KinFit initialized" << endl;
 
