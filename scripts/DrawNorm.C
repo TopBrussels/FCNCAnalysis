@@ -6,21 +6,29 @@ void DrawNorm()
   vector<std::string> MVAvars;
 
 
+      MVAvars.push_back("SumCharge_Hjets");
+      MVAvars.push_back("SumCharge_TopJets");
+      MVAvars.push_back("SumCharge_FCNHJetLep");
+      MVAvars.push_back("CvsL_Hjet1");
+      MVAvars.push_back("CvsL_Hjet2");
+      MVAvars.push_back("CvsL_SMb");
+      MVAvars.push_back("CvsL_FCNHjet");
+      MVAvars.push_back("CvsB_Hjet1");
+      MVAvars.push_back("CvsB_Hjet2");
+      MVAvars.push_back("CvsB_SMb");
+      MVAvars.push_back("CvsB_FCNHjet");
       MVAvars.push_back("Hmass");
-      MVAvars.push_back("LepTopmass");
-      MVAvars.push_back("DR_H_LepTop");
+      MVAvars.push_back("TransvLepTopmass");
+      MVAvars.push_back("HadTopmass");
       MVAvars.push_back("DR_H_HadTop");
+      MVAvars.push_back("DPhi_H_LepTop");
       MVAvars.push_back("LepTopPt");
       MVAvars.push_back("HadTopPt");
-      MVAvars.push_back("HadTopmass");
-      MVAvars.push_back("CvsB_FCNHjet");
-      MVAvars.push_back("CvsL_FCNHjet");
-      MVAvars.push_back("SumCharge_FCNHJetLep");
-      MVAvars.push_back("SumCharge_TopJets");
+      MVAvars.push_back("JetCombBDT");
 
 //  gSystem->Load("$ROOTSYS/test/libEvent");
 
-  TFile *infile= new TFile("../MVA/TrainFiles/TrainedJetCombMVA_TThypo_TTtraining_11vars.root","READ");
+  TFile *infile= new TFile("../MVA/TrainFiles/EventMVA_SThypo_4Vars_3B1J_El_NP_overlay_ST_tHToBB_1L_Kappa_hct_19vars.root","READ");
   TFile *fout = new TFile("NormHistos.root","RECREATE");
 
   for(int i_vars = 0; i_vars < MVAvars.size(); i_vars++)
