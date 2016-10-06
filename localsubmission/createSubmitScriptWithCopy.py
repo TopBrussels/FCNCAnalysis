@@ -35,9 +35,9 @@ for chan in channels:
     print "\nSearching list of sample used for ", chan, " channel!"
     # getting the appropriate xml file
     if "Mu" in chan:
-        tree = ET.ElementTree(file='../config/FullMcBkgdSamplesV8_Mu.xml')
+        tree = ET.ElementTree(file='../config/FullMcBkgdSamples_80X_Mu.xml')
     elif "El" in chan:
-        tree = ET.ElementTree(file='../config/FullMcBkgdSamplesV8_El.xml')
+        tree = ET.ElementTree(file='../config/FullMcBkgdSamples_80X_El.xml')
     else:
         print "Channel '", chan , "' is not a correct channel name. No tree has been loaded!"
         sys.exit()
@@ -90,9 +90,9 @@ for chan in channels:
             # setting the number of file per job depending whether it is data sample or not
             # this ca be tweaked
             if "Data" in str(d.attrib['name']):
-                FilePerJob=20
+                FilePerJob=10
             else:
-                FilePerJob=1
+                FilePerJob=3
 
             # create a test job for each dataset
             # create a file for this job 

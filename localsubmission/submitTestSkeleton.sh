@@ -5,7 +5,7 @@
 
 # setting up your code and your env
 source /user/kderoove/.bash_profile
-cd /user/kderoove/FCNC/TopTreeFramework_Run2/CMSSW_7_6_5/src/TopBrussels/FCNCAnalysis/
+cd /user/kderoove/FCNC/TopTreeFramework_Run2/CMSSW_8_0_12/src/TopBrussels_new/FCNCAnalysis/
 cmsenv
 eval `scramv1 runtime -sh`
 
