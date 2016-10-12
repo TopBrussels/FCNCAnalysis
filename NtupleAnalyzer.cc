@@ -99,7 +99,6 @@ int main(int argc, char* argv[])
   applyMET = strtol(argv[9],NULL,10);
   
   
-  
   string xmlFileName;
   string CraneenPath;
   CraneenPath = "NtupleMakerOutput/MergedTuples/";
@@ -140,7 +139,7 @@ int main(int argc, char* argv[])
   }
   dateString = MakeTimeStamp();
   //    CraneenPath += dateString + "/";
-  CraneenPath += "160712/";
+  CraneenPath += "160812/";
   string pathPNG = "myOutput";
   mkdir(pathPNG.c_str(),0777);
   pathPNG += "/" + dateString + "/";
@@ -164,10 +163,10 @@ int main(int argc, char* argv[])
   
   
   // calling datasetPlotter to create MSPplots
- // DatasetPlotter(25, -1, 1, "BDTscore", xmlFileName,CraneenPath,pathPNG); 
+//  DatasetPlotter(25, -1, 1, "BDTscore", xmlFileName,CraneenPath,pathPNG); 
   // event plots
 //      DatasetPlotter(70, -0.5, 69.5, "npu", xmlFileName,CraneenPath,pathPNG);
-    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,CraneenPath,pathPNG);
+  //  DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,CraneenPath,pathPNG);
  //
   //    DatasetPlotter(10, -0.5, 9.5, "nLeptons", xmlFileName,CraneenPath,pathPNG);
 //  DatasetPlotter(20, 0, 200, "Zboson_M", xmlFileName,CraneenPath,pathPNG);
@@ -202,26 +201,29 @@ int main(int argc, char* argv[])
   
    elecPlot = false;
    muPlot = false;*/
-  // DatasetPlotter(11, -0.5, 10.5, "nJets", xmlFileName,CraneenPath,pathPNG);
+//   DatasetPlotter(11, -0.5, 10.5, "nJets", xmlFileName,CraneenPath,pathPNG);
 /*   DatasetPlotter(70, 0, 700, "pt_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
    DatasetPlotter(50, -3.15, 3.15, "eta_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
    DatasetPlotter(30, -3.15, 3.15, "phi_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
-   DatasetPlotter(25, 0, 1, "bdisc_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
-   DatasetPlotter(25,-1, 1, "cdiscCvsL_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
-   DatasetPlotter(25,-1, 1, "cdiscCvsB_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
-   DatasetPlotter(11, -0.5, 10.5, "nJets_CSVL", xmlFileName,CraneenPath,pathPNG);
-   DatasetPlotter(11, -0.5, 10.5, "nJets_CSVM", xmlFileName,CraneenPath,pathPNG);
-   DatasetPlotter(11, -0.5, 10.5, "nJets_CSVT", xmlFileName,CraneenPath,pathPNG);
-  */
+*/  // DatasetPlotter(25, 0, 1, "bdisc_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
+   //DatasetPlotter(25,-1, 1, "cdiscCvsL_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
+  // DatasetPlotter(25,-1, 1, "cdiscCvsB_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
+// DatasetPlotter(11, -0.5, 10.5, "nJets_CSVL", xmlFileName,CraneenPath,pathPNG);
+//   DatasetPlotter(11, -0.5, 10.5, "nJets_CSVM", xmlFileName,CraneenPath,pathPNG);
+//   DatasetPlotter(11, -0.5, 10.5, "nJets_CSVT", xmlFileName,CraneenPath,pathPNG);
+  
 
-  /*DatasetPlotter(25,-1, 1, "cdiscCvsL_jet_1", xmlFileName,CraneenPath,pathPNG);
-   DatasetPlotter(25,-1, 1, "cdiscCvsB_jet_1", xmlFileName,CraneenPath,pathPNG); 
+//   DatasetPlotter(25,-1, 1, "cdiscCvsL_jet_1", xmlFileName,CraneenPath,pathPNG);
+ //  DatasetPlotter(25,-1, 1, "cdiscCvsB_jet_1", xmlFileName,CraneenPath,pathPNG); 
+   DatasetPlotter(70, 0, 700, "met_Pz", xmlFileName,CraneenPath,pathPNG);
    DatasetPlotter(70, 0, 700, "met_Pt", xmlFileName,CraneenPath,pathPNG);
-   DatasetPlotter(50,0, 500, "pt_electron_1", xmlFileName, CraneenPath, pathPNG);
-   DatasetPlotter(20, 0, 200, "Zboson_M", xmlFileName,CraneenPath,pathPNG);
-   DatasetPlotter(20, 0, 400, "mWt", xmlFileName,CraneenPath,pathPNG);
-   DatasetPlotter(20, 0, 400, "SMtop_M", xmlFileName,CraneenPath,pathPNG);
-   DatasetPlotter(50,0, 500, "pt_electron_2", xmlFileName, CraneenPath, pathPNG);
+   //DatasetPlotter(50,0, 500, "pt_electron_1", xmlFileName, CraneenPath, pathPNG);
+   //DatasetPlotter(20, 0, 200, "Zboson_M", xmlFileName,CraneenPath,pathPNG);
+   //DatasetPlotter(20, 0, 400, "mWt", xmlFileName,CraneenPath,pathPNG);
+   DatasetPlotter(20, 0, 400, "SMtop_M", xmlFileName,CraneenPath,pathPNG); 
+   DatasetPlotter(20, 0, 400, "FCNCtop_M", xmlFileName,CraneenPath,pathPNG);
+   DatasetPlotter(20, 0, 400, "FCNCtop_tagger", xmlFileName,CraneenPath,pathPNG);
+   /*DatasetPlotter(50,0, 500, "pt_electron_2", xmlFileName, CraneenPath, pathPNG);
    DatasetPlotter(50,0, 500, "pt_electron_3", xmlFileName, CraneenPath, pathPNG);
    DatasetPlotter(50,0, 500, "pt_muon_1", xmlFileName, CraneenPath, pathPNG);
    DatasetPlotter(50,0, 500, "pt_muon_2", xmlFileName, CraneenPath, pathPNG);
@@ -268,7 +270,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
   
   int nEntries;
   float ScaleFactor, NormFactor;
-  int  varofInterest;
+  double  varofInterest;
   double varofInterest_double [20];
   
   
@@ -401,10 +403,65 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
     
     Int_t nbHLTv3;
     globalttree[dataSetName.c_str()]->SetBranchAddress("nofEventsHLTv3", &nbHLTv3);
-    
+   
+    Int_t nMatch; 
+    if(dataSetName.find("NP_overlay_FCNC_TT")!= string::npos) globalttree[dataSetName.c_str()]->SetBranchAddress("nMatched",&nMatch); 
+
+    Int_t nNonMatch;
+    if(dataSetName.find("NP_overlay_FCNC_TT")!= string::npos) globalttree[dataSetName.c_str()]->SetBranchAddress("nNonMatched",&nNonMatch);
+
+ 
     Double_t BSF;
     ttree[dataSetName.c_str()]->SetBranchAddress("btagSF",&BSF);
     
+    Int_t nMatched_c; 
+    if(NewPhys) globalttree[dataSetName.c_str()]->SetBranchAddress("nMatched_charm", &nMatched_c);
+
+    Int_t nMatched_b;
+    if(NewPhys) globalttree[dataSetName.c_str()]->SetBranchAddress("nMatched_bottom", &nMatched_b);
+
+    Int_t nMatched_Zel;
+    if(NewPhys) globalttree[dataSetName.c_str()]->SetBranchAddress("nMatched_Zelec", &nMatched_Zel);
+
+    Int_t nMatched_Zm;
+    if(NewPhys) globalttree[dataSetName.c_str()]->SetBranchAddress("nMatched_Zmu", &nMatched_Zm);
+
+    Int_t nMatched_Wel;
+    if(NewPhys) globalttree[dataSetName.c_str()]->SetBranchAddress("nMatched_Welec", &nMatched_Wel);
+
+    Int_t nMatched_Wm;
+    if(NewPhys) globalttree[dataSetName.c_str()]->SetBranchAddress("nMatched_Wmu", &nMatched_Wm);
+
+    Int_t nMatched_ct;
+    if(NewPhys) globalttree[dataSetName.c_str()]->SetBranchAddress("nMatched_charm_tag", &nMatched_ct);
+
+    Int_t nMatched_tm;
+    if(NewPhys) globalttree[dataSetName.c_str()]->SetBranchAddress("nTagEqMass", &nMatched_tm);
+
+    Int_t nNonMatched_c;
+    if(NewPhys) globalttree[dataSetName.c_str()]->SetBranchAddress("nNonMatched_charm", &nNonMatched_c);
+
+    Int_t nNonMatched_b;
+    if(NewPhys) globalttree[dataSetName.c_str()]->SetBranchAddress("nNonMatched_bottom", &nNonMatched_b);
+
+    Int_t nNonMatched_Zel;
+    if(NewPhys) globalttree[dataSetName.c_str()]->SetBranchAddress("nNonMatched_Zelec", &nNonMatched_Zel);
+
+    Int_t nNonMatched_Zm;
+    if(NewPhys) globalttree[dataSetName.c_str()]->SetBranchAddress("nNonMatched_Zmu", &nNonMatched_Zm);
+
+    Int_t nNonMatched_Wel;
+    if(NewPhys) globalttree[dataSetName.c_str()]->SetBranchAddress("nNonMatched_Welec", &nNonMatched_Wel);
+
+    Int_t nNonMatched_Wm;
+    if(NewPhys) globalttree[dataSetName.c_str()]->SetBranchAddress("nNonMatched_Wmu", &nNonMatched_Wm);
+
+    Int_t nNonMatched_ct;
+    if(NewPhys) globalttree[dataSetName.c_str()]->SetBranchAddress("nNonMatched_charm_tag", &nNonMatched_ct);
+
+    Int_t nNonMatched_tm;
+    if(NewPhys) globalttree[dataSetName.c_str()]->SetBranchAddress("nTagNotEqMass", &nNonMatched_tm);
+
     
     Int_t NbCuts;
     globalttree[dataSetName.c_str()]->SetBranchAddress("nCuts", &NbCuts);
@@ -425,23 +482,59 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
     int nNeg = 0;
     int Ev = 0;
     int Weights = 0;
-    if(applyAMC && isAMC && !isData)
+     int Matched = 0;
+     int nonMatched = 0;
+    int NmatchCharm, NonmatchCharm, NmatchBottom, NonmatchBottom, NmatchZelec, NonmatchZelec, NmatchZmu, NonmatchZmu, NmatchWelec, NonmatchWmu, TagEqM, TagNeqM, NmatchTcharm, NonmatchTcharm, NonmatchWelec,NmatchWmu; 
+    NmatchCharm = NonmatchCharm = NmatchBottom = NonmatchBottom = NmatchZelec = NonmatchZelec = NmatchZmu = NonmatchZmu= NmatchWelec= NonmatchWmu= TagEqM= TagNeqM= NmatchTcharm= NonmatchTcharm = NonmatchWelec = NmatchWmu =0 ;
+
+    if(!isData)
     {
       
       for (int k = 0; k<globalnEntries; k++)
       {
         globalttree[(dataSetName).c_str()]->GetEntry(k);
 	if(debug) cout << "get globaltree" << endl; 
-        nPos += nPosW;
-        nNeg += nNegW;
-        Ev += nEvents;
-        Weights += SumW;
+        if(applyAMC && isAMC && !isData) nPos += nPosW;
+        if(applyAMC && isAMC && !isData) nNeg += nNegW;
+        if(applyAMC && isAMC && !isData) Ev += nEvents;
+        if(applyAMC && isAMC && !isData) Weights += SumW;
+//        if(dataSetName.find("NP_overlay_FCNC_TT")!= string::npos)  Matched += nMatch;
+//        if(dataSetName.find("NP_overlay_FCNC_TT")!= string::npos) nonMatched += nNonMatch;
         // cout << "nPos " << nPos << " vs " << nPosW << " nNeg " << nNeg << " vs " << nNegW << " + " << nPos + nNeg << " - " << nPos - nNeg  << endl;
         // cout << "nEvents " << nEvents << " vs " << Ev << " sumWeights " << SumW << " vs " << Weights << endl;
+        if(NewPhys){
+		NmatchCharm += nMatched_c; 
+		NonmatchCharm += nNonMatched_c; 
+		NmatchBottom += nMatched_b; 
+		NonmatchBottom += nNonMatched_b; 
+		NmatchZelec += nMatched_Zel; 
+		NonmatchZelec += nNonMatched_Zel; 
+		NmatchZmu += nMatched_Zm;
+		NonmatchZmu += nNonMatched_Zm; 
+		NmatchWelec += nMatched_Wel; 
+		NonmatchWelec += nNonMatched_Wel; 
+		NmatchWmu += nMatched_Wm; 
+		NonmatchWmu += nNonMatched_Wm;
+		TagEqM += nMatched_tm; 
+		TagNeqM += nNonMatched_tm; 
+		NmatchTcharm += nMatched_ct;  
+		NonmatchTcharm += nNonMatched_ct;
+	}
       }
       //          if(!isData) nloSF *= (double) Weights/(double) Ev; //
-      if(!isData) nloSF *= ((double) (nPos + nNeg))/((double) (nPos - nNeg));
-      cout << "                nloSF: " << nloSF << endl;
+      if(applyAMC && isAMC && !isData) nloSF *= ((double) (nPos + nNeg))/((double) (nPos - nNeg));
+      if(applyAMC && isAMC && !isData) cout << "                nloSF: " << nloSF << endl;
+      if(NewPhys) {
+	//cout << "                % matched: " << (double) (Matched) / (double) (Matched + nonMatched) << endl; 
+        cout << "                % matched charm: " << (double) (NmatchCharm) / (double) (NmatchCharm + NonmatchCharm) << endl;
+        cout << "                % matched bottom: " << (double) (NmatchBottom) / (double) (NmatchBottom + NonmatchBottom) << endl;
+        cout << "                % matched Z electron: " << (double) (NmatchZelec) / (double) (NmatchZelec + NonmatchZelec) << endl;
+        cout << "                % matched Z muon: " << (double) (NmatchZmu) / (double) (NmatchZmu + NonmatchZmu) << endl;
+        cout << "                % matched W electron: " << (double) (NmatchWelec) / (double) (NmatchWelec + NonmatchWelec) << endl;
+        cout << "                % matched W muon: " << (double) (NmatchWmu) / (double) (NmatchWmu + NonmatchWmu) << endl;
+        cout << "                % matched charm tag method: " << (double) (NmatchTcharm) / (double) (NmatchTcharm + NonmatchTcharm) << endl;
+        cout << "                % matched charm tag same as charm mass: " << (double) (TagEqM) / (double) (TagEqM + TagNeqM) << endl;
+      }
     }
     for (int j = 0; j<nEntries; j++)
     {
@@ -595,7 +688,7 @@ void MSPCreator (string pathPNG)
       cout << "Saving the MSP" << endl;
       cout << " and it->first is " << it->first << endl;
     }
-    temp->Draw("MyMSP"+it->first, 0, false, false, false, 10);// 0 = no ratio 1 = ratio
+    temp->Draw("MyMSP"+it->first, 0, false, false, false, 1);// 0 = no ratio 1 = ratio
     //    name += "_3L";
     if(!applyGlobalSF) name += "_noSF";
     if(!applyPUSF) name += "_noPUSF";

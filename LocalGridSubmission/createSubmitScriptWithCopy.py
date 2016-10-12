@@ -83,7 +83,7 @@ for chan in channels:
     for d in datasets:
         if d.attrib['add'] == '1':
             print "found dataset to be added..." + str(d.attrib['name'])
-            commandString = "./Ntupler_an "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff'])
+            commandString = "./FinalAn "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff'])
             topTrees = glob.glob(d.attrib['filenames'])
 
             # setting the number of file per job depending whether it is data sample or not

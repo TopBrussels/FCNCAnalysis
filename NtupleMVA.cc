@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
   }
   dateString = MakeTimeStamp();
   //    CraneenPath += dateString + "/";
-  CraneenPath += "160712/";
+  CraneenPath += "160718/";
   string pathPNG = "myOutput";
   mkdir(pathPNG.c_str(),0777);
   pathPNG += "/" + dateString + "/";
@@ -193,6 +193,17 @@ void MSPCreator (string pathPNG)
 
 void MVAanalysis(bool doTraining, std::string MVAmethod, int skipEvents, std::string SignalName,std::string BkgName,std::string xmlNom_train,std::string xmlNom_evaluate , TString CraneenPath, std::string channel)
 {
+
+  // Set cuts
+  //
+  TString set_MET_cut = ">30";
+  TString set_mTW_cut = "";
+  TString set_NJets_cut = ">1"; //ONLY STRICT SIGN (> / < / ==)
+  TString set_NBJets_cut = "=1"; //ONLY STRICT SIGN (> / < / ==)
+  
+  std::vector<TString > CUTvars;
+  CUTvars.push_back("MET"); 
+  
   
   MVAComputer* Eventcomputer_ =0;
   MVATrainer* Eventtrainer_ = 0;
@@ -204,8 +215,8 @@ void MVAanalysis(bool doTraining, std::string MVAmethod, int skipEvents, std::st
   //  MVAvars.push_back("NumberOfElectrons"); // doesn't contribute
   //  MVAvars.push_back("NumberOfMuons"); // doesn't contribute
   //  MVAvars.push_back("Zmass"); // doesn't contribute
-  MVAvars.push_back("TrMassW");
-  MVAvars.push_back("MET");
+  //  MVAvars.push_back("TrMassW"); lowcontribution ? 
+//  MVAvars.push_back("MET");
   //  MVAvars.push_back("CvsL_1");
   // MVAvars.push_back("CvsB_1");
   //  MVAvars.push_back("CvsL_2");
@@ -216,25 +227,25 @@ void MVAanalysis(bool doTraining, std::string MVAmethod, int skipEvents, std::st
   MVAvars.push_back("pt_muon_1");
   //  MVAvars.push_back("pt_muon_2");
   // MVAvars.push_back("pt_muon_3");
-  MVAvars.push_back("pt_jet_1");
+//  MVAvars.push_back("pt_jet_1"); // related wit FNC top  mass
   //  MVAvars.push_back("pt_jet_2");
   MVAvars.push_back("topMass");
   //  MVAvars.push_back("nCSVL");
   MVAvars.push_back("nCSVM");
   //  MVAvars.push_back("nCSVT");
-  MVAvars.push_back("bdis_1");
+//  MVAvars.push_back("bdis_1");
   MVAvars.push_back("bdis_2");
   MVAvars.push_back("FCNCtopmass");
-  MVAvars.push_back("Pt_cjet");
-  MVAvars.push_back("deltaPhiSMFCNCtop");
-  MVAvars.push_back("deltaPhiWlepb");
-  MVAvars.push_back("deltaPhiWlepc");
-  MVAvars.push_back("deltaPhiZc");
+ // MVAvars.push_back("Pt_cjet");
+//  MVAvars.push_back("deltaPhiSMFCNCtop"); // related with FCNC tiop mass
+//  MVAvars.push_back("deltaPhiWlepb");
+//  MVAvars.push_back("deltaPhiWlepc");
+//  MVAvars.push_back("deltaPhiZc"); // related with FCNC top mass 
   MVAvars.push_back("deltaPhiZb");
-  MVAvars.push_back("deltaRSMFCNCtop");
+  //MVAvars.push_back("deltaRSMFCNCtop"); // correlated with deltaPhiWlepC deltaPhiZc
   MVAvars.push_back("deltaRWlepb");
-  MVAvars.push_back("deltaRWlepc");
-  MVAvars.push_back("deltaRZc");
+//  MVAvars.push_back("deltaRWlepc");
+ // MVAvars.push_back("deltaRZc"); // related with fcnc top mass
   MVAvars.push_back("deltaRZb");
   MVAvars.push_back("MassWlepB");
   
@@ -473,17 +484,17 @@ void MVAanalysis(bool doTraining, std::string MVAmethod, int skipEvents, std::st
         NormFactor = DataLumi / datasets[d]->EquivalentLumi(); //data->NormFactor*Lumi
         ScaleFactor *= NormFactor;
         if(debug) cout << "normalisation SF " << endl;
-        
-        
-        if(dataSetName.find(SignalName)!=string::npos )
+        if(dataSetName.find("NP")!=string::npos){ ScaleFactor = 1.;} 
+        if(ScaleFactor < 0 ) ScaleFactor *= -1;  
+        if(dataSetName.find("NP_overlay")!=string::npos )
         {
           
           Eventtrainer_->FillWeight("S","Weight", ScaleFactor);
           //         Eventtrainer_->Fill("S","NumberOfElectrons", NumberOfElectrons);
           //          Eventtrainer_->Fill("S","NumberOfMuons", NumberOfMuons);
           //	  Eventtrainer_->Fill("S","Zmass", Zmass);
-          Eventtrainer_->Fill("S","TrMassW", TrMassW);
-          Eventtrainer_->Fill("S","MET", MET );
+//          Eventtrainer_->Fill("S","TrMassW", TrMassW);
+//          Eventtrainer_->Fill("S","MET", MET );
           //	  Eventtrainer_->Fill("S","CvsL_1", CvsL_1 );
           //  Eventtrainer_->Fill("S","CvsB_1", CvsB_1 );
           //	  Eventtrainer_->Fill("S","CvsL_2", CvsL[1] );
@@ -494,27 +505,27 @@ void MVAanalysis(bool doTraining, std::string MVAmethod, int skipEvents, std::st
           Eventtrainer_->Fill("S","pt_muon_1", pt_muon_1 );
           //	  Eventtrainer_->Fill("S","pt_muon_2", pt_muon_2 );
           //	  Eventtrainer_->Fill("S","pt_muon_3", pt_muon_3 );
-          Eventtrainer_->Fill("S","pt_jet_1", pt_jet_1 );
+//          Eventtrainer_->Fill("S","pt_jet_1", pt_jet_1 );
           //	  Eventtrainer_->Fill("S","pt_jet_2", pt_jet_2 );
           Eventtrainer_->Fill("S","topMass", topMass );
           //	  Eventtrainer_->Fill("S","nCSVL", nCSVL);
           Eventtrainer_->Fill("S","nCSVM", nCSVM);
           //	  Eventtrainer_->Fill("S","nCSVT", nCSVT);
-          Eventtrainer_->Fill("S","bdis_1", bDisc[0]);
+//          Eventtrainer_->Fill("S","bdis_1", bDisc[0]);
           Eventtrainer_->Fill("S","bdis_2", bDisc[1]);
           Eventtrainer_->Fill("S","FCNCtopmass",FCNCtopmass);
-          Eventtrainer_->Fill("S","Pt_cjet",Pt_cjet);
-          Eventtrainer_->Fill("S","deltaPhiSMFCNCtop",deltaPhiSMFCNCtop);
-          Eventtrainer_->Fill("S","deltaPhiWlepb",deltaPhiWlepb);
-          Eventtrainer_->Fill("S","deltaPhiWlepc",deltaPhiWlepc);
-          Eventtrainer_->Fill("S","deltaPhiZc",deltaPhiZc);
+//          Eventtrainer_->Fill("S","Pt_cjet",Pt_cjet);
+//          Eventtrainer_->Fill("S","deltaPhiSMFCNCtop",deltaPhiSMFCNCtop);
+//          Eventtrainer_->Fill("S","deltaPhiWlepb",deltaPhiWlepb);
+//          Eventtrainer_->Fill("S","deltaPhiWlepc",deltaPhiWlepc);
+//          Eventtrainer_->Fill("S","deltaPhiZc",deltaPhiZc);
           Eventtrainer_->Fill("S","deltaPhiZb",deltaPhiZb);
-          Eventtrainer_->Fill("S","deltaRSMFCNCtop",deltaRSMFCNCtop);
+//          Eventtrainer_->Fill("S","deltaRSMFCNCtop",deltaRSMFCNCtop);
           Eventtrainer_->Fill("S","deltaRWlepb",deltaRWlepb);
-          Eventtrainer_->Fill("S","deltaRWlepc",deltaRWlepc);
-          Eventtrainer_->Fill("S","deltaRZc",deltaRZc);
+//          Eventtrainer_->Fill("S","deltaRWlepc",deltaRWlepc);
+//          Eventtrainer_->Fill("S","deltaRZc",deltaRZc);
           Eventtrainer_->Fill("S","deltaRZb",deltaRZb);
-          Eventtrainer_->Fill("S","MassWlepB",MassWlepB);
+         Eventtrainer_->Fill("S","MassWlepB",MassWlepB);
         }
         else if((dataSetName.find("TTZ")!=string::npos || dataSetName.find("WZJets")!=string::npos || dataSetName.find("tZq")!=string::npos) && BkgName.find("all")==string::npos )
         {
@@ -523,8 +534,8 @@ void MVAanalysis(bool doTraining, std::string MVAmethod, int skipEvents, std::st
           //          Eventtrainer_->Fill("B","NumberOfElectrons", NumberOfElectrons);
           //          Eventtrainer_->Fill("B","NumberOfMuons", NumberOfMuons);
           //	  Eventtrainer_->Fill("B","Zmass", Zmass);
-          Eventtrainer_->Fill("B","TrMassW", TrMassW);
-          Eventtrainer_->Fill("B","MET", MET );
+//          Eventtrainer_->Fill("B","TrMassW", TrMassW);
+//          Eventtrainer_->Fill("B","MET", MET );
           //	  Eventtrainer_->Fill("B","CvsL_1", CvsL_1 );
           // Eventtrainer_->Fill("B","CvsB_1", CvsB_1 );
           //	  Eventtrainer_->Fill("B","CvsL_2", CvsL[1] );
@@ -535,25 +546,25 @@ void MVAanalysis(bool doTraining, std::string MVAmethod, int skipEvents, std::st
           Eventtrainer_->Fill("B","pt_muon_1", pt_muon_1 );
           //	  Eventtrainer_->Fill("B","pt_muon_2", pt_muon_2 );
           //	  Eventtrainer_->Fill("B","pt_muon_3", pt_muon_3 );
-          Eventtrainer_->Fill("B","pt_jet_1", pt_jet_1 );
+//          Eventtrainer_->Fill("B","pt_jet_1", pt_jet_1 );
           //	  Eventtrainer_->Fill("B","pt_jet_2", pt_jet_2 );
           Eventtrainer_->Fill("B","topMass", topMass );
           //	  Eventtrainer_->Fill("B","nCSVL", nCSVL);
           Eventtrainer_->Fill("B","nCSVM", nCSVM);
           //	  Eventtrainer_->Fill("B","nCSVT", nCSVT);
-          Eventtrainer_->Fill("B","bdis_1", bDisc[0]);
+//          Eventtrainer_->Fill("B","bdis_1", bDisc[0]);
           Eventtrainer_->Fill("B","bdis_2", bDisc[1]);
           Eventtrainer_->Fill("B","FCNCtopmass",FCNCtopmass);
-          Eventtrainer_->Fill("B","Pt_cjet",Pt_cjet);
-          Eventtrainer_->Fill("B","deltaPhiSMFCNCtop",deltaPhiSMFCNCtop);
-          Eventtrainer_->Fill("B","deltaPhiWlepb",deltaPhiWlepb);
-          Eventtrainer_->Fill("B","deltaPhiWlepc",deltaPhiWlepc);
-          Eventtrainer_->Fill("B","deltaPhiZc",deltaPhiZc);
+//          Eventtrainer_->Fill("B","Pt_cjet",Pt_cjet);
+//          Eventtrainer_->Fill("B","deltaPhiSMFCNCtop",deltaPhiSMFCNCtop);
+//         Eventtrainer_->Fill("B","deltaPhiWlepb",deltaPhiWlepb);
+//          Eventtrainer_->Fill("B","deltaPhiWlepc",deltaPhiWlepc);
+//          Eventtrainer_->Fill("B","deltaPhiZc",deltaPhiZc);
           Eventtrainer_->Fill("B","deltaPhiZb",deltaPhiZb);
-          Eventtrainer_->Fill("B","deltaRSMFCNCtop",deltaRSMFCNCtop);
+//          Eventtrainer_->Fill("B","deltaRSMFCNCtop",deltaRSMFCNCtop);
           Eventtrainer_->Fill("B","deltaRWlepb",deltaRWlepb);
-          Eventtrainer_->Fill("B","deltaRWlepc",deltaRWlepc);
-          Eventtrainer_->Fill("B","deltaRZc",deltaRZc);
+//          Eventtrainer_->Fill("B","deltaRWlepc",deltaRWlepc);
+//          Eventtrainer_->Fill("B","deltaRZc",deltaRZc);
           Eventtrainer_->Fill("B","deltaRZb",deltaRZb);
           Eventtrainer_->Fill("B","MassWlepB",MassWlepB);
           
@@ -589,7 +600,7 @@ void MVAanalysis(bool doTraining, std::string MVAmethod, int skipEvents, std::st
           Eventtrainer_->Fill("B","Pt_cjet",Pt_cjet);
           Eventtrainer_->Fill("B","deltaPhiSMFCNCtop",deltaPhiSMFCNCtop);
           Eventtrainer_->Fill("B","deltaPhiWlepb",deltaPhiWlepb);
-          Eventtrainer_->Fill("B","deltaPhiWlepc",deltaPhiWlepc);
+//          Eventtrainer_->Fill("B","deltaPhiWlepc",deltaPhiWlepc);
           Eventtrainer_->Fill("B","deltaPhiZc",deltaPhiZc);
           Eventtrainer_->Fill("B","deltaPhiZb",deltaPhiZb);
           Eventtrainer_->Fill("B","deltaRSMFCNCtop",deltaRSMFCNCtop);
@@ -645,42 +656,34 @@ void MVAanalysis(bool doTraining, std::string MVAmethod, int skipEvents, std::st
         if(debug) cout << "normalisation SF " << endl;
         
         if (Eventcomputer_ == 0) cout <<"null computer...." <<endl;
-        //       Eventcomputer_->FillVar("NumberOfElectrons", NumberOfElectrons);
-        //        Eventcomputer_->FillVar("NumberOfMuons", NumberOfMuons);
-        //	Eventcomputer_->FillVar("Zmass", Zmass);
-        //	Eventcomputer_->FillVar("TrMassW", TrMassW);
-        //    	Eventcomputer_->FillVar("MET", MET );
-        //        Eventcomputer_->FillVar("CvsL", CvsL );
-        //        Eventcomputer_->FillVar("CvsB", CvsB );
-        //        Eventcomputer_->FillVar("pt_electron", pt_electron );
-        //        Eventcomputer_->FillVar("pt_muon", pt_muon );
-        //        Eventcomputer_->FillVar("pt_jet", pt_jet );
-        //        Eventcomputer_->FillVar("topMass", topMass );
+
         
         
-        //          Eventcomputer_->FillVar("NumberOfElectrons", NumberOfElectrons);
-        //          Eventcomputer_->FillVar("NumberOfMuons", NumberOfMuons);
-        //	  Eventcomputer_->FillVar("Zmass", Zmass);
-        Eventcomputer_->FillVar("TrMassW", TrMassW);
-        Eventcomputer_->FillVar("MET", MET );
-        //	  Eventcomputer_->FillVar("CvsL_1", CvsL_1 );
-        Eventcomputer_->FillVar("CvsB_1", CvsB_1 );
-        //	  Eventcomputer_->FillVar("CvsL_2", CvsL[1] );
-        //	  Eventcomputer_->FillVar("CvsB_2", CvsB[1] );
+        Eventcomputer_->FillVar("Weight", ScaleFactor);
+        
         Eventcomputer_->FillVar("pt_electron_1", pt_electron_1 );
-        //	  Eventcomputer_->FillVar("pt_electron_2", pt_electron_2 );
-        //	  Eventcomputer_->FillVar("pt_electron_3", pt_electron_3 );
+
         Eventcomputer_->FillVar("pt_muon_1", pt_muon_1 );
-        //	  Eventcomputer_->FillVar("pt_muon_2", pt_muon_2 );
-        //	  Eventcomputer_->FillVar("pt_muon_3", pt_muon_3 );
-        Eventcomputer_->FillVar("pt_jet_1", pt_jet_1 );
-        //	  Eventcomputer_->FillVar("pt_jet_2", pt_jet_2 );
         Eventcomputer_->FillVar("topMass", topMass );
         //	  Eventcomputer_->FillVar("nCSVL", nCSVL);
         Eventcomputer_->FillVar("nCSVM", nCSVM);
         //	  Eventcomputer_->FillVar("nCSVT", nCSVT);
-        Eventcomputer_->FillVar("bdis_1", bDisc[0]);
+        //          Eventcomputer_->FillVar("bdis_1", bDisc[0]);
         Eventcomputer_->FillVar("bdis_2", bDisc[1]);
+        Eventcomputer_->FillVar("FCNCtopmass",FCNCtopmass);
+        //          Eventcomputer_->FillVar("Pt_cjet",Pt_cjet);
+        //          Eventcomputer_->FillVar("deltaPhiSMFCNCtop",deltaPhiSMFCNCtop);
+        //         Eventcomputer_->FillVar("deltaPhiWlepb",deltaPhiWlepb);
+        //          Eventcomputer_->FillVar("deltaPhiWlepc",deltaPhiWlepc);
+        //          Eventcomputer_->FillVar("deltaPhiZc",deltaPhiZc);
+        Eventcomputer_->FillVar("deltaPhiZb",deltaPhiZb);
+        //          Eventcomputer_->FillVar("deltaRSMFCNCtop",deltaRSMFCNCtop);
+        Eventcomputer_->FillVar("deltaRWlepb",deltaRWlepb);
+        //          Eventcomputer_->FillVar("deltaRWlepc",deltaRWlepc);
+        //          Eventcomputer_->FillVar("deltaRZc",deltaRZc);
+        Eventcomputer_->FillVar("deltaRZb",deltaRZb);
+        Eventcomputer_->FillVar("MassWlepB",MassWlepB);
+
         
         
         std::map<std::string,Float_t> MVAVals = Eventcomputer_->GetMVAValues();
@@ -700,8 +703,9 @@ void MVAanalysis(bool doTraining, std::string MVAmethod, int skipEvents, std::st
     ttree[(dataSetName).c_str()]->Write(); 
     
   }//for-loop datasets
-  
-  if(doTraining) Eventtrainer_->TrainMVA("Random","",0,0,"",0,0,"test",false);
+  std::string  mycutS = ""; 
+  std::string mycutB = ""; 
+  if(doTraining) Eventtrainer_->TrainMVA("Random",mycutS,0,0,mycutB,0,0,"test",false);
   
   delete Eventtrainer_;
   delete Eventcomputer_;
