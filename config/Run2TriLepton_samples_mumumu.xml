@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+<data>
+<datasets>
+
+
+<d name="dataDoubleMurunC" title="dataDoubleMu" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="1"  xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/ivanpari/TopTree/CMSSW_76X_v3/DoubleMuon/crab_DoubleMuon-Run2015C_25ns-16Dec2015-v1-76X_mcRun2_asymptotic_Fall15DR76_v1/160530_122137/0000/*.root"/>
+
+
+
+<!-- Single t -->
+<!-- ********* -->
+
+
+
+<d name="ST_tamc" title="SingleTop" add="1" color="7"  ls="1"  lw="2" normf="1" EqLumi="134597.866261" xsection="216.99" PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/lmoreels/TopTree/CMSSW_76X_v3/ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/crab_3TeVamcatnlopythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12ext1v176XmcRun2asymptoticFall15DR76v1/160530_104503/0000/*.root"/>
+
+
+<!-- *********** -->
+<!-- eo Single t -->
+
+
+
+<!-- ttV -->
+<!-- ****** -->
+
+<!-- **** -->
+<!-- eo ttV -->
+
+
+
+<!-- triboson --> 
+<!-- ****** -->
+
+
+
+<!-- ******* -->
+<!-- eo triboson -->
+
+
+<d name="Zjets1050amc" title="DYtoll10mll50" add="1" color="44" ls="1" lw="2" normf="1" EqLumi="3338.8339065" xsection="18610" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/lmoreels/TopTree/CMSSW_76X_v3/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_amcatnloFXFXpythia8Fall15PU25nsData2015v176XmcRun2asymptoticv12ext1v176XmcRun2asymptoticFall15DR76v1/160530_104437/0000/*.root"/>
+
+
+
+
+
+</datasets>
+
+</data>
