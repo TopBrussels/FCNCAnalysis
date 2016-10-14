@@ -340,16 +340,16 @@ int main (int argc, char *argv[])
         }
         else if(Electron)
         {
-                if(electronID == "Loose") electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_CutBasedLooseID.root","EGamma_SF2D",true,false);
-                if(electronID == "Medium") electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_CutBasedMediumID.root","EGamma_SF2D",true,false);
-                if(electronID == "Tight") electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_CutBasedTightID.root","EGamma_SF2D",true,false);
-                if(electronID == "Veto") electronSFWeightReco = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_CutBasedVeto.root","EGamma_SF2D",true,false);
-                electronSFWeightReco = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_GsfTrackingEff.root","EGamma_SF2D",true,false);
+                if(electronID == "Loose") electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_CutBasedLooseID.root","EGamma_SF2D",true,false,false);
+                if(electronID == "Medium") electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_CutBasedMediumID.root","EGamma_SF2D",true,false,false);
+                if(electronID == "Tight") electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_CutBasedTightID.root","EGamma_SF2D",true,false,false);
+                if(electronID == "Veto") electronSFWeightReco = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_CutBasedVeto.root","EGamma_SF2D",true,false,false);
+                electronSFWeightReco = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_GsfTrackingEff.root","EGamma_SF2D",true,false,false);
         }
     }
 
-    LumiReWeighting puSFs;
-    puSFs = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring16MiniAODv2-Asympt.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2016Data80X_Run273158-276811Cert.root", "pileup", "pileup");    
+    LumiReWeighting W_puSFs;
+    W_puSFs = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring16MiniAODv2-Asympt.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2016Data80X_Run273158-276811Cert.root", "pileup", "pileup");    
 
     ////////////////////////////
     /// Initialise trigger /
@@ -425,17 +425,13 @@ int main (int argc, char *argv[])
 
         string jobNumString = static_cast<ostringstream*>( &(ostringstream() << JobNum) )->str();
         string Ntupname = date_dir +"FCNC_1L3B_" +postfix + channelpostfix + "_" + jobNumString + ".root";
-        string Ntuptitle_JetCombIndices = "JetCombination";
         string Ntuptitle_ObjectVars = "ObjectVarsTree";
         string Ntuptitle_NtupleInfo = "NtupleInfoTree";
-        string Ntuptitle_Weights = "Weights";
 
         TFile * tupfile = new TFile(Ntupname.c_str(),"RECREATE");
 	      tupfile->cd();
-	      TTree* tup_JetCombIndices = new TTree(Ntuptitle_JetCombIndices.c_str(), Ntuptitle_JetCombIndices.c_str());
         TTree* tup_ObjectVars      = new TTree(Ntuptitle_ObjectVars.c_str(), Ntuptitle_ObjectVars.c_str());
 	      TTree* tup_ntupleinfo      = new TTree(Ntuptitle_NtupleInfo.c_str(), Ntuptitle_NtupleInfo.c_str());
-        TTree* tup_Weights      = new TTree(Ntuptitle_Weights.c_str(), Ntuptitle_Weights.c_str());
 
         //////////////////////////////////////////////////
         // Pre-event loop definitions
@@ -468,28 +464,27 @@ int main (int argc, char *argv[])
         Double_t Luminosity_ = Luminosity;
 
         //Weights
-        Double_t puSF;
-        Double_t fleptonSF;
-        Double_t btagWeight_CSVv2M_mujets_central;
-        Double_t btagWeight_CSVv2M_mujets_up;
-        Double_t btagWeight_CSVv2M_mujets_down;
-        Double_t nloWeight;// for amc@nlo samples
-        Double_t weight1;
-        Double_t weight2;
-        Double_t weight3;
-        Double_t weight4;
-        Double_t weight5;
-        Double_t weight6;
-        Double_t weight7;
-        Double_t weight8; 
-        Double_t MuonIDSF; //One of the 3 components for the total muon SF
-        Double_t MuonIsoSF; //One of the 3 components for the total muon SF
-        Double_t MuonTrigSF;//One of the 3 components for the total muon SF
-        Double_t MuontrigSF_Runs273158to274093 = 1;//Used in calculation for MuonTrigSF
-        Double_t MuontrigSF_Runs274094to276097 = 1;//Used in calculation for MuonTrigSF
-        Double_t MuontrigSFD2 = 1;//Used in calculation for MuonTrigSF
-        Double_t ElectronIDSF; //One of the 2 components for the total electron SF
-        Double_t ElectronRecoSF; //One of the 2 components for the total electron SF
+        Double_t W_puSF;
+        Double_t W_fleptonSF;
+        Double_t W_btagWeight_CSVv2M_mujets_central;
+        Double_t W_btagWeight_CSVv2M_mujets_up;
+        Double_t W_btagWeight_CSVv2M_mujets_down;
+        Double_t W_nloWeight;// for amc@nlo samples
+        Double_t W_weight1;
+        Double_t W_weight2;
+        Double_t W_weight3;
+        Double_t W_weight4;
+        Double_t W_weight5;
+        Double_t W_weight6;
+        Double_t W_weight7;
+        Double_t W_weight8; 
+        Double_t W_MuonIDSF; //One of the 3 components for the total muon SF
+        Double_t W_MuonIsoSF; //One of the 3 components for the total muon SF
+        Double_t W_MuonTrigSF;//One of the 3 components for the total muon SF
+        Double_t W_MuonTrigSF_Runs273158to274093 = 1;//Used in calculation for W_MuonTrigSF
+        Double_t W_MuonTrigSF_Runs274094to276097 = 1;//Used in calculation for W_MuonTrigSF
+        Double_t W_ElectronIDSF; //One of the 2 components for the total electron SF
+        Double_t W_ElectronRecoSF; //One of the 2 components for the total electron SF
 
  
       
@@ -513,7 +508,6 @@ int main (int argc, char *argv[])
 	      Int_t missingHits_electron;
 	      Bool_t passConversion_electron;
         Bool_t isEBEEGap; 
-        Int_t LeptonChannel; // = 0 for electron, =1 for muon
       
         //variable for muons
         Double_t pt_muon;
@@ -527,6 +521,13 @@ int main (int argc, char *argv[])
         Double_t photonIso_muon;
         Double_t pfIso_muon;
         Double_t charge_muon;
+        
+        //variable for  leptons
+        Double_t pt_lepton;
+        Double_t eta_lepton;
+        Double_t phi_lepton;
+        Double_t E_lepton;
+        
   
         //variable for jets 
         Int_t nJets;
@@ -567,11 +568,9 @@ int main (int argc, char *argv[])
 	      Int_t TOPTOPLEPHBB_JetIdx_H1 = -99;
 	      Int_t TOPTOPLEPHBB_JetIdx_H2 = -99;
 	      Int_t TOPHLEPBB_JetIdx_LepTop_hut = -99;
-	      Int_t TOPHLEPBB_JetIdx_HadTop_hut = -99;
 	      Int_t TOPHLEPBB_JetIdx_H1_hut = -99;
 	      Int_t TOPHLEPBB_JetIdx_H2_hut = -99;
 	      Int_t TOPHLEPBB_JetIdx_LepTop_hct = -99;
-	      Int_t TOPHLEPBB_JetIdx_HadTop_hct = -99;
 	      Int_t TOPHLEPBB_JetIdx_H1_hct = -99;
 	      Int_t TOPHLEPBB_JetIdx_H2_hct = -99;
         Double_t MVA_TOPTOPLEPHAD = -999.;
@@ -597,35 +596,33 @@ int main (int argc, char *argv[])
         tup_ntupleinfo->Branch("cMVA_workingpointvalue_Tight", &cMVA_workingpointvalue_Tight, "cMVA_workingpointvalue_Tight/D");
 
         // Weights
-        tup_Weights->Branch("fleptonSF",&fleptonSF,"fleptonSF/D"); //Contains, if muon, the  isoSF, idSF & trigSF
-        tup_Weights->Branch("puSF",&puSF,"puSF/D");  
-        tup_Weights->Branch("btagWeight_CSVv2M_mujets_central",&btagWeight_CSVv2M_mujets_central,"btagWeight_CSVv2M_mujets_central/D"); 
-        tup_Weights->Branch("btagWeight_CSVv2M_mujets_up",&btagWeight_CSVv2M_mujets_up,"btagWeight_CSVv2M_mujets_up/D");  
-        tup_Weights->Branch("btagWeight_CSVv2M_mujets_down",&btagWeight_CSVv2M_mujets_down,"btagWeight_CSVv2M_mujets_down/D"); 
-        tup_Weights->Branch("nloWeight",&nloWeight,"nloWeight/D"); 
-        tup_Weights->Branch("weight1",&weight1,"weight1/D");  
-        tup_Weights->Branch("weight2",&weight2,"weight2/D");  
-        tup_Weights->Branch("weight3",&weight3,"weight3/D"); 
-        tup_Weights->Branch("weight4",&weight4,"weight4/D");  
-        tup_Weights->Branch("weight5",&weight5,"weight5/D"); 
-        tup_Weights->Branch("weight6",&weight6,"weight6/D");  
-        tup_Weights->Branch("weight7",&weight7,"weight7/D"); 
-        tup_Weights->Branch("weight8",&weight8,"weight8/D");  
-        tup_Weights->Branch("MuonIDSF",&MuonIDSF,"MuonIDSF/D");  
-        tup_Weights->Branch("MuonIsoSF",&MuonIsoSF,"MuonIsoSF/D");  
-        tup_Weights->Branch("MuonTrigSF",&MuonTrigSF,"MuonTrigSF/D");  
-        tup_Weights->Branch("MuontrigSF_Runs273158to274093",&MuontrigSF_Runs273158to274093,"MuontrigSF_Runs273158to274093/D");  
-        tup_Weights->Branch("MuontrigSF_Runs274094to276097",&MuontrigSF_Runs274094to276097,"MuontrigSF_Runs274094to276097/D");  
-        tup_Weights->Branch("MuontrigSFD2",&MuontrigSFD2,"MuontrigSFD2/D");  
-        tup_Weights->Branch("ElectronIDSF",&ElectronIDSF,"ElectronIDSF/D");  
-        tup_Weights->Branch("ElectronRecoSF",&ElectronRecoSF,"ElectronRecoSF/D");  
+        tup_ObjectVars->Branch("W_fleptonSF",&W_fleptonSF,"W_fleptonSF/D"); //Contains, if muon, the  isoSF, idSF & trigSF
+        tup_ObjectVars->Branch("W_puSF",&W_puSF,"W_puSF/D");  
+        tup_ObjectVars->Branch("W_btagWeight_CSVv2M_mujets_central",&W_btagWeight_CSVv2M_mujets_central,"W_btagWeight_CSVv2M_mujets_central/D"); 
+        tup_ObjectVars->Branch("W_btagWeight_CSVv2M_mujets_up",&W_btagWeight_CSVv2M_mujets_up,"W_btagWeight_CSVv2M_mujets_up/D");  
+        tup_ObjectVars->Branch("W_btagWeight_CSVv2M_mujets_down",&W_btagWeight_CSVv2M_mujets_down,"W_btagWeight_CSVv2M_mujets_down/D"); 
+        tup_ObjectVars->Branch("W_nloWeight",&W_nloWeight,"W_nloWeight/D"); 
+        tup_ObjectVars->Branch("W_weight1",&W_weight1,"W_weight1/D");  
+        tup_ObjectVars->Branch("W_weight2",&W_weight2,"W_weight2/D");  
+        tup_ObjectVars->Branch("W_weight3",&W_weight3,"W_weight3/D"); 
+        tup_ObjectVars->Branch("W_weight4",&W_weight4,"W_weight4/D");  
+        tup_ObjectVars->Branch("W_weight5",&W_weight5,"W_weight5/D"); 
+        tup_ObjectVars->Branch("W_weight6",&W_weight6,"W_weight6/D");  
+        tup_ObjectVars->Branch("W_weight7",&W_weight7,"W_weight7/D"); 
+        tup_ObjectVars->Branch("W_weight8",&W_weight8,"W_weight8/D");  
+        tup_ObjectVars->Branch("W_MuonIDSF",&W_MuonIDSF,"W_MuonIDSF/D");  
+        tup_ObjectVars->Branch("W_MuonIsoSF",&W_MuonIsoSF,"W_MuonIsoSF/D");  
+        tup_ObjectVars->Branch("W_MuonTrigSF",&W_MuonTrigSF,"W_MuonTrigSF/D");  
+        tup_ObjectVars->Branch("W_MuonTrigSF_Runs273158to274093",&W_MuonTrigSF_Runs273158to274093,"W_MuonTrigSF_Runs273158to274093/D");  
+        tup_ObjectVars->Branch("W_MuonTrigSF_Runs274094to276097",&W_MuonTrigSF_Runs274094to276097,"W_MuonTrigSF_Runs274094to276097/D");  
+        tup_ObjectVars->Branch("W_ElectronIDSF",&W_ElectronIDSF,"W_ElectronIDSF/D");  
+        tup_ObjectVars->Branch("W_ElectronRecoSF",&W_ElectronRecoSF,"W_ElectronRecoSF/D");  
 
         tup_ObjectVars->Branch("I_run_num",&run_num,"run_num/I");
         tup_ObjectVars->Branch("I_evt_num",&evt_num,"evt_num/I");
         tup_ObjectVars->Branch("I_lumi_num",&lumi_num,"lumi_num/I");
         tup_ObjectVars->Branch("I_nvtx",&nvtx,"nvtx/I");
         tup_ObjectVars->Branch("I_npu",&npu,"npu/I");
-        tup_ObjectVars->Branch("I_LeptonChannel",&LeptonChannel,"LeptonChannel/I");
 
 
         // electrons
@@ -663,6 +660,13 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("d0_muon",&d0_muon,"d0_muon/D");
         tup_ObjectVars->Branch("d0BeamSpot_muon",&d0BeamSpot_muon,"d0BeamSpot_muon/D");
 
+        //SelectedLepton
+        tup_ObjectVars->Branch("pt_lepton",&pt_lepton,"pt_lepton/D");
+        tup_ObjectVars->Branch("phi_lepton",&phi_lepton,"phi_lepton/D");
+        tup_ObjectVars->Branch("eta_lepton",&eta_lepton,"eta_lepton/D");
+        tup_ObjectVars->Branch("E_lepton",&E_lepton,"E_lepton/D");
+        
+
         // jets
         tup_ObjectVars->Branch("I_nJets",&nJets,"nJets/I");
         tup_ObjectVars->Branch("I_nJets_CSVL",&nJets_CSVL,"nJets_CSVL/I");
@@ -693,26 +697,24 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("met_Phi", &met_Phi, "met_Phi/D"); 
 
         // Advanced variables
-       tup_JetCombIndices->Branch("I_TOPTOPLEPHAD_JetIdx_LepTop",&TOPTOPLEPHAD_JetIdx_LepTop,"TOPTOPLEPHAD_JetIdx_LepTop/I");
-       tup_JetCombIndices->Branch("I_TOPTOPLEPHAD_JetIdx_HadTop",&TOPTOPLEPHAD_JetIdx_HadTop,"TOPTOPLEPHAD_JetIdx_HadTop/I");
-       tup_JetCombIndices->Branch("I_TOPTOPLEPHAD_JetIdx_W1",&TOPTOPLEPHAD_JetIdx_W1,"TOPTOPLEPHAD_JetIdx_W1/I");
-       tup_JetCombIndices->Branch("I_TOPTOPLEPHAD_JetIdx_W2",&TOPTOPLEPHAD_JetIdx_W2,"TOPTOPLEPHAD_JetIdx_W2/I");
-       tup_JetCombIndices->Branch("I_TOPTOPLEPHBB_JetIdx_LepTop",&TOPTOPLEPHBB_JetIdx_LepTop,"TOPTOPLEPHBB_JetIdx_LepTop/I");
-       tup_JetCombIndices->Branch("I_TOPTOPLEPHBB_JetIdx_HadTop",&TOPTOPLEPHBB_JetIdx_HadTop,"TOPTOPLEPHBB_JetIdx_HadTop/I");
-       tup_JetCombIndices->Branch("I_TOPTOPLEPHBB_JetIdx_H1",&TOPTOPLEPHBB_JetIdx_H1,"TOPTOPLEPHBB_JetIdx_H1/I");
-       tup_JetCombIndices->Branch("I_TOPTOPLEPHBB_JetIdx_H2",&TOPTOPLEPHBB_JetIdx_H2,"TOPTOPLEPHBB_JetIdx_H2/I");
-       tup_JetCombIndices->Branch("I_TOPHLEPBB_JetIdx_LepTop_hut",&TOPHLEPBB_JetIdx_LepTop_hut,"TOPHLEPBB_JetIdx_LepTop_hut/I");
-       tup_JetCombIndices->Branch("I_TOPHLEPBB_JetIdx_HadTop_hut",&TOPHLEPBB_JetIdx_HadTop_hut,"TOPHLEPBB_JetIdx_HadTop_hut/I");
-       tup_JetCombIndices->Branch("I_TOPHLEPBB_JetIdx_H1_hut",&TOPHLEPBB_JetIdx_H1_hut,"TOPHLEPBB_JetIdx_H1_hut/I");
-       tup_JetCombIndices->Branch("I_TOPHLEPBB_JetIdx_H2_hut",&TOPHLEPBB_JetIdx_H2_hut,"TOPHLEPBB_JetIdx_H2_hut/I");
-       tup_JetCombIndices->Branch("I_TOPHLEPBB_JetIdx_LepTop_hct",&TOPHLEPBB_JetIdx_LepTop_hct,"TOPHLEPBB_JetIdx_LepTop_hct/I");
-       tup_JetCombIndices->Branch("I_TOPHLEPBB_JetIdx_HadTop_hct",&TOPHLEPBB_JetIdx_HadTop_hct,"TOPHLEPBB_JetIdx_HadTop_hct/I");
-       tup_JetCombIndices->Branch("I_TOPHLEPBB_JetIdx_H1_hct",&TOPHLEPBB_JetIdx_H1_hct,"TOPHLEPBB_JetIdx_H1_hct/I");
-       tup_JetCombIndices->Branch("I_TOPHLEPBB_JetIdx_H2_hct",&TOPHLEPBB_JetIdx_H2_hct,"TOPHLEPBB_JetIdx_H2_hct/I");
-       tup_JetCombIndices->Branch("MVA_TOPTOPLEPHAD",&MVA_TOPTOPLEPHAD,"MVA_TOPTOPLEPHAD/D");
-       tup_JetCombIndices->Branch("MVA_TOPTOPLEPHBB",&MVA_TOPTOPLEPHBB,"MVA_TOPTOPLEPHBB/D");
-       tup_JetCombIndices->Branch("MVA_TOPHLEPBB_hut",&MVA_TOPHLEPBB_hut,"MVA_TOPHLEPBB_hut/D");
-       tup_JetCombIndices->Branch("MVA_TOPHLEPBB_hct",&MVA_TOPHLEPBB_hct,"MVA_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("I_TOPTOPLEPHAD_JetIdx_LepTop",&TOPTOPLEPHAD_JetIdx_LepTop,"TOPTOPLEPHAD_JetIdx_LepTop/I");
+       tup_ObjectVars->Branch("I_TOPTOPLEPHAD_JetIdx_HadTop",&TOPTOPLEPHAD_JetIdx_HadTop,"TOPTOPLEPHAD_JetIdx_HadTop/I");
+       tup_ObjectVars->Branch("I_TOPTOPLEPHAD_JetIdx_W1",&TOPTOPLEPHAD_JetIdx_W1,"TOPTOPLEPHAD_JetIdx_W1/I");
+       tup_ObjectVars->Branch("I_TOPTOPLEPHAD_JetIdx_W2",&TOPTOPLEPHAD_JetIdx_W2,"TOPTOPLEPHAD_JetIdx_W2/I");
+       tup_ObjectVars->Branch("I_TOPTOPLEPHBB_JetIdx_LepTop",&TOPTOPLEPHBB_JetIdx_LepTop,"TOPTOPLEPHBB_JetIdx_LepTop/I");
+       tup_ObjectVars->Branch("I_TOPTOPLEPHBB_JetIdx_HadTop",&TOPTOPLEPHBB_JetIdx_HadTop,"TOPTOPLEPHBB_JetIdx_HadTop/I");
+       tup_ObjectVars->Branch("I_TOPTOPLEPHBB_JetIdx_H1",&TOPTOPLEPHBB_JetIdx_H1,"TOPTOPLEPHBB_JetIdx_H1/I");
+       tup_ObjectVars->Branch("I_TOPTOPLEPHBB_JetIdx_H2",&TOPTOPLEPHBB_JetIdx_H2,"TOPTOPLEPHBB_JetIdx_H2/I");
+       tup_ObjectVars->Branch("I_TOPHLEPBB_JetIdx_LepTop_hut",&TOPHLEPBB_JetIdx_LepTop_hut,"TOPHLEPBB_JetIdx_LepTop_hut/I");
+       tup_ObjectVars->Branch("I_TOPHLEPBB_JetIdx_H1_hut",&TOPHLEPBB_JetIdx_H1_hut,"TOPHLEPBB_JetIdx_H1_hut/I");
+       tup_ObjectVars->Branch("I_TOPHLEPBB_JetIdx_H2_hut",&TOPHLEPBB_JetIdx_H2_hut,"TOPHLEPBB_JetIdx_H2_hut/I");
+       tup_ObjectVars->Branch("I_TOPHLEPBB_JetIdx_LepTop_hct",&TOPHLEPBB_JetIdx_LepTop_hct,"TOPHLEPBB_JetIdx_LepTop_hct/I");
+       tup_ObjectVars->Branch("I_TOPHLEPBB_JetIdx_H1_hct",&TOPHLEPBB_JetIdx_H1_hct,"TOPHLEPBB_JetIdx_H1_hct/I");
+       tup_ObjectVars->Branch("I_TOPHLEPBB_JetIdx_H2_hct",&TOPHLEPBB_JetIdx_H2_hct,"TOPHLEPBB_JetIdx_H2_hct/I");
+       tup_ObjectVars->Branch("MVA_TOPTOPLEPHAD",&MVA_TOPTOPLEPHAD,"MVA_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("MVA_TOPTOPLEPHBB",&MVA_TOPTOPLEPHBB,"MVA_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("MVA_TOPHLEPBB_hut",&MVA_TOPHLEPBB_hut,"MVA_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("MVA_TOPHLEPBB_hct",&MVA_TOPHLEPBB_hct,"MVA_TOPHLEPBB_hct/D");
 
         if(debug)cout<<"created ntuples"<<endl;
 
@@ -944,27 +946,27 @@ int main (int argc, char *argv[])
             if(ievt%10000 == 0)
             {
                 std::cout<<"Processing the "<<ievt<<"th event, time = "<< ((double)clock() - start) / CLOCKS_PER_SEC 
-                << " ("<<100*(ievt-start)/(ending-start)<<"%)"<<flush<<"\r"<<endl;
+                << " ("<<100*(ievt-event_start)/(end_d-event_start)<<"%)"<<flush<<"\r"<<endl;
             }
 
             float scaleFactor = 1.;  // scale factor for the event
-            puSF = 1;
-            fleptonSF = 1;
-            btagWeight_CSVv2M_mujets_central = 1;
-            btagWeight_CSVv2M_mujets_up = 1;
-            btagWeight_CSVv2M_mujets_down = 1;
-            nloWeight = 1;// for amc@nlo samples
-            weight1 = 1;
-            weight2 = 1;
-            weight3 = 1;
-            weight4 = 1;
-            weight5 = 1;
-            weight6 = 1;
-            weight7 = 1;
-            weight8 = 1; 
-            MuonIDSF = 1; 
-            MuonIsoSF = 1; 
-            MuonTrigSF = 1;
+            W_puSF = 1;
+            W_fleptonSF = 1;
+            W_btagWeight_CSVv2M_mujets_central = 1;
+            W_btagWeight_CSVv2M_mujets_up = 1;
+            W_btagWeight_CSVv2M_mujets_down = 1;
+            W_nloWeight = 1;// for amc@nlo samples
+            W_weight1 = 1;
+            W_weight2 = 1;
+            W_weight3 = 1;
+            W_weight4 = 1;
+            W_weight5 = 1;
+            W_weight6 = 1;
+            W_weight7 = 1;
+            W_weight8 = 1; 
+            W_MuonIDSF = 1; 
+            W_MuonIsoSF = 1; 
+            W_MuonTrigSF = 1;
 
             if(debug)cout<<"before tree load"<<endl;
             event = treeLoader.LoadEvent (ievt, vertex, init_muons, init_electrons, init_jets, mets, debug);  //load event
@@ -1083,7 +1085,7 @@ int main (int argc, char *argv[])
                     cout << "         Check which weight type should be used when." << endl;
           	    }
           
-          	    nloWeight = mc_baseweight;
+          	    W_nloWeight = mc_baseweight;
           	    sumWeights += mc_baseweight;
 
             }
@@ -1130,24 +1132,24 @@ int main (int argc, char *argv[])
             if (Muon)
             {
 				        if (debug)cout<<"Getting Jets"<<endl;
-				        selectedOrigJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Tight"); // ApplyJetId
+				        selectedOrigJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Loose"); // ApplyJetId
 				        if (debug)cout<<"Getting Tight Muons"<<endl;
 				        selectedMuons                                       = r2selection.GetSelectedMuons(25,2.1,0.15, "Tight", "Spring15"); //Selected
 				        if (debug)cout<<"Getting Loose Electrons"<<endl;
-				        selectedElectrons                                   = r2selection.GetSelectedElectrons(10,2.5,"Loose", "Spring15_25ns", true); //Vetoed  
+				        selectedElectrons                                   = r2selection.GetSelectedElectrons(10,2.5,"Loose", "Spring16_80X", true); //Vetoed  
 				        if (debug)cout<<"Getting Loose Muons"<<endl;
 				        selectedExtraMuons                                  = r2selection.GetSelectedMuons(10, 2.4, 0.25,"Loose","Spring15"); //Vetoed         
             }
             else if (Electron)
             {
 				        if (debug)cout<<"Getting Jets"<<endl;
-				        selectedOrigJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Tight"); // ApplyJetId
+				        selectedOrigJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Loose"); // ApplyJetId
 				        if (debug)cout<<"Getting Loose Muons"<<endl;
 				        selectedMuons                                       = r2selection.GetSelectedMuons(10, 2.4, 0.25,"Loose","Spring15"); //Vetoed
 				        if (debug)cout<<"Getting Electrons"<<endl;
-				        selectedElectrons                                   = r2selection.GetSelectedElectrons(40,2.4,electronID, "Spring15_25ns", true); //Selected                       
+				        selectedElectrons                                   = r2selection.GetSelectedElectrons(30,2.4,electronID, "Spring16_80X", true); //Selected                       
 				        if (debug)cout<<"Getting Loose Electrons"<<endl;
-				        selectedExtraElectrons                              = r2selection.GetSelectedElectrons(10,2.5,"Loose", "Spring15_25ns", true); //Vetoed
+				        selectedExtraElectrons                              = r2selection.GetSelectedElectrons(10,2.5,"Loose", "Spring16_80X", true); //Vetoed
             }
             if(Muon)
             {
@@ -1176,38 +1178,38 @@ int main (int argc, char *argv[])
             //////////////////////////////////////////////////
             if(dName.find("Data")!=string::npos) //If sample is data, no PU reweighting
             {
-                puSF=1;
+                W_puSF=1;
             }
             else
             {
-                puSF = puSFs.ITweight( (int)event->nTruePU() );
+                W_puSF = W_puSFs.ITweight( (int)event->nTruePU() );
             }
-            if(debug) cout << "puSF: " << puSF << endl;
+            if(debug) cout << "W_puSF: " << W_puSF << endl;
             /////////////////////////////////////////////////
             //                   Lepton SF                 //
             /////////////////////////////////////////////////
             if(bLeptonSF && !isData)
             {
                 if(Muon && nMu>0){
-                    MuonIDSF = muonSFWeightID->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
-                    MuonIsoSF = muonSFWeightIso->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
-                    MuontrigSF_Runs273158to274093 = muonSFWeightTrig_Runs273158to274093->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
-                    MuontrigSF_Runs274094to276097 = muonSFWeightTrig_Runs274094to276097->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
+                    W_MuonIDSF = muonSFWeightID->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
+                    W_MuonIsoSF = muonSFWeightIso->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
+                    W_MuonTrigSF_Runs273158to274093 = muonSFWeightTrig_Runs273158to274093->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
+                    W_MuonTrigSF_Runs274094to276097 = muonSFWeightTrig_Runs274094to276097->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
                     
                     float lum_Runs273158to274093 = 0.62;// /fb
                     float lum_Runs274094to276097 = 7.04;// /fb
-                    MuonTrigSF =( (MuontrigSF_Runs273158to274093*lum_Runs273158to274093) + (MuontrigSF_Runs274094to276097*lum_Runs274094to276097))/(lum_Runs273158to274093+lum_Runs274094to276097);  //Weigh each triggerSF according to the luminosity it holds for. These SF were only measured on 7.62/fb
-                    fleptonSF = MuonIDSF * MuonIsoSF * MuonTrigSF;
+                    W_MuonTrigSF =( (W_MuonTrigSF_Runs273158to274093*lum_Runs273158to274093) + (W_MuonTrigSF_Runs274094to276097*lum_Runs274094to276097))/(lum_Runs273158to274093+lum_Runs274094to276097);  //Weigh each triggerSF according to the luminosity it holds for. These SF were only measured on 7.62/fb
+                    W_fleptonSF = W_MuonIDSF * W_MuonIsoSF * W_MuonTrigSF;
                 }
                 else if(Electron && nEl>0){
-                    ElectronIDSF = electronSFWeightID->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0);
-                    ElectronRecoSF = electronSFWeightReco->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0);
-                    fleptonSF = ElectronIDSF * ElectronRecoSF;//electronSFWeightID->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0) * electronSFWeightReco->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0);
+                    W_ElectronIDSF = electronSFWeightID->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0);
+                    W_ElectronRecoSF = electronSFWeightReco->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0);
+                    W_fleptonSF = W_ElectronIDSF * W_ElectronRecoSF;//electronSFWeightID->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0) * electronSFWeightReco->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0);
                 }
             }
 
 
-            if(debug) cout<<"lepton SF:  "<<fleptonSF  << endl;
+            if(debug) cout<<"lepton SF:  "<<W_fleptonSF  << endl;
 
             /////////////////////////////////////////////////
             //                   Btag SF                    //
@@ -1217,9 +1219,9 @@ int main (int argc, char *argv[])
                 if(dName.find("Data")==string::npos) //If sample is data, no b-tag-reweighting
                 {
                     if(debug) cout << "Applying b-tag weights " << endl;
-                    btagWeight_CSVv2M_mujets_central =  btwt_CSVv2M_mujets_central->getMCEventWeight(selectedOrigJets, false);
-                    //                    btagWeight_CSVv2M_mujets_up =  btwt_CSVv2M_mujets_up->getMCEventWeight(selectedOrigJets, false);
-                    //                    btagWeight_CSVv2M_mujets_down =  btwt_CSVv2M_mujets_down->getMCEventWeight(selectedOrigJets, false);
+                    W_btagWeight_CSVv2M_mujets_central =  btwt_CSVv2M_mujets_central->getMCEventWeight(selectedOrigJets, false);
+                    //                    W_btagWeight_CSVv2M_mujets_up =  btwt_CSVv2M_mujets_up->getMCEventWeight(selectedOrigJets, false);
+                    //                    W_btagWeight_CSVv2M_mujets_down =  btwt_CSVv2M_mujets_down->getMCEventWeight(selectedOrigJets, false);
                     //btagWeight_cMVAM_mujets_central =  btwt_cMVAM_mujets_central->getMCEventWeight(selectedOrigJets, false);
                     //                    btagWeight_cMVAM_mujets_up =  btwt_CSVv2M_mujets_up->getMCEventWeight(selectedOrigJets, false);
                     //                    btagWeight_cMVAM_mujets_down =  btwt_CSVv2M_mujets_down->getMCEventWeight(selectedOrigJets, false);
@@ -1227,11 +1229,11 @@ int main (int argc, char *argv[])
             }
             
             float btagWeight = 1;
-            if(btagger == "CSVv2M") btagWeight = btagWeight_CSVv2M_mujets_central;
+            if(btagger == "CSVv2M") btagWeight = W_btagWeight_CSVv2M_mujets_central;
 //            else if(btagger == "cMVAM") btagWeight = btagWeight_cMVAM_mujets_central;
 
             if(debug) cout<<"btag SF:  "<< btagWeight << endl;
-            scaleFactor = scaleFactor * puSF * fleptonSF * btagWeight;
+            scaleFactor = scaleFactor * W_puSF * W_fleptonSF * btagWeight;
             if(isData) scaleFactor = 1;
             ////////////////////////////////////////////////
             // Pre-baseline initializations
@@ -1245,6 +1247,14 @@ int main (int argc, char *argv[])
             cutstep[0]=cutstep[0]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
 
             eventCount++;
+            //////////////////////////////////////////////////////
+            // Applying baseline lepton selection
+            //////////////////////////////////////////////////////
+
+
+            if (!isGoodPV) continue; // Check that there is a good Primary Vertex
+            if(debug) cout << "Past cut 1: good PV selection" << endl;
+            cutstep[1]=cutstep[1]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
 
             bool trigged = false;
             if (applyTriggers)
@@ -1258,14 +1268,6 @@ int main (int argc, char *argv[])
             {
                 trigged = true;
             }
-            //////////////////////////////////////////////////////
-            // Applying baseline lepton selection
-            //////////////////////////////////////////////////////
-
-
-            if (!isGoodPV) continue; // Check that there is a good Primary Vertex
-            if(debug) cout << "Past cut 1: good PV selection" << endl;
-            cutstep[1]=cutstep[1]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
 
             if(!trigged) continue;
             if(debug) cout << "Past cut 2: Passed trigger" << endl;
@@ -1284,9 +1286,9 @@ int main (int argc, char *argv[])
                 //if (selectedMuons[0]->Pt() < 26) continue;
                 cutstep[3]=cutstep[3]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
                 if(debug) cout << "Past cut 3: Single Muon selected" << endl;
-                if( !(nEl == 0)) continue;
-                cutstep[4]=cutstep[4]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
-                if(debug) cout << "Past cut 4: vetoed electrons" << endl;
+//                if( !(nEl == 0)) continue;
+//                cutstep[4]=cutstep[4]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
+//                if(debug) cout << "Past cut 4: vetoed electrons" << endl;
             }
             else if (!Muon && Electron)
             {
@@ -1294,9 +1296,9 @@ int main (int argc, char *argv[])
                 //if (selectedMuons[0]->Pt() < 26) continue;
                 cutstep[3]=cutstep[3]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
                 if(debug) cout << "Past cut 3: Single Electron selected" << endl;
-                if( !(nMu == 0)) continue;
-                cutstep[4]=cutstep[4]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
-                if(debug) cout << "Past cut 4: vetoed muons" << endl;
+//                if( !(nMu == 0)) continue;
+//                cutstep[4]=cutstep[4]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
+//                if(debug) cout << "Past cut 4: vetoed muons" << endl;
             }
             else
             {
@@ -1307,23 +1309,29 @@ int main (int argc, char *argv[])
 			      if(Muon && !Electron)
 			      {
 				          if(nLooseMu != 1) continue;
+                  if( !(nEl == 0)) continue;
 	                if (debug)	cout <<"Vetoed extra muons..."<<endl;
 			      }
 			      if(!Muon && Electron)
 			      {
 				          if(nLooseEl != 1) continue;
+                  if( !(nMu == 0)) continue;
 	                if (debug)	cout <<"Vetoed extra electrons..."<<endl;
 			      }
             if(debug) cout << "Past cut 5: Vetoed extra loose leptons" << endl;
-            cutstep[5]=cutstep[5]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
+            cutstep[4]=cutstep[4]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
             
             if(Electron)
             {
               pt_electron=selectedElectrons[0]->Pt();
 	            phi_electron=selectedElectrons[0]->Phi();
 	            eta_electron=selectedElectrons[0]->Eta();
-	            eta_superCluster_electron=selectedElectrons[0]->superClusterEta();
 	            E_electron=selectedElectrons[0]->E();
+              pt_lepton=selectedElectrons[0]->Pt();
+	            phi_lepton=selectedElectrons[0]->Phi();
+	            eta_lepton=selectedElectrons[0]->Eta();
+	            E_lepton=selectedElectrons[0]->E();
+	            eta_superCluster_electron=selectedElectrons[0]->superClusterEta();
 	            d0_electron=selectedElectrons[0]->d0();
 	            d0BeamSpot_electron=selectedElectrons[0]->d0BeamSpot();
 	            chargedHadronIso_electron=selectedElectrons[0]->chargedHadronIso(3);
@@ -1338,7 +1346,6 @@ int main (int argc, char *argv[])
 	            missingHits_electron=selectedElectrons[0]->missingHits();
 	            passConversion_electron=selectedElectrons[0]->passConversion();
 	            isEBEEGap=selectedElectrons[0]->isEBEEGap();
-	            LeptonChannel = 0;
 	          }
 	          else if (Muon)
 	          {
@@ -1346,6 +1353,10 @@ int main (int argc, char *argv[])
 	              phi_muon=selectedMuons[0]->Phi();
 	              eta_muon=selectedMuons[0]->Eta();
 	              E_muon=selectedMuons[0]->E();
+                pt_lepton=selectedMuons[0]->Pt();
+	              phi_lepton=selectedMuons[0]->Phi();
+	              eta_lepton=selectedMuons[0]->Eta();
+	              E_lepton=selectedMuons[0]->E();
 	              d0_muon=selectedMuons[0]->d0();
 	              d0BeamSpot_muon=selectedMuons[0]->d0BeamSpot();
 	              chargedHadronIso_muon=selectedMuons[0]->chargedHadronIso(4);
@@ -1353,7 +1364,6 @@ int main (int argc, char *argv[])
 	              photonIso_muon=selectedMuons[0]->photonIso(4);
                 pfIso_muon=selectedMuons[0]->relPfIso(4,0);
 	              charge_muon=selectedMuons[0]->charge();
-                LeptonChannel = 1;
 	          }
 
             /////////////////////////////////////////////////
@@ -1490,7 +1500,7 @@ int main (int argc, char *argv[])
             //////////////////////////////////////////////////////////////////////
 			      if(selectedJets.size() < 3)  continue;
             if(debug) cout << "Past cut 5: Passed number of jets cut" << endl;
-            cutstep[6]=cutstep[6]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
+            cutstep[5]=cutstep[5]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
 
             ///////////////////////////////////////////////////
             // Fill b-tag histos for scale factors
@@ -1513,7 +1523,7 @@ int main (int argc, char *argv[])
 //		  	    if(selectedMBJets.size() < 3) continue;
 //	          if (debug)	cout <<"Cut on nb b-jets..."<<endl;
 //            if(debug) cout << "Past cut 7: Passed cut on number of b-jets" << endl;
-//            cutstep[7]=cutstep[7]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
+//            cutstep[6]=cutstep[6]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
 
 
             if(debug)
@@ -2197,7 +2207,6 @@ int main (int argc, char *argv[])
 				                for(int i_IndexMatch = 0; i_IndexMatch < MapIndex_NonSortedToSorted.size(); i_IndexMatch++)
 				                {
 				                    if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_STHypo[idxTopLepBJetFit]) TOPHLEPBB_JetIdx_LepTop_hut = i_IndexMatch;
-				                    else if(selectedJets.size() > 3 && MapIndex_NonSortedToSorted[i_IndexMatch] == NonBJetPt_STHypo[idxTopHadNonBJetFit]) TOPHLEPBB_JetIdx_HadTop_hut = i_IndexMatch;
 				                    else if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_STHypo[idxHiggsBJet1Fit]) TOPHLEPBB_JetIdx_H1_hut = i_IndexMatch;
 				                    else if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_STHypo[idxHiggsBJet2Fit]) TOPHLEPBB_JetIdx_H2_hut = i_IndexMatch;
 /*				                    else
@@ -2213,7 +2222,6 @@ int main (int argc, char *argv[])
 				                for(int i_IndexMatch = 0; i_IndexMatch < MapIndex_NonSortedToSorted.size(); i_IndexMatch++)
 				                {
 				                    if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_STHypo[idxTopLepBJetFit]) TOPHLEPBB_JetIdx_LepTop_hct = i_IndexMatch;
-				                    else if(selectedJets.size() > 3 && MapIndex_NonSortedToSorted[i_IndexMatch] == NonBJetPt_STHypo[idxTopHadNonBJetFit]) TOPHLEPBB_JetIdx_HadTop_hct = i_IndexMatch;
 				                    else if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_STHypo[idxHiggsBJet1Fit]) TOPHLEPBB_JetIdx_H1_hct = i_IndexMatch;
 				                    else if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_STHypo[idxHiggsBJet2Fit]) TOPHLEPBB_JetIdx_H2_hct = i_IndexMatch;
 /*				                    else
@@ -2229,9 +2237,7 @@ int main (int argc, char *argv[])
 
 
             // Filling ntuples
-	          tup_JetCombIndices->Fill();
             tup_ObjectVars->Fill();
-            tup_Weights->Fill();
 
 
 			      ///////////////////////////
@@ -2264,9 +2270,7 @@ int main (int argc, char *argv[])
 
         tup_ntupleinfo->Fill();
         tup_ntupleinfo->Print("all");	          
-        tup_JetCombIndices->Print("all");
         tup_ObjectVars->Print("all");
-        tup_Weights->Print("all");
 
 	      tupfile->Write();   
        	tupfile->Close();

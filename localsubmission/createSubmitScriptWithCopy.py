@@ -59,6 +59,7 @@ for chan in channels:
 
     # copy the submitAll macro
     copyfile("SubmitAll.sh","SubmitScripts/"+date+"/"+chan+"/SubmitAll.sh")
+    copyfile("MakeTXTforMassiveSubmission.sh","SubmitScripts/"+date+"/"+chan+"/MakeTXTforMassiveSubmission.sh")
 
     
     # list of variables 
@@ -90,9 +91,9 @@ for chan in channels:
             # setting the number of file per job depending whether it is data sample or not
             # this ca be tweaked
             if "Data" in str(d.attrib['name']):
-                FilePerJob=10
+                FilePerJob=20
             else:
-                FilePerJob=3
+                FilePerJob=1
 
             # create a test job for each dataset
             # create a file for this job 
@@ -157,7 +158,7 @@ for chan in channels:
 
                     # run on the files
                     print >> outfile, "# now run on the file copied under /$TMPDIR/ "
-                    print >> outfile, commandString, scractFiles_str , " ", chan , " " , str(N_job+1) , " 0" , " 2000000" 
+                    print >> outfile, commandString, scractFiles_str , " ", chan , " " , str(N_job+1) , " 0" , " 10000000" 
 
                     # cleaning
                     listOfFiles=[]
