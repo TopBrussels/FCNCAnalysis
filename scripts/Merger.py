@@ -10,7 +10,7 @@ import shutil
 # getting the appropriate xml file & defining channel and production date of TreeMakerTrees
 tree = ET.ElementTree(file='../config/FullMcBkgdSamples_80X_El.xml')
 channel = "_El"
-date = "_11_10_2016"
+date = "_15_10_2016"
 
 
 #Making and setting all relevant paths

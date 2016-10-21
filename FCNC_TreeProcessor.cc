@@ -41,23 +41,12 @@ map<string,TTree*> ttree;
 map<string,MultiSamplePlot*> MSPlot;
 
 
-float Luminosity = 12900; // pb-1
-bool ManualLuminosity = false;  //Put this to true if you have produced the data n-tuples with the wrong luminosity.
-std::string channel = "_El";
-std::string date = "_11_10_2016";
-int maxNumbObjToPlot = 5;
 Bool_t debug = false;
-float workingpointvalue_Loose = 0.460;//working points updated to 2016 BTV-POG recommendations.
-float workingpointvalue_Medium = 0.800;//working points updated to 2016 BTV-POG recommendations.
-float workingpointvalue_Tight = 0.935;//working points updated to 2016 BTV-POG recommendations.
 
-std::string xmlNom = "config/FullMcBkgdSamples_TreeProcessor.xml";
-TString TreePath = "Merged/Ntuples" + channel + "/Ntuples" + date;
 
 
 // functions prototype
 std::string intToStr (int number);
-void DatasetPlotter(int nBins, float plotLow, float plotHigh, string s_varofInterest, string NTupleName, bool Inclusive, int Nbjets, int Njets, string units);
 void MSPCreator ();
 
 
@@ -65,427 +54,527 @@ void MSPCreator ();
 int main(int argc, char *argv[])
 {
 
-    int baseline_bjets             = strtol(argv[1], NULL,10);
-    int baseline_jets                 = strtol(argv[2], NULL,10);
-
-    bool doInclusive = false;
-    if(baseline_bjets == 0 && baseline_jets == 0) doInclusive = true;
+    int baseline_jets                 = strtol(argv[1], NULL,10);
+    int baseline_bjets             = strtol(argv[2], NULL,10);
+    string channel            = argv[3];
+    string date            = argv[4];
+    bool debug         =strtol(argv[5], NULL,10);
     
+    bool doInclusive = false;
+    string category;
+    if(baseline_bjets == 0 && baseline_jets == 0)
+    {
+        doInclusive = true;
+        category = "Inclusive";
+    }
+    else
+    {
+        category = "b"+intToStr(baseline_bjets)+"j"+intToStr(baseline_jets);
+    }    
 
     cout << "------------------------------------------------------------------------------------------------" << endl;
     cout << "Begin program" << endl;
-    if(!doInclusive) cout << "MACRO command line arguments, category: " << baseline_bjets << "b" << baseline_jets << "j" << endl;
-    else cout << "MACRO command line arguments, Inclusive " << endl;
+    cout << "Category: " << category << endl;
     cout << "------------------------------------------------------------------------------------------------" << endl;
 
 
     clock_t start = clock();
 
-    // calling datasetPlotter to create MSPplots
 
-//    DatasetPlotter(11, -0.5, 10.5, "I_nJets", "ObjectVarsTree", doInclusive, baseline_bjets, baseline_jets,"");
-//   	DatasetPlotter(11, -0.5, 10.5, "I_nJets_CSVL", "ObjectVarsTree", doInclusive, baseline_bjets, baseline_jets);
-//   	DatasetPlotter(11, -0.5, 10.5, "I_nJets_CSVM", "ObjectVarsTree", doInclusive, baseline_bjets, baseline_jets,"");
-//   	DatasetPlotter(11, -0.5, 10.5, "I_nJets_CSVT", "ObjectVarsTree", doInclusive, baseline_bjets, baseline_jets);
-//    DatasetPlotter(40, 0, 400, "pt_muon", "ObjectVarsTree", doInclusive, baseline_bjets, baseline_jets);
-//    DatasetPlotter(40, 0, 400, "pt_electron", "ObjectVarsTree", doInclusive, baseline_bjets, baseline_jets);
-//    DatasetPlotter(35, -0.5, 34.5, "I_nvtx", "ObjectVarsTree", doInclusive, baseline_bjets, baseline_jets, "");
-    DatasetPlotter(70, 0, 700, "pt_jet[I_nJets]", "ObjectVarsTree", doInclusive, baseline_bjets, baseline_jets, "GeV");
-/*    DatasetPlotter(50, -3.15, 3.15, "eta_Jet[I_nJets]", "ObjectVarsTree", doInclusive, baseline_bjets, baseline_jets);
-    DatasetPlotter(30, -3.15, 3.15, "phi_jet[I_nJets]", "ObjectVarsTree", doInclusive, baseline_bjets, baseline_jets);
-    DatasetPlotter(21, -10.5, 10.5, "charge_jet[I_nJets]", "ObjectVarsTree", doInclusive, baseline_bjets, baseline_jets);
-    DatasetPlotter(25, 0, 1, "bdisc_Jet[I_nJets]", "ObjectVarsTree", doInclusive, baseline_bjets, baseline_jets);
-    DatasetPlotter(59,-29.5, 29.5, "jet_matchedMC_pdgID[I_nJets]", "ObjectVarsTree", doInclusive, baseline_bjets, baseline_jets);
-    DatasetPlotter(59,-29.5, 29.5, "jet_matchedMC_motherpdgID[I_nJets]", "ObjectVarsTree", doInclusive, baseline_bjets, baseline_jets);
-    DatasetPlotter(59,-29.5, 29.5, "jet_matchedMC_grannypdgID[I_nJets]", "ObjectVarsTree", doInclusive, baseline_bjets, baseline_jets);
-    DatasetPlotter(25,-1, 1, "cdiscCvsB_jet[I_nJets]", "ObjectVarsTree", doInclusive, baseline_bjets, baseline_jets);
-    DatasetPlotter(25,-1, 1, "cdiscCvsL_jet[I_nJets]", "ObjectVarsTree", doInclusive, baseline_bjets, baseline_jets);
-    DatasetPlotter(50,-1, 1, "incl_charge_jet[I_nJets]", "ObjectVarsTree", doInclusive, baseline_bjets, baseline_jets);
-*/
-
-
-	MSPCreator ();
-
-    cout << "It took us " << ((double)clock() - start) / CLOCKS_PER_SEC << " to run the program" << endl;
-    cout << "********************************************" << endl;
-    cout << "           End of the program !!            " << endl;
-    cout << "********************************************" << endl;
-
-}
-
-
-
-
-
-
-
-void DatasetPlotter(int nBins, float plotLow, float plotHigh, string s_varofInterest, string NTupleName, bool Inclusive, int Nbjets, int Njets, string units)
-{
-  	cout<<""<<endl;
-  	cout<<"RUNNING NOMINAL DATASETS"<<endl;
-  	cout<<""<<endl;
+    string xmlNom = "config/FullMcBkgdSamples_TreeProcessor.xml";
+    TString TreePath = "Merged/Ntuples" + channel + "/Ntuples" + date;
 
   	const char *xmlfile = xmlNom.c_str();
   	cout << "used config file: " << xmlfile << endl;
   
-  	///////////////////////////////////////////////////////////// Load Datasets //////////////////////////////////////////////////////////////////////cout<<"loading...."<<endl;
+    //***************************************************LOADING DATASETS****************************************************
   	TTreeLoader treeLoader;
   	vector < Dataset* > datasets; 					//cout<<"vector filled"<<endl;
   	treeLoader.LoadDatasets (datasets, xmlfile);	//cout<<"datasets loaded"<<endl;
-  
-    //***************************************************CREATING PLOT****************************************************
-  	string plotname = s_varofInterest;
-    MSPlot[plotname.c_str()] = new MultiSamplePlot(datasets, plotname.c_str(), nBins, plotLow, plotHigh, s_varofInterest.c_str(),"Events", "", units); 
-    MSPlot["Njets"] = new MultiSamplePlot(datasets, "Njets", 11, -0.5, 10.5, "Number of jets","Events", "", units); 
-    MSPlot["NBjets"] = new MultiSamplePlot(datasets, "NBjets", 10, -0.5, 10.5, "Number of CSVv2 M","Events", "", units); 
-
-  
-  	//***********************************************OPEN FILES & GET NTUPLES**********************************************
   	string dataSetName, filepath;
-  	int nEntries;
-  	float ScaleFactor, NormFactor;
-  	int varofInterest;
-  	Double_t d_varofInterest;
- 	  int n_object = 0;
-  	double v_d_varofInterest_double [20];
-    int NumberOfJets, NumberOfBjets;
+    float Luminosity = 0;
+
+    //***************************************************CREATING PLOT****************************************************
+    //Format of MSPlots: MultiSamplePlot(vector<Dataset*> datasets, string PlotName, int Nbins, float Min, float Max, string XaxisLabel, string YaxisLabel, string Text, string Units)
+
+    MSPlot["NPV"] = new MultiSamplePlot(datasets, "NPV", 41, -0.5, 40.5, "Number of PV","Events", category); 
+    MSPlot["NCSVv2Ljets"] = new MultiSamplePlot(datasets, "NCSVv2Ljets", 11, -0.5, 10.5, "Number of CSVv2 L jets","Events", category); 
+    MSPlot["NCSVv2Mjets"] = new MultiSamplePlot(datasets, "NCSVv2Mjets", 11, -0.5, 10.5, "Number of CSVv2 M jets","Events", category); 
+    MSPlot["NCSVv2Tjets"] = new MultiSamplePlot(datasets, "NCSVv2Tjets", 11, -0.5, 10.5, "Number of CSVv2 T jets","Events", category); 
+    MSPlot["Njets"] = new MultiSamplePlot(datasets, "Njets", 11, -0.5, 10.5, "Number jets","Events", category); 
+    MSPlot["LeptonPt"] = new MultiSamplePlot(datasets, "LeptonPt", 50, 20., 300., "Lepton Pt","Events", category, "GeV"); 
+    MSPlot["LeptonEta"] = new MultiSamplePlot(datasets, "LeptonEta", 50, -2.5, 2.5, "Lepton eta","Events", category); 
+    MSPlot["LeptonPhi"] = new MultiSamplePlot(datasets, "LeptonPhi", 50, -3.2, 3.2, "Lepton phi","Events", category); 
+    MSPlot["JetPt"] = new MultiSamplePlot(datasets, "JetPt", 50, 20., 300., "Jet Pt","Events", category, "GeV"); 
+    MSPlot["JetEta"] = new MultiSamplePlot(datasets, "JetEta", 50, -2.5, 2.5, "Jet eta","Events", category); 
+    MSPlot["JetPhi"] = new MultiSamplePlot(datasets, "JetPhi", 50, -3.2, 3.2, "Jet phi","Events", category); 
+    MSPlot["JetCSVv2"] = new MultiSamplePlot(datasets, "JetCSVv2", 50, 0., 1., "Jet CSVv2","Events", category); 
+    MSPlot["JetcMVAv2"] = new MultiSamplePlot(datasets, "JetcMVAv2", 50, -1., 1., "Jet cMVAv2","Events", category); 
+
+  
  
-  	vector<string> v;
-  	// to avoid modifying original string
-  	// first duplicate the original string and return a char pointer then free the memory
-  
-  	char delim[] = "[]";
-  	char * dup = strdup(s_varofInterest.c_str());
-  	char * token = strtok(dup, delim);//split string of variable according to the delim
-  	while(token != NULL){
-    	v.push_back(string(token));
-    	// the call is treated as a subsequent calls to strtok:
-    	// the function continues from where it left in previous invocation
-    	token = strtok(NULL, delim);
-  	}
-  	free(dup);
+    //***************************************************GETTING LUMI FROM DATA IN XML****************************************************
+	  for (int d = 0; d < datasets.size(); d++)   //Loop through datasets  
+	  {
+		    dataSetName = datasets[d]->Name();
+		    if(dataSetName.find("Data")!=string::npos || dataSetName.find("data")!=string::npos || dataSetName.find("DATA")!=string::npos)
+		    {
+		        Luminosity = datasets[d]->EquivalentLumi();
+        }
+    }
+    if(Luminosity == 0)
+    {
+            cout << "Luminosity is 0. Please check the data-luminosity in your xml file. Exiting program..." << endl;
+            return 1;
+    }
 
-
-     if (v.size() == 2)//Meaning we have a variable of the form "var[n_obj]", which is an array of values for the variable 'var'
-     {
-
-                //If plotting a variable which consists of several values (e.g.: jet_pt contains the pt of all jets), make also plots for the individual values (e.g.: plot the pt for every jet separately). For now, only done for 5 first objects
-                for(int iToPlot = 1; iToPlot <= maxNumbObjToPlot; iToPlot++)
-                {
-                          string conv_str;
-                          ostringstream conv;   // stream used for the conversion
-                          conv << (iToPlot);      // insert the textual representation of 'Number' in the characters in the stream
-                          conv_str = "_"+conv.str(); // set 'Result' to the contents of the stream
-
-                          MSPlot[(v[0]+conv_str).c_str()] = new MultiSamplePlot(datasets, (v[0]+conv_str).c_str(), nBins, plotLow, plotHigh, (v[0]+conv_str).c_str(),"Events", "", units); 
-                }                
-
-  
-	              for (int d = 0; d < datasets.size(); d++)   //Loop through datasets  
-	              {
-		              dataSetName = datasets[d]->Name();
-		              cout<<"Dataset:  :"<<dataSetName<<endl;
-		              filepath = TreePath+"/FCNC_1L3B__Run2_TopTree_Study_"+dataSetName + ".root";
-		              if (debug) cout<<"filepath: "<<filepath<<endl;
+  	//***********************************************RUNNING OVER DATASETS**********************************************
+	  for (int d = 0; d < datasets.size(); d++)   //Loop through datasets  
+	  {
+		    dataSetName = datasets[d]->Name();
+		    cout<<"Dataset:  :"<<dataSetName<<endl;
+		    filepath = TreePath+"/FCNC_1L3B__Run2_TopTree_Study_"+dataSetName + ".root";
+		    if (debug)
+		    {
+		        cout<<"filepath: "<<filepath<<endl;
+            cout <<"Equivalent luminosity of the dataset is: " << datasets[d]->EquivalentLumi() << endl;
+		    }
 	
 
-		              FileObj[dataSetName.c_str()] = new TFile((filepath).c_str(),"READ"); //create TFile for each dataset      
-		              string TTreename = NTupleName;	
-		              ttree[dataSetName.c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename.c_str()); //get ttree for each dataset
-		              nEntries = ttree[dataSetName.c_str()]->GetEntries();
-		              cout<<"                 nEntries: "<<nEntries<<endl;
+		    FileObj[dataSetName.c_str()] = new TFile((filepath).c_str(),"READ"); //create TFile for each dataset      
 		                
 		                
-                   // bo logic to set the right branch address depending on the string given as argument of the datasetplotter
-	                 ttree[dataSetName.c_str()]->SetBranchAddress(v[0].c_str(),v_d_varofInterest_double); //v[0] is the string of the variable you want to plot. This variable should be an array of values, according to the number of objects
-	                 ttree[dataSetName.c_str()]->SetBranchAddress(v[1].c_str(),&n_object); // v[1] is the string of the variable between [] in the string. This should correspond to the number of objects
+        bool isData= false;
+		    bool isAMC = false;
+		    if(dataSetName.find("Data")!=string::npos || dataSetName.find("data")!=string::npos || dataSetName.find("DATA")!=string::npos)
+		    {
+		        if(debug) cout << "Data found" << endl;
+		        isData =true;
+	      }
+        else if(dataSetName.find("NLO") != std::string::npos || dataSetName.find("nlo") !=std::string::npos || dataSetName.find("amc") !=std::string::npos) isAMC = true;
 
 
-		              bool isData= false;
-		              bool isAMC = false;
-		              if(dataSetName.find("Data")!=string::npos || dataSetName.find("data")!=string::npos || dataSetName.find("DATA")!=string::npos)
-		              {
-		                if(debug) cout << "Data found" << endl;
-		                isData =true;
-	                }
-                  if(dataSetName.find("NLO") != std::string::npos || dataSetName.find("nlo") !=std::string::npos || dataSetName.find("amc") !=std::string::npos) isAMC = true;
+  	    //***********************************************IMPORTING VARIABLES**********************************************
+		    string TTreename = "ObjectVarsTree";	
+		    string TTreename_info = "NtupleInfoTree";	
+		    ttree[dataSetName.c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename.c_str()); //get ttree for each dataset
+		    ttree[(dataSetName+TTreename_info).c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename_info.c_str()); //get ntuple creation information
 
+        int nEntries;
 
-                  ////////////////////////////////////////////////////////////
-                  // Tree for reweighting
-                  ////////////////////////////////////////////////////////////		  
-		              string TTreename_Weights = "Weights";	
-		              string TTreename_NtupleInfo = "NtupleInfoTree";	
-		              ttree[(dataSetName + "weights").c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename_Weights.c_str()); //get ttree for each dataset
-		              ttree[(dataSetName + "NtupleInfoTree").c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename_NtupleInfo.c_str()); //get ttree for each dataset
+		    nEntries = ttree[dataSetName.c_str()]->GetEntries();
+		    cout<<"                 nEntries: "<<nEntries<<endl;
 		
-                  Double_t lumiweight, LeptonSF, bTagSF, luminosity_;
-                  Double_t  nloweight;
-                  ttree[(dataSetName + "NtupleInfoTree").c_str()]->SetBranchAddress("Luminosity_",&luminosity_);
-                  ttree[(dataSetName + "NtupleInfoTree").c_str()]->GetEntry(0);
-                  Luminosity = luminosity_;
-                  ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("puSF",&lumiweight);
-                  ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("fleptonSF",&LeptonSF);
-                  ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("btagWeight_CSVv2M_mujets_central",&bTagSF);
-                  ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("nloWeight",& nloweight);
+        //----------------------------------------------//
+        //Import the working points for b-tagging used to create the ntuples
+        //----------------------------------------------//
+	      Double_t CSVv2_workingpointvalue_Loose;
+	      Double_t CSVv2_workingpointvalue_Medium;
+	      Double_t CSVv2_workingpointvalue_Tight;
+	      Double_t cMVA_workingpointvalue_Loose;
+	      Double_t cMVA_workingpointvalue_Medium;
+	      Double_t cMVA_workingpointvalue_Tight;
+        
+        ttree[(dataSetName + TTreename_info).c_str()]->SetBranchAddress("CSVv2_workingpointvalue_Loose",&CSVv2_workingpointvalue_Loose);
+        ttree[(dataSetName + TTreename_info).c_str()]->SetBranchAddress("CSVv2_workingpointvalue_Medium",&CSVv2_workingpointvalue_Medium);
+        ttree[(dataSetName + TTreename_info).c_str()]->SetBranchAddress("CSVv2_workingpointvalue_Tight",&CSVv2_workingpointvalue_Tight);
+        ttree[(dataSetName + TTreename_info).c_str()]->SetBranchAddress("cMVA_workingpointvalue_Loose",&CSVv2_workingpointvalue_Loose);
+        ttree[(dataSetName + TTreename_info).c_str()]->SetBranchAddress("cMVA_workingpointvalue_Medium",&CSVv2_workingpointvalue_Medium);
+        ttree[(dataSetName + TTreename_info).c_str()]->SetBranchAddress("cMVA_workingpointvalue_Tight",&CSVv2_workingpointvalue_Tight);
+        ttree[(dataSetName + TTreename_info).c_str()]->GetEntry(0);
+
+        //----------------------------------------------//
+        //Get The object variables + weights
+        //----------------------------------------------//
+        //Weights
+        Double_t W_puSF;
+        Double_t W_fleptonSF;
+        Double_t W_btagWeight_CSVv2M_mujets_central;
+        Double_t W_btagWeight_CSVv2M_mujets_up;
+        Double_t W_btagWeight_CSVv2M_mujets_down;
+        Double_t W_nloWeight;// for amc@nlo samples
+        Double_t W_weight1;
+        Double_t W_weight2;
+        Double_t W_weight3;
+        Double_t W_weight4;
+        Double_t W_weight5;
+        Double_t W_weight6;
+        Double_t W_weight7;
+        Double_t W_weight8; 
+        Double_t W_MuonIDSF; //One of the 3 components for the total muon SF
+        Double_t W_MuonIsoSF; //One of the 3 components for the total muon SF
+        Double_t W_MuonTrigSF;//One of the 3 components for the total muon SF
+        Double_t W_MuonTrigSF_Runs273158to274093 = 1;//Used in calculation for W_MuonTrigSF
+        Double_t W_MuonTrigSF_Runs274094to276097 = 1;//Used in calculation for W_MuonTrigSF
+        Double_t W_ElectronIDSF; //One of the 2 components for the total electron SF
+        Double_t W_ElectronRecoSF; //One of the 2 components for the total electron SF
+      
+        Int_t run_num;
+        Int_t evt_num;
+        Int_t lumi_num;
+        Int_t nvtx;
+        Int_t npu;
+
+	      // variables for electrons
+        Double_t pt_electron;
+        Double_t phi_electron;
+        Double_t eta_electron;
+        Double_t eta_superCluster_electron;
+        Double_t E_electron;
+        Double_t d0_electron;
+        Double_t d0BeamSpot_electron;
+        Double_t chargedHadronIso_electron;
+        Double_t neutralHadronIso_electron;
+        Double_t photonIso_electron;
+        Double_t pfIso_electron;
+        Double_t charge_electron;
+        Double_t sigmaIEtaIEta_electron;
+	      Double_t deltaEtaIn_electron;
+	      Double_t deltaPhiIn_electron;
+	      Double_t hadronicOverEm_electron;
+	      Int_t missingHits_electron;
+	      Bool_t passConversion_electron;
+        Bool_t isEBEEGap; 
+      
+        //variable for muons
+        Double_t pt_muon;
+        Double_t phi_muon;
+        Double_t eta_muon;
+        Double_t E_muon;
+        Double_t d0_muon;
+        Double_t d0BeamSpot_muon;
+        Double_t chargedHadronIso_muon;
+        Double_t neutralHadronIso_muon;
+        Double_t photonIso_muon;
+        Double_t pfIso_muon;
+        Double_t charge_muon;
+        
+        //variable for  leptons
+        Double_t pt_lepton;
+        Double_t eta_lepton;
+        Double_t phi_lepton;
+        Double_t E_lepton;
+  
+        //variable for jets 
+        Int_t nJets;
+	      Int_t nJets_CSVL; 
+	      Int_t nJets_CSVM; 
+	      Int_t nJets_CSVT;
+	      Int_t nJets_cMVAL; 
+	      Int_t nJets_cMVAM; 
+	      Int_t nJets_cMVAT;
+        Double_t pt_jet[20];
+        Double_t phi_jet[20];
+        Double_t eta_jet[20];
+        Double_t E_jet[20];
+        Double_t charge_jet[20];
+        Double_t incl_charge_jet[20];
+        Double_t CSVv2[20];
+        Double_t cMVA[20];
+        Double_t cdiscCvsL_jet[20]; 
+	      Double_t cdiscCvsB_jet[20];
+	      Double_t jet_matchedMC_pdgID[20];
+	      Double_t jet_matchedMC_motherpdgID[20];
+	      Double_t jet_matchedMC_grannypdgID[20];
+      
+        // met 
+        Double_t met_Px; 
+        Double_t met_Py; 
+        Double_t met_Pt; 
+	      Double_t met_Phi; 
+	      Double_t met_Eta;
+	      
+	      //JetIndices_correctJetComb
+	      Int_t TOPTOPLEPHAD_JetIdx_LepTop = -99;
+	      Int_t TOPTOPLEPHAD_JetIdx_HadTop = -99;
+	      Int_t TOPTOPLEPHAD_JetIdx_W1 = -99;
+	      Int_t TOPTOPLEPHAD_JetIdx_W2 = -99;
+	      Int_t TOPTOPLEPHBB_JetIdx_LepTop = -99;
+	      Int_t TOPTOPLEPHBB_JetIdx_HadTop = -99;
+	      Int_t TOPTOPLEPHBB_JetIdx_H1 = -99;
+	      Int_t TOPTOPLEPHBB_JetIdx_H2 = -99;
+	      Int_t TOPHLEPBB_JetIdx_LepTop_hut = -99;
+	      Int_t TOPHLEPBB_JetIdx_H1_hut = -99;
+	      Int_t TOPHLEPBB_JetIdx_H2_hut = -99;
+	      Int_t TOPHLEPBB_JetIdx_LepTop_hct = -99;
+	      Int_t TOPHLEPBB_JetIdx_H1_hct = -99;
+	      Int_t TOPHLEPBB_JetIdx_H2_hct = -99;
+        Double_t MVA_TOPTOPLEPHAD = -999.;
+        Double_t MVA_TOPTOPLEPHBB = -999.;
+        Double_t MVA_TOPHLEPBB_hut = -999.;
+        Double_t MVA_TOPHLEPBB_hct = -999.;
+        
+        // Weights
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_fleptonSF",&W_fleptonSF); //Contains, if muon, the  isoSF, idSF & trigSF
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_puSF",&W_puSF);  
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_CSVv2M_mujets_central",&W_btagWeight_CSVv2M_mujets_central); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_CSVv2M_mujets_up",&W_btagWeight_CSVv2M_mujets_up);  
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_CSVv2M_mujets_down",&W_btagWeight_CSVv2M_mujets_down); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_nloWeight",&W_nloWeight); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight1",&W_weight1);  
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight2",&W_weight2);  
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight3",&W_weight3); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight4",&W_weight4);  
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight5",&W_weight5); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight6",&W_weight6);  
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight7",&W_weight7); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight8",&W_weight8);  
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_MuonIDSF",&W_MuonIDSF);  
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_MuonIsoSF",&W_MuonIsoSF);  
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_MuonTrigSF",&W_MuonTrigSF);  
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_MuonTrigSF_Runs273158to274093",&W_MuonTrigSF_Runs273158to274093);  
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_MuonTrigSF_Runs274094to276097",&W_MuonTrigSF_Runs274094to276097);  
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_ElectronIDSF",&W_ElectronIDSF);  
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_ElectronRecoSF",&W_ElectronRecoSF);  
+
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_run_num",&run_num);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_evt_num",&evt_num);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_lumi_num",&lumi_num);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_nvtx",&nvtx);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_npu",&npu);
+
+
+        // electrons
+        ttree[(dataSetName).c_str()]->SetBranchAddress("pt_electron",&pt_electron);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("phi_electron",&phi_electron);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("eta_electron",&eta_electron);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("eta_superCluster_electron",&eta_superCluster_electron);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("E_electron",&E_electron);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("chargedHadronIso_electron",&chargedHadronIso_electron);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("neutralHadronIso_electron",&neutralHadronIso_electron);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("photonIso_electron",&photonIso_electron);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("pfIso_electron",&pfIso_electron);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("charge_electron",&charge_electron);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("d0_electron",&d0_electron);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("d0BeamSpot_electron",&d0BeamSpot_electron);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("sigmaIEtaIEta_electron",&sigmaIEtaIEta_electron);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("deltaEtaIn_electron",&deltaEtaIn_electron);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("deltaPhiIn_electron",&deltaPhiIn_electron);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("hadronicOverEm_electron",&hadronicOverEm_electron);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_missingHits_electron",&missingHits_electron);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_passConversion_electron",&passConversion_electron);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_isEBEEGap",&isEBEEGap);
+      
+        // muons
+        ttree[(dataSetName).c_str()]->SetBranchAddress("pt_muon",&pt_muon);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("phi_muon",&phi_muon);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("eta_muon",&eta_muon);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("E_muon",&E_muon);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("chargedHadronIso_muon",&chargedHadronIso_muon);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("neutralHadronIso_muon",&neutralHadronIso_muon);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("photonIso_muon",&photonIso_muon);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("pfIso_muon",&pfIso_muon);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("charge_muon",&charge_muon);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("d0_muon",&d0_muon);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("d0BeamSpot_muon",&d0BeamSpot_muon);
+
+        //SelectedLepton
+        ttree[(dataSetName).c_str()]->SetBranchAddress("pt_lepton",&pt_lepton);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("phi_lepton",&phi_lepton);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("eta_lepton",&eta_lepton);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("E_lepton",&E_lepton);
+        
+        // jets
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets",&nJets);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVL",&nJets_CSVL);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVM",&nJets_CSVM);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVT",&nJets_CSVT);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_cMVAL",&nJets_cMVAL);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_cMVAM",&nJets_cMVAM);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_cMVAT",&nJets_cMVAT);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("pt_jet",&pt_jet);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("phi_jet",&phi_jet);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("eta_jet",&eta_jet);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("E_jet",&E_jet);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("charge_jet",&charge_jet);	    
+        ttree[(dataSetName).c_str()]->SetBranchAddress("incl_charge_jet",&incl_charge_jet);	    
+        ttree[(dataSetName).c_str()]->SetBranchAddress("CSVv2",&CSVv2);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("cMVA",&cMVA);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("cdiscCvsL_jet",&cdiscCvsL_jet);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("cdiscCvsB_jet",&cdiscCvsB_jet);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("jet_matchedMC_pdgID",&jet_matchedMC_pdgID);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("jet_matchedMC_motherpdgID",&jet_matchedMC_motherpdgID);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("jet_matchedMC_grannypdgID",&jet_matchedMC_grannypdgID);
+       
+        // met 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("met_Px", &met_Px); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("met_Py", &met_Py); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("met_Pt", &met_Pt); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("met_Eta", &met_Eta); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("met_Phi", &met_Phi); 
+
+        // Jet-indices associated to the jet-assignment in the bMVA method
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_LepTop",&TOPTOPLEPHAD_JetIdx_LepTop);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_HadTop",&TOPTOPLEPHAD_JetIdx_HadTop);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_W1",&TOPTOPLEPHAD_JetIdx_W1);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_W2",&TOPTOPLEPHAD_JetIdx_W2);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_LepTop",&TOPTOPLEPHBB_JetIdx_LepTop);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_HadTop",&TOPTOPLEPHBB_JetIdx_HadTop);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_H1",&TOPTOPLEPHBB_JetIdx_H1);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_H2",&TOPTOPLEPHBB_JetIdx_H2);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_LepTop_hut",&TOPHLEPBB_JetIdx_LepTop_hut);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H1_hut",&TOPHLEPBB_JetIdx_H1_hut);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H2_hut",&TOPHLEPBB_JetIdx_H2_hut);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_LepTop_hct",&TOPHLEPBB_JetIdx_LepTop_hct);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H1_hct",&TOPHLEPBB_JetIdx_H1_hct);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H2_hct",&TOPHLEPBB_JetIdx_H2_hct);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPTOPLEPHAD",&MVA_TOPTOPLEPHAD);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPTOPLEPHBB",&MVA_TOPTOPLEPHBB);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPHLEPBB_hut",&MVA_TOPHLEPBB_hut);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPHLEPBB_hct",&MVA_TOPHLEPBB_hct);
                   
-                  ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets",&NumberOfJets);
-                  ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVM",&NumberOfBjets);
-                  
 
-                    double nloSF = 1.;
-                    int nPos = 0; 
-                    int nNeg = 0;
-                    int Ev = 0; 
-                    if(isAMC && !isData)
-                    {
-                       
-                        for (int k = 0; k<nEntries; k++)
-                        {
-                           ttree[(dataSetName + "weights").c_str()]->GetEntry(k);
-                           if( nloweight > 0) nPos++;
-                           else if( nloweight < 0) nNeg ++;
-                           Ev ++; 
-                         }
-                         
-                         nloSF *= ((double) (nPos - nNeg))/((double) (nPos + nNeg));
-                     }		
+        double nloSF = 1.;
+        int nPos = 0; 
+        int nNeg = 0;
+        if(isAMC && !isData)
+        {
+            for (int k = 0; k<nEntries; k++)
+            {
+                ttree[dataSetName.c_str()]->GetEntry(k);
+                if( W_nloWeight > 0) nPos++;
+                else if( W_nloWeight < 0) nNeg ++;
+            }
+            nloSF *= ((double) (nPos - nNeg))/((double) (nPos + nNeg));
+        }		
 		
-		
-		              //////////////////////////////////////////////////////////
-		              // Making MS plots
-		              //////////////////////////////////////////////////////////
-		              for (int j = 0; j<nEntries; j++)
-		              {
+  	    //***********************************************RUNNING OVER EVENTS**********************************************
+		    for (int j = 0; j<nEntries; j++)
+		    {
 		              
-			                ttree[dataSetName.c_str()]->GetEntry(j);
-		                  if(!Inclusive)
-		                  {
-		                      if(Njets == 3 && NumberOfJets != Njets && NumberOfBjets != Nbjets) continue;
-		                      if(Njets == 4 && NumberOfJets < Njets && NumberOfBjets != Nbjets) continue;
-		                  }
+            if(debug)
+            {
+                if(!isData)cin.get();
+                cout << " " << endl;
+                cout << "------------NEW EVENT: " << j << " --------------" << endl;
+            }
+			      ttree[dataSetName.c_str()]->GetEntry(j);
+//if(fabs(eta_lepton) > 1.5) continue;
+		        if(!doInclusive)
+		        {
+		            if(baseline_jets == 3 && nJets != baseline_jets && nJets_CSVM != baseline_bjets) continue;
+		            else if(baseline_jets == 4 && nJets < baseline_jets && nJets_CSVM != baseline_bjets) continue;
+		        }
+		                  
+            float ScaleFactor = 1.; // event scale factor
+            if(W_puSF <= 0|| W_fleptonSF <= 0 || W_btagWeight_CSVv2M_mujets_central <= 0 || nloSF <= 0 || Luminosity <= 0 )
+            {
+                  cout << "----- Event " << j << " has a negative weight. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << "; Luminosity=" << Luminosity << endl;
+                  cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
+                  cout << "----- The event will be skipped....." << endl;
+                  continue;
+            }
+            else if(W_puSF != W_puSF|| W_fleptonSF != W_fleptonSF || W_btagWeight_CSVv2M_mujets_central != W_btagWeight_CSVv2M_mujets_central || nloSF != nloSF)
+            {
+                  cout << "----- Event " << j << " has a Nan weight. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
+                  cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
+                  cout << "----- The event will be skipped....." << endl;
+                  continue;
+            }
+            else if(W_puSF >= 20|| W_fleptonSF >= 20 || W_btagWeight_CSVv2M_mujets_central >= 20 || nloSF >= 20)
+            {
+                  cout << "----- Event " << j << " has a weight larger than 20. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
+                  cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
+                  cout << "----- The event will be skipped....." << endl;
+                  continue;
+            }
+			      if(!isData) ScaleFactor = ScaleFactor * W_puSF * W_fleptonSF /* W_btagWeight_CSVv2M_mujets_central */* nloSF;
+			      if(debug && !isData)
+			      {
+                cout << "----- Event " << j << "Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
+                  cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
+			          cout << "   SCALE FACTOR is: " << ScaleFactor << endl;
+			      }
+			      
+			      //**********************EVENT RECONSTRUCTIONS*******************************
+			          TLorentzVector Lepton;
+			          TLorentzVector Hb1_TOPHLEPBB_hut, Hb2_TOPHLEPBB_hut, LepTopB_TOPHLEPBB_hut;
+			          TLorentzVector Hb1_TOPHLEPBB_hct, Hb2_TOPHLEPBB_hct, LepTopB_TOPHLEPBB_hct;
+			          TLorentzVector Hb1_TOPTOPLEPHBB, Hb2_TOPTOPLEPHBB, LepTopB_TOPTOPLEPHBB, HadTopB_TOPTOPLEPHBB;
+			          TLorentzVector Hb1_TOPTOPLEPHAD, Hb2_TOPTOPLEPHAD, LepTopB_TOPTOPLEPHAD, HadTopB_TOPTOPLEPHAD;
+			          TLorentzVector Higgs_TOPHLEPBB_hut, Higgs_TOPHLEPBB_hct, Higgs_TOPTOPLEPHBB, Higgs_TOPTOPLEPHAD;
+			          //TLorentzVector LepTop_TOPHLEPBB_hut, LepTop_TOPHLEPBB_hct, LepTop_TOPTOPLEPHBB, LepTop_TOPTOPLEPHAD;
+			          TLorentzVector HadTop_TOPTOPLEPHBB, HadTop_TOPTOPLEPHAD;
+			          
+			          Lepton.SetPtEtaPhiE(pt_lepton, eta_lepton, phi_lepton, E_lepton);
+			          
+			          Hb1_TOPHLEPBB_hct.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_H1_hct],eta_jet[TOPHLEPBB_JetIdx_H1_hct],phi_jet[TOPHLEPBB_JetIdx_H1_hct],E_jet[TOPHLEPBB_JetIdx_H1_hct]);
+			          Hb2_TOPHLEPBB_hct.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_H2_hct],eta_jet[TOPHLEPBB_JetIdx_H2_hct],phi_jet[TOPHLEPBB_JetIdx_H2_hct],E_jet[TOPHLEPBB_JetIdx_H2_hct]);
+			          LepTopB_TOPHLEPBB_hct.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_LepTop_hct],eta_jet[TOPHLEPBB_JetIdx_LepTop_hct],phi_jet[TOPHLEPBB_JetIdx_LepTop_hct],E_jet[TOPHLEPBB_JetIdx_LepTop_hct]);
+                Higgs_TOPHLEPBB_hct = Hb1_TOPHLEPBB_hct + Hb2_TOPHLEPBB_hct;
+			          Hb1_TOPHLEPBB_hut.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_H1_hut],eta_jet[TOPHLEPBB_JetIdx_H1_hut],phi_jet[TOPHLEPBB_JetIdx_H1_hut],E_jet[TOPHLEPBB_JetIdx_H1_hut]);
+			          Hb2_TOPHLEPBB_hut.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_H2_hut],eta_jet[TOPHLEPBB_JetIdx_H2_hut],phi_jet[TOPHLEPBB_JetIdx_H2_hut],E_jet[TOPHLEPBB_JetIdx_H2_hut]);
+			          LepTopB_TOPHLEPBB_hut.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_LepTop_hut],eta_jet[TOPHLEPBB_JetIdx_LepTop_hut],phi_jet[TOPHLEPBB_JetIdx_LepTop_hut],E_jet[TOPHLEPBB_JetIdx_LepTop_hut]);
+                Higgs_TOPHLEPBB_hut = Hb1_TOPHLEPBB_hut + Hb2_TOPHLEPBB_hut;
+			          Hb1_TOPTOPLEPHBB.SetPtEtaPhiE(pt_jet[TOPTOPLEPHBB_JetIdx_H1],eta_jet[TOPTOPLEPHBB_JetIdx_H1],phi_jet[TOPTOPLEPHBB_JetIdx_H1],E_jet[TOPTOPLEPHBB_JetIdx_H1]);
+			          Hb2_TOPTOPLEPHBB.SetPtEtaPhiE(pt_jet[TOPTOPLEPHBB_JetIdx_H2],eta_jet[TOPTOPLEPHBB_JetIdx_H2],phi_jet[TOPTOPLEPHBB_JetIdx_H2],E_jet[TOPTOPLEPHBB_JetIdx_H2]);
+			          LepTopB_TOPTOPLEPHBB.SetPtEtaPhiE(pt_jet[TOPTOPLEPHBB_JetIdx_LepTop],eta_jet[TOPTOPLEPHBB_JetIdx_LepTop],phi_jet[TOPTOPLEPHBB_JetIdx_LepTop],E_jet[TOPTOPLEPHBB_JetIdx_LepTop]);
+                Higgs_TOPTOPLEPHBB = Hb1_TOPTOPLEPHBB + Hb2_TOPTOPLEPHBB;
+			          Hb1_TOPTOPLEPHAD.SetPtEtaPhiE(pt_jet[TOPTOPLEPHAD_JetIdx_W1],eta_jet[TOPTOPLEPHAD_JetIdx_W1],phi_jet[TOPTOPLEPHAD_JetIdx_W1],E_jet[TOPTOPLEPHAD_JetIdx_W1]);
+			          Hb2_TOPTOPLEPHAD.SetPtEtaPhiE(pt_jet[TOPTOPLEPHAD_JetIdx_W2],eta_jet[TOPTOPLEPHAD_JetIdx_W2],phi_jet[TOPTOPLEPHAD_JetIdx_W2],E_jet[TOPTOPLEPHAD_JetIdx_W2]);
+			          LepTopB_TOPTOPLEPHAD.SetPtEtaPhiE(pt_jet[TOPTOPLEPHAD_JetIdx_LepTop],eta_jet[TOPTOPLEPHAD_JetIdx_LepTop],phi_jet[TOPTOPLEPHAD_JetIdx_LepTop],E_jet[TOPTOPLEPHAD_JetIdx_LepTop]);
+                Higgs_TOPTOPLEPHAD = Hb1_TOPTOPLEPHAD + Hb2_TOPTOPLEPHAD;
+			                
+  	        //***********************************************FILLING PLOTS**********************************************
+				    MSPlot["NCSVv2Ljets"]->Fill(nJets_CSVL, datasets[d], true, Luminosity * ScaleFactor);
+				    MSPlot["NCSVv2Mjets"]->Fill(nJets_CSVM, datasets[d], true, Luminosity * ScaleFactor);
+				    MSPlot["NCSVv2Tjets"]->Fill(nJets_CSVT, datasets[d], true, Luminosity * ScaleFactor);
+				    MSPlot["Njets"]->Fill(nJets, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["LeptonPt"]->Fill(pt_lepton, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["LeptonEta"]->Fill(eta_lepton, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["LeptonPhi"]->Fill(phi_lepton, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["NPV"]->Fill(nvtx, datasets[d], true, Luminosity * ScaleFactor);
+            for(int i_Jet = 0; i_Jet < nJets; i_Jet++)
+            {
+                MSPlot["JetPt"]->Fill(pt_jet[i_Jet], datasets[d], true, Luminosity * ScaleFactor);
+                MSPlot["JetEta"]->Fill(eta_jet[i_Jet], datasets[d], true, Luminosity * ScaleFactor);
+                MSPlot["JetPhi"]->Fill(phi_jet[i_Jet], datasets[d], true, Luminosity * ScaleFactor);
+                MSPlot["JetCSVv2"]->Fill(CSVv2[i_Jet], datasets[d], true, Luminosity * ScaleFactor);
+                MSPlot["JetcMVAv2"]->Fill(cMVA[i_Jet], datasets[d], true, Luminosity * ScaleFactor);
+            }			                
+			                
+		  }//for-loop events
 		              
-                  		ScaleFactor = 1.; // event scale factor
-//			                ttree[(dataSetName + "weights").c_str()]->GetEntry(j);
-			                ScaleFactor = ScaleFactor * lumiweight * LeptonSF * bTagSF * nloSF;
-			                if(ScaleFactor < 0) ScaleFactor = 0;
-//			                ttree[dataSetName.c_str()]->GetEntry(j);
-			                
-                      for(int i_obj = 0; i_obj < n_object;  i_obj++)
-                      {
-                          string conversion_str;
-                          ostringstream convert;   // stream used for the conversion
-                          convert << (1+i_obj);      // insert the textual representation of 'Number' in the characters in the stream
-                          conversion_str = "_"+convert.str(); // set 'Result' to the contents of the stream
-
-			                    if(debug) cout << "varofInterest is " << v_d_varofInterest_double[i_obj] << endl;
-			                    if(isData)
-			                    {// for data, fill once per event, weighted with the event scale factor
-				                    MSPlot[plotname.c_str()]->Fill(v_d_varofInterest_double[i_obj], datasets[d], true, 1.);
-				                    MSPlot["Njets"]->Fill(NumberOfJets, datasets[d], true, 1.);
-				                    MSPlot["NBjets"]->Fill(NumberOfBjets, datasets[d], true, 1.);
-				                    if(i_obj< maxNumbObjToPlot) MSPlot[(v[0]+conversion_str).c_str()]->Fill(v_d_varofInterest_double[i_obj], datasets[d], true, 1.);//Fill MSPlot for first 5 variables
-			                    }
-			                    else
-			                    {// for MC, fill once per event and multiply by the event scale factor. Then reweigt by Lumi/Eqlumi where Eqlumi is gotten from the xml file
-				                    MSPlot["Njets"]->Fill(NumberOfJets, datasets[d], true, ScaleFactor*Luminosity);
-				                    MSPlot["NBjets"]->Fill(NumberOfBjets, datasets[d], true, ScaleFactor*Luminosity);
-				                    MSPlot[plotname.c_str()]->Fill(v_d_varofInterest_double[i_obj], datasets[d], true, ScaleFactor*Luminosity);
-				                    if(i_obj<maxNumbObjToPlot) MSPlot[(v[0]+conversion_str).c_str()]->Fill(v_d_varofInterest_double[i_obj], datasets[d], true,  ScaleFactor*Luminosity);//Fill MSPlot for first 5 variables
-			                    }
-			                }
-			                
-			                
-		              }
-		              
-		          }//for-loop datasets
+    }//for-loop datasets
                
 
-      }//end statement on variable-plotting consisting of array		   (v.size()==2)
-     else if (v.size() == 1)
-     {
-	              for (int d = 0; d < datasets.size(); d++)   //Loop through datasets  
-	              {
-		              dataSetName = datasets[d]->Name();
-		              cout<<"Dataset:  :"<<dataSetName<<endl;
-		              filepath = TreePath+"/FCNC_1L3B__Run2_TopTree_Study_"+dataSetName + ".root";
-		              if (debug) cout<<"filepath: "<<filepath<<endl;
-	
-
-		              FileObj[dataSetName.c_str()] = new TFile((filepath).c_str(),"READ"); //create TFile for each dataset      
-		              string TTreename = NTupleName;	
-		              ttree[dataSetName.c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename.c_str()); //get ttre for each dataset
-		              nEntries = ttree[dataSetName.c_str()]->GetEntries();
-		              cout<<"                 nEntries: "<<nEntries<<endl;
 
 
-                  ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets",&NumberOfJets);
-                  ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVM",&NumberOfBjets);
-
-                  bool isInteger = false;
-	                if (v[0].compare(0,2,"I_") == 0)//these are the variables that are an integer
-	                {
-	                  ttree[dataSetName.c_str()]->SetBranchAddress(v[0].c_str(),&varofInterest);
-	                  isInteger = true;
-	                }
-	                else //The others are doubles
-	                {
-	                  ttree[dataSetName.c_str()]->SetBranchAddress(v[0].c_str(),&d_varofInterest);
-	                }
-
-          		    bool isData= false;
-		              bool isAMC = false;
-		              if(dataSetName.find("Data")!=string::npos || dataSetName.find("data")!=string::npos || dataSetName.find("DATA")!=string::npos)
-		              {
-		                if(debug) cout << "Data found" << endl;
-		                isData =true;
-	                }
-                  if(dataSetName.find("NLO") != std::string::npos || dataSetName.find("nlo") !=std::string::npos || dataSetName.find("amc") !=std::string::npos) isAMC = true;
-
-
-                  ////////////////////////////////////////////////////////////
-                  // Tree for reweighting
-                  ////////////////////////////////////////////////////////////		  
-		              string TTreename_Weights = "Weights";	
-		              string TTreename_NtupleInfo = "NtupleInfoTree";	
-		              ttree[(dataSetName + "weights").c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename_Weights.c_str()); //get ttree for each dataset
-		              ttree[(dataSetName + "NtupleInfoTree").c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename_NtupleInfo.c_str()); //get ttree for each dataset
-		
-                  Double_t lumiweight, LeptonSF, bTagSF, luminosity_;
-                  Double_t  nloweight;
-                  ttree[(dataSetName + "NtupleInfoTree").c_str()]->SetBranchAddress("Luminosity_",&luminosity_);
-                  ttree[(dataSetName + "NtupleInfoTree").c_str()]->GetEntry(0);
-                  Luminosity = luminosity_;
-                  ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("puSF",&lumiweight);
-                  ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("fleptonSF",&LeptonSF);
-                  ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("btagWeight_CSVv2M_mujets_central",&bTagSF);
-                  ttree[(dataSetName + "weights").c_str()]->SetBranchAddress("nloWeight",& nloweight);
-
-
-                    double nloSF = 1.;
-                    int nPos = 0; 
-                    int nNeg = 0;
-                    int Ev = 0; 
-                    if(isAMC && !isData)
-                    {
-                       
-                        for (int k = 0; k<nEntries; k++)
-                        {
-                           ttree[(dataSetName + "weights").c_str()]->GetEntry(k);
-                           if( nloweight > 0) nPos++;
-                           else if( nloweight < 0) nNeg ++;
-                           Ev ++; 
-                         }
-                         
-                         nloSF *= ((double) (nPos - nNeg))/((double) (nPos + nNeg));
-                     }		
-		
-		              //////////////////////////////////////////////////////////
-		              // Making MS plots
-		              //////////////////////////////////////////////////////////
-		              for (int j = 0; j<nEntries; j++)
-		              {
-			                ttree[dataSetName.c_str()]->GetEntry(j);
-		                  if(!Inclusive)
-		                  {
-		                      if(Njets == 3 && NumberOfJets != Njets && NumberOfBjets != Nbjets) continue;
-		                      else if(Njets == 4 && NumberOfJets < Njets && NumberOfBjets != Nbjets) continue;
-		                  }
-		              
-                  		ScaleFactor = 1.; // event scale factor
-//			                ttree[(dataSetName + "weights").c_str()]->GetEntry(j);
-			                ScaleFactor = ScaleFactor * lumiweight * LeptonSF * bTagSF * nloSF;
-			                if(ScaleFactor < 0) ScaleFactor = 0;
-//			                ttree[dataSetName.c_str()]->GetEntry(j);
-
-			                if(isInteger)
-			                {
-			                    if(debug) cout << "varofInterest is " << varofInterest << endl;
-			                    if(isData)
-			                    {// for data, fill once per event, weighted with the event scale factor
-				                    MSPlot[plotname.c_str()]->Fill(varofInterest, datasets[d], true, 1.);
-				                  }
-			                    else
-			                    {// for MC, fill once per event and multiply by the event scale factor. Then reweigt by Lumi/Eqlumi where Eqlumi is gotten from the xml file
-				                    MSPlot[plotname.c_str()]->Fill(varofInterest, datasets[d], true, ScaleFactor*Luminosity);
-			                    }
-			                }
-			                else
-			                {
-			                		if(debug) cout << "varofInterest is " << d_varofInterest << endl;
-			                    if(isData)
-			                    {// for data, fill once per event, weighted with the event scale factor
-				                    MSPlot[plotname.c_str()]->Fill(d_varofInterest, datasets[d], true, 1.);
-				                    MSPlot["Njets"]->Fill(NumberOfJets, datasets[d], true, 1.);
-				                    MSPlot["NBjets"]->Fill(NumberOfBjets, datasets[d], true, 1.);
-				                  }
-			                    else
-			                    {// for MC, fill once per event and multiply by the event scale factor. Then reweigt by Lumi/Eqlumi where Eqlumi is gotten from the xml file
-				                    MSPlot[plotname.c_str()]->Fill(d_varofInterest, datasets[d], true, ScaleFactor*Luminosity);
-				                    MSPlot["Njets"]->Fill(NumberOfJets, datasets[d], true, ScaleFactor*Luminosity);
-				                    MSPlot["NBjets"]->Fill(NumberOfBjets, datasets[d], true, ScaleFactor*Luminosity);
-			                    }
-			                }
-			                		if(debug) cout << "Event " << j << endl;
-
-			            }
-			                
-			                
-		           }//for-loop datasets
-     }//end of statement if variable is not an array of values
-      
-      
-
-
-
-
-//	treeLoader.UnLoadDataset();
-  	// clearing vector
-  	v.clear();
-  	if (debug){
-    	cout << "after cleaning" << endl ;
-    	cout << "v.size() is " << v.size() << endl;
-  	}
   
-cout << "MSPlot size: " << MSPlot.size() << endl;      
-
-
-};
+  cout << "MSPlot size: " << MSPlot.size() << endl;      
 
 
 
 
+  string pathPNG = "MSPlots/";
+  mkdir(pathPNG.c_str(),0777);
+  pathPNG += "MSPlots";
+  pathPNG += channel;
+  mkdir(pathPNG.c_str(),0777);
+  pathPNG += "/";
+  pathPNG += date;
+  mkdir(pathPNG.c_str(),0777);
+  pathPNG += "/";
+  pathPNG += category;
+  mkdir(pathPNG.c_str(),0777);
+  cout <<"Making directory :"<< pathPNG  <<endl;		//make directory
+
+  TFile *outfile = new TFile((pathPNG+"/Output.root").c_str(),"recreate");
+  outfile->cd();
 
 
-// function that writes all the MSPlots created in a root file
-void MSPCreator ()
-{
-
-  	string pathPNG = "MSPlots/";
-  	mkdir(pathPNG.c_str(),0777);
-  	pathPNG += "MSPlots";
-  	pathPNG += channel;
-  	mkdir(pathPNG.c_str(),0777);
-  	pathPNG += "/";
-  	pathPNG += date;
-  	mkdir(pathPNG.c_str(),0777);
-  	cout <<"Making directory :"<< pathPNG  <<endl;		//make directory
-
-  	TFile *outfile = new TFile((pathPNG+"/Output.root").c_str(),"recreate");
-  	outfile->cd();
-
-
-  	// Loop over all the MSPlots
-  	for(map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
-    {
-      	string name = it->first;
-      	MultiSamplePlot *temp = it->second;
-      	//if (debug){
-			cout << "Saving the MSP" << endl;
-			cout << " and it->first is " << it->first << endl;
-			cout << " Luminosity is " << Luminosity << endl;
-      	//}
-      	temp->setDataLumi(Luminosity);
+  // Loop over all the MSPlots
+  for(map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
+  {
+     	string name = it->first;
+     	MultiSamplePlot *temp = it->second;
+      if (debug)
+      {
+          cout << "Saving the MSP" << endl;
+          cout << " and it->first is " << it->first << endl;
+          cout << " Luminosity is " << Luminosity << endl;
+      }
+//      temp->setDataLumi(Luminosity);
       	//    temp->Draw(name,RatioType, addRatioErrorBand, addErrorBand, ErrorBandAroundTotalInput, scaleNPSignal);              
       	//MultiSamplePlot options
           /*
@@ -500,12 +589,18 @@ void MSPCreator ()
           int scaleNPSignal = 20; //determines the factor with which the new physics signal samples are scaled, only on the canvas (note that the TH1F histogram in the MSPlot output root file itself is not scaled with this factor!)
           bool savePNG = false; //automatically save png files of MSPlots.
           */
-        cout << "Drawing MSP: " << it->second << endl;
-		    temp->Draw("MyMSP_"+it->first, 1, false, false, false, 1);
-      	temp->Write(outfile, it->first, true,pathPNG, "png");
+      cout << "Drawing MSP: " << it->first << endl;
+      temp->Draw("MyMSP_"+it->first, 1, false, false, false, 1);
+      temp->Write(outfile, it->first, true,pathPNG, "png");
 	}
 
   	outfile->Write("kOverwrite");
+
+    cout << "It took us " << ((double)clock() - start) / CLOCKS_PER_SEC << " to run the program" << endl;
+    cout << "********************************************" << endl;
+    cout << "           End of the program !!            " << endl;
+    cout << "********************************************" << endl;
+
 }
 
 // function that converts an int into a string

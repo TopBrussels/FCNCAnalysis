@@ -300,7 +300,7 @@ int main (int argc, char *argv[])
 //            bTagReader_cMVAM_mujets_down = new BTagCalibrationReader(bTagCalib_cMVA,BTagEntry::OP_MEDIUM,"mujets","down"); //mujets
             if(bTagReweight_FillMChistos)// Need to differentiate BTagWeightTools according to filling the histos and just reading, because of overwriting possibilities in grid submission
             {
-                btwt_CSVv2M_mujets_central = new BTagWeightTools(bTagReader_CSVv2M_mujets_central,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_mujets_central.root",false,30,999,2.4);
+                btwt_CSVv2M_mujets_central = new BTagWeightTools(bTagReader_CSVv2M_mujets_central,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_mujets_central.root",false,30,670,2.4);
 //                btwt_CSVv2M_mujets_up = new BTagWeightTools(bTagReader_CSVv2M_mujets_up,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_mujets_up.root",false,30,999,2.4);
 //                btwt_CSVv2M_mujets_down = new BTagWeightTools(bTagReader_CSVv2M_mujets_down,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_mujets_down.root",false,30,999,2.4);
 //                btwt_cMVAM_mujets_central = new BTagWeightTools(bTagReader_cMVAM_mujets_central,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_mujets_central.root",false,30,999,2.4);
@@ -309,7 +309,7 @@ int main (int argc, char *argv[])
             }
             else
             {
-                btwt_CSVv2M_mujets_central = new BTagWeightTools(bTagReader_CSVv2M_mujets_central,"BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_central.root",false,30,999,2.4);
+                btwt_CSVv2M_mujets_central = new BTagWeightTools(bTagReader_CSVv2M_mujets_central,"BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_central.root",true,30,670,2.4);
 //                btwt_CSVv2M_mujets_up = new BTagWeightTools(bTagReader_CSVv2M_mujets_up,"BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_up.root",false,30,999,2.4);
 //                btwt_CSVv2M_mujets_down = new BTagWeightTools(bTagReader_CSVv2M_mujets_down,"BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_down.root",false,30,999,2.4);
 //                btwt_cMVAM_mujets_central = new BTagWeightTools(bTagReader_cMVAM_mujets_central,"BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_central.root",false,30,999,2.4);
@@ -936,7 +936,7 @@ int main (int argc, char *argv[])
         {
             if(debug)
             {
-                cin.get();
+//                cin.get();
                 cout << " " << endl;
                 cout << "------------NEW EVENT: " << ievt << " --------------" << endl;
             }
@@ -981,7 +981,11 @@ int main (int argc, char *argv[])
 	          lumi_num=event->lumiBlockId(); 
 	          nvtx = vertex.size();
 	          npu = (int) event->nTruePU(); 
-
+if(evt_num != 364683)
+{
+   continue;
+}
+else cin.get();
             bool runChanged = false;
 
 
@@ -1231,6 +1235,7 @@ int main (int argc, char *argv[])
             float btagWeight = 1;
             if(btagger == "CSVv2M") btagWeight = W_btagWeight_CSVv2M_mujets_central;
 //            else if(btagger == "cMVAM") btagWeight = btagWeight_cMVAM_mujets_central;
+
 
             if(debug) cout<<"btag SF:  "<< btagWeight << endl;
             scaleFactor = scaleFactor * W_puSF * W_fleptonSF * btagWeight;
@@ -1722,14 +1727,25 @@ int main (int argc, char *argv[])
 	          std::vector<float> MuonPhi;
 	          std::vector<float> MuonE;
 	          
+            
             for(int i_Jet = 0; i_Jet < selectedJets.size(); i_Jet++)
             {
-                  if(i_Jet < 3)//The 3 jets with the highest CSVv2 value are used as b-jets.
+                  if(i_Jet < 3 || selectedJets[i_Jet]->btag_combinedInclusiveSecondaryVertexV2BJetTags()>CSVv2_workingpointvalue_Medium)//The 3 jets with the highest CSVv2 value are used as b-jets.
                   {
-                      BJetPt_TTHypo.push_back(selectedJets[i_Jet]->Pt());
-                      BJetEta_TTHypo.push_back(selectedJets[i_Jet]->Eta());
-                      BJetPhi_TTHypo.push_back(selectedJets[i_Jet]->Phi());
-                      BJetE_TTHypo.push_back(selectedJets[i_Jet]->E());
+                      if(i_Jet < selectedJets.size())//If all jets are b-tagged, assign the last jet as non-b tagged jet
+                      {
+                          BJetPt_TTHypo.push_back(selectedJets[i_Jet]->Pt());
+                          BJetEta_TTHypo.push_back(selectedJets[i_Jet]->Eta());
+                          BJetPhi_TTHypo.push_back(selectedJets[i_Jet]->Phi());
+                          BJetE_TTHypo.push_back(selectedJets[i_Jet]->E());
+                      }
+                      else
+                      {
+                          NonBJetPt_TTHypo.push_back(selectedJets[i_Jet]->Pt());
+                          NonBJetEta_TTHypo.push_back(selectedJets[i_Jet]->Eta());
+                          NonBJetPhi_TTHypo.push_back(selectedJets[i_Jet]->Phi());
+                          NonBJetE_TTHypo.push_back(selectedJets[i_Jet]->E());
+                      }
                       BJetPt_STHypo.push_back(selectedJets[i_Jet]->Pt());
                       BJetEta_STHypo.push_back(selectedJets[i_Jet]->Eta());
                       BJetPhi_STHypo.push_back(selectedJets[i_Jet]->Phi());
@@ -1746,12 +1762,22 @@ int main (int argc, char *argv[])
                       NonBJetPhi_STHypo.push_back(selectedJets[i_Jet]->Phi());
                       NonBJetE_STHypo.push_back(selectedJets[i_Jet]->E());
                   }
-                  if(i_Jet < 2)//The 2 jets with the highest CSVv2 value are used as b-jets.
+                  if(i_Jet < 2 || selectedJets[i_Jet]->btag_combinedInclusiveSecondaryVertexV2BJetTags()>CSVv2_workingpointvalue_Medium)//The 2 jets with the highest CSVv2 value are used as b-jets, in case the number of b-jets is samller than 2.
                   {
-                      BJetPt_SMttHypo.push_back(selectedJets[i_Jet]->Pt());
-                      BJetEta_SMttHypo.push_back(selectedJets[i_Jet]->Eta());
-                      BJetPhi_SMttHypo.push_back(selectedJets[i_Jet]->Phi());
-                      BJetE_SMttHypo.push_back(selectedJets[i_Jet]->E());
+                      if(i_Jet < selectedJets.size()-1)//If all jets are b-tagged, assign the last 2 jets as non-b tagged jet
+                      {
+                          BJetPt_SMttHypo.push_back(selectedJets[i_Jet]->Pt());
+                          BJetEta_SMttHypo.push_back(selectedJets[i_Jet]->Eta());
+                          BJetPhi_SMttHypo.push_back(selectedJets[i_Jet]->Phi());
+                          BJetE_SMttHypo.push_back(selectedJets[i_Jet]->E());
+                      }
+                      else
+                      {
+                          NonBJetPt_SMttHypo.push_back(selectedJets[i_Jet]->Pt());
+                          NonBJetEta_SMttHypo.push_back(selectedJets[i_Jet]->Eta());
+                          NonBJetPhi_SMttHypo.push_back(selectedJets[i_Jet]->Phi());
+                          NonBJetE_SMttHypo.push_back(selectedJets[i_Jet]->E());
+                      }
                   }
                   else
                   {
@@ -2269,8 +2295,8 @@ int main (int argc, char *argv[])
         }
 
         tup_ntupleinfo->Fill();
-        tup_ntupleinfo->Print("all");	          
-        tup_ObjectVars->Print("all");
+        //tup_ntupleinfo->Print("all");	          
+        //tup_ObjectVars->Print("all");
 
 	      tupfile->Write();   
        	tupfile->Close();
