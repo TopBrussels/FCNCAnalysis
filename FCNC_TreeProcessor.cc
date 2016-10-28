@@ -111,6 +111,15 @@ int main(int argc, char *argv[])
     MSPlot["JetCSVv2"] = new MultiSamplePlot(datasets, "JetCSVv2", 50, 0., 1., "Jet CSVv2","Events", category); 
     MSPlot["JetcMVAv2"] = new MultiSamplePlot(datasets, "JetcMVAv2", 50, -1., 1., "Jet cMVAv2","Events", category); 
 
+    MSPlot["Hmass_TOPTOPLEPHAD"] = new MultiSamplePlot(datasets, "Hmass_TOPTOPLEPHAD", 50, 60., 180., "H mass","Events", category, "GeV"); 
+    MSPlot["Hmass_TOPTOPLEPHBB"] = new MultiSamplePlot(datasets, "Hmass_TOPTOPLEPHBB", 50, 60., 180., "H mass","Events", category, "GeV"); 
+    MSPlot["Hmass_TOPHLEPBB_hct"] = new MultiSamplePlot(datasets, "Hmass_TOPHLEPBB_hct", 50, 60., 180., "H mass","Events", category, "GeV"); 
+    MSPlot["Hmass_TOPHLEPBB_hut"] = new MultiSamplePlot(datasets, "Hmass_TOPHLEPBB_hut", 50, 60., 180., "H mass","Events", category, "GeV"); 
+    MSPlot["HadTopMass_TOPTOPLEPHAD"] = new MultiSamplePlot(datasets, "HadTopMass_TOPTOPLEPHAD", 50, 60., 180., "HadTopMass mass","Events", category, "GeV");
+    MSPlot["HadTopMass_TOPTOPLEPHBB"] = new MultiSamplePlot(datasets, "HadTopMass_TOPTOPLEPHBB", 50, 60., 180., "HadTopMass mass","Events", category, "GeV");
+    MSPlot["HadTopMass_TOPHLEPBB_hct"] = new MultiSamplePlot(datasets, "HadTopMass_TOPHLEPBB_hct", 50, 60., 180., "HadTopMass mass","Events", category, "GeV");
+    MSPlot["HadTopMass_TOPHLEPBB_hut"] = new MultiSamplePlot(datasets, "HadTopMass_TOPHLEPBB_hut", 50, 60., 180., "HadTopMass mass","Events", category, "GeV");
+
   
  
     //***************************************************GETTING LUMI FROM DATA IN XML****************************************************
@@ -192,6 +201,7 @@ int main(int argc, char *argv[])
         Double_t W_btagWeight_CSVv2M_mujets_central;
         Double_t W_btagWeight_CSVv2M_mujets_up;
         Double_t W_btagWeight_CSVv2M_mujets_down;
+        Double_t W_btagWeight_shape;
         Double_t W_nloWeight;// for amc@nlo samples
         Double_t W_weight1;
         Double_t W_weight2;
@@ -310,6 +320,7 @@ int main(int argc, char *argv[])
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_CSVv2M_mujets_central",&W_btagWeight_CSVv2M_mujets_central); 
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_CSVv2M_mujets_up",&W_btagWeight_CSVv2M_mujets_up);  
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_CSVv2M_mujets_down",&W_btagWeight_CSVv2M_mujets_down); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape",&W_btagWeight_shape); 
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_nloWeight",&W_nloWeight); 
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight1",&W_weight1);  
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight2",&W_weight2);  
@@ -449,13 +460,14 @@ int main(int argc, char *argv[])
                 cout << "------------NEW EVENT: " << j << " --------------" << endl;
             }
 			      ttree[dataSetName.c_str()]->GetEntry(j);
-//if(fabs(eta_lepton) > 1.5) continue;
 		        if(!doInclusive)
 		        {
-		            if(baseline_jets == 3 && nJets != baseline_jets && nJets_CSVM != baseline_bjets) continue;
-		            else if(baseline_jets == 4 && nJets < baseline_jets && nJets_CSVM != baseline_bjets) continue;
+		            if(nJets_CSVM != baseline_bjets)  continue;
+
+		            if(baseline_jets == 3 && nJets != baseline_jets) continue;
+		            else if(baseline_jets == 4 && nJets < baseline_jets) continue;
 		        }
-		                  
+
             float ScaleFactor = 1.; // event scale factor
             if(W_puSF <= 0|| W_fleptonSF <= 0 || W_btagWeight_CSVv2M_mujets_central <= 0 || nloSF <= 0 || Luminosity <= 0 )
             {
@@ -478,7 +490,14 @@ int main(int argc, char *argv[])
                   cout << "----- The event will be skipped....." << endl;
                   continue;
             }
-			      if(!isData) ScaleFactor = ScaleFactor * W_puSF * W_fleptonSF /* W_btagWeight_CSVv2M_mujets_central */* nloSF;
+			      if(!isData)
+			      {
+//			          ScaleFactor = ScaleFactor * W_puSF;
+//			          ScaleFactor = ScaleFactor * W_fleptonSF;
+			          ScaleFactor = ScaleFactor * W_btagWeight_CSVv2M_mujets_central;
+//			          ScaleFactor = ScaleFactor * nloSF;
+//                  ScaleFactor = ScaleFactor * W_btagWeight_shape;
+			      }
 			      if(debug && !isData)
 			      {
                 cout << "----- Event " << j << "Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
@@ -487,34 +506,35 @@ int main(int argc, char *argv[])
 			      }
 			      
 			      //**********************EVENT RECONSTRUCTIONS*******************************
-			          TLorentzVector Lepton;
-			          TLorentzVector Hb1_TOPHLEPBB_hut, Hb2_TOPHLEPBB_hut, LepTopB_TOPHLEPBB_hut;
-			          TLorentzVector Hb1_TOPHLEPBB_hct, Hb2_TOPHLEPBB_hct, LepTopB_TOPHLEPBB_hct;
-			          TLorentzVector Hb1_TOPTOPLEPHBB, Hb2_TOPTOPLEPHBB, LepTopB_TOPTOPLEPHBB, HadTopB_TOPTOPLEPHBB;
-			          TLorentzVector Hb1_TOPTOPLEPHAD, Hb2_TOPTOPLEPHAD, LepTopB_TOPTOPLEPHAD, HadTopB_TOPTOPLEPHAD;
-			          TLorentzVector Higgs_TOPHLEPBB_hut, Higgs_TOPHLEPBB_hct, Higgs_TOPTOPLEPHBB, Higgs_TOPTOPLEPHAD;
-			          //TLorentzVector LepTop_TOPHLEPBB_hut, LepTop_TOPHLEPBB_hct, LepTop_TOPTOPLEPHBB, LepTop_TOPTOPLEPHAD;
-			          TLorentzVector HadTop_TOPTOPLEPHBB, HadTop_TOPTOPLEPHAD;
+			      TLorentzVector Lepton;
+			      TLorentzVector Hb1_TOPHLEPBB_hut, Hb2_TOPHLEPBB_hut, LepTopB_TOPHLEPBB_hut;
+			      TLorentzVector Hb1_TOPHLEPBB_hct, Hb2_TOPHLEPBB_hct, LepTopB_TOPHLEPBB_hct;
+			      TLorentzVector Hb1_TOPTOPLEPHBB, Hb2_TOPTOPLEPHBB, LepTopB_TOPTOPLEPHBB, HadTopB_TOPTOPLEPHBB;
+			      TLorentzVector Hb1_TOPTOPLEPHAD, Hb2_TOPTOPLEPHAD, LepTopB_TOPTOPLEPHAD, HadTopB_TOPTOPLEPHAD;
+			      TLorentzVector Higgs_TOPHLEPBB_hut, Higgs_TOPHLEPBB_hct, Higgs_TOPTOPLEPHBB, Higgs_TOPTOPLEPHAD;
+			      TLorentzVector HadTop_TOPTOPLEPHBB, HadTop_TOPTOPLEPHAD;
 			          
-			          Lepton.SetPtEtaPhiE(pt_lepton, eta_lepton, phi_lepton, E_lepton);
+			      Lepton.SetPtEtaPhiE(pt_lepton, eta_lepton, phi_lepton, E_lepton);
 			          
-			          Hb1_TOPHLEPBB_hct.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_H1_hct],eta_jet[TOPHLEPBB_JetIdx_H1_hct],phi_jet[TOPHLEPBB_JetIdx_H1_hct],E_jet[TOPHLEPBB_JetIdx_H1_hct]);
-			          Hb2_TOPHLEPBB_hct.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_H2_hct],eta_jet[TOPHLEPBB_JetIdx_H2_hct],phi_jet[TOPHLEPBB_JetIdx_H2_hct],E_jet[TOPHLEPBB_JetIdx_H2_hct]);
-			          LepTopB_TOPHLEPBB_hct.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_LepTop_hct],eta_jet[TOPHLEPBB_JetIdx_LepTop_hct],phi_jet[TOPHLEPBB_JetIdx_LepTop_hct],E_jet[TOPHLEPBB_JetIdx_LepTop_hct]);
-                Higgs_TOPHLEPBB_hct = Hb1_TOPHLEPBB_hct + Hb2_TOPHLEPBB_hct;
-			          Hb1_TOPHLEPBB_hut.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_H1_hut],eta_jet[TOPHLEPBB_JetIdx_H1_hut],phi_jet[TOPHLEPBB_JetIdx_H1_hut],E_jet[TOPHLEPBB_JetIdx_H1_hut]);
-			          Hb2_TOPHLEPBB_hut.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_H2_hut],eta_jet[TOPHLEPBB_JetIdx_H2_hut],phi_jet[TOPHLEPBB_JetIdx_H2_hut],E_jet[TOPHLEPBB_JetIdx_H2_hut]);
-			          LepTopB_TOPHLEPBB_hut.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_LepTop_hut],eta_jet[TOPHLEPBB_JetIdx_LepTop_hut],phi_jet[TOPHLEPBB_JetIdx_LepTop_hut],E_jet[TOPHLEPBB_JetIdx_LepTop_hut]);
-                Higgs_TOPHLEPBB_hut = Hb1_TOPHLEPBB_hut + Hb2_TOPHLEPBB_hut;
-			          Hb1_TOPTOPLEPHBB.SetPtEtaPhiE(pt_jet[TOPTOPLEPHBB_JetIdx_H1],eta_jet[TOPTOPLEPHBB_JetIdx_H1],phi_jet[TOPTOPLEPHBB_JetIdx_H1],E_jet[TOPTOPLEPHBB_JetIdx_H1]);
-			          Hb2_TOPTOPLEPHBB.SetPtEtaPhiE(pt_jet[TOPTOPLEPHBB_JetIdx_H2],eta_jet[TOPTOPLEPHBB_JetIdx_H2],phi_jet[TOPTOPLEPHBB_JetIdx_H2],E_jet[TOPTOPLEPHBB_JetIdx_H2]);
-			          LepTopB_TOPTOPLEPHBB.SetPtEtaPhiE(pt_jet[TOPTOPLEPHBB_JetIdx_LepTop],eta_jet[TOPTOPLEPHBB_JetIdx_LepTop],phi_jet[TOPTOPLEPHBB_JetIdx_LepTop],E_jet[TOPTOPLEPHBB_JetIdx_LepTop]);
-                Higgs_TOPTOPLEPHBB = Hb1_TOPTOPLEPHBB + Hb2_TOPTOPLEPHBB;
-			          Hb1_TOPTOPLEPHAD.SetPtEtaPhiE(pt_jet[TOPTOPLEPHAD_JetIdx_W1],eta_jet[TOPTOPLEPHAD_JetIdx_W1],phi_jet[TOPTOPLEPHAD_JetIdx_W1],E_jet[TOPTOPLEPHAD_JetIdx_W1]);
-			          Hb2_TOPTOPLEPHAD.SetPtEtaPhiE(pt_jet[TOPTOPLEPHAD_JetIdx_W2],eta_jet[TOPTOPLEPHAD_JetIdx_W2],phi_jet[TOPTOPLEPHAD_JetIdx_W2],E_jet[TOPTOPLEPHAD_JetIdx_W2]);
-			          LepTopB_TOPTOPLEPHAD.SetPtEtaPhiE(pt_jet[TOPTOPLEPHAD_JetIdx_LepTop],eta_jet[TOPTOPLEPHAD_JetIdx_LepTop],phi_jet[TOPTOPLEPHAD_JetIdx_LepTop],E_jet[TOPTOPLEPHAD_JetIdx_LepTop]);
-                Higgs_TOPTOPLEPHAD = Hb1_TOPTOPLEPHAD + Hb2_TOPTOPLEPHAD;
-			                
+			      Hb1_TOPHLEPBB_hct.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_H1_hct],eta_jet[TOPHLEPBB_JetIdx_H1_hct],phi_jet[TOPHLEPBB_JetIdx_H1_hct],E_jet[TOPHLEPBB_JetIdx_H1_hct]);
+			      Hb2_TOPHLEPBB_hct.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_H2_hct],eta_jet[TOPHLEPBB_JetIdx_H2_hct],phi_jet[TOPHLEPBB_JetIdx_H2_hct],E_jet[TOPHLEPBB_JetIdx_H2_hct]);
+			      LepTopB_TOPHLEPBB_hct.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_LepTop_hct],eta_jet[TOPHLEPBB_JetIdx_LepTop_hct],phi_jet[TOPHLEPBB_JetIdx_LepTop_hct],E_jet[TOPHLEPBB_JetIdx_LepTop_hct]);
+            Higgs_TOPHLEPBB_hct = Hb1_TOPHLEPBB_hct + Hb2_TOPHLEPBB_hct;
+			      Hb1_TOPHLEPBB_hut.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_H1_hut],eta_jet[TOPHLEPBB_JetIdx_H1_hut],phi_jet[TOPHLEPBB_JetIdx_H1_hut],E_jet[TOPHLEPBB_JetIdx_H1_hut]);
+			      Hb2_TOPHLEPBB_hut.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_H2_hut],eta_jet[TOPHLEPBB_JetIdx_H2_hut],phi_jet[TOPHLEPBB_JetIdx_H2_hut],E_jet[TOPHLEPBB_JetIdx_H2_hut]);
+			      LepTopB_TOPHLEPBB_hut.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_LepTop_hut],eta_jet[TOPHLEPBB_JetIdx_LepTop_hut],phi_jet[TOPHLEPBB_JetIdx_LepTop_hut],E_jet[TOPHLEPBB_JetIdx_LepTop_hut]);
+            Higgs_TOPHLEPBB_hut = Hb1_TOPHLEPBB_hut + Hb2_TOPHLEPBB_hut;
+			      Hb1_TOPTOPLEPHBB.SetPtEtaPhiE(pt_jet[TOPTOPLEPHBB_JetIdx_H1],eta_jet[TOPTOPLEPHBB_JetIdx_H1],phi_jet[TOPTOPLEPHBB_JetIdx_H1],E_jet[TOPTOPLEPHBB_JetIdx_H1]);
+			      Hb2_TOPTOPLEPHBB.SetPtEtaPhiE(pt_jet[TOPTOPLEPHBB_JetIdx_H2],eta_jet[TOPTOPLEPHBB_JetIdx_H2],phi_jet[TOPTOPLEPHBB_JetIdx_H2],E_jet[TOPTOPLEPHBB_JetIdx_H2]);
+			      LepTopB_TOPTOPLEPHBB.SetPtEtaPhiE(pt_jet[TOPTOPLEPHBB_JetIdx_LepTop],eta_jet[TOPTOPLEPHBB_JetIdx_LepTop],phi_jet[TOPTOPLEPHBB_JetIdx_LepTop],E_jet[TOPTOPLEPHBB_JetIdx_LepTop]);
+            Higgs_TOPTOPLEPHBB = Hb1_TOPTOPLEPHBB + Hb2_TOPTOPLEPHBB;
+			      Hb1_TOPTOPLEPHAD.SetPtEtaPhiE(pt_jet[TOPTOPLEPHAD_JetIdx_W1],eta_jet[TOPTOPLEPHAD_JetIdx_W1],phi_jet[TOPTOPLEPHAD_JetIdx_W1],E_jet[TOPTOPLEPHAD_JetIdx_W1]);
+			      Hb2_TOPTOPLEPHAD.SetPtEtaPhiE(pt_jet[TOPTOPLEPHAD_JetIdx_W2],eta_jet[TOPTOPLEPHAD_JetIdx_W2],phi_jet[TOPTOPLEPHAD_JetIdx_W2],E_jet[TOPTOPLEPHAD_JetIdx_W2]);
+			      LepTopB_TOPTOPLEPHAD.SetPtEtaPhiE(pt_jet[TOPTOPLEPHAD_JetIdx_LepTop],eta_jet[TOPTOPLEPHAD_JetIdx_LepTop],phi_jet[TOPTOPLEPHAD_JetIdx_LepTop],E_jet[TOPTOPLEPHAD_JetIdx_LepTop]);
+            Higgs_TOPTOPLEPHAD = Hb1_TOPTOPLEPHAD + Hb2_TOPTOPLEPHAD;
+            HadTop_TOPTOPLEPHBB  = Higgs_TOPTOPLEPHBB + HadTopB_TOPTOPLEPHBB;
+            HadTop_TOPTOPLEPHAD  = Higgs_TOPTOPLEPHAD + HadTopB_TOPTOPLEPHAD;
+
   	        //***********************************************FILLING PLOTS**********************************************
 				    MSPlot["NCSVv2Ljets"]->Fill(nJets_CSVL, datasets[d], true, Luminosity * ScaleFactor);
 				    MSPlot["NCSVv2Mjets"]->Fill(nJets_CSVM, datasets[d], true, Luminosity * ScaleFactor);
@@ -532,6 +552,12 @@ int main(int argc, char *argv[])
                 MSPlot["JetCSVv2"]->Fill(CSVv2[i_Jet], datasets[d], true, Luminosity * ScaleFactor);
                 MSPlot["JetcMVAv2"]->Fill(cMVA[i_Jet], datasets[d], true, Luminosity * ScaleFactor);
             }			                
+            MSPlot["Hmass_TOPTOPLEPHAD"]->Fill(Higgs_TOPTOPLEPHAD.M(), datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["Hmass_TOPTOPLEPHBB"]->Fill(Higgs_TOPTOPLEPHBB.M(), datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["Hmass_TOPHLEPBB_hct"]->Fill(Higgs_TOPHLEPBB_hct.M(), datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["Hmass_TOPHLEPBB_hut"]->Fill(Higgs_TOPHLEPBB_hut.M(), datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["HadTopMass_TOPTOPLEPHAD"]->Fill(HadTop_TOPTOPLEPHAD.M(), datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["HadTopMass_TOPTOPLEPHBB"]->Fill(HadTop_TOPTOPLEPHBB.M(), datasets[d], true, Luminosity * ScaleFactor);
 			                
 		  }//for-loop events
 		              

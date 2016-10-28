@@ -198,7 +198,7 @@ int main (int argc, char *argv[])
 
 
     ///////////////////////////////////////
-    // Configuration
+    // Configuration - ALWAYS CHECK THESE!!!!
     ///////////////////////////////////////
     bool debug = false;
     bool Muon = false;
@@ -206,7 +206,8 @@ int main (int argc, char *argv[])
     string electronID = "Medium";
     string btagger = "CSVv2M"; //Define which b-tagger + WP is used in the SF for the cutflow-table// valable: CSVv2M, cMVAM
     bool printTriggers = false;
-    bool applyTriggers = false;
+    bool applyTriggers = true;
+    bool applyMVAJetComb = true;
     string channelpostfix = "";
 
     //Setting Lepton Channels
@@ -469,6 +470,7 @@ int main (int argc, char *argv[])
         Double_t W_btagWeight_CSVv2M_mujets_central;
         Double_t W_btagWeight_CSVv2M_mujets_up;
         Double_t W_btagWeight_CSVv2M_mujets_down;
+        Double_t W_btagWeight_shape;
         Double_t W_nloWeight;// for amc@nlo samples
         Double_t W_weight1;
         Double_t W_weight2;
@@ -579,7 +581,6 @@ int main (int argc, char *argv[])
         Double_t MVA_TOPHLEPBB_hct = -999.;
 
         // global data set variables
-        tup_ntupleinfo->Branch("Luminosity_",&Luminosity_,"Luminosity_/D");  
         tup_ntupleinfo->Branch("I_nofPosWeights",&nofPosWeights,"nofPosWeights/I");  
 	      tup_ntupleinfo->Branch("I_nofNegWeights",&nofNegWeights,"nofNegWeights/I");
         tup_ntupleinfo->Branch("I_nEvents" , &nEvents, "nEvents/I"); 
@@ -601,6 +602,7 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("W_btagWeight_CSVv2M_mujets_central",&W_btagWeight_CSVv2M_mujets_central,"W_btagWeight_CSVv2M_mujets_central/D"); 
         tup_ObjectVars->Branch("W_btagWeight_CSVv2M_mujets_up",&W_btagWeight_CSVv2M_mujets_up,"W_btagWeight_CSVv2M_mujets_up/D");  
         tup_ObjectVars->Branch("W_btagWeight_CSVv2M_mujets_down",&W_btagWeight_CSVv2M_mujets_down,"W_btagWeight_CSVv2M_mujets_down/D"); 
+        tup_ObjectVars->Branch("W_btagWeight_shape",&W_btagWeight_shape,"W_btagWeight_shape/D"); 
         tup_ObjectVars->Branch("W_nloWeight",&W_nloWeight,"W_nloWeight/D"); 
         tup_ObjectVars->Branch("W_weight1",&W_weight1,"W_weight1/D");  
         tup_ObjectVars->Branch("W_weight2",&W_weight2,"W_weight2/D");  
@@ -955,6 +957,7 @@ int main (int argc, char *argv[])
             W_btagWeight_CSVv2M_mujets_central = 1;
             W_btagWeight_CSVv2M_mujets_up = 1;
             W_btagWeight_CSVv2M_mujets_down = 1;
+            W_btagWeight_shape = 1;
             W_nloWeight = 1;// for amc@nlo samples
             W_weight1 = 1;
             W_weight2 = 1;
@@ -981,11 +984,6 @@ int main (int argc, char *argv[])
 	          lumi_num=event->lumiBlockId(); 
 	          nvtx = vertex.size();
 	          npu = (int) event->nTruePU(); 
-if(evt_num != 364683)
-{
-   continue;
-}
-else cin.get();
             bool runChanged = false;
 
 
@@ -1140,7 +1138,7 @@ else cin.get();
 				        if (debug)cout<<"Getting Tight Muons"<<endl;
 				        selectedMuons                                       = r2selection.GetSelectedMuons(25,2.1,0.15, "Tight", "Spring15"); //Selected
 				        if (debug)cout<<"Getting Loose Electrons"<<endl;
-				        selectedElectrons                                   = r2selection.GetSelectedElectrons(10,2.5,"Loose", "Spring16_80X", true); //Vetoed  
+				        selectedElectrons                                   = r2selection.GetSelectedElectrons(10,2.5,"Loose", "Spring15_25ns", true); //Vetoed  
 				        if (debug)cout<<"Getting Loose Muons"<<endl;
 				        selectedExtraMuons                                  = r2selection.GetSelectedMuons(10, 2.4, 0.25,"Loose","Spring15"); //Vetoed         
             }
@@ -1151,9 +1149,9 @@ else cin.get();
 				        if (debug)cout<<"Getting Loose Muons"<<endl;
 				        selectedMuons                                       = r2selection.GetSelectedMuons(10, 2.4, 0.25,"Loose","Spring15"); //Vetoed
 				        if (debug)cout<<"Getting Electrons"<<endl;
-				        selectedElectrons                                   = r2selection.GetSelectedElectrons(30,2.4,electronID, "Spring16_80X", true); //Selected                       
+				        selectedElectrons                                   = r2selection.GetSelectedElectrons(35,2.4,electronID, "Spring15_25ns", true); //Selected                       
 				        if (debug)cout<<"Getting Loose Electrons"<<endl;
-				        selectedExtraElectrons                              = r2selection.GetSelectedElectrons(10,2.5,"Loose", "Spring16_80X", true); //Vetoed
+				        selectedExtraElectrons                              = r2selection.GetSelectedElectrons(10,2.5,"Loose", "Spring15_25ns", true); //Vetoed
             }
             if(Muon)
             {
@@ -1432,6 +1430,28 @@ else cin.get();
             ////////////////////////////////////
 		        for (Int_t seljet =0; seljet < selectedJets.size(); seljet++ )
 		        {
+                if(!isData)
+                {
+                    float jetpt = selectedJets[seljet]->Pt();
+                    if(jetpt > 1000.) jetpt = 999.;
+                    float jeteta = selectedJets[seljet]->Eta();
+                    float jetdisc = selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
+                    BTagEntry::JetFlavor jflav;
+                    int jetpartonflav = std::abs(selectedJets[seljet]->partonFlavour());
+                    if(debug) cout<<"parton flavour: "<<jetpartonflav<<"  jet eta: "<<jeteta<<" jet pt: "<<jetpt<<"  jet disc: "<<jetdisc<<endl;
+                    if(jetpartonflav == 5){
+                      jflav = BTagEntry::FLAV_B;
+                    }
+                    else if(jetpartonflav == 4){
+                      jflav = BTagEntry::FLAV_C;
+                    }
+                    else{
+                      jflav = BTagEntry::FLAV_UDSG;
+                    }
+                    double bTagEff = bTagReader_CSVv2M_mujets_central->eval(jflav, jeteta, jetpt, jetdisc);
+                    W_btagWeight_shape *= bTagEff;
+                }
+            
 		           	if (selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > CSVv2_workingpointvalue_Loose   )
 		            {
 		              	  selectedLBJets.push_back(selectedJets[seljet]);
@@ -1682,62 +1702,76 @@ else cin.get();
             ////////////////////////////////////////////////////////////////////////////////
             // Jet-combination selection according to MVA-TopKinFit
             ////////////////////////////////////////////////////////////////////////////////
-            vector<float> MapIndex_NonSortedToSorted;
-            //Make an association between the original jet-collection index and the Pt of the jet, such that after sorting, we can find the original jet-index back
-            //The vector-position is the index and the value is the Pt of the jet
-            for(int i_sortingAssoc = 0; i_sortingAssoc < selectedJets.size(); i_sortingAssoc++)
+            if(applyMVAJetComb)
             {
-                MapIndex_NonSortedToSorted.push_back(selectedJets[i_sortingAssoc]->Pt());
-            }
-            sort(selectedJets.begin(), selectedJets.end(), HighestCSVBtag());//Sort according to the highest b-tag value.
-            
-            //First define all the variables that go into the kinfit procedure
-	          std::vector<float> BJetPt_SMttHypo;
-	          std::vector<float> BJetEta_SMttHypo;
-	          std::vector<float> BJetPhi_SMttHypo;
-	          std::vector<float> BJetE_SMttHypo;
-	          std::vector<float> BJetPt_TTHypo;
-	          std::vector<float> BJetEta_TTHypo;
-	          std::vector<float> BJetPhi_TTHypo;
-	          std::vector<float> BJetE_TTHypo;
-	          std::vector<float> BJetPt_STHypo;
-	          std::vector<float> BJetEta_STHypo;
-	          std::vector<float> BJetPhi_STHypo;
-	          std::vector<float> BJetE_STHypo;
+                vector<float> MapIndex_NonSortedToSorted;
+                //Make an association between the original jet-collection index and the Pt of the jet, such that after sorting, we can find the original jet-index back
+                //The vector-position is the index and the value is the Pt of the jet
+                for(int i_sortingAssoc = 0; i_sortingAssoc < selectedJets.size(); i_sortingAssoc++)
+                {
+                    MapIndex_NonSortedToSorted.push_back(selectedJets[i_sortingAssoc]->Pt());
+                }
+                sort(selectedJets.begin(), selectedJets.end(), HighestCSVBtag());//Sort according to the highest b-tag value.
+                
+                //First define all the variables that go into the kinfit procedure
+	              std::vector<float> BJetPt_SMttHypo;
+	              std::vector<float> BJetEta_SMttHypo;
+	              std::vector<float> BJetPhi_SMttHypo;
+	              std::vector<float> BJetE_SMttHypo;
+	              std::vector<float> BJetPt_TTHypo;
+	              std::vector<float> BJetEta_TTHypo;
+	              std::vector<float> BJetPhi_TTHypo;
+	              std::vector<float> BJetE_TTHypo;
+	              std::vector<float> BJetPt_STHypo;
+	              std::vector<float> BJetEta_STHypo;
+	              std::vector<float> BJetPhi_STHypo;
+	              std::vector<float> BJetE_STHypo;
 
-	          std::vector<float> NonBJetPt_SMttHypo;
-	          std::vector<float> NonBJetEta_SMttHypo;
-	          std::vector<float> NonBJetPhi_SMttHypo;
-	          std::vector<float> NonBJetE_SMttHypo;
-	          std::vector<float> NonBJetPt_TTHypo;
-	          std::vector<float> NonBJetEta_TTHypo;
-	          std::vector<float> NonBJetPhi_TTHypo;
-	          std::vector<float> NonBJetE_TTHypo;
-	          std::vector<float> NonBJetPt_STHypo;
-	          std::vector<float> NonBJetEta_STHypo;
-	          std::vector<float> NonBJetPhi_STHypo;
-	          std::vector<float> NonBJetE_STHypo;
+	              std::vector<float> NonBJetPt_SMttHypo;
+	              std::vector<float> NonBJetEta_SMttHypo;
+	              std::vector<float> NonBJetPhi_SMttHypo;
+	              std::vector<float> NonBJetE_SMttHypo;
+	              std::vector<float> NonBJetPt_TTHypo;
+	              std::vector<float> NonBJetEta_TTHypo;
+	              std::vector<float> NonBJetPhi_TTHypo;
+	              std::vector<float> NonBJetE_TTHypo;
+	              std::vector<float> NonBJetPt_STHypo;
+	              std::vector<float> NonBJetEta_STHypo;
+	              std::vector<float> NonBJetPhi_STHypo;
+	              std::vector<float> NonBJetE_STHypo;
 
-	          std::vector<float> ElectronPt;
-	          std::vector<float> ElectronEta;
-	          std::vector<float> ElectronPhi;
-	          std::vector<float> ElectronE;
-	          std::vector<float> MuonPt;
-	          std::vector<float> MuonEta;
-	          std::vector<float> MuonPhi;
-	          std::vector<float> MuonE;
-	          
-            
-            for(int i_Jet = 0; i_Jet < selectedJets.size(); i_Jet++)
-            {
-                  if(i_Jet < 3 || selectedJets[i_Jet]->btag_combinedInclusiveSecondaryVertexV2BJetTags()>CSVv2_workingpointvalue_Medium)//The 3 jets with the highest CSVv2 value are used as b-jets.
-                  {
-                      if(i_Jet < selectedJets.size())//If all jets are b-tagged, assign the last jet as non-b tagged jet
+	              std::vector<float> ElectronPt;
+	              std::vector<float> ElectronEta;
+	              std::vector<float> ElectronPhi;
+	              std::vector<float> ElectronE;
+	              std::vector<float> MuonPt;
+	              std::vector<float> MuonEta;
+	              std::vector<float> MuonPhi;
+	              std::vector<float> MuonE;
+	              
+                
+                for(int i_Jet = 0; i_Jet < selectedJets.size(); i_Jet++)
+                {
+                      if(i_Jet < 3 || selectedJets[i_Jet]->btag_combinedInclusiveSecondaryVertexV2BJetTags()>CSVv2_workingpointvalue_Medium)//The 3 jets with the highest CSVv2 value are used as b-jets.
                       {
-                          BJetPt_TTHypo.push_back(selectedJets[i_Jet]->Pt());
-                          BJetEta_TTHypo.push_back(selectedJets[i_Jet]->Eta());
-                          BJetPhi_TTHypo.push_back(selectedJets[i_Jet]->Phi());
-                          BJetE_TTHypo.push_back(selectedJets[i_Jet]->E());
+                          if(i_Jet < selectedJets.size())//If all jets are b-tagged, assign the last jet as non-b tagged jet
+                          {
+                              BJetPt_TTHypo.push_back(selectedJets[i_Jet]->Pt());
+                              BJetEta_TTHypo.push_back(selectedJets[i_Jet]->Eta());
+                              BJetPhi_TTHypo.push_back(selectedJets[i_Jet]->Phi());
+                              BJetE_TTHypo.push_back(selectedJets[i_Jet]->E());
+                          }
+                          else
+                          {
+                              NonBJetPt_TTHypo.push_back(selectedJets[i_Jet]->Pt());
+                              NonBJetEta_TTHypo.push_back(selectedJets[i_Jet]->Eta());
+                              NonBJetPhi_TTHypo.push_back(selectedJets[i_Jet]->Phi());
+                              NonBJetE_TTHypo.push_back(selectedJets[i_Jet]->E());
+                          }
+                          BJetPt_STHypo.push_back(selectedJets[i_Jet]->Pt());
+                          BJetEta_STHypo.push_back(selectedJets[i_Jet]->Eta());
+                          BJetPhi_STHypo.push_back(selectedJets[i_Jet]->Phi());
+                          BJetE_STHypo.push_back(selectedJets[i_Jet]->E());
                       }
                       else
                       {
@@ -1745,31 +1779,27 @@ else cin.get();
                           NonBJetEta_TTHypo.push_back(selectedJets[i_Jet]->Eta());
                           NonBJetPhi_TTHypo.push_back(selectedJets[i_Jet]->Phi());
                           NonBJetE_TTHypo.push_back(selectedJets[i_Jet]->E());
+                          NonBJetPt_STHypo.push_back(selectedJets[i_Jet]->Pt());
+                          NonBJetEta_STHypo.push_back(selectedJets[i_Jet]->Eta());
+                          NonBJetPhi_STHypo.push_back(selectedJets[i_Jet]->Phi());
+                          NonBJetE_STHypo.push_back(selectedJets[i_Jet]->E());
                       }
-                      BJetPt_STHypo.push_back(selectedJets[i_Jet]->Pt());
-                      BJetEta_STHypo.push_back(selectedJets[i_Jet]->Eta());
-                      BJetPhi_STHypo.push_back(selectedJets[i_Jet]->Phi());
-                      BJetE_STHypo.push_back(selectedJets[i_Jet]->E());
-                  }
-                  else
-                  {
-                      NonBJetPt_TTHypo.push_back(selectedJets[i_Jet]->Pt());
-                      NonBJetEta_TTHypo.push_back(selectedJets[i_Jet]->Eta());
-                      NonBJetPhi_TTHypo.push_back(selectedJets[i_Jet]->Phi());
-                      NonBJetE_TTHypo.push_back(selectedJets[i_Jet]->E());
-                      NonBJetPt_STHypo.push_back(selectedJets[i_Jet]->Pt());
-                      NonBJetEta_STHypo.push_back(selectedJets[i_Jet]->Eta());
-                      NonBJetPhi_STHypo.push_back(selectedJets[i_Jet]->Phi());
-                      NonBJetE_STHypo.push_back(selectedJets[i_Jet]->E());
-                  }
-                  if(i_Jet < 2 || selectedJets[i_Jet]->btag_combinedInclusiveSecondaryVertexV2BJetTags()>CSVv2_workingpointvalue_Medium)//The 2 jets with the highest CSVv2 value are used as b-jets, in case the number of b-jets is samller than 2.
-                  {
-                      if(i_Jet < selectedJets.size()-1)//If all jets are b-tagged, assign the last 2 jets as non-b tagged jet
+                      if(i_Jet < 2 || selectedJets[i_Jet]->btag_combinedInclusiveSecondaryVertexV2BJetTags()>CSVv2_workingpointvalue_Medium)//The 2 jets with the highest CSVv2 value are used as b-jets, in case the number of b-jets is samller than 2.
                       {
-                          BJetPt_SMttHypo.push_back(selectedJets[i_Jet]->Pt());
-                          BJetEta_SMttHypo.push_back(selectedJets[i_Jet]->Eta());
-                          BJetPhi_SMttHypo.push_back(selectedJets[i_Jet]->Phi());
-                          BJetE_SMttHypo.push_back(selectedJets[i_Jet]->E());
+                          if(i_Jet < selectedJets.size()-1)//If all jets are b-tagged, assign the last 2 jets as non-b tagged jet
+                          {
+                              BJetPt_SMttHypo.push_back(selectedJets[i_Jet]->Pt());
+                              BJetEta_SMttHypo.push_back(selectedJets[i_Jet]->Eta());
+                              BJetPhi_SMttHypo.push_back(selectedJets[i_Jet]->Phi());
+                              BJetE_SMttHypo.push_back(selectedJets[i_Jet]->E());
+                          }
+                          else
+                          {
+                              NonBJetPt_SMttHypo.push_back(selectedJets[i_Jet]->Pt());
+                              NonBJetEta_SMttHypo.push_back(selectedJets[i_Jet]->Eta());
+                              NonBJetPhi_SMttHypo.push_back(selectedJets[i_Jet]->Phi());
+                              NonBJetE_SMttHypo.push_back(selectedJets[i_Jet]->E());
+                          }
                       }
                       else
                       {
@@ -1778,486 +1808,479 @@ else cin.get();
                           NonBJetPhi_SMttHypo.push_back(selectedJets[i_Jet]->Phi());
                           NonBJetE_SMttHypo.push_back(selectedJets[i_Jet]->E());
                       }
-                  }
-                  else
-                  {
-                      NonBJetPt_SMttHypo.push_back(selectedJets[i_Jet]->Pt());
-                      NonBJetEta_SMttHypo.push_back(selectedJets[i_Jet]->Eta());
-                      NonBJetPhi_SMttHypo.push_back(selectedJets[i_Jet]->Phi());
-                      NonBJetE_SMttHypo.push_back(selectedJets[i_Jet]->E());
-                  }
-            }
-            if(Electron)
-            {
-                ElectronPt.push_back(selectedElectrons[0]->Pt());
-                ElectronEta.push_back(selectedElectrons[0]->Eta());
-                ElectronPhi.push_back(selectedElectrons[0]->Phi());
-                ElectronE.push_back(selectedElectrons[0]->E());
-                MuonPt.push_back(0.);
-                MuonEta.push_back(0.);
-                MuonPhi.push_back(0.);
-                MuonE.push_back(0.);
-            }
-            else if(Muon)
-            {
-                MuonPt.push_back(selectedMuons[0]->Pt());
-                MuonEta.push_back(selectedMuons[0]->Eta());
-                MuonPhi.push_back(selectedMuons[0]->Phi());
-                MuonE.push_back(selectedMuons[0]->E());
-                ElectronPt.push_back(0.);
-                ElectronEta.push_back(0.);
-                ElectronPhi.push_back(0.);
-                ElectronE.push_back(0.);
-            }
-            
-            
-            //Initialize the hypotheses
-            kfit_SMttHypo->SetBJet(BJetPt_SMttHypo,BJetEta_SMttHypo,BJetPhi_SMttHypo,BJetE_SMttHypo);
-            kfit_SMttHypo->SetNonBJet(NonBJetPt_SMttHypo,NonBJetEta_SMttHypo,NonBJetPhi_SMttHypo,NonBJetE_SMttHypo);
-            kfit_SMttHypo->SetMet(met_px,met_py);
-            kfit_SMttHypo->SetElectron(ElectronPt,ElectronEta,ElectronPhi,ElectronE);
-            kfit_SMttHypo->SetMuon(MuonPt,MuonEta,MuonPhi,MuonE);
-            kfit_TTHypo->SetBJet(BJetPt_TTHypo,BJetEta_TTHypo,BJetPhi_TTHypo,BJetE_TTHypo);
-            kfit_TTHypo->SetNonBJet(NonBJetPt_TTHypo,NonBJetEta_TTHypo,NonBJetPhi_TTHypo,NonBJetE_TTHypo);
-            kfit_TTHypo->SetMet(met_px,met_py);
-            kfit_TTHypo->SetElectron(ElectronPt,ElectronEta,ElectronPhi,ElectronE);
-            kfit_TTHypo->SetMuon(MuonPt,MuonEta,MuonPhi,MuonE);
-            kfit_STHypo->SetBJet(BJetPt_STHypo,BJetEta_STHypo,BJetPhi_STHypo,BJetE_STHypo);
-            kfit_STHypo->SetNonBJet(NonBJetPt_STHypo,NonBJetEta_STHypo,NonBJetPhi_STHypo,NonBJetE_STHypo);
-            kfit_STHypo->SetMet(met_px,met_py);
-            kfit_STHypo->SetElectron(ElectronPt,ElectronEta,ElectronPhi,ElectronE);
-            kfit_STHypo->SetMuon(MuonPt,MuonEta,MuonPhi,MuonE);
-            
-            kfit_SMttHypo->Run();
-            kfit_TTHypo->Run();
-            kfit_STHypo->Run();
-            
-		        int NPerm_SMttHypo = kfit_SMttHypo->GetNPerm();
-		        int NPerm_TTHypo = kfit_TTHypo->GetNPerm();
-		        int NPerm_STHypo = kfit_STHypo->GetNPerm();
+                }
+                if(Electron)
+                {
+                    ElectronPt.push_back(selectedElectrons[0]->Pt());
+                    ElectronEta.push_back(selectedElectrons[0]->Eta());
+                    ElectronPhi.push_back(selectedElectrons[0]->Phi());
+                    ElectronE.push_back(selectedElectrons[0]->E());
+                    MuonPt.push_back(0.);
+                    MuonEta.push_back(0.);
+                    MuonPhi.push_back(0.);
+                    MuonE.push_back(0.);
+                }
+                else if(Muon)
+                {
+                    MuonPt.push_back(selectedMuons[0]->Pt());
+                    MuonEta.push_back(selectedMuons[0]->Eta());
+                    MuonPhi.push_back(selectedMuons[0]->Phi());
+                    MuonE.push_back(selectedMuons[0]->E());
+                    ElectronPt.push_back(0.);
+                    ElectronEta.push_back(0.);
+                    ElectronPhi.push_back(0.);
+                    ElectronE.push_back(0.);
+                }
+                
+                
+                //Initialize the hypotheses
+                kfit_SMttHypo->SetBJet(BJetPt_SMttHypo,BJetEta_SMttHypo,BJetPhi_SMttHypo,BJetE_SMttHypo);
+                kfit_SMttHypo->SetNonBJet(NonBJetPt_SMttHypo,NonBJetEta_SMttHypo,NonBJetPhi_SMttHypo,NonBJetE_SMttHypo);
+                kfit_SMttHypo->SetMet(met_px,met_py);
+                kfit_SMttHypo->SetElectron(ElectronPt,ElectronEta,ElectronPhi,ElectronE);
+                kfit_SMttHypo->SetMuon(MuonPt,MuonEta,MuonPhi,MuonE);
+                kfit_TTHypo->SetBJet(BJetPt_TTHypo,BJetEta_TTHypo,BJetPhi_TTHypo,BJetE_TTHypo);
+                kfit_TTHypo->SetNonBJet(NonBJetPt_TTHypo,NonBJetEta_TTHypo,NonBJetPhi_TTHypo,NonBJetE_TTHypo);
+                kfit_TTHypo->SetMet(met_px,met_py);
+                kfit_TTHypo->SetElectron(ElectronPt,ElectronEta,ElectronPhi,ElectronE);
+                kfit_TTHypo->SetMuon(MuonPt,MuonEta,MuonPhi,MuonE);
+                kfit_STHypo->SetBJet(BJetPt_STHypo,BJetEta_STHypo,BJetPhi_STHypo,BJetE_STHypo);
+                kfit_STHypo->SetNonBJet(NonBJetPt_STHypo,NonBJetEta_STHypo,NonBJetPhi_STHypo,NonBJetE_STHypo);
+                kfit_STHypo->SetMet(met_px,met_py);
+                kfit_STHypo->SetElectron(ElectronPt,ElectronEta,ElectronPhi,ElectronE);
+                kfit_STHypo->SetMuon(MuonPt,MuonEta,MuonPhi,MuonE);
+                
+                kfit_SMttHypo->Run();
+                kfit_TTHypo->Run();
+                kfit_STHypo->Run();
+                
+		            int NPerm_SMttHypo = kfit_SMttHypo->GetNPerm();
+		            int NPerm_TTHypo = kfit_TTHypo->GetNPerm();
+		            int NPerm_STHypo = kfit_STHypo->GetNPerm();
 
-		        std::vector<std::pair<float,int> > MVA_SMttHypo;
-		        std::vector<std::pair<float,int> > MVA_TTHypo;
-		        std::vector<std::pair<float,int> > MVA_STHypo;
+		            std::vector<std::pair<float,int> > MVA_SMttHypo;
+		            std::vector<std::pair<float,int> > MVA_TTHypo;
+		            std::vector<std::pair<float,int> > MVA_STHypo;
 
-		        float TopLepWLepFitPt;
-		        float TopLepWLepFitEta;
-		        float TopLepWLepFitPhi;
-		        float TopLepWLepFitE;
-            if(Electron)
-            {
-                TopLepWLepFitPt = selectedElectrons[0]->Pt();
-                TopLepWLepFitEta = selectedElectrons[0]->Eta();
-                TopLepWLepFitPhi = selectedElectrons[0]->Phi();
-                TopLepWLepFitE = selectedElectrons[0]->E();
-            }
-            else if(Muon)
-            {
-                TopLepWLepFitPt = selectedMuons[0]->Pt();
-                TopLepWLepFitEta = selectedMuons[0]->Eta();
-                TopLepWLepFitPhi = selectedMuons[0]->Phi();
-                TopLepWLepFitE = selectedMuons[0]->E();
-            }
+		            float TopLepWLepFitPt;
+		            float TopLepWLepFitEta;
+		            float TopLepWLepFitPhi;
+		            float TopLepWLepFitE;
+                if(Electron)
+                {
+                    TopLepWLepFitPt = selectedElectrons[0]->Pt();
+                    TopLepWLepFitEta = selectedElectrons[0]->Eta();
+                    TopLepWLepFitPhi = selectedElectrons[0]->Phi();
+                    TopLepWLepFitE = selectedElectrons[0]->E();
+                }
+                else if(Muon)
+                {
+                    TopLepWLepFitPt = selectedMuons[0]->Pt();
+                    TopLepWLepFitEta = selectedMuons[0]->Eta();
+                    TopLepWLepFitPhi = selectedMuons[0]->Phi();
+                    TopLepWLepFitE = selectedMuons[0]->E();
+                }
 
-		        
-            //Run over SMttHypo
-		        for(int ip=0;ip<NPerm_SMttHypo;ip++)
-		        {
-		             float disc = kfit_SMttHypo->GetDisc(ip);
+		            
+                //Run over SMttHypo
+		            for(int ip=0;ip<NPerm_SMttHypo;ip++)
+		            {
+		                 float disc = kfit_SMttHypo->GetDisc(ip);
 
-		             int idxTopLepWElecFit = kfit_SMttHypo->GetIndex(ELECTRON_TOPTOPLEPHAD,ip);
-		             int idxTopLepWMuonFit = kfit_SMttHypo->GetIndex(MUON_TOPTOPLEPHAD,ip);
-		             int idxTopLepBJetFit = kfit_SMttHypo->GetIndex(BJETLEP_TOPTOPLEPHAD,ip);
-		             int idxTopHadBJetFit = kfit_SMttHypo->GetIndex(BJETHAD_TOPTOPLEPHAD,ip);
-		             int idxTopHadWNonBJet1Fit = kfit_SMttHypo->GetIndex(NONBJET1_TOPTOPLEPHAD,ip);
-		             int idxTopHadWNonBJet2Fit = kfit_SMttHypo->GetIndex(NONBJET2_TOPTOPLEPHAD,ip);
+		                 int idxTopLepWElecFit = kfit_SMttHypo->GetIndex(ELECTRON_TOPTOPLEPHAD,ip);
+		                 int idxTopLepWMuonFit = kfit_SMttHypo->GetIndex(MUON_TOPTOPLEPHAD,ip);
+		                 int idxTopLepBJetFit = kfit_SMttHypo->GetIndex(BJETLEP_TOPTOPLEPHAD,ip);
+		                 int idxTopHadBJetFit = kfit_SMttHypo->GetIndex(BJETHAD_TOPTOPLEPHAD,ip);
+		                 int idxTopHadWNonBJet1Fit = kfit_SMttHypo->GetIndex(NONBJET1_TOPTOPLEPHAD,ip);
+		                 int idxTopHadWNonBJet2Fit = kfit_SMttHypo->GetIndex(NONBJET2_TOPTOPLEPHAD,ip);
 
-		             float NuPx = kfit_SMttHypo->GetNuPx(ip,0);
-		             float NuPy = kfit_SMttHypo->GetNuPy(ip,0);
-		             float NuPz = kfit_SMttHypo->GetNuPz(ip,0);
-		             float NuE = sqrt(NuPx*NuPx+NuPy*NuPy+NuPz*NuPz);
+		                 float NuPx = kfit_SMttHypo->GetNuPx(ip,0);
+		                 float NuPy = kfit_SMttHypo->GetNuPy(ip,0);
+		                 float NuPz = kfit_SMttHypo->GetNuPz(ip,0);
+		                 float NuE = sqrt(NuPx*NuPx+NuPy*NuPy+NuPz*NuPz);
 
-		             TLorentzVector *TopLepWNuFitP4 = new TLorentzVector();
-		             TopLepWNuFitP4->SetPxPyPzE(NuPx,NuPy,NuPz,NuE);
-		             
-		             TLorentzVector *TopLepWLepFitP4 = new TLorentzVector();
-		             TopLepWLepFitP4->SetPtEtaPhiE(TopLepWLepFitPt,TopLepWLepFitEta,TopLepWLepFitPhi,TopLepWLepFitE);
-		             
-		             float TopLepBJetFitPt = BJetPt_SMttHypo[idxTopLepBJetFit];
-		             float TopLepBJetFitEta = BJetEta_SMttHypo[idxTopLepBJetFit];
-		             float TopLepBJetFitPhi = BJetPhi_SMttHypo[idxTopLepBJetFit];
-		             float TopLepBJetFitE = BJetE_SMttHypo[idxTopLepBJetFit];
-		             
-		             TLorentzVector *TopLepBJetFitP4 = new TLorentzVector();
-		             TopLepBJetFitP4->SetPtEtaPhiE(TopLepBJetFitPt,TopLepBJetFitEta,TopLepBJetFitPhi,TopLepBJetFitE);
-		             
-		             float TopHadBJetFitPt = BJetPt_SMttHypo[idxTopHadBJetFit];
-		             float TopHadBJetFitEta = BJetEta_SMttHypo[idxTopHadBJetFit];
-		             float TopHadBJetFitPhi = BJetPhi_SMttHypo[idxTopHadBJetFit];
-		             float TopHadBJetFitE = BJetE_SMttHypo[idxTopHadBJetFit];
-		             
-		             TLorentzVector *TopHadBJetFitP4 = new TLorentzVector();
-		             TopHadBJetFitP4->SetPtEtaPhiE(TopHadBJetFitPt,TopHadBJetFitEta,TopHadBJetFitPhi,TopHadBJetFitE);
-		             
-		             float TopHadWNonBJet1FitPt = NonBJetPt_SMttHypo[idxTopHadWNonBJet1Fit];
-		             float TopHadWNonBJet1FitEta = NonBJetEta_SMttHypo[idxTopHadWNonBJet1Fit];
-		             float TopHadWNonBJet1FitPhi = NonBJetPhi_SMttHypo[idxTopHadWNonBJet1Fit];
-		             float TopHadWNonBJet1FitE = NonBJetE_SMttHypo[idxTopHadWNonBJet1Fit];
-		             
-		             TLorentzVector *TopHadWNonBJet1FitP4 = new TLorentzVector();
-		             TopHadWNonBJet1FitP4->SetPtEtaPhiE(TopHadWNonBJet1FitPt,TopHadWNonBJet1FitEta,TopHadWNonBJet1FitPhi,TopHadWNonBJet1FitE);
-		             
-		             float TopHadWNonBJet2FitPt = NonBJetPt_SMttHypo[idxTopHadWNonBJet2Fit];
-		             float TopHadWNonBJet2FitEta = NonBJetEta_SMttHypo[idxTopHadWNonBJet2Fit];
-		             float TopHadWNonBJet2FitPhi = NonBJetPhi_SMttHypo[idxTopHadWNonBJet2Fit];
-		             float TopHadWNonBJet2FitE = NonBJetE_SMttHypo[idxTopHadWNonBJet2Fit];
+		                 TLorentzVector *TopLepWNuFitP4 = new TLorentzVector();
+		                 TopLepWNuFitP4->SetPxPyPzE(NuPx,NuPy,NuPz,NuE);
+		                 
+		                 TLorentzVector *TopLepWLepFitP4 = new TLorentzVector();
+		                 TopLepWLepFitP4->SetPtEtaPhiE(TopLepWLepFitPt,TopLepWLepFitEta,TopLepWLepFitPhi,TopLepWLepFitE);
+		                 
+		                 float TopLepBJetFitPt = BJetPt_SMttHypo[idxTopLepBJetFit];
+		                 float TopLepBJetFitEta = BJetEta_SMttHypo[idxTopLepBJetFit];
+		                 float TopLepBJetFitPhi = BJetPhi_SMttHypo[idxTopLepBJetFit];
+		                 float TopLepBJetFitE = BJetE_SMttHypo[idxTopLepBJetFit];
+		                 
+		                 TLorentzVector *TopLepBJetFitP4 = new TLorentzVector();
+		                 TopLepBJetFitP4->SetPtEtaPhiE(TopLepBJetFitPt,TopLepBJetFitEta,TopLepBJetFitPhi,TopLepBJetFitE);
+		                 
+		                 float TopHadBJetFitPt = BJetPt_SMttHypo[idxTopHadBJetFit];
+		                 float TopHadBJetFitEta = BJetEta_SMttHypo[idxTopHadBJetFit];
+		                 float TopHadBJetFitPhi = BJetPhi_SMttHypo[idxTopHadBJetFit];
+		                 float TopHadBJetFitE = BJetE_SMttHypo[idxTopHadBJetFit];
+		                 
+		                 TLorentzVector *TopHadBJetFitP4 = new TLorentzVector();
+		                 TopHadBJetFitP4->SetPtEtaPhiE(TopHadBJetFitPt,TopHadBJetFitEta,TopHadBJetFitPhi,TopHadBJetFitE);
+		                 
+		                 float TopHadWNonBJet1FitPt = NonBJetPt_SMttHypo[idxTopHadWNonBJet1Fit];
+		                 float TopHadWNonBJet1FitEta = NonBJetEta_SMttHypo[idxTopHadWNonBJet1Fit];
+		                 float TopHadWNonBJet1FitPhi = NonBJetPhi_SMttHypo[idxTopHadWNonBJet1Fit];
+		                 float TopHadWNonBJet1FitE = NonBJetE_SMttHypo[idxTopHadWNonBJet1Fit];
+		                 
+		                 TLorentzVector *TopHadWNonBJet1FitP4 = new TLorentzVector();
+		                 TopHadWNonBJet1FitP4->SetPtEtaPhiE(TopHadWNonBJet1FitPt,TopHadWNonBJet1FitEta,TopHadWNonBJet1FitPhi,TopHadWNonBJet1FitE);
+		                 
+		                 float TopHadWNonBJet2FitPt = NonBJetPt_SMttHypo[idxTopHadWNonBJet2Fit];
+		                 float TopHadWNonBJet2FitEta = NonBJetEta_SMttHypo[idxTopHadWNonBJet2Fit];
+		                 float TopHadWNonBJet2FitPhi = NonBJetPhi_SMttHypo[idxTopHadWNonBJet2Fit];
+		                 float TopHadWNonBJet2FitE = NonBJetE_SMttHypo[idxTopHadWNonBJet2Fit];
 
-		             TLorentzVector *TopHadWNonBJet2FitP4 = new TLorentzVector();
-		             TopHadWNonBJet2FitP4->SetPtEtaPhiE(TopHadWNonBJet2FitPt,TopHadWNonBJet2FitEta,TopHadWNonBJet2FitPhi,TopHadWNonBJet2FitE);
+		                 TLorentzVector *TopHadWNonBJet2FitP4 = new TLorentzVector();
+		                 TopHadWNonBJet2FitP4->SetPtEtaPhiE(TopHadWNonBJet2FitPt,TopHadWNonBJet2FitEta,TopHadWNonBJet2FitPhi,TopHadWNonBJet2FitE);
 
-		             TLorentzVector TopHadW = *TopHadWNonBJet1FitP4+*TopHadWNonBJet2FitP4;
-		             TLorentzVector TopLep = *TopLepWLepFitP4+*TopLepWNuFitP4+*TopLepBJetFitP4;
-		             TLorentzVector TopHad = TopHadW+*TopHadBJetFitP4;
+		                 TLorentzVector TopHadW = *TopHadWNonBJet1FitP4+*TopHadWNonBJet2FitP4;
+		                 TLorentzVector TopLep = *TopLepWLepFitP4+*TopLepWNuFitP4+*TopLepBJetFitP4;
+		                 TLorentzVector TopHad = TopHadW+*TopHadBJetFitP4;
 
-		             float VarTopHadWRecM = TopHadW.M();
-		             float VarTopLepRecM = TopLep.M();
-		             float VarTopHadRecM = TopHad.M();
-		             float VarTopLepTopHadRecDr = TopLep.DeltaR(TopHad);
-		             float VarTopLepRecPt = TopLep.Pt();
-		             float VarTopHadRecPt = TopHad.Pt();
+		                 float VarTopHadWRecM = TopHadW.M();
+		                 float VarTopLepRecM = TopLep.M();
+		                 float VarTopHadRecM = TopHad.M();
+		                 float VarTopLepTopHadRecDr = TopLep.DeltaR(TopHad);
+		                 float VarTopLepRecPt = TopLep.Pt();
+		                 float VarTopHadRecPt = TopHad.Pt();
 
-		             TLorentzVector *TopHadFitT = new TLorentzVector();
-		             TopHadFitT->SetPxPyPzE(TopHad.Px(),TopHad.Py(),0.,TopHad.Et());
-		             
-		             TLorentzVector *TopLepWLepFitT = new TLorentzVector();
-		             TopLepWLepFitT->SetPxPyPzE(TopLepWLepFitP4->Px(),TopLepWLepFitP4->Py(),0.,TopLepWLepFitP4->Et());
+		                 TLorentzVector *TopHadFitT = new TLorentzVector();
+		                 TopHadFitT->SetPxPyPzE(TopHad.Px(),TopHad.Py(),0.,TopHad.Et());
+		                 
+		                 TLorentzVector *TopLepWLepFitT = new TLorentzVector();
+		                 TopLepWLepFitT->SetPxPyPzE(TopLepWLepFitP4->Px(),TopLepWLepFitP4->Py(),0.,TopLepWLepFitP4->Et());
 
-		             TLorentzVector *TopLepWNuFitT = new TLorentzVector();
-		             TopLepWNuFitT->SetPxPyPzE(TopLepWNuFitP4->Px(),TopLepWNuFitP4->Py(),0.,TopLepWNuFitP4->Et());
+		                 TLorentzVector *TopLepWNuFitT = new TLorentzVector();
+		                 TopLepWNuFitT->SetPxPyPzE(TopLepWNuFitP4->Px(),TopLepWNuFitP4->Py(),0.,TopLepWNuFitP4->Et());
 
-		             TLorentzVector *TopLepBJetFitT = new TLorentzVector();
-		             TopLepBJetFitT->SetPxPyPzE(TopLepBJetFitP4->Px(),TopLepBJetFitP4->Py(),0.,TopLepBJetFitP4->Et());
-		             
-		             TLorentzVector TopLepT = *TopLepWLepFitT+*TopLepWNuFitT+*TopLepBJetFitT;
+		                 TLorentzVector *TopLepBJetFitT = new TLorentzVector();
+		                 TopLepBJetFitT->SetPxPyPzE(TopLepBJetFitP4->Px(),TopLepBJetFitP4->Py(),0.,TopLepBJetFitP4->Et());
+		                 
+		                 TLorentzVector TopLepT = *TopLepWLepFitT+*TopLepWNuFitT+*TopLepBJetFitT;
 
-		             float VarTopLepRecMT = sqrt(2*(*TopLepWNuFitT+*TopLepBJetFitT).Pt() * TopLepWNuFitT->Pt() * (1-cos( (*TopLepWNuFitT+*TopLepBJetFitT).DeltaPhi( *TopLepWNuFitT )) ) );
-		             float VarTopLepTopHadRecDphiT = TopLepT.DeltaPhi(*TopHadFitT);
-		             float VarTopLepRecPtT = TopLepT.Pt();
-		             
-		             delete TopHadFitT;
-		             delete TopLepWLepFitT;
-		             delete TopLepWNuFitT;
-		             delete TopLepBJetFitT;
-		             
-		             delete TopLepWLepFitP4;
-		             delete TopLepWNuFitP4;
-		             delete TopLepBJetFitP4;
-		             delete TopHadBJetFitP4;
-		             delete TopHadWNonBJet1FitP4;
-		             delete TopHadWNonBJet2FitP4;
+		                 float VarTopLepRecMT = sqrt(2*(*TopLepWNuFitT+*TopLepBJetFitT).Pt() * TopLepWNuFitT->Pt() * (1-cos( (*TopLepWNuFitT+*TopLepBJetFitT).DeltaPhi( *TopLepWNuFitT )) ) );
+		                 float VarTopLepTopHadRecDphiT = TopLepT.DeltaPhi(*TopHadFitT);
+		                 float VarTopLepRecPtT = TopLepT.Pt();
+		                 
+		                 delete TopHadFitT;
+		                 delete TopLepWLepFitT;
+		                 delete TopLepWNuFitT;
+		                 delete TopLepBJetFitT;
+		                 
+		                 delete TopLepWLepFitP4;
+		                 delete TopLepWNuFitP4;
+		                 delete TopLepBJetFitP4;
+		                 delete TopHadBJetFitP4;
+		                 delete TopHadWNonBJet1FitP4;
+		                 delete TopHadWNonBJet2FitP4;
 
-                 float MVA_tmp;
-				         if( disc < 10E+8 )
-				           {				 
-				              MVAFullReco_TopHadRecM_ = VarTopHadRecM;
-				              MVAFullReco_TopLepRecM_ = VarTopLepRecM;
-				              MVAFullReco_TopLepTopHadRecDr_ = VarTopLepTopHadRecDr;
-				              MVAFullReco_TopLepRecPt_ = VarTopLepRecPt;
-				              
-				              MVA_tmp = reader_FullReco_SMttHypo->EvaluateMVA("BDTG method");
-				           }
-				         else
-				           {
-				              MVAPartReco_TopHadRecM_ = VarTopHadRecM;
-				              MVAPartReco_TopLepRecMT_ = VarTopLepRecMT;
-				              MVAPartReco_TopLepTopHadRecDphiT_ = VarTopLepTopHadRecDphiT;
-				              MVAPartReco_TopLepRecPtT_ = VarTopLepRecPtT;
-				              
-				              MVA_tmp = reader_PartReco_SMttHypo->EvaluateMVA("BDTG method");
-				           }
+                     float MVA_tmp;
+				             if( disc < 10E+8 )
+				               {				 
+				                  MVAFullReco_TopHadRecM_ = VarTopHadRecM;
+				                  MVAFullReco_TopLepRecM_ = VarTopLepRecM;
+				                  MVAFullReco_TopLepTopHadRecDr_ = VarTopLepTopHadRecDr;
+				                  MVAFullReco_TopLepRecPt_ = VarTopLepRecPt;
+				                  
+				                  MVA_tmp = reader_FullReco_SMttHypo->EvaluateMVA("BDTG method");
+				               }
+				             else
+				               {
+				                  MVAPartReco_TopHadRecM_ = VarTopHadRecM;
+				                  MVAPartReco_TopLepRecMT_ = VarTopLepRecMT;
+				                  MVAPartReco_TopLepTopHadRecDphiT_ = VarTopLepTopHadRecDphiT;
+				                  MVAPartReco_TopLepRecPtT_ = VarTopLepRecPtT;
+				                  
+				                  MVA_tmp = reader_PartReco_SMttHypo->EvaluateMVA("BDTG method");
+				               }
 
-				           if(MVA_tmp > MVA_TOPTOPLEPHAD)
-				           {
-				                MVA_TOPTOPLEPHAD = MVA_tmp;
-				                for(int i_IndexMatch = 0; i_IndexMatch < MapIndex_NonSortedToSorted.size(); i_IndexMatch++)
-				                {
-				                    if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_SMttHypo[idxTopLepBJetFit]) TOPTOPLEPHAD_JetIdx_LepTop = i_IndexMatch;
-				                    else if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_SMttHypo[idxTopHadBJetFit]) TOPTOPLEPHAD_JetIdx_HadTop = i_IndexMatch;
-				                    else if(MapIndex_NonSortedToSorted[i_IndexMatch] == NonBJetPt_SMttHypo[idxTopHadWNonBJet1Fit]) TOPTOPLEPHAD_JetIdx_W1 = i_IndexMatch;
-				                    else if(MapIndex_NonSortedToSorted[i_IndexMatch] == NonBJetPt_SMttHypo[idxTopHadWNonBJet2Fit]) TOPTOPLEPHAD_JetIdx_W2 = i_IndexMatch;
-/*				                    else
+				               if(MVA_tmp > MVA_TOPTOPLEPHAD)
+				               {
+				                    MVA_TOPTOPLEPHAD = MVA_tmp;
+				                    for(int i_IndexMatch = 0; i_IndexMatch < MapIndex_NonSortedToSorted.size(); i_IndexMatch++)
 				                    {
-				                        cout << "An error occurred in the jet-index matching of the sorted jet collection to the original jet collection" << endl;
-				                        return 1;
-				                    }
-*/				                }
-				           }
+				                        if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_SMttHypo[idxTopLepBJetFit]) TOPTOPLEPHAD_JetIdx_LepTop = i_IndexMatch;
+				                        else if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_SMttHypo[idxTopHadBJetFit]) TOPTOPLEPHAD_JetIdx_HadTop = i_IndexMatch;
+				                        else if(MapIndex_NonSortedToSorted[i_IndexMatch] == NonBJetPt_SMttHypo[idxTopHadWNonBJet1Fit]) TOPTOPLEPHAD_JetIdx_W1 = i_IndexMatch;
+				                        else if(MapIndex_NonSortedToSorted[i_IndexMatch] == NonBJetPt_SMttHypo[idxTopHadWNonBJet2Fit]) TOPTOPLEPHAD_JetIdx_W2 = i_IndexMatch;
+    /*				                    else
+				                        {
+				                            cout << "An error occurred in the jet-index matching of the sorted jet collection to the original jet collection" << endl;
+				                            return 1;
+				                        }
+    */				                }
+				               }
 
-            }
-            //Run over TTHypo
-		        for(int ip=0;ip<NPerm_TTHypo;ip++)
-		        {
-		             float disc = kfit_TTHypo->GetDisc(ip);
+                }
+                //Run over TTHypo
+		            for(int ip=0;ip<NPerm_TTHypo;ip++)
+		            {
+		                 float disc = kfit_TTHypo->GetDisc(ip);
 
-		             int idxTopLepWElecFit = kfit_TTHypo->GetIndex(ELECTRON_TOPTOPLEPHBB,ip);
-		             int idxTopLepWMuonFit = kfit_TTHypo->GetIndex(MUON_TOPTOPLEPHBB,ip);
-		             int idxTopLepBJetFit = kfit_TTHypo->GetIndex(BJETLEP_TOPTOPLEPHBB,ip);
-		             int idxTopHadNonBJetFit = kfit_TTHypo->GetIndex(NONBJETHAD_TOPTOPLEPHBB,ip);
-		             int idxHiggsBJet1Fit = kfit_TTHypo->GetIndex(BJET1_TOPTOPLEPHBB,ip);
-		             int idxHiggsBJet2Fit = kfit_TTHypo->GetIndex(BJET2_TOPTOPLEPHBB,ip);
+		                 int idxTopLepWElecFit = kfit_TTHypo->GetIndex(ELECTRON_TOPTOPLEPHBB,ip);
+		                 int idxTopLepWMuonFit = kfit_TTHypo->GetIndex(MUON_TOPTOPLEPHBB,ip);
+		                 int idxTopLepBJetFit = kfit_TTHypo->GetIndex(BJETLEP_TOPTOPLEPHBB,ip);
+		                 int idxTopHadNonBJetFit = kfit_TTHypo->GetIndex(NONBJETHAD_TOPTOPLEPHBB,ip);
+		                 int idxHiggsBJet1Fit = kfit_TTHypo->GetIndex(BJET1_TOPTOPLEPHBB,ip);
+		                 int idxHiggsBJet2Fit = kfit_TTHypo->GetIndex(BJET2_TOPTOPLEPHBB,ip);
 
-		             float NuPx = kfit_TTHypo->GetNuPx(ip,0);
-		             float NuPy = kfit_TTHypo->GetNuPy(ip,0);
-		             float NuPz = kfit_TTHypo->GetNuPz(ip,0);
-		             float NuE = sqrt(NuPx*NuPx+NuPy*NuPy+NuPz*NuPz);
+		                 float NuPx = kfit_TTHypo->GetNuPx(ip,0);
+		                 float NuPy = kfit_TTHypo->GetNuPy(ip,0);
+		                 float NuPz = kfit_TTHypo->GetNuPz(ip,0);
+		                 float NuE = sqrt(NuPx*NuPx+NuPy*NuPy+NuPz*NuPz);
 
-		             TLorentzVector *TopLepWNuFitP4 = new TLorentzVector();
-		             TopLepWNuFitP4->SetPxPyPzE(NuPx,NuPy,NuPz,NuE);
-		             
-		             TLorentzVector *TopLepWLepFitP4 = new TLorentzVector();
-		             TopLepWLepFitP4->SetPtEtaPhiE(TopLepWLepFitPt,TopLepWLepFitEta,TopLepWLepFitPhi,TopLepWLepFitE);
-		             
-		             float TopLepBJetFitPt = BJetPt_TTHypo[idxTopLepBJetFit];
-		             float TopLepBJetFitEta = BJetEta_TTHypo[idxTopLepBJetFit];
-		             float TopLepBJetFitPhi = BJetPhi_TTHypo[idxTopLepBJetFit];
-		             float TopLepBJetFitE = BJetE_TTHypo[idxTopLepBJetFit];
-		             
-		             TLorentzVector *TopLepBJetFitP4 = new TLorentzVector();
-		             TopLepBJetFitP4->SetPtEtaPhiE(TopLepBJetFitPt,TopLepBJetFitEta,TopLepBJetFitPhi,TopLepBJetFitE);
-		             
-		             float HiggsBJet1FitPt = BJetPt_TTHypo[idxHiggsBJet1Fit];
-		             float HiggsBJet1FitEta = BJetEta_TTHypo[idxHiggsBJet1Fit];
-		             float HiggsBJet1FitPhi = BJetPhi_TTHypo[idxHiggsBJet1Fit];
-		             float HiggsBJet1FitE = BJetE_TTHypo[idxHiggsBJet1Fit];
-		             
-		             TLorentzVector *HiggsBJet1FitP4 = new TLorentzVector();
-		             HiggsBJet1FitP4->SetPtEtaPhiE(HiggsBJet1FitPt,HiggsBJet1FitEta,HiggsBJet1FitPhi,HiggsBJet1FitE);
-		             
-		             float HiggsBJet2FitPt = BJetPt_TTHypo[idxHiggsBJet2Fit];
-		             float HiggsBJet2FitEta = BJetEta_TTHypo[idxHiggsBJet2Fit];
-		             float HiggsBJet2FitPhi = BJetPhi_TTHypo[idxHiggsBJet2Fit];
-		             float HiggsBJet2FitE = BJetE_TTHypo[idxHiggsBJet2Fit];
+		                 TLorentzVector *TopLepWNuFitP4 = new TLorentzVector();
+		                 TopLepWNuFitP4->SetPxPyPzE(NuPx,NuPy,NuPz,NuE);
+		                 
+		                 TLorentzVector *TopLepWLepFitP4 = new TLorentzVector();
+		                 TopLepWLepFitP4->SetPtEtaPhiE(TopLepWLepFitPt,TopLepWLepFitEta,TopLepWLepFitPhi,TopLepWLepFitE);
+		                 
+		                 float TopLepBJetFitPt = BJetPt_TTHypo[idxTopLepBJetFit];
+		                 float TopLepBJetFitEta = BJetEta_TTHypo[idxTopLepBJetFit];
+		                 float TopLepBJetFitPhi = BJetPhi_TTHypo[idxTopLepBJetFit];
+		                 float TopLepBJetFitE = BJetE_TTHypo[idxTopLepBJetFit];
+		                 
+		                 TLorentzVector *TopLepBJetFitP4 = new TLorentzVector();
+		                 TopLepBJetFitP4->SetPtEtaPhiE(TopLepBJetFitPt,TopLepBJetFitEta,TopLepBJetFitPhi,TopLepBJetFitE);
+		                 
+		                 float HiggsBJet1FitPt = BJetPt_TTHypo[idxHiggsBJet1Fit];
+		                 float HiggsBJet1FitEta = BJetEta_TTHypo[idxHiggsBJet1Fit];
+		                 float HiggsBJet1FitPhi = BJetPhi_TTHypo[idxHiggsBJet1Fit];
+		                 float HiggsBJet1FitE = BJetE_TTHypo[idxHiggsBJet1Fit];
+		                 
+		                 TLorentzVector *HiggsBJet1FitP4 = new TLorentzVector();
+		                 HiggsBJet1FitP4->SetPtEtaPhiE(HiggsBJet1FitPt,HiggsBJet1FitEta,HiggsBJet1FitPhi,HiggsBJet1FitE);
+		                 
+		                 float HiggsBJet2FitPt = BJetPt_TTHypo[idxHiggsBJet2Fit];
+		                 float HiggsBJet2FitEta = BJetEta_TTHypo[idxHiggsBJet2Fit];
+		                 float HiggsBJet2FitPhi = BJetPhi_TTHypo[idxHiggsBJet2Fit];
+		                 float HiggsBJet2FitE = BJetE_TTHypo[idxHiggsBJet2Fit];
 
-		             TLorentzVector *HiggsBJet2FitP4 = new TLorentzVector();
-		             HiggsBJet2FitP4->SetPtEtaPhiE(HiggsBJet2FitPt,HiggsBJet2FitEta,HiggsBJet2FitPhi,HiggsBJet2FitE);
+		                 TLorentzVector *HiggsBJet2FitP4 = new TLorentzVector();
+		                 HiggsBJet2FitP4->SetPtEtaPhiE(HiggsBJet2FitPt,HiggsBJet2FitEta,HiggsBJet2FitPhi,HiggsBJet2FitE);
 
-		             
-		             TLorentzVector Higgs = *HiggsBJet1FitP4+*HiggsBJet2FitP4;
-		             TLorentzVector TopLep = *TopLepWLepFitP4+*TopLepWNuFitP4+*TopLepBJetFitP4;
+		                 
+		                 TLorentzVector Higgs = *HiggsBJet1FitP4+*HiggsBJet2FitP4;
+		                 TLorentzVector TopLep = *TopLepWLepFitP4+*TopLepWNuFitP4+*TopLepBJetFitP4;
 
-		             float VarHiggsRecM = Higgs.M();
-		             float VarTopLepRecM = TopLep.M();
-		             float VarHiggsTopLepRecDr = Higgs.DeltaR(TopLep);
-		             float VarTopLepRecPt = TopLep.Pt();
-		             float VarHiggsRecPt = Higgs.Pt();
+		                 float VarHiggsRecM = Higgs.M();
+		                 float VarTopLepRecM = TopLep.M();
+		                 float VarHiggsTopLepRecDr = Higgs.DeltaR(TopLep);
+		                 float VarTopLepRecPt = TopLep.Pt();
+		                 float VarHiggsRecPt = Higgs.Pt();
 
-		             TLorentzVector *HiggsFitT = new TLorentzVector();
-		             HiggsFitT->SetPxPyPzE(Higgs.Px(),Higgs.Py(),0.,Higgs.Et());
-		             
-		             TLorentzVector *TopLepWLepFitT = new TLorentzVector();
-		             TopLepWLepFitT->SetPxPyPzE(TopLepWLepFitP4->Px(),TopLepWLepFitP4->Py(),0.,TopLepWLepFitP4->Et());
+		                 TLorentzVector *HiggsFitT = new TLorentzVector();
+		                 HiggsFitT->SetPxPyPzE(Higgs.Px(),Higgs.Py(),0.,Higgs.Et());
+		                 
+		                 TLorentzVector *TopLepWLepFitT = new TLorentzVector();
+		                 TopLepWLepFitT->SetPxPyPzE(TopLepWLepFitP4->Px(),TopLepWLepFitP4->Py(),0.,TopLepWLepFitP4->Et());
 
-		             TLorentzVector *TopLepWNuFitT = new TLorentzVector();
-		             TopLepWNuFitT->SetPxPyPzE(TopLepWNuFitP4->Px(),TopLepWNuFitP4->Py(),0.,TopLepWNuFitP4->Et());
+		                 TLorentzVector *TopLepWNuFitT = new TLorentzVector();
+		                 TopLepWNuFitT->SetPxPyPzE(TopLepWNuFitP4->Px(),TopLepWNuFitP4->Py(),0.,TopLepWNuFitP4->Et());
 
-		             TLorentzVector *TopLepBJetFitT = new TLorentzVector();
-		             TopLepBJetFitT->SetPxPyPzE(TopLepBJetFitP4->Px(),TopLepBJetFitP4->Py(),0.,TopLepBJetFitP4->Et());
-		             
-		             TLorentzVector TopLepT = *TopLepWLepFitT+*TopLepWNuFitT+*TopLepBJetFitT;
+		                 TLorentzVector *TopLepBJetFitT = new TLorentzVector();
+		                 TopLepBJetFitT->SetPxPyPzE(TopLepBJetFitP4->Px(),TopLepBJetFitP4->Py(),0.,TopLepBJetFitP4->Et());
+		                 
+		                 TLorentzVector TopLepT = *TopLepWLepFitT+*TopLepWNuFitT+*TopLepBJetFitT;
 
-		             float VarTopLepRecMT = sqrt(2*(*TopLepWNuFitT+*TopLepBJetFitT).Pt() * TopLepWNuFitT->Pt() * (1-cos( (*TopLepWNuFitT+*TopLepBJetFitT).DeltaPhi( *TopLepWNuFitT )) ) );
-		             float VarHiggsTopLepRecDphiT = HiggsFitT->DeltaPhi(TopLepT);
-		             float VarTopLepRecPtT = TopLepT.Pt();
-		             
-		             delete HiggsFitT;
-		             delete TopLepWLepFitT;
-		             delete TopLepWNuFitT;
-		             delete TopLepBJetFitT;
-		             
-		             delete TopLepWLepFitP4;
-		             delete TopLepWNuFitP4;
-		             delete TopLepBJetFitP4;
-		             delete HiggsBJet1FitP4;
-		             delete HiggsBJet2FitP4;
+		                 float VarTopLepRecMT = sqrt(2*(*TopLepWNuFitT+*TopLepBJetFitT).Pt() * TopLepWNuFitT->Pt() * (1-cos( (*TopLepWNuFitT+*TopLepBJetFitT).DeltaPhi( *TopLepWNuFitT )) ) );
+		                 float VarHiggsTopLepRecDphiT = HiggsFitT->DeltaPhi(TopLepT);
+		                 float VarTopLepRecPtT = TopLepT.Pt();
+		                 
+		                 delete HiggsFitT;
+		                 delete TopLepWLepFitT;
+		                 delete TopLepWNuFitT;
+		                 delete TopLepBJetFitT;
+		                 
+		                 delete TopLepWLepFitP4;
+		                 delete TopLepWNuFitP4;
+		                 delete TopLepBJetFitP4;
+		                 delete HiggsBJet1FitP4;
+		                 delete HiggsBJet2FitP4;
 
-                 float MVA_tmp;
-				         if( disc < 10E+8 )
-				           {				 
-				              MVAFullReco_HiggsRecM_ = VarHiggsRecM;
-				              MVAFullReco_TopLepRecM_ = VarTopLepRecM;
-				              MVAFullReco_HiggsTopLepRecDr_ = VarHiggsTopLepRecDr;
-				              MVAFullReco_TopLepRecPt_ = VarTopLepRecPt;
-				              
-				              MVA_tmp = reader_FullReco_TTHypo->EvaluateMVA("BDTG method");
-				           }
-				         else
-				           {
-				              MVAPartReco_HiggsRecM_ = VarHiggsRecM;
-				              MVAPartReco_TopLepRecMT_ = VarTopLepRecMT;
-				              MVAPartReco_HiggsTopLepRecDphiT_ = VarHiggsTopLepRecDphiT;
-				              MVAPartReco_TopLepRecPtT_ = VarTopLepRecPtT;
-				              
-				              MVA_tmp = reader_PartReco_TTHypo->EvaluateMVA("BDTG method");
-				           }
+                     float MVA_tmp;
+				             if( disc < 10E+8 )
+				               {				 
+				                  MVAFullReco_HiggsRecM_ = VarHiggsRecM;
+				                  MVAFullReco_TopLepRecM_ = VarTopLepRecM;
+				                  MVAFullReco_HiggsTopLepRecDr_ = VarHiggsTopLepRecDr;
+				                  MVAFullReco_TopLepRecPt_ = VarTopLepRecPt;
+				                  
+				                  MVA_tmp = reader_FullReco_TTHypo->EvaluateMVA("BDTG method");
+				               }
+				             else
+				               {
+				                  MVAPartReco_HiggsRecM_ = VarHiggsRecM;
+				                  MVAPartReco_TopLepRecMT_ = VarTopLepRecMT;
+				                  MVAPartReco_HiggsTopLepRecDphiT_ = VarHiggsTopLepRecDphiT;
+				                  MVAPartReco_TopLepRecPtT_ = VarTopLepRecPtT;
+				                  
+				                  MVA_tmp = reader_PartReco_TTHypo->EvaluateMVA("BDTG method");
+				               }
 
-				           if(MVA_tmp > MVA_TOPTOPLEPHBB)
-				           {
-				                MVA_TOPTOPLEPHBB = MVA_tmp;
-				                for(int i_IndexMatch = 0; i_IndexMatch < MapIndex_NonSortedToSorted.size(); i_IndexMatch++)
-				                {
-				                    if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_TTHypo[idxTopLepBJetFit]) TOPTOPLEPHBB_JetIdx_LepTop = i_IndexMatch;
-				                    else if(MapIndex_NonSortedToSorted[i_IndexMatch] == NonBJetPt_TTHypo[idxTopHadNonBJetFit]) TOPTOPLEPHBB_JetIdx_HadTop = i_IndexMatch;
-				                    else if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_TTHypo[idxHiggsBJet1Fit]) TOPTOPLEPHBB_JetIdx_H1 = i_IndexMatch;
-				                    else if(MapIndex_NonSortedToSorted[i_IndexMatch] ==BJetPt_TTHypo[idxHiggsBJet2Fit]) TOPTOPLEPHBB_JetIdx_H2 = i_IndexMatch;
-/*				                    else
+				               if(MVA_tmp > MVA_TOPTOPLEPHBB)
+				               {
+				                    MVA_TOPTOPLEPHBB = MVA_tmp;
+				                    for(int i_IndexMatch = 0; i_IndexMatch < MapIndex_NonSortedToSorted.size(); i_IndexMatch++)
 				                    {
-				                        cout << "An error occurred in the jet-index matching of the sorted jet collection to the original jet collection" << endl;
-				                        return 1;
-				                    }
-*/				                }
-				           }
+				                        if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_TTHypo[idxTopLepBJetFit]) TOPTOPLEPHBB_JetIdx_LepTop = i_IndexMatch;
+				                        else if(MapIndex_NonSortedToSorted[i_IndexMatch] == NonBJetPt_TTHypo[idxTopHadNonBJetFit]) TOPTOPLEPHBB_JetIdx_HadTop = i_IndexMatch;
+				                        else if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_TTHypo[idxHiggsBJet1Fit]) TOPTOPLEPHBB_JetIdx_H1 = i_IndexMatch;
+				                        else if(MapIndex_NonSortedToSorted[i_IndexMatch] ==BJetPt_TTHypo[idxHiggsBJet2Fit]) TOPTOPLEPHBB_JetIdx_H2 = i_IndexMatch;
+    /*				                    else
+				                        {
+				                            cout << "An error occurred in the jet-index matching of the sorted jet collection to the original jet collection" << endl;
+				                            return 1;
+				                        }
+    */				                }
+				               }
 
-            }
-            //Run over STHypo
-		        for(int ip=0;ip<NPerm_STHypo;ip++)
-		        {
-		             float disc = kfit_STHypo->GetDisc(ip);
+                }
+                //Run over STHypo
+		            for(int ip=0;ip<NPerm_STHypo;ip++)
+		            {
+		                 float disc = kfit_STHypo->GetDisc(ip);
 
-		             int idxTopLepWElecFit = kfit_STHypo->GetIndex(ELECTRON_TOPHLEPBB,ip);
-		             int idxTopLepWMuonFit = kfit_STHypo->GetIndex(MUON_TOPHLEPBB,ip);
-		             int idxTopLepBJetFit = kfit_STHypo->GetIndex(BJETLEP_TOPHLEPBB,ip);
-		             int idxTopHadNonBJetFit = 0;//The Had jet will be assigned as the non-b-jet in this specific hypothesis, which has index 0 in it's respective non-b-jet collection
-		             int idxHiggsBJet1Fit = kfit_STHypo->GetIndex(BJET1_TOPHLEPBB,ip);
-		             int idxHiggsBJet2Fit = kfit_STHypo->GetIndex(BJET2_TOPHLEPBB,ip);
+		                 int idxTopLepWElecFit = kfit_STHypo->GetIndex(ELECTRON_TOPHLEPBB,ip);
+		                 int idxTopLepWMuonFit = kfit_STHypo->GetIndex(MUON_TOPHLEPBB,ip);
+		                 int idxTopLepBJetFit = kfit_STHypo->GetIndex(BJETLEP_TOPHLEPBB,ip);
+		                 int idxTopHadNonBJetFit = 0;//The Had jet will be assigned as the non-b-jet in this specific hypothesis, which has index 0 in it's respective non-b-jet collection
+		                 int idxHiggsBJet1Fit = kfit_STHypo->GetIndex(BJET1_TOPHLEPBB,ip);
+		                 int idxHiggsBJet2Fit = kfit_STHypo->GetIndex(BJET2_TOPHLEPBB,ip);
 
-		             float NuPx = kfit_STHypo->GetNuPx(ip,0);
-		             float NuPy = kfit_STHypo->GetNuPy(ip,0);
-		             float NuPz = kfit_STHypo->GetNuPz(ip,0);
-		             float NuE = sqrt(NuPx*NuPx+NuPy*NuPy+NuPz*NuPz);
+		                 float NuPx = kfit_STHypo->GetNuPx(ip,0);
+		                 float NuPy = kfit_STHypo->GetNuPy(ip,0);
+		                 float NuPz = kfit_STHypo->GetNuPz(ip,0);
+		                 float NuE = sqrt(NuPx*NuPx+NuPy*NuPy+NuPz*NuPz);
 
-		             TLorentzVector *TopLepWNuFitP4 = new TLorentzVector();
-		             TopLepWNuFitP4->SetPxPyPzE(NuPx,NuPy,NuPz,NuE);
-		             
-		             TLorentzVector *TopLepWLepFitP4 = new TLorentzVector();
-		             TopLepWLepFitP4->SetPtEtaPhiE(TopLepWLepFitPt,TopLepWLepFitEta,TopLepWLepFitPhi,TopLepWLepFitE);
-		             
-		             float TopLepBJetFitPt = BJetPt_STHypo[idxTopLepBJetFit];
-		             float TopLepBJetFitEta = BJetEta_STHypo[idxTopLepBJetFit];
-		             float TopLepBJetFitPhi = BJetPhi_STHypo[idxTopLepBJetFit];
-		             float TopLepBJetFitE = BJetE_STHypo[idxTopLepBJetFit];
-		             
-		             TLorentzVector *TopLepBJetFitP4 = new TLorentzVector();
-		             TopLepBJetFitP4->SetPtEtaPhiE(TopLepBJetFitPt,TopLepBJetFitEta,TopLepBJetFitPhi,TopLepBJetFitE);
-		             
-		             float HiggsBJet1FitPt = BJetPt_STHypo[idxHiggsBJet1Fit];
-		             float HiggsBJet1FitEta = BJetEta_STHypo[idxHiggsBJet1Fit];
-		             float HiggsBJet1FitPhi = BJetPhi_STHypo[idxHiggsBJet1Fit];
-		             float HiggsBJet1FitE = BJetE_STHypo[idxHiggsBJet1Fit];
-		             
-		             TLorentzVector *HiggsBJet1FitP4 = new TLorentzVector();
-		             HiggsBJet1FitP4->SetPtEtaPhiE(HiggsBJet1FitPt,HiggsBJet1FitEta,HiggsBJet1FitPhi,HiggsBJet1FitE);
-		             
-		             float HiggsBJet2FitPt = BJetPt_STHypo[idxHiggsBJet2Fit];
-		             float HiggsBJet2FitEta = BJetEta_STHypo[idxHiggsBJet2Fit];
-		             float HiggsBJet2FitPhi = BJetPhi_STHypo[idxHiggsBJet2Fit];
-		             float HiggsBJet2FitE = BJetE_STHypo[idxHiggsBJet2Fit];
+		                 TLorentzVector *TopLepWNuFitP4 = new TLorentzVector();
+		                 TopLepWNuFitP4->SetPxPyPzE(NuPx,NuPy,NuPz,NuE);
+		                 
+		                 TLorentzVector *TopLepWLepFitP4 = new TLorentzVector();
+		                 TopLepWLepFitP4->SetPtEtaPhiE(TopLepWLepFitPt,TopLepWLepFitEta,TopLepWLepFitPhi,TopLepWLepFitE);
+		                 
+		                 float TopLepBJetFitPt = BJetPt_STHypo[idxTopLepBJetFit];
+		                 float TopLepBJetFitEta = BJetEta_STHypo[idxTopLepBJetFit];
+		                 float TopLepBJetFitPhi = BJetPhi_STHypo[idxTopLepBJetFit];
+		                 float TopLepBJetFitE = BJetE_STHypo[idxTopLepBJetFit];
+		                 
+		                 TLorentzVector *TopLepBJetFitP4 = new TLorentzVector();
+		                 TopLepBJetFitP4->SetPtEtaPhiE(TopLepBJetFitPt,TopLepBJetFitEta,TopLepBJetFitPhi,TopLepBJetFitE);
+		                 
+		                 float HiggsBJet1FitPt = BJetPt_STHypo[idxHiggsBJet1Fit];
+		                 float HiggsBJet1FitEta = BJetEta_STHypo[idxHiggsBJet1Fit];
+		                 float HiggsBJet1FitPhi = BJetPhi_STHypo[idxHiggsBJet1Fit];
+		                 float HiggsBJet1FitE = BJetE_STHypo[idxHiggsBJet1Fit];
+		                 
+		                 TLorentzVector *HiggsBJet1FitP4 = new TLorentzVector();
+		                 HiggsBJet1FitP4->SetPtEtaPhiE(HiggsBJet1FitPt,HiggsBJet1FitEta,HiggsBJet1FitPhi,HiggsBJet1FitE);
+		                 
+		                 float HiggsBJet2FitPt = BJetPt_STHypo[idxHiggsBJet2Fit];
+		                 float HiggsBJet2FitEta = BJetEta_STHypo[idxHiggsBJet2Fit];
+		                 float HiggsBJet2FitPhi = BJetPhi_STHypo[idxHiggsBJet2Fit];
+		                 float HiggsBJet2FitE = BJetE_STHypo[idxHiggsBJet2Fit];
 
-		             TLorentzVector *HiggsBJet2FitP4 = new TLorentzVector();
-		             HiggsBJet2FitP4->SetPtEtaPhiE(HiggsBJet2FitPt,HiggsBJet2FitEta,HiggsBJet2FitPhi,HiggsBJet2FitE);
+		                 TLorentzVector *HiggsBJet2FitP4 = new TLorentzVector();
+		                 HiggsBJet2FitP4->SetPtEtaPhiE(HiggsBJet2FitPt,HiggsBJet2FitEta,HiggsBJet2FitPhi,HiggsBJet2FitE);
 
-		             
-		             TLorentzVector Higgs = *HiggsBJet1FitP4+*HiggsBJet2FitP4;
-		             TLorentzVector TopLep = *TopLepWLepFitP4+*TopLepWNuFitP4+*TopLepBJetFitP4;
+		                 
+		                 TLorentzVector Higgs = *HiggsBJet1FitP4+*HiggsBJet2FitP4;
+		                 TLorentzVector TopLep = *TopLepWLepFitP4+*TopLepWNuFitP4+*TopLepBJetFitP4;
 
-		             float VarHiggsRecM = Higgs.M();
-		             float VarTopLepRecM = TopLep.M();
-		             float VarHiggsTopLepRecDr = Higgs.DeltaR(TopLep);
-		             float VarTopLepRecPt = TopLep.Pt();
-		             float VarHiggsRecPt = Higgs.Pt();
+		                 float VarHiggsRecM = Higgs.M();
+		                 float VarTopLepRecM = TopLep.M();
+		                 float VarHiggsTopLepRecDr = Higgs.DeltaR(TopLep);
+		                 float VarTopLepRecPt = TopLep.Pt();
+		                 float VarHiggsRecPt = Higgs.Pt();
 
-		             TLorentzVector *HiggsFitT = new TLorentzVector();
-		             HiggsFitT->SetPxPyPzE(Higgs.Px(),Higgs.Py(),0.,Higgs.Et());
-		             
-		             TLorentzVector *TopLepWLepFitT = new TLorentzVector();
-		             TopLepWLepFitT->SetPxPyPzE(TopLepWLepFitP4->Px(),TopLepWLepFitP4->Py(),0.,TopLepWLepFitP4->Et());
+		                 TLorentzVector *HiggsFitT = new TLorentzVector();
+		                 HiggsFitT->SetPxPyPzE(Higgs.Px(),Higgs.Py(),0.,Higgs.Et());
+		                 
+		                 TLorentzVector *TopLepWLepFitT = new TLorentzVector();
+		                 TopLepWLepFitT->SetPxPyPzE(TopLepWLepFitP4->Px(),TopLepWLepFitP4->Py(),0.,TopLepWLepFitP4->Et());
 
-		             TLorentzVector *TopLepWNuFitT = new TLorentzVector();
-		             TopLepWNuFitT->SetPxPyPzE(TopLepWNuFitP4->Px(),TopLepWNuFitP4->Py(),0.,TopLepWNuFitP4->Et());
+		                 TLorentzVector *TopLepWNuFitT = new TLorentzVector();
+		                 TopLepWNuFitT->SetPxPyPzE(TopLepWNuFitP4->Px(),TopLepWNuFitP4->Py(),0.,TopLepWNuFitP4->Et());
 
-		             TLorentzVector *TopLepBJetFitT = new TLorentzVector();
-		             TopLepBJetFitT->SetPxPyPzE(TopLepBJetFitP4->Px(),TopLepBJetFitP4->Py(),0.,TopLepBJetFitP4->Et());
-		             
-		             TLorentzVector TopLepT = *TopLepWLepFitT+*TopLepWNuFitT+*TopLepBJetFitT;
+		                 TLorentzVector *TopLepBJetFitT = new TLorentzVector();
+		                 TopLepBJetFitT->SetPxPyPzE(TopLepBJetFitP4->Px(),TopLepBJetFitP4->Py(),0.,TopLepBJetFitP4->Et());
+		                 
+		                 TLorentzVector TopLepT = *TopLepWLepFitT+*TopLepWNuFitT+*TopLepBJetFitT;
 
-		             float VarTopLepRecMT = sqrt(2*(*TopLepWNuFitT+*TopLepBJetFitT).Pt() * TopLepWNuFitT->Pt() * (1-cos( (*TopLepWNuFitT+*TopLepBJetFitT).DeltaPhi( *TopLepWNuFitT )) ) );
-		             float VarHiggsTopLepRecDphiT = HiggsFitT->DeltaPhi(TopLepT);
-		             float VarTopLepRecPtT = TopLepT.Pt();
-		             
-		             delete HiggsFitT;
-		             delete TopLepWLepFitT;
-		             delete TopLepWNuFitT;
-		             delete TopLepBJetFitT;
-		             
-		             delete TopLepWLepFitP4;
-		             delete TopLepWNuFitP4;
-		             delete TopLepBJetFitP4;
-		             delete HiggsBJet1FitP4;
-		             delete HiggsBJet2FitP4;
+		                 float VarTopLepRecMT = sqrt(2*(*TopLepWNuFitT+*TopLepBJetFitT).Pt() * TopLepWNuFitT->Pt() * (1-cos( (*TopLepWNuFitT+*TopLepBJetFitT).DeltaPhi( *TopLepWNuFitT )) ) );
+		                 float VarHiggsTopLepRecDphiT = HiggsFitT->DeltaPhi(TopLepT);
+		                 float VarTopLepRecPtT = TopLepT.Pt();
+		                 
+		                 delete HiggsFitT;
+		                 delete TopLepWLepFitT;
+		                 delete TopLepWNuFitT;
+		                 delete TopLepBJetFitT;
+		                 
+		                 delete TopLepWLepFitP4;
+		                 delete TopLepWNuFitP4;
+		                 delete TopLepBJetFitP4;
+		                 delete HiggsBJet1FitP4;
+		                 delete HiggsBJet2FitP4;
 
-                 float MVA_tmp_hut;
-                 float MVA_tmp_hct;
-				         if( disc < 10E+8 )
-				           {				 
-				              MVAFullReco_HiggsRecM_ = VarHiggsRecM;
-				              MVAFullReco_TopLepRecM_ = VarTopLepRecM;
-				              MVAFullReco_HiggsTopLepRecDr_ = VarHiggsTopLepRecDr;
-				              MVAFullReco_TopLepRecPt_ = VarTopLepRecPt;
-				              
-				              MVA_tmp_hut = reader_FullReco_STHypo_hut->EvaluateMVA("BDTG method");
-				              MVA_tmp_hct = reader_FullReco_STHypo_hct->EvaluateMVA("BDTG method");
-				           }
-				         else
-				           {
-				              MVAPartReco_HiggsRecM_ = VarHiggsRecM;
-				              MVAPartReco_TopLepRecMT_ = VarTopLepRecMT;
-				              MVAPartReco_HiggsTopLepRecDphiT_ = VarHiggsTopLepRecDphiT;
-				              MVAPartReco_TopLepRecPtT_ = VarTopLepRecPtT;
-				              
-				              MVA_tmp_hut = reader_PartReco_STHypo_hut->EvaluateMVA("BDTG method");
-				              MVA_tmp_hct = reader_PartReco_STHypo_hct->EvaluateMVA("BDTG method");
-				           }
+                     float MVA_tmp_hut;
+                     float MVA_tmp_hct;
+				             if( disc < 10E+8 )
+				               {				 
+				                  MVAFullReco_HiggsRecM_ = VarHiggsRecM;
+				                  MVAFullReco_TopLepRecM_ = VarTopLepRecM;
+				                  MVAFullReco_HiggsTopLepRecDr_ = VarHiggsTopLepRecDr;
+				                  MVAFullReco_TopLepRecPt_ = VarTopLepRecPt;
+				                  
+				                  MVA_tmp_hut = reader_FullReco_STHypo_hut->EvaluateMVA("BDTG method");
+				                  MVA_tmp_hct = reader_FullReco_STHypo_hct->EvaluateMVA("BDTG method");
+				               }
+				             else
+				               {
+				                  MVAPartReco_HiggsRecM_ = VarHiggsRecM;
+				                  MVAPartReco_TopLepRecMT_ = VarTopLepRecMT;
+				                  MVAPartReco_HiggsTopLepRecDphiT_ = VarHiggsTopLepRecDphiT;
+				                  MVAPartReco_TopLepRecPtT_ = VarTopLepRecPtT;
+				                  
+				                  MVA_tmp_hut = reader_PartReco_STHypo_hut->EvaluateMVA("BDTG method");
+				                  MVA_tmp_hct = reader_PartReco_STHypo_hct->EvaluateMVA("BDTG method");
+				               }
 
-				           if(MVA_tmp_hut > MVA_TOPHLEPBB_hut)
-				           {
-				                MVA_TOPHLEPBB_hut = MVA_tmp_hut;
-				                for(int i_IndexMatch = 0; i_IndexMatch < MapIndex_NonSortedToSorted.size(); i_IndexMatch++)
-				                {
-				                    if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_STHypo[idxTopLepBJetFit]) TOPHLEPBB_JetIdx_LepTop_hut = i_IndexMatch;
-				                    else if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_STHypo[idxHiggsBJet1Fit]) TOPHLEPBB_JetIdx_H1_hut = i_IndexMatch;
-				                    else if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_STHypo[idxHiggsBJet2Fit]) TOPHLEPBB_JetIdx_H2_hut = i_IndexMatch;
-/*				                    else
+				               if(MVA_tmp_hut > MVA_TOPHLEPBB_hut)
+				               {
+				                    MVA_TOPHLEPBB_hut = MVA_tmp_hut;
+				                    for(int i_IndexMatch = 0; i_IndexMatch < MapIndex_NonSortedToSorted.size(); i_IndexMatch++)
 				                    {
-				                        cout << "An error occurred in the jet-index matching of the sorted jet collection to the original jet collection" << endl;
-				                        return 1;
-				                    }
-*/				                }
-				           }
-				           if(MVA_tmp_hct > MVA_TOPHLEPBB_hct)
-				           {
-				                MVA_TOPHLEPBB_hct = MVA_tmp_hct;
-				                for(int i_IndexMatch = 0; i_IndexMatch < MapIndex_NonSortedToSorted.size(); i_IndexMatch++)
-				                {
-				                    if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_STHypo[idxTopLepBJetFit]) TOPHLEPBB_JetIdx_LepTop_hct = i_IndexMatch;
-				                    else if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_STHypo[idxHiggsBJet1Fit]) TOPHLEPBB_JetIdx_H1_hct = i_IndexMatch;
-				                    else if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_STHypo[idxHiggsBJet2Fit]) TOPHLEPBB_JetIdx_H2_hct = i_IndexMatch;
-/*				                    else
+				                        if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_STHypo[idxTopLepBJetFit]) TOPHLEPBB_JetIdx_LepTop_hut = i_IndexMatch;
+				                        else if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_STHypo[idxHiggsBJet1Fit]) TOPHLEPBB_JetIdx_H1_hut = i_IndexMatch;
+				                        else if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_STHypo[idxHiggsBJet2Fit]) TOPHLEPBB_JetIdx_H2_hut = i_IndexMatch;
+    /*				                    else
+				                        {
+				                            cout << "An error occurred in the jet-index matching of the sorted jet collection to the original jet collection" << endl;
+				                            return 1;
+				                        }
+    */				                }
+				               }
+				               if(MVA_tmp_hct > MVA_TOPHLEPBB_hct)
+				               {
+				                    MVA_TOPHLEPBB_hct = MVA_tmp_hct;
+				                    for(int i_IndexMatch = 0; i_IndexMatch < MapIndex_NonSortedToSorted.size(); i_IndexMatch++)
 				                    {
-				                        cout << "An error occurred in the jet-index matching of the sorted jet collection to the original jet collection" << endl;
-				                        return 1;
-				                    }
-*/				                }
-				           }
+				                        if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_STHypo[idxTopLepBJetFit]) TOPHLEPBB_JetIdx_LepTop_hct = i_IndexMatch;
+				                        else if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_STHypo[idxHiggsBJet1Fit]) TOPHLEPBB_JetIdx_H1_hct = i_IndexMatch;
+				                        else if(MapIndex_NonSortedToSorted[i_IndexMatch] == BJetPt_STHypo[idxHiggsBJet2Fit]) TOPHLEPBB_JetIdx_H2_hct = i_IndexMatch;
+    /*				                    else
+				                        {
+				                            cout << "An error occurred in the jet-index matching of the sorted jet collection to the original jet collection" << endl;
+				                            return 1;
+				                        }
+    */				                }
+				               }
 
+                }
             }
 
 
@@ -2298,7 +2321,7 @@ else cin.get();
         //tup_ntupleinfo->Print("all");	          
         //tup_ObjectVars->Print("all");
 
-	      tupfile->Write();   
+	      tupfile->Write(); 
        	tupfile->Close();
         delete tupfile;
         cout <<"n events passed  =  "<<passed <<endl;
@@ -2306,6 +2329,9 @@ else cin.get();
         //important: free memory
         treeLoader.UnLoadDataset();
 
+    delete kfit_SMttHypo;
+    delete kfit_TTHypo;
+    delete kfit_STHypo;
     } //End Loop on Datasets
 
     fclose (eventlist);
@@ -2319,7 +2345,9 @@ else cin.get();
 //    delete btwt_ttbar_central;
 //    delete btwt_ttbar_up;
 //    delete btwt_ttbar_down;
-
+    delete bTagReader_CSVv2M_mujets_central;
+//    delete bTagReader_CSVv2M_mujets_up;
+//    delete bTagReader_CSVv2M_mujets_down;
 
 
     cout << "It took us " << ((double)clock() - start) / CLOCKS_PER_SEC << " to run the program" << endl;
