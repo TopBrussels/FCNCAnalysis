@@ -494,7 +494,7 @@ int main(int argc, char *argv[])
 			      {
 //			          ScaleFactor = ScaleFactor * W_puSF;
 //			          ScaleFactor = ScaleFactor * W_fleptonSF;
-			          ScaleFactor = ScaleFactor * W_btagWeight_CSVv2M_mujets_central;
+//			          ScaleFactor = ScaleFactor * W_btagWeight_CSVv2M_mujets_central;
 //			          ScaleFactor = ScaleFactor * nloSF;
 //                  ScaleFactor = ScaleFactor * W_btagWeight_shape;
 			      }
@@ -520,21 +520,51 @@ int main(int argc, char *argv[])
 			      Hb2_TOPHLEPBB_hct.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_H2_hct],eta_jet[TOPHLEPBB_JetIdx_H2_hct],phi_jet[TOPHLEPBB_JetIdx_H2_hct],E_jet[TOPHLEPBB_JetIdx_H2_hct]);
 			      LepTopB_TOPHLEPBB_hct.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_LepTop_hct],eta_jet[TOPHLEPBB_JetIdx_LepTop_hct],phi_jet[TOPHLEPBB_JetIdx_LepTop_hct],E_jet[TOPHLEPBB_JetIdx_LepTop_hct]);
             Higgs_TOPHLEPBB_hct = Hb1_TOPHLEPBB_hct + Hb2_TOPHLEPBB_hct;
+
 			      Hb1_TOPHLEPBB_hut.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_H1_hut],eta_jet[TOPHLEPBB_JetIdx_H1_hut],phi_jet[TOPHLEPBB_JetIdx_H1_hut],E_jet[TOPHLEPBB_JetIdx_H1_hut]);
 			      Hb2_TOPHLEPBB_hut.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_H2_hut],eta_jet[TOPHLEPBB_JetIdx_H2_hut],phi_jet[TOPHLEPBB_JetIdx_H2_hut],E_jet[TOPHLEPBB_JetIdx_H2_hut]);
 			      LepTopB_TOPHLEPBB_hut.SetPtEtaPhiE(pt_jet[TOPHLEPBB_JetIdx_LepTop_hut],eta_jet[TOPHLEPBB_JetIdx_LepTop_hut],phi_jet[TOPHLEPBB_JetIdx_LepTop_hut],E_jet[TOPHLEPBB_JetIdx_LepTop_hut]);
             Higgs_TOPHLEPBB_hut = Hb1_TOPHLEPBB_hut + Hb2_TOPHLEPBB_hut;
+
 			      Hb1_TOPTOPLEPHBB.SetPtEtaPhiE(pt_jet[TOPTOPLEPHBB_JetIdx_H1],eta_jet[TOPTOPLEPHBB_JetIdx_H1],phi_jet[TOPTOPLEPHBB_JetIdx_H1],E_jet[TOPTOPLEPHBB_JetIdx_H1]);
 			      Hb2_TOPTOPLEPHBB.SetPtEtaPhiE(pt_jet[TOPTOPLEPHBB_JetIdx_H2],eta_jet[TOPTOPLEPHBB_JetIdx_H2],phi_jet[TOPTOPLEPHBB_JetIdx_H2],E_jet[TOPTOPLEPHBB_JetIdx_H2]);
 			      LepTopB_TOPTOPLEPHBB.SetPtEtaPhiE(pt_jet[TOPTOPLEPHBB_JetIdx_LepTop],eta_jet[TOPTOPLEPHBB_JetIdx_LepTop],phi_jet[TOPTOPLEPHBB_JetIdx_LepTop],E_jet[TOPTOPLEPHBB_JetIdx_LepTop]);
+			      HadTopB_TOPTOPLEPHBB.SetPtEtaPhiE(pt_jet[TOPTOPLEPHBB_JetIdx_HadTop],eta_jet[TOPTOPLEPHBB_JetIdx_HadTop],phi_jet[TOPTOPLEPHBB_JetIdx_HadTop],E_jet[TOPTOPLEPHBB_JetIdx_HadTop]);
             Higgs_TOPTOPLEPHBB = Hb1_TOPTOPLEPHBB + Hb2_TOPTOPLEPHBB;
+            HadTop_TOPTOPLEPHBB  = Higgs_TOPTOPLEPHBB + HadTopB_TOPTOPLEPHBB;
+
 			      Hb1_TOPTOPLEPHAD.SetPtEtaPhiE(pt_jet[TOPTOPLEPHAD_JetIdx_W1],eta_jet[TOPTOPLEPHAD_JetIdx_W1],phi_jet[TOPTOPLEPHAD_JetIdx_W1],E_jet[TOPTOPLEPHAD_JetIdx_W1]);
 			      Hb2_TOPTOPLEPHAD.SetPtEtaPhiE(pt_jet[TOPTOPLEPHAD_JetIdx_W2],eta_jet[TOPTOPLEPHAD_JetIdx_W2],phi_jet[TOPTOPLEPHAD_JetIdx_W2],E_jet[TOPTOPLEPHAD_JetIdx_W2]);
 			      LepTopB_TOPTOPLEPHAD.SetPtEtaPhiE(pt_jet[TOPTOPLEPHAD_JetIdx_LepTop],eta_jet[TOPTOPLEPHAD_JetIdx_LepTop],phi_jet[TOPTOPLEPHAD_JetIdx_LepTop],E_jet[TOPTOPLEPHAD_JetIdx_LepTop]);
+			      HadTopB_TOPTOPLEPHAD.SetPtEtaPhiE(pt_jet[TOPTOPLEPHAD_JetIdx_HadTop],eta_jet[TOPTOPLEPHAD_JetIdx_HadTop],phi_jet[TOPTOPLEPHAD_JetIdx_HadTop],E_jet[TOPTOPLEPHAD_JetIdx_HadTop]);
             Higgs_TOPTOPLEPHAD = Hb1_TOPTOPLEPHAD + Hb2_TOPTOPLEPHAD;
-            HadTop_TOPTOPLEPHBB  = Higgs_TOPTOPLEPHBB + HadTopB_TOPTOPLEPHBB;
             HadTop_TOPTOPLEPHAD  = Higgs_TOPTOPLEPHAD + HadTopB_TOPTOPLEPHAD;
+/*
+if(!isData)
+{
+    cout << "----- TOPTOPLEPHAD -----" << endl;
+    cout << " JetIndices: " << TOPTOPLEPHAD_JetIdx_W1 << " " << TOPTOPLEPHAD_JetIdx_W2 << " " << TOPTOPLEPHAD_JetIdx_LepTop << " " << TOPTOPLEPHAD_JetIdx_HadTop << endl;
+    cout << " - pt_jet[TOPTOPLEPHAD_JetIdx_W1]: " << pt_jet[TOPTOPLEPHAD_JetIdx_W1] << endl;
+    cout << " - pt_jet[TOPTOPLEPHAD_JetIdx_W2]: " << pt_jet[TOPTOPLEPHAD_JetIdx_W2] << endl;
+    cout << " - pt_jet[TOPTOPLEPHAD_JetIdx_LepTop]: " << pt_jet[TOPTOPLEPHAD_JetIdx_LepTop] << endl;
+    cout << " - pt_jet[TOPTOPLEPHAD_JetIdx_HadTop]: " << pt_jet[TOPTOPLEPHAD_JetIdx_HadTop] << endl;
+    cout << " - eta_jet[TOPTOPLEPHAD_JetIdx_W1]: " << eta_jet[TOPTOPLEPHAD_JetIdx_W1] << endl;
+    cout << " - eta_jet[TOPTOPLEPHAD_JetIdx_W2]: " << eta_jet[TOPTOPLEPHAD_JetIdx_W2] << endl;
+    cout << " - eta_jet[TOPTOPLEPHAD_JetIdx_LepTop]: " << eta_jet[TOPTOPLEPHAD_JetIdx_LepTop] << endl;
+    cout << " - eta_jet[TOPTOPLEPHAD_JetIdx_HadTop]: " << eta_jet[TOPTOPLEPHAD_JetIdx_HadTop] << endl;
+    cout << " - phi_jet[TOPTOPLEPHAD_JetIdx_W1]: " << phi_jet[TOPTOPLEPHAD_JetIdx_W1] << endl;
+    cout << " - phi_jet[TOPTOPLEPHAD_JetIdx_W2]: " << phi_jet[TOPTOPLEPHAD_JetIdx_W2] << endl;
+    cout << " - phi_jet[TOPTOPLEPHAD_JetIdx_LepTop]: " << phi_jet[TOPTOPLEPHAD_JetIdx_LepTop] << endl;
+    cout << " - phi_jet[TOPTOPLEPHAD_JetIdx_HadTop]: " << phi_jet[TOPTOPLEPHAD_JetIdx_HadTop] << endl;
+    cout << " - E_jet[TOPTOPLEPHAD_JetIdx_W1]: " << E_jet[TOPTOPLEPHAD_JetIdx_W1] << endl;
+    cout << " - E_jet[TOPTOPLEPHAD_JetIdx_W2]: " << E_jet[TOPTOPLEPHAD_JetIdx_W2] << endl;
+    cout << " - E_jet[TOPTOPLEPHAD_JetIdx_LepTop]: " << E_jet[TOPTOPLEPHAD_JetIdx_LepTop] << endl;
+    cout << " - E_jet[TOPTOPLEPHAD_JetIdx_HadTop]: " << E_jet[TOPTOPLEPHAD_JetIdx_HadTop] << endl;
 
+    cout << "HadTopMass (TOPTOPLEPHAD): " << HadTop_TOPTOPLEPHAD.M() << endl;
+    cout << "HiggsMass (TOPTOPLEPHAD): " << Higgs_TOPTOPLEPHAD.M() << endl;
+}
+*/
   	        //***********************************************FILLING PLOTS**********************************************
 				    MSPlot["NCSVv2Ljets"]->Fill(nJets_CSVL, datasets[d], true, Luminosity * ScaleFactor);
 				    MSPlot["NCSVv2Mjets"]->Fill(nJets_CSVM, datasets[d], true, Luminosity * ScaleFactor);
