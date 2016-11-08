@@ -1,8 +1,8 @@
 # FCNCAnalysis
 
-cmsrel CMSSW_7_6_0
+cmsrel CMSSW_8_0_21
 
-cd CMSSW_7_6_0/src/
+cd CMSSW_8_0_21/src/
 
 cmsenv
 
@@ -11,7 +11,7 @@ git clone https://github.com/TopBrussels/TopTreeProducer TopBrussels/TopTreeProd
 
 cd TopBrussels/TopTreeProducer/
 
-git checkout CMSSW_76X #This is the developer's branch for TTP. Change to the tag according to the samples you are using
+git checkout CMSSW_80X #This is the developer's branch for TTP. Change to the tag according to the samples you are using
 
 scram b clean
 
@@ -29,7 +29,7 @@ git clone https://github.com/TopBrussels/TopTreeAnalysisBase TopTreeAnalysisBase
 
 cd TopTreeAnalysisBase/
 
-git checkout CMSSW_76X
+git checkout CMSSW_80X
 
 make
 
@@ -41,8 +41,13 @@ git clone https://github.com/TopBrussels/FCNCAnalysis FCNCAnalysis
 
 cd FCNCAnalysis/
 
-git checkout CMSSW_76X_1L3B
+git checkout CMSSW_80X_1L3B
 
+cd TopKinFit
+
+make clean
+
+make
 
 
 # Workflow
@@ -51,14 +56,18 @@ git checkout CMSSW_76X_1L3B
 
 cd localsubmission
 
-python createSubmitScript.py %creates the submission scripts. You can run 1 interactively to make sure there are no bugs in the code
+python createSubmitScriptWithCopy.py #creates the submission scripts.
 
-source SubmitAll.sh
+cd SubmitScripts/DATE/CHANNEL #You can run 1 interactively to make sure there are no bugs in the code in the test directory
 
-check status with 'qstat -u kderoove'
+source SubmitAll.sh #submits the jobs. If you have a lot of jobs (>1500), you can run 'source MakeTXTforMassiveSubmission.sh; big-submission massiveJobSumbission.txt'
 
-cd ../../scripts #change the channel and date in Merger.py & MakePlots.C 
+check status with 'qstat -u kderoove' #Or on the webpage http://mon.iihe.ac.be/jobview/overview.html
 
-source PlotBomb.sh #This will merge your output controlPlots, as well as your ntuples into 1 file respectively and store them in the directory ../Merged, with the appropriate tag. At the same time, the controlplots will be stacked into the directory ../Plots
+cd ../../scripts #change the channel and date in Merger.py
+
+python Merge.py #merges the output from your Ntupler
+
+./TreeProcessor 0 0 _CHANNEL _DATE 0 #Runs the code on the merged trees and makes plots
 
 

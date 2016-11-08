@@ -86,10 +86,10 @@ struct HighestCSVBtag
 int main (int argc, char *argv[])
 {
 
-    //Checking Passed Arguments to ensure proper execution of MACRO
+    //Checking passed Arguments to ensure proper execution of MACRO
     if(argc < 14)
     {
-        std::cerr << "INVALID INPUT FROM XMLFILE.  CHECK XML IMPUT FROM SCRIPT.  " << argc << " ARGUMENTS HAVE BEEN PASSED." << std::endl;
+        std::cerr << "INVALID INPUT FROM XMLFILE.  CHECK XML IMPUT FROM SCRIPT.  " << argc << " ARGUMENTS HAVE BEEN passed." << std::endl;
         return 1;
     }
 
@@ -139,7 +139,13 @@ int main (int argc, char *argv[])
     string strJobNum = ss.str();
 
     //Initializing event counts etc.
-    int passed = 0;
+    int passed_FinalSelection = 0;
+    int passed_Step2 = 0;
+    int passed_Step3 = 0;
+    int passed_Step4 = 0;
+    int passed_Step5 = 0;
+    int passed_Step6 = 0;
+    int passed_Step7 = 0;
     int eventCount = 0;
 
     //Initializing b-tag WP
@@ -161,7 +167,7 @@ int main (int argc, char *argv[])
     // Initialize scale&reweight-handlings
     //////////////////////////////////////////////////////////////
     bool bLeptonSF = true;
-    bool bTagReweight_FillMChistos = false; //Needs to be set only once to true in order to produce the BTagEtaPtHistos
+    bool bTagReweight_FillMChistos = true; //Needs to be set only once to true in order to produce the BTagEtaPtHistos
     bool applyJES = true;
     bool applyJER = true;
     
@@ -205,8 +211,8 @@ int main (int argc, char *argv[])
     bool Electron = false;
     string electronID = "Medium";
     string btagger = "CSVv2M"; //Define which b-tagger + WP is used in the SF for the cutflow-table// valable: CSVv2M, cMVAM
-    bool printTriggers = true;
-    bool applyTriggers = true;
+    bool printTriggers = false;
+    bool applyTriggers = false;
     bool applyMVAJetComb = true;
     string channelpostfix = "";
 
@@ -273,6 +279,9 @@ int main (int argc, char *argv[])
     //////////////////////////////////////////////
     // Btag and lepton scale factors
     //////////////////////////////////////////////
+//    int mkdirstatus_btag = mkdir("BTagHistosPtEta",0777);
+
+
     BTagCalibration * bTagCalib_CSVv2;   
 //    BTagCalibration * bTagCalib_cMVA;
     BTagCalibrationReader * bTagReader_CSVv2M_mujets_central;
@@ -1174,7 +1183,7 @@ int main (int argc, char *argv[])
 				        if (debug)cout<<"Getting Jets"<<endl;
 				        selectedOrigJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Loose"); // ApplyJetId
 				        if (debug)cout<<"Getting Tight Muons"<<endl;
-				        selectedMuons                                       = r2selection.GetSelectedMuons(25,2.1,0.15, "Tight", "Spring15"); //Selected - Trigger: HLT_Iso(Tk)Mu24_v*
+				        selectedMuons                                       = r2selection.GetSelectedMuons(27,2.1,0.15, "Tight", "Spring15"); //Selected - Trigger: HLT_Iso(Tk)Mu24_v*
 				        if (debug)cout<<"Getting Loose Electrons"<<endl;
 				        selectedElectrons                                   = r2selection.GetSelectedElectrons(10,2.5,"Loose", "Spring16_80X", true); //Vetoed  
 				        if (debug)cout<<"Getting Loose Muons"<<endl;
@@ -1187,7 +1196,7 @@ int main (int argc, char *argv[])
 				        if (debug)cout<<"Getting Loose Muons"<<endl;
 				        selectedMuons                                       = r2selection.GetSelectedMuons(10, 2.4, 0.25,"Loose","Spring15"); //Vetoed
 				        if (debug)cout<<"Getting Electrons"<<endl;
-				        selectedElectrons                                   = r2selection.GetSelectedElectrons(35,2.4,electronID, "Spring16_80X", true); //Selected - Trigger:  HLT_Ele32_eta2p1_WPTight_Gsf_v*                
+				        selectedElectrons                                   = r2selection.GetSelectedElectrons(35,2.1,electronID, "Spring16_80X", true); //Selected - Trigger:  HLT_Ele32_eta2p1_WPTight_Gsf_v*                
 				        if (debug)cout<<"Getting Loose Electrons"<<endl;
 				        selectedExtraElectrons                              = r2selection.GetSelectedElectrons(10,2.5,"Loose", "Spring16_80X", true); //Vetoed
             }
@@ -1296,6 +1305,7 @@ int main (int argc, char *argv[])
             if (!isGoodPV) continue; // Check that there is a good Primary Vertex
             if(debug) cout << "Past cut 1: good PV selection" << endl;
             cutstep[1]=cutstep[1]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
+            passed_Step2++;
 
             bool trigged = false;
             if (applyTriggers)
@@ -1311,8 +1321,9 @@ int main (int argc, char *argv[])
             }
 
             if(!trigged) continue;
-            if(debug) cout << "Past cut 2: Passed trigger" << endl;
+            if(debug) cout << "Past cut 2: passed_FinalSelection trigger" << endl;
             cutstep[2]=cutstep[2]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
+            passed_Step3++;
 
             if (debug)
             {
@@ -1339,16 +1350,22 @@ int main (int argc, char *argv[])
                 exit(1);
             }
 
+            passed_Step4++;
+
 			      if(Muon && !Electron)
 			      {
-				          if(nLooseMu != 1) continue;
                   if( !(nEl == 0)) continue;
+                  passed_Step5++;
+				          if(nLooseMu != 1) continue;
+                  passed_Step6++;
 	                if (debug)	cout <<"Vetoed extra muons..."<<endl;
 			      }
 			      if(!Muon && Electron)
 			      {
-				          if(nLooseEl != 1) continue;
                   if( !(nMu == 0)) continue;
+                  passed_Step5++;
+				          if(nLooseEl != 1) continue;
+                  passed_Step6++;
 	                if (debug)	cout <<"Vetoed extra electrons..."<<endl;
 			      }
             if(debug) cout << "Past cut 5: Vetoed extra loose leptons" << endl;
@@ -1554,8 +1571,9 @@ int main (int argc, char *argv[])
             // Cut on nb of jets and b-jets
             //////////////////////////////////////////////////////////////////////
 			      if(selectedJets.size() < 3)  continue;
-            if(debug) cout << "Past cut 5: Passed number of jets cut" << endl;
+            if(debug) cout << "Past cut 5: passed_FinalSelection number of jets cut" << endl;
             cutstep[5]=cutstep[5]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
+            passed_Step7++;
 
             ///////////////////////////////////////////////////
             // Fill b-tag histos for scale factors
@@ -1577,15 +1595,15 @@ int main (int argc, char *argv[])
 
 //		  	    if(selectedMBJets.size() < 3) continue;
 //	          if (debug)	cout <<"Cut on nb b-jets..."<<endl;
-//            if(debug) cout << "Past cut 7: Passed cut on number of b-jets" << endl;
+//            if(debug) cout << "Past cut 7: passed_FinalSelection cut on number of b-jets" << endl;
 //            cutstep[6]=cutstep[6]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
 
 
             if(debug)
             {
-                cout<<"Selection Passed."<<endl;
+                cout<<"Selection passed_FinalSelection."<<endl;
             }
-            passed++;
+            passed_FinalSelection++;
 
             for (unsigned int i = 0; i < selectedJets.size(); i++) selectedJetsTLV.push_back(*selectedJets[i]);
             for (unsigned int i = 0; i < selectedMBJets.size(); i++) selectedBJetsTLV.push_back(*selectedMBJets[i]);
@@ -2411,17 +2429,27 @@ int main (int argc, char *argv[])
 	      tupfile->Write(); 
        	tupfile->Close();
         delete tupfile;
-        cout <<"n events passed  =  "<<passed <<endl;
+//        delete tup_ntupleinfo;
+//        delete tup_ObjectVars;
+        cout <<"n events passed_Step2  =  "<<passed_Step2 <<endl;
+        cout <<"n events passed_Step3  =  "<<passed_Step3 <<endl;
+        cout <<"n events passed_Step4  =  "<<passed_Step4 <<endl;
+        cout <<"n events passed_Step5  =  "<<passed_Step5 <<endl;
+        cout <<"n events passed_Step6  =  "<<passed_Step6 <<endl;
+        cout <<"n events passed_Step7  =  "<<passed_Step7 <<endl;
+        cout <<"n events passed_FinalSelection  =  "<<passed_FinalSelection <<endl;
         cout << "Event Count: " << eventCount << endl;
         //important: free memory
         treeLoader.UnLoadDataset();
 
-    delete kfit_SMttHypo;
-    delete kfit_TTHypo;
-    delete kfit_STHypo;
+        delete kfit_SMttHypo;
+        delete kfit_TTHypo;
+        delete kfit_STHypo;
+
     } //End Loop on Datasets
 
     fclose (eventlist);
+    delete eventlist;
 
 //    delete btwt_comb_central;
 //    delete btwt_comb_up;
@@ -2432,7 +2460,7 @@ int main (int argc, char *argv[])
 //    delete btwt_ttbar_central;
 //    delete btwt_ttbar_up;
 //    delete btwt_ttbar_down;
-    delete bTagReader_CSVv2M_mujets_central;
+//    delete bTagReader_CSVv2M_mujets_central;
 //    delete bTagReader_CSVv2M_mujets_up;
 //    delete bTagReader_CSVv2M_mujets_down;
 

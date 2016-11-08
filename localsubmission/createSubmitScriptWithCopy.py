@@ -35,9 +35,9 @@ for chan in channels:
     print "\nSearching list of sample used for ", chan, " channel!"
     # getting the appropriate xml file
     if "Mu" in chan:
-        tree = ET.ElementTree(file='../config/FullMcBkgdSamples_80X_Mu.xml')
+        tree = ET.ElementTree(file='../config/FullMcBkgdSamples_Mu.xml')
     elif "El" in chan:
-        tree = ET.ElementTree(file='../config/FullMcBkgdSamples_80X_El.xml')
+        tree = ET.ElementTree(file='../config/FullMcBkgdSamples_El.xml')
     else:
         print "Channel '", chan , "' is not a correct channel name. No tree has been loaded!"
         sys.exit()
@@ -103,7 +103,7 @@ for chan in channels:
             # append to the file the actual command 
             outfileTest = open (filenameTest, 'a')
             if not len(topTrees) == 0:
-                print >> outfileTest, commandString, topTrees[0], " ", chan , " " , 1 , " 0" , " 10000"
+                print >> outfileTest, commandString, "dcap://maite.iihe.ac.be:"+topTrees[0], " ", chan , " " , 1 , " 0" , " 10000"
                 
             N_job = 0
             N_file = 1

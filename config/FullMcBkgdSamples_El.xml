@@ -8,13 +8,15 @@
 
 <!--NOT SURE HOW I SHOULD USE THE DIFFERENT OPTION -->
 
+<data>
 <datasets>
 
 
 <!--DATA-->
 
-<d name="Data"     title="Data_SingleMuon"                          add="0"   color="0"      ls="1"  lw="2" normf="1"  EqLumi="11859.424311971"    xsection="1." PreselEff="0.0"  filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v0-Cert271036-279588-NoL1T/SingleElectron/crab_SingleElectron-Run2016B-PromptReco-v2crab1/160902_141556/0000/TOPTREE_*.root"/>
-<d name="Data"     title="Data_SingleElectron"                          add="1"   color="0"      ls="1"  lw="2" normf="1"  EqLumi="12765.8623308"    xsection="1." PreselEff="0.0"  filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v0-Cert271036-279588-NoL1T/SingleElectron/crab_SingleElectron-Run2016B-PromptReco-v2crab1/160902_141556/0000/TOPTREE_*.root"/>
+<d name="Data_Run2016B"     title="Data"                          add="0"   color="1"      ls="1"  lw="2" normf="1"  EqLumi="5884.443206432"    xsection="1." PreselEff="0.0"  filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v1-Cert_271036-283685_13TeV_PromptReco_Collisions16_JSON_NoL1T/TTP-CMSSW_80X_v1-Cert_271036-283685_13TeV_PromptReco_Collisions16_JSON_NoL1T--GT-80X_dataRun2_ICHEP16_repro_v0/SingleElectron/crab_SingleElectron-Run2016B-PromptReco-v2crab36/161031_152556/000*/TOPTREE_*.root"/>
+<d name="Data_Run2016C"     title="Data"                          add="0"   color="1"      ls="1"  lw="2" normf="1"  EqLumi="2596.873242666"    xsection="1." PreselEff="0.0"  filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v1-Cert_271036-283685_13TeV_PromptReco_Collisions16_JSON_NoL1T/TTP-CMSSW_80X_v1-Cert_271036-283685_13TeV_PromptReco_Collisions16_JSON_NoL1T--GT-80X_dataRun2_ICHEP16_repro_v0/SingleElectron/crab_SingleElectron-Run2016C-PromptReco-v2crab37/161031_152607/000*/TOPTREE_*.root"/>
+<d name="Data_Run2016D"     title="Data"                          add="0"   color="1"      ls="1"  lw="2" normf="1"  EqLumi="4284.545881728"    xsection="1." PreselEff="0.0"  filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v1-Cert_271036-283685_13TeV_PromptReco_Collisions16_JSON_NoL1T/TTP-CMSSW_80X_v1-Cert_271036-283685_13TeV_PromptReco_Collisions16_JSON_NoL1T--GT-80X_dataRun2_ICHEP16_repro_v0/SingleElectron/crab_SingleElectron-Run2016D-PromptReco-v2crab38/161031_183815/0000/TOPTREE_*.root"/>
 
 
 <!-- Main backrounds -->
@@ -25,7 +27,7 @@
 
 <!-- Other backgrounds -->
 
-<d name="DYJets-10to50"  title="DY+jets-10to50"               add="1"   color="214"  ls="1"  lw="2" normf="1"  EqLumi="1661.25126276"  xsection="18610"                   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v1/TTP-CMSSW_80X_v1--GT-80X_mcRun2_asymptotic_2016_miniAODv2_v1/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_113TeVamcatnloFXFXpythia8RunIISpring16MiniAODv2PUSpring1680XmcRun2asymptotic2016miniAODv2v0v1crab8/161028_094229/0000/TOPTREE_*.root" />
+<d name="DYJets-10to50"  title="DY+jets-10to50"               add="0"   color="214"  ls="1"  lw="2" normf="1"  EqLumi="1661.25126276"  xsection="18610"                   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v1/TTP-CMSSW_80X_v1--GT-80X_mcRun2_asymptotic_2016_miniAODv2_v1/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_113TeVamcatnloFXFXpythia8RunIISpring16MiniAODv2PUSpring1680XmcRun2asymptotic2016miniAODv2v0v1crab8/161028_094229/0000/TOPTREE_*.root" />
 <d name="DYJets50"  title="DY+jets-50"                              add="1"   color="214"  ls="1"  lw="2" normf="1"  EqLumi="497.744440975" xsection="57654"                    PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v1/TTP-CMSSW_80X_v1--GT-80X_mcRun2_asymptotic_2016_miniAODv2_v1/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_113TeVamcatnloFXFXpythia8RunIISpring16MiniAODv2PUSpring1680XmcRun2asymptotic2016miniAODv2v0v1crab11/161028_094252/0000/TOPTREE_*.root" />
 <d name="ST-s"  title="ST-s"                                                 add="1"   color="7"      ls="1"  lw="2" normf="1"  EqLumi="297619.047619" xsection="3.36"                        PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v1/TTP-CMSSW_80X_v1--GT-80X_mcRun2_asymptotic_2016_miniAODv2_v1/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/crab_catnlopythia8TuneCUETP8M1RunIISpring16MiniAODv2PUSpring1680XmcRun2asymptotic2016miniAODv2v0v1crab14/161028_094551/0000/TOPTREE_*.root" />
 <d name="ST-t"  title="ST-t"                                                  add="1"   color="7"      ls="1"  lw="2" normf="1"  EqLumi="280596.604895" xsection="70.69"                      PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v1/TTP-CMSSW_80X_v1--GT-80X_mcRun2_asymptotic_2016_miniAODv2_v1/ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/crab_TeVamcatnlopythia8TuneCUETP8M1RunIISpring16MiniAODv2premixwithHLT80XmcRun2asymptoticv14ext1v1crab133/161028_094621/0000/TOPTREE_*.root" />
@@ -45,12 +47,12 @@
 
 <!-- SIGNALS -->
 
-<d name="NP_overlay_TTtoTHToBB-1L-Kappa-hct_LepTop"  title="tt-tcH"  add="0"   color="kCyan"  ls="1"  lw="2" normf="1"  EqLumi="261651.676206" xsection="2.446"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/76X_v4/76_v4_SIGNAL_TT_TcH_LepTop/TT_TopLeptonicDecay_TH_1L3B_Eta_Hct/crab_TOPTREE_76_v4_SIGNAL_TT_TcH_LepTop/160708_081332/0000/*.root"/>
-<d name="NP_overlay_TTtoTHToBB-1L-Kappa-hct_LepAntiTop"  title="tt-tcH"  add="0"   color="kCyan"  ls="1"  lw="2" normf="1"  EqLumi="261651.676206" xsection="2.446"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/76X_v4/76_v4_SIGNAL_TT_TcH_LepAntiTop/TT_AntitopLeptonicDecay_TH_1L3B_Eta_Hct/crab_TOPTREE_76_v4_SIGNAL_TT_TcH_LepAntiTop/160708_081232/0000/*.root"/>
-<d name="NP_overlay_TTtoTHToBB-1L-Kappa-hut_LepTop"  title="tt-tuH"  add="0"   color="kCyan-7"  ls="1"  lw="2" normf="1"  EqLumi="228945.21668" xsection="2.446"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/76X_v4/76_v4_SIGNAL_TT_TuH_LepTop/TT_TopLeptonicDecay_TH_1L3B_Eta_Hut/crab_TOPTREE_76_v4_SIGNAL_TT_TuH_LepTop/160708_081129/0000/*.root"/>
-<d name="NP_overlay_TTtoTHToBB-1L-Kappa-hut_LepAntiTop"  title="tt-tuH"  add="0"   color="kCyan-7"  ls="1"  lw="2" normf="1"  EqLumi="228945.21668" xsection="2.446"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/76X_v4/76_v4_SIGNAL_TT_TuH_LepAntiTop/TT_AntitopLeptonicDecay_TH_1L3B_Eta_Hut/crab_TOPTREE_76_v4_SIGNAL_TT_TuH_LepAntiTop/160708_080947/0000/*.root"/>
-<d name="NP_overlay_ST_tHToBB_1L_Kappa_hct"  title="ST-tcH"  add="0"   color="kCyan+2"  ls="1"  lw="2" normf="1"  EqLumi="22636363.6364" xsection="0.11"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/76X_v4/76_v4_SIGNAL_ST_TcH/ST_TH_1L3B_Hct/crab_TOPTREE_76_v4_SIGNAL_ST_TcH/160708_081448/0000/*.root"/>
-<d name="NP_overlay_ST_tHToBB_1L_Kappa_hut"  title="ST-tuH"  add="0"   color="kCyan-6"  ls="1"  lw="2" normf="1"  EqLumi="2823863.63636" xsection="0.88"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/76X_v4/76_v4_SIGNAL_ST_TuH/ST_TH_1L3B/crab_TOPTREE_76_v4_SIGNAL_ST_TuH/160708_081650/0000/*.root"/>
+<d name="NP_overlay_TTtoTHToBB-1L-Kappa-hct_LepTop"  title="tt-tcH"  add="1"   color="kCyan"  ls="1"  lw="2" normf="1"  EqLumi="261651.676206" xsection="2.446"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/76X_v4/76_v4_SIGNAL_TT_TcH_LepTop/TT_TopLeptonicDecay_TH_1L3B_Eta_Hct/crab_TOPTREE_76_v4_SIGNAL_TT_TcH_LepTop/160708_081332/0000/*.root"/>
+<d name="NP_overlay_TTtoTHToBB-1L-Kappa-hct_LepAntiTop"  title="tt-tcH"  add="1"   color="kCyan"  ls="1"  lw="2" normf="1"  EqLumi="261651.676206" xsection="2.446"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/76X_v4/76_v4_SIGNAL_TT_TcH_LepAntiTop/TT_AntitopLeptonicDecay_TH_1L3B_Eta_Hct/crab_TOPTREE_76_v4_SIGNAL_TT_TcH_LepAntiTop/160708_081232/0000/*.root"/>
+<d name="NP_overlay_TTtoTHToBB-1L-Kappa-hut_LepTop"  title="tt-tuH"  add="1"   color="kCyan-7"  ls="1"  lw="2" normf="1"  EqLumi="228945.21668" xsection="2.446"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/76X_v4/76_v4_SIGNAL_TT_TuH_LepTop/TT_TopLeptonicDecay_TH_1L3B_Eta_Hut/crab_TOPTREE_76_v4_SIGNAL_TT_TuH_LepTop/160708_081129/0000/*.root"/>
+<d name="NP_overlay_TTtoTHToBB-1L-Kappa-hut_LepAntiTop"  title="tt-tuH"  add="1"   color="kCyan-7"  ls="1"  lw="2" normf="1"  EqLumi="228945.21668" xsection="2.446"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/76X_v4/76_v4_SIGNAL_TT_TuH_LepAntiTop/TT_AntitopLeptonicDecay_TH_1L3B_Eta_Hut/crab_TOPTREE_76_v4_SIGNAL_TT_TuH_LepAntiTop/160708_080947/0000/*.root"/>
+<d name="NP_overlay_ST_tHToBB_1L_Kappa_hct"  title="ST-tcH"  add="1"   color="kCyan+2"  ls="1"  lw="2" normf="1"  EqLumi="22636363.6364" xsection="0.11"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/76X_v4/76_v4_SIGNAL_ST_TcH/ST_TH_1L3B_Hct/crab_TOPTREE_76_v4_SIGNAL_ST_TcH/160708_081448/0000/*.root"/>
+<d name="NP_overlay_ST_tHToBB_1L_Kappa_hut"  title="ST-tuH"  add="1"   color="kCyan-6"  ls="1"  lw="2" normf="1"  EqLumi="2823863.63636" xsection="0.88"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/76X_v4/76_v4_SIGNAL_ST_TuH/ST_TH_1L3B/crab_TOPTREE_76_v4_SIGNAL_ST_TuH/160708_081650/0000/*.root"/>
 
 
 
@@ -65,4 +67,5 @@
 <!-- LuminosityError has to be relative [0-1], ex: 0.1 means 10% uncertainty on luminosity -->
 <!-- other errors should be absolute -->
 </analysis>
+</data>
 
