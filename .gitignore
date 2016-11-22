@@ -23,3 +23,7 @@ scripts/ST_trainingNormedHistos/
 TopKinFit/kinfitDict_rdict.pcm
 TopKinFit/libKinFit.so
 scripts/*.root
+scripts/prompt_*.txt
+scripts/his/
+scripts/mine/
+TreeMaker_sycnhEx

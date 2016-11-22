@@ -81,7 +81,9 @@ int main(int argc, char *argv[])
     clock_t start = clock();
 
 
-    string xmlNom = "config/FullMcBkgdSamples_TreeProcessor.xml";
+    string xmlNom;
+    if(channel == "_El") xmlNom = "config/FullMcBkgdSamples_El.xml";
+    if(channel == "_Mu") xmlNom = "config/FullMcBkgdSamples_Mu.xml";
     TString TreePath = "Merged/Ntuples" + channel + "/Ntuples" + date;
 
   	const char *xmlfile = xmlNom.c_str();
@@ -98,6 +100,7 @@ int main(int argc, char *argv[])
     //Format of MSPlots: MultiSamplePlot(vector<Dataset*> datasets, string PlotName, int Nbins, float Min, float Max, string XaxisLabel, string YaxisLabel, string Text, string Units)
 
     MSPlot["NPV"] = new MultiSamplePlot(datasets, "NPV", 41, -0.5, 40.5, "Number of PV","Events", category); 
+    MSPlot["NPU"] = new MultiSamplePlot(datasets, "NPU", 41, -0.5, 40.5, "Number of PU","Events", category); 
     MSPlot["NCSVv2Ljets"] = new MultiSamplePlot(datasets, "NCSVv2Ljets", 11, -0.5, 10.5, "Number of CSVv2 L jets","Events", category); 
     MSPlot["NCSVv2Mjets"] = new MultiSamplePlot(datasets, "NCSVv2Mjets", 11, -0.5, 10.5, "Number of CSVv2 M jets","Events", category); 
     MSPlot["NCSVv2Tjets"] = new MultiSamplePlot(datasets, "NCSVv2Tjets", 11, -0.5, 10.5, "Number of CSVv2 T jets","Events", category); 
@@ -119,6 +122,9 @@ int main(int argc, char *argv[])
     MSPlot["HadTopMass_TOPTOPLEPHBB"] = new MultiSamplePlot(datasets, "HadTopMass_TOPTOPLEPHBB", 50, 60., 180., "HadTopMass mass","Events", category, "GeV");
     MSPlot["HadTopMass_TOPHLEPBB_hct"] = new MultiSamplePlot(datasets, "HadTopMass_TOPHLEPBB_hct", 50, 60., 180., "HadTopMass mass","Events", category, "GeV");
     MSPlot["HadTopMass_TOPHLEPBB_hut"] = new MultiSamplePlot(datasets, "HadTopMass_TOPHLEPBB_hut", 50, 60., 180., "HadTopMass mass","Events", category, "GeV");
+
+    MSPlot["MC_TopPt"] = new MultiSamplePlot(datasets, "MC_TopPt", 60, 80., 250., "Top Pt (Gen)","Events", category, "GeV");
+    MSPlot["MC_AntiTopPt"] = new MultiSamplePlot(datasets, "MC_AntiTopPt", 60, 80., 250., "Top Pt (Gen)","Events", category, "GeV");
 
   
  
@@ -218,6 +224,7 @@ int main(int argc, char *argv[])
         Double_t W_MuonTrigSF_Runs274094to276097 = 1;//Used in calculation for W_MuonTrigSF
         Double_t W_ElectronIDSF; //One of the 2 components for the total electron SF
         Double_t W_ElectronRecoSF; //One of the 2 components for the total electron SF
+        Double_t W_TopPtReweighing;
       
         Int_t run_num;
         Int_t evt_num;
@@ -313,6 +320,9 @@ int main(int argc, char *argv[])
         Double_t MVA_TOPTOPLEPHBB = -999.;
         Double_t MVA_TOPHLEPBB_hut = -999.;
         Double_t MVA_TOPHLEPBB_hct = -999.;
+
+        Double_t MC_TopPt;
+        Double_t MC_AntiTopPt;
         
         // Weights
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_fleptonSF",&W_fleptonSF); //Contains, if muon, the  isoSF, idSF & trigSF
@@ -337,6 +347,7 @@ int main(int argc, char *argv[])
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_MuonTrigSF_Runs274094to276097",&W_MuonTrigSF_Runs274094to276097);  
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_ElectronIDSF",&W_ElectronIDSF);  
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_ElectronRecoSF",&W_ElectronRecoSF);  
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_TopPtReweighing",&W_TopPtReweighing);  
 
         ttree[(dataSetName).c_str()]->SetBranchAddress("I_run_num",&run_num);
         ttree[(dataSetName).c_str()]->SetBranchAddress("I_evt_num",&evt_num);
@@ -434,6 +445,9 @@ int main(int argc, char *argv[])
         ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPHLEPBB_hut",&MVA_TOPHLEPBB_hut);
         ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPHLEPBB_hct",&MVA_TOPHLEPBB_hct);
                   
+        //MC variables (affected by TopPtReweighing
+        ttree[(dataSetName).c_str()]->SetBranchAddress("MC_TopPt",&MC_TopPt);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("MC_AntiTopPt",&MC_AntiTopPt);
 
         double nloSF = 1.;
         int nPos = 0; 
@@ -448,6 +462,17 @@ int main(int argc, char *argv[])
             }
             nloSF *= ((double) (nPos - nNeg))/((double) (nPos + nNeg));
         }		
+
+        Double_t average_TopPtWeight = 0;
+        if(dataSetName.find("TTJets") != std::string::npos)
+        {
+            for (int k = 0; k<nEntries; k++)
+            {
+                ttree[dataSetName.c_str()]->GetEntry(k);
+                average_TopPtWeight = average_TopPtWeight + W_TopPtReweighing;
+            }
+            average_TopPtWeight = average_TopPtWeight/nEntries;
+        }
 		
   	    //***********************************************RUNNING OVER EVENTS**********************************************
 		    for (int j = 0; j<nEntries; j++)
@@ -493,15 +518,16 @@ int main(int argc, char *argv[])
 			      if(!isData)
 			      {
 //			          ScaleFactor = ScaleFactor * W_puSF;
-//			          ScaleFactor = ScaleFactor * W_fleptonSF;
+			          ScaleFactor = ScaleFactor * W_fleptonSF;
 //			          ScaleFactor = ScaleFactor * W_btagWeight_CSVv2M_mujets_central;
-//			          ScaleFactor = ScaleFactor * nloSF;
-//                  ScaleFactor = ScaleFactor * W_btagWeight_shape;
+			          ScaleFactor = ScaleFactor * nloSF;
+//                ScaleFactor = ScaleFactor * W_btagWeight_shape;
+                if(dataSetName.find("TTJets") != std::string::npos) ScaleFactor = ScaleFactor * W_TopPtReweighing/average_TopPtWeight;
 			      }
 			      if(debug && !isData)
 			      {
                 cout << "----- Event " << j << "Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
-                  cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
+                cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
 			          cout << "   SCALE FACTOR is: " << ScaleFactor << endl;
 			      }
 			      
@@ -574,6 +600,7 @@ if(!isData)
             MSPlot["LeptonEta"]->Fill(eta_lepton, datasets[d], true, Luminosity * ScaleFactor);
             MSPlot["LeptonPhi"]->Fill(phi_lepton, datasets[d], true, Luminosity * ScaleFactor);
             MSPlot["NPV"]->Fill(nvtx, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["NPU"]->Fill(npu, datasets[d], true, Luminosity * ScaleFactor);
             for(int i_Jet = 0; i_Jet < nJets; i_Jet++)
             {
                 MSPlot["JetPt"]->Fill(pt_jet[i_Jet], datasets[d], true, Luminosity * ScaleFactor);
@@ -588,6 +615,8 @@ if(!isData)
             MSPlot["Hmass_TOPHLEPBB_hut"]->Fill(Higgs_TOPHLEPBB_hut.M(), datasets[d], true, Luminosity * ScaleFactor);
             MSPlot["HadTopMass_TOPTOPLEPHAD"]->Fill(HadTop_TOPTOPLEPHAD.M(), datasets[d], true, Luminosity * ScaleFactor);
             MSPlot["HadTopMass_TOPTOPLEPHBB"]->Fill(HadTop_TOPTOPLEPHBB.M(), datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["MC_TopPt"]->Fill(MC_TopPt, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["MC_AntiTopPt"]->Fill(MC_AntiTopPt, datasets[d], true, Luminosity * ScaleFactor);
 			                
 		  }//for-loop events
 		              

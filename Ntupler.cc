@@ -3,11 +3,6 @@
 ////              --- Kevin Deroover                                                        ///
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-// ttbar @ NLO 13 TeV:                              //ttbar @ NNLO 8 TeV:
-//all-had ->679 * .46 = 312.34                      //all-had -> 245.8 * .46 = 113.068
-//semi-lep ->679 *.45 = 305.55                      //semi-lep-> 245.8 * .45 = 110.61
-//di-lep-> 679* .09 = 61.113                        //di-lep ->  245.8 * .09 = 22.122
-
 #define _USE_MATH_DEFINES
 #include "TStyle.h"
 #include "TPaveText.h"
@@ -167,7 +162,7 @@ int main (int argc, char *argv[])
     // Initialize scale&reweight-handlings
     //////////////////////////////////////////////////////////////
     bool bLeptonSF = true;
-    bool bTagReweight_FillMChistos = true; //Needs to be set only once to true in order to produce the BTagEtaPtHistos
+    bool bTagReweight_FillMChistos = false; //Needs to be set only once to true in order to produce the BTagEtaPtHistos
     bool applyJES = true;
     bool applyJER = true;
     
@@ -209,11 +204,10 @@ int main (int argc, char *argv[])
     bool debug = false;
     bool Muon = false;
     bool Electron = false;
-    string electronID = "Medium";
     string btagger = "CSVv2M"; //Define which b-tagger + WP is used in the SF for the cutflow-table// valable: CSVv2M, cMVAM
     bool printTriggers = false;
-    bool applyTriggers = false;
-    bool applyMVAJetComb = true;
+    bool applyTriggers = true;
+    bool applyMVAJetComb = false;
     string channelpostfix = "";
 
     //Setting Lepton Channels
@@ -231,14 +225,12 @@ int main (int argc, char *argv[])
         cout << " --> Using the Muon channel..." << endl;
         channelpostfix = "_Mu";
     	  eventlist = fopen("EventInfo_mu.txt","w");
-    	  electronID = "Loose";
     }
     else if(!Muon && Electron)
     {
         cout << " --> Using the Electron channel..." << endl;
         channelpostfix = "_El";
     	  eventlist = fopen("EventInfo_El.txt","w");
-    	  electronID = "Medium";
     }
     else 
     {
@@ -256,7 +248,7 @@ int main (int argc, char *argv[])
     anaEnv.FatJetCollection = "FatJets_slimmedJetsAK8";
     anaEnv.METCollection = "PFMET_slimmedMETs";
     anaEnv.MuonCollection = "Muons_slimmedMuons";
-    anaEnv.ElectronCollection = "Electrons_slimmedElectrons";
+    anaEnv.ElectronCollection = "Electrons_calibratedPatElectrons";
     anaEnv.NPGenEventCollection = "NPGenEvent";
     anaEnv.MCParticlesCollection = "MCParticles";
     anaEnv.loadFatJetCollection = false;
@@ -279,7 +271,7 @@ int main (int argc, char *argv[])
     //////////////////////////////////////////////
     // Btag and lepton scale factors
     //////////////////////////////////////////////
-//    int mkdirstatus_btag = mkdir("BTagHistosPtEta",0777);
+    int mkdirstatus_btag = mkdir("BTagHistosPtEta",0777);
 
 
     BTagCalibration * bTagCalib_CSVv2;   
@@ -350,10 +342,7 @@ int main (int argc, char *argv[])
         }
         else if(Electron)
         {
-                if(electronID == "Loose") electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_CutBasedLooseID.root","EGamma_SF2D",true,false,false);
-                if(electronID == "Medium") electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_CutBasedMediumID.root","EGamma_SF2D",true,false,false);
-                if(electronID == "Tight") electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_CutBasedTightID.root","EGamma_SF2D",true,false,false);
-                if(electronID == "Veto") electronSFWeightReco = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_CutBasedVeto.root","EGamma_SF2D",true,false,false);
+                electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_CutBasedMediumID.root","EGamma_SF2D",true,false,false);
                 electronSFWeightReco = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_GsfTrackingEff.root","EGamma_SF2D",true,false,false);
         }
     }
@@ -744,7 +733,9 @@ int main (int argc, char *argv[])
         //////////////////////////////////////////////////////////////////////////////////////////////
         // Initializing TopKinFit + MVA for correct jet-comb selection
         //////////////////////////////////////////////////////////////////////////////////////////////
-        int nToys = 500;
+        TRandom3 *rnd = new TRandom3(666);
+
+        int nToys = 50;
         std::string pdfFileName_SMttHypo = "TopKinFit/test/GenAnalysis/TopTopLepHad/pdf.root";
         std::string pdfFileName_TTHypo = "TopKinFit/test/GenAnalysis/TopTopLepHbb/pdf.root";
         std::string pdfFileName_STHypo = "TopKinFit/test/GenAnalysis/TopHLepbb/pdf.root";
@@ -1185,7 +1176,7 @@ int main (int argc, char *argv[])
 				        if (debug)cout<<"Getting Tight Muons"<<endl;
 				        selectedMuons                                       = r2selection.GetSelectedMuons(27,2.1,0.15, "Tight", "Spring15"); //Selected - Trigger: HLT_Iso(Tk)Mu24_v*
 				        if (debug)cout<<"Getting Loose Electrons"<<endl;
-				        selectedElectrons                                   = r2selection.GetSelectedElectrons(10,2.5,"Loose", "Spring16_80X", true); //Vetoed  
+				        selectedElectrons                                   = r2selection.GetSelectedElectrons(10,2.5,"Loose", "Spring16_80X", true, true); //Vetoed  
 				        if (debug)cout<<"Getting Loose Muons"<<endl;
 				        selectedExtraMuons                                  = r2selection.GetSelectedMuons(10, 2.4, 0.25,"Loose","Spring15"); //Vetoed         
             }
@@ -1196,9 +1187,9 @@ int main (int argc, char *argv[])
 				        if (debug)cout<<"Getting Loose Muons"<<endl;
 				        selectedMuons                                       = r2selection.GetSelectedMuons(10, 2.4, 0.25,"Loose","Spring15"); //Vetoed
 				        if (debug)cout<<"Getting Electrons"<<endl;
-				        selectedElectrons                                   = r2selection.GetSelectedElectrons(35,2.1,electronID, "Spring16_80X", true); //Selected - Trigger:  HLT_Ele32_eta2p1_WPTight_Gsf_v*                
+				        selectedElectrons                                   = r2selection.GetSelectedElectrons(35,2.1,"Medium", "Spring16_80X", true, true); //Selected - Trigger:  HLT_Ele32_eta2p1_WPTight_Gsf_v*                
 				        if (debug)cout<<"Getting Loose Electrons"<<endl;
-				        selectedExtraElectrons                              = r2selection.GetSelectedElectrons(10,2.5,"Loose", "Spring16_80X", true); //Vetoed
+				        selectedExtraElectrons                              = r2selection.GetSelectedElectrons(10,2.5,"Loose", "Spring16_80X", true, true); //Vetoed
             }
             if(Muon)
             {
@@ -1440,7 +1431,16 @@ int main (int argc, char *argv[])
                 }                    
 			      }
             if(debug) cout << "Cleaned jets from isolated leptons" << endl;
-		
+if(evt_num == 4465955)
+{
+      cout << "Muon" << endl;
+      cout << "   pt=" << selectedMuons[0]->Pt() << " eta=" << selectedMuons[0]->Eta() << " phi=" << selectedMuons[0]->Phi() << endl;
+      for(int seljet = 0; seljet <selectedOrigJets.size();seljet++)
+      {
+          cout << "Jet #" << seljet << endl;
+          cout << "   pt=" << selectedJets[seljet]->Pt() << " eta=" << selectedJets[seljet]->Eta() << " phi=" << selectedJets[seljet]->Phi() << endl;
+      }
+}		
 			      /////////////////////////////////////////////
 			      // Make TLorentzVectors //
 			      ////////////////////////////////////////////
@@ -2400,7 +2400,11 @@ int main (int argc, char *argv[])
 			      if(Muon && !Electron)
 			      fprintf(eventlist,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %6.1f  %+4.2f    %d %d \n", event->runId(), event->lumiBlockId(), event->eventId(), selectedMuons[0]->type(), selectedMuons[0]->Pt(), selectedMuons[0]->Eta(), selectedMuons[0]->Phi(),mets[0]->Et(), mets[0]->Phi(),selectedJets.size(), selectedMBJets.size());
 			      else if(!Muon && Electron)
-			      fprintf(eventlist,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %6.1f  %+4.2f    %d %d \n", event->runId(), event->lumiBlockId(), event->eventId(), selectedElectrons[0]->type(), selectedElectrons[0]->Pt(), selectedElectrons[0]->Eta(), selectedElectrons[0]->Phi(),mets[0]->Et(), mets[0]->Phi(),selectedJets.size(), selectedMBJets.size());
+			      {
+			        fprintf(eventlist,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %6.1f  %+4.2f    %d %d \n", event->runId(), event->lumiBlockId(), event->eventId(), selectedElectrons[0]->type(), selectedElectrons[0]->Pt(), selectedElectrons[0]->Eta(), selectedElectrons[0]->Phi(),mets[0]->Et(), mets[0]->Phi(),selectedJets.size(), selectedMBJets.size(), selectedElectrons[0]->superClusterEta(), selectedElectrons[0]->deltaEtaIn(), selectedElectrons[0]->deltaPhiIn(), selectedElectrons[0]->sigmaIEtaIEta_full5x5(), selectedElectrons[0]->hadronicOverEm(), selectedElectrons[0]->ioEmIoP(), r2selection.pfElectronIso(selectedElectrons[0]), selectedElectrons[0]->missingHits());
+//               fprintf(eventlist,"%6d %6d %10d  %6.3f %6.5f %6.5f %6.5f %6.5f %6.5f %6.5f %6d %6.5f %6.5f %6.5f %6.5f %6.5f \n", event->runId(), event->lumiBlockId(), event->eventId(), selectedElectrons[0]->superClusterEta(), selectedElectrons[0]->deltaEtaIn(), selectedElectrons[0]->deltaPhiIn(), selectedElectrons[0]->sigmaIEtaIEta_full5x5(), selectedElectrons[0]->hadronicOverEm(), selectedElectrons[0]->ioEmIoP(), r2selection.pfElectronIso(selectedElectrons[0]), selectedElectrons[0]->missingHits(), selectedElectrons[0]->chargedHadronIso(3), selectedElectrons[0]->neutralHadronIso(3), selectedElectrons[0]->photonIso(3), rho, r2selection.GetElectronIsoCorrType(selectedElectrons[0])/rho);
+//                fprintf(eventlist,"%6d %6d %10d  %6.5f %6.5f %6.5f %6.5f %6.5f \n", event->runId(), event->lumiBlockId(), event->eventId(), selectedElectrons[0]->neutralHadronIso(3), selectedElectrons[0]->photonIso(3), selectedElectrons[0]->chargedHadronIso(3), rho, r2selection.GetElectronIsoCorrType(selectedElectrons[0],true)/rho);
+            }
 
             if(debug)
             {
@@ -2426,9 +2430,12 @@ int main (int argc, char *argv[])
         //tup_ntupleinfo->Print("all");	          
         //tup_ObjectVars->Print("all");
 
-	      tupfile->Write(); 
+        tupfile->cd();
+        tup_ntupleinfo->Write();
+        tup_ObjectVars->Write();
+
        	tupfile->Close();
-        delete tupfile;
+//        delete tupfile;
 //        delete tup_ntupleinfo;
 //        delete tup_ObjectVars;
         cout <<"n events passed_Step2  =  "<<passed_Step2 <<endl;
@@ -2442,28 +2449,14 @@ int main (int argc, char *argv[])
         //important: free memory
         treeLoader.UnLoadDataset();
 
-        delete kfit_SMttHypo;
-        delete kfit_TTHypo;
-        delete kfit_STHypo;
+      delete btwt_CSVv2M_mujets_central;
 
     } //End Loop on Datasets
 
     fclose (eventlist);
-    delete eventlist;
 
-//    delete btwt_comb_central;
-//    delete btwt_comb_up;
-//    delete btwt_comb_down;
-    delete btwt_CSVv2M_mujets_central;
-//    delete btwt_CSVv2M_mujets_up;
-//    delete btwt_CSVv2M_mujets_down;
-//    delete btwt_ttbar_central;
-//    delete btwt_ttbar_up;
-//    delete btwt_ttbar_down;
-//    delete bTagReader_CSVv2M_mujets_central;
-//    delete bTagReader_CSVv2M_mujets_up;
-//    delete bTagReader_CSVv2M_mujets_down;
 
+  
 
     cout << "It took us " << ((double)clock() - start) / CLOCKS_PER_SEC << " to run the program" << endl;
     cout << "********************************************" << endl;

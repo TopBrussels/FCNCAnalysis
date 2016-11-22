@@ -9,7 +9,7 @@ import shutil
 
 # getting the appropriate xml file & defining channel and production date of TreeMakerTrees
 channel = "_El"
-date = "_28_10_2016"
+date = "_9_11_2016"
 
 
 if channel == "_Mu":
