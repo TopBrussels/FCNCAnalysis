@@ -277,7 +277,7 @@ int main (int argc, char *argv[])
   anaEnv.FatJetCollection = "FatJets_slimmedJetsAK8";
   anaEnv.METCollection = "PFMET_slimmedMETs";
   anaEnv.MuonCollection = "Muons_slimmedMuons";
-  anaEnv.ElectronCollection = "Electrons_slimmedElectrons";
+  anaEnv.ElectronCollection = "Electrons_calibratedPatElectrons";
   anaEnv.GenJetCollection   = "GenJets_slimmedGenJets";
   //  anaEnv.TrackMETCollection = "";
   //  anaEnv.GenEventCollection = "GenEvent";
@@ -481,7 +481,7 @@ int main (int argc, char *argv[])
     LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring16MiniAODv2-Asympt.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting//pileup_2016Data80X_Run273158-276811Cert.root", "pileup", "pileup");
     
     //MuonSFWeight (const string &sfFile, const string &dataOverMC, const bool &extendRange, const bool &debug, const bool &printWarning)
-    
+   /* 
     MuonSFWeight* muonSFWeightID_T = new MuonSFWeight(CaliPath+"LeptonSF/"+"MuonID_Z_RunCD_Reco76X_Feb15.root", "MC_NUM_TightIDandIPCut_DEN_genTracks_PAR_pt_spliteta_bin1/abseta_pt_ratio",true, printLeptonSF,printLeptonSF);
     MuonSFWeight* muonSFWeightID_M = new MuonSFWeight(CaliPath+"LeptonSF/"+"MuonID_Z_RunCD_Reco76X_Feb15.root", "MC_NUM_MediumID_DEN_genTracks_PAR_pt_spliteta_bin1/abseta_pt_ratio",true,  printLeptonSF, printLeptonSF);
     MuonSFWeight* muonSFWeightID_L = new MuonSFWeight(CaliPath+"LeptonSF/"+"MuonID_Z_RunCD_Reco76X_Feb15.root", "MC_NUM_LooseID_DEN_genTracks_PAR_pt_spliteta_bin1/abseta_pt_ratio", true, printLeptonSF, printLeptonSF);
@@ -491,37 +491,43 @@ int main (int argc, char *argv[])
     MuonSFWeight* muonSFWeightIso_LM = new MuonSFWeight(CaliPath+"LeptonSF/"+"MuonIso_Z_RunCD_Reco76X_Feb15.root", "MC_NUM_LooseRelIso_DEN_MediumID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true,printLeptonSF, printLeptonSF);  // Loose RelIso, Medium ID
     
     
-    
+    */
     
     string electronFile= "CutBasedID_TightWP_76X_18Feb.txt_SF2D.root";
     string electronRecoFile = "eleRECO.txt.egamma_SF2D.root";
     string elecHistName = "EGamma_SF2D";
-    ElectronSFWeight* electronSFWeight = new ElectronSFWeight (CaliPath+"LeptonSF/"+electronFile,elecHistName, true,printLeptonSF, printLeptonSF); // (... , ... , debug, print warning)  i
-    ElectronSFWeight* electronSFWeightReco = new ElectronSFWeight(CaliPath+"LeptonSF/"+electronRecoFile,elecHistName, true,printLeptonSF, printLeptonSF);
+//    ElectronSFWeight* electronSFWeight = new ElectronSFWeight (CaliPath+"LeptonSF/"+electronFile,elecHistName, true,printLeptonSF, printLeptonSF); // (... , ... , debug, print warning)  i
+ //   ElectronSFWeight* electronSFWeightReco = new ElectronSFWeight(CaliPath+"LeptonSF/"+electronRecoFile,elecHistName, true,printLeptonSF, printLeptonSF);
     
+   ElectronSFWeight* electronSFWeight = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_CutBasedMediumID.root","EGamma_SF2D",true,false,false);
+   ElectronSFWeight* electronSFWeightReco = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_GsfTrackingEff.root","EGamma_SF2D",true,false,false);
+     
     vCorrParam.clear();
-    if (isData)
-    {
-      JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters(pathCalJEC+"Fall15_25nsV2_DATA_L1FastJet_AK4PFchs.txt");
-      vCorrParam.push_back(*L1JetCorPar);
-      JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters(pathCalJEC+"Fall15_25nsV2_DATA_L2Relative_AK4PFchs.txt");
-      vCorrParam.push_back(*L2JetCorPar);
-      JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters(pathCalJEC+"Fall15_25nsV2_DATA_L3Absolute_AK4PFchs.txt");
-      vCorrParam.push_back(*L3JetCorPar);
-      JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters(pathCalJEC+"Fall15_25nsV2_DATA_L2L3Residual_AK4PFchs.txt");
-      vCorrParam.push_back(*L2L3ResJetCorPar);
-    }
-    else
-    {
-      JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters(pathCalJEC+"Fall15_25nsV2_MC_L1FastJet_AK4PFchs.txt");
-      vCorrParam.push_back(*L1JetCorPar);
-      JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters(pathCalJEC+"Fall15_25nsV2_MC_L2Relative_AK4PFchs.txt");
-      vCorrParam.push_back(*L2JetCorPar);
-      JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters(pathCalJEC+"Fall15_25nsV2_MC_L3Absolute_AK4PFchs.txt");
-      vCorrParam.push_back(*L3JetCorPar);
-    }
-    JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty(pathCalJEC+"Fall15_25nsV2_MC_Uncertainty_AK4PFchs.txt");
-    
+     if(dName.find("Data")!=string::npos)
+        {
+            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV6/Spring16_25nsV6_DATA_L1FastJet_AK4PFchs.txt");
+            vCorrParam.push_back(*L1JetCorPar);
+            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV6/Spring16_25nsV6_DATA_L2Relative_AK4PFchs.txt");
+            vCorrParam.push_back(*L2JetCorPar);
+            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV6/Spring16_25nsV6_DATA_L3Absolute_AK4PFchs.txt");
+            vCorrParam.push_back(*L3JetCorPar);
+            JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV6/Spring16_25nsV6_DATA_L2L3Residual_AK4PFchs.txt");
+            vCorrParam.push_back(*L2L3ResJetCorPar);
+            isData = true;
+        }
+        else
+        {
+            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV6/Spring16_25nsV6_MC_L1FastJet_AK4PFchs.txt");
+            vCorrParam.push_back(*L1JetCorPar);
+            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV6/Spring16_25nsV6_MC_L2Relative_AK4PFchs.txt");
+            vCorrParam.push_back(*L2JetCorPar);
+            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV6/Spring16_25nsV6_MC_L3Absolute_AK4PFchs.txt");
+            vCorrParam.push_back(*L3JetCorPar);
+        }
+        JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV6/Spring16_25nsV6_DATA_Uncertainty_AK4PFchs.txt");
+  
+
+ 
     JetTools *jetTools = new JetTools(vCorrParam, jecUnc, true); //true means redo also L1
     
     ////////////////////////////////////////////////////////////
@@ -1150,6 +1156,8 @@ int main (int argc, char *argv[])
     bool   HBHEnoise = false;
     bool   HBHEIso = false;
     bool   CSCTight = false;
+    bool badchan = false; 
+    bool badmu = false; 
     bool   EcalDead = false;
     bool    eeBad = false;
     bool   lep3 = false;
@@ -1229,6 +1237,8 @@ int main (int argc, char *argv[])
       HBHEnoise = false;
       HBHEIso = false;
       CSCTight = false;
+      badchan = false; 
+      badmu = false; 
       EcalDead = false;
       eeBad = false;
       eventweight = 1;
@@ -1271,10 +1281,14 @@ int main (int argc, char *argv[])
       evt_num = event->eventId();
       HBHEnoise = event->getHBHENoiseFilter();
       HBHEIso = event->getHBHENoiseIsoFilter();
-      CSCTight = event->getCSCTightHalo2015Filter();
+      CSCTight = event->getglobalTightHalo2016Filter();
       EcalDead = event->getEcalDeadCellTriggerPrimitiveFilter();
       eeBad = event->getEEBadScFilter();
-      
+      badchan   = event-> getBadChCandFilter(); 
+      badmu	    = event-> getBadPFMuonFilter();      
+
+
+
       lumi_num=event->lumiBlockId();
       nvtx = vertex.size();
       npu = (int) event->nTruePU();
@@ -1471,12 +1485,13 @@ int main (int argc, char *argv[])
       selectedMuons.clear();
       selectedLooseMuons.clear();
       selectedMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut, "Tight", "Spring15");
-      selectedLooseMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut,0.2, "Loose", "Spring15");
+      
       // pt, eta, iso // run normally
       selectedElectrons.clear();
       selectedLooseElectrons.clear();
-      selectedElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Tight","Spring15_25ns",true);// pt, eta
-      selectedLooseElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Veto","Spring15_25ns",true);// pt, eta
+      selectedElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Tight","Spring16_80X",true,true);// pt, eta
+       
+      selectedLooseElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Veto","Spring16_80X",true,true);// pt, eta
       /// For MC Information
       mcParticles.clear();
       if(!isData) treeLoader.LoadMCEvent(ievt, 0,  mcParticles, false);
@@ -1531,7 +1546,7 @@ int main (int argc, char *argv[])
       // Apply primary vertex selection
       bool isGoodPV = selection.isPVSelected(vertex, 4, 24., 2);
       // Met filters
-      if(HBHEnoise && HBHEIso && CSCTight && EcalDead && eeBad && isGoodPV) passedMET = true;
+      if(HBHEnoise && HBHEIso && CSCTight && EcalDead && eeBad && isGoodPV && badchan && badmu) passedMET = true;
       PassedMETFilter = passedMET;
       
       //////////////////////////////////////
@@ -2137,8 +2152,11 @@ int main (int argc, char *argv[])
           pfIso_muon[nMuons]=selectedMuons[selmu]->relPfIso(4,0);
           if(!isData)
         	 {
-             MuonIDSF[nMuons] = muonSFWeightID_T->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
-             MuonIsoSF[nMuons] =  muonSFWeightIso_TT->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+//             MuonIDSF[nMuons] = muonSFWeightID_T->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+//
+//             MuonIsoSF[nMuons] =  muonSFWeightIso_TT->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+MuonIDSF[nMuons] = 1.;
+             MuonIsoSF[nMuons] = 1.;
            }
         	 else
            {
