@@ -79,9 +79,13 @@ map<string,TH2F*> histo2D;
 
 
 //Initializing b-tag WP
-float workingpointvalue_Loose = 0.460;//working points updated to 2016 BTV-POG recommendations.
-float workingpointvalue_Medium = 0.800;//working points updated to 2016 BTV-POG recommendations.
-float workingpointvalue_Tight = 0.935;//working points updated to 2016 BTV-POG recommendations.
+Double_t workingpointvalue_Loose = 0.460;//working points updated to 2016 BTV-POG recommendations.
+Double_t workingpointvalue_Medium = 0.800;//working points updated to 2016 BTV-POG recommendations.
+Double_t workingpointvalue_Tight = 0.935;//working points updated to 2016 BTV-POG recommendations.
+
+std::pair <Double_t,Double_t> c_workingpointvalue_Loose(-0.48, -0.17); // reduces b -jets (cvsln cvsb)
+std::pair < Double_t, Double_t > c_workingpointvalue_Medium(-0.1, -0.08); // reduces light and b jets
+std::pair <Double_t, Double_t> c_workingpointvalue_Tight(0.69, -0.45); // reduces light
 
 
 
@@ -159,7 +163,7 @@ int main (int argc, char *argv[])
   ///////////////////////////
   /// Configuration      ///
   //////////////////////////
-  int verbose = 2; // 0 = cout alll
+  int verbose = 1; // 0 = cout alll
   bool eventSelected = false;
   bool baseSelected = false;
   int nbTrig = 0;
@@ -492,15 +496,15 @@ int main (int argc, char *argv[])
     
     //MuonSFWeight(const string &sfFile, const string &dataOverMC, const bool &extendRange, const bool &debug, const bool &printWarning)
     
-     MuonSFWeight* muonSFWeightID_T = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonID_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_TightIDandIPCut_DEN_genTracks_PAR_pt_spliteta_bin1/abseta_pt_ratio",true, printLeptonSF,printLeptonSF);
+    MuonSFWeight* muonSFWeightID_T = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonID_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_TightIDandIPCut_DEN_genTracks_PAR_pt_spliteta_bin1/abseta_pt_ratio",true, printLeptonSF,printLeptonSF);
     // MuonSFWeight* muonSFWeightID_M = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonID_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_MediumID_DEN_genTracks_PAR_pt_spliteta_bin1/abseta_pt_ratio",true,  printLeptonSF, printLeptonSF);
-     //MuonSFWeight* muonSFWeightID_L = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonID_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_LooseID_DEN_genTracks_PAR_pt_spliteta_bin1/abseta_pt_ratio", true, printLeptonSF, printLeptonSF);
-     MuonSFWeight* muonSFWeightIso_TT = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonIso_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_TightRelIso_DEN_TightID_PAR_pt_spliteta_bin1/abseta_pt_ratio",true, printLeptonSF,printLeptonSF);  // Tight RelIso, Tight ID
-   //  MuonSFWeight* muonSFWeightIso_TM = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonIso_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_TightRelIso_DEN_MediumID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true,printLeptonSF, printLeptonSF);  // Tight RelIso, Medium ID
-  //   MuonSFWeight* muonSFWeightIso_LT = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonIso_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_LooseRelIso_DEN_TightID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true,printLeptonSF, printLeptonSF);  // Loose RelIso, Tight ID
+    //MuonSFWeight* muonSFWeightID_L = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonID_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_LooseID_DEN_genTracks_PAR_pt_spliteta_bin1/abseta_pt_ratio", true, printLeptonSF, printLeptonSF);
+    MuonSFWeight* muonSFWeightIso_TT = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonIso_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_TightRelIso_DEN_TightID_PAR_pt_spliteta_bin1/abseta_pt_ratio",true, printLeptonSF,printLeptonSF);  // Tight RelIso, Tight ID
+    //  MuonSFWeight* muonSFWeightIso_TM = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonIso_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_TightRelIso_DEN_MediumID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true,printLeptonSF, printLeptonSF);  // Tight RelIso, Medium ID
+    //   MuonSFWeight* muonSFWeightIso_LT = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonIso_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_LooseRelIso_DEN_TightID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true,printLeptonSF, printLeptonSF);  // Loose RelIso, Tight ID
     // MuonSFWeight* muonSFWeightIso_LM = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonIso_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_LooseRelIso_DEN_MediumID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true,printLeptonSF, printLeptonSF);  // Loose RelIso, Medium ID
-     
-     
+    
+    
     if(verbose>1) cout << "muon SF loaded" << endl;
     
     
@@ -631,6 +635,12 @@ int main (int argc, char *argv[])
     Double_t WPb_L;
     Double_t WPb_M;
     Double_t WPb_T;
+    Double_t WPc_CvsB_Loose;
+    Double_t WPc_CvsB_Medium;
+    Double_t WPc_CvsB_Tight;
+    Double_t WPc_CvsL_Loose;
+    Double_t WPc_CvsL_Medium;
+    Double_t WPc_CvsL_Tight;
     Int_t PassedMET;
     Int_t channelInt;
     
@@ -694,6 +704,51 @@ int main (int argc, char *argv[])
     Int_t nJets_CSVL;
     Int_t nJets_CSVM;
     Int_t nJets_CSVT;
+    Int_t nJets_CharmL;
+    Int_t nJets_CharmM;
+    Int_t nJets_CharmT;
+    Int_t nJets_nonCSVL;
+    Int_t nJets_nonCSVM;
+    Int_t nJets_nonCSVT;
+    Int_t nJets_nonCharmL;
+    Int_t nJets_nonCharmM;
+    Int_t nJets_nonCharmT;
+    Int_t nJets_nonCharmLCSVL;
+    Int_t nJets_nonCharmLCSVM;
+    Int_t nJets_nonCharmLCSVT;
+    Int_t nJets_nonCharmMCSVL;
+    Int_t nJets_nonCharmMCSVM;
+    Int_t nJets_nonCharmMCSVT;
+    Int_t nJets_nonCharmTCSVL;
+    Int_t nJets_nonCharmTCSVM;
+    Int_t nJets_nonCharmTCSVT;
+    Int_t nJets_nonCharmLnonCSVL;
+    Int_t nJets_nonCharmLnonCSVM;
+    Int_t nJets_nonCharmLnonCSVT;
+    Int_t nJets_nonCharmMnonCSVL;
+    Int_t nJets_nonCharmMnonCSVM;
+    Int_t nJets_nonCharmMnonCSVT;
+    Int_t nJets_nonCharmTnonCSVL;
+    Int_t nJets_nonCharmTnonCSVM;
+    Int_t nJets_nonCharmTnonCSVT;
+    Int_t nJets_CharmLnonCSVL;
+    Int_t nJets_CharmLnonCSVM;
+    Int_t nJets_CharmLnonCSVT;
+    Int_t nJets_CharmMnonCSVL;
+    Int_t nJets_CharmMnonCSVM;
+    Int_t nJets_CharmMnonCSVT;
+    Int_t nJets_CharmTnonCSVL;
+    Int_t nJets_CharmTnonCSVM;
+    Int_t nJets_CharmTnonCSVT;
+    Int_t nJets_CharmLCSVL;
+    Int_t nJets_CharmLCSVM;
+    Int_t nJets_CharmLCSVT;
+    Int_t nJets_CharmMCSVL;
+    Int_t nJets_CharmMCSVM;
+    Int_t nJets_CharmMCSVT;
+    Int_t nJets_CharmTCSVL;
+    Int_t nJets_CharmTCSVM;
+    Int_t nJets_CharmTCSVT;
     Double_t pt_jet[20];
     Double_t px_jet[20];
     Double_t py_jet[20];
@@ -839,6 +894,12 @@ int main (int argc, char *argv[])
     globalTree->Branch("WPb_L", &WPb_L, "WPb_L/D");
     globalTree->Branch("WPb_M", &WPb_M, "WPb_M/D");
     globalTree->Branch("WPb_T", &WPb_T, "WPb_T/D");
+    globalTree->Branch("WPc_CvsB_Loose", &WPc_CvsB_Loose, "WPc_CvsB_Loose/D");
+    globalTree->Branch("WPc_CvsB_Medium", &WPc_CvsB_Medium, "WPc_CvsB_Medium/D");
+    globalTree->Branch("WPc_CvsB_Tight", &WPc_CvsB_Tight, "WPc_CvsB_Tight/D");
+    globalTree->Branch("WPc_CvsL_Loose", &WPc_CvsL_Loose, "WPc_CvsL_Loose/D");
+    globalTree->Branch("WPc_CvsL_Medium", &WPc_CvsL_Medium, "WPc_CvsL_Medium/D");
+    globalTree->Branch("WPc_CvsL_Tight", &WPc_CvsL_Tight, "WPc_CvsL_Tight/D");
     
     globalTree->Branch("nTrigg", &nTrigg, "nTrigg/I");
     globalTree->Branch("n3lep", &n3lep, "n3lep/I");
@@ -851,7 +912,6 @@ int main (int argc, char *argv[])
     globalTree->Branch("nMWT", &nMWT, "nMWT/I");
     globalTree->Branch("nSMtop",&nSMtop, "nSMtop/I");
     globalTree->Branch("nMET",&nMET, "nMET/I");
-    
     
     
     
@@ -988,6 +1048,58 @@ int main (int argc, char *argv[])
     myTree->Branch("nJets_CSVL",&nJets_CSVL,"nJets_CSVL/I");
     myTree->Branch("nJets_CSVM",&nJets_CSVM,"nJets_CSVM/I");
     myTree->Branch("nJets_CSVT",&nJets_CSVT,"nJets_CSVT/I");
+    myTree->Branch("nJets_nonCSVL",&nJets_nonCSVL,"nJets_nonCSVL/I");
+    myTree->Branch("nJets_nonCSVM",&nJets_nonCSVM,"nJets_nonCSVM/I");
+    myTree->Branch("nJets_nonCSVT",&nJets_nonCSVT,"nJets_nonCSVT/I");
+    myTree->Branch("nJets_nonCharmLCSVL",&nJets_nonCharmLCSVL,"nJets_nonCharmLCSVL/I");
+    myTree->Branch("nJets_nonCharmLCSVM",&nJets_nonCharmLCSVM,"nJets_nonCharmLCSVM/I");
+    myTree->Branch("nJets_nonCharmLCSVT",&nJets_nonCharmLCSVT,"nJets_nonCharmLCSVT/I");
+    myTree->Branch("nJets_nonCharmMCSVL",&nJets_nonCharmMCSVL,"nJets_nonCharmMCSVL/I");
+    myTree->Branch("nJets_nonCharmMCSVM",&nJets_nonCharmMCSVM,"nJets_nonCharmMCSVM/I");
+    myTree->Branch("nJets_nonCharmMCSVT",&nJets_nonCharmMCSVT,"nJets_nonCharmMCSVT/I");
+    myTree->Branch("nJets_nonCharmTCSVL",&nJets_nonCharmTCSVL,"nJets_nonCharmTCSVL/I");
+    myTree->Branch("nJets_nonCharmTCSVM",&nJets_nonCharmTCSVM,"nJets_nonCharmTCSVM/I");
+    myTree->Branch("nJets_nonCharmTCSVT",&nJets_nonCharmTCSVT,"nJets_nonCharmTCSVT/I");
+    
+    myTree->Branch("nJets_nonCharmLnonCSVL",&nJets_nonCharmLnonCSVL,"nJets_nonCharmLnonCSVL/I");
+    myTree->Branch("nJets_nonCharmLnonCSVM",&nJets_nonCharmLnonCSVM,"nJets_nonCharmLnonCSVM/I");
+    myTree->Branch("nJets_nonCharmLnonCSVT",&nJets_nonCharmLnonCSVT,"nJets_nonCharmLnonCSVT/I");
+    myTree->Branch("nJets_nonCharmMnonCSVL",&nJets_nonCharmMnonCSVL,"nJets_nonCharmMnonCSVL/I");
+    myTree->Branch("nJets_nonCharmMnonCSVM",&nJets_nonCharmMnonCSVM,"nJets_nonCharmMnonCSVM/I");
+    myTree->Branch("nJets_nonCharmMnonCSVT",&nJets_nonCharmMnonCSVT,"nJets_nonCharmMnonCSVT/I");
+    myTree->Branch("nJets_nonCharmTnonCSVL",&nJets_nonCharmTnonCSVL,"nJets_nonCharmTnonCSVL/I");
+    myTree->Branch("nJets_nonCharmTnonCSVM",&nJets_nonCharmTnonCSVM,"nJets_nonCharmTnonCSVM/I");
+    myTree->Branch("nJets_nonCharmTnonCSVT",&nJets_nonCharmTnonCSVT,"nJets_nonCharmTnonCSVT/I");
+    
+    myTree->Branch("nJets_CharmLnonCSVL",&nJets_CharmLnonCSVL,"nJets_CharmLnonCSVL/I");
+    myTree->Branch("nJets_CharmLnonCSVM",&nJets_CharmLnonCSVM,"nJets_CharmLnonCSVM/I");
+    myTree->Branch("nJets_CharmLnonCSVT",&nJets_CharmLnonCSVT,"nJets_CharmLnonCSVT/I");
+    myTree->Branch("nJets_CharmMnonCSVL",&nJets_CharmMnonCSVL,"nJets_CharmMnonCSVL/I");
+    myTree->Branch("nJets_CharmMnonCSVM",&nJets_CharmMnonCSVM,"nJets_CharmMnonCSVM/I");
+    myTree->Branch("nJets_CharmMnonCSVT",&nJets_CharmMnonCSVT,"nJets_CharmMnonCSVT/I");
+    myTree->Branch("nJets_CharmTnonCSVL",&nJets_CharmTnonCSVL,"nJets_CharmTnonCSVL/I");
+    myTree->Branch("nJets_CharmTnonCSVM",&nJets_CharmTnonCSVM,"nJets_CharmTnonCSVM/I");
+    myTree->Branch("nJets_CharmTnonCSVT",&nJets_CharmTnonCSVT,"nJets_CharmTnonCSVT/I");
+    
+    myTree->Branch("nJets_CharmLCSVL",&nJets_CharmLCSVL,"nJets_CharmLCSVL/I");
+    myTree->Branch("nJets_CharmLCSVM",&nJets_CharmLCSVM,"nJets_CharmLCSVM/I");
+    myTree->Branch("nJets_CharmLCSVT",&nJets_CharmLCSVT,"nJets_CharmLCSVT/I");
+    myTree->Branch("nJets_CharmMCSVL",&nJets_CharmMCSVL,"nJets_CharmMCSVL/I");
+    myTree->Branch("nJets_CharmMCSVM",&nJets_CharmMCSVM,"nJets_CharmMCSVM/I");
+    myTree->Branch("nJets_CharmMCSVT",&nJets_CharmMCSVT,"nJets_CharmMCSVT/I");
+    myTree->Branch("nJets_CharmTCSVL",&nJets_CharmTCSVL,"nJets_CharmTCSVL/I");
+    myTree->Branch("nJets_CharmTCSVM",&nJets_CharmTCSVM,"nJets_CharmTCSVM/I");
+    myTree->Branch("nJets_CharmTCSVT",&nJets_CharmTCSVT,"nJets_CharmTCSVT/I");
+    
+  
+    myTree->Branch("nJets_CharmL",&nJets_CharmL,"nJets_CharmL/I");
+    myTree->Branch("nJets_CharmM",&nJets_CharmM,"nJets_CharmM/I");
+     myTree->Branch("nJets_CharmT",&nJets_CharmT,"nJets_CharmT/I");
+    myTree->Branch("nJets_nonCharmL",&nJets_nonCharmL,"nJets_nonCharmL/I");
+    myTree->Branch("nJets_nonCharmM",&nJets_nonCharmM,"nJets_nonCharmM/I");
+    myTree->Branch("nJets_nonCharmT",&nJets_nonCharmT,"nJets_nonCharmT/I");
+
+    
     myTree->Branch("pt_jet",pt_jet,"pt_jet[nJets]/D");
     myTree->Branch("px_jet",px_jet,"px_jet[nJets]/D");
     myTree->Branch("py_jet",py_jet,"py_jet[nJets]/D");
@@ -1011,6 +1123,60 @@ int main (int argc, char *argv[])
     baselineTree->Branch("nJets_CSVL",&nJets_CSVL,"nJets_CSVL/I");
     baselineTree->Branch("nJets_CSVM",&nJets_CSVM,"nJets_CSVM/I");
     baselineTree->Branch("nJets_CSVT",&nJets_CSVT,"nJets_CSVT/I");
+    baselineTree->Branch("nJets_CharmL",&nJets_CharmL,"nJets_CharmL/I");
+    baselineTree->Branch("nJets_CharmM",&nJets_CharmM,"nJets_CharmM/I");
+    baselineTree->Branch("nJets_CharmT",&nJets_CharmT,"nJets_CharmT/I");
+    baselineTree->Branch("nJets_L",&nJets_nonCSVL,"nJets_nonCSVL/I");
+    baselineTree->Branch("nJets_nonCSVM",&nJets_nonCSVM,"nJets_nonCSVM/I");
+    baselineTree->Branch("nJets_nonCSVT",&nJets_nonCSVT,"nJets_nonCSVT/I");
+    baselineTree->Branch("nJets_nonCharmLCSVL",&nJets_nonCharmLCSVL,"nJets_nonCharmLCSVL/I");
+    baselineTree->Branch("nJets_nonCharmLCSVM",&nJets_nonCharmLCSVM,"nJets_nonCharmLCSVM/I");
+    baselineTree->Branch("nJets_nonCharmLCSVT",&nJets_nonCharmLCSVT,"nJets_nonCharmLCSVT/I");
+    baselineTree->Branch("nJets_nonCharmMCSVL",&nJets_nonCharmMCSVL,"nJets_nonCharmMCSVL/I");
+    baselineTree->Branch("nJets_nonCharmMCSVM",&nJets_nonCharmMCSVM,"nJets_nonCharmMCSVM/I");
+    baselineTree->Branch("nJets_nonCharmMCSVT",&nJets_nonCharmMCSVT,"nJets_nonCharmMCSVT/I");
+    baselineTree->Branch("nJets_nonCharmTCSVL",&nJets_nonCharmTCSVL,"nJets_nonCharmTCSVL/I");
+    baselineTree->Branch("nJets_nonCharmTCSVM",&nJets_nonCharmTCSVM,"nJets_nonCharmTCSVM/I");
+    baselineTree->Branch("nJets_nonCharmTCSVT",&nJets_nonCharmTCSVT,"nJets_nonCharmTCSVT/I");
+    baselineTree->Branch("nJets_nonCharmLnonCSVL",&nJets_nonCharmLnonCSVL,"nJets_nonCharmLnonCSVL/I");
+    baselineTree->Branch("nJets_nonCharmLnonCSVM",&nJets_nonCharmLnonCSVM,"nJets_nonCharmLnonCSVM/I");
+    baselineTree->Branch("nJets_nonCharmLnonCSVT",&nJets_nonCharmLnonCSVT,"nJets_nonCharmLnonCSVT/I");
+    baselineTree->Branch("nJets_nonCharmMnonCSVL",&nJets_nonCharmMnonCSVL,"nJets_nonCharmMnonCSVL/I");
+    baselineTree->Branch("nJets_nonCharmMnonCSVM",&nJets_nonCharmMnonCSVM,"nJets_nonCharmMnonCSVM/I");
+    baselineTree->Branch("nJets_nonCharmMnonCSVT",&nJets_nonCharmMnonCSVT,"nJets_nonCharmMnonCSVT/I");
+    baselineTree->Branch("nJets_nonCharmTnonCSVL",&nJets_nonCharmTnonCSVL,"nJets_nonCharmTnonCSVL/I");
+    baselineTree->Branch("nJets_nonCharmTnonCSVM",&nJets_nonCharmTnonCSVM,"nJets_nonCharmTnonCSVM/I");
+    baselineTree->Branch("nJets_nonCharmTnonCSVT",&nJets_nonCharmTnonCSVT,"nJets_nonCharmTnonCSVT/I");
+    
+    baselineTree->Branch("nJets_CharmLnonCSVL",&nJets_CharmLnonCSVL,"nJets_CharmLnonCSVL/I");
+    baselineTree->Branch("nJets_CharmLnonCSVM",&nJets_CharmLnonCSVM,"nJets_CharmLnonCSVM/I");
+    baselineTree->Branch("nJets_CharmLnonCSVT",&nJets_CharmLnonCSVT,"nJets_CharmLnonCSVT/I");
+    baselineTree->Branch("nJets_CharmMnonCSVL",&nJets_CharmMnonCSVL,"nJets_CharmMnonCSVL/I");
+    baselineTree->Branch("nJets_CharmMnonCSVM",&nJets_CharmMnonCSVM,"nJets_CharmMnonCSVM/I");
+    baselineTree->Branch("nJets_CharmMnonCSVT",&nJets_CharmMnonCSVT,"nJets_CharmMnonCSVT/I");
+    baselineTree->Branch("nJets_CharmTnonCSVL",&nJets_CharmTnonCSVL,"nJets_CharmTnonCSVL/I");
+    baselineTree->Branch("nJets_CharmTnonCSVM",&nJets_CharmTnonCSVM,"nJets_CharmTnonCSVM/I");
+    baselineTree->Branch("nJets_CharmTnonCSVT",&nJets_CharmTnonCSVT,"nJets_CharmTnonCSVT/I");
+    
+    
+    baselineTree->Branch("nJets_CharmL",&nJets_CharmL,"nJets_CharmL/I");
+    baselineTree->Branch("nJets_CharmM",&nJets_CharmM,"nJets_CharmM/I");
+    baselineTree->Branch("nJets_CharmT",&nJets_CharmT,"nJets_CharmT/I");
+    baselineTree->Branch("nJets_nonCharmL",&nJets_nonCharmL,"nJets_nonCharmL/I");
+    baselineTree->Branch("nJets_nonCharmM",&nJets_nonCharmM,"nJets_nonCharmM/I");
+    baselineTree->Branch("nJets_nonCharmT",&nJets_nonCharmT,"nJets_nonCharmT/I");
+    
+    baselineTree->Branch("nJets_CharmLCSVL",&nJets_CharmLCSVL,"nJets_CharmLCSVL/I");
+    baselineTree->Branch("nJets_CharmLCSVM",&nJets_CharmLCSVM,"nJets_CharmLCSVM/I");
+    baselineTree->Branch("nJets_CharmLCSVT",&nJets_CharmLCSVT,"nJets_CharmLCSVT/I");
+    baselineTree->Branch("nJets_CharmMCSVL",&nJets_CharmMCSVL,"nJets_CharmMCSVL/I");
+    baselineTree->Branch("nJets_CharmMCSVM",&nJets_CharmMCSVM,"nJets_CharmMCSVM/I");
+    baselineTree->Branch("nJets_CharmMCSVT",&nJets_CharmMCSVT,"nJets_CharmMCSVT/I");
+    baselineTree->Branch("nJets_CharmTCSVL",&nJets_CharmTCSVL,"nJets_CharmTCSVL/I");
+    baselineTree->Branch("nJets_CharmTCSVM",&nJets_CharmTCSVM,"nJets_CharmTCSVM/I");
+    baselineTree->Branch("nJets_CharmTCSVT",&nJets_CharmTCSVT,"nJets_CharmTCSVT/I");
+    
+    
     baselineTree->Branch("pt_jet",pt_jet,"pt_jet[nJets]/D");
     baselineTree->Branch("phi_jet",phi_jet,"phi_jet[nJets]/D");
     baselineTree->Branch("eta_jet",eta_jet,"eta_jet[nJets]/D");
@@ -1165,11 +1331,56 @@ int main (int argc, char *argv[])
     vector<TRootPFJet*>      selectedCSVLBJets;
     vector<TRootPFJet*>      selectedCSVMBJets;
     vector<TRootPFJet*>      selectedCSVTBJets;
-    vector<TRootPFJet*>      selectedCSVLLJets;
-    vector<TRootPFJet*>      selectedCSVMLJets;
-    vector<TRootPFJet*>      selectedCSVTLJets;
+    
+    
     vector<TRootMCParticle*> mcParticles;
     vector <TRootPFJet*>     selectednonCSVLJets;
+    vector<TRootPFJet*>      selectedCharmLJets;
+    vector<TRootPFJet*>     selectedCharmMJets;
+    vector<TRootPFJet*>     selectedCharmTJets;
+    vector <TRootPFJet*>     selectednonCSVMJets;
+    vector <TRootPFJet*>     selectednonCSVTJets;
+    vector<TRootPFJet*>      selectednonCharmLJets;
+    vector<TRootPFJet*>     selectednonCharmMJets;
+    vector<TRootPFJet*>     selectednonCharmTJets;
+    vector<TRootPFJet*>      selectednonCLBLJets;
+    vector<TRootPFJet*>     selectednonCLBMJets;
+    vector<TRootPFJet*>     selectednonCLBTJets;
+    vector<TRootPFJet*>      selectednonCMBLJets;
+    vector<TRootPFJet*>     selectednonCMBMJets;
+    vector<TRootPFJet*>     selectednonCMBTJets;
+    vector<TRootPFJet*>      selectednonCTBLJets;
+    vector<TRootPFJet*>     selectednonCTBMJets;
+    vector<TRootPFJet*>     selectednonCTBTJets;
+    vector<TRootPFJet*>      selectednonCLnonBLJets;
+    vector<TRootPFJet*>     selectednonCLnonBMJets;
+    vector<TRootPFJet*>     selectednonCLnonBTJets;
+    vector<TRootPFJet*>      selectednonCMnonBLJets;
+    vector<TRootPFJet*>     selectednonCMnonBMJets;
+    vector<TRootPFJet*>     selectednonCMnonBTJets;
+    vector<TRootPFJet*>      selectednonCTnonBLJets;
+    vector<TRootPFJet*>     selectednonCTnonBMJets;
+    vector<TRootPFJet*>     selectednonCTnonBTJets;
+    
+    vector<TRootPFJet*>      selectedCLnonBLJets;
+    vector<TRootPFJet*>     selectedCLnonBMJets;
+    vector<TRootPFJet*>     selectedCLnonBTJets;
+    vector<TRootPFJet*>      selectedCMnonBLJets;
+    vector<TRootPFJet*>     selectedCMnonBMJets;
+    vector<TRootPFJet*>     selectedCMnonBTJets;
+    vector<TRootPFJet*>      selectedCTnonBLJets;
+    vector<TRootPFJet*>     selectedCTnonBMJets;
+    vector<TRootPFJet*>     selectedCTnonBTJets;
+    vector<TRootPFJet*> selectedCLBLJets;
+    vector<TRootPFJet*> selectedCLBMJets;
+    vector<TRootPFJet*> selectedCLBTJets;
+    vector<TRootPFJet*> selectedCMBLJets;
+    vector<TRootPFJet*> selectedCMBMJets;
+    vector<TRootPFJet*> selectedCMBTJets;
+    vector<TRootPFJet*> selectedCTBLJets;
+    vector<TRootPFJet*> selectedCTBMJets;
+    vector<TRootPFJet*> selectedCTBTJets;
+    
     
     TLorentzVector Zboson;
     TLorentzVector Zlep0;
@@ -1302,7 +1513,7 @@ int main (int argc, char *argv[])
       if(verbose > 0 ) cout << "new event " << ievt << endl;
       double ievt_d = ievt;
       debug = false;
-      if (verbose > 0 ) debug = true;
+      if (verbose > 4 ) debug = true;
       currentfrac = ievt_d/end_d;
       if (debug)cout << endl << endl << "Starting a new event loop!"<<endl;
       
@@ -1483,7 +1694,7 @@ int main (int argc, char *argv[])
         if ( EE && !EM && !MM &&                 !isData ) result_trigger = 1;
         if ( M  && !EM && !MM && !EE &&          !isData ) result_trigger = 1;
         if ( E  && !EM && !MM && !EE && !M &&    !isData ) result_trigger = 1;
-
+        
         trigged = result_trigger;
         if(dName.find("NP")!=string::npos) trigged = true; // needs to be fixed with the new MC
         
@@ -1652,26 +1863,157 @@ int main (int argc, char *argv[])
       //   B jet selection	       ////
       ///////////////////////////////////////
       
+      selectednonCLnonBLJets.clear();
+      selectednonCLnonBMJets.clear();
+      selectednonCLnonBTJets.clear();
+      selectednonCMnonBLJets.clear();
+      selectednonCMnonBMJets.clear();
+      selectednonCMnonBTJets.clear();
+      selectednonCTnonBLJets.clear();
+      selectednonCTnonBMJets.clear();
+      selectednonCTnonBTJets.clear();
+      
+      selectedCLnonBLJets.clear();
+      selectedCLnonBMJets.clear();
+      selectedCLnonBTJets.clear();
+      selectedCMnonBLJets.clear();
+      selectedCMnonBMJets.clear();
+      selectedCMnonBTJets.clear();
+      selectedCTnonBLJets.clear();
+      selectedCTnonBMJets.clear();
+      selectedCTnonBTJets.clear();
+      
+      
+      
+      
       selectedCSVLBJets.clear();
       selectedCSVMBJets.clear();
       selectedCSVTBJets.clear();
-      selectedCSVLLJets.clear();
-      selectedCSVMLJets.clear();
-      selectedCSVTLJets.clear();
       selectednonCSVLJets.clear();
+      selectedCharmLJets.clear();
+      selectedCharmMJets.clear();
+      selectedCharmTJets.clear();
+      selectednonCSVMJets.clear();
+      selectednonCSVTJets.clear();
+      selectednonCharmLJets.clear();
+      selectednonCharmMJets.clear();
+      selectednonCharmTJets.clear();
+      selectednonCLBLJets.clear();
+      selectednonCLBMJets.clear();
+      selectednonCLBTJets.clear();
+      selectednonCMBLJets.clear();
+      selectednonCMBMJets.clear();
+      selectednonCMBTJets.clear();
+      selectednonCTBLJets.clear();
+      selectednonCTBMJets.clear();
+      selectednonCTBTJets.clear();
+      selectedCLBLJets.clear();
+      selectedCLBMJets.clear();
+      selectedCLBTJets.clear();
+      selectedCMBLJets.clear();
+      selectedCMBMJets.clear();
+      selectedCMBTJets.clear();
+      selectedCTBLJets.clear();
+      selectedCTBMJets.clear();
+      selectedCTBTJets.clear();
       for(unsigned int iJ = 0; iJ < selectedJets.size(); iJ++)
       {
-        if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose) selectedCSVLBJets.push_back(selectedJets[iJ]);
-        else selectedCSVLLJets.push_back(selectedJets[iJ]);
-        if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium) selectedCSVMBJets.push_back(selectedJets[iJ]);
-        else selectedCSVMLJets.push_back(selectedJets[iJ]);
-        if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight) selectedCSVTBJets.push_back(selectedJets[iJ]);
-        else selectedCSVTLJets.push_back(selectedJets[iJ]);
+        //bjets
+        if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose) { selectedCSVLBJets.push_back(selectedJets[iJ]);    }
+        else{          selectednonCSVLJets.push_back(selectedJets[iJ]);        }
+        if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium){ selectedCSVMBJets.push_back(selectedJets[iJ]);}
+        else { selectednonCSVMJets.push_back(selectedJets[iJ]);}
+        if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight){ selectedCSVTBJets.push_back(selectedJets[iJ]);}
+        else {selectednonCSVTJets.push_back(selectedJets[iJ]);}
+        
+        //cjets
+        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first){   selectedCharmLJets.push_back(selectedJets[iJ]);   }
+        else{   selectednonCharmLJets.push_back(selectedJets[iJ]);}
+        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first){   selectedCharmMJets.push_back(selectedJets[iJ]);   }
+        else{   selectednonCharmMJets.push_back(selectedJets[iJ]);    }
+        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first){   selectedCharmTJets.push_back(selectedJets[iJ]);   }
+        else{   selectednonCharmTJets.push_back(selectedJets[iJ]);    }
+        
+        
+        /// c and b loose combi
+        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose ) {   selectedCLBLJets.push_back(selectedJets[iJ]);  }
+        else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose){  selectednonCLBLJets.push_back(selectedJets[iJ]);   }
+        else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first ){
+          selectedCLnonBLJets.push_back(selectedJets[iJ]);
+        }
+        else { selectednonCLnonBLJets.push_back(selectedJets[iJ]);}
+        
+        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose ) {   selectedCMBLJets.push_back(selectedJets[iJ]);  }
+        else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose){  selectednonCMBLJets.push_back(selectedJets[iJ]);   }
+        else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first ){
+          selectedCMnonBLJets.push_back(selectedJets[iJ]);
+        }
+        else { selectednonCMnonBLJets.push_back(selectedJets[iJ]);}
+        
+        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose ) {   selectedCTBLJets.push_back(selectedJets[iJ]);  }
+        else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose){  selectednonCTBLJets.push_back(selectedJets[iJ]);   }
+        else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first ){
+          selectedCTnonBLJets.push_back(selectedJets[iJ]);
+        }
+        else { selectednonCTnonBLJets.push_back(selectedJets[iJ]);}
+        
+        /// c and b medium combi
+        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium ) {   selectedCLBMJets.push_back(selectedJets[iJ]);  }
+        else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium){  selectednonCLBMJets.push_back(selectedJets[iJ]);   }
+        else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first ){
+          selectedCLnonBMJets.push_back(selectedJets[iJ]);
+        }
+        else { selectednonCLnonBMJets.push_back(selectedJets[iJ]);}
+        
+        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium ) {   selectedCMBLJets.push_back(selectedJets[iJ]);  }
+        else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium){  selectednonCMBMJets.push_back(selectedJets[iJ]);   }
+        else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first ){
+          selectedCMnonBMJets.push_back(selectedJets[iJ]);
+        }
+        else { selectednonCMnonBMJets.push_back(selectedJets[iJ]);}
+        
+        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium ) {   selectedCTBMJets.push_back(selectedJets[iJ]);  }
+        else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium){  selectednonCTBMJets.push_back(selectedJets[iJ]);   }
+        else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first ){
+          selectedCTnonBMJets.push_back(selectedJets[iJ]);
+        }
+        else { selectednonCTnonBMJets.push_back(selectedJets[iJ]);}
+        
+        /// c and b tight combi
+        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight ) {   selectedCLBLJets.push_back(selectedJets[iJ]);  }
+        else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight){  selectednonCLBTJets.push_back(selectedJets[iJ]);   }
+        else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first ){
+          selectedCLnonBTJets.push_back(selectedJets[iJ]);
+        }
+        else { selectednonCLnonBTJets.push_back(selectedJets[iJ]);}
+        
+        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight ) {   selectedCMBLJets.push_back(selectedJets[iJ]);  }
+        else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight){  selectednonCMBTJets.push_back(selectedJets[iJ]);   }
+        else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first ){
+          selectedCMnonBTJets.push_back(selectedJets[iJ]);
+        }
+        else { selectednonCMnonBTJets.push_back(selectedJets[iJ]);}
+        
+        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight ) {   selectedCTBLJets.push_back(selectedJets[iJ]);  }
+        else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight){  selectednonCTBTJets.push_back(selectedJets[iJ]);   }
+        else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first ){
+          selectedCTnonBTJets.push_back(selectedJets[iJ]);
+        }
+        else { selectednonCTnonBTJets.push_back(selectedJets[iJ]);}
+        
+        
         
       }
       WPb_L =  workingpointvalue_Loose;
       WPb_M =  workingpointvalue_Medium;
       WPb_T =  workingpointvalue_Tight;
+      WPc_CvsL_Loose = c_workingpointvalue_Loose.first;
+      WPc_CvsB_Loose = c_workingpointvalue_Loose.second;
+      WPc_CvsL_Medium = c_workingpointvalue_Medium.first;
+      WPc_CvsB_Medium = c_workingpointvalue_Medium.second;
+      WPc_CvsL_Tight = c_workingpointvalue_Tight.first;
+      WPc_CvsB_Tight = c_workingpointvalue_Tight.second;
+      
       
       ////////////////////////////////////
       //   Event Weights               ///
@@ -2044,7 +2386,7 @@ int main (int argc, char *argv[])
           nCuts++;
           nbEvents_3++;
           histo1D["cutFlow"]->Fill(3., eventweight);
-         // baseSelected = true;
+          // baseSelected = true;
         }
       }
       
@@ -2239,9 +2581,71 @@ int main (int argc, char *argv[])
         if(selectedJets.size()>0) pt_jet_1 = selectedJets[0]->Pt();
         if(selectedJets.size()>1) pt_jet_2 = selectedJets[1]->Pt();
         if(selectedJets.size()>2) pt_jet_3 = selectedJets[2]->Pt();
+        // bjets
         nJets_CSVT =  selectedCSVTBJets.size();
         nJets_CSVM =  selectedCSVMBJets.size();
         nJets_CSVL =  selectedCSVLBJets.size();
+        nJets_nonCSVL = selectednonCSVLJets.size();
+        nJets_nonCSVM = selectednonCSVMJets.size();
+        nJets_nonCSVT = selectednonCSVTJets.size();
+        
+        // charm jets
+        nJets_CharmL = selectedCharmLJets.size();
+        nJets_CharmM = selectedCharmMJets.size();
+        nJets_CharmT = selectedCharmTJets.size();
+        nJets_nonCharmL = selectednonCharmLJets.size();
+        nJets_nonCharmM = selectednonCharmMJets.size();
+        nJets_nonCharmT = selectednonCharmTJets.size();
+        
+        
+        // charm b jets
+        nJets_CharmLCSVL = selectedCLBLJets.size();
+        nJets_CharmLCSVM = selectedCLBMJets.size();
+        nJets_CharmLCSVT = selectedCLBTJets.size();
+        nJets_CharmMCSVL = selectedCMBLJets.size();
+        nJets_CharmMCSVM = selectedCMBMJets.size();
+        nJets_CharmMCSVT = selectedCMBTJets.size();
+        nJets_CharmTCSVL = selectedCTBLJets.size();
+        nJets_CharmTCSVM = selectedCTBMJets.size();
+        nJets_CharmTCSVT = selectedCTBTJets.size();
+        
+        // non charm b jets
+        nJets_nonCharmLCSVL = selectednonCLBLJets.size();
+        nJets_nonCharmLCSVM = selectednonCLBMJets.size();
+        nJets_nonCharmLCSVT = selectednonCLBTJets.size();
+        nJets_nonCharmMCSVL = selectednonCMBLJets.size();
+        nJets_nonCharmMCSVM = selectednonCMBMJets.size();
+        nJets_nonCharmMCSVT = selectednonCMBTJets.size();
+        nJets_nonCharmTCSVL = selectednonCTBLJets.size();
+        nJets_nonCharmTCSVM = selectednonCTBMJets.size();
+        nJets_nonCharmTCSVT = selectednonCTBTJets.size();
+        
+        //  charm non b jets
+        nJets_CharmLnonCSVL = selectedCLnonBLJets.size();
+        nJets_CharmLnonCSVM = selectedCLnonBMJets.size();
+        nJets_CharmLnonCSVT = selectedCLnonBTJets.size();
+        nJets_CharmMnonCSVL = selectedCMnonBLJets.size();
+        nJets_CharmMnonCSVM = selectedCMnonBMJets.size();
+        nJets_CharmMnonCSVT = selectedCMnonBTJets.size();
+        nJets_CharmTnonCSVL = selectedCTnonBLJets.size();
+        nJets_CharmTnonCSVM = selectedCTnonBMJets.size();
+        nJets_CharmTnonCSVT = selectedCTnonBTJets.size();
+        
+        // non charm non b jets
+        nJets_nonCharmLnonCSVL = selectednonCLnonBLJets.size();
+        nJets_nonCharmLnonCSVM = selectednonCLnonBMJets.size();
+        nJets_nonCharmLnonCSVT = selectednonCLnonBTJets.size();
+        nJets_nonCharmMnonCSVL = selectednonCMnonBLJets.size();
+        nJets_nonCharmMnonCSVM = selectednonCMnonBMJets.size();
+        nJets_nonCharmMnonCSVT = selectednonCMnonBTJets.size();
+        nJets_nonCharmTnonCSVL = selectednonCTnonBLJets.size();
+        nJets_nonCharmTnonCSVM = selectednonCTnonBMJets.size();
+        nJets_nonCharmTnonCSVT = selectednonCTnonBTJets.size();
+        
+        
+        
+        
+        
         nMuons = 0;
         for (Int_t selmu =0; selmu < selectedMuons.size() ; selmu++ )
         {
@@ -2255,10 +2659,10 @@ int main (int argc, char *argv[])
           if(!isData)
         	 {
              
-                         MuonIDSF[nMuons] = muonSFWeightID_T->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+             MuonIDSF[nMuons] = muonSFWeightID_T->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
              
-                         MuonIsoSF[nMuons] =  muonSFWeightIso_TT->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
-          
+             MuonIsoSF[nMuons] =  muonSFWeightIso_TT->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+             
            }
         	 else
            {
@@ -2415,7 +2819,7 @@ int main (int argc, char *argv[])
     //	for(int j = 0; j < 9; j++){       cout << cutstep[j] << endl; }
     sumW = (int) sumWeights;
     nEv = (int) nEvents;
-    
+    nbTrig = nbEvents_0;
     globalTree->Fill();
     if(verbose > 0) cout << "end eventloop" << endl;
     
