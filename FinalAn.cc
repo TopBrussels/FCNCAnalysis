@@ -163,7 +163,7 @@ int main (int argc, char *argv[])
   ///////////////////////////
   /// Configuration      ///
   //////////////////////////
-  int verbose = 1; // 0 = cout alll
+  int verbose = 0; // 0 = cout alll
   bool eventSelected = false;
   bool baseSelected = false;
   int nbTrig = 0;
@@ -1126,7 +1126,7 @@ int main (int argc, char *argv[])
     baselineTree->Branch("nJets_CharmL",&nJets_CharmL,"nJets_CharmL/I");
     baselineTree->Branch("nJets_CharmM",&nJets_CharmM,"nJets_CharmM/I");
     baselineTree->Branch("nJets_CharmT",&nJets_CharmT,"nJets_CharmT/I");
-    baselineTree->Branch("nJets_L",&nJets_nonCSVL,"nJets_nonCSVL/I");
+    baselineTree->Branch("nJets_nonCSVL",&nJets_nonCSVL,"nJets_nonCSVL/I");
     baselineTree->Branch("nJets_nonCSVM",&nJets_nonCSVM,"nJets_nonCSVM/I");
     baselineTree->Branch("nJets_nonCSVT",&nJets_nonCSVT,"nJets_nonCSVT/I");
     baselineTree->Branch("nJets_nonCharmLCSVL",&nJets_nonCharmLCSVL,"nJets_nonCharmLCSVL/I");
@@ -1421,6 +1421,7 @@ int main (int argc, char *argv[])
     vector <int> selections;
     std::ostringstream  selectionsnb;
     bool   passedMET = false;
+    bool   PassedGoodPV = false;
     bool   HBHEnoise = false;
     bool   HBHEIso = false;
     bool   CSCTight = false;
@@ -1502,6 +1503,7 @@ int main (int argc, char *argv[])
       }
       nCuts = 0;
       passedMET = false;
+      PassedGoodPV = false;
       HBHEnoise = false;
       HBHEIso = false;
       CSCTight = false;
@@ -1858,6 +1860,7 @@ int main (int argc, char *argv[])
       //if(HBHEnoise && HBHEIso && CSCTight && EcalDead && eeBad && isGoodPV && badchan && badmu) passedMET = true;
       if(HBHEnoise && HBHEIso && CSCTight && EcalDead  && isGoodPV && badchan && badmu) passedMET = true;
       PassedMETFilter = passedMET;
+      PassedGoodPV = isGoodPV;
       
       //////////////////////////////////////
       //   B jet selection	       ////
