@@ -6,7 +6,7 @@ import xml.etree.cElementTree as ET
 import os
 
 # get filenames from the xml!!!
-tree = ET.ElementTree(file='config/Run2TriLepton_samples_extra.xml')
+tree = ET.ElementTree(file='config/Run2TriLepton_samples.xml')
 
 root = tree.getroot()
 datasets = root.find('datasets')

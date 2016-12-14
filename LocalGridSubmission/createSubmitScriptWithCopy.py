@@ -25,7 +25,7 @@ date = dd+"_"+mm+"_"+yyyy
 #channels = ["MuMu","ElEl"] 
 #channels = ["mumumu","eee","all"] 
 channels = ["all"]
-fillBhisto = 0; 
+fillBhisto = 1; 
 JES = 1; 
 JER = 1; 
 
@@ -88,10 +88,10 @@ for chan in channels:
 
             # setting the number of file per job depending whether it is data sample or not
             # this ca be tweaked
-            if "Data" in str(d.attrib['name']):
+            if "data" in str(d.attrib['name']):
                 FilePerJob=15
             else:
-                FilePerJob=2
+                FilePerJob=4
 
             # create a test job for each dataset
             # create a file for this job                                                                                                                                        
