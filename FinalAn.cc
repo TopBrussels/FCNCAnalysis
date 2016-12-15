@@ -172,19 +172,24 @@ int main (int argc, char *argv[])
   int nbSelectedEvents = 0;
   int nbEvents = 0;
   double dataLumi = 0; //pb
+  
+  // to put  on here
   bool runHLT = true;
   bool applyJetLeptonCleaning = true;
-  bool fillBtagHisto = false;
+  bool btagShape = false;
   bool printTrigger = false;
   bool printLeptonSF = false;
-  bool applyJER = false;
-  bool applyJES = false;
-  bool applyNegWeightCorrection = false;
-  bool applyPU = false;
-  bool applyLeptonSF = false;
-  bool btagShape = true;
+  bool applyPU = true;
   string xmlFileName = "";
   int maxMCParticles = -1;
+  
+  // to put on with agrs
+  bool applyJER = false;
+  bool applyJES = false;
+  bool fillBtagHisto = false;
+  
+  
+  
   
   //////////////////////////////////////////////
   /// Set up everything for local submission ////
@@ -231,11 +236,20 @@ int main (int argc, char *argv[])
   applyJES = JES;
   applyJER = JER;
   fillBtagHisto = FillBtagHisto;
+  
+  string btag_dir = "BTagHistosPtEta";
+  if(fillBtagHisto)
+  {
+    
+    mkdir(btag_dir.c_str(),0777);
+  }
+  
   // all the files are stored from arg 11 to argc-2
   vector<string> vecfileNames;
   for(int args = 11; args < argc-7; args++)
   {
     vecfileNames.push_back(argv[args]);
+    
   }
   
   if (verbose>0)
@@ -251,7 +265,7 @@ int main (int argc, char *argv[])
   
   cout << " --> Using the all  channel <-- " << endl;
   xmlFileName = "config/Run2TriLepton.xml" ;
-  dataLumi = 2700; //pb
+  dataLumi = 36000; //pb
   
   
   cout << "---Dataset accepted from command line---" << endl;
@@ -466,10 +480,11 @@ int main (int argc, char *argv[])
     {
       // documentation at http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
       //	   btagcalib = new BTagCalibration("CSVv2", "../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_13TeV_25ns_com@
-      btagcalib = new BTagCalibration("CSVv2", "../TopTreeAnalysisBase/Calibrations/BTaggingCSVv2_80X_ichep_incl_ChangedTo_mujets.csv");
+      btagcalib = new BTagCalibration("CSVv2", "../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_80X_ichep_incl_ChangedTo_mujets.csv");
       btagreader = new BTagCalibrationReader(btagcalib, BTagEntry::OP_LOOSE, "mujets","central");
       if(fillBtagHisto)  // before btag reweighting can be apply, you first have to make the histograms
       {
+        
         btwt = new BTagWeightTools(btagreader,"BTagHistosPtEta/HistosPtEta_"+daName+ "_" + strJobNum +"_mujets_central.root",false,30,999,2.4);
       }
       else
@@ -632,6 +647,7 @@ int main (int argc, char *argv[])
     Double_t nloWeight; // for amc@nlo samples
     Int_t JERon;
     Int_t JESon;
+    Int_t METon;
     Double_t WPb_L;
     Double_t WPb_M;
     Double_t WPb_T;
@@ -762,7 +778,13 @@ int main (int argc, char *argv[])
     Double_t cdiscCvsL_jet_1;
     Double_t cdiscCvsB_jet_1;
     Double_t cdiscCvsB_jet[20];
-    
+    double orig_jet_px;
+    double orig_jet_py ;
+    double orig_jet_pt;
+    double corrected_jet_px ;
+    double corrected_jet_py ;
+    double corrected_jet_pt ;
+    double jet_pt_check;
     
     // variables for Zboson
     Double_t Zboson_M;
@@ -779,6 +801,15 @@ int main (int argc, char *argv[])
     Double_t met_Pz;
     Double_t met_Phi;
     Double_t met_Eta;
+    
+    
+    
+    double orig_met_px;
+    double orig_met_py ;
+    double orig_met_pt;
+    double corrected_met_px ;
+    double corrected_met_py ;
+    double corrected_met_pt ;
     
     Double_t mWt;
     Double_t FCNCtop_M;
@@ -891,6 +922,7 @@ int main (int argc, char *argv[])
     globalTree->Branch("cutstep",&cutstep,"cutstep[nCuts]/D");
     globalTree->Branch("JERon",&JERon,"JERon/I");
     globalTree->Branch("JESon", &JESon, "JESon/I");
+    globalTree->Branch("METon", &METon, "METon/I");
     globalTree->Branch("WPb_L", &WPb_L, "WPb_L/D");
     globalTree->Branch("WPb_M", &WPb_M, "WPb_M/D");
     globalTree->Branch("WPb_T", &WPb_T, "WPb_T/D");
@@ -1251,6 +1283,22 @@ int main (int argc, char *argv[])
     myTree->Branch("met_Py", &met_Py, "met_Py/D");
     myTree->Branch("met_Pz", &met_Pz, "met_Pz/D");
     
+    myTree->Branch("orig_met_pt", &orig_met_pt, "orig_met_pt/D");
+    myTree->Branch("orig_met_px", &orig_met_px, "orig_met_px/D");
+    myTree->Branch("orig_met_py", &orig_met_py, "orig_met_py/D");
+    myTree->Branch("corrected_met_pt", &corrected_met_pt, "corrected_met_pt/D");
+    myTree->Branch("corrected_met_px", &corrected_met_px, "corrected_met_px/D");
+    myTree->Branch("corrected_met_py", &corrected_met_py, "corrected_met_py/D");
+    
+    myTree->Branch("orig_jet_pt", &orig_jet_pt, "orig_jet_pt/D");
+    myTree->Branch("orig_jet_px", &orig_jet_px, "orig_jet_px/D");
+    myTree->Branch("orig_jet_py", &orig_jet_py, "orig_jet_py/D");
+    myTree->Branch("corrected_jet_pt", &corrected_jet_pt, "corrected_jet_pt/D");
+    myTree->Branch("corrected_jet_px", &corrected_jet_px, "corrected_jet_px/D");
+    myTree->Branch("corrected_jet_py", &corrected_jet_py, "corrected_jet_py/D");
+    myTree->Branch("jet_pt_check", &jet_pt_check, "jet_pt_check/D");
+
+    
     baselineTree->Branch("met_Pt", &met_Pt, "met_Pt/D");
     baselineTree->Branch("met_Ptbf", &met_Ptbf, "met_Ptbf/D");
     baselineTree->Branch("met_Px", &met_Px, "met_Px/D");
@@ -1259,6 +1307,21 @@ int main (int argc, char *argv[])
     baselineTree->Branch("met_Eta", &met_Eta,"met_Eta/D");
     baselineTree->Branch("met_Phi", &met_Phi, "met_Phi/D");
     
+    
+    baselineTree->Branch("orig_met_pt", &orig_met_pt, "orig_met_pt/D");
+    baselineTree->Branch("orig_met_px", &orig_met_px, "orig_met_px/D");
+    baselineTree->Branch("orig_met_py", &orig_met_py, "orig_met_py/D");
+    baselineTree->Branch("corrected_met_pt", &corrected_met_pt, "corrected_met_pt/D");
+    baselineTree->Branch("corrected_met_px", &corrected_met_px, "corrected_met_px/D");
+    baselineTree->Branch("corrected_met_py", &corrected_met_py, "corrected_met_py/D");
+    
+    baselineTree->Branch("orig_jet_pt", &orig_jet_pt, "orig_jet_pt/D");
+    baselineTree->Branch("orig_jet_px", &orig_jet_px, "orig_jet_px/D");
+    baselineTree->Branch("orig_jet_py", &orig_jet_py, "orig_jet_py/D");
+    baselineTree->Branch("corrected_jet_pt", &corrected_jet_pt, "corrected_jet_pt/D");
+    baselineTree->Branch("corrected_jet_px", &corrected_jet_px, "corrected_jet_px/D");
+    baselineTree->Branch("corrected_jet_py", &corrected_jet_py, "corrected_jet_py/D");
+    baselineTree->Branch("jet_pt_check", &jet_pt_check, "jet_pt_check/D");
     
     
     if(verbose>1) cout << "trees created " << endl;
@@ -1421,7 +1484,7 @@ int main (int argc, char *argv[])
     vector <int> selections;
     std::ostringstream  selectionsnb;
     bool   passedMET = false;
-    bool   PassedGoodPV = false;
+       PassedGoodPV = false;
     bool   HBHEnoise = false;
     bool   HBHEIso = false;
     bool   CSCTight = false;
@@ -1541,6 +1604,7 @@ int main (int argc, char *argv[])
         cout <<"Number of Electrons Loaded: " << init_electrons.size() <<endl;
         cout <<"Number of Muons Loaded: " << init_muons.size() <<endl;
         cout << "Number of Jets  Loaded: " << init_jets.size() << endl;
+        cout << "Met px / py loaded: "<< mets[0]->Px() << " / " << mets[0]->Py() << endl;
       }
       
       //  take the event
@@ -1722,6 +1786,9 @@ int main (int argc, char *argv[])
       ///// JES - JER smearing     ////
       //////////////////////////
       JERon = 0;
+      
+      
+      
       if(applyJER && !isData)
       {
         jetTools->correctJetJER(init_jets_corrected, genjets, mets[0], "nominal", false);
@@ -1734,15 +1801,47 @@ int main (int argc, char *argv[])
         JESon = 1;
       }
       
+      orig_jet_pt = 0.;
+      orig_jet_px = 0.;
+      orig_jet_py = 0.;
+      for(int intJet = 0; intJet < init_jets.size(); intJet++)
+      {
+        orig_jet_pt = orig_jet_pt + init_jets[intJet]->Pt();
+        orig_jet_px = orig_jet_px + init_jets[intJet]->Px();
+        orig_jet_py = orig_jet_py + init_jets[intJet]->Py();
+      }
+      
+      corrected_jet_pt = 0.;
+      corrected_jet_px = 0.;
+      corrected_jet_py = 0.;
+      for(int intJet = 0; intJet < init_jets_corrected.size(); intJet++)
+      {
+        corrected_jet_pt = corrected_jet_pt + init_jets_corrected[intJet]->Pt();
+        corrected_jet_px = corrected_jet_px + init_jets_corrected[intJet]->Px();
+        corrected_jet_py = corrected_jet_py + init_jets_corrected[intJet]->Py();
+      }
+      for(int intJet = 0; intJet < init_jets_corrected.size(); intJet++)
+      {
+        jet_pt_check = init_jets_corrected[intJet]->Pt() - init_jets[intJet]->Pt();
+      }
+      
       /// propagate JEC to MET
-      if(true)  // EFFECT NEEDS TO BE CHECKED !!!!!
+      METon = 0;
+      orig_met_px = mets[0]->Px();
+      orig_met_py = mets[0]->Py();
+      orig_met_pt = sqrt(orig_met_px*orig_met_px + orig_met_py*orig_met_py);
+      if((applyJES ||  applyJER) && isData)
       {
         jetTools->correctMETTypeOne(init_jets_corrected, mets[0], isData);
+        METon = 1;
         //  if JES applied: replaces the vector sum of transverse momenta of particles which can be clustered as jets with the vector sum of the transverse momenta of the jets to which JEC is applied
         //  if JER applied:  replaces the vector sum of transverse momenta of particles which can be clustered as jets with the vector sum of the transverse momenta of the jets to which smearing is applied.
         // type 1 correction / sleard pmet correction
         
       }
+      corrected_met_px = mets[0]->Px();
+      corrected_met_py = mets[0]->Py();
+      corrected_met_pt = sqrt(corrected_met_px*corrected_met_px + corrected_met_py*corrected_met_py);
       
       ///////////////////////////////////////////////////////////
       // Event selection
@@ -1783,6 +1882,9 @@ int main (int argc, char *argv[])
           mc_M[iMC] = mcParticles[iMC]->M();
         }
       }
+
+      
+      
       
       /*
        
@@ -2327,7 +2429,7 @@ int main (int argc, char *argv[])
       
       if(lep3){
         //cout << "assigning leptons " << endl;
-        if(i_channel == 3)baseSelected = true;
+        baseSelected = true;
         AssignedLeptons = LeptonAssigner(selectedElectrons, selectedMuons);
         
         if(Assigned){
