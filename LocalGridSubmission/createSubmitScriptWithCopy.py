@@ -100,7 +100,7 @@ for chan in channels:
             shutil.copyfile("submitTestSkeleton.sh", filenameTest)
             # append to the file the actual command                                                                                                                             
             outfileTest = open (filenameTest, 'a')
-	    print >> outfileTest, commandString, topTrees[0], " ", JES , " " , JER , " ", fillBhisto, " ", chan , " " , 1 , " 0" , " 10000"
+	    print >> outfileTest, commandString, topTrees[0], " ", JES , " " , JER , " ", fillBhisto, " ", "1" , "0" , " 10000"
                 
             N_job = 0
             N_file = 1
@@ -149,7 +149,7 @@ for chan in channels:
 
 
 
-                    print >> outfile, commandString, files_str, " ", JES, " " , JER, " " , fillBhisto, " ", chan , " " , str(N_job+1) , " 0" , " 2000000" 
+                    print >> outfile, commandString, files_str, " ", JES, " " , JER, " " , fillBhisto, " ", str(N_job+1) , " 0" , " 2000000" 
 
                     # cleaning
                     listOfFiles=[]
