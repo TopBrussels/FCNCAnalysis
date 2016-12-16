@@ -12,7 +12,7 @@ dd = str(now.day)
 mm = str(now.month)
 yyyy = str(now.year)
 # pick one of the two above
-date = "160705"
+date = "161214"
 #date = "17_1_2016"
 
 #channels = ["_MuMu","_ElEl"]
@@ -22,7 +22,7 @@ channels = ["_All"] #,"_ElElEl"]
 for chan in channels:
     
     #Define path where ntuples are stored
-    pathNonMerged = "NtupleMakerOutput/Ntuples"+chan+"/Ntuples_"+date+"/"
+    pathNonMerged = "NtupleMakerOutput/Ntuples/Ntuples_"+date+"/"
     if "MuMuMu" in chan:
         pathMerged = "NtupleMakerOutput/MergedTuples/mumumu/"+"160530"+"/"
     if "ElElEl" in chan:
@@ -72,7 +72,7 @@ for chan in channels:
     
     # loop over data set to search root files
     for n in datasetNames:
-        filenames = glob.glob(pathNonMerged + "/*" + chan + "*" + n + "*.root")
+        filenames = glob.glob(pathNonMerged + "/*" + n + "*.root")
         hadd = "hadd -f " + pathMerged + "/"+ n + ".root"
 
         if (len(filenames) == 0):
