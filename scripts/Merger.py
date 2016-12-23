@@ -8,8 +8,8 @@ import shutil
 
 
 # getting the appropriate xml file & defining channel and production date of TreeMakerTrees
-channel = "_El"
-date = "_9_11_2016"
+channel = "_Mu"
+date = "_22_12_2016"
 
 
 if channel == "_Mu":
@@ -54,10 +54,6 @@ for d in datasets:
         datasetNames.append(str(d.attrib['name']))
 
 for n in datasetNames:
-    #filenames_ctrlplots = glob.glob(inputdir_ControlPlots + "/*" + n + "*.root")
-    #commandString_ctrplots = "hadd -f " + pathdir_ctrplots + "/FCNC_1L3B__Run2_TopTree_Study_" + n + ".root"
-    #for f in filenames_ctrlplots:
-    #   commandString_ctrplots = commandString_ctrplots + " " + f
     filenames_ntuples = glob.glob(inputdir_Ntuples + "/*" + n + "*.root")
     commandString_ntuples = "hadd -f " + pathdir_ntuples + "/FCNC_1L3B__Run2_TopTree_Study_" + n + ".root"
     for ff in filenames_ntuples:
