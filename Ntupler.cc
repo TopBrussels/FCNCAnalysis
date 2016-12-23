@@ -141,6 +141,7 @@ int main (int argc, char *argv[])
     int passed_Step5 = 0;
     int passed_Step6 = 0;
     int passed_Step7 = 0;
+    int passed_Step8 = 0;
     int eventCount = 0;
 
     //Initializing b-tag WP
@@ -206,8 +207,8 @@ int main (int argc, char *argv[])
     bool Electron = false;
     string btagger = "CSVv2M"; //Define which b-tagger + WP is used in the SF for the cutflow-table// valable: CSVv2M, cMVAM
     bool printTriggers = false;
-    bool applyTriggers = true;
-    bool applyMVAJetComb = false;
+    bool applyTriggers = false;
+    bool applyMVAJetComb = true;
     string channelpostfix = "";
 
     //Setting Lepton Channels
@@ -277,6 +278,7 @@ int main (int argc, char *argv[])
     BTagCalibration * bTagCalib_CSVv2;   
 //    BTagCalibration * bTagCalib_cMVA;
     BTagCalibrationReader * bTagReader_CSVv2M_mujets_central;
+    BTagCalibrationReader * bTagReader_shape;
 //    BTagCalibrationReader * bTagReader_CSVv2M_mujets_up;
 //    BTagCalibrationReader * bTagReader_CSVv2M_mujets_down;
 //    BTagCalibrationReader * bTagReader_cMVAM_mujets_central;
@@ -293,31 +295,16 @@ int main (int argc, char *argv[])
         //Btag documentation : http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
         {
             bTagCalib_CSVv2 = new BTagCalibration("CSVv2","../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_80X_ichep_incl_ChangedTo_mujets.csv");
-//            bTagCalib_cMVA = new BTagCalibration("cMVAv2","../TopTreeAnalysisBase/Calibrations/BTagging/cMVAv2_80X_ichep_incl_ChangedTo_ttbar.csv");
             bTagReader_CSVv2M_mujets_central = new BTagCalibrationReader(bTagCalib_CSVv2,BTagEntry::OP_MEDIUM,"mujets","central"); //mujets
-//            bTagReader_CSVv2M_mujets_up = new BTagCalibrationReader(bTagCalib_CSVv2,BTagEntry::OP_MEDIUM,"mujets","up"); //mujets
-//            bTagReader_CSVv2M_mujets_down = new BTagCalibrationReader(bTagCalib_CSVv2,BTagEntry::OP_MEDIUM,"mujets","down"); //mujets
-//            bTagReader_cMVAM_mujets_central = new BTagCalibrationReader(bTagCalib_cMVA,BTagEntry::OP_MEDIUM,"mujets","central"); //mujets
-//            bTagReader_cMVAM_mujets_up = new BTagCalibrationReader(bTagCalib_cMVA,BTagEntry::OP_MEDIUM,"mujets","up"); //mujets
-//            bTagReader_cMVAM_mujets_down = new BTagCalibrationReader(bTagCalib_cMVA,BTagEntry::OP_MEDIUM,"mujets","down"); //mujets
+            bTagReader_shape = new BTagCalibrationReader(bTagCalib_CSVv2,BTagEntry::OP_RESHAPING,"iterativefit","central"); //reshaping
             if(bTagReweight_FillMChistos)// Need to differentiate BTagWeightTools according to filling the histos and just reading, because of overwriting possibilities in grid submission
             {
                 btwt_CSVv2M_mujets_central = new BTagWeightTools(bTagReader_CSVv2M_mujets_central,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_mujets_central.root",false,30,670,2.4);
-//                btwt_CSVv2M_mujets_up = new BTagWeightTools(bTagReader_CSVv2M_mujets_up,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_mujets_up.root",false,30,999,2.4);
-//                btwt_CSVv2M_mujets_down = new BTagWeightTools(bTagReader_CSVv2M_mujets_down,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_mujets_down.root",false,30,999,2.4);
-//                btwt_cMVAM_mujets_central = new BTagWeightTools(bTagReader_cMVAM_mujets_central,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_mujets_central.root",false,30,999,2.4);
-//                btwt_cMVAM_mujets_up = new BTagWeightTools(bTagReader_cMVAM_mujets_up,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_mujets_up.root",false,30,999,2.4);
-//                btwt_cMVAM_mujets_down = new BTagWeightTools(bTagReader_cMVAM_mujets_down,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_mujets_down.root",false,30,999,2.4);
             }
             else
             {
                 btwt_CSVv2M_mujets_central = new BTagWeightTools(bTagReader_CSVv2M_mujets_central,"BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_central.root",true,30,670,2.4);
-//                btwt_CSVv2M_mujets_up = new BTagWeightTools(bTagReader_CSVv2M_mujets_up,"BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_up.root",false,30,999,2.4);
-//                btwt_CSVv2M_mujets_down = new BTagWeightTools(bTagReader_CSVv2M_mujets_down,"BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_down.root",false,30,999,2.4);
-//                btwt_cMVAM_mujets_central = new BTagWeightTools(bTagReader_cMVAM_mujets_central,"BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_central.root",false,30,999,2.4);
-//                btwt_cMVAM_mujets_up = new BTagWeightTools(bTagReader_cMVAM_mujets_up,"BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_up.root",false,30,999,2.4);
-//                btwt_cMVAM_mujets_down = new BTagWeightTools(bTagReader_cMVAM_mujets_down,"BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_down.root",false,30,999,2.4);
-            }
+           }
         }       
 
     /////////////////////////////////////////////////
@@ -348,8 +335,10 @@ int main (int argc, char *argv[])
     }
 
     LumiReWeighting W_puSFs;
-    W_puSFs = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring16MiniAODv2-Asympt.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2016Data80X_Run273158-276811Cert.root", "pileup", "pileup");    
-
+    //W_puSFs = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring16MiniAODv2-Asympt.root", "pileup_2016Data80X_Run271036-284044Cert__Full2016DataSet.root", "pileup", "pileup");    
+    W_puSFs = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/MCPileup_Spring16.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2016Data80X_Run271036-284044Cert__Full2016DataSet.root", "pileup", "pileup");    
+    
+    
     ////////////////////////////
     /// Initialise trigger /
     ////////////////////////////
@@ -908,29 +897,70 @@ int main (int argc, char *argv[])
         // JEC
         ///////////////////////////////////////////////////////////////
         vector<JetCorrectorParameters> vCorrParam;
+        JetCorrectionUncertainty *jecUnc;
 
-        if(dName.find("Data")!=string::npos)
+        if(dName.find("Data_Run2016B")!=string::npos || dName.find("Data_Run2016C")!=string::npos || dName.find("Data_Run2016D")!=string::npos)
         {
-            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV6/Spring16_25nsV6_DATA_L1FastJet_AK4PFchs.txt");
+            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10BCD_DATA_L1FastJet_AK4PFchs.txt");
             vCorrParam.push_back(*L1JetCorPar);
-            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV6/Spring16_25nsV6_DATA_L2Relative_AK4PFchs.txt");
+            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10BCD_DATA_L2Relative_AK4PFchs.txt");
             vCorrParam.push_back(*L2JetCorPar);
-            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV6/Spring16_25nsV6_DATA_L3Absolute_AK4PFchs.txt");
+            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10BCD_DATA_L3Absolute_AK4PFchs.txt");
             vCorrParam.push_back(*L3JetCorPar);
-            JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV6/Spring16_25nsV6_DATA_L2L3Residual_AK4PFchs.txt");
+            JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10BCD_DATA_L2L3Residual_AK4PFchs.txt");
             vCorrParam.push_back(*L2L3ResJetCorPar);
             isData = true;
+            jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10BCD_DATA_Uncertainty_AK4PFchs.txt");
+        }
+        else if(dName.find("Data_Run2016E")!=string::npos)
+        {
+            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10E_DATA_L1FastJet_AK4PFchs.txt");
+            vCorrParam.push_back(*L1JetCorPar);
+            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10E_DATA_L2Relative_AK4PFchs.txt");
+            vCorrParam.push_back(*L2JetCorPar);
+            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10E_DATA_L3Absolute_AK4PFchs.txt");
+            vCorrParam.push_back(*L3JetCorPar);
+            JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10E_DATA_L2L3Residual_AK4PFchs.txt");
+            vCorrParam.push_back(*L2L3ResJetCorPar);
+            isData = true;
+            jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10E_DATA_Uncertainty_AK4PFchs.txt");
+        }
+        else if(dName.find("Data_Run2016F")!=string::npos)
+        {
+            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10F_DATA_L1FastJet_AK4PFchs.txt");
+            vCorrParam.push_back(*L1JetCorPar);
+            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10F_DATA_L2Relative_AK4PFchs.txt");
+            vCorrParam.push_back(*L2JetCorPar);
+            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10F_DATA_L3Absolute_AK4PFchs.txt");
+            vCorrParam.push_back(*L3JetCorPar);
+            JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10F_DATA_L2L3Residual_AK4PFchs.txt");
+            vCorrParam.push_back(*L2L3ResJetCorPar);
+            isData = true;
+            jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10F_DATA_Uncertainty_AK4PFchs.txt");
+        }
+        else if(dName.find("Data")!=string::npos)
+        {
+            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10p2_DATA_L1FastJet_AK4PFchs.txt");
+            vCorrParam.push_back(*L1JetCorPar);
+            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10p2_DATA_L2Relative_AK4PFchs.txt");
+            vCorrParam.push_back(*L2JetCorPar);
+            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10p2_DATA_L3Absolute_AK4PFchs.txt");
+            vCorrParam.push_back(*L3JetCorPar);
+            JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10p2_DATA_L2L3Residual_AK4PFchs.txt");
+            vCorrParam.push_back(*L2L3ResJetCorPar);
+            isData = true;
+            jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10p2_DATA_Uncertainty_AK4PFchs.txt");
         }
         else
         {
-            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV6/Spring16_25nsV6_MC_L1FastJet_AK4PFchs.txt");
+            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10_MC_L1FastJet_AK4PFchs.txt");
             vCorrParam.push_back(*L1JetCorPar);
-            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV6/Spring16_25nsV6_MC_L2Relative_AK4PFchs.txt");
+            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10_MC_L2Relative_AK4PFchs.txt");
             vCorrParam.push_back(*L2JetCorPar);
-            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV6/Spring16_25nsV6_MC_L3Absolute_AK4PFchs.txt");
+            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10_MC_L3Absolute_AK4PFchs.txt");
             vCorrParam.push_back(*L3JetCorPar);
+            jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10p2_DATA_Uncertainty_AK4PFchs.txt");
         }
-        JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV6/Spring16_25nsV6_DATA_Uncertainty_AK4PFchs.txt");
 
         JetTools *jetTools = new JetTools(vCorrParam, jecUnc, true);
 
@@ -1311,10 +1341,25 @@ int main (int argc, char *argv[])
                 trigged = true;
             }
 
+            //Event cleaning filters
+            if(isData)
+            {
+                if(!event->getHBHENoiseFilter() || !event->getHBHENoiseIsoFilter() || !event->getEEBadScFilter() || !event->getglobalTightHalo2016Filter()
+                 || !event->getEcalDeadCellTriggerPrimitiveFilter() || !event->getPVFilter() || !event->getBadChCandFilter() || !event->getBadPFMuonFilter()) continue;
+            }
+            else if(!isData)
+            {
+                 if(!event->getHBHENoiseFilter() || !event->getHBHENoiseIsoFilter() || !event->getglobalTightHalo2016Filter()
+                 || !event->getEcalDeadCellTriggerPrimitiveFilter() || !event->getPVFilter() || !event->getBadChCandFilter() || !event->getBadPFMuonFilter()) continue;
+            }
+                
+            passed_Step3++;
+
+
             if(!trigged) continue;
             if(debug) cout << "Past cut 2: passed_FinalSelection trigger" << endl;
             cutstep[2]=cutstep[2]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
-            passed_Step3++;
+            passed_Step4++;
 
             if (debug)
             {
@@ -1341,22 +1386,22 @@ int main (int argc, char *argv[])
                 exit(1);
             }
 
-            passed_Step4++;
+            passed_Step5++;
 
 			      if(Muon && !Electron)
 			      {
                   if( !(nEl == 0)) continue;
-                  passed_Step5++;
-				          if(nLooseMu != 1) continue;
                   passed_Step6++;
+				          if(nLooseMu != 1) continue;
+                  passed_Step7++;
 	                if (debug)	cout <<"Vetoed extra muons..."<<endl;
 			      }
 			      if(!Muon && Electron)
 			      {
                   if( !(nMu == 0)) continue;
-                  passed_Step5++;
-				          if(nLooseEl != 1) continue;
                   passed_Step6++;
+				          if(nLooseEl != 1) continue;
+                  passed_Step7++;
 	                if (debug)	cout <<"Vetoed extra electrons..."<<endl;
 			      }
             if(debug) cout << "Past cut 5: Vetoed extra loose leptons" << endl;
@@ -1431,16 +1476,7 @@ int main (int argc, char *argv[])
                 }                    
 			      }
             if(debug) cout << "Cleaned jets from isolated leptons" << endl;
-if(evt_num == 4465955)
-{
-      cout << "Muon" << endl;
-      cout << "   pt=" << selectedMuons[0]->Pt() << " eta=" << selectedMuons[0]->Eta() << " phi=" << selectedMuons[0]->Phi() << endl;
-      for(int seljet = 0; seljet <selectedOrigJets.size();seljet++)
-      {
-          cout << "Jet #" << seljet << endl;
-          cout << "   pt=" << selectedJets[seljet]->Pt() << " eta=" << selectedJets[seljet]->Eta() << " phi=" << selectedJets[seljet]->Phi() << endl;
-      }
-}		
+
 			      /////////////////////////////////////////////
 			      // Make TLorentzVectors //
 			      ////////////////////////////////////////////
@@ -1495,7 +1531,7 @@ if(evt_num == 4465955)
                     else{
                       jflav = BTagEntry::FLAV_UDSG;
                     }
-                    double bTagEff = bTagReader_CSVv2M_mujets_central->eval(jflav, jeteta, jetpt, jetdisc);
+                    double bTagEff = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
                     W_btagWeight_shape *= bTagEff;
                 }
             
@@ -1573,7 +1609,7 @@ if(evt_num == 4465955)
 			      if(selectedJets.size() < 3)  continue;
             if(debug) cout << "Past cut 5: passed_FinalSelection number of jets cut" << endl;
             cutstep[5]=cutstep[5]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
-            passed_Step7++;
+            passed_Step8++;
 
             ///////////////////////////////////////////////////
             // Fill b-tag histos for scale factors
@@ -1593,10 +1629,10 @@ if(evt_num == 4465955)
                 continue;
             }
 
-//		  	    if(selectedMBJets.size() < 3) continue;
-//	          if (debug)	cout <<"Cut on nb b-jets..."<<endl;
-//            if(debug) cout << "Past cut 7: passed_FinalSelection cut on number of b-jets" << endl;
-//            cutstep[6]=cutstep[6]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
+		  	    if(selectedMBJets.size() < 1) continue;
+	          if (debug)	cout <<"Cut on nb b-jets..."<<endl;
+            if(debug) cout << "Past cut 7: passed_FinalSelection cut on number of b-jets" << endl;
+            cutstep[6]=cutstep[6]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
 
 
             if(debug)
@@ -1650,8 +1686,8 @@ if(evt_num == 4465955)
                     //Calculating event weight according to the TopPtReweighing: https://twiki.cern.ch/twiki/bin/view/CMS/TopPtReweighting
                     if(mcParticles[i]->type() == 6)
                     {
-                        if(mcParticles[i]->Pt() < 400) TopPtReweigh  = TMath::Exp(0.159-0.00141*mcParticles[i]->Pt());
-                        else TopPtReweigh  = TMath::Exp(0.159-0.00141*400);
+                        if(mcParticles[i]->Pt() < 400) TopPtReweigh  = TMath::Exp(0.0615-0.0005*mcParticles[i]->Pt());
+                        else TopPtReweigh  = TMath::Exp(0.0615-0.0005*400);
                         MC_TopPt = mcParticles[i]->Pt();
                     }
                     else if(mcParticles[i]->type() == -6)
@@ -2444,6 +2480,7 @@ if(evt_num == 4465955)
         cout <<"n events passed_Step5  =  "<<passed_Step5 <<endl;
         cout <<"n events passed_Step6  =  "<<passed_Step6 <<endl;
         cout <<"n events passed_Step7  =  "<<passed_Step7 <<endl;
+        cout <<"n events passed_Step8  =  "<<passed_Step8 <<endl;
         cout <<"n events passed_FinalSelection  =  "<<passed_FinalSelection <<endl;
         cout << "Event Count: " << eventCount << endl;
         //important: free memory
