@@ -18,6 +18,7 @@
 #include "TopTreeAnalysisBase/Content/interface/AnalysisEnvironment.h"
 #include "TopTreeAnalysisBase/Tools/interface/TTreeLoader.h"
 #include "TopTreeAnalysisBase/Tools/interface/MultiSamplePlot.h"
+#include "TopTreeAnalysisBase/MCInformation/interface/LumiReWeighting.h"
 
 //includes for MVA
 #include "TopTreeAnalysisBase/Tools/interface/MVATrainer.h"
@@ -39,16 +40,20 @@ map<string,TFile*> FileObj;
 map<string,TNtuple*> nTuple;
 map<string,TTree*> ttree;
 map<string,MultiSamplePlot*> MSPlot;
+map<string,MultiSamplePlot*> MSPlot_nPV;
 
 
-Bool_t debug = false;
 
 
 
 // functions prototype
 std::string intToStr (int number);
-void MSPCreator ();
+void MakeNPV_Distributions(int baseline_jets, int baseline_bjets, string channel, string date, bool debug);
 
+inline bool FileExists (const std::string& name) {
+  struct stat buffer;   
+  return (stat (name.c_str(), &buffer) == 0); 
+}
 
 
 int main(int argc, char *argv[])
@@ -58,7 +63,8 @@ int main(int argc, char *argv[])
     int baseline_bjets             = strtol(argv[2], NULL,10);
     string channel            = argv[3];
     string date            = argv[4];
-    bool debug         =strtol(argv[5], NULL,10);
+    bool PVreweighing = strtol(argv[5], NULL,10);
+    bool debug         =strtol(argv[6], NULL,10);
     
     bool doInclusive = false;
     string category;
@@ -81,10 +87,18 @@ int main(int argc, char *argv[])
     clock_t start = clock();
 
 
+    cout << " ... Making the TreeProcessor .xml files " << endl;
+    system("python scripts/MakeXMLforTreeProcessor.py");
+
     string xmlNom;
-    if(channel == "_El") xmlNom = "config/FullMcBkgdSamples_El.xml";
-    if(channel == "_Mu") xmlNom = "config/FullMcBkgdSamples_Mu.xml";
+    if(channel == "_El") xmlNom = "config/FullMcBkgdSamples_El_TreeProcessor.xml";
+    if(channel == "_Mu") xmlNom = "config/FullMcBkgdSamples_Mu_TreeProcessor.xml";
     TString TreePath = "Merged/Ntuples" + channel + "/Ntuples" + date;
+    if(!FileExists(string(TreePath+"/FCNC_1L3B__Run2_TopTree_Study_Data.root")))
+    {
+        system(("hadd "+TreePath+"/FCNC_1L3B__Run2_TopTree_Study_Data.root "+TreePath+"/FCNC_1L3B__Run2_TopTree_Study_Data_*.root").Data());
+    }
+
 
   	const char *xmlfile = xmlNom.c_str();
   	cout << "used config file: " << xmlfile << endl;
@@ -99,8 +113,8 @@ int main(int argc, char *argv[])
     //***************************************************CREATING PLOT****************************************************
     //Format of MSPlots: MultiSamplePlot(vector<Dataset*> datasets, string PlotName, int Nbins, float Min, float Max, string XaxisLabel, string YaxisLabel, string Text, string Units)
 
-    MSPlot["NPV"] = new MultiSamplePlot(datasets, "NPV", 41, -0.5, 40.5, "Number of PV","Events", category); 
-    MSPlot["NPU"] = new MultiSamplePlot(datasets, "NPU", 41, -0.5, 40.5, "Number of PU","Events", category); 
+    MSPlot["NPV"] = new MultiSamplePlot(datasets, "NPV", 51, -0.5, 50.5, "Number of PV","Events", category); 
+    MSPlot["NPU"] = new MultiSamplePlot(datasets, "NPU", 51, -0.5, 50.5, "Number of PU","Events", category); 
     MSPlot["NCSVv2Ljets"] = new MultiSamplePlot(datasets, "NCSVv2Ljets", 11, -0.5, 10.5, "Number of CSVv2 L jets","Events", category); 
     MSPlot["NCSVv2Mjets"] = new MultiSamplePlot(datasets, "NCSVv2Mjets", 11, -0.5, 10.5, "Number of CSVv2 M jets","Events", category); 
     MSPlot["NCSVv2Tjets"] = new MultiSamplePlot(datasets, "NCSVv2Tjets", 11, -0.5, 10.5, "Number of CSVv2 T jets","Events", category); 
@@ -155,6 +169,30 @@ int main(int argc, char *argv[])
             cout <<"Equivalent luminosity of the dataset is: " << datasets[d]->EquivalentLumi() << endl;
 		    }
 	
+        reweight::LumiReWeighting W_nPV;
+        if(PVreweighing)//Before you can apply this, you need to make the nPV distributions first by running this macro once.
+        {
+            string pathPlot = "MSPlots/";
+            mkdir(pathPlot.c_str(),0777);
+            pathPlot += "MSPlots";
+            pathPlot += channel;
+            pathPlot += "/";
+            mkdir(pathPlot.c_str(),0777);
+            pathPlot += date;
+            pathPlot += "/";
+            mkdir(pathPlot.c_str(),0777);
+            pathPlot += category;
+            pathPlot += "/";
+            mkdir(pathPlot.c_str(),0777);            
+            pathPlot += "Output_NPV.root";            
+
+            if(!FileExists(pathPlot))
+            {
+                MakeNPV_Distributions(baseline_jets, baseline_bjets, channel, date, debug);
+            }
+            
+            W_nPV = reweight::LumiReWeighting( pathPlot.c_str(), pathPlot.c_str(), ("MultiSamplePlot_NPV_unw/NPV_unw_"+dataSetName).c_str(), "MultiSamplePlot_NPV_unw/NPV_unw_Data");    
+        }
 
 		    FileObj[dataSetName.c_str()] = new TFile((filepath).c_str(),"READ"); //create TFile for each dataset      
 		                
@@ -494,32 +532,67 @@ int main(int argc, char *argv[])
 		        }
 
             float ScaleFactor = 1.; // event scale factor
-            if(W_puSF <= 0|| W_fleptonSF <= 0 || W_btagWeight_CSVv2M_mujets_central <= 0 || nloSF <= 0 || Luminosity <= 0 )
+            //Safety triggers in case there are strange things happening in the event weights
+            if(!PVreweighing)
             {
-                  cout << "----- Event " << j << " has a negative weight. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << "; Luminosity=" << Luminosity << endl;
-                  cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
-                  cout << "----- The event will be skipped....." << endl;
-                  continue;
+                if(W_puSF <= 0|| W_fleptonSF <= 0 || W_btagWeight_CSVv2M_mujets_central <= 0 || nloSF <= 0 || Luminosity <= 0 )
+                {
+                      cout << "----- Event " << j << " has a negative weight. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << "; Luminosity=" << Luminosity << endl;
+                      cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
+                      cout << "----- The event will be skipped....." << endl;
+                      continue;
+                }
+                else if(W_puSF != W_puSF|| W_fleptonSF != W_fleptonSF || W_btagWeight_CSVv2M_mujets_central != W_btagWeight_CSVv2M_mujets_central || nloSF != nloSF)
+                {
+                      cout << "----- Event " << j << " has a Nan weight. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
+                      cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
+                      cout << "----- The event will be skipped....." << endl;
+                      continue;
+                }
+                else if(W_puSF >= 20|| W_fleptonSF >= 20 || W_btagWeight_CSVv2M_mujets_central >= 20 || nloSF >= 20)
+                {
+                      cout << "----- Event " << j << " has a weight larger than 20. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
+                      cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
+                      cout << "----- The event will be skipped....." << endl;
+                      continue;
+                }
             }
-            else if(W_puSF != W_puSF|| W_fleptonSF != W_fleptonSF || W_btagWeight_CSVv2M_mujets_central != W_btagWeight_CSVv2M_mujets_central || nloSF != nloSF)
+            else
             {
-                  cout << "----- Event " << j << " has a Nan weight. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
-                  cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
-                  cout << "----- The event will be skipped....." << endl;
-                  continue;
-            }
-            else if(W_puSF >= 20|| W_fleptonSF >= 20 || W_btagWeight_CSVv2M_mujets_central >= 20 || nloSF >= 20)
-            {
-                  cout << "----- Event " << j << " has a weight larger than 20. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
-                  cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
-                  cout << "----- The event will be skipped....." << endl;
-                  continue;
-            }
+                if(W_fleptonSF <= 0 || W_btagWeight_CSVv2M_mujets_central <= 0 || nloSF <= 0 || Luminosity <= 0 )
+                {
+                      cout << "----- Event " << j << " has a negative weight. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << "; Luminosity=" << Luminosity << endl;
+                      cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
+                      cout << "----- The event will be skipped....." << endl;
+                      continue;
+                }
+                else if(W_fleptonSF != W_fleptonSF || W_btagWeight_CSVv2M_mujets_central != W_btagWeight_CSVv2M_mujets_central || nloSF != nloSF)
+                {
+                      cout << "----- Event " << j << " has a Nan weight. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
+                      cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
+                      cout << "----- The event will be skipped....." << endl;
+                      continue;
+                }
+                else if(W_fleptonSF >= 20 || W_btagWeight_CSVv2M_mujets_central >= 20 || nloSF >= 20)
+                {
+                      cout << "----- Event " << j << " has a weight larger than 20. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
+                      cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
+                      cout << "----- The event will be skipped....." << endl;
+                      continue;
+                }
+			      }
 			      if(!isData)
 			      {
-//			          ScaleFactor = ScaleFactor * W_puSF;
+			          
+                double W_puSF_applied = 1.;
+			          if(!PVreweighing) W_puSF_applied = W_puSF;
+			          else
+			          {
+			              W_puSF_applied = W_nPV.ITweight( (int)nvtx );
+			          }
+			          ScaleFactor = ScaleFactor * W_puSF_applied;
 			          ScaleFactor = ScaleFactor * W_fleptonSF;
-//			          ScaleFactor = ScaleFactor * W_btagWeight_CSVv2M_mujets_central;
+			          ScaleFactor = ScaleFactor * W_btagWeight_CSVv2M_mujets_central;
 			          ScaleFactor = ScaleFactor * nloSF;
 //                ScaleFactor = ScaleFactor * W_btagWeight_shape;
                 if(dataSetName.find("TTJets") != std::string::npos) ScaleFactor = ScaleFactor * W_TopPtReweighing/average_TopPtWeight;
@@ -695,4 +768,111 @@ std::string intToStr (int number)
   	buff<<number;
   	return buff.str();
 }
+
+void MakeNPV_Distributions(int baseline_jets, int baseline_bjets, string channel, string date, bool debug)
+{
+    bool doInclusive = false;
+    string category;
+    if(baseline_bjets == 0 && baseline_jets == 0)
+    {
+        doInclusive = true;
+        category = "Inclusive";
+    }
+    else
+    {
+        category = "b"+intToStr(baseline_bjets)+"j"+intToStr(baseline_jets);
+    }    
+
+    cout << ".. ..Making nPV_unw distributions for all samples.. .." << endl;
+
+
+    string xmlNom;
+    if(channel == "_El") xmlNom = "config/FullMcBkgdSamples_El_TreeProcessor.xml";
+    if(channel == "_Mu") xmlNom = "config/FullMcBkgdSamples_Mu_TreeProcessor.xml";
+    TString TreePath = "Merged/Ntuples" + channel + "/Ntuples" + date;
+
+  	const char *xmlfile = xmlNom.c_str();
+  	cout << "used config file: " << xmlfile << endl;
+  
+    //***************************************************LOADING DATASETS****************************************************
+  	TTreeLoader treeLoader;
+  	vector < Dataset* > datasets; 					//cout<<"vector filled"<<endl;
+  	treeLoader.LoadDatasets (datasets, xmlfile);	//cout<<"datasets loaded"<<endl;
+  	string dataSetName, filepath;
+
+    //***************************************************CREATING PLOT****************************************************
+    //Format of MSPlots: MultiSamplePlot(vector<Dataset*> datasets, string PlotName, int Nbins, float Min, float Max, string XaxisLabel, string YaxisLabel, string Text, string Units)
+
+    MSPlot_nPV["NPV_unw"] = new MultiSamplePlot(datasets, "NPV_unw", 51, -0.5, 50.5, "Number of PV","Events", category); 
+
+  
+ 
+
+  	//***********************************************RUNNING OVER DATASETS**********************************************
+	  for (int d = 0; d < datasets.size(); d++)   //Loop through datasets  
+	  {
+		    dataSetName = datasets[d]->Name();
+		    cout<<".. ..Dataset:  :"<<dataSetName<<endl;
+		    filepath = TreePath+"/FCNC_1L3B__Run2_TopTree_Study_"+dataSetName + ".root";
+		    FileObj[dataSetName.c_str()] = new TFile((filepath).c_str(),"READ"); //create TFile for each dataset      
+		                
+
+  	    //***********************************************IMPORTING VARIABLES**********************************************
+		    string TTreename = "ObjectVarsTree";	
+		    ttree[dataSetName.c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename.c_str()); //get ttree for each dataset
+
+        int nEntries;
+
+		    nEntries = ttree[dataSetName.c_str()]->GetEntries();
+		    cout<<"                 nEntries: "<<nEntries<<endl;
+        Int_t nvtx;
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_nvtx",&nvtx);
+		
+  	    //***********************************************RUNNING OVER EVENTS**********************************************
+		    for (int j = 0; j<nEntries; j++)
+		    {
+			      ttree[dataSetName.c_str()]->GetEntry(j);
+            MSPlot_nPV["NPV_unw"]->Fill(nvtx, datasets[d], true, 1.);
+			                
+		  }//for-loop events
+		              
+    }//for-loop datasets
+  
+  cout << "MSPlot size: " << MSPlot_nPV.size() << endl;      
+
+  string pathPNG = "MSPlots/";
+  mkdir(pathPNG.c_str(),0777);
+  pathPNG += "MSPlots";
+  pathPNG += channel;
+  mkdir(pathPNG.c_str(),0777);
+  pathPNG += "/";
+  pathPNG += date;
+  mkdir(pathPNG.c_str(),0777);
+  pathPNG += "/";
+  pathPNG += category;
+  mkdir(pathPNG.c_str(),0777);
+  cout <<"Making directory :"<< pathPNG  <<endl;		//make directory
+
+  TFile *outfile = new TFile((pathPNG+"/Output_NPV.root").c_str(),"recreate");
+  outfile->cd();
+
+
+  // Loop over all the MSPlots
+  for(map<string,MultiSamplePlot*>::const_iterator it = MSPlot_nPV.begin(); it != MSPlot_nPV.end(); it++)
+  {
+     	string name = it->first;
+     	MultiSamplePlot *temp = it->second;
+      cout << "Drawing MSP: " << it->first << endl;
+      temp->Draw("MyMSP_"+it->first, 1, false, false, false, 1);
+      temp->Write(outfile, it->first, true,pathPNG, "png");
+	}
+
+  	outfile->Write("kOverwrite");
+    cout << ".. .. Finished making nPV_unw distributions for all samples.. .." << endl;
+
+}
+
+
+
+
 
