@@ -274,29 +274,142 @@ int main (int argc, char *argv[])
     //////////////////////////////////////////////
     int mkdirstatus_btag = mkdir("BTagHistosPtEta",0777);
 
-
     BTagCalibration * bTagCalib_CSVv2;   
 //    BTagCalibration * bTagCalib_cMVA;
+
     BTagCalibrationReader * bTagReader_CSVv2M_mujets_central;
     BTagCalibrationReader * bTagReader_shape;
-//    BTagCalibrationReader * bTagReader_CSVv2M_mujets_up;
-//    BTagCalibrationReader * bTagReader_CSVv2M_mujets_down;
-//    BTagCalibrationReader * bTagReader_cMVAM_mujets_central;
-//    BTagCalibrationReader * bTagReader_cMVAM_mujets_up;
-//    BTagCalibrationReader * bTagReader_cMVAM_mujets_down;
+    BTagCalibrationReader * reader_JESUp;
+    BTagCalibrationReader * reader_JESDown;
+    BTagCalibrationReader * reader_LFUp;
+    BTagCalibrationReader * reader_LFDown;
+    BTagCalibrationReader * reader_HFUp;
+    BTagCalibrationReader * reader_HFDown;
+    BTagCalibrationReader * reader_HFStats1Up;
+    BTagCalibrationReader * reader_HFStats1Down;
+    BTagCalibrationReader * reader_HFStats2Up;
+    BTagCalibrationReader * reader_HFStats2Down;
+    BTagCalibrationReader * reader_LFStats1Up;
+    BTagCalibrationReader * reader_LFStats1Down;
+    BTagCalibrationReader * reader_LFStats2Up;
+    BTagCalibrationReader * reader_LFStats2Down;
+    BTagCalibrationReader * reader_CFErr1Up;
+    BTagCalibrationReader * reader_CFErr1Down;
+    BTagCalibrationReader * reader_CFErr2Up;
+    BTagCalibrationReader * reader_CFErr2Down;
+
     BTagWeightTools *btwt_CSVv2M_mujets_central = 0;
-//    BTagWeightTools *btwt_CSVv2M_mujets_up;
-//    BTagWeightTools *btwt_CSVv2M_mujets_down;
-//    BTagWeightTools *btwt_cMVAM_mujets_central = 0;
-//    BTagWeightTools *btwt_cMVAM_mujets_up;
-//    BTagWeightTools *btwt_cMVAM_mujets_down;
+
 
         if(dName.find("Data")==string::npos)
         //Btag documentation : http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
         {
             bTagCalib_CSVv2 = new BTagCalibration("CSVv2","../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_80X_ichep_incl_ChangedTo_mujets.csv");
+
             bTagReader_CSVv2M_mujets_central = new BTagCalibrationReader(bTagCalib_CSVv2,BTagEntry::OP_MEDIUM,"mujets","central"); //mujets
             bTagReader_shape = new BTagCalibrationReader(bTagCalib_CSVv2,BTagEntry::OP_RESHAPING,"iterativefit","central"); //reshaping
+
+
+            // JESUp
+            reader_JESUp = new BTagCalibrationReader(bTagCalib_CSVv2, // calibration instance
+                           BTagEntry::OP_RESHAPING, // operating point
+                           "iterativefit", // measurement type
+                           "up_jes"); // systematics type
+            // JESDown
+            reader_JESDown = new BTagCalibrationReader(bTagCalib_CSVv2, // calibration instance
+                           BTagEntry::OP_RESHAPING, // operating point
+                           "iterativefit", // measurement type
+                           "down_jes"); // systematics type
+
+            // LFUp
+            reader_LFUp = new BTagCalibrationReader(bTagCalib_CSVv2, // calibration instance
+                           BTagEntry::OP_RESHAPING, // operating point
+                           "iterativefit", // measurement type
+                           "up_lf"); // systematics type
+            // LFDown
+            reader_LFDown = new BTagCalibrationReader(bTagCalib_CSVv2, // calibration instance
+                           BTagEntry::OP_RESHAPING, // operating point
+                           "iterativefit", // measurement type
+                           "down_lf"); // systematics type
+
+            // HFUp
+            reader_HFUp = new BTagCalibrationReader(bTagCalib_CSVv2, // calibration instance
+                           BTagEntry::OP_RESHAPING, // operating point
+                           "iterativefit", // measurement type
+                           "up_hf"); // systematics type
+            // HFDown
+            reader_HFDown = new BTagCalibrationReader(bTagCalib_CSVv2, // calibration instance
+                           BTagEntry::OP_RESHAPING, // operating point
+                           "iterativefit", // measurement type
+                           "down_hf"); // systematics type
+
+            // HFStats1Up
+            reader_HFStats1Up = new BTagCalibrationReader(bTagCalib_CSVv2, // calibration instance
+                           BTagEntry::OP_RESHAPING, // operating point
+                           "iterativefit", // measurement type
+                           "up_hfstats1"); // systematics type
+            // HFStats1Down
+            reader_HFStats1Down = new BTagCalibrationReader(bTagCalib_CSVv2, // calibration instance
+                           BTagEntry::OP_RESHAPING, // operating point
+                           "iterativefit", // measurement type
+                           "down_hfstats1"); // systematics type
+
+            // HFStats2Up
+            reader_HFStats2Up = new BTagCalibrationReader(bTagCalib_CSVv2, // calibration instance
+                           BTagEntry::OP_RESHAPING, // operating point
+                           "iterativefit", // measurement type
+                           "up_hfstats2"); // systematics type
+            // HFStats2Down
+            reader_HFStats2Down = new BTagCalibrationReader(bTagCalib_CSVv2, // calibration instance
+                           BTagEntry::OP_RESHAPING, // operating point
+                           "iterativefit", // measurement type
+                           "down_hfstats2"); // systematics type
+
+            // LFStats1Up
+            reader_LFStats1Up = new BTagCalibrationReader(bTagCalib_CSVv2, // calibration instance
+                           BTagEntry::OP_RESHAPING, // operating point
+                           "iterativefit", // measurement type
+                           "up_lfstats1"); // systematics type
+            // LFStats1Down
+            reader_LFStats1Down = new BTagCalibrationReader(bTagCalib_CSVv2, // calibration instance
+                           BTagEntry::OP_RESHAPING, // operating point
+                           "iterativefit", // measurement type
+                           "down_lfstats1"); // systematics type
+
+            // LFStats2Up
+            reader_LFStats2Up = new BTagCalibrationReader(bTagCalib_CSVv2, // calibration instance
+                           BTagEntry::OP_RESHAPING, // operating point
+                           "iterativefit", // measurement type
+                           "up_lfstats2"); // systematics type
+            // LFStats2Down
+            reader_LFStats2Down = new BTagCalibrationReader(bTagCalib_CSVv2, // calibration instance
+                           BTagEntry::OP_RESHAPING, // operating point
+                           "iterativefit", // measurement type
+                           "down_lfstats2"); // systematics type
+
+            // CFErr1Up
+            reader_CFErr1Up = new BTagCalibrationReader(bTagCalib_CSVv2, // calibration instance
+                           BTagEntry::OP_RESHAPING, // operating point
+                           "iterativefit", // measurement type
+                           "up_cferr1"); // systematics type
+            // CFErr1Down
+            reader_CFErr1Down = new BTagCalibrationReader(bTagCalib_CSVv2, // calibration instance
+                           BTagEntry::OP_RESHAPING, // operating point
+                           "iterativefit", // measurement type
+                           "down_cferr1"); // systematics type
+
+            // CFErr2Up
+            reader_CFErr2Up = new BTagCalibrationReader(bTagCalib_CSVv2, // calibration instance
+                           BTagEntry::OP_RESHAPING, // operating point
+                           "iterativefit", // measurement type
+                           "up_cferr2"); // systematics type
+            // CFErr2Down
+            reader_CFErr2Down = new BTagCalibrationReader(bTagCalib_CSVv2, // calibration instance
+                           BTagEntry::OP_RESHAPING, // operating point
+                           "iterativefit", // measurement type
+                           "down_cferr2"); // systematics type        
+
+
             if(bTagReweight_FillMChistos)// Need to differentiate BTagWeightTools according to filling the histos and just reading, because of overwriting possibilities in grid submission
             {
                 btwt_CSVv2M_mujets_central = new BTagWeightTools(bTagReader_CSVv2M_mujets_central,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_mujets_central.root",false,30,670,2.4);
@@ -334,9 +447,10 @@ int main (int argc, char *argv[])
         }
     }
 
-    LumiReWeighting W_puSFs;
-    //W_puSFs = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring16MiniAODv2-Asympt.root", "pileup_2016Data80X_Run271036-284044Cert__Full2016DataSet.root", "pileup", "pileup");    
+    LumiReWeighting W_puSFs, W_puSFs_Minus, W_puSFs_Plus;
     W_puSFs = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/MCPileup_Spring16.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2016Data80X_Run271036-284044Cert__Full2016DataSet.root", "pileup", "pileup");    
+    W_puSFs_Minus = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/MCPileup_Spring16.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2016Data80X_Run271036-284044Cert__Full2016DataSet_sysMinus.root", "pileup", "pileup");    
+    W_puSFs_Plus = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/MCPileup_Spring16.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2016Data80X_Run271036-284044Cert__Full2016DataSet_sysPlus.root", "pileup", "pileup");    
     
     
     ////////////////////////////
@@ -453,11 +567,31 @@ int main (int argc, char *argv[])
 
         //Weights
         Double_t W_puSF;
+        Double_t W_puSF_Minus;
+        Double_t W_puSF_Plus;
         Double_t W_fleptonSF;
+        Double_t W_fleptonSF_Plus;
+        Double_t W_fleptonSF_Minus;
         Double_t W_btagWeight_CSVv2M_mujets_central;
         Double_t W_btagWeight_CSVv2M_mujets_up;
         Double_t W_btagWeight_CSVv2M_mujets_down;
         Double_t W_btagWeight_shape;
+        Double_t W_btagWeight_shape_up_lf; 
+        Double_t W_btagWeight_shape_down_lf; 
+        Double_t W_btagWeight_shape_up_hf; 
+        Double_t W_btagWeight_shape_down_hf; 
+        Double_t W_btagWeight_shape_up_hfstats1; 
+        Double_t W_btagWeight_shape_down_hfstats1; 
+        Double_t W_btagWeight_shape_up_hfstats2; 
+        Double_t W_btagWeight_shape_down_hfstats2; 
+        Double_t W_btagWeight_shape_up_lfstats1; 
+        Double_t W_btagWeight_shape_down_lfstats1; 
+        Double_t W_btagWeight_shape_up_lfstats2; 
+        Double_t W_btagWeight_shape_down_lfstats2; 
+        Double_t W_btagWeight_shape_up_cferr1; 
+        Double_t W_btagWeight_shape_down_cferr1; 
+        Double_t W_btagWeight_shape_up_cferr2; 
+        Double_t W_btagWeight_shape_down_cferr2; 
         Double_t W_nloWeight;// for amc@nlo samples
         Double_t W_weight1;
         Double_t W_weight2;
@@ -474,6 +608,20 @@ int main (int argc, char *argv[])
         Double_t W_MuonTrigSF_Runs274094to276097;//Used in calculation for W_MuonTrigSF
         Double_t W_ElectronIDSF; //One of the 2 components for the total electron SF
         Double_t W_ElectronRecoSF; //One of the 2 components for the total electron SF
+        Double_t W_MuonIDSF_Plus; //One of the 3 components for the total muon SF
+        Double_t W_MuonIsoSF_Plus; //One of the 3 components for the total muon SF
+        Double_t W_MuonTrigSF_Plus;//One of the 3 components for the total muon SF
+        Double_t W_MuonTrigSF_Runs273158to274093_Plus;//Used in calculation for W_MuonTrigSF
+        Double_t W_MuonTrigSF_Runs274094to276097_Plus;//Used in calculation for W_MuonTrigSF
+        Double_t W_ElectronIDSF_Plus; //One of the 2 components for the total electron SF
+        Double_t W_ElectronRecoSF_Plus; //One of the 2 components for the total electron SF
+        Double_t W_MuonIDSF_Minus; //One of the 3 components for the total muon SF
+        Double_t W_MuonIsoSF_Minus; //One of the 3 components for the total muon SF
+        Double_t W_MuonTrigSF_Minus;//One of the 3 components for the total muon SF
+        Double_t W_MuonTrigSF_Runs273158to274093_Minus;//Used in calculation for W_MuonTrigSF
+        Double_t W_MuonTrigSF_Runs274094to276097_Minus;//Used in calculation for W_MuonTrigSF
+        Double_t W_ElectronIDSF_Minus; //One of the 2 components for the total electron SF
+        Double_t W_ElectronRecoSF_Minus; //One of the 2 components for the total electron SF
         Double_t W_TopPtReweighing;
  
       
@@ -589,11 +737,31 @@ int main (int argc, char *argv[])
 
         // Weights
         tup_ObjectVars->Branch("W_fleptonSF",&W_fleptonSF,"W_fleptonSF/D"); //Contains, if muon, the  isoSF, idSF & trigSF
-        tup_ObjectVars->Branch("W_puSF",&W_puSF,"W_puSF/D");  
+        tup_ObjectVars->Branch("W_fleptonSF_Plus",&W_fleptonSF_Plus,"W_fleptonSF_Plus/D"); //Contains, if muon, the  isoSF, idSF & trigSF
+        tup_ObjectVars->Branch("W_fleptonSF_Minus",&W_fleptonSF_Minus,"W_fleptonSF_Minus/D"); //Contains, if muon, the  isoSF, idSF & trigSF
+        tup_ObjectVars->Branch("W_puSF",&W_puSF,"W_puSF/D");
+        tup_ObjectVars->Branch("W_puSF_Minus",&W_puSF_Minus,"W_puSF_Minus/D");
+        tup_ObjectVars->Branch("W_puSF_Plus",&W_puSF_Plus,"W_puSF_Plus/D");
         tup_ObjectVars->Branch("W_btagWeight_CSVv2M_mujets_central",&W_btagWeight_CSVv2M_mujets_central,"W_btagWeight_CSVv2M_mujets_central/D"); 
         tup_ObjectVars->Branch("W_btagWeight_CSVv2M_mujets_up",&W_btagWeight_CSVv2M_mujets_up,"W_btagWeight_CSVv2M_mujets_up/D");  
         tup_ObjectVars->Branch("W_btagWeight_CSVv2M_mujets_down",&W_btagWeight_CSVv2M_mujets_down,"W_btagWeight_CSVv2M_mujets_down/D"); 
         tup_ObjectVars->Branch("W_btagWeight_shape",&W_btagWeight_shape,"W_btagWeight_shape/D"); 
+        tup_ObjectVars->Branch("W_btagWeight_shape_up_lf",&W_btagWeight_shape_up_lf,"W_btagWeight_shape_up_lf/D"); 
+        tup_ObjectVars->Branch("W_btagWeight_shape_down_lf",&W_btagWeight_shape_down_lf,"W_btagWeight_shape_down_lf/D"); 
+        tup_ObjectVars->Branch("W_btagWeight_shape_up_hf",&W_btagWeight_shape_up_hf,"W_btagWeight_shape_up_hf/D"); 
+        tup_ObjectVars->Branch("W_btagWeight_shape_down_hf",&W_btagWeight_shape_down_hf,"W_btagWeight_shape_down_hf/D"); 
+        tup_ObjectVars->Branch("W_btagWeight_shape_up_hfstats1",&W_btagWeight_shape_up_hfstats1,"W_btagWeight_shape_up_hfstats1/D"); 
+        tup_ObjectVars->Branch("W_btagWeight_shape_down_hfstats1",&W_btagWeight_shape_down_hfstats1,"W_btagWeight_shape_down_hfstats1/D"); 
+        tup_ObjectVars->Branch("W_btagWeight_shape_up_hfstats2",&W_btagWeight_shape_up_hfstats2,"W_btagWeight_shape_up_hfstats2/D"); 
+        tup_ObjectVars->Branch("W_btagWeight_shape_down_hfstats2",&W_btagWeight_shape_down_hfstats2,"W_btagWeight_shape_down_hfstats2/D"); 
+        tup_ObjectVars->Branch("W_btagWeight_shape_up_lfstats1",&W_btagWeight_shape_up_lfstats1,"W_btagWeight_shape_up_lfstats1/D"); 
+        tup_ObjectVars->Branch("W_btagWeight_shape_down_lfstats1",&W_btagWeight_shape_down_lfstats1,"W_btagWeight_shape_down_lfstats1/D"); 
+        tup_ObjectVars->Branch("W_btagWeight_shape_up_lfstats2",&W_btagWeight_shape_up_lfstats2,"W_btagWeight_shape_up_lfstats2/D"); 
+        tup_ObjectVars->Branch("W_btagWeight_shape_down_lfstats2",&W_btagWeight_shape_down_lfstats2,"W_btagWeight_shape_down_lfstats2/D"); 
+        tup_ObjectVars->Branch("W_btagWeight_shape_up_cferr1",&W_btagWeight_shape_up_cferr1,"W_btagWeight_shape_up_cferr1/D"); 
+        tup_ObjectVars->Branch("W_btagWeight_shape_down_cferr1",&W_btagWeight_shape_down_cferr1,"W_btagWeight_shape_down_cferr1/D"); 
+        tup_ObjectVars->Branch("W_btagWeight_shape_up_cferr2",&W_btagWeight_shape_up_cferr2,"W_btagWeight_shape_up_cferr2/D"); 
+        tup_ObjectVars->Branch("W_btagWeight_shape_down_cferr2",&W_btagWeight_shape_down_cferr2,"W_btagWeight_shape_down_cferr2/D"); 
         tup_ObjectVars->Branch("W_nloWeight",&W_nloWeight,"W_nloWeight/D"); 
         tup_ObjectVars->Branch("W_weight1",&W_weight1,"W_weight1/D");  
         tup_ObjectVars->Branch("W_weight2",&W_weight2,"W_weight2/D");  
@@ -901,55 +1069,55 @@ int main (int argc, char *argv[])
 
         if(dName.find("Data_Run2016B")!=string::npos || dName.find("Data_Run2016C")!=string::npos || dName.find("Data_Run2016D")!=string::npos)
         {
-            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10BCD_DATA_L1FastJet_AK4PFchs.txt");
+            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016BCDV2_DATA_L1FastJet_AK4PFchs.txt");
             vCorrParam.push_back(*L1JetCorPar);
-            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10BCD_DATA_L2Relative_AK4PFchs.txt");
+            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016BCDV2_DATA_L2Relative_AK4PFchs.txt");
             vCorrParam.push_back(*L2JetCorPar);
-            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10BCD_DATA_L3Absolute_AK4PFchs.txt");
+            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016BCDV2_DATA_L3Absolute_AK4PFchs.txt");
             vCorrParam.push_back(*L3JetCorPar);
-            JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10BCD_DATA_L2L3Residual_AK4PFchs.txt");
+            JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016BCDV2_DATA_L2L3Residual_AK4PFchs.txt");
             vCorrParam.push_back(*L2L3ResJetCorPar);
             isData = true;
-            jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10BCD_DATA_Uncertainty_AK4PFchs.txt");
+            jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016BCDV2_DATA_Uncertainty_AK4PFchs.txt");
         }
-        else if(dName.find("Data_Run2016E")!=string::npos)
+        else if(dName.find("Data_Run2016E")!=string::npos || dName.find("Data_Run2016F")!=string::npos)
         {
-            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10E_DATA_L1FastJet_AK4PFchs.txt");
+            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016EFV2_DATA_L1FastJet_AK4PFchs.txt");
             vCorrParam.push_back(*L1JetCorPar);
-            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10E_DATA_L2Relative_AK4PFchs.txt");
+            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016EFV2_DATA_L2Relative_AK4PFchs.txt");
             vCorrParam.push_back(*L2JetCorPar);
-            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10E_DATA_L3Absolute_AK4PFchs.txt");
+            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016EFV2_DATA_L3Absolute_AK4PFchs.txt");
             vCorrParam.push_back(*L3JetCorPar);
-            JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10E_DATA_L2L3Residual_AK4PFchs.txt");
+            JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016EFV2_DATA_L2L3Residual_AK4PFchs.txt");
             vCorrParam.push_back(*L2L3ResJetCorPar);
             isData = true;
-            jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10E_DATA_Uncertainty_AK4PFchs.txt");
+            jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016EFV2_DATA_Uncertainty_AK4PFchs.txt");
         }
-        else if(dName.find("Data_Run2016F")!=string::npos)
+        else if(dName.find("Data_Run2016G")!=string::npos)
         {
-            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10F_DATA_L1FastJet_AK4PFchs.txt");
+            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016GV2_DATA_L1FastJet_AK4PFchs.txt");
             vCorrParam.push_back(*L1JetCorPar);
-            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10F_DATA_L2Relative_AK4PFchs.txt");
+            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016GV2_DATA_L2Relative_AK4PFchs.txt");
             vCorrParam.push_back(*L2JetCorPar);
-            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10F_DATA_L3Absolute_AK4PFchs.txt");
+            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016GV2_DATA_L3Absolute_AK4PFchs.txt");
             vCorrParam.push_back(*L3JetCorPar);
-            JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10F_DATA_L2L3Residual_AK4PFchs.txt");
+            JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016GV2_DATA_L2L3Residual_AK4PFchs.txt");
             vCorrParam.push_back(*L2L3ResJetCorPar);
             isData = true;
-            jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10F_DATA_Uncertainty_AK4PFchs.txt");
+            jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016GV2_DATA_Uncertainty_AK4PFchs.txt");
         }
-        else if(dName.find("Data")!=string::npos)
+        else if(dName.find("Data_Run2016H")!=string::npos)
         {
-            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10p2_DATA_L1FastJet_AK4PFchs.txt");
+            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016HV2_DATA_L1FastJet_AK4PFchs.txt");
             vCorrParam.push_back(*L1JetCorPar);
-            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10p2_DATA_L2Relative_AK4PFchs.txt");
+            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016HV2_DATA_L2Relative_AK4PFchs.txt");
             vCorrParam.push_back(*L2JetCorPar);
-            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10p2_DATA_L3Absolute_AK4PFchs.txt");
+            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016HV2_DATA_L3Absolute_AK4PFchs.txt");
             vCorrParam.push_back(*L3JetCorPar);
-            JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10p2_DATA_L2L3Residual_AK4PFchs.txt");
+            JetCorrectorParameters *L2L3ResJetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016HV2_DATA_L2L3Residual_AK4PFchs.txt");
             vCorrParam.push_back(*L2L3ResJetCorPar);
             isData = true;
-            jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10p2_DATA_Uncertainty_AK4PFchs.txt");
+            jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_23Sep2016V2/Spring16_23Sep2016HV2_DATA_Uncertainty_AK4PFchs.txt");
         }
         else
         {
@@ -959,11 +1127,10 @@ int main (int argc, char *argv[])
             vCorrParam.push_back(*L2JetCorPar);
             JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10_MC_L3Absolute_AK4PFchs.txt");
             vCorrParam.push_back(*L3JetCorPar);
-            jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10p2_DATA_Uncertainty_AK4PFchs.txt");
+            jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10_MC_Uncertainty_AK4PFchs.txt");
         }
 
         JetTools *jetTools = new JetTools(vCorrParam, jecUnc, true);
-
         /// book triggers
         if (applyTriggers) { trigger->bookTriggers(isData);}
 
@@ -994,10 +1161,28 @@ int main (int argc, char *argv[])
             float scaleFactor = 1.;  // scale factor for the event
             W_puSF =1;
             W_fleptonSF =1;
+            W_fleptonSF_Plus =1;
+            W_fleptonSF_Minus =1;
             W_btagWeight_CSVv2M_mujets_central =1;
             W_btagWeight_CSVv2M_mujets_up =1;
             W_btagWeight_CSVv2M_mujets_down =1;
             W_btagWeight_shape =1;
+            W_btagWeight_shape_up_lf =1; 
+            W_btagWeight_shape_down_lf =1; 
+            W_btagWeight_shape_up_hf =1; 
+            W_btagWeight_shape_down_hf =1; 
+            W_btagWeight_shape_up_hfstats1 =1; 
+            W_btagWeight_shape_down_hfstats1 =1; 
+            W_btagWeight_shape_up_hfstats2 =1; 
+            W_btagWeight_shape_down_hfstats2 =1; 
+            W_btagWeight_shape_up_lfstats1 =1; 
+            W_btagWeight_shape_down_lfstats1 =1; 
+            W_btagWeight_shape_up_lfstats2 =1; 
+            W_btagWeight_shape_down_lfstats2 =1; 
+            W_btagWeight_shape_up_cferr1 =1; 
+            W_btagWeight_shape_down_cferr1 =1; 
+            W_btagWeight_shape_up_cferr2 =1; 
+            W_btagWeight_shape_down_cferr2 =1; 
             W_nloWeight =1;// for amc@nlo samples
             W_weight1 =1;
             W_weight2 =1;
@@ -1014,6 +1199,20 @@ int main (int argc, char *argv[])
             W_MuonTrigSF_Runs274094to276097 = 1;//Used in calculation for W_MuonTrigSF
             W_ElectronIDSF =1; //One of the 2 components for the total electron SF
             W_ElectronRecoSF =1;     //One of the 2 components for the total electron SF
+            W_MuonIDSF_Plus =1; //One of the 3 components for the total muon SF
+            W_MuonIsoSF_Plus =1; //One of the 3 components for the total muon SF
+            W_MuonTrigSF_Plus =1;//One of the 3 components for the total muon SF
+            W_MuonTrigSF_Runs273158to274093_Plus = 1;//Used in calculation for W_MuonTrigSF
+            W_MuonTrigSF_Runs274094to276097_Plus = 1;//Used in calculation for W_MuonTrigSF
+            W_ElectronIDSF_Plus =1; //One of the 2 components for the total electron SF
+            W_ElectronRecoSF_Plus =1;     //One of the 2 components for the total electron SF
+            W_MuonIDSF_Minus =1; //One of the 3 components for the total muon SF
+            W_MuonIsoSF_Minus =1; //One of the 3 components for the total muon SF
+            W_MuonTrigSF_Minus =1;//One of the 3 components for the total muon SF
+            W_MuonTrigSF_Runs273158to274093_Minus = 1;//Used in calculation for W_MuonTrigSF
+            W_MuonTrigSF_Runs274094to276097_Minus = 1;//Used in calculation for W_MuonTrigSF
+            W_ElectronIDSF_Minus =1; //One of the 2 components for the total electron SF
+            W_ElectronRecoSF_Minus =1;     //One of the 2 components for the total electron SF
             W_TopPtReweighing =1;
 
             MC_TopPt = -99.;
@@ -1102,6 +1301,9 @@ int main (int argc, char *argv[])
                             jetTools->correctJets(init_jets,event->fixedGridRhoFastjetAll() ,false);
                     }
                     else JESon = -1;
+                    
+                    jetTools->correctMETTypeOne(init_jets, mets[0], isData);
+
 
                 }
             }
@@ -1249,10 +1451,14 @@ int main (int argc, char *argv[])
             if(dName.find("Data")!=string::npos) //If sample is data, no PU reweighting
             {
                 W_puSF=1;
+                W_puSF_Minus=1;
+                W_puSF_Plus=1;
             }
             else
             {
                 W_puSF = W_puSFs.ITweight( (int)event->nTruePU() );
+                W_puSF_Minus = W_puSFs_Minus.ITweight( (int)event->nTruePU() );
+                W_puSF_Plus = W_puSFs_Plus.ITweight( (int)event->nTruePU() );
             }
             if(debug) cout << "W_puSF: " << W_puSF << endl;
             /////////////////////////////////////////////////
@@ -1265,16 +1471,34 @@ int main (int argc, char *argv[])
                     W_MuonIsoSF = muonSFWeightIso->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
                     W_MuonTrigSF_Runs273158to274093 = muonSFWeightTrig_Runs273158to274093->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
                     W_MuonTrigSF_Runs274094to276097 = muonSFWeightTrig_Runs274094to276097->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
+                    W_MuonIDSF_Plus = muonSFWeightID->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 1);
+                    W_MuonIsoSF_Plus = muonSFWeightIso->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 1);
+                    W_MuonTrigSF_Runs273158to274093_Plus = muonSFWeightTrig_Runs273158to274093->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 1);
+                    W_MuonTrigSF_Runs274094to276097_Plus = muonSFWeightTrig_Runs274094to276097->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 1);
+                    W_MuonIDSF_Minus = muonSFWeightID->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1);
+                    W_MuonIsoSF_Minus = muonSFWeightIso->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1);
+                    W_MuonTrigSF_Runs273158to274093_Minus = muonSFWeightTrig_Runs273158to274093->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1);
+                    W_MuonTrigSF_Runs274094to276097_Minus = muonSFWeightTrig_Runs274094to276097->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1);
                     
                     float lum_Runs273158to274093 = 0.62;// /fb
                     float lum_Runs274094to276097 = 7.04;// /fb
+                    W_MuonTrigSF_Plus =( (W_MuonTrigSF_Runs273158to274093_Plus*lum_Runs273158to274093) + (W_MuonTrigSF_Runs274094to276097_Plus*lum_Runs274094to276097))/(lum_Runs273158to274093+lum_Runs274094to276097);  //Weigh each triggerSF according to the luminosity it holds for. These SF were only measured on 7.62/fb
+                    W_fleptonSF_Plus = W_MuonIDSF_Plus * W_MuonIsoSF_Plus * W_MuonTrigSF_Plus;
+                    W_MuonTrigSF_Minus =( (W_MuonTrigSF_Runs273158to274093_Minus*lum_Runs273158to274093) + (W_MuonTrigSF_Runs274094to276097_Minus*lum_Runs274094to276097))/(lum_Runs273158to274093+lum_Runs274094to276097);  //Weigh each triggerSF according to the luminosity it holds for. These SF were only measured on 7.62/fb
+                    W_fleptonSF_Minus = W_MuonIDSF_Minus * W_MuonIsoSF_Minus * W_MuonTrigSF_Minus;
                     W_MuonTrigSF =( (W_MuonTrigSF_Runs273158to274093*lum_Runs273158to274093) + (W_MuonTrigSF_Runs274094to276097*lum_Runs274094to276097))/(lum_Runs273158to274093+lum_Runs274094to276097);  //Weigh each triggerSF according to the luminosity it holds for. These SF were only measured on 7.62/fb
                     W_fleptonSF = W_MuonIDSF * W_MuonIsoSF * W_MuonTrigSF;
                 }
                 else if(Electron && nEl>0){
                     W_ElectronIDSF = electronSFWeightID->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0);
                     W_ElectronRecoSF = electronSFWeightReco->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0);
-                    W_fleptonSF = W_ElectronIDSF * W_ElectronRecoSF;//electronSFWeightID->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0) * electronSFWeightReco->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),0);
+                    W_fleptonSF = W_ElectronIDSF * W_ElectronRecoSF;
+                    W_ElectronIDSF_Plus = electronSFWeightID->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),1);
+                    W_ElectronRecoSF_Plus = electronSFWeightReco->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),1);
+                    W_fleptonSF_Plus = W_ElectronIDSF_Plus * W_ElectronRecoSF_Plus;
+                    W_ElectronIDSF_Minus = electronSFWeightID->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),-1);
+                    W_ElectronRecoSF_Minus = electronSFWeightReco->at(selectedElectrons[0]->Eta(),selectedElectrons[0]->Pt(),-1);
+                    W_fleptonSF_Minus = W_ElectronIDSF_Minus * W_ElectronRecoSF_Minus;
                 }
             }
 
@@ -1511,53 +1735,146 @@ int main (int argc, char *argv[])
 			      ////////////////////////////////////
 		        //Fill b-jet collections
             ////////////////////////////////////
-		        for (Int_t seljet =0; seljet < selectedJets.size(); seljet++ )
-		        {
+            for(int jetbtag = 0; jetbtag<selectedJets.size(); jetbtag++)
+  			    {
                 if(!isData)
                 {
-                    float jetpt = selectedJets[seljet]->Pt();
-                    if(jetpt > 1000.) jetpt = 999.;
-                    float jeteta = selectedJets[seljet]->Eta();
-                    float jetdisc = selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
+                    float bTagEff = 1, bTagEff_LFUp = 1, bTagEff_LFDown = 1, bTagEff_HFUp = 1, bTagEff_HFDown = 1, bTagEff_HFStats1Up = 1,
+                    bTagEff_HFStats1Down = 1, bTagEff_HFStats2Up = 1, bTagEff_HFStats2Down = 1, bTagEff_LFStats1Up = 1, bTagEff_LFStats1Down = 1,
+                    bTagEff_LFStats2Up = 1, bTagEff_LFStats2Down = 1, bTagEff_CFErr1Up = 1, bTagEff_CFErr1Down = 1, bTagEff_CFErr2Up = 1, bTagEff_CFErr2Down = 1;
+
+                    float jetpt = selectedJets[jetbtag]->Pt();
+                    float jeteta = selectedJets[jetbtag]->Eta();
+                    float jetdisc = selectedJets[jetbtag]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
+                    bool isBFlav = false;
+                    bool isLFlav = false;
+                    bool isCFlav = false;
+                    if(jetdisc<0.0) jetdisc = -0.05;
+                    if(jetdisc>1.0) jetdisc = 1.0;
                     BTagEntry::JetFlavor jflav;
-                    int jetpartonflav = std::abs(selectedJets[seljet]->partonFlavour());
-                    if(debug) cout<<"parton flavour: "<<jetpartonflav<<"  jet eta: "<<jeteta<<" jet pt: "<<jetpt<<"  jet disc: "<<jetdisc<<endl;
-                    if(jetpartonflav == 5){
-                      jflav = BTagEntry::FLAV_B;
+                    int jethadronflav = std::abs(selectedJets[jetbtag]->hadronFlavour());
+                    if(debug) cout<<"hadron flavour: "<<jethadronflav<<"  jet eta: "<<jeteta<<" jet pt: "<<jetpt<<"  jet disc: "<<jetdisc<<endl;
+                    if(jethadronflav == 5){
+                        jflav = BTagEntry::FLAV_B;
+                        isBFlav =true;
                     }
-                    else if(jetpartonflav == 4){
-                      jflav = BTagEntry::FLAV_C;
+                    else if(jethadronflav == 4){
+                        jflav = BTagEntry::FLAV_C;
+                        isCFlav=true;
                     }
                     else{
-                      jflav = BTagEntry::FLAV_UDSG;
+                        jflav = BTagEntry::FLAV_UDSG;
+                        isLFlav = true;
                     }
-                    double bTagEff = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
-                    W_btagWeight_shape *= bTagEff;
+                    if( doJESShift == 2)        bTagEff = reader_JESUp->eval(jflav, jeteta, jetpt, jetdisc);
+                    else if( doJESShift == 1) bTagEff = reader_JESDown->eval(jflav, jeteta, jetpt, jetdisc);
+                    else bTagEff = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
+
+                    if( isBFlav ) bTagEff_LFUp = reader_LFUp->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( isBFlav ) bTagEff_LFDown = reader_LFDown->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( isLFlav ) bTagEff_HFUp = reader_HFUp->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( isLFlav ) bTagEff_HFDown = reader_HFDown->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( isBFlav ) bTagEff_HFStats1Up = reader_HFStats1Up->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( isBFlav ) bTagEff_HFStats1Down = reader_HFStats1Down->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( isBFlav ) bTagEff_HFStats2Up = reader_HFStats2Up->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( isBFlav ) bTagEff_HFStats2Down = reader_HFStats2Down->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( isLFlav ) bTagEff_LFStats1Up = reader_LFStats1Up->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( isLFlav ) bTagEff_LFStats1Down = reader_LFStats1Down->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( isLFlav ) bTagEff_LFStats2Up = reader_LFStats2Up->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( isLFlav ) bTagEff_LFStats2Down = reader_LFStats2Down->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( isCFlav ) bTagEff_CFErr1Up = reader_CFErr1Up->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( isCFlav ) bTagEff_CFErr1Down = reader_CFErr1Down->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( isCFlav ) bTagEff_CFErr2Up = reader_CFErr2Up->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( isCFlav ) bTagEff_CFErr2Down = reader_CFErr2Down->eval(jflav, jeteta, jetpt, jetdisc);
+                    
+                    //If jet is not the appropriate flavor for that systematic, use the nominal reader so that all weights will be on the same
+                    //jet multiplicity footing.
+                    if( !isBFlav ) bTagEff_LFUp = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( !isBFlav ) bTagEff_LFDown = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( !isLFlav ) bTagEff_HFUp = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( !isLFlav ) bTagEff_HFDown = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( !isBFlav ) bTagEff_HFStats1Up = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( !isBFlav ) bTagEff_HFStats1Down = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( !isBFlav ) bTagEff_HFStats2Up = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( !isBFlav ) bTagEff_HFStats2Down = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( !isLFlav ) bTagEff_LFStats1Up = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( !isLFlav ) bTagEff_LFStats1Down = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( !isLFlav ) bTagEff_LFStats2Up = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( !isLFlav ) bTagEff_LFStats2Down = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( !isCFlav ) bTagEff_CFErr1Up = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( !isCFlav ) bTagEff_CFErr1Down = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( !isCFlav ) bTagEff_CFErr2Up = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( !isCFlav ) bTagEff_CFErr2Down = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
+
+                    W_btagWeight_shape_up_lf *= bTagEff_LFUp;
+                    W_btagWeight_shape_down_lf *= bTagEff_LFDown;
+                    W_btagWeight_shape_up_hf *= bTagEff_HFUp;
+                    W_btagWeight_shape_down_hf *= bTagEff_HFDown;
+                    W_btagWeight_shape_up_hfstats1 *= bTagEff_HFStats1Up;
+                    W_btagWeight_shape_down_hfstats1 *= bTagEff_HFStats1Down;
+                    W_btagWeight_shape_up_hfstats2 *= bTagEff_HFStats2Up;
+                    W_btagWeight_shape_down_hfstats2 *= bTagEff_HFStats2Down;            
+                    W_btagWeight_shape_up_lfstats1 *= bTagEff_LFStats1Up;
+                    W_btagWeight_shape_down_lfstats1 *= bTagEff_LFStats1Down;
+                    W_btagWeight_shape_up_lfstats2 *= bTagEff_LFStats2Up;
+                    W_btagWeight_shape_down_lfstats2 *= bTagEff_LFStats2Down; 
+                    W_btagWeight_shape_up_cferr1 *= bTagEff_CFErr1Up;
+                    W_btagWeight_shape_down_cferr1 *= bTagEff_CFErr1Down;
+                    W_btagWeight_shape_up_cferr2 *= bTagEff_CFErr2Up;
+                    W_btagWeight_shape_down_cferr2 *= bTagEff_CFErr2Down; 
+
+                    W_btagWeight_shape*=bTagEff;
+                    if (debug){
+                        cout<<"hadron flavour: "<<jethadronflav<<"  jet eta: "<<jeteta<<" jet pt: "<<jetpt<<"  jet disc: "<<jetdisc<<endl;
+                        cout << " isBFlav " << isBFlav;
+                        cout << " isLFlav" << isLFlav;
+                        cout << " isCFlav" << isCFlav << endl;
+                        cout << " reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);  " << bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc) << endl;
+                        cout << " bTagEff " << bTagEff;
+                        cout << " bTagEff_LFUp " << bTagEff_LFUp;
+                        cout << " bTagEff_LFDown " << bTagEff_LFDown << endl;
+                        cout << " bTagEff_HFUp " << bTagEff_HFUp;
+                        cout << " bTagEff_HFDown " << bTagEff_HFDown << endl;
+                        cout << " bTagEff_HFStats1Up " << bTagEff_HFStats1Up;
+                        cout << " bTagEff_HFStats1Down " << bTagEff_HFStats1Down << endl;
+                        cout << " bTagEff_HFStats2Up " << bTagEff_HFStats2Up;
+                        cout << " bTagEff_HFStats2Down " << bTagEff_HFStats2Down << endl;
+                        cout << " bTagEff_LFStats1Up " << bTagEff_LFStats1Up;
+                        cout << " bTagEff_LFStats1Down " << bTagEff_LFStats1Down << endl;
+                        cout << " bTagEff_LFStats2Up " << bTagEff_LFStats2Up;
+                        cout << " bTagEff_LFStats2Down " << bTagEff_LFStats2Down << endl;
+                        cout << " bTagEff_CFErr1Up " << bTagEff_CFErr1Up;
+                        cout << " bTagEff_CFErr1Down " << bTagEff_CFErr1Down << endl;
+                        cout << " bTagEff_CFErr2Up " << bTagEff_CFErr2Up;
+                        cout << " bTagEff_CFErr2Down " << bTagEff_CFErr2Down << endl;
+                    }
+                    if(debug)cout<<"btag efficiency = "<<bTagEff<<endl;       
+
                 }
             
-		           	if (selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > CSVv2_workingpointvalue_Loose   )
+		           	if (selectedJets[jetbtag]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > CSVv2_workingpointvalue_Loose   )
 		            {
-		              	  selectedLBJets.push_back(selectedJets[seljet]);
-		                  if (selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > CSVv2_workingpointvalue_Medium)
+		              	  selectedLBJets.push_back(selectedJets[jetbtag]);
+		                  if (selectedJets[jetbtag]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > CSVv2_workingpointvalue_Medium)
 		                  {
-		                  	  selectedMBJets.push_back(selectedJets[seljet]);
-		                      if (selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > CSVv2_workingpointvalue_Tight)
+		                  	  selectedMBJets.push_back(selectedJets[jetbtag]);
+		                      if (selectedJets[jetbtag]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > CSVv2_workingpointvalue_Tight)
 		                      {
-		                      	selectedTBJets.push_back(selectedJets[seljet]);
+		                      	selectedTBJets.push_back(selectedJets[jetbtag]);
 		                      }
-		         				      else selectedLightJets_TWP.push_back(selectedJets[seljet]);
+		         				      else selectedLightJets_TWP.push_back(selectedJets[jetbtag]);
 		              	  }
 		         			    else
 		         			    {
-		         				      selectedLightJets_MWP.push_back(selectedJets[seljet]);
-		         				      selectedLightJets_TWP.push_back(selectedJets[seljet]);
+		         				      selectedLightJets_MWP.push_back(selectedJets[jetbtag]);
+		         				      selectedLightJets_TWP.push_back(selectedJets[jetbtag]);
 		         			    }
 		         		}
 		         		else
 		         		{
-		         			selectedLightJets_LWP.push_back(selectedJets[seljet]);
-		         			selectedLightJets_MWP.push_back(selectedJets[seljet]);
-		         			selectedLightJets_TWP.push_back(selectedJets[seljet]);
+		         			selectedLightJets_LWP.push_back(selectedJets[jetbtag]);
+		         			selectedLightJets_MWP.push_back(selectedJets[jetbtag]);
+		         			selectedLightJets_TWP.push_back(selectedJets[jetbtag]);
 		         		}
 		        }
 
