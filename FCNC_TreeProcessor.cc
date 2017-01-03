@@ -21,8 +21,9 @@
 #include "TopTreeAnalysisBase/MCInformation/interface/LumiReWeighting.h"
 
 //includes for MVA
-#include "TopTreeAnalysisBase/Tools/interface/MVATrainer.h"
-#include "TopTreeAnalysisBase/Tools/interface/MVAComputer.h"
+#include "TMVA/Factory.h"
+#include "TMVA/Tools.h"
+#include "TMVA/Reader.h"
 
 //includes for Kinematic fitting
 #include "FCNCAnalysis/TopKinFit/kinfit.h"
@@ -47,10 +48,10 @@ map<string,MultiSamplePlot*> MSPlot_nPV;
 
 
 // functions prototype
-std::string intToStr (int number);
+string intToStr (int number);
 void MakeNPV_Distributions(int baseline_jets, int baseline_bjets, string channel, string date, bool debug);
 
-inline bool FileExists (const std::string& name) {
+inline bool FileExists (const string& name) {
   struct stat buffer;   
   return (stat (name.c_str(), &buffer) == 0); 
 }
@@ -59,12 +60,58 @@ inline bool FileExists (const std::string& name) {
 int main(int argc, char *argv[])
 {
 
+    if(argc < 14)
+    {
+        cerr << "INVALID number of arguments. The necessary arguments are: " << endl;
+        cout << "    int baseline_jets                 = strtol(argv[1], NULL,10);" << endl;
+        cout << "    int baseline_bjets             = strtol(argv[2], NULL,10);" << endl;
+        cout << "    string channel            = argv[3];" << endl;
+        cout << "    string date            = argv[4];" << endl;
+        cout << "    bool PVreweighing = strtol(argv[5], NULL,10);" << endl;
+        cout << "    int Syst_          = strtol(argv[6], NULL,10);// 0=nominal (no syst), -1=minus, 1=plus" << endl;
+        cout << "    bool Syst_bTagShape         =strtol(argv[7], NULL,10);" << endl;
+        cout << "    bool Syst_lepton         =strtol(argv[8], NULL,10);" << endl;
+        cout << "    bool Syst_JER         =strtol(argv[9], NULL,10);" << endl;
+        cout << "    bool Syst_JES         =strtol(argv[10], NULL,10);" << endl;
+        cout << "    bool Syst_Xsec         =strtol(argv[11], NULL,10);" << endl;
+        cout << "    bool Syst_Lumi         =strtol(argv[12], NULL,10);" << endl;
+        cout << "    bool Syst_PU         =strtol(argv[13], NULL,10);" << endl;
+        cout << "    bool debug         =strtol(argv[14], NULL,10);" << endl;
+
+        return 1;
+    }
+
+
     int baseline_jets                 = strtol(argv[1], NULL,10);
     int baseline_bjets             = strtol(argv[2], NULL,10);
     string channel            = argv[3];
     string date            = argv[4];
     bool PVreweighing = strtol(argv[5], NULL,10);
-    bool debug         =strtol(argv[6], NULL,10);
+    int Syst_          = strtol(argv[6], NULL,10);// 0=nominal (no syst), -1=minus, 1=plus
+    bool Syst_bTagShape         =strtol(argv[7], NULL,10);
+    bool Syst_lepton         =strtol(argv[8], NULL,10);
+    bool Syst_JER         =strtol(argv[9], NULL,10);
+    bool Syst_JES         =strtol(argv[10], NULL,10);
+    bool Syst_Xsec         =strtol(argv[11], NULL,10);
+    bool Syst_Lumi         =strtol(argv[12], NULL,10);
+    bool Syst_PU         =strtol(argv[13], NULL,10);
+    bool debug         =strtol(argv[14], NULL,10);
+    
+    int AddSysts = (int) Syst_bTagShape + (int) Syst_lepton + (int) Syst_JER + (int) Syst_JES + (int) Syst_Xsec + (int) Syst_Lumi + (int) Syst_PU;
+    
+    if(AddSysts >= 2)
+    {
+        cerr << "Do not make more than 1 systematic at the same time" << endl;
+
+        return  1;
+    }
+    if(PVreweighing && Syst_PU)
+    {
+        cerr << "Cannot apply both PU systematic if you reweigh according to " << endl;
+
+        return  1;
+    }
+    
     
     bool doInclusive = false;
     string category;
@@ -78,9 +125,33 @@ int main(int argc, char *argv[])
         category = "b"+intToStr(baseline_bjets)+"j"+intToStr(baseline_jets);
     }    
 
+    string SystematicShift;
+    string  WhichSysts = "_";
+    
+    WhichSysts += intToStr(Syst_bTagShape);
+    WhichSysts += "_"+intToStr(Syst_lepton);
+    WhichSysts += "_"+intToStr(Syst_JER);
+    WhichSysts += "_"+intToStr(Syst_JES);
+    WhichSysts += "_"+intToStr(Syst_Xsec);
+    WhichSysts += "_"+intToStr(Syst_Lumi);
+    WhichSysts += "_"+intToStr(Syst_PU);
+    
+    if(Syst_ == 0) SystematicShift = "nominal";
+    else if(Syst_ == -1) SystematicShift = "minus"+WhichSysts;
+    else if(Syst_ == 1) SystematicShift = "plus"+WhichSysts;
+    else
+    {
+        cerr << "Incorrect value for systematic shift." << endl;
+
+        return  1;
+    }
+    
+    
+
     cout << "------------------------------------------------------------------------------------------------" << endl;
     cout << "Begin program" << endl;
-    cout << "Category: " << category << endl;
+    cout << " - Category: " << category << endl;
+    cout << " - Systematics: " << SystematicShift << endl;
     cout << "------------------------------------------------------------------------------------------------" << endl;
 
 
@@ -160,9 +231,15 @@ int main(int argc, char *argv[])
   	//***********************************************RUNNING OVER DATASETS**********************************************
 	  for (int d = 0; d < datasets.size(); d++)   //Loop through datasets  
 	  {
+	      string postfix = "";
+	      if(Syst_JER == -1) postfix = postfix+"_JERMinus";
+	      else if(Syst_JER == 1) postfix = postfix+"_JERPlus";
+	      else if(Syst_JES == -1) postfix = postfix+"_JESMinus";
+	      else if(Syst_JES == 1) postfix = postfix+"_JESPlus";
+	  
 		    dataSetName = datasets[d]->Name();
 		    cout<<"Dataset:  :"<<dataSetName<<endl;
-		    filepath = TreePath+"/FCNC_1L3B__Run2_TopTree_Study_"+dataSetName + ".root";
+		    filepath = TreePath+"/FCNC_1L3B__Run2_TopTree_Study_"+dataSetName + postfix + ".root";
 		    if (debug)
 		    {
 		        cout<<"filepath: "<<filepath<<endl;
@@ -204,7 +281,7 @@ int main(int argc, char *argv[])
 		        if(debug) cout << "Data found" << endl;
 		        isData =true;
 	      }
-        else if(dataSetName.find("NLO") != std::string::npos || dataSetName.find("nlo") !=std::string::npos || dataSetName.find("amc") !=std::string::npos) isAMC = true;
+        else if(dataSetName.find("NLO") != string::npos || dataSetName.find("nlo") !=string::npos || dataSetName.find("amc") !=string::npos) isAMC = true;
 
 
   	    //***********************************************IMPORTING VARIABLES**********************************************
@@ -241,11 +318,31 @@ int main(int argc, char *argv[])
         //----------------------------------------------//
         //Weights
         Double_t W_puSF;
+        Double_t W_puSF_Minus;
+        Double_t W_puSF_Plus;
         Double_t W_fleptonSF;
+        Double_t W_fleptonSF_Plus;
+        Double_t W_fleptonSF_Minus;
         Double_t W_btagWeight_CSVv2M_mujets_central;
         Double_t W_btagWeight_CSVv2M_mujets_up;
         Double_t W_btagWeight_CSVv2M_mujets_down;
         Double_t W_btagWeight_shape;
+        Double_t W_btagWeight_shape_up_lf; 
+        Double_t W_btagWeight_shape_down_lf; 
+        Double_t W_btagWeight_shape_up_hf; 
+        Double_t W_btagWeight_shape_down_hf; 
+        Double_t W_btagWeight_shape_up_hfstats1; 
+        Double_t W_btagWeight_shape_down_hfstats1; 
+        Double_t W_btagWeight_shape_up_hfstats2; 
+        Double_t W_btagWeight_shape_down_hfstats2; 
+        Double_t W_btagWeight_shape_up_lfstats1; 
+        Double_t W_btagWeight_shape_down_lfstats1; 
+        Double_t W_btagWeight_shape_up_lfstats2; 
+        Double_t W_btagWeight_shape_down_lfstats2; 
+        Double_t W_btagWeight_shape_up_cferr1; 
+        Double_t W_btagWeight_shape_down_cferr1; 
+        Double_t W_btagWeight_shape_up_cferr2; 
+        Double_t W_btagWeight_shape_down_cferr2; 
         Double_t W_nloWeight;// for amc@nlo samples
         Double_t W_weight1;
         Double_t W_weight2;
@@ -258,8 +355,8 @@ int main(int argc, char *argv[])
         Double_t W_MuonIDSF; //One of the 3 components for the total muon SF
         Double_t W_MuonIsoSF; //One of the 3 components for the total muon SF
         Double_t W_MuonTrigSF;//One of the 3 components for the total muon SF
-        Double_t W_MuonTrigSF_Runs273158to274093 = 1;//Used in calculation for W_MuonTrigSF
-        Double_t W_MuonTrigSF_Runs274094to276097 = 1;//Used in calculation for W_MuonTrigSF
+        Double_t W_MuonTrigSF_Runs273158to274093;//Used in calculation for W_MuonTrigSF
+        Double_t W_MuonTrigSF_Runs274094to276097;//Used in calculation for W_MuonTrigSF
         Double_t W_ElectronIDSF; //One of the 2 components for the total electron SF
         Double_t W_ElectronRecoSF; //One of the 2 components for the total electron SF
         Double_t W_TopPtReweighing;
@@ -364,11 +461,31 @@ int main(int argc, char *argv[])
         
         // Weights
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_fleptonSF",&W_fleptonSF); //Contains, if muon, the  isoSF, idSF & trigSF
-        ttree[(dataSetName).c_str()]->SetBranchAddress("W_puSF",&W_puSF);  
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_fleptonSF_Plus",&W_fleptonSF_Plus); //Contains, if muon, the  isoSF, idSF & trigSF
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_fleptonSF_Minus",&W_fleptonSF_Minus); //Contains, if muon, the  isoSF, idSF & trigSF
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_puSF",&W_puSF);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_puSF_Minus",&W_puSF_Minus);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_puSF_Plus",&W_puSF_Plus);
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_CSVv2M_mujets_central",&W_btagWeight_CSVv2M_mujets_central); 
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_CSVv2M_mujets_up",&W_btagWeight_CSVv2M_mujets_up);  
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_CSVv2M_mujets_down",&W_btagWeight_CSVv2M_mujets_down); 
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape",&W_btagWeight_shape); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_up_lf",&W_btagWeight_shape_up_lf); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_down_lf",&W_btagWeight_shape_down_lf); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_up_hf",&W_btagWeight_shape_up_hf); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_down_hf",&W_btagWeight_shape_down_hf); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_up_hfstats1",&W_btagWeight_shape_up_hfstats1); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_down_hfstats1",&W_btagWeight_shape_down_hfstats1); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_up_hfstats2",&W_btagWeight_shape_up_hfstats2); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_down_hfstats2",&W_btagWeight_shape_down_hfstats2); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_up_lfstats1",&W_btagWeight_shape_up_lfstats1); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_down_lfstats1",&W_btagWeight_shape_down_lfstats1); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_up_lfstats2",&W_btagWeight_shape_up_lfstats2); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_down_lfstats2",&W_btagWeight_shape_down_lfstats2); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_up_cferr1",&W_btagWeight_shape_up_cferr1); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_down_cferr1",&W_btagWeight_shape_down_cferr1); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_up_cferr2",&W_btagWeight_shape_up_cferr2); 
+        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_down_cferr2",&W_btagWeight_shape_down_cferr2); 
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_nloWeight",&W_nloWeight); 
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight1",&W_weight1);  
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight2",&W_weight2);  
@@ -502,7 +619,7 @@ int main(int argc, char *argv[])
         }		
 
         Double_t average_TopPtWeight = 0;
-        if(dataSetName.find("TTJets") != std::string::npos)
+        if(dataSetName.find("TTJets") != string::npos)
         {
             for (int k = 0; k<nEntries; k++)
             {
@@ -531,56 +648,10 @@ int main(int argc, char *argv[])
 		            else if(baseline_jets == 4 && nJets < baseline_jets) continue;
 		        }
 
+            //////////////////////////////////////
+            //Applying the scale factors
+            ///////////////////////////////////////
             float ScaleFactor = 1.; // event scale factor
-            //Safety triggers in case there are strange things happening in the event weights
-            if(!PVreweighing)
-            {
-                if(W_puSF <= 0|| W_fleptonSF <= 0 || W_btagWeight_CSVv2M_mujets_central <= 0 || nloSF <= 0 || Luminosity <= 0 )
-                {
-                      cout << "----- Event " << j << " has a negative weight. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << "; Luminosity=" << Luminosity << endl;
-                      cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
-                      cout << "----- The event will be skipped....." << endl;
-                      continue;
-                }
-                else if(W_puSF != W_puSF|| W_fleptonSF != W_fleptonSF || W_btagWeight_CSVv2M_mujets_central != W_btagWeight_CSVv2M_mujets_central || nloSF != nloSF)
-                {
-                      cout << "----- Event " << j << " has a Nan weight. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
-                      cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
-                      cout << "----- The event will be skipped....." << endl;
-                      continue;
-                }
-                else if(W_puSF >= 20|| W_fleptonSF >= 20 || W_btagWeight_CSVv2M_mujets_central >= 20 || nloSF >= 20)
-                {
-                      cout << "----- Event " << j << " has a weight larger than 20. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
-                      cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
-                      cout << "----- The event will be skipped....." << endl;
-                      continue;
-                }
-            }
-            else
-            {
-                if(W_fleptonSF <= 0 || W_btagWeight_CSVv2M_mujets_central <= 0 || nloSF <= 0 || Luminosity <= 0 )
-                {
-                      cout << "----- Event " << j << " has a negative weight. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << "; Luminosity=" << Luminosity << endl;
-                      cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
-                      cout << "----- The event will be skipped....." << endl;
-                      continue;
-                }
-                else if(W_fleptonSF != W_fleptonSF || W_btagWeight_CSVv2M_mujets_central != W_btagWeight_CSVv2M_mujets_central || nloSF != nloSF)
-                {
-                      cout << "----- Event " << j << " has a Nan weight. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
-                      cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
-                      cout << "----- The event will be skipped....." << endl;
-                      continue;
-                }
-                else if(W_fleptonSF >= 20 || W_btagWeight_CSVv2M_mujets_central >= 20 || nloSF >= 20)
-                {
-                      cout << "----- Event " << j << " has a weight larger than 20. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
-                      cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
-                      cout << "----- The event will be skipped....." << endl;
-                      continue;
-                }
-			      }
 			      if(!isData)
 			      {
 			          
@@ -590,12 +661,54 @@ int main(int argc, char *argv[])
 			          {
 			              W_puSF_applied = W_nPV.ITweight( (int)nvtx );
 			          }
-			          ScaleFactor = ScaleFactor * W_puSF_applied;
-			          ScaleFactor = ScaleFactor * W_fleptonSF;
-			          ScaleFactor = ScaleFactor * W_btagWeight_CSVv2M_mujets_central;
-			          ScaleFactor = ScaleFactor * nloSF;
-//                ScaleFactor = ScaleFactor * W_btagWeight_shape;
-                if(dataSetName.find("TTJets") != std::string::npos) ScaleFactor = ScaleFactor * W_TopPtReweighing/average_TopPtWeight;
+
+                //Safety triggers in case there are strange things happening in the event weights
+                if(W_fleptonSF <= 0 || W_btagWeight_shape <= 0 || nloSF <= 0 || Luminosity <= 0 || W_puSF_applied <= 0)
+                {
+                      cout << "----- Event " << j << " has a negative weight. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << "; Luminosity=" << Luminosity << endl;
+                      cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
+                      cout << "----- The event will be skipped....." << endl;
+                      continue;
+                }
+                else if(W_fleptonSF != W_fleptonSF || W_btagWeight_shape != W_btagWeight_shape || nloSF != nloSF || W_puSF_applied != W_puSF_applied)
+                {
+                      cout << "----- Event " << j << " has a Nan weight. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
+                      cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
+                      cout << "----- The event will be skipped....." << endl;
+                      continue;
+                }
+                else if(W_fleptonSF >= 40 || W_btagWeight_shape >= 40 || nloSF >= 40 || W_puSF_applied >= 40)
+                {
+                      cout << "----- Event " << j << " has a weight larger than 20. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
+                      cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
+                      cout << "----- The event will be skipped....." << endl;
+                      continue;
+                }
+
+
+                if(Syst_ == 0)//Nominal
+                {
+			              ScaleFactor = ScaleFactor * W_puSF_applied;
+			              ScaleFactor = ScaleFactor * W_fleptonSF;
+//  			          ScaleFactor = ScaleFactor * W_btagWeight_CSVv2M_mujets_central;
+//                    ScaleFactor = ScaleFactor * W_btagWeight_shape;
+                }
+                else if(Syst_ == -1)//Minus systematics
+                {
+                    if(Syst_lepton) ScaleFactor = ScaleFactor * W_puSF_applied * W_fleptonSF_Minus * W_btagWeight_shape;
+//                    if(Syst_bTagShape) ScaleFactor = ScaleFactor * W_puSF_applied * W_fleptonSF * nloSF * W_btagWeight_shape___??????;
+                    if(Syst_PU) ScaleFactor = ScaleFactor * W_puSF_Minus * W_fleptonSF * W_btagWeight_shape;
+                }
+                else if(Syst_ == 1)//Plus systematics
+                {
+                    if(Syst_lepton) ScaleFactor = ScaleFactor * W_puSF_applied * W_fleptonSF_Plus * W_btagWeight_shape;
+//                    if(Syst_bTagShape) ScaleFactor = ScaleFactor * W_puSF_applied * W_fleptonSF * nloSF * W_btagWeight_shape___??????;
+                    if(Syst_PU) ScaleFactor = ScaleFactor * W_puSF_Plus * W_fleptonSF * W_btagWeight_shape;
+                }
+                
+               ScaleFactor = ScaleFactor * nloSF;
+               if(dataSetName.find("TTJets") != string::npos) ScaleFactor = ScaleFactor * W_TopPtReweighing/average_TopPtWeight;
+
 			      }
 			      if(debug && !isData)
 			      {
@@ -714,6 +827,9 @@ if(!isData)
   mkdir(pathPNG.c_str(),0777);
   pathPNG += "/";
   pathPNG += category;
+  pathPNG += "/";
+  pathPNG += SystematicShift;
+  pathPNG += "/";
   mkdir(pathPNG.c_str(),0777);
   cout <<"Making directory :"<< pathPNG  <<endl;		//make directory
 
@@ -762,9 +878,9 @@ if(!isData)
 }
 
 // function that converts an int into a string
-std::string intToStr (int number)
+string intToStr (int number)
 {
-  	std::ostringstream buff;
+  	ostringstream buff;
   	buff<<number;
   	return buff.str();
 }
