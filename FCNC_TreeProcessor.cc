@@ -368,11 +368,7 @@ int main(int argc, char *argv[])
         Int_t npu;
 
 	      // variables for electrons
-        Double_t pt_electron;
-        Double_t phi_electron;
-        Double_t eta_electron;
         Double_t eta_superCluster_electron;
-        Double_t E_electron;
         Double_t d0_electron;
         Double_t d0BeamSpot_electron;
         Double_t chargedHadronIso_electron;
@@ -389,10 +385,6 @@ int main(int argc, char *argv[])
         Bool_t isEBEEGap; 
       
         //variable for muons
-        Double_t pt_muon;
-        Double_t phi_muon;
-        Double_t eta_muon;
-        Double_t E_muon;
         Double_t d0_muon;
         Double_t d0BeamSpot_muon;
         Double_t chargedHadronIso_muon;
@@ -406,6 +398,7 @@ int main(int argc, char *argv[])
         Double_t eta_lepton;
         Double_t phi_lepton;
         Double_t E_lepton;
+        Double_t LepCharge;
   
         //variable for jets 
         Int_t nJets;
@@ -495,7 +488,7 @@ int main(int argc, char *argv[])
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight6",&W_weight6);  
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight7",&W_weight7); 
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight8",&W_weight8);  
-        ttree[(dataSetName).c_str()]->SetBranchAddress("W_MuonIDSF",&W_MuonIDSF);  
+/*        ttree[(dataSetName).c_str()]->SetBranchAddress("W_MuonIDSF",&W_MuonIDSF);  
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_MuonIsoSF",&W_MuonIsoSF);  
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_MuonTrigSF",&W_MuonTrigSF);  
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_MuonTrigSF_Runs273158to274093",&W_MuonTrigSF_Runs273158to274093);  
@@ -503,7 +496,7 @@ int main(int argc, char *argv[])
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_ElectronIDSF",&W_ElectronIDSF);  
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_ElectronRecoSF",&W_ElectronRecoSF);  
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_TopPtReweighing",&W_TopPtReweighing);  
-
+*/
         ttree[(dataSetName).c_str()]->SetBranchAddress("I_run_num",&run_num);
         ttree[(dataSetName).c_str()]->SetBranchAddress("I_evt_num",&evt_num);
         ttree[(dataSetName).c_str()]->SetBranchAddress("I_lumi_num",&lumi_num);
@@ -512,11 +505,7 @@ int main(int argc, char *argv[])
 
 
         // electrons
-        ttree[(dataSetName).c_str()]->SetBranchAddress("pt_electron",&pt_electron);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("phi_electron",&phi_electron);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("eta_electron",&eta_electron);
         ttree[(dataSetName).c_str()]->SetBranchAddress("eta_superCluster_electron",&eta_superCluster_electron);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("E_electron",&E_electron);
         ttree[(dataSetName).c_str()]->SetBranchAddress("chargedHadronIso_electron",&chargedHadronIso_electron);
         ttree[(dataSetName).c_str()]->SetBranchAddress("neutralHadronIso_electron",&neutralHadronIso_electron);
         ttree[(dataSetName).c_str()]->SetBranchAddress("photonIso_electron",&photonIso_electron);
@@ -533,10 +522,6 @@ int main(int argc, char *argv[])
         ttree[(dataSetName).c_str()]->SetBranchAddress("I_isEBEEGap",&isEBEEGap);
       
         // muons
-        ttree[(dataSetName).c_str()]->SetBranchAddress("pt_muon",&pt_muon);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("phi_muon",&phi_muon);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("eta_muon",&eta_muon);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("E_muon",&E_muon);
         ttree[(dataSetName).c_str()]->SetBranchAddress("chargedHadronIso_muon",&chargedHadronIso_muon);
         ttree[(dataSetName).c_str()]->SetBranchAddress("neutralHadronIso_muon",&neutralHadronIso_muon);
         ttree[(dataSetName).c_str()]->SetBranchAddress("photonIso_muon",&photonIso_muon);
@@ -550,6 +535,7 @@ int main(int argc, char *argv[])
         ttree[(dataSetName).c_str()]->SetBranchAddress("phi_lepton",&phi_lepton);
         ttree[(dataSetName).c_str()]->SetBranchAddress("eta_lepton",&eta_lepton);
         ttree[(dataSetName).c_str()]->SetBranchAddress("E_lepton",&E_lepton);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_LepCharge",&LepCharge);
         
         // jets
         ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets",&nJets);
@@ -665,21 +651,21 @@ int main(int argc, char *argv[])
                 //Safety triggers in case there are strange things happening in the event weights
                 if(W_fleptonSF <= 0 || W_btagWeight_shape <= 0 || nloSF <= 0 || Luminosity <= 0 || W_puSF_applied <= 0)
                 {
-                      cout << "----- Event " << j << " has a negative weight. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << "; Luminosity=" << Luminosity << endl;
+                      cout << "----- Event " << j << " has a negative weight. Weights are: W_puSF=" << W_puSF_applied << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << "; Luminosity=" << Luminosity << endl;
                       cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
                       cout << "----- The event will be skipped....." << endl;
                       continue;
                 }
                 else if(W_fleptonSF != W_fleptonSF || W_btagWeight_shape != W_btagWeight_shape || nloSF != nloSF || W_puSF_applied != W_puSF_applied)
                 {
-                      cout << "----- Event " << j << " has a Nan weight. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
+                      cout << "----- Event " << j << " has a Nan weight. Weights are: W_puSF=" << W_puSF_applied << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
                       cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
                       cout << "----- The event will be skipped....." << endl;
                       continue;
                 }
                 else if(W_fleptonSF >= 40 || W_btagWeight_shape >= 40 || nloSF >= 40 || W_puSF_applied >= 40)
                 {
-                      cout << "----- Event " << j << " has a weight larger than 20. Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
+                      cout << "----- Event " << j << " has a weight larger than 20. Weights are: W_puSF=" << W_puSF_applied << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
                       cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
                       cout << "----- The event will be skipped....." << endl;
                       continue;
@@ -691,7 +677,7 @@ int main(int argc, char *argv[])
 			              ScaleFactor = ScaleFactor * W_puSF_applied;
 			              ScaleFactor = ScaleFactor * W_fleptonSF;
 //  			          ScaleFactor = ScaleFactor * W_btagWeight_CSVv2M_mujets_central;
-//                    ScaleFactor = ScaleFactor * W_btagWeight_shape;
+                    ScaleFactor = ScaleFactor * W_btagWeight_shape;
                 }
                 else if(Syst_ == -1)//Minus systematics
                 {

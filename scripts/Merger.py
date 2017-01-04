@@ -8,8 +8,8 @@ import shutil
 
 
 # getting the appropriate xml file & defining channel and production date of TreeMakerTrees
-channel = "_Mu"
-date = "_22_12_2016"
+channel = "_El"
+date = "_28_12_2016"
 
 
 if channel == "_Mu":
