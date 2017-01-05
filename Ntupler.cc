@@ -145,12 +145,12 @@ int main (int argc, char *argv[])
     int eventCount = 0;
 
     //Initializing b-tag WP
-	  float CSVv2_workingpointvalue_Loose = 0.460;//working points updated to 2016 BTV-POG recommendations.
-	  float CSVv2_workingpointvalue_Medium = 0.800;//working points updated to 2016 BTV-POG recommendations.
-	  float CSVv2_workingpointvalue_Tight = 0.935;//working points updated to 2016 BTV-POG recommendations.
-	  float cMVA_workingpointvalue_Loose = -0.715;//working points updated to 2016 BTV-POG recommendations.
-	  float cMVA_workingpointvalue_Medium = 0.185;//working points updated to 2016 BTV-POG recommendations.
-	  float cMVA_workingpointvalue_Tight = 0.875;//working points updated to 2016 BTV-POG recommendations.
+	  float CSVv2_workingpointvalue_Loose = 0.5426;//working points updated to 2016ReReco BTV-POG recommendations.
+	  float CSVv2_workingpointvalue_Medium = 0.8484;//working points updated to 2016ReReco BTV-POG recommendations.
+	  float CSVv2_workingpointvalue_Tight = 0.9535;//working points updated to 2016ReReco BTV-POG recommendations.
+	  float cMVA_workingpointvalue_Loose = -0.5884;//working points updated to 2016ReReco BTV-POG recommendations.
+	  float cMVA_workingpointvalue_Medium = 0.4432;//working points updated to 2016ReReco BTV-POG recommendations.
+	  float cMVA_workingpointvalue_Tight = 0.9432;//working points updated to 2016ReReco BTV-POG recommendations.
 
     clock_t start = clock();
     cout << "*************************************************************" << endl;
@@ -448,9 +448,9 @@ int main (int argc, char *argv[])
     }
 
     LumiReWeighting W_puSFs, W_puSFs_Minus, W_puSFs_Plus;
-    W_puSFs = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/MCPileup_Spring16.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2016Data80X_Run271036-284044Cert__Full2016DataSet.root", "pileup", "pileup");    
-    W_puSFs_Minus = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/MCPileup_Spring16.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2016Data80X_Run271036-284044Cert__Full2016DataSet_sysMinus.root", "pileup", "pileup");    
-    W_puSFs_Plus = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/MCPileup_Spring16.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2016Data80X_Run271036-284044Cert__Full2016DataSet_sysPlus.root", "pileup", "pileup");    
+    W_puSFs = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/MCPileup_Summer16.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2016Data80X_Run271036-284044Cert__Full2016DataSet.root", "pileup", "pileup");    
+    W_puSFs_Minus = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/MCPileup_Summer16.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2016Data80X_Run271036-284044Cert__Full2016DataSet_sysMinus.root", "pileup", "pileup");    
+    W_puSFs_Plus = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/MCPileup_Summer16.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2016Data80X_Run271036-284044Cert__Full2016DataSet_sysPlus.root", "pileup", "pileup");    
     
     
     ////////////////////////////

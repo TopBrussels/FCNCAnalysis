@@ -27,5 +27,5 @@ scripts/prompt_*.txt
 scripts/his/
 scripts/mine/
 TreeMaker_sycnhEx
-TreeProcessor
-config/FullMcBkgdSamples_El_*.xml
+TreeProcessor*
+config/FullMcBkgdSamples_*_TreeProcessor.xml
