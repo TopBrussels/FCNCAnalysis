@@ -207,7 +207,8 @@ int main (int argc, char *argv[])
     bool Electron = false;
     string btagger = "CSVv2M"; //Define which b-tagger + WP is used in the SF for the cutflow-table// valable: CSVv2M, cMVAM
     bool printTriggers = false;
-    bool applyTriggers = false;
+    bool applyTriggers = true;
+    bool CSVv2nonshape = false;//Put to false if you don't want to use the regular CSVv2 SF's
     bool applyMVAJetComb = true;
     string channelpostfix = "";
 
@@ -306,7 +307,7 @@ int main (int argc, char *argv[])
         {
             bTagCalib_CSVv2 = new BTagCalibration("CSVv2","../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_80X_ichep_incl_ChangedTo_mujets.csv");
 
-            bTagReader_CSVv2M_mujets_central = new BTagCalibrationReader(bTagCalib_CSVv2,BTagEntry::OP_MEDIUM,"mujets","central"); //mujets
+            if(CSVv2nonshape) bTagReader_CSVv2M_mujets_central = new BTagCalibrationReader(bTagCalib_CSVv2,BTagEntry::OP_MEDIUM,"mujets","central"); //mujets
             bTagReader_shape = new BTagCalibrationReader(bTagCalib_CSVv2,BTagEntry::OP_RESHAPING,"iterativefit","central"); //reshaping
 
 
@@ -410,11 +411,11 @@ int main (int argc, char *argv[])
                            "down_cferr2"); // systematics type        
 
 
-            if(bTagReweight_FillMChistos)// Need to differentiate BTagWeightTools according to filling the histos and just reading, because of overwriting possibilities in grid submission
+            if(bTagReweight_FillMChistos && CSVv2nonshape)// Need to differentiate BTagWeightTools according to filling the histos and just reading, because of overwriting possibilities in grid submission
             {
                 btwt_CSVv2M_mujets_central = new BTagWeightTools(bTagReader_CSVv2M_mujets_central,"BTagHistosPtEta/HistosPtEta_"+dName+ "_" + strJobNum +"_mujets_central.root",false,30,670,2.4);
             }
-            else
+            else if(CSVv2nonshape)
             {
                 btwt_CSVv2M_mujets_central = new BTagWeightTools(bTagReader_CSVv2M_mujets_central,"BTagHistosPtEta/HistosPtEta_"+dName+"_mujets_central.root",true,30,670,2.4);
            }
@@ -423,10 +424,12 @@ int main (int argc, char *argv[])
     /////////////////////////////////////////////////
     //                   Lepton SF                 //
     /////////////////////////////////////////////////
-    MuonSFWeight* muonSFWeightID;   
-    MuonSFWeight* muonSFWeightIso;
-    MuonSFWeight* muonSFWeightTrig_Runs273158to274093;
-    MuonSFWeight* muonSFWeightTrig_Runs274094to276097;
+    MuonSFWeight* muonSFWeightID_BCDEF;   
+    MuonSFWeight* muonSFWeightID_GH;   
+    MuonSFWeight* muonSFWeightIso_BCDEF;
+    MuonSFWeight* muonSFWeightIso_GH;
+    MuonSFWeight* muonSFWeightTrig_BCDEF;
+    MuonSFWeight* muonSFWeightTrig_GH;
 
 
     ElectronSFWeight* electronSFWeightID; 
@@ -435,10 +438,12 @@ int main (int argc, char *argv[])
     {
         if(Muon)
         { 
-            muonSFWeightID = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/MuonID_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_TightIDandIPCut_DEN_genTracks_PAR_pt_spliteta_bin1/abseta_pt_ratio", true, false, false);
-            muonSFWeightIso = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/MuonIso_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_TightRelIso_DEN_TightID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true, false, false);  // Tight RelIso, Tight ID
-            muonSFWeightTrig_Runs273158to274093 = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/SingleMuonTrigger_Z_RunBCD_prompt80X_7p65.root", "IsoMu22_OR_IsoTkMu22_PtEtaBins_Run273158_to_274093/efficienciesDATA/abseta_pt_DATA", true, false, false);
-            muonSFWeightTrig_Runs274094to276097 = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/SingleMuonTrigger_Z_RunBCD_prompt80X_7p65.root", "IsoMu22_OR_IsoTkMu22_PtEtaBins_Run274094_to_276097/efficienciesDATA/abseta_pt_DATA", true, false, false);
+            muonSFWeightID_BCDEF = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/MuonID_EfficienciesAndSF_BCDEF.root", "MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/abseta_pt_ratio", true, false, false);
+            muonSFWeightID_GH = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/MuonID_EfficienciesAndSF_GH.root", "MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/abseta_pt_ratio", true, false, false);
+            muonSFWeightIso_BCDEF = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/MuonIso_EfficienciesAndSF_BCDEF.root", "TightISO_TightID_pt_eta/abseta_pt_ratio", true, false, false);  // Tight RelIso, Tight ID
+            muonSFWeightIso_GH = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/MuonIso_EfficienciesAndSF_GH.root", "TightISO_TightID_pt_eta/abseta_pt_ratio", true, false, false);  // Tight RelIso, Tight ID
+            muonSFWeightTrig_BCDEF = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/SingleMuonTrigger_EfficienciesAndSF_RunsBCDEF.root", "IsoMu24_OR_IsoTkMu24_PtEtaBins/abseta_pt_ratio", true, false, false);
+            muonSFWeightTrig_GH = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/SingleMuonTrigger_EfficienciesAndSF_RunsGH.root", "IsoMu24_OR_IsoTkMu24_PtEtaBins/abseta_pt_ratio", true, false, false);
         }
         else if(Electron)
         {
@@ -462,6 +467,7 @@ int main (int argc, char *argv[])
         isData = true;
         applyTriggers = true; //Always apply trigger on data
     }
+    else if(dName.find("noTrigger")!=string::npos) applyTriggers = false;
 
     if (debug) cout << "Initializing trigger" << endl;    
     //Trigger* trigger = new Trigger(hasMuon, hasElectron, trigSingleLep, trigDoubleLep);
@@ -556,8 +562,8 @@ int main (int argc, char *argv[])
         Int_t lumi_num;
         Int_t nvtx;
         Int_t npu;
-        Double_t cutstep[10]; //0: no cut, 1: PV cleaning, 2: trigger, 3: lepton selection, 4: loose other-flavoured lepton veto, 5: veto extra loose leptons, 6: nb jets, 7: nb b-jets
-        Int_t nCuts = 7; //REDEFINE if ncuts change
+        Double_t cutstep[10]; //0: no cut, 1: PV cleaning, 2:event cleaning, 3: trigger, 4: lepton selection, 5: loose other-flavoured lepton veto, 6: veto extra loose leptons, 7: nb jets, 8: nb b-jets
+        Int_t nCuts = 9; //REDEFINE if ncuts change
         Int_t nofPosWeights = 0;
         Int_t nofNegWeights = 0;
         Int_t sumW = 0; 
@@ -604,22 +610,16 @@ int main (int argc, char *argv[])
         Double_t W_MuonIDSF; //One of the 3 components for the total muon SF
         Double_t W_MuonIsoSF; //One of the 3 components for the total muon SF
         Double_t W_MuonTrigSF;//One of the 3 components for the total muon SF
-        Double_t W_MuonTrigSF_Runs273158to274093;//Used in calculation for W_MuonTrigSF
-        Double_t W_MuonTrigSF_Runs274094to276097;//Used in calculation for W_MuonTrigSF
         Double_t W_ElectronIDSF; //One of the 2 components for the total electron SF
         Double_t W_ElectronRecoSF; //One of the 2 components for the total electron SF
         Double_t W_MuonIDSF_Plus; //One of the 3 components for the total muon SF
         Double_t W_MuonIsoSF_Plus; //One of the 3 components for the total muon SF
         Double_t W_MuonTrigSF_Plus;//One of the 3 components for the total muon SF
-        Double_t W_MuonTrigSF_Runs273158to274093_Plus;//Used in calculation for W_MuonTrigSF
-        Double_t W_MuonTrigSF_Runs274094to276097_Plus;//Used in calculation for W_MuonTrigSF
         Double_t W_ElectronIDSF_Plus; //One of the 2 components for the total electron SF
         Double_t W_ElectronRecoSF_Plus; //One of the 2 components for the total electron SF
         Double_t W_MuonIDSF_Minus; //One of the 3 components for the total muon SF
         Double_t W_MuonIsoSF_Minus; //One of the 3 components for the total muon SF
         Double_t W_MuonTrigSF_Minus;//One of the 3 components for the total muon SF
-        Double_t W_MuonTrigSF_Runs273158to274093_Minus;//Used in calculation for W_MuonTrigSF
-        Double_t W_MuonTrigSF_Runs274094to276097_Minus;//Used in calculation for W_MuonTrigSF
         Double_t W_ElectronIDSF_Minus; //One of the 2 components for the total electron SF
         Double_t W_ElectronRecoSF_Minus; //One of the 2 components for the total electron SF
         Double_t W_TopPtReweighing;
@@ -801,13 +801,6 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("W_weight6",&W_weight6,"W_weight6/D");  
         tup_ObjectVars->Branch("W_weight7",&W_weight7,"W_weight7/D"); 
         tup_ObjectVars->Branch("W_weight8",&W_weight8,"W_weight8/D");  
-        tup_ObjectVars->Branch("W_MuonIDSF",&W_MuonIDSF,"W_MuonIDSF/D");  
-        tup_ObjectVars->Branch("W_MuonIsoSF",&W_MuonIsoSF,"W_MuonIsoSF/D");  
-        tup_ObjectVars->Branch("W_MuonTrigSF",&W_MuonTrigSF,"W_MuonTrigSF/D");  
-        tup_ObjectVars->Branch("W_MuonTrigSF_Runs273158to274093",&W_MuonTrigSF_Runs273158to274093,"W_MuonTrigSF_Runs273158to274093/D");  
-        tup_ObjectVars->Branch("W_MuonTrigSF_Runs274094to276097",&W_MuonTrigSF_Runs274094to276097,"W_MuonTrigSF_Runs274094to276097/D");  
-        tup_ObjectVars->Branch("W_ElectronIDSF",&W_ElectronIDSF,"W_ElectronIDSF/D");  
-        tup_ObjectVars->Branch("W_ElectronRecoSF",&W_ElectronRecoSF,"W_ElectronRecoSF/D");  
         tup_ObjectVars->Branch("W_TopPtReweighing",&W_TopPtReweighing,"W_TopPtReweighing/D");  
 
         tup_ObjectVars->Branch("I_run_num",&run_num,"run_num/I");
@@ -941,7 +934,7 @@ int main (int argc, char *argv[])
       tup_ObjectVars->Branch("HiggsBJet1CSVv2_TOPTOPLEPHBB",&HiggsBJet1CSVv2_TOPTOPLEPHBB,"HiggsBJet1CSVv2_TOPTOPLEPHBB/D");
       tup_ObjectVars->Branch("HiggsBJet2CSVv2_TOPTOPLEPHBB",&HiggsBJet2CSVv2_TOPTOPLEPHBB,"HiggsBJet2CSVv2_TOPTOPLEPHBB/D");
       tup_ObjectVars->Branch("TopLepBJetCSVv2_TOPTOPLEPHBB",&TopLepBJetCSVv2_TOPTOPLEPHBB,"TopLepBJetCSVv2_TOPTOPLEPHBB/D");
-      tup_ObjectVars->Branch("TopHadNonBJetCSVv2_TOPTOPLEPHBB",&TopHadNonBJetCSVv2_TOPTOPLEPHBB,"TopHadNonBJetCSVv2_TOPTOPLEPHBB");
+      tup_ObjectVars->Branch("TopHadNonBJetCSVv2_TOPTOPLEPHBB",&TopHadNonBJetCSVv2_TOPTOPLEPHBB,"TopHadNonBJetCSVv2_TOPTOPLEPHBB/D");
 
         if(debug)cout<<"created ntuples"<<endl;
 
@@ -955,7 +948,8 @@ int main (int argc, char *argv[])
         int nToys = 50;
         std::string pdfFileName_SMttHypo = "TopKinFit/test/GenAnalysis/TopTopLepHad/pdf.root";
         std::string pdfFileName_TTHypo = "TopKinFit/test/GenAnalysis/TopTopLepHbb/pdf.root";
-        std::string pdfFileName_STHypo = "TopKinFit/test/GenAnalysis/TopHLepbb/pdf.root";
+        std::string pdfFileName_STHypo 
+        = "TopKinFit/test/GenAnalysis/TopHLepbb/pdf.root";
 
         KINFIT::kfit *kfit_SMttHypo = new KINFIT::kfit();
         KINFIT::kfit *kfit_TTHypo = new KINFIT::kfit();
@@ -1255,22 +1249,19 @@ int main (int argc, char *argv[])
             W_MuonIDSF =1; //One of the 3 components for the total muon SF
             W_MuonIsoSF =1; //One of the 3 components for the total muon SF
             W_MuonTrigSF =1;//One of the 3 components for the total muon SF
-            W_MuonTrigSF_Runs273158to274093 = 1;//Used in calculation for W_MuonTrigSF
-            W_MuonTrigSF_Runs274094to276097 = 1;//Used in calculation for W_MuonTrigSF
+            W_MuonTrigSF = 1;//Used in calculation for W_MuonTrigSF
             W_ElectronIDSF =1; //One of the 2 components for the total electron SF
             W_ElectronRecoSF =1;     //One of the 2 components for the total electron SF
             W_MuonIDSF_Plus =1; //One of the 3 components for the total muon SF
             W_MuonIsoSF_Plus =1; //One of the 3 components for the total muon SF
             W_MuonTrigSF_Plus =1;//One of the 3 components for the total muon SF
-            W_MuonTrigSF_Runs273158to274093_Plus = 1;//Used in calculation for W_MuonTrigSF
-            W_MuonTrigSF_Runs274094to276097_Plus = 1;//Used in calculation for W_MuonTrigSF
+            W_MuonTrigSF_Plus = 1;//Used in calculation for W_MuonTrigSF
             W_ElectronIDSF_Plus =1; //One of the 2 components for the total electron SF
             W_ElectronRecoSF_Plus =1;     //One of the 2 components for the total electron SF
             W_MuonIDSF_Minus =1; //One of the 3 components for the total muon SF
             W_MuonIsoSF_Minus =1; //One of the 3 components for the total muon SF
             W_MuonTrigSF_Minus =1;//One of the 3 components for the total muon SF
-            W_MuonTrigSF_Runs273158to274093_Minus = 1;//Used in calculation for W_MuonTrigSF
-            W_MuonTrigSF_Runs274094to276097_Minus = 1;//Used in calculation for W_MuonTrigSF
+            W_MuonTrigSF_Minus = 1;//Used in calculation for W_MuonTrigSF
             W_ElectronIDSF_Minus =1; //One of the 2 components for the total electron SF
             W_ElectronRecoSF_Minus =1;     //One of the 2 components for the total electron SF
             W_TopPtReweighing =1;
@@ -1524,29 +1515,25 @@ int main (int argc, char *argv[])
             /////////////////////////////////////////////////
             //                   Lepton SF                 //
             /////////////////////////////////////////////////
+            float lum_RunsBCDEF = 15.658183109;// /fb
+            float lum_RunsGH = 15.199167277;// /fb
             if(bLeptonSF && !isData)
             {
                 if(Muon && nMu>0){
-                    W_MuonIDSF = muonSFWeightID->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
-                    W_MuonIsoSF = muonSFWeightIso->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
-                    W_MuonTrigSF_Runs273158to274093 = muonSFWeightTrig_Runs273158to274093->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
-                    W_MuonTrigSF_Runs274094to276097 = muonSFWeightTrig_Runs274094to276097->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0);
-                    W_MuonIDSF_Plus = muonSFWeightID->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 1);
-                    W_MuonIsoSF_Plus = muonSFWeightIso->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 1);
-                    W_MuonTrigSF_Runs273158to274093_Plus = muonSFWeightTrig_Runs273158to274093->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 1);
-                    W_MuonTrigSF_Runs274094to276097_Plus = muonSFWeightTrig_Runs274094to276097->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 1);
-                    W_MuonIDSF_Minus = muonSFWeightID->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1);
-                    W_MuonIsoSF_Minus = muonSFWeightIso->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1);
-                    W_MuonTrigSF_Runs273158to274093_Minus = muonSFWeightTrig_Runs273158to274093->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1);
-                    W_MuonTrigSF_Runs274094to276097_Minus = muonSFWeightTrig_Runs274094to276097->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1);
+                    W_MuonIDSF = (muonSFWeightID_BCDEF->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+                    W_MuonIsoSF = (muonSFWeightIso_BCDEF->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+                    W_MuonTrigSF = (muonSFWeightTrig_BCDEF->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0)*lum_RunsBCDEF+muonSFWeightTrig_GH->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 0)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+
+                    W_MuonIDSF_Plus = (muonSFWeightID_BCDEF->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 1)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+                    W_MuonIsoSF_Plus = (muonSFWeightIso_BCDEF->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 1)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+                    W_MuonTrigSF_Plus = (muonSFWeightTrig_BCDEF->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 1)*lum_RunsBCDEF+muonSFWeightTrig_GH->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), 1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+
+                    W_MuonIDSF_Minus = (muonSFWeightID_BCDEF->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+                    W_MuonIsoSF_Minus = (muonSFWeightIso_BCDEF->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+                    W_MuonTrigSF_Minus = (muonSFWeightTrig_BCDEF->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightTrig_GH->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
                     
-                    float lum_Runs273158to274093 = 0.62;// /fb
-                    float lum_Runs274094to276097 = 7.04;// /fb
-                    W_MuonTrigSF_Plus =( (W_MuonTrigSF_Runs273158to274093_Plus*lum_Runs273158to274093) + (W_MuonTrigSF_Runs274094to276097_Plus*lum_Runs274094to276097))/(lum_Runs273158to274093+lum_Runs274094to276097);  //Weigh each triggerSF according to the luminosity it holds for. These SF were only measured on 7.62/fb
                     W_fleptonSF_Plus = W_MuonIDSF_Plus * W_MuonIsoSF_Plus * W_MuonTrigSF_Plus;
-                    W_MuonTrigSF_Minus =( (W_MuonTrigSF_Runs273158to274093_Minus*lum_Runs273158to274093) + (W_MuonTrigSF_Runs274094to276097_Minus*lum_Runs274094to276097))/(lum_Runs273158to274093+lum_Runs274094to276097);  //Weigh each triggerSF according to the luminosity it holds for. These SF were only measured on 7.62/fb
                     W_fleptonSF_Minus = W_MuonIDSF_Minus * W_MuonIsoSF_Minus * W_MuonTrigSF_Minus;
-                    W_MuonTrigSF =( (W_MuonTrigSF_Runs273158to274093*lum_Runs273158to274093) + (W_MuonTrigSF_Runs274094to276097*lum_Runs274094to276097))/(lum_Runs273158to274093+lum_Runs274094to276097);  //Weigh each triggerSF according to the luminosity it holds for. These SF were only measured on 7.62/fb
                     W_fleptonSF = W_MuonIDSF * W_MuonIsoSF * W_MuonTrigSF;
                 }
                 else if(Electron && nEl>0){
@@ -1568,7 +1555,7 @@ int main (int argc, char *argv[])
             /////////////////////////////////////////////////
             //                   Btag SF                    //
             /////////////////////////////////////////////////
-            if(!bTagReweight_FillMChistos)
+            if(!bTagReweight_FillMChistos && CSVv2nonshape)
             {
                 if(dName.find("Data")==string::npos) //If sample is data, no b-tag-reweighting
                 {
@@ -1581,15 +1568,6 @@ int main (int argc, char *argv[])
                     //                    btagWeight_cMVAM_mujets_down =  btwt_CSVv2M_mujets_down->getMCEventWeight(selectedOrigJets, false);
                 }
             }
-            
-            float btagWeight = 1;
-            if(btagger == "CSVv2M") btagWeight = W_btagWeight_CSVv2M_mujets_central;
-//            else if(btagger == "cMVAM") btagWeight = btagWeight_cMVAM_mujets_central;
-
-
-            if(debug) cout<<"btag SF:  "<< btagWeight << endl;
-            scaleFactor = scaleFactor * W_puSF * W_fleptonSF * btagWeight;
-            if(isData) scaleFactor = 1;
             ////////////////////////////////////////////////
             // Pre-baseline initializations
             ////////////////////////////////////////////////           
@@ -1636,13 +1614,14 @@ int main (int argc, char *argv[])
                  if(!event->getHBHENoiseFilter() || !event->getHBHENoiseIsoFilter() || !event->getglobalTightHalo2016Filter()
                  || !event->getEcalDeadCellTriggerPrimitiveFilter() || !event->getPVFilter() || !event->getBadChCandFilter() || !event->getBadPFMuonFilter()) continue;
             }
+            cutstep[2]=cutstep[2]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
                 
             passed_Step3++;
 
 
             if(!trigged) continue;
             if(debug) cout << "Past cut 2: passed_FinalSelection trigger" << endl;
-            cutstep[2]=cutstep[2]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
+            cutstep[3]=cutstep[3]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
             passed_Step4++;
 
             if (debug)
@@ -1655,13 +1634,11 @@ int main (int argc, char *argv[])
             if (Muon && !Electron)
             {
                 if  (  !( nMu ==1)) continue; // Muon Channel Selection
-                cutstep[3]=cutstep[3]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
                 if(debug) cout << "Past cut 3: Single Muon selected" << endl;
             }
             else if (!Muon && Electron)
             {
                 if  (  !( nEl ==1)) continue; // Electron Channel Selection
-                cutstep[3]=cutstep[3]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
                 if(debug) cout << "Past cut 3: Single Electron selected" << endl;
             }
             else
@@ -1669,22 +1646,27 @@ int main (int argc, char *argv[])
                 cerr<<"Correct Channel not selected."<<endl;
                 exit(1);
             }
+            cutstep[4]=cutstep[4]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
 
             passed_Step5++;
 
 			      if(Muon && !Electron)
 			      {
                   if( !(nEl == 0)) continue;
+                  cutstep[5]=cutstep[5]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
                   passed_Step6++;
 				          if(nLooseMu != 1) continue;
+                  cutstep[6]=cutstep[6]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
                   passed_Step7++;
 	                if (debug)	cout <<"Vetoed extra muons..."<<endl;
 			      }
 			      if(!Muon && Electron)
 			      {
                   if( !(nMu == 0)) continue;
+                  cutstep[5]=cutstep[5]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
                   passed_Step6++;
 				          if(nLooseEl != 1) continue;
+                  cutstep[6]=cutstep[6]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
                   passed_Step7++;
 	                if (debug)	cout <<"Vetoed extra electrons..."<<endl;
 			      }
@@ -1755,42 +1737,9 @@ int main (int argc, char *argv[])
 			      }
             if(debug) cout << "Cleaned jets from isolated leptons" << endl;
 
-			      /////////////////////////////////////////////
-			      // Make TLorentzVectors //
-			      ////////////////////////////////////////////
-			      for(unsigned int iMuon=0; iMuon<selectedMuons.size(); iMuon++)
-            {
-				        selectedMuonsTLV.push_back( *selectedMuons[iMuon]);			
-			      }
-			      for(unsigned int iElectron=0; iElectron<selectedElectrons.size(); iElectron++)
-            {
-				        selectedElectronsTLV.push_back( *selectedElectrons[iElectron]);		
-			      }
-			      if(mets.size() > 0) metsTLV.push_back( *mets[0] );
-			      else cout<<"No MET??"<<endl;
-			
-			      ////////////////////////////////////////////////////////////////
-			      //Calculations for MT(lep,MET) selection cut
-			      ////////////////////////////////////////////////////////////////
-			      float MT = -999;
-			      if(Muon)
-			      {
-			          MT = sqrt(2*selectedMuons[0]->Pt() * mets[0]->Et() * (1-cos( selectedMuonsTLV[0].DeltaPhi( metsTLV[0] )) ) );
-			          selectedLeptonsTLV.push_back(*selectedMuons[0]);
-			      }
-			      else if(Electron)
-			      {
-			          MT = sqrt(2*selectedElectrons[0]->Pt() * mets[0]->Et() * (1-cos( selectedElectronsTLV[0].DeltaPhi( metsTLV[0] )) ) );
-			          selectedLeptonsTLV.push_back(*selectedElectrons[0]);
-			      }
-			      else cout << "Wrong channel (1)" << endl;
-
-            sort(selectedJets.begin(),selectedJets.end(),HighestPt()); //order Jets wrt Pt for tuple output
-			      ////////////////////////////////////
-		        //Fill b-jet collections
-            ////////////////////////////////////
             for(int jetbtag = 0; jetbtag<selectedJets.size(); jetbtag++)
   			    {
+
                 if(!isData)
                 {
                     float bTagEff = 1, bTagEff_LFUp = 1, bTagEff_LFDown = 1, bTagEff_HFUp = 1, bTagEff_HFDown = 1, bTagEff_HFStats1Up = 1,
@@ -1905,6 +1854,54 @@ int main (int argc, char *argv[])
                     if(debug)cout<<"btag efficiency = "<<bTagEff<<endl;       
 
                 }
+            }
+            
+            float btagWeight = 1;
+            if(btagger == "CSVv2M") btagWeight = W_btagWeight_CSVv2M_mujets_central;
+//            else if(btagger == "cMVAM") btagWeight = btagWeight_cMVAM_mujets_central;
+            if(!CSVv2nonshape)  btagWeight = W_btagWeight_shape;
+
+
+            if(debug) cout<<"btag SF:  "<< btagWeight << endl;
+            scaleFactor = scaleFactor * W_puSF * W_fleptonSF * btagWeight;
+            if(isData) scaleFactor = 1;
+
+			      /////////////////////////////////////////////
+			      // Make TLorentzVectors //
+			      ////////////////////////////////////////////
+			      for(unsigned int iMuon=0; iMuon<selectedMuons.size(); iMuon++)
+            {
+				        selectedMuonsTLV.push_back( *selectedMuons[iMuon]);			
+			      }
+			      for(unsigned int iElectron=0; iElectron<selectedElectrons.size(); iElectron++)
+            {
+				        selectedElectronsTLV.push_back( *selectedElectrons[iElectron]);		
+			      }
+			      if(mets.size() > 0) metsTLV.push_back( *mets[0] );
+			      else cout<<"No MET??"<<endl;
+			
+			      ////////////////////////////////////////////////////////////////
+			      //Calculations for MT(lep,MET) selection cut
+			      ////////////////////////////////////////////////////////////////
+			      float MT = -999;
+			      if(Muon)
+			      {
+			          MT = sqrt(2*selectedMuons[0]->Pt() * mets[0]->Et() * (1-cos( selectedMuonsTLV[0].DeltaPhi( metsTLV[0] )) ) );
+			          selectedLeptonsTLV.push_back(*selectedMuons[0]);
+			      }
+			      else if(Electron)
+			      {
+			          MT = sqrt(2*selectedElectrons[0]->Pt() * mets[0]->Et() * (1-cos( selectedElectronsTLV[0].DeltaPhi( metsTLV[0] )) ) );
+			          selectedLeptonsTLV.push_back(*selectedElectrons[0]);
+			      }
+			      else cout << "Wrong channel (1)" << endl;
+
+            sort(selectedJets.begin(),selectedJets.end(),HighestPt()); //order Jets wrt Pt for tuple output
+			      ////////////////////////////////////
+		        //Fill b-jet collections
+            ////////////////////////////////////
+            for(int jetbtag = 0; jetbtag<selectedJets.size(); jetbtag++)
+  			    {
             
 		           	if (selectedJets[jetbtag]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > CSVv2_workingpointvalue_Loose   )
 		            {
@@ -1979,14 +1976,14 @@ int main (int argc, char *argv[])
             //////////////////////////////////////////////////////////////////////
 			      if(selectedJets.size() < 3)  continue;
             if(debug) cout << "Past cut 5: passed_FinalSelection number of jets cut" << endl;
-            cutstep[5]=cutstep[5]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
+            cutstep[7]=cutstep[7]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
             passed_Step8++;
 
             ///////////////////////////////////////////////////
             // Fill b-tag histos for scale factors
             // info: http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees_v2.pdf
             ////////////////////////////////////////////////////
-            if(bTagReweight_FillMChistos)
+            if(bTagReweight_FillMChistos && CSVv2nonshape)
             {
                 if(dName.find("Data")==string::npos)        //Btag documentation : http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
                 {
@@ -2003,7 +2000,7 @@ int main (int argc, char *argv[])
 		  	    if(selectedMBJets.size() < 1) continue;
 	          if (debug)	cout <<"Cut on nb b-jets..."<<endl;
             if(debug) cout << "Past cut 7: passed_FinalSelection cut on number of b-jets" << endl;
-            cutstep[6]=cutstep[6]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
+            cutstep[8]=cutstep[8]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
 
 
             if(debug)

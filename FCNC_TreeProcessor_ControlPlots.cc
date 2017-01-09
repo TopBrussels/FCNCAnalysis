@@ -1,5 +1,6 @@
 #include "TStyle.h"
 #include "TPaveText.h"
+#include <TLatex.h>
 
 #include <cmath>
 #include <fstream>
@@ -195,18 +196,45 @@ int main(int argc, char *argv[])
     MSPlot["LeptonPhi"] = new MultiSamplePlot(datasets, "LeptonPhi", 50, -3.2, 3.2, "Lepton phi","Events", category); 
     MSPlot["JetPt"] = new MultiSamplePlot(datasets, "JetPt", 50, 20., 300., "Jet Pt","Events", category, "GeV"); 
     MSPlot["JetEta"] = new MultiSamplePlot(datasets, "JetEta", 50, -2.5, 2.5, "Jet eta","Events", category); 
-    MSPlot["JetPhi"] = new MultiSamplePlot(datasets, "JetPhi", 50, -3.2, 3.2, "Jet phi","Events", category); 
-    MSPlot["JetCSVv2"] = new MultiSamplePlot(datasets, "JetCSVv2", 50, 0., 1., "Jet CSVv2","Events", category); 
+    MSPlot["JetPhi"] = new MultiSamplePlot(datasets, "JetPhi", 50, -3.2, 3.2, "Jet phi","Events", category);
+    MSPlot["JetCSVv2"] = new MultiSamplePlot(datasets, "JetCSVv2", 50, 0., 1., "Jet CSVv2","Events", category);
     MSPlot["JetcMVAv2"] = new MultiSamplePlot(datasets, "JetcMVAv2", 50, -1., 1., "Jet cMVAv2","Events", category); 
 
-    MSPlot["Hmass_TOPTOPLEPHAD"] = new MultiSamplePlot(datasets, "Hmass_TOPTOPLEPHAD", 50, 60., 180., "H mass","Events", category, "GeV"); 
-    MSPlot["Hmass_TOPTOPLEPHBB"] = new MultiSamplePlot(datasets, "Hmass_TOPTOPLEPHBB", 50, 60., 180., "H mass","Events", category, "GeV"); 
-    MSPlot["Hmass_TOPHLEPBB_hct"] = new MultiSamplePlot(datasets, "Hmass_TOPHLEPBB_hct", 50, 60., 180., "H mass","Events", category, "GeV"); 
-    MSPlot["Hmass_TOPHLEPBB_hut"] = new MultiSamplePlot(datasets, "Hmass_TOPHLEPBB_hut", 50, 60., 180., "H mass","Events", category, "GeV"); 
-    MSPlot["HadTopMass_TOPTOPLEPHAD"] = new MultiSamplePlot(datasets, "HadTopMass_TOPTOPLEPHAD", 50, 60., 180., "HadTopMass mass","Events", category, "GeV");
-    MSPlot["HadTopMass_TOPTOPLEPHBB"] = new MultiSamplePlot(datasets, "HadTopMass_TOPTOPLEPHBB", 50, 60., 180., "HadTopMass mass","Events", category, "GeV");
-    MSPlot["HadTopMass_TOPHLEPBB_hct"] = new MultiSamplePlot(datasets, "HadTopMass_TOPHLEPBB_hct", 50, 60., 180., "HadTopMass mass","Events", category, "GeV");
-    MSPlot["HadTopMass_TOPHLEPBB_hut"] = new MultiSamplePlot(datasets, "HadTopMass_TOPHLEPBB_hut", 50, 60., 180., "HadTopMass mass","Events", category, "GeV");
+    MSPlot["HiggsMass_TOPHLEPBB_hut"] = new MultiSamplePlot(datasets, "HiggsMass_TOPHLEPBB_hut", 50, 50., 250, "M(Higgs)","Events", category,"GeV");
+    MSPlot["HiggsMass_TOPHLEPBB_hct"] = new MultiSamplePlot(datasets, "HiggsMass_TOPHLEPBB_hct", 50, 50., 250, "M(Higgs)","Events", category,"GeV");
+    MSPlot["HiggsEta_TOPHLEPBB_hut"] = new MultiSamplePlot(datasets, "HiggsEta_TOPHLEPBB_hut", 50, -5.0, 5.0, "eta (Higgs)","Events", category);
+    MSPlot["HiggsEta_TOPHLEPBB_hct"] = new MultiSamplePlot(datasets, "HiggsEta_TOPHLEPBB_hct", 50, -5.0, 5.0, "eta (Higgs)","Events", category);
+    MSPlot["TopLepMass_TOPHLEPBB_hut"] = new MultiSamplePlot(datasets, "TopLepMass_TOPHLEPBB_hut", 50, 80., 300., "M(LepTop)","Events", category,"GeV");
+    MSPlot["TopLepMass_TOPHLEPBB_hct"] = new MultiSamplePlot(datasets, "TopLepMass_TOPHLEPBB_hct", 50, 80., 300., "M(LepTop)","Events", category,"GeV");
+    MSPlot["TopLepPt_TOPHLEPBB_hut"] = new MultiSamplePlot(datasets, "TopLepPt_TOPHLEPBB_hut", 50, 80., 300., "Pt(LepTop)","Events", category,"GeV");
+    MSPlot["TopLepPt_TOPHLEPBB_hct"] = new MultiSamplePlot(datasets, "TopLepPt_TOPHLEPBB_hct", 50, 80., 300., "Pt(LepTop)","Events", category,"GeV");
+    MSPlot["TopLepEta_TOPHLEPBB_hut"] = new MultiSamplePlot(datasets, "TopLepEta_TOPHLEPBB_hut", 50, -5.0, 5.0, "eta (LepTop)","Events", category);
+    MSPlot["TopLepEta_TOPHLEPBB_hct"] = new MultiSamplePlot(datasets, "TopLepEta_TOPHLEPBB_hct", 50, -5.0, 5.0, "eta (LepTop)","Events", category);
+    MSPlot["HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut"] = new MultiSamplePlot(datasets, "HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut", 50, 0., 5.0, "DR(Hb1,Hb2)","Events", category);
+    MSPlot["HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct"] = new MultiSamplePlot(datasets, "HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct", 50, 0., 5.0, "DR(Hb1,Hb2)","Events", category);
+    MSPlot["TopLepHiggsDr_TOPHLEPBB_hut"] = new MultiSamplePlot(datasets, "TopLepHiggsDr_TOPHLEPBB_hut", 50, 0., 5.0, "#Delta R(H,LepTop)","Events", category);
+    MSPlot["TopLepHiggsDr_TOPHLEPBB_hct"] = new MultiSamplePlot(datasets, "TopLepHiggsDr_TOPHLEPBB_hct", 50, 0., 5.0, "#Delta R(H,LepTop)","Events", category);
+    MSPlot["HiggsBJet1CSVv2_TOPHLEPBB_hut"] = new MultiSamplePlot(datasets, "HiggsBJet1CSVv2_TOPHLEPBB_hut", 50, 0., 1., "CSVv2 disc.","Events", category);
+    MSPlot["HiggsBJet1CSVv2_TOPHLEPBB_hct"] = new MultiSamplePlot(datasets, "HiggsBJet1CSVv2_TOPHLEPBB_hct", 50, 0., 1., "CSVv2 disc.","Events", category);
+    MSPlot["HiggsBJet2CSVv2_TOPHLEPBB_hut"] = new MultiSamplePlot(datasets, "HiggsBJet2CSVv2_TOPHLEPBB_hut", 50, 0., 1., "CSVv2 disc.","Events", category);
+    MSPlot["HiggsBJet2CSVv2_TOPHLEPBB_hct"] = new MultiSamplePlot(datasets, "HiggsBJet2CSVv2_TOPHLEPBB_hct", 50, 0., 1., "CSVv2 disc.","Events", category);
+    MSPlot["TopLepBJetCSVv2_TOPHLEPBB_hut"] = new MultiSamplePlot(datasets, "TopLepBJetCSVv2_TOPHLEPBB_hut", 50, 0., 1., "CSVv2 disc.","Events", category);
+    MSPlot["TopLepBJetCSVv2_TOPHLEPBB_hct"] = new MultiSamplePlot(datasets, "TopLepBJetCSVv2_TOPHLEPBB_hct", 50, 0., 1., "CSVv2 disc.","Events", category);
+    MSPlot["TopHadMass_TOPTOPLEPHAD"] = new MultiSamplePlot(datasets, "TopHadMass_TOPTOPLEPHAD", 50, 80., 300., "M(HadTop)","Events", category,"GeV");
+    MSPlot["TopLepMass_TOPTOPLEPHAD"] = new MultiSamplePlot(datasets, "TopLepMass_TOPTOPLEPHAD", 50, 80., 300., "M(LepTop)","Events", category,"GeV");
+    MSPlot["TopLepTopHadDr_TOPTOPLEPHAD"] = new MultiSamplePlot(datasets, "TopLepTopHadDr_TOPTOPLEPHAD", 50, 0., 5.0, "DR(HadTop,LepTop)","Events", category);
+    MSPlot["TopLepBJetCSVv2_TOPTOPLEPHAD"] = new MultiSamplePlot(datasets, "TopLepBJetCSVv2_TOPTOPLEPHAF", 50, 0., 1., "CSVv2 disc.","Events", category);
+    MSPlot["TopHadBJetCSVv2_TOPTOPLEPHAD"] = new MultiSamplePlot(datasets, "TopHadBJetCSVv2_TOPTOPLEPHAD", 50, 0., 1., "CSVv2 disc.","Events", category);
+    MSPlot["TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"] = new MultiSamplePlot(datasets, "TopHadWNonBJet1CSVv2_TOPTOPLEPHAD", 50, 0., 1., "CSVv2 disc.","Events", category);
+    MSPlot["TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"] = new MultiSamplePlot(datasets, "TopHadWNonBJet2CSVv2_TOPTOPLEPHAD", 50, 0., 1., "CSVv2 disc.","Events", category);
+    MSPlot["HiggsMass_TOPTOPLEPHBB"] = new MultiSamplePlot(datasets, "HiggsMass_TOPTOPLEPHBB", 50, 50., 250, "M(Higgs)","Events", category,"GeV");
+    MSPlot["TopLepMass_TOPTOPLEPHBB"] = new MultiSamplePlot(datasets, "TopLepMass_TOPTOPLEPHBB", 50, 80., 300., "M(LepTop)","Events", category,"GeV");
+    MSPlot["HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB"] = new MultiSamplePlot(datasets, "HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB", 50, 0., 5.0, "DR(Hb1,Hb2)","Events", category);
+    MSPlot["TopLepHiggsDr_TOPTOPLEPHBB"] = new MultiSamplePlot(datasets, "TopLepHiggsDr_TOPTOPLEPHBB", 50, 0., 5.0, "DR(H,LepTop)","Events", category);
+    MSPlot["HiggsBJet1CSVv2_TOPTOPLEPHBB"] = new MultiSamplePlot(datasets, "HiggsBJet1CSVv2_TOPTOPLEPHBB", 50, 0., 1., "CSVv2 disc.","Events", category);
+    MSPlot["HiggsBJet2CSVv2_TOPTOPLEPHBB"] = new MultiSamplePlot(datasets, "HiggsBJet2CSVv2_TOPTOPLEPHBB", 50, 0., 1., "CSVv2 disc.","Events", category);
+    MSPlot["TopLepBJetCSVv2_TOPTOPLEPHBB"] = new MultiSamplePlot(datasets, "TopLepBJetCSVv2_TOPTOPLEPHBB", 50, 0., 1., "CSVv2 disc.","Events", category);
+    MSPlot["TopHadNonBJetCSVv2_TOPTOPLEPHBB"] = new MultiSamplePlot(datasets, "TopHadNonBJetCSVv2_TOPTOPLEPHBB", 50, 0., 1., "CSVv2 disc.","Events", category);
 
     MSPlot["MC_TopPt"] = new MultiSamplePlot(datasets, "MC_TopPt", 60, 80., 250., "Top Pt (Gen)","Events", category, "GeV");
     MSPlot["MC_AntiTopPt"] = new MultiSamplePlot(datasets, "MC_AntiTopPt", 60, 80., 250., "Top Pt (Gen)","Events", category, "GeV");
@@ -294,7 +322,7 @@ int main(int argc, char *argv[])
 
 		    nEntries = ttree[dataSetName.c_str()]->GetEntries();
 		    cout<<"                 nEntries: "<<nEntries<<endl;
-		
+/*		
         //----------------------------------------------//
         //Import the working points for b-tagging used to create the ntuples
         //----------------------------------------------//
@@ -312,7 +340,7 @@ int main(int argc, char *argv[])
         ttree[(dataSetName + TTreename_info).c_str()]->SetBranchAddress("cMVA_workingpointvalue_Medium",&CSVv2_workingpointvalue_Medium);
         ttree[(dataSetName + TTreename_info).c_str()]->SetBranchAddress("cMVA_workingpointvalue_Tight",&CSVv2_workingpointvalue_Tight);
         ttree[(dataSetName + TTreename_info).c_str()]->GetEntry(0);
-
+*/
         //----------------------------------------------//
         //Get The object variables + weights
         //----------------------------------------------//
@@ -398,7 +426,7 @@ int main(int argc, char *argv[])
         Double_t eta_lepton;
         Double_t phi_lepton;
         Double_t E_lepton;
-        Double_t LepCharge;
+        Int_t LepCharge;
   
         //variable for jets 
         Int_t nJets;
@@ -722,23 +750,23 @@ int main(int argc, char *argv[])
 			          }
 
                 //Safety triggers in case there are strange things happening in the event weights
-                if(W_fleptonSF <= 0 || W_btagWeight_shape <= 0 || nloSF <= 0 || Luminosity <= 0 || W_puSF_applied <= 0)
+                if(W_fleptonSF < 0 || W_btagWeight_shape < 0 || nloSF < 0 || Luminosity < 0 || W_puSF_applied < 0)
                 {
-                      cout << "----- Event " << j << " has a negative weight. Weights are: W_puSF=" << W_puSF_applied << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << "; Luminosity=" << Luminosity << endl;
+                      cout << "----- Event " << j << " has a negative weight. Weights are: W_puSF=" << W_puSF_applied << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_shape=" << W_btagWeight_shape << "; nloSF=" << nloSF << "; Luminosity=" << Luminosity << endl;
                       cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
                       cout << "----- The event will be skipped....." << endl;
                       continue;
                 }
                 else if(W_fleptonSF != W_fleptonSF || W_btagWeight_shape != W_btagWeight_shape || nloSF != nloSF || W_puSF_applied != W_puSF_applied)
                 {
-                      cout << "----- Event " << j << " has a Nan weight. Weights are: W_puSF=" << W_puSF_applied << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
+                      cout << "----- Event " << j << " has a Nan weight. Weights are: W_puSF=" << W_puSF_applied << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_shape=" << W_btagWeight_shape << "; nloSF=" << nloSF << endl;
                       cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
                       cout << "----- The event will be skipped....." << endl;
                       continue;
                 }
                 else if(W_fleptonSF >= 40 || W_btagWeight_shape >= 40 || nloSF >= 40 || W_puSF_applied >= 40)
                 {
-                      cout << "----- Event " << j << " has a weight larger than 20. Weights are: W_puSF=" << W_puSF_applied << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
+                      cout << "----- Event " << j << " has a weight larger than 20. Weights are: W_puSF=" << W_puSF_applied << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_shape=" << W_btagWeight_shape << "; nloSF=" << nloSF << endl;
                       cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
                       cout << "----- The event will be skipped....." << endl;
                       continue;
@@ -854,12 +882,54 @@ if(!isData)
                 MSPlot["JetCSVv2"]->Fill(CSVv2[i_Jet], datasets[d], true, Luminosity * ScaleFactor);
                 MSPlot["JetcMVAv2"]->Fill(cMVA[i_Jet], datasets[d], true, Luminosity * ScaleFactor);
             }			                
-            MSPlot["Hmass_TOPTOPLEPHAD"]->Fill(Higgs_TOPTOPLEPHAD.M(), datasets[d], true, Luminosity * ScaleFactor);
-            MSPlot["Hmass_TOPTOPLEPHBB"]->Fill(Higgs_TOPTOPLEPHBB.M(), datasets[d], true, Luminosity * ScaleFactor);
-            MSPlot["Hmass_TOPHLEPBB_hct"]->Fill(Higgs_TOPHLEPBB_hct.M(), datasets[d], true, Luminosity * ScaleFactor);
-            MSPlot["Hmass_TOPHLEPBB_hut"]->Fill(Higgs_TOPHLEPBB_hut.M(), datasets[d], true, Luminosity * ScaleFactor);
-            MSPlot["HadTopMass_TOPTOPLEPHAD"]->Fill(HadTop_TOPTOPLEPHAD.M(), datasets[d], true, Luminosity * ScaleFactor);
-            MSPlot["HadTopMass_TOPTOPLEPHBB"]->Fill(HadTop_TOPTOPLEPHBB.M(), datasets[d], true, Luminosity * ScaleFactor);
+
+	          if( HiggsMass_TOPHLEPBB_hut > 500. ) HiggsMass_TOPHLEPBB_hut = 500.;
+	          if( TopLepMass_TOPHLEPBB_hut > 500. ) TopLepMass_TOPHLEPBB_hut = 500.;
+	          if( TopLepPt_TOPHLEPBB_hut > 1000. ) TopLepPt_TOPHLEPBB_hut = 1000.;
+	          if( HiggsMass_TOPHLEPBB_hct > 500. ) HiggsMass_TOPHLEPBB_hct = 500.;
+	          if( TopLepMass_TOPHLEPBB_hct > 500. ) TopLepMass_TOPHLEPBB_hct = 500.;
+	          if( TopLepPt_TOPHLEPBB_hct > 1000. ) TopLepPt_TOPHLEPBB_hct = 1000.;
+	          if( TopLepMass_TOPTOPLEPHAD > 500. || TopLepMass_TOPTOPLEPHAD != TopLepMass_TOPTOPLEPHAD) TopLepMass_TOPTOPLEPHAD = 500.;
+	          if( HiggsMass_TOPTOPLEPHBB > 500. ) HiggsMass_TOPTOPLEPHBB = 500.;
+	          if( TopLepMass_TOPTOPLEPHBB > 500. ) TopLepMass_TOPTOPLEPHBB = 500.;
+
+
+            MSPlot["HiggsMass_TOPHLEPBB_hut"]->Fill(HiggsMass_TOPHLEPBB_hut, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["HiggsMass_TOPHLEPBB_hct"]->Fill(HiggsMass_TOPHLEPBB_hct, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["HiggsEta_TOPHLEPBB_hut"]->Fill(HiggsEta_TOPHLEPBB_hut, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["HiggsEta_TOPHLEPBB_hct"]->Fill(HiggsEta_TOPHLEPBB_hct, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopLepMass_TOPHLEPBB_hut"]->Fill(TopLepMass_TOPHLEPBB_hut, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopLepMass_TOPHLEPBB_hct"]->Fill(TopLepMass_TOPHLEPBB_hct, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopLepPt_TOPHLEPBB_hut"]->Fill(TopLepPt_TOPHLEPBB_hut, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopLepPt_TOPHLEPBB_hct"]->Fill(TopLepPt_TOPHLEPBB_hct, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopLepEta_TOPHLEPBB_hut"]->Fill(TopLepEta_TOPHLEPBB_hut, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopLepEta_TOPHLEPBB_hct"]->Fill(TopLepEta_TOPHLEPBB_hct, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut"]->Fill(HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct"]->Fill(HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopLepHiggsDr_TOPHLEPBB_hut"]->Fill(TopLepHiggsDr_TOPHLEPBB_hut, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopLepHiggsDr_TOPHLEPBB_hct"]->Fill(TopLepHiggsDr_TOPHLEPBB_hct, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["HiggsBJet1CSVv2_TOPHLEPBB_hut"]->Fill(HiggsBJet1CSVv2_TOPHLEPBB_hut, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["HiggsBJet1CSVv2_TOPHLEPBB_hct"]->Fill(HiggsBJet1CSVv2_TOPHLEPBB_hct, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["HiggsBJet2CSVv2_TOPHLEPBB_hut"]->Fill(HiggsBJet2CSVv2_TOPHLEPBB_hut, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["HiggsBJet2CSVv2_TOPHLEPBB_hct"]->Fill(HiggsBJet2CSVv2_TOPHLEPBB_hct, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopLepBJetCSVv2_TOPHLEPBB_hut"]->Fill(TopLepBJetCSVv2_TOPHLEPBB_hut, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopLepBJetCSVv2_TOPHLEPBB_hct"]->Fill(TopLepBJetCSVv2_TOPHLEPBB_hct, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopHadMass_TOPTOPLEPHAD"]->Fill(TopHadMass_TOPTOPLEPHAD, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopLepMass_TOPTOPLEPHAD"]->Fill(TopLepMass_TOPTOPLEPHAD, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopLepTopHadDr_TOPTOPLEPHAD"]->Fill(TopLepTopHadDr_TOPTOPLEPHAD, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopLepBJetCSVv2_TOPTOPLEPHAD"]->Fill(TopLepBJetCSVv2_TOPTOPLEPHAD, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopHadBJetCSVv2_TOPTOPLEPHAD"]->Fill(TopHadBJetCSVv2_TOPTOPLEPHAD, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"]->Fill(TopHadWNonBJet1CSVv2_TOPTOPLEPHAD, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"]->Fill(TopHadWNonBJet2CSVv2_TOPTOPLEPHAD, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["HiggsMass_TOPTOPLEPHBB"]->Fill(HiggsMass_TOPTOPLEPHBB, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopLepMass_TOPTOPLEPHBB"]->Fill(TopLepMass_TOPTOPLEPHBB, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB"]->Fill(HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopLepHiggsDr_TOPTOPLEPHBB"]->Fill(TopLepHiggsDr_TOPTOPLEPHBB, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["HiggsBJet1CSVv2_TOPTOPLEPHBB"]->Fill(HiggsBJet1CSVv2_TOPTOPLEPHBB, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["HiggsBJet2CSVv2_TOPTOPLEPHBB"]->Fill(HiggsBJet2CSVv2_TOPTOPLEPHBB, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopLepBJetCSVv2_TOPTOPLEPHBB"]->Fill(TopLepBJetCSVv2_TOPTOPLEPHBB, datasets[d], true, Luminosity * ScaleFactor);
+            MSPlot["TopHadNonBJetCSVv2_TOPTOPLEPHBB"]->Fill(TopHadNonBJetCSVv2_TOPTOPLEPHBB, datasets[d], true, Luminosity * ScaleFactor);
+
             MSPlot["MC_TopPt"]->Fill(MC_TopPt, datasets[d], true, Luminosity * ScaleFactor);
             MSPlot["MC_AntiTopPt"]->Fill(MC_AntiTopPt, datasets[d], true, Luminosity * ScaleFactor);
 			                
@@ -886,9 +956,9 @@ if(!isData)
   mkdir(pathPNG.c_str(),0777);
   pathPNG += "/";
   pathPNG += category;
+  mkdir(pathPNG.c_str(),0777);
   pathPNG += "/";
   pathPNG += SystematicShift;
-  pathPNG += "/";
   mkdir(pathPNG.c_str(),0777);
   cout <<"Making directory :"<< pathPNG  <<endl;		//make directory
 
@@ -904,7 +974,7 @@ if(!isData)
       if (debug)
       {
           cout << "Saving the MSP" << endl;
-          cout << " and it->first is " << it->first << endl;
+          cout << " and it->first is " << name << endl;
           cout << " Luminosity is " << Luminosity << endl;
       }
 //      temp->setDataLumi(Luminosity);
@@ -922,9 +992,10 @@ if(!isData)
           int scaleNPSignal = 20; //determines the factor with which the new physics signal samples are scaled, only on the canvas (note that the TH1F histogram in the MSPlot output root file itself is not scaled with this factor!)
           bool savePNG = false; //automatically save png files of MSPlots.
           */
-      cout << "Drawing MSP: " << it->first << endl;
-      temp->Draw("MyMSP_"+it->first, 1, false, false, false, 1);
-      temp->Write(outfile, it->first, true,pathPNG, "png");
+      cout << "Drawing MSP: " << name << endl;
+      temp->Draw("MyMSP_"+name, 1, false, false, false, 1);
+      temp->Write(outfile, name, true,pathPNG, "png");
+      MSPlot.erase(name);
 	}
 
   	outfile->Write("kOverwrite");
