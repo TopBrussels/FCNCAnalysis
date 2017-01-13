@@ -18,6 +18,7 @@ myOutput_MSPlots*/
 MSPlots_El/*
 MSPlots_Mu/*
 MSPlots/
+MSPlots_old/
 *.png
 scripts/ST_trainingNormedHistos/
 TopKinFit/kinfitDict_rdict.pcm

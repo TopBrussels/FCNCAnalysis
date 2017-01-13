@@ -182,13 +182,13 @@ int main (int argc, char *argv[])
     string postfix = "_Run2_TopTree_Study_" + dName; // to relabel the names of the output file
 
     if (doJESShift == 1)
-        postfix= postfix+"_JESMinus";
+        postfix= postfix+"JESMinus";
     if (doJESShift == 2)
-        postfix= postfix+"_JESPlus";
+        postfix= postfix+"JESPlus";
     if (doJERShift == 1)
-        postfix= postfix+"_JERMinus";
+        postfix= postfix+"JERMinus";
     if (doJERShift == 2)
-        postfix= postfix+"_JERPlus";
+        postfix= postfix+"JERPlus";
     if (dobTagEffShift == -1)
         postfix= postfix+"_bTagMinus";
     if (dobTagEffShift == 1)
@@ -1289,6 +1289,42 @@ int main (int argc, char *argv[])
             MVA_TOPHLEPBB_hut = -999.;
             MVA_TOPHLEPBB_hct = -999.;
 
+            HiggsMass_TOPHLEPBB_hut = -999.;
+            HiggsMass_TOPHLEPBB_hct = -999.;
+            HiggsEta_TOPHLEPBB_hut = -999.;
+            HiggsEta_TOPHLEPBB_hct = -999.;
+            TopLepMass_TOPHLEPBB_hut = -999.;
+            TopLepMass_TOPHLEPBB_hct = -999.;
+            TopLepPt_TOPHLEPBB_hut = -999.;
+            TopLepPt_TOPHLEPBB_hct = -999.;
+            TopLepEta_TOPHLEPBB_hut = -999.;
+            TopLepEta_TOPHLEPBB_hct = -999.;
+            HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut = -999.;
+            HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct = -999.;
+            TopLepHiggsDr_TOPHLEPBB_hut = -999.;
+            TopLepHiggsDr_TOPHLEPBB_hct = -999.;
+            HiggsBJet1CSVv2_TOPHLEPBB_hut = -999.;
+            HiggsBJet1CSVv2_TOPHLEPBB_hct = -999.;
+            HiggsBJet2CSVv2_TOPHLEPBB_hut = -999.;
+            HiggsBJet2CSVv2_TOPHLEPBB_hct = -999.;
+            TopLepBJetCSVv2_TOPHLEPBB_hut = -999.;
+            TopLepBJetCSVv2_TOPHLEPBB_hct = -999.;
+            TopHadMass_TOPTOPLEPHAD = -999.;
+            TopLepMass_TOPTOPLEPHAD = -999.;
+            TopLepTopHadDr_TOPTOPLEPHAD = -999.;
+            TopLepBJetCSVv2_TOPTOPLEPHAD = -999.;
+            TopHadBJetCSVv2_TOPTOPLEPHAD = -999.;
+            TopHadWNonBJet1CSVv2_TOPTOPLEPHAD = -999.;
+            TopHadWNonBJet2CSVv2_TOPTOPLEPHAD = -999.;
+            HiggsMass_TOPTOPLEPHBB = -999.;
+            TopLepMass_TOPTOPLEPHBB = -999.;
+            HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB = -999.;
+            TopLepHiggsDr_TOPTOPLEPHBB = -999.;
+            HiggsBJet1CSVv2_TOPTOPLEPHBB = -999.;
+            HiggsBJet2CSVv2_TOPTOPLEPHBB = -999.;
+            TopLepBJetCSVv2_TOPTOPLEPHBB = -999.;
+            TopHadNonBJetCSVv2_TOPTOPLEPHBB = -999.;
+
             if(debug)cout<<"before tree load"<<endl;
             event = treeLoader.LoadEvent (ievt, vertex, init_muons, init_electrons, init_jets, mets, debug);  //load event
             if(debug)cout<<"after tree load"<<endl;
@@ -1598,10 +1634,10 @@ int main (int argc, char *argv[])
               
             }
             else trigged = true;
-             if(dName.find("NP")!=string::npos)//JER smearing only feasible for non-data samples
-            {
-                trigged = true;
-            }
+//             if(dName.find("NP")!=string::npos)
+//            {
+//                trigged = true;
+//            }
 
             //Event cleaning filters
             if(isData)
@@ -2623,10 +2659,10 @@ int main (int argc, char *argv[])
 				                        MVA_TOPTOPLEPHBB = MVA_tmp;
 				                        for(int i_IndexMatch = 0; i_IndexMatch < selectedJets.size(); i_IndexMatch++)
 				                        {
-				                            if(pt_jet[i_IndexMatch] == BJetPt_TTHypo[idxTopLepBJetFit]) TOPTOPLEPHBB_JetIdx_LepTop = i_IndexMatch;
-				                            else if(pt_jet[i_IndexMatch] == NonBJetPt_TTHypo[idxTopHadNonBJetFit]) TOPTOPLEPHBB_JetIdx_HadTop = i_IndexMatch;
-				                            else if(pt_jet[i_IndexMatch] == BJetPt_TTHypo[idxHiggsBJet1Fit]) TOPTOPLEPHBB_JetIdx_H1 = i_IndexMatch;
-				                            else if(pt_jet[i_IndexMatch] ==BJetPt_TTHypo[idxHiggsBJet2Fit]) TOPTOPLEPHBB_JetIdx_H2 = i_IndexMatch;
+				                            if(float(pt_jet[i_IndexMatch]) == BJetPt_TTHypo[idxTopLepBJetFit]) TOPTOPLEPHBB_JetIdx_LepTop = i_IndexMatch;
+				                            else if(float(pt_jet[i_IndexMatch]) == NonBJetPt_TTHypo[idxTopHadNonBJetFit]) TOPTOPLEPHBB_JetIdx_HadTop = i_IndexMatch;
+				                            else if(float(pt_jet[i_IndexMatch]) == BJetPt_TTHypo[idxHiggsBJet1Fit]) TOPTOPLEPHBB_JetIdx_H1 = i_IndexMatch;
+				                            else if(float(pt_jet[i_IndexMatch]) ==BJetPt_TTHypo[idxHiggsBJet2Fit]) TOPTOPLEPHBB_JetIdx_H2 = i_IndexMatch;
         /*				                    else
 				                            {
 				                                cout << "An error occurred in the jet-index matching of the sorted jet collection to the original jet collection" << endl;
@@ -2777,9 +2813,9 @@ int main (int argc, char *argv[])
 				                    MVA_TOPHLEPBB_hut = MVA_tmp_hut;
 				                    for(int i_IndexMatch = 0; i_IndexMatch < selectedJets.size(); i_IndexMatch++)
 				                    {
-				                        if(pt_jet[i_IndexMatch] == BJetPt_STHypo[idxTopLepBJetFit]) TOPHLEPBB_JetIdx_LepTop_hut = i_IndexMatch;
-				                        else if(pt_jet[i_IndexMatch] == BJetPt_STHypo[idxHiggsBJet1Fit]) TOPHLEPBB_JetIdx_H1_hut = i_IndexMatch;
-				                        else if(pt_jet[i_IndexMatch] == BJetPt_STHypo[idxHiggsBJet2Fit]) TOPHLEPBB_JetIdx_H2_hut = i_IndexMatch;
+				                        if(float(pt_jet[i_IndexMatch]) == BJetPt_STHypo[idxTopLepBJetFit]) TOPHLEPBB_JetIdx_LepTop_hut = i_IndexMatch;
+				                        else if(float(pt_jet[i_IndexMatch]) == BJetPt_STHypo[idxHiggsBJet1Fit]) TOPHLEPBB_JetIdx_H1_hut = i_IndexMatch;
+				                        else if(float(pt_jet[i_IndexMatch]) == BJetPt_STHypo[idxHiggsBJet2Fit]) TOPHLEPBB_JetIdx_H2_hut = i_IndexMatch;
     /*				                    else
 				                        {
 				                            cout << "An error occurred in the jet-index matching of the sorted jet collection to the original jet collection" << endl;
@@ -2802,9 +2838,9 @@ int main (int argc, char *argv[])
 				                    MVA_TOPHLEPBB_hct = MVA_tmp_hct;
 				                    for(int i_IndexMatch = 0; i_IndexMatch < selectedJets.size(); i_IndexMatch++)
 				                    {
-				                        if(pt_jet[i_IndexMatch] == BJetPt_STHypo[idxTopLepBJetFit]) TOPHLEPBB_JetIdx_LepTop_hct = i_IndexMatch;
-				                        else if(pt_jet[i_IndexMatch] == BJetPt_STHypo[idxHiggsBJet1Fit]) TOPHLEPBB_JetIdx_H1_hct = i_IndexMatch;
-				                        else if(pt_jet[i_IndexMatch] == BJetPt_STHypo[idxHiggsBJet2Fit]) TOPHLEPBB_JetIdx_H2_hct = i_IndexMatch;
+				                        if(float(pt_jet[i_IndexMatch]) == BJetPt_STHypo[idxTopLepBJetFit]) TOPHLEPBB_JetIdx_LepTop_hct = i_IndexMatch;
+				                        else if(float(pt_jet[i_IndexMatch]) == BJetPt_STHypo[idxHiggsBJet1Fit]) TOPHLEPBB_JetIdx_H1_hct = i_IndexMatch;
+				                        else if(float(pt_jet[i_IndexMatch]) == BJetPt_STHypo[idxHiggsBJet2Fit]) TOPHLEPBB_JetIdx_H2_hct = i_IndexMatch;
     /*				                    else
 				                        {
 				                            cout << "An error occurred in the jet-index matching of the sorted jet collection to the original jet collection" << endl;

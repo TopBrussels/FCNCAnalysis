@@ -275,6 +275,9 @@ int main(int argc, char *argv[])
     pathPNG += channel;
     pathPNG += "/";
     mkdir(pathPNG.c_str(),0777);
+    pathPNG += date;
+    pathPNG += "/";
+    mkdir(pathPNG.c_str(),0777);
     cout <<"Making directory :"<< pathPNG  <<endl;		//make directory
 
     TFile *outfile = new TFile((pathPNG+"Baseline_CutFlow.root").c_str(),"recreate");
