@@ -105,6 +105,10 @@ float EffectiveArea(TRootElectron *el) ;
 float relPfIsoEl(TRootElectron *el, float _rho);
 float IsoDBeta(TRootMuon *mu);
 vector<TLorentzVector> LeptonAssigner(std::vector<TRootElectron*> electrons,std::vector<TRootMuon*> muons);
+vector<TLorentzVector> LeptonAssignerv2(std::vector<TRootElectron*> electrons,std::vector<TRootMuon*> muons);
+
+bool isVetoElectronSpring2016(TRootElectron electron);
+bool isTightElectronSpring2016(TRootElectron electron);
 TLorentzVector MetzCalculator(TLorentzVector leptW, TLorentzVector v_met);
 vector< pair<unsigned int, unsigned int> > JetPartonPair_charm;
 vector< pair<unsigned int, unsigned int> > JetPartonPair_bottom;
@@ -195,7 +199,7 @@ int main (int argc, char *argv[])
   /// Set up everything for local submission ////
   ///////////////////////////////////////////////
   // check the arguments passed
-  if(verbose > 4)
+  if(true)
   {
     cout << " The list of arguments are: " << endl;
     for (int n_arg=1; n_arg<argc; n_arg++)
@@ -203,7 +207,7 @@ int main (int argc, char *argv[])
       std:: cerr << "  - arg number " << n_arg << " is " << argv[n_arg] << std::endl;
     }
   }
-  if(argc < 19)
+  if(argc < 18)
   {
     std::cerr << "TOO FEW INPUTs FROM XMLFILE.  CHECK XML INPUT FROM SCRIPT.  " << argc << " ARGUMENTS HAVE BEEN PASSED." << std::endl;
     for (int n_arg=1; n_arg<argc; n_arg++)
@@ -246,8 +250,9 @@ int main (int argc, char *argv[])
   
   // all the files are stored from arg 11 to argc-2
   vector<string> vecfileNames;
-  for(int args = 11; args < argc-7; args++)
+  for(int args = 11; args < argc-6; args++)
   {
+    cout << "pushing back " << argv[args] << endl;
     vecfileNames.push_back(argv[args]);
     
   }
@@ -387,12 +392,12 @@ int main (int argc, char *argv[])
   /////////////////////////////
   // electron
   float el_pt_cut =35.; // 42
-  float el_eta_cut = 2.5;
+  float el_eta_cut = 2.1;
   float el_iso_cone  = 0.3;
   // reliso cut fabs(eta supercluster) <= 1.479 --> 0.107587 // (fabs(eta supercluster) > 1.479 && fabs(eta supercluster) < 2.5) --> 0.113254
   // muon
-  float mu_pt_cut = 24.; // 40
-  float mu_eta_cut = 2.4;
+  float mu_pt_cut = 25.; // 40
+  float mu_eta_cut = 2.1;
   float mu_iso_cut = 0.15;
   float mu_iso_cut_loose = 0.25;
   //jets
@@ -476,6 +481,7 @@ int main (int argc, char *argv[])
     ////////////////////////////////////////
     string CaliPath = "../TopTreeAnalysisBase/Calibrations/";
     string BCaliPath = CaliPath + "BTagging/CSVv2_13TeV_25ns_combToMujets.csv";
+    
     if(!isData && !btagShape)
     {
       // documentation at http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
@@ -484,12 +490,12 @@ int main (int argc, char *argv[])
       btagreader = new BTagCalibrationReader(btagcalib, BTagEntry::OP_LOOSE, "mujets","central");
       if(fillBtagHisto)  // before btag reweighting can be apply, you first have to make the histograms
       {
-        
+        cout << "filling btag histo's" << endl;
         btwt = new BTagWeightTools(btagreader,"BTagHistosPtEta/HistosPtEta_"+daName+ "_" + strJobNum +"_mujets_central.root",false,30,999,2.4);
       }
       else
       {
-        btwt = new BTagWeightTools(btagreader,"BTagHistosPtEta/HistosPtEta_"+daName+"_mujets_central.root",false,30,999,2.4);
+        btwt = new BTagWeightTools(btagreader,"BTagHistosPtEta/Merged/"+daName+".root",false,30,999,2.4);
         //btwt = new BTagWeightTools(btagreader,"BTagHistosPtEta/HistosPtEta_TTJets_mujets_central.root",false,30,999,2.4);
       }
       
@@ -631,7 +637,12 @@ int main (int argc, char *argv[])
     Int_t npu;
     Int_t PassedMETFilter;
     Int_t PassedGoodPV;
-    Double_t cutstep[10];
+    vector <int> cutstep;
+    vector <int> cutstep_eee;
+    vector <int> cutstep_eeu;
+    vector <int> cutstep_uuu;
+    vector <int> cutstep_uue;
+    vector <string> cutstep_string;
     Int_t nCuts;
     Double_t puSF;
     Double_t btagSF;
@@ -793,6 +804,12 @@ int main (int argc, char *argv[])
     Double_t Zboson_Pz;
     Double_t Zboson_Energy;
     
+    Double_t Zboson2_M;
+    Double_t Zboson2_Px;
+    Double_t Zboson2_Py;
+    Double_t Zboson2_Pz;
+    Double_t Zboson2_Energy;
+    
     // met
     Double_t met_Pt;
     Double_t met_Ptbf;
@@ -912,6 +929,52 @@ int main (int argc, char *argv[])
     int nMWT;
     int nSMtop;
     int nMET;
+    int nTrigg_eee;
+    int n3lep_eee;
+    int nVetoMu_eee;
+    int nVetoEl_eee;
+    int nOS_eee;
+    int nZmass_eee;
+    int nJet_eee;
+    int nBJet_eee;
+    int nMWT_eee;
+    int nSMtop_eee;
+    int nMET_eee;
+    int nTrigg_eeu;
+    int n3lep_eeu;
+    int nVetoMu_eeu;
+    int nVetoEl_eeu;
+    int nOS_eeu;
+    int nZmass_eeu;
+    int nJet_eeu;
+    int nBJet_eeu;
+    int nMWT_eeu;
+    int nSMtop_eeu;
+    int nMET_eeu;
+    int nTrigg_uuu;
+    int n3lep_uuu;
+    int nVetoMu_uuu;
+    int nVetoEl_uuu;
+    int nOS_uuu;
+    int nZmass_uuu;
+    int nJet_uuu;
+    int nBJet_uuu;
+    int nMWT_uuu;
+    int nSMtop_uuu;
+    int nMET_uuu;
+    int nTrigg_uue;
+    int n3lep_uue;
+    int nVetoMu_uue;
+    int nVetoEl_uue;
+    int nOS_uue;
+    int nZmass_uue;
+    int nJet_uue;
+    int nBJet_uue;
+    int nMWT_uue;
+    int nSMtop_uue;
+    int nMET_uue;
+    int nEvPassed;
+    double xsec;
     globalTree->Branch("nofEventsHLTv2",&nofEventsHLTv2,"nofEventsHLTv2/I");
     globalTree->Branch("nofEventsHLTv3",&nofEventsHLTv3,"nofEventsHLTv3/I");
     globalTree->Branch("nofPosWeights",&nofPosWeights,"nofPosWeights/I");
@@ -919,7 +982,12 @@ int main (int argc, char *argv[])
     globalTree->Branch("nEv" , &nEv, "nEv/I");
     globalTree->Branch("sumW", &sumW, "sumW/I");
     globalTree->Branch("nCuts",&nCuts, "nCuts/I");
-    globalTree->Branch("cutstep",&cutstep,"cutstep[nCuts]/D");
+    globalTree->Branch("cutstep_string", &cutstep_string, "cutstep_string");
+    globalTree->Branch("cutstep",&cutstep,"cutstep");
+    globalTree->Branch("cutstep_eee",&cutstep_eee,"cutstep_eee");
+    globalTree->Branch("cutstep_eeu",&cutstep_eeu,"cutstep_eeu");
+    globalTree->Branch("cutstep_uuu",&cutstep_uuu,"cutstep_uuu");
+    globalTree->Branch("cutstep_uue",&cutstep_uue,"cutstep_uue");
     globalTree->Branch("JERon",&JERon,"JERon/I");
     globalTree->Branch("JESon", &JESon, "JESon/I");
     globalTree->Branch("METon", &METon, "METon/I");
@@ -944,6 +1012,52 @@ int main (int argc, char *argv[])
     globalTree->Branch("nMWT", &nMWT, "nMWT/I");
     globalTree->Branch("nSMtop",&nSMtop, "nSMtop/I");
     globalTree->Branch("nMET",&nMET, "nMET/I");
+    globalTree->Branch("nEvPassed",&nEvPassed, "nEvPassed/I");
+    globalTree->Branch("xsec",&xsec,"xsec/D");
+    globalTree->Branch("nTrigg_eee",&nTrigg_eee, "nTrigg_eee/I");
+    globalTree->Branch("n3lep_eee",&n3lep_eee, "n3lep_eee/I");
+    globalTree->Branch("nVetoMu_eee",&nVetoMu_eee, "nVetoMu_eee/I");
+    globalTree->Branch("nVetoEl_eee",&nVetoEl_eee, "nVetoEl_eee/I");
+    globalTree->Branch("nOS_eee",&nOS_eee, "nOS_eee/I");
+    globalTree->Branch("nZmass_eee",&nZmass_eee, "nZmass_eee/I");
+    globalTree->Branch("nJet_eee",&nJet_eee, "nJet_eee/I");
+    globalTree->Branch("nBJet_eee",&nBJet_eee, "nBJet_eee/I");
+    globalTree->Branch("nMWT_eee",&nMWT_eee, "nMWT_eee/I");
+    globalTree->Branch("nSMtop_eee",&nSMtop_eee, "nSMtop_eee/I");
+    globalTree->Branch("nMET_eee",&nMET_eee, "nMET_eee/I");
+    globalTree->Branch("nTrigg_eeu",&nTrigg_eeu, "nTrigg_eeu/I");
+    globalTree->Branch("n3lep_eeu",&n3lep_eeu, "n3lep_eeu/I");
+    globalTree->Branch("nVetoMu_eeu",&nVetoMu_eeu, "nVetoMu_eeu/I");
+    globalTree->Branch("nVetoEl_eeu",&nVetoEl_eeu, "nVetoEl_eeu/I");
+    globalTree->Branch("nOS_eeu",&nOS_eeu, "nOS_eeu/I");
+    globalTree->Branch("nZmass_eeu",&nZmass_eeu, "nZmass_eeu/I");
+    globalTree->Branch("nJet_eeu",&nJet_eeu, "nJet_eeu/I");
+    globalTree->Branch("nBJet_eeu",&nBJet_eeu, "nBJet_eeu/I");
+    globalTree->Branch("nMWT_eeu",&nMWT_eeu, "nMWT_eeu/I");
+    globalTree->Branch("nSMtop_eeu",&nSMtop_eeu, "nSMtop_eeu/I");
+    globalTree->Branch("nMET_eeu",&nMET_eeu, "nMET_eeu/I");
+    globalTree->Branch("nTrigg_uuu",&nTrigg_uuu, "nTrigg_uuu/I");
+    globalTree->Branch("n3lep_uuu",&n3lep_uuu, "n3lep_uuu/I");
+    globalTree->Branch("nVetoMu_uuu",&nVetoMu_uuu, "nVetoMu_uuu/I");
+    globalTree->Branch("nVetoEl_uuu",&nVetoEl_uuu, "nVetoEl_uuu/I");
+    globalTree->Branch("nOS_uuu",&nOS_uuu, "nOS_uuu/I");
+    globalTree->Branch("nZmass_uuu",&nZmass_uuu, "nZmass_uuu/I");
+    globalTree->Branch("nJet_uuu",&nJet_uuu, "nJet_uuu/I");
+    globalTree->Branch("nBJet_uuu",&nBJet_uuu, "nBJet_uuu/I");
+    globalTree->Branch("nMWT_uuu",&nMWT_uuu, "nMWT_uuu/I");
+    globalTree->Branch("nSMtop_uuu",&nSMtop_uuu, "nSMtop_uuu/I");
+    globalTree->Branch("nMET_uuu",&nMET_uuu, "nMET_uuu/I");
+    globalTree->Branch("nTrigg_uue",&nTrigg_uue, "nTrigg_uue/I");
+    globalTree->Branch("n3lep_uue",&n3lep_uue, "n3lep_uue/I");
+    globalTree->Branch("nVetoMu_uue",&nVetoMu_uue, "nVetoMu_uue/I");
+    globalTree->Branch("nVetoEl_uue",&nVetoEl_uue, "nVetoEl_uue/I");
+    globalTree->Branch("nOS_uue",&nOS_uue, "nOS_uue/I");
+    globalTree->Branch("nZmass_uue",&nZmass_uue, "nZmass_uue/I");
+    globalTree->Branch("nJet_uue",&nJet_uue, "nJet_uue/I");
+    globalTree->Branch("nBJet_uue",&nBJet_uue, "nBJet_uue/I");
+    globalTree->Branch("nMWT_uue",&nMWT_uue, "nMWT_uue/I");
+    globalTree->Branch("nSMtop_uue", &nSMtop_uue, "nSMtop_uue/I");
+    globalTree->Branch("nMET_uue",&nMET_uue, "nMET_uue/I");
     
     
     
@@ -1123,14 +1237,14 @@ int main (int argc, char *argv[])
     myTree->Branch("nJets_CharmTCSVM",&nJets_CharmTCSVM,"nJets_CharmTCSVM/I");
     myTree->Branch("nJets_CharmTCSVT",&nJets_CharmTCSVT,"nJets_CharmTCSVT/I");
     
-  
+    
     myTree->Branch("nJets_CharmL",&nJets_CharmL,"nJets_CharmL/I");
     myTree->Branch("nJets_CharmM",&nJets_CharmM,"nJets_CharmM/I");
-     myTree->Branch("nJets_CharmT",&nJets_CharmT,"nJets_CharmT/I");
+    myTree->Branch("nJets_CharmT",&nJets_CharmT,"nJets_CharmT/I");
     myTree->Branch("nJets_nonCharmL",&nJets_nonCharmL,"nJets_nonCharmL/I");
     myTree->Branch("nJets_nonCharmM",&nJets_nonCharmM,"nJets_nonCharmM/I");
     myTree->Branch("nJets_nonCharmT",&nJets_nonCharmT,"nJets_nonCharmT/I");
-
+    
     
     myTree->Branch("pt_jet",pt_jet,"pt_jet[nJets]/D");
     myTree->Branch("px_jet",px_jet,"px_jet[nJets]/D");
@@ -1224,6 +1338,8 @@ int main (int argc, char *argv[])
     // Zboson
     myTree->Branch("Zboson_M",&Zboson_M,"Zboson_M/D");
     baselineTree->Branch("Zboson_M",&Zboson_M,"Zboson_M/D");
+    myTree->Branch("Zboson2_M",&Zboson2_M,"Zboson2_M/D");
+    baselineTree->Branch("Zboson2_M",&Zboson2_M,"Zboson2_M/D");
     myTree->Branch("mWt",&mWt,"mWt/D");
     baselineTree->Branch("mWt",&mWt,"mWt/D");
     myTree->Branch("FCNCtop_M",&FCNCtop_M,"FCNCtop_M/D");
@@ -1297,7 +1413,7 @@ int main (int argc, char *argv[])
     myTree->Branch("corrected_jet_px", &corrected_jet_px, "corrected_jet_px/D");
     myTree->Branch("corrected_jet_py", &corrected_jet_py, "corrected_jet_py/D");
     myTree->Branch("jet_pt_check", &jet_pt_check, "jet_pt_check/D");
-
+    
     
     baselineTree->Branch("met_Pt", &met_Pt, "met_Pt/D");
     baselineTree->Branch("met_Ptbf", &met_Ptbf, "met_Ptbf/D");
@@ -1480,11 +1596,69 @@ int main (int argc, char *argv[])
     int nbEvents_7 = 0;
     int nbEvents_8 = 0;
     int nbEvents_9 = 0;
+    
+    int nbEvents_eee_0 = 0;
+    int nbEvents_eee_test = 0;
+    int nbEvents_eee_1 = 0;
+    int nbEvents_eee_1m = 0;
+    int nbEvents_eee_2m = 0;
+    int nbEvents_eee_2 = 0;
+    int nbEvents_eee_3 = 0;
+    int nbEvents_eee_4 = 0;
+    int nbEvents_eee_5 = 0;
+    int nbEvents_eee_6 = 0;
+    int nbEvents_eee_7 = 0;
+    int nbEvents_eee_8 = 0;
+    int nbEvents_eee_9 = 0;
+    
+    int nbEvents_eeu_0 = 0;
+    int nbEvents_eeu_test = 0;
+    int nbEvents_eeu_1 = 0;
+    int nbEvents_eeu_1m = 0;
+    int nbEvents_eeu_2m = 0;
+    int nbEvents_eeu_2 = 0;
+    int nbEvents_eeu_3 = 0;
+    int nbEvents_eeu_4 = 0;
+    int nbEvents_eeu_5 = 0;
+    int nbEvents_eeu_6 = 0;
+    int nbEvents_eeu_7 = 0;
+    int nbEvents_eeu_8 = 0;
+    int nbEvents_eeu_9 = 0;
+    
+    int nbEvents_uuu_0 = 0;
+    int nbEvents_uuu_test = 0;
+    int nbEvents_uuu_1 = 0;
+    int nbEvents_uuu_1m = 0;
+    int nbEvents_uuu_2m = 0;
+    int nbEvents_uuu_2 = 0;
+    int nbEvents_uuu_3 = 0;
+    int nbEvents_uuu_4 = 0;
+    int nbEvents_uuu_5 = 0;
+    int nbEvents_uuu_6 = 0;
+    int nbEvents_uuu_7 = 0;
+    int nbEvents_uuu_8 = 0;
+    int nbEvents_uuu_9 = 0;
+    
+    int nbEvents_uue_0 = 0;
+    int nbEvents_uue_test = 0;
+    int nbEvents_uue_1 = 0;
+    int nbEvents_uue_1m = 0;
+    int nbEvents_uue_2m = 0;
+    int nbEvents_uue_2 = 0;
+    int nbEvents_uue_3 = 0;
+    int nbEvents_uue_4 = 0;
+    int nbEvents_uue_5 = 0;
+    int nbEvents_uue_6 = 0;
+    int nbEvents_uue_7 = 0;
+    int nbEvents_uue_8 = 0;
+    int nbEvents_uue_9 = 0;
+    
+    
     bool debug = false;
     vector <int> selections;
     std::ostringstream  selectionsnb;
     bool   passedMET = false;
-       PassedGoodPV = false;
+    PassedGoodPV = false;
     bool   HBHEnoise = false;
     bool   HBHEIso = false;
     bool   CSCTight = false;
@@ -1493,6 +1667,7 @@ int main (int argc, char *argv[])
     bool   EcalDead = false;
     //bool    eeBad = false; not recommended
     bool   lep3 = false;
+    bool lep2 = false;
     TLorentzVector metTLV;
     TLorentzVector metTLVbf;
     string TriggBits;
@@ -1524,6 +1699,12 @@ int main (int argc, char *argv[])
     nMatched_Welec = 0;
     nTagEqMass = 0;
     nTagNotEqMass = 0;
+    cutstep_string.clear();
+    cutstep.clear();
+    cutstep_eee.clear();
+    cutstep_eeu.clear();
+    cutstep_uue.clear();
+    cutstep_uuu.clear();
     for (unsigned int ievt = event_start; ievt < end_d; ievt++)
     {
       elecbool = false;
@@ -1536,6 +1717,7 @@ int main (int argc, char *argv[])
       baseSelected = false;
       continueFlow = true;
       lep3 = false;
+      lep2 = false;
       AssignedLeptons.clear();
       leading_jetPt = 0.;
       met = 0.;
@@ -1565,6 +1747,7 @@ int main (int argc, char *argv[])
         mc_M[i] = 0.;
       }
       nCuts = 0;
+      
       passedMET = false;
       PassedGoodPV = false;
       HBHEnoise = false;
@@ -1708,7 +1891,7 @@ int main (int argc, char *argv[])
       bool filechanged = false;
       bool runchanged = false;
       
-      if(runHLT)
+      if(runHLT && dTitle.find("noTrig")==string::npos )  // FIXME old samples (not withHLT not reHLT) don't contain trigger info
       {
         trigger_mumu->checkAvail(currentRun, datasets, d, &treeLoader, event, printTrigger);
         trigged_mumu =  trigger_mumu->checkIfFired();
@@ -1765,6 +1948,9 @@ int main (int argc, char *argv[])
         if(dName.find("NP")!=string::npos) trigged = true; // needs to be fixed with the new MC
         
         
+      }
+      else if(runHLT && dTitle.find("noTrig")!=string::npos ){
+        trigged = true;
       }
       else if(!runHLT && previousFilename != currentFilename)
       {
@@ -1853,13 +2039,13 @@ int main (int argc, char *argv[])
       PreselectedJets  = selection.GetSelectedJets(jet_pt_cut,jet_eta_cut, true, "Loose");
       selectedMuons.clear();
       selectedLooseMuons.clear();
-      selectedMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut, "Tight", "Spring15");   // spring 15 still counts for 2016
+      selectedMuons = selection.GetSelectedMuons(25., 2.1, mu_iso_cut, "Tight", "Spring15");   // spring 15 still counts for 2016
       selectedLooseMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut_loose, "Loose", "Spring15"); // spring 15 still counts for 2016
       
       // pt, eta, iso // run normally
       selectedElectrons.clear();
       selectedVetoElectrons.clear();
-      selectedElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Tight","Spring16_80X",true,true);// pt, eta, WP point, campaign, cutbased, VID EA
+      selectedElectrons = selection.GetSelectedElectrons(35., 2.1, "Tight","Spring16_80X",true,true);// pt, eta, WP point, campaign, cutbased, VID EA
       selectedVetoElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Veto","Spring16_80X",true,true);// pt, eta
       /// For MC Information
       mcParticles.clear();
@@ -1882,7 +2068,18 @@ int main (int argc, char *argv[])
           mc_M[iMC] = mcParticles[iMC]->M();
         }
       }
-
+      
+      /*  bool tightID = false;
+       bool vetoID =false;
+       for(int iEl = 0; iEl < init_electrons.size() ; iEl++){
+       
+       if(init_electrons[iEl]->isCB_TightID()) tightID = true;
+       if(init_electrons[iEl]->isCB_VetoID()) vetoID = true;
+       
+       cout << "|" << evt_num << "|" << init_electrons[iEl]->Pt() << "|" << vetoID << "|" << tightID << "|" <<  endl;
+       
+       }
+       */
       
       
       
@@ -2355,6 +2552,12 @@ int main (int argc, char *argv[])
           histo1D["cutFlow"]->Fill(0., eventweight);
           nCuts++;
           nbEvents_0++;
+          
+          if(selectedMuons.size() == 3) {nbEvents_uuu_0++;}
+          else if(selectedElectrons.size() == 3) {nbEvents_eee_0++;}
+          else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_0++; }
+          else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_0++; }
+          
         }
       }
       else{
@@ -2363,25 +2566,71 @@ int main (int argc, char *argv[])
       }
       
       // to be ok with triggers
-      /* if(dName.find("DoubleEG")!=string::npos && selectedElectrons.size() < 2) { continueFlow = false; }
-       else if(dName.find("DoubleEG")!=string::npos) { nbEvents_test++ ;}
-       if(dName.find("DoubleMu")!=string::npos && selectedMuons.size() < 2) { continueFlow = false; }
-       else if(dName.find("DoubleMu")!=string::npos) { nbEvents_test++ ;}
-       if(dName.find("MuonEG")!=string::npos && (selectedElectrons.size() < 1 || selectedMuons.size() < 1)) { continueFlow = false; }
-       else if(dName.find("MuonEG")!=string::npos){ nbEvents_test++ ;}
-       */
+      /*  if(trigged && (selectedElectrons.size()!=0 || selectedMuons.size() !=0)){
+       cout << "----------------------------" << endl;
+       cout << "check to be ok with trig" << endl;
+       cout <<"Init Number of Muons, Electrons, Jets  ===>  " << init_muons.size() <<" "  << init_electrons.size()<<" "<< init_jets.size()   << endl;
+       for(int iMu = 0 ; iMu < init_muons.size() ; iMu++){
+       cout << "mu " << init_muons[iMu]->Pt() << " " << init_muons[iMu]->Eta()  << endl;
+       }
+       for(int iEl = 0 ; iEl < init_electrons.size() ; iEl++){
+       cout << "el " << init_electrons[iEl]->Pt() << " " << init_electrons[iEl]->Eta() << endl;
+       }
+       cout <<"Number of Muons, Electrons, Jets  ===>  " << selectedMuons.size() <<" "  << selectedElectrons.size()<<" "<< selectedJets.size()   << endl;
+       for(int iMu = 0 ; iMu < selectedMuons.size() ; iMu++){
+       cout << "mu " <<  selectedMuons[iMu]->Pt() << " " << selectedMuons[iMu]->Eta() << endl;
+       }
+       for(int iEl = 0 ; iEl < selectedElectrons.size() ; iEl++){
+       cout << "el " << selectedElectrons[iEl]->Pt() << " " << selectedElectrons[iEl]->Eta() << endl;
+       }
+       cout << "Name, Trigged, Flow" << dName << " " << trigged << " " << continueFlow << endl;
+       }*/
+      if(dName.find("DoubleEG")!=string::npos && selectedElectrons.size() < 2) { continueFlow = false; }
+      else if(dName.find("DoubleEG")!=string::npos) { nbEvents_test++ ;}
+      if(dName.find("DoubleMu")!=string::npos && selectedMuons.size() < 2) { continueFlow = false; }
+      else if(dName.find("DoubleMu")!=string::npos) { nbEvents_test++ ;}
+      if(dName.find("MuonEG")!=string::npos && (selectedElectrons.size() < 1 || selectedMuons.size() < 1)) { continueFlow = false; }
+      else if(dName.find("MuonEG")!=string::npos){ nbEvents_test++ ;}
+      if((dName.find("SingleMu") != string::npos) && selectedMuons.size() < 1) {continueFlow= false; }
+      else if(dName.find("SingleMu")!= string::npos){ nbEvents_test++;}
+      if((dName.find("SingleEl") != string::npos) && selectedElectrons.size() < 1) {continueFlow= false; }
+      else if(dName.find("SingleEl") != string::npos){ nbEvents_test++;}
+      /*if(trigged && (selectedElectrons.size()!=0 || selectedMuons.size() !=0)){
+       cout << "Name, Trigged, Flow" << dName << " " << trigged << " " << continueFlow << endl;
+       }*/
+      
       
       if(((selectedMuons.size() + selectedElectrons.size()) != 3)){
         selections.push_back(0);
+        if((selectedMuons.size() + selectedElectrons.size()) >1){
+          
+          if(continueFlow){
+            
+            baseSelected = true;
+          }
+          lep2 = true;
+          if(selectedMuons.size() == 3) {channelInt = 0; i_channel = 0;}
+          else if(selectedElectrons.size() == 3) {channelInt = 3; i_channel = 3;}
+          else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {channelInt = 2; i_channel = 2; }
+          else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){channelInt = 1; i_channel = 1; }
+          
+        }
+        
         continueFlow = false;
       }
-      else if( ((selectedMuons.size() + selectedElectrons.size()) == 3)){
+      else if((selectedMuons.size() + selectedElectrons.size()) == 3){
         selections.push_back(1);
-	       if(continueFlow){
-           histo1D["cutFlow"]->Fill(1., eventweight);
-           nCuts++;
-           nbEvents_1++;
-         }
+        if(continueFlow){
+          histo1D["cutFlow"]->Fill(1., eventweight);
+          nCuts++;
+          nbEvents_1++;
+          
+          if(selectedMuons.size() == 3) {nbEvents_uuu_1++;}
+          else if(selectedElectrons.size() == 3) {nbEvents_eee_1++;}
+          else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_1++; }
+          else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_1++; }
+          
+        }
         lep3 = true;
         if(selectedMuons.size() == 3) {channelInt = 0; i_channel = 0;}
         else if(selectedElectrons.size() == 3) {channelInt = 3; i_channel = 3;}
@@ -2392,9 +2641,27 @@ int main (int argc, char *argv[])
       
       //cout << "LOOKING AT CHANNEL " << channelInt << endl;
       
-      if(selectedMuons.size() == selectedLooseMuons.size() && continueFlow) nbEvents_1m++;
+      if(selectedMuons.size() == selectedLooseMuons.size() && continueFlow) {
+        nbEvents_1m++;
+        nCuts++;
+        
+        
+        if(selectedMuons.size() == 3) {nbEvents_uuu_1m++;}
+        else if(selectedElectrons.size() == 3) {nbEvents_eee_1m++;}
+        else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_1m++; }
+        else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_1m++; }
+      }
       else continueFlow = false;
-      if(selectedVetoElectrons.size() == selectedElectrons.size() && continueFlow)  nbEvents_2m++;
+      if(selectedVetoElectrons.size() == selectedElectrons.size() && continueFlow){
+        nbEvents_2m++;
+        nCuts++;
+        
+        
+        if(selectedMuons.size() == 3) {nbEvents_uuu_2m++;}
+        else if(selectedElectrons.size() == 3) {nbEvents_eee_2m++;}
+        else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_2m++; }
+        else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_2m++; }
+      }
       else continueFlow = false;
       
       if((selectedMuons.size() != selectedLooseMuons.size()) || (selectedVetoElectrons.size() != selectedElectrons.size())){
@@ -2426,10 +2693,28 @@ int main (int argc, char *argv[])
       Wlep.SetPxPyPzE(0,0,0,0);
       
       // check sign
+      if(lep2)
+      {
+        // cout << "in two leptons " << selectedElectrons.size() << " " << selectedMuons.size() << endl;
+        vector <TLorentzVector> leptons = LeptonAssignerv2(selectedElectrons, selectedMuons);
+        if(Assigned){
+          TLorentzVector lep0;
+          TLorentzVector lep1;
+          lep0.SetPxPyPzE(leptons[0].Px(), leptons[0].Py(), leptons[0].Pz(), leptons[0].Energy());
+          lep1.SetPxPyPzE(leptons[1].Px(), leptons[1].Py(), leptons[1].Pz(), leptons[1].Energy());
+          TLorentzVector Zboson2;
+          Zboson2.SetPxPyPzE(( lep0 + lep1).Px() ,( lep0 + lep1).Py(),( lep0 + lep1).Pz(),( lep0 + lep1).Energy()) ;
+          Zboson2_M = (lep0+lep1).M();
+          Zboson2_Px = ( lep0 + lep1).Px();
+          Zboson2_Py = ( lep0 + lep1).Py();
+          Zboson2_Pz = ( lep0 + lep1).Pz();
+          Zboson2_Energy = ( lep0 + lep1).Energy();}
+        
+      }
       
       if(lep3){
         //cout << "assigning leptons " << endl;
-        baseSelected = true;
+        
         AssignedLeptons = LeptonAssigner(selectedElectrons, selectedMuons);
         
         if(Assigned){
@@ -2446,6 +2731,11 @@ int main (int argc, char *argv[])
           
           nCuts++;
           nbEvents_2++;
+          
+          if(selectedMuons.size() == 3) {nbEvents_uuu_2++;}
+          else if(selectedElectrons.size() == 3) {nbEvents_eee_2++;}
+          else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_2++; }
+          else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_2++; }
           
           Zboson.Clear();
           
@@ -2490,6 +2780,12 @@ int main (int argc, char *argv[])
         if(continueFlow){
           nCuts++;
           nbEvents_3++;
+          
+          
+          if(selectedMuons.size() == 3) {nbEvents_uuu_3++;}
+          else if(selectedElectrons.size() == 3) {nbEvents_eee_3++;}
+          else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_3++; }
+          else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_3++; }
           histo1D["cutFlow"]->Fill(3., eventweight);
           // baseSelected = true;
         }
@@ -2506,11 +2802,16 @@ int main (int argc, char *argv[])
           histo1D["cutFlow"]->Fill(4., eventweight);
           nCuts++;
           nbEvents_4++;
+          
+          if(selectedMuons.size() == 3) {nbEvents_uuu_4++;}
+          else if(selectedElectrons.size() == 3) {nbEvents_eee_4++;}
+          else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_4++; }
+          else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_4++; }
         }
       }
       if(selectedCSVLBJets.size()  < 1){
         selections.push_back(0);
-	       continueFlow = false;
+        continueFlow = false;
       }
       else{
         selections.push_back(1);
@@ -2518,6 +2819,11 @@ int main (int argc, char *argv[])
           histo1D["cutFlow"]->Fill(5., eventweight);
           nCuts++;
           nbEvents_5++;
+          
+          if(selectedMuons.size() == 3) {nbEvents_uuu_5++;}
+          else if(selectedElectrons.size() == 3) {nbEvents_eee_5++;}
+          else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_5++; }
+          else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_5++; }
         }
       }
       
@@ -2525,7 +2831,7 @@ int main (int argc, char *argv[])
       
       if(false){ // no mWT cut
         selections.push_back(0);
-	       continueFlow = false;
+        continueFlow = false;
       }
       else{
         selections.push_back(1);
@@ -2534,6 +2840,11 @@ int main (int argc, char *argv[])
           histo1D["cutFlow"]->Fill(6., eventweight);
           nCuts++;
           nbEvents_6++;
+          
+          if(selectedMuons.size() == 3) {nbEvents_uuu_6++;}
+          else if(selectedElectrons.size() == 3) {nbEvents_eee_6++;}
+          else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_6++; }
+          else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_6++; }
         }
       }
       
@@ -2646,7 +2957,12 @@ int main (int argc, char *argv[])
           histo1D["cutFlow"]->Fill(7., eventweight);
           nCuts++;
           nbEvents_7++;
+          //cout << "ncuts " << nCuts << endl;
           
+          if(selectedMuons.size() == 3) {nbEvents_uuu_7++;}
+          else if(selectedElectrons.size() == 3) {nbEvents_eee_7++;}
+          else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_7++; }
+          else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_7++; }
         }
       }
       
@@ -2656,7 +2972,13 @@ int main (int argc, char *argv[])
         histo1D["cutFlow"]->Fill(8., eventweight);
         nCuts++;
         nbEvents_8++;
+        
+        if(selectedMuons.size() == 3) {nbEvents_uuu_8++;}
+        else if(selectedElectrons.size() == 3) {nbEvents_eee_8++;}
+        else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_8++; }
+        else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_8++; }
         eventSelected = true;
+        
       }
       //////////////////////////////////////
       //  DO STUFF WITH SELECTED EVENTS ////
@@ -2755,27 +3077,27 @@ int main (int argc, char *argv[])
         for (Int_t selmu =0; selmu < selectedMuons.size() ; selmu++ )
         {
           
-        	 pt_muon[nMuons]=selectedMuons[selmu]->Pt();
-        	 phi_muon[nMuons]=selectedMuons[selmu]->Phi();
-        	 eta_muon[nMuons]=selectedMuons[selmu]->Eta();
-        	 E_muon[nMuons]=selectedMuons[selmu]->E();
+          pt_muon[nMuons]=selectedMuons[selmu]->Pt();
+          phi_muon[nMuons]=selectedMuons[selmu]->Phi();
+          eta_muon[nMuons]=selectedMuons[selmu]->Eta();
+          E_muon[nMuons]=selectedMuons[selmu]->E();
           
           pfIso_muon[nMuons]=selectedMuons[selmu]->relPfIso(4,0);
           if(!isData)
-        	 {
-             
-             MuonIDSF[nMuons] = muonSFWeightID_T->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
-             
-             MuonIsoSF[nMuons] =  muonSFWeightIso_TT->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
-             
-           }
-        	 else
-           {
-             MuonIDSF[nMuons] = 1.;
-             MuonIsoSF[nMuons] = 1.;
-           }
-        	 charge_muon[nMuons]=selectedMuons[selmu]->charge();
-        	 nMuons++;
+          {
+            
+            MuonIDSF[nMuons] = muonSFWeightID_T->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+            
+            MuonIsoSF[nMuons] =  muonSFWeightIso_TT->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+            
+          }
+          else
+          {
+            MuonIDSF[nMuons] = 1.;
+            MuonIsoSF[nMuons] = 1.;
+          }
+          charge_muon[nMuons]=selectedMuons[selmu]->charge();
+          nMuons++;
         }
         if(selectedMuons.size()>0) pt_muon_1 = selectedMuons[0]->Pt();
         if(selectedMuons.size()>1) pt_muon_2 = selectedMuons[1]->Pt();
@@ -2784,17 +3106,17 @@ int main (int argc, char *argv[])
         for (Int_t selel =0; selel < selectedElectrons.size() ; selel++ )
         {
           
-        	 pt_electron[nElectrons]=selectedElectrons[selel]->Pt();
-        	 phi_electron[nElectrons]=selectedElectrons[selel]->Phi();
-        	 eta_electron[nElectrons]=selectedElectrons[selel]->Eta();
-        	 eta_superCluster_electron[nElectrons]=selectedElectrons[selel]->superClusterEta();
-        	 E_electron[nElectrons]=selectedElectrons[selel]->E();
-        	 pfIso_electron[nElectrons]=selectedElectrons[selel]->relPfIso(3,0);
-        	 charge_electron[nElectrons]=selectedElectrons[selel]->charge();
-        	 if(!isData) ElectronSF[nElectrons] = electronSFWeight->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0)*electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0);
-           else ElectronSF[nElectrons] = 1.;
+          pt_electron[nElectrons]=selectedElectrons[selel]->Pt();
+          phi_electron[nElectrons]=selectedElectrons[selel]->Phi();
+          eta_electron[nElectrons]=selectedElectrons[selel]->Eta();
+          eta_superCluster_electron[nElectrons]=selectedElectrons[selel]->superClusterEta();
+          E_electron[nElectrons]=selectedElectrons[selel]->E();
+          pfIso_electron[nElectrons]=selectedElectrons[selel]->relPfIso(3,0);
+          charge_electron[nElectrons]=selectedElectrons[selel]->charge();
+          if(!isData) ElectronSF[nElectrons] = electronSFWeight->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0)*electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0);
+          else ElectronSF[nElectrons] = 1.;
           
-        	 nElectrons++;
+          nElectrons++;
         }
         if(selectedElectrons.size()>0) pt_electron_1 = selectedElectrons[0]->Pt();
         if(selectedElectrons.size()>1) pt_electron_2 = selectedElectrons[1]->Pt();
@@ -2854,7 +3176,7 @@ int main (int argc, char *argv[])
         
         //cout << "SIZE mu " << JetPartonPair_muon.size() << " elec " << JetPartonPair_electron.size() << endl;  ;
         myTree->Fill();
- 	    }
+      }
       if(baseSelected){ baselineTree->Fill(); }
       if(selections.size() != 8) cout << "ERROR SOMETHING WENT WRONG WITH THE SELECTIONS " << endl;
       for(int inb = 0; inb <selections.size(); inb++)
@@ -2868,19 +3190,92 @@ int main (int argc, char *argv[])
       
       
     } // end eventloop
-    cutstep[0] = nbEvents_0;
-    cutstep[1] = nbEvents_1;
-    cutstep[2] = nbEvents_2;
-    cutstep[3] = nbEvents_3;
-    cutstep[4] = nbEvents_4;
-    cutstep[5] = nbEvents_5;
-    cutstep[6] = nbEvents_6;
-    cutstep[7] = nbEvents_7;
-    cutstep[8] = nbEvents_8;
-    cutstep[9] = nbEvents_9;
     
-    cout << "nbEvents_0 trigg: " << nbEvents_0 << endl;
-    //cout << "trigger req for data " << nbEvents_test << endl;
+    
+    
+    cutstep_string.push_back("trigger");
+    cutstep_string.push_back("3lep");
+    cutstep_string.push_back("VetoMu");
+    cutstep_string.push_back("VetoEl");
+    cutstep_string.push_back("OSSF");
+    cutstep_string.push_back("Zmass");
+    cutstep_string.push_back(">1jet");
+    cutstep_string.push_back(">0CSVL");
+    cutstep_string.push_back("mWt");
+    cutstep_string.push_back("SMtop");
+    cutstep_string.push_back("METfilter");
+    
+    
+    for(int iC = 0; iC < cutstep_string.size() ; iC++){
+      cout << "cut " << iC << " label " << cutstep_string[iC] << endl;
+    }
+    
+    cutstep.push_back(nbEvents_0);
+    cutstep.push_back(nbEvents_1);
+    cutstep.push_back(nbEvents_2m);
+    cutstep.push_back(nbEvents_3);
+    cutstep.push_back(nbEvents_4);
+    cutstep.push_back(nbEvents_5);
+    cutstep.push_back(nbEvents_6);
+    cutstep.push_back(nbEvents_7);
+    cutstep.push_back(nbEvents_8);
+    cutstep.push_back(nbEvents_9);
+    
+    cutstep_eee.push_back(nbEvents_eee_0);
+    cutstep_eee.push_back(nbEvents_eee_1);
+    cutstep_eee.push_back(nbEvents_eee_2m);
+    cutstep_eee.push_back(nbEvents_eee_3);
+    cutstep_eee.push_back(nbEvents_eee_4);
+    cutstep_eee.push_back(nbEvents_eee_5);
+    cutstep_eee.push_back(nbEvents_eee_6);
+    cutstep_eee.push_back(nbEvents_eee_7);
+    cutstep_eee.push_back(nbEvents_eee_8);
+    cutstep_eee.push_back(nbEvents_eee_9);
+    
+    cutstep_eeu.push_back( nbEvents_eeu_0);
+    cutstep_eeu.push_back(nbEvents_eeu_1);
+    cutstep_eeu.push_back(nbEvents_eeu_2m);
+    cutstep_eeu.push_back(nbEvents_eeu_3);
+    cutstep_eeu.push_back(nbEvents_eeu_4);
+    cutstep_eeu.push_back(nbEvents_eeu_5);
+    cutstep_eeu.push_back(nbEvents_eeu_6);
+    cutstep_eeu.push_back(nbEvents_eeu_7);
+    cutstep_eeu.push_back(nbEvents_eeu_8);
+    cutstep_eeu.push_back(nbEvents_eeu_9);
+    
+    
+    cutstep_uuu.push_back( nbEvents_uuu_0);
+    cutstep_uuu.push_back(nbEvents_uuu_1);
+    cutstep_uuu.push_back(nbEvents_uuu_2m);
+    cutstep_uuu.push_back(nbEvents_uuu_3);
+    cutstep_uuu.push_back(nbEvents_uuu_4);
+    cutstep_uuu.push_back(nbEvents_uuu_5);
+    cutstep_uuu.push_back(nbEvents_uuu_6);
+    cutstep_uuu.push_back(nbEvents_uuu_7);
+    cutstep_uuu.push_back(nbEvents_uuu_8);
+    cutstep_uuu.push_back(nbEvents_uuu_9);
+    
+    
+    cutstep_uue.push_back( nbEvents_uue_0);
+    cutstep_uue.push_back(nbEvents_uue_1);
+    cutstep_uue.push_back(nbEvents_uue_2m);
+    cutstep_uue.push_back(nbEvents_uue_3);
+    cutstep_uue.push_back(nbEvents_uue_4);
+    cutstep_uue.push_back(nbEvents_uue_5);
+    cutstep_uue.push_back(nbEvents_uue_6);
+    cutstep_uue.push_back(nbEvents_uue_7);
+    cutstep_uue.push_back(nbEvents_uue_8);
+    cutstep_uue.push_back(nbEvents_uue_9);
+    
+    
+    for( int i =0 ; i < 10; i++){
+      cout << "cutstep " << i << " has " << cutstep[i] << " events" << endl;
+    }
+    
+    
+    
+    cout << "nbEvents_0 trigg: " <<  nbEvents_0 << endl;
+    cout << "trigger req check for data " << nbEvents_test << endl;
     cout << "nbEvents_1 3 lep: " << nbEvents_1 << endl;
     cout << "nbEvents_1m  veto mu: " << nbEvents_1m << endl;
     cout << "nbEvents_2m veto el: " << nbEvents_2m << endl;
@@ -2905,6 +3300,53 @@ int main (int argc, char *argv[])
     nSMtop = nbEvents_7;
     nMET= nbEvents_8;
     
+    nTrigg_eee = nbEvents_eee_0;
+    n3lep_eee = nbEvents_eee_1;
+    nVetoMu_eee = nbEvents_eee_1m;
+    nVetoEl_eee = nbEvents_eee_2m;
+    nOS_eee = nbEvents_eee_2;
+    nZmass_eee = nbEvents_eee_3;
+    nJet_eee = nbEvents_eee_4;
+    nBJet_eee = nbEvents_eee_5;
+    nMWT_eee = nbEvents_eee_6;
+    nSMtop_eee = nbEvents_eee_7;
+    nMET_eee = nbEvents_eee_8;
+    
+    nTrigg_eeu = nbEvents_eeu_0;
+    n3lep_eeu = nbEvents_eeu_1;
+    nVetoMu_eeu = nbEvents_eeu_1m;
+    nVetoEl_eeu = nbEvents_eeu_2m;
+    nOS_eeu = nbEvents_eeu_2;
+    nZmass_eeu = nbEvents_eeu_3;
+    nJet_eeu = nbEvents_eeu_4;
+    nBJet_eeu = nbEvents_eeu_5;
+    nMWT_eeu = nbEvents_eeu_6;
+    nSMtop_eeu = nbEvents_eeu_7;
+    nMET_eeu = nbEvents_eeu_8;
+    
+    nTrigg_uuu = nbEvents_uuu_0;
+    n3lep_uuu = nbEvents_uuu_1;
+    nVetoMu_uuu = nbEvents_uuu_1m;
+    nVetoEl_uuu = nbEvents_uuu_2m;
+    nOS_uuu = nbEvents_uuu_2;
+    nZmass_uuu = nbEvents_uuu_3;
+    nJet_uuu = nbEvents_uuu_4;
+    nBJet_uuu = nbEvents_uuu_5;
+    nMWT_uuu = nbEvents_uuu_6;
+    nSMtop_uuu = nbEvents_uuu_7;
+    nMET_uuu = nbEvents_uuu_8;
+    
+    nTrigg_uue = nbEvents_uue_0;
+    n3lep_uue = nbEvents_uue_1;
+    nVetoMu_uue = nbEvents_uue_1m;
+    nVetoEl_uue = nbEvents_uue_2m;
+    nOS_uue = nbEvents_uue_2;
+    nZmass_uue = nbEvents_uue_3;
+    nJet_uue = nbEvents_uue_4;
+    nBJet_uue = nbEvents_uue_5;
+    nMWT_uue = nbEvents_uue_6;
+    nSMtop_uue = nbEvents_uue_7;
+    nMET_uue = nbEvents_uue_8;
     
     
     
@@ -2921,9 +3363,11 @@ int main (int argc, char *argv[])
       cout << "Percentage matched Z: " << (double) (nMatched_Zmu+nMatched_Zelec)/ (nMatched_Zmu +nMatched_Zelec+nNonMatched_Zelec+ nNonMatched_Zmu) << endl;
       cout << "Percentage matched W: " << (double) (nMatched_Welec+nMatched_Wmu)/ (nMatched_Welec + nMatched_Wmu + nNonMatched_Wmu+ nNonMatched_Welec) << endl;
     }
-    //	for(int j = 0; j < 9; j++){       cout << cutstep[j] << endl; }
+    //	for(int j_eeu = 0; j < 9; j++){       cout << cutstep[j] << endl; }
     sumW = (int) sumWeights;
     nEv = (int) nEvents;
+    xsec = xSect;
+    nEvPassed  = (int) nbSelectedEvents;
     nbTrig = nbEvents_0;
     globalTree->Fill();
     if(verbose > 0) cout << "end eventloop" << endl;
@@ -3083,7 +3527,7 @@ int FCNCjetCalculator(std::vector<TRootPFJet*> Jets, TLorentzVector recoZ ,int i
   TLorentzVector Jetcandidate;
   int NbInColl = -1;
   if(Jets.size() > 1){
-    //cout << " non bjets: " << nonBJets.size() << " possibilities " <<endl;  ;
+    //cout << " non bjets: " << nonBJets.size() << " possibilities " <<endl;
     for( int iJ = 0; iJ < Jets.size(); iJ++)
     {
       if(iJ == index) continue;
@@ -3345,6 +3789,147 @@ vector <TLorentzVector> LeptonAssigner(std::vector<TRootElectron*> electrons,std
   }
   
   
+  return ReturnColl;
+}
+
+vector <TLorentzVector> LeptonAssignerv2(std::vector<TRootElectron*> electrons,std::vector<TRootMuon*> muons)
+{
+  // cout << " in assigner " << endl;
+  vector<TLorentzVector> ReturnColl;
+  Assigned = false;
+  
+  
+  
+  elecbool = false;
+  mubool = false;
+  elecIndices.clear();
+  muIndices.clear();
+  
+  TLorentzVector Zlepcan0;
+  Zlepcan0.SetPxPyPzE(0.,0.,0.,0.);
+  TLorentzVector Zlepcan1;
+  Zlepcan1.SetPxPyPzE(0.,0.,0.,0.);
+  
+  
+  if(electrons.size() == 2){
+    //  cout << "2 electr " << electrons[0]->charge() << " " << electrons[1]->charge() << endl;
+    if(electrons[0]->charge() != electrons[1]->charge()){
+      Zlepcan0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
+      Zlepcan1.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
+      
+      Assigned = true;
+      elecbool = true;
+      elecIndices.push_back(0);
+      elecIndices.push_back(1);
+      //cout << "assigned " <<endl;
+    }
+  }
+  else if(muons.size() == 2){
+    //    cout << "2 muons" << endl;
+    if(muons[0]->charge() != muons[1]->charge()){
+      Zlepcan0.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
+      Zlepcan1.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
+      
+      Assigned = true;
+      mubool = true;
+      muIndices.push_back(0);
+      muIndices.push_back(1);
+      
+    }
+  }
+  else if(electrons.size() ==3){
+    //    cout << " 3 electrons " << endl;
+    bool can01 = false;
+    bool can02= false;
+    bool can12 = false;
+    elecbool = true;
+    if(electrons[0]->charge() != electrons[1]->charge()) can01 = true;
+    if(electrons[0]->charge() != electrons[2]->charge()) can02 = true;
+    if(electrons[2]->charge() != electrons[1]->charge()) can12 = true;
+    
+    double mass01 = 9999.;
+    double mass02 = 9999.;
+    double mass12 = 9999.;
+    TLorentzVector temp0;
+    temp0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
+    TLorentzVector temp1;
+    temp1.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
+    TLorentzVector temp2;
+    temp2.SetPxPyPzE(electrons[2]->Px(), electrons[2]->Py(),electrons[2]->Pz(),electrons[2]->Energy());
+    if(can01) mass01 = fabs(91.1-(temp1+temp0).M());
+    if(can02) mass02 = fabs(91.1-(temp2+temp0).M());
+    if(can12) mass12 = fabs(91.1-(temp1+temp2).M());
+    if(mass01 <= mass02 && mass01 <= mass12){
+      Zlepcan0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
+      Zlepcan1.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
+      Assigned = true;
+      elecIndices.push_back(0); elecIndices.push_back(1);
+    }
+    else if(mass02 <= mass12 && mass02 < mass01){
+      Zlepcan0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
+      Zlepcan1.SetPxPyPzE(electrons[2]->Px(), electrons[2]->Py(),electrons[2]->Pz(),electrons[2]->Energy());
+      Assigned = true;
+      elecIndices.push_back(0); elecIndices.push_back(2);
+    }
+    else if(mass12 < mass01 && mass12 < mass02){
+      Zlepcan0.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
+      Zlepcan1.SetPxPyPzE(electrons[2]->Px(), electrons[2]->Py(),electrons[2]->Pz(),electrons[2]->Energy());
+      Assigned = true;
+      elecIndices.push_back(1); elecIndices.push_back(2);
+    }
+  }
+  else if(muons.size() == 3){
+    bool can01 = false;
+    bool can02= false;
+    bool can12 = false;
+    mubool = true;
+    if(muons[0]->charge() != muons[1]->charge()) can01 = true;
+    if(muons[0]->charge() != muons[2]->charge()) can02 = true;
+    if(muons[2]->charge() != muons[1]->charge()) can12 = true;
+    
+    double mass01 = 9999.;
+    double mass02 = 9999.;
+    double mass12 = 9999.;
+    TLorentzVector temp0;
+    temp0.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
+    TLorentzVector temp1;
+    temp1.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
+    TLorentzVector temp2;
+    temp2.SetPxPyPzE(muons[2]->Px(), muons[2]->Py(),muons[2]->Pz(),muons[2]->Energy());
+    if(can01) mass01 = fabs(91.1-(temp1+temp0).M());
+    if(can02) mass02 = fabs(91.1-(temp2+temp0).M());
+    if(can12) mass12 = fabs(91.1-(temp1+temp2).M());
+    if(mass01 <= mass02 && mass01 <= mass12){
+      Zlepcan0.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
+      Zlepcan1.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
+      Assigned = true;
+      muIndices.push_back(0); muIndices.push_back(1);
+    }
+    else if(mass02 <= mass12 && mass02 < mass01){
+      Zlepcan0.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
+      Zlepcan1.SetPxPyPzE(muons[2]->Px(), muons[2]->Py(),muons[2]->Pz(),muons[2]->Energy());
+      Assigned = true;
+      muIndices.push_back(0); muIndices.push_back(2);
+    }
+    else if(mass12 < mass01 && mass12 < mass02){
+      Zlepcan0.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
+      Zlepcan1.SetPxPyPzE(muons[2]->Px(), muons[2]->Py(),muons[2]->Pz(),muons[2]->Energy());
+      Assigned = true;
+      muIndices.push_back(1); muIndices.push_back(2);
+    }
+  }
+  if(Assigned){
+    ReturnColl.push_back(Zlepcan0);
+    ReturnColl.push_back(Zlepcan1);
+    //   cout << "filled" << endl;
+    
+  }
+  if(!Assigned){
+    //    cout << " WARNING: leptons not set for assignment " << endl;
+    return ReturnColl;
+  }
+  
+  //cout << "returned" << endl;
   return ReturnColl;
 }
 
