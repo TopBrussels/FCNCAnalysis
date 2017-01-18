@@ -182,14 +182,22 @@ int main (int argc, char *argv[])
     string postfix = "_Run2_TopTree_Study_" + dName; // to relabel the names of the output file
 
     if (doJESShift == 1)
-        postfix= postfix+"JESMinus";
+    {
+        postfix += "JESMinus";
+    }
     if (doJESShift == 2)
-        postfix= postfix+"JESPlus";
+    {
+        postfix += "JESPlus";
+    }
     if (doJERShift == 1)
-        postfix= postfix+"JERMinus";
+    {
+        postfix += "JERMinus";
+    }
     if (doJERShift == 2)
-        postfix= postfix+"JERPlus";
-    if (dobTagEffShift == -1)
+    {
+        postfix += "JERPlus";
+    }
+/*    if (dobTagEffShift == -1)
         postfix= postfix+"_bTagMinus";
     if (dobTagEffShift == 1)
         postfix= postfix+"_bTagPlus";
@@ -197,7 +205,7 @@ int main (int argc, char *argv[])
         postfix= postfix+"_misTagMinus";
     if(domisTagEffShift == 1)
         postfix= postfix+"_misTagPlus";
-
+*/
 
     ///////////////////////////////////////
     // Configuration - ALWAYS CHECK THESE!!!!
@@ -559,6 +567,7 @@ int main (int argc, char *argv[])
         ///////////////////////////////////////
         Int_t run_num;
         Int_t evt_num;
+        Int_t genTTX;
         Int_t lumi_num;
         Int_t nvtx;
         Int_t npu;
@@ -804,6 +813,7 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("W_TopPtReweighing",&W_TopPtReweighing,"W_TopPtReweighing/D");  
 
         tup_ObjectVars->Branch("I_run_num",&run_num,"run_num/I");
+        tup_ObjectVars->Branch("I_genTTX",&genTTX,"genTTX/I");
         tup_ObjectVars->Branch("I_evt_num",&evt_num,"evt_num/I");
         tup_ObjectVars->Branch("I_lumi_num",&lumi_num,"lumi_num/I");
         tup_ObjectVars->Branch("I_nvtx",&nvtx,"nvtx/I");
@@ -1265,6 +1275,7 @@ int main (int argc, char *argv[])
             W_ElectronIDSF_Minus =1; //One of the 2 components for the total electron SF
             W_ElectronRecoSF_Minus =1;     //One of the 2 components for the total electron SF
             W_TopPtReweighing =1;
+            genTTX = -666;
 
             MC_TopPt = -99.;
             MC_AntiTopPt = -99.;
@@ -1333,6 +1344,25 @@ int main (int argc, char *argv[])
             ///  Include trigger set up here when using data
             //////////////////////////////////////////////////////////////////
             datasets[d]->eventTree()->LoadTree(ievt);
+            if(datasets[d]->eventTree()->GetBranch("genTTX_id_")) genTTX = event->getgenTTX_id(); //Safety check to make sure the code doesn't crash when using trees that do not have the genTTX_id variable
+
+		        if(dName.find("TTJets")!=string::npos)//Split ttbar samples into ttbb, ttcc and ttlf
+		        {
+                bool isttbb = (genTTX == 051 || genTTX == 151 || genTTX == 251 ||
+		              genTTX == 052 || genTTX == 152 || genTTX == 252 ||
+		              genTTX == 053 || genTTX == 153 || genTTX == 253 ||
+		              genTTX == 054 || genTTX == 154 || genTTX == 254 ||
+		              genTTX == 055 || genTTX == 155 || genTTX == 255);
+               
+                bool isttcc = (genTTX == 041 || genTTX == 141 || genTTX == 241 ||
+		              genTTX == 042 || genTTX == 142 || genTTX == 242 ||
+		              genTTX == 043 || genTTX == 143 || genTTX == 243 ||
+		              genTTX == 044 || genTTX == 144 || genTTX == 244 ||
+		              genTTX == 045 || genTTX == 145 || genTTX == 245);
+               
+                bool isttlf = (!isttbb && !isttcc);
+            }
+
 	          run_num = event->runId(); 
 	          evt_num = event->eventId();
 	          lumi_num=event->lumiBlockId(); 
