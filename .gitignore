@@ -1,4 +1,8 @@
 __init__.py
+MCInfoPlotter
+MC_ComparisonOutput*
+scripts/plots_MCInfoComp*
+scripts/addedSamplesFromPNFS*
 *.pyc
 BTagHistosPtEta/
 EventInfo_*.txt

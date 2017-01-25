@@ -313,7 +313,7 @@ int main (int argc, char *argv[])
         if(dName.find("Data")==string::npos)
         //Btag documentation : http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
         {
-            bTagCalib_CSVv2 = new BTagCalibration("CSVv2","../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_80X_ichep_incl_ChangedTo_mujets.csv");
+            bTagCalib_CSVv2 = new BTagCalibration("CSVv2","../TopTreeAnalysisBase/Calibrations/BTagging/ttH_BTV_CSVv2_13TeV_2016All_36p5_2017_1_10.csv");
 
             if(CSVv2nonshape) bTagReader_CSVv2M_mujets_central = new BTagCalibrationReader(bTagCalib_CSVv2,BTagEntry::OP_MEDIUM,"mujets","central"); //mujets
             bTagReader_shape = new BTagCalibrationReader(bTagCalib_CSVv2,BTagEntry::OP_RESHAPING,"iterativefit","central"); //reshaping
@@ -1397,11 +1397,11 @@ int main (int argc, char *argv[])
                     {
                         JERon = doJERShift;
                         if(doJERShift == 1)
-                            jetTools->correctJetJER(init_jets, genjets, mets[0], "minus");
+                            jetTools->correctJetJER(init_jets, genjets, mets[0], "minus", false);
                         else if(doJERShift == 2)
-                            jetTools->correctJetJER(init_jets, genjets, mets[0], "plus");
+                            jetTools->correctJetJER(init_jets, genjets, mets[0], "plus", false);
                         else
-                            jetTools->correctJetJER(init_jets, genjets, mets[0], "nominal");
+                            jetTools->correctJetJER(init_jets, genjets, mets[0], "nominal", false);
                     }
                     else JERon = -1;
 

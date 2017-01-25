@@ -172,7 +172,7 @@ int main(int argc, char *argv[])
     if(channel == "_All")
     {
         xmlNom = "config/FullMcBkgdSamples_Mu_TreeProcessor.xml";
-        CorrectionForAllChannel = 0.5;
+        CorrectionForAllChannel = 1.;
         
     }
     TString TreePath = "Merged/Ntuples" + channel + "/Ntuples" + date;
@@ -1195,7 +1195,7 @@ int main(int argc, char *argv[])
                 TopLepBJetCSVv2_TOPTOPLEPHBB_ = (float) TopLepBJetCSVv2_TOPTOPLEPHBB;
 	              TopHadNonBJetCSVv2_TOPTOPLEPHBB_ = (float) TopHadNonBJetCSVv2_TOPTOPLEPHBB;
 
-                if(filepath.find("JESMinus") == string::npos || filepath.find("JESPlus") == string::npos  || filepath.find("JERMinus") == string::npos || filepath.find("JERPlus") == string::npos)
+                if(filepath.find("JESMinus") == string::npos && filepath.find("JESPlus") == string::npos  && filepath.find("JERMinus") == string::npos && filepath.find("JERPlus") == string::npos)
                 {
                     for(int iSyst__ = 0; iSyst__ < WhatSysts_noJECs.size(); iSyst__++)
                     {

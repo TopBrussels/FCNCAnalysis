@@ -46,13 +46,14 @@ map<string,MultiSamplePlot*> MSPlot;
 map<string,MultiSamplePlot*> MSPlot_nPV;
 
 
-
-
+bool Manual_XML = false; //This boolean controls the luminosity by hand, the nPV reweighing and which xml file to be taken as input
+string manualxml = "config/FullMcBkgdSamples_Manual.xml";
 
 // functions prototype
 string intToStr (int number);
 void MakeNPV_Distributions(int baseline_jets, int baseline_bjets, string channel, string date, bool debug);
-void MakeTotalSystErrorBand_Distributions(TFile MSPlotFile, vector< string > systematics);
+void MakeTotalSystErrorBand_Distributions(string  outfilename, vector< string > systematics, vector <string> datasetNames, vector<string> NominalVariableNames, string outputFile);
+double WeightPrivateSignalSample(Int_t n_jets, string samplename);
 
 inline bool FileExists (const string& name) {
   struct stat buffer;   
@@ -88,7 +89,7 @@ int main(int argc, char *argv[])
     bool doJERSys  = strtol(argv[7], NULL,10);
     bool debug         =strtol(argv[8], NULL,10);
 
-    bool split_ttbar = false;   
+    bool split_ttbar = true;   
     
     bool doInclusive = false;
     string category;
@@ -105,7 +106,7 @@ int main(int argc, char *argv[])
 
     vector<string> WhatSysts;
     
-/*    WhatSysts.push_back("iterativefit_lfPlus");   
+    WhatSysts.push_back("iterativefit_lfPlus");   
     WhatSysts.push_back("iterativefit_lfMinus");   
     WhatSysts.push_back("iterativefit_hfPlus");   
     WhatSysts.push_back("iterativefit_hfMinus");   
@@ -125,15 +126,26 @@ int main(int argc, char *argv[])
     WhatSysts.push_back("pileupMinus");   
     WhatSysts.push_back("leptonPlus");
     WhatSysts.push_back("leptonMinus");
+    WhatSysts.push_back("noSF");
+    WhatSysts.push_back("OnlyTopPtSF");
+    WhatSysts.push_back("OnlyBTagSF");
+    WhatSysts.push_back("OnlyPUSF");
+    WhatSysts.push_back("OnlyLepSF");
+    WhatSysts.push_back("OnlyNLOSF");
+    WhatSysts.push_back("NoTopPtSF");
+    WhatSysts.push_back("NoBTagSF");
+    WhatSysts.push_back("NoPUSF");
+    WhatSysts.push_back("NoLepSF");
+    WhatSysts.push_back("NoNLOSF");
     if(doJESSys) WhatSysts.push_back("JESPlus");
     if(doJESSys) WhatSysts.push_back("JESMinus");
     if(doJERSys) WhatSysts.push_back("JERPlus");
     if(doJERSys) WhatSysts.push_back("JERMinus");
-*/    WhatSysts.push_back("");   
+    WhatSysts.push_back("");   
 
     vector<string> WhatSysts_noJECs;
     
-/*    WhatSysts_noJECs.push_back("iterativefit_lfPlus");   
+    WhatSysts_noJECs.push_back("iterativefit_lfPlus");   
     WhatSysts_noJECs.push_back("iterativefit_lfMinus");   
     WhatSysts_noJECs.push_back("iterativefit_hfPlus");   
     WhatSysts_noJECs.push_back("iterativefit_hfMinus");   
@@ -153,7 +165,18 @@ int main(int argc, char *argv[])
     WhatSysts_noJECs.push_back("pileupMinus");   
     WhatSysts_noJECs.push_back("leptonPlus");
     WhatSysts_noJECs.push_back("leptonMinus");
-*/
+    WhatSysts_noJECs.push_back("noSF");
+    WhatSysts_noJECs.push_back("OnlyTopPtSF");
+    WhatSysts_noJECs.push_back("OnlyBTagSF");
+    WhatSysts_noJECs.push_back("OnlyPUSF");
+    WhatSysts_noJECs.push_back("OnlyLepSF");
+    WhatSysts_noJECs.push_back("OnlyNLOSF");
+    WhatSysts_noJECs.push_back("NoTopPtSF");
+    WhatSysts_noJECs.push_back("NoBTagSF");
+    WhatSysts_noJECs.push_back("NoPUSF");
+    WhatSysts_noJECs.push_back("NoLepSF");
+    WhatSysts_noJECs.push_back("NoNLOSF");
+
 
     cout << "------------------------------------------------------------------------------------------------" << endl;
     cout << "Begin program" << endl;
@@ -169,12 +192,13 @@ int main(int argc, char *argv[])
     Double_t CorrectionForAllChannel = 1.; 
 
     string xmlNom;
-    if(channel == "_El") xmlNom = "config/FullMcBkgdSamples_El_TreeProcessor.xml";
-    if(channel == "_Mu") xmlNom = "config/FullMcBkgdSamples_Mu_TreeProcessor.xml";
-    if(channel == "_All")
+    if(Manual_XML) xmlNom = manualxml;
+    else if(channel == "_El") xmlNom = "config/FullMcBkgdSamples_El_TreeProcessor.xml";
+    else if(channel == "_Mu") xmlNom = "config/FullMcBkgdSamples_Mu_TreeProcessor.xml";
+    else if(channel == "_All")
     {
         xmlNom = "config/FullMcBkgdSamples_Mu_TreeProcessor.xml";
-        CorrectionForAllChannel = 0.5;
+        CorrectionForAllChannel = 1.;
         
     }
     TString TreePath = "Merged/Ntuples" + channel + "/Ntuples" + date;
@@ -197,9 +221,9 @@ int main(int argc, char *argv[])
 
     ///////////////////////////////////////////////////////////////////
     //// S p l i t t i n g   T T b a r ////////////////////////////////
-    Dataset* ttbar_ll = 0;
-    Dataset* ttbar_cc = 0;
-    Dataset* ttbar_bb = 0;
+    Dataset* ttbar_ll = new Dataset();
+    Dataset* ttbar_cc = new Dataset();
+    Dataset* ttbar_bb = new Dataset();
 
     
 	  for (int d = 0; d < datasets.size(); d++)   //Loop through datasets
@@ -214,14 +238,22 @@ int main(int argc, char *argv[])
         else if (dataSetName.find("TTJets")!=string::npos && split_ttbar)
         {
             //creating three new datsets to contain the tt+ll, tt+cc and tt+ bb compenents.
-            cout << " - splitting TTBar dataset ..."  << endl;
-            vector<string> ttbar_filenames = datasets[d]->Filenames();
-            cout <<"ttbar filenames =  "<< ttbar_filenames[0] <<endl;
+//            vector<string> ttbar_filenames = datasets[d]->Filenames();
+//            cout <<"ttbar filenames =  "<< ttbar_filenames[0] <<endl;
             
-            Dataset* ttbar_ll = new Dataset("TTJets_ll","tt + lf" , true, 633, 1, 2, 1, datasets[d]->Xsection(),ttbar_filenames );
-            Dataset* ttbar_cc = new Dataset("TTJets_cc","tt + cc" , true, 633, 1, 2, 1, datasets[d]->Xsection(), ttbar_filenames );
-            Dataset* ttbar_bb = new Dataset("TTJets_bb","tt + bb" , true, 633, 1, 2, 1, datasets[d]->Xsection(), ttbar_filenames );
+//            Dataset* ttbar_ll = new Dataset("TTJets_ll","tt+lf" , true, 633, 1, 2, 1, datasets[d]->Xsection(),ttbar_filenames );
+//            Dataset* ttbar_cc = new Dataset("TTJets_cc","tt+cc" , true, 633, 1, 2, 1, datasets[d]->Xsection(), ttbar_filenames );
+//            Dataset* ttbar_bb = new Dataset("TTJets_bb","tt+bb" , true, 633, 1, 2, 1, datasets[d]->Xsection(), ttbar_filenames );
             
+            ttbar_ll->SetName("TTJets_ll");
+            ttbar_cc->SetName("TTJets_cc");
+            ttbar_bb->SetName("TTJets_bb");
+
+            ttbar_ll->SetTitle("tt+lf");
+            ttbar_cc->SetTitle("tt+cc");
+            ttbar_bb->SetTitle("tt+bb");
+
+
             ttbar_ll->SetEquivalentLuminosity(datasets[d]->EquivalentLumi());
             ttbar_cc->SetEquivalentLuminosity(datasets[d]->EquivalentLumi());
             ttbar_bb->SetEquivalentLuminosity(datasets[d]->EquivalentLumi());
@@ -234,15 +266,27 @@ int main(int argc, char *argv[])
             datasets_splittedTTbar.push_back(ttbar_ll);
             datasets_splittedTTbar.push_back(ttbar_cc);
             datasets_splittedTTbar.push_back(ttbar_bb);
+
+            cout << " - split TTBar dataset into ..."  << ttbar_ll->Name() << ", " << ttbar_cc->Name() << " and " << ttbar_ll->Name()  << endl;
+
         }     
     }
+    if(Manual_XML) Luminosity = 1.;
     if(Luminosity == 0)
     {
             cout << "Luminosity is 0. Please check the data-luminosity in your xml file. Exiting program..." << endl;
             return 1;
     }
 
-
+    //Storing the datasetNames in a vector for which the variables are plotted
+    //This will be used later on in the tool to plot the error bands, so do not store the Data name and NewPhysics names
+    vector <string> datasetnames_backgrounds;
+	  for (int d = 0; d < datasets_splittedTTbar.size(); d++)   //Loop through datasets
+	  {
+          string n = datasets_splittedTTbar[d]->Name();
+          if(n.find("Data")!=string::npos || n.find("NP_")!=string::npos) continue;
+          datasetnames_backgrounds.push_back(n);
+    }
     //***************************************************CREATING PLOT****************************************************
     //Format of MSPlots: MultiSamplePlot(vector<Dataset*> datasets, string PlotName, int Nbins, float Min, float Max, string XaxisLabel, string YaxisLabel, string Text, string Units)
 
@@ -355,7 +399,9 @@ int main(int argc, char *argv[])
                     MakeNPV_Distributions(baseline_jets, baseline_bjets, channel, date, debug);
                 }
                 
-                W_nPV = reweight::LumiReWeighting( pathPlot.c_str(), pathPlot.c_str(), ("MultiSamplePlot_NPV_unw/NPV_unw_"+dataSetName).c_str(), "MultiSamplePlot_NPV_unw/NPV_unw_Data");    
+//                if(Manual_XML) W_nPV = reweight::LumiReWeighting("MSPlots/MSPlots_All/_19_1_2017/Inclusive/Output.root", "MSPlots/MSPlots_All/_19_1_2017/Inclusive/Output.root", ("MultiSamplePlot_Njets/Njets_"+dataSetName).c_str(), "MultiSamplePlot_Njets/Njets_NP_overlay_ST_tHToBB_1L_Kappa_hct");
+                if(Manual_XML) W_nPV = reweight::LumiReWeighting(pathPlot.c_str(), "MSPlots/MSPlots_All/_12_1_2017/Inclusive/Output_NPV.root", ("MultiSamplePlot_NPV_unw/NPV_unw_"+dataSetName).c_str(), "MultiSamplePlot_NPV_unw/NPV_unw_NP_overlay_ST_tHToBB_1L_Kappa_hct");
+                else W_nPV = reweight::LumiReWeighting( pathPlot.c_str(), pathPlot.c_str(), ("MultiSamplePlot_NPV_unw/NPV_unw_"+dataSetName).c_str(), "MultiSamplePlot_NPV_unw/NPV_unw_Data");
             }
 
 		        FileObj[dataSetName.c_str()] = new TFile((filepath).c_str(),"READ"); //create TFile for each dataset      
@@ -373,25 +419,7 @@ int main(int argc, char *argv[])
 
 		        nEntries = ttree[dataSetName.c_str()]->GetEntries();
 		        cout<<"                 nEntries: "<<nEntries<<endl;
-    /*		
-            //----------------------------------------------//
-            //Import the working points for b-tagging used to create the ntuples
-            //----------------------------------------------//
-	          Double_t CSVv2_workingpointvalue_Loose;
-	          Double_t CSVv2_workingpointvalue_Medium;
-	          Double_t CSVv2_workingpointvalue_Tight;
-	          Double_t cMVA_workingpointvalue_Loose;
-	          Double_t cMVA_workingpointvalue_Medium;
-	          Double_t cMVA_workingpointvalue_Tight;
 
-            ttree[(dataSetName + TTreename_info).c_str()]->SetBranchAddress("CSVv2_workingpointvalue_Loose",&CSVv2_workingpointvalue_Loose);
-            ttree[(dataSetName + TTreename_info).c_str()]->SetBranchAddress("CSVv2_workingpointvalue_Medium",&CSVv2_workingpointvalue_Medium);
-            ttree[(dataSetName + TTreename_info).c_str()]->SetBranchAddress("CSVv2_workingpointvalue_Tight",&CSVv2_workingpointvalue_Tight);
-            ttree[(dataSetName + TTreename_info).c_str()]->SetBranchAddress("cMVA_workingpointvalue_Loose",&CSVv2_workingpointvalue_Loose);
-            ttree[(dataSetName + TTreename_info).c_str()]->SetBranchAddress("cMVA_workingpointvalue_Medium",&CSVv2_workingpointvalue_Medium);
-            ttree[(dataSetName + TTreename_info).c_str()]->SetBranchAddress("cMVA_workingpointvalue_Tight",&CSVv2_workingpointvalue_Tight);
-            ttree[(dataSetName + TTreename_info).c_str()]->GetEntry(0);
-    */
             //----------------------------------------------//
             //Get The object variables + weights
             //----------------------------------------------//
@@ -760,6 +788,7 @@ int main(int argc, char *argv[])
             Double_t average_TopPtWeight = 1.;
             if(dataSetName.find("TTJets") != string::npos)
             {
+                int nEventsPassed = 0;
                 for (int k = 0; k<nEntries; k++)
                 {
                     ttree[dataSetName.c_str()]->GetEntry(k);
@@ -771,8 +800,9 @@ int main(int argc, char *argv[])
 		                    else if(baseline_jets == 4 && nJets < baseline_jets) continue;
 		                }
                     average_TopPtWeight = average_TopPtWeight + W_TopPtReweighing;
+                    nEventsPassed++;
                 }
-                average_TopPtWeight = average_TopPtWeight/nEntries;
+                average_TopPtWeight = average_TopPtWeight/nEventsPassed;
             }
 		
       	    //***********************************************RUNNING OVER EVENTS**********************************************
@@ -814,22 +844,19 @@ int main(int argc, char *argv[])
                     if(isttlf) Sample = ttbar_ll;
                     else if(isttcc) Sample = ttbar_cc;
                     else if(isttbb) Sample = ttbar_bb;
+                    
+                    if(debug) cout << "   Sample split into " << Sample->Name() << endl;
                 }
                 else Sample = datasets[d];
 
                 //////////////////////////////////////
                 //Applying the scale factors
                 ///////////////////////////////////////
-                for(int iSyst_ = 0; iSyst_ < WhatSysts_noJECs.size(); iSyst_++)
-                {
-                    SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] = CorrectionForAllChannel;
-                }
                 double ScaleFactor = CorrectionForAllChannel;
-
+//                ScaleFactor *= WeightPrivateSignalSample(nJets,Sample->Name());//Reweigh privately produced samples such that number of jets agree
+                double W_puSF_applied = 1.;
 			          if(!isData)
 			          {
-			              
-                    double W_puSF_applied = 1.;
 			              if(!PVreweighing) W_puSF_applied = W_puSF;
 			              else
 			              {
@@ -855,188 +882,21 @@ int main(int argc, char *argv[])
                     {
                           cout << "----- Event " << j << " has a weight larger than 40. Weights are: W_puSF=" << W_puSF_applied << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_shape=" << W_btagWeight_shape << "; nloSF=" << nloSF << endl;
                           cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
-                          cout << "----- The event will be skipped....." << endl;
-                          continue;
+                          //cout << "----- The event will be skipped....." << endl;
+                          //continue;
                     }
+                
 
 
+                    //Nominal scale factor -- scale factors for systematic shifts are calculated below
                     ScaleFactor *= W_puSF_applied;
                     ScaleFactor *= W_fleptonSF;
-//                    ScaleFactor *= W_btagWeight_shape;
+                    ScaleFactor *= W_btagWeight_shape;
                     ScaleFactor *= nloSF;
                     if(dataSetName.find("TTJets") != string::npos) ScaleFactor *= W_TopPtReweighing/average_TopPtWeight;
-
-
-                    for(int iSyst_ = 0; iSyst_ < WhatSysts_noJECs.size(); iSyst_++)
-                    {
-                        
-                        if(filepath.find("JESMinus") == string::npos || filepath.find("JESPlus") == string::npos  || filepath.find("JERMinus") == string::npos || filepath.find("JERPlus") == string::npos)
-                        {
-                            if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfPlus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_lf;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfMinus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_lf;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfPlus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_hf;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfMinus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_hf;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats1Plus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_lfstats1;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats1Minus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_lfstats1;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats2Plus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_lfstats2;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats2Minus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_lfstats2;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats1Plus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_hfstats1;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats1Minus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_hfstats1;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats2Plus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_hfstats2;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats2Minus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_hfstats2;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr1Plus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_cferr1;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr1Minus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_cferr1;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr2Plus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_cferr2;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr2Minus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_cferr2;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "pileupPlus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_Plus;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "pileupMinus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_Minus;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "leptonPlus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF_Plus;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                            if(WhatSysts_noJECs[iSyst_] == "leptonMinus")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF_Minus;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
-                            }
-                        }
-                    }
-                    
-			          }
-			          
+                }
+                else ScaleFactor = 1.;    
+		          
       	        //***********************************************FILLING PLOTS**********************************************
 	              if( HiggsMass_TOPHLEPBB_hut > 500. ) HiggsMass_TOPHLEPBB_hut = 500.;
 	              if( TopLepMass_TOPHLEPBB_hut > 500. ) TopLepMass_TOPHLEPBB_hut = 500.;
@@ -1047,123 +907,357 @@ int main(int argc, char *argv[])
 	              if( TopLepMass_TOPTOPLEPHAD > 500. || TopLepMass_TOPTOPLEPHAD != TopLepMass_TOPTOPLEPHAD) TopLepMass_TOPTOPLEPHAD = 500.;
 	              if( HiggsMass_TOPTOPLEPHBB > 500. ) HiggsMass_TOPTOPLEPHBB = 500.;
                 if( TopLepMass_TOPTOPLEPHBB > 500. ) TopLepMass_TOPTOPLEPHBB = 500.;
+                
+                bool ScalePlots = true;
+                if(isData) ScalePlots = false;
 
-                if(filepath.find("JESMinus") == string::npos || filepath.find("JESPlus") == string::npos  || filepath.find("JERMinus") == string::npos || filepath.find("JERPlus") == string::npos)
+                if(filepath.find("JESMinus") == string::npos && filepath.find("JESPlus") == string::npos  && filepath.find("JERMinus") == string::npos && filepath.find("JERPlus") == string::npos)
                 {
-                    for(int iSyst__ = 0; iSyst__ < WhatSysts_noJECs.size(); iSyst__++)
+                    for(int iSyst_ = 0; iSyst_ < WhatSysts_noJECs.size(); iSyst_++)
                     {
-				                MSPlot[("NCSVv2Ljets"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(nJets_CSVL, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-				                MSPlot[("NCSVv2Mjets"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(nJets_CSVM, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-				                MSPlot[("NCSVv2Tjets"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(nJets_CSVT, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-				                MSPlot[("Njets"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(nJets, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("LeptonPt"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(pt_lepton, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("LeptonEta"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(eta_lepton, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("LeptonPhi"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(phi_lepton, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("LeptonCharge"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(LepCharge, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("NPV"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(nvtx, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
+                    
+                        //-----------------------------------------------------------------------------------------------------------
+                        // Calculate Scale factors
+                        //-----------------------------------------------------------------------------------------------------------
+                        SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] = CorrectionForAllChannel;
+                    
+			                  if(!isData)
+			                  {
+                            if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfPlus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_lf;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfMinus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_lf;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfPlus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_hf;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfMinus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_hf;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats1Plus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_lfstats1;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats1Minus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_lfstats1;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats2Plus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_lfstats2;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats2Minus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_lfstats2;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats1Plus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_hfstats1;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats1Minus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_hfstats1;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats2Plus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_hfstats2;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats2Minus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_hfstats2;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr1Plus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_cferr1;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr1Minus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_cferr1;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr2Plus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_cferr2;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr2Minus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_cferr2;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "pileupPlus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_Plus;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "pileupMinus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_Minus;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "leptonPlus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF_Plus;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "leptonMinus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF_Minus;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "OnlyTopPtSF")
+                            {
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "OnlyBTagSF")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "OnlyPUSF")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "OnlyLepSF")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "OnlyNLOSF")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "NoTopPtSF")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "NoBTagSF")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "NoPUSF")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "NoLepSF")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "NoNLOSF")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
+                            }
+                        }//if(!isData)
+                        else SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] = 1.;
+
+
+                        //-----------------------------------------------------------------------------------------------------------
+                        // Fill Plots
+                        //-----------------------------------------------------------------------------------------------------------
+				                MSPlot[("NCSVv2Ljets"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(nJets_CSVL, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+				                MSPlot[("NCSVv2Mjets"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(nJets_CSVM, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+				                MSPlot[("NCSVv2Tjets"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(nJets_CSVT, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+				                MSPlot[("Njets"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(nJets, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("LeptonPt"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(pt_lepton, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("LeptonEta"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(eta_lepton, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("LeptonPhi"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(phi_lepton, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("LeptonCharge"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(LepCharge, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("NPV"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(nvtx, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                         for(int i_Jet = 0; i_Jet < nJets; i_Jet++)
                         {
-                            MSPlot[("JetPt"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(pt_jet[i_Jet], Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                            MSPlot[("JetEta"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(eta_jet[i_Jet], Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                            MSPlot[("JetPhi"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(phi_jet[i_Jet], Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                            MSPlot[("JetCSVv2"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(CSVv2[i_Jet], Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                            MSPlot[("JetcMVAv2"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(cMVA[i_Jet], Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
+                            MSPlot[("JetPt"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(pt_jet[i_Jet], Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                            MSPlot[("JetEta"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(eta_jet[i_Jet], Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                            MSPlot[("JetPhi"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(phi_jet[i_Jet], Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                            MSPlot[("JetCSVv2"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(CSVv2[i_Jet], Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                            MSPlot[("JetcMVAv2"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(cMVA[i_Jet], Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                         }			                
 
 
-                        MSPlot[("HiggsMass_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(HiggsMass_TOPHLEPBB_hut, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("HiggsMass_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(HiggsMass_TOPHLEPBB_hct, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("HiggsEta_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(HiggsEta_TOPHLEPBB_hut, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("HiggsEta_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(HiggsEta_TOPHLEPBB_hct, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopLepMass_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopLepMass_TOPHLEPBB_hut, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopLepMass_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopLepMass_TOPHLEPBB_hct, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopLepPt_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopLepPt_TOPHLEPBB_hut, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopLepPt_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopLepPt_TOPHLEPBB_hct, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopLepEta_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopLepEta_TOPHLEPBB_hut, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopLepEta_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopLepEta_TOPHLEPBB_hct, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopLepHiggsDr_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopLepHiggsDr_TOPHLEPBB_hut, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopLepHiggsDr_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopLepHiggsDr_TOPHLEPBB_hct, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(HiggsBJet1CSVv2_TOPHLEPBB_hut, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(HiggsBJet1CSVv2_TOPHLEPBB_hct, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(HiggsBJet2CSVv2_TOPHLEPBB_hut, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(HiggsBJet2CSVv2_TOPHLEPBB_hct, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopLepBJetCSVv2_TOPHLEPBB_hut, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopLepBJetCSVv2_TOPHLEPBB_hct, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopHadMass_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopHadMass_TOPTOPLEPHAD, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopLepMass_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopLepMass_TOPTOPLEPHAD, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopLepTopHadDr_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopLepTopHadDr_TOPTOPLEPHAD, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopLepBJetCSVv2_TOPTOPLEPHAD, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopHadBJetCSVv2_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopHadBJetCSVv2_TOPTOPLEPHAD, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopHadWNonBJet1CSVv2_TOPTOPLEPHAD, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopHadWNonBJet2CSVv2_TOPTOPLEPHAD, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("HiggsMass_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(HiggsMass_TOPTOPLEPHBB, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopLepMass_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopLepMass_TOPTOPLEPHBB, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopLepHiggsDr_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopLepHiggsDr_TOPTOPLEPHBB, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("HiggsBJet1CSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(HiggsBJet1CSVv2_TOPTOPLEPHBB, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(HiggsBJet2CSVv2_TOPTOPLEPHBB, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopLepBJetCSVv2_TOPTOPLEPHBB, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
-                        MSPlot[("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst__]).c_str()]->Fill(TopHadNonBJetCSVv2_TOPTOPLEPHBB, Sample, true, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst__].c_str()]);
+                        MSPlot[("HiggsMass_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsMass_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("HiggsMass_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsMass_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("HiggsEta_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsEta_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("HiggsEta_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsEta_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopLepMass_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepMass_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopLepMass_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepMass_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopLepPt_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepPt_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopLepPt_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepPt_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopLepEta_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepEta_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopLepEta_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepEta_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopLepHiggsDr_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepHiggsDr_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopLepHiggsDr_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepHiggsDr_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet1CSVv2_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet1CSVv2_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet2CSVv2_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet2CSVv2_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepBJetCSVv2_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepBJetCSVv2_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopHadMass_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopHadMass_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopLepMass_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepMass_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopLepTopHadDr_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepTopHadDr_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepBJetCSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopHadBJetCSVv2_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopHadBJetCSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopHadWNonBJet1CSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopHadWNonBJet2CSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("HiggsMass_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsMass_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopLepMass_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepMass_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopLepHiggsDr_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepHiggsDr_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("HiggsBJet1CSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet1CSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet2CSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepBJetCSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopHadNonBJetCSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                     }
                }
                 if(filepath.find("JESMinus") != string::npos || filepath.find("JESPlus") != string::npos  || filepath.find("JERMinus") != string::npos || filepath.find("JERPlus") != string::npos || isData || WhatSysts[JecCounter] == "")
                {
-				                MSPlot[("NCSVv2Ljets"+WhatSysts[JecCounter]).c_str()]->Fill(nJets_CSVL, Sample, true, Luminosity * ScaleFactor);
-				                MSPlot[("NCSVv2Mjets"+WhatSysts[JecCounter]).c_str()]->Fill(nJets_CSVM, Sample, true, Luminosity * ScaleFactor);
-				                MSPlot[("NCSVv2Tjets"+WhatSysts[JecCounter]).c_str()]->Fill(nJets_CSVT, Sample, true, Luminosity * ScaleFactor);
-				                MSPlot[("Njets"+WhatSysts[JecCounter]).c_str()]->Fill(nJets, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("LeptonPt"+WhatSysts[JecCounter]).c_str()]->Fill(pt_lepton, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("LeptonEta"+WhatSysts[JecCounter]).c_str()]->Fill(eta_lepton, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("LeptonPhi"+WhatSysts[JecCounter]).c_str()]->Fill(phi_lepton, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("LeptonCharge"+WhatSysts[JecCounter]).c_str()]->Fill(LepCharge, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("NPV"+WhatSysts[JecCounter]).c_str()]->Fill(nvtx, Sample, true, Luminosity * ScaleFactor);
+				                MSPlot[("NCSVv2Ljets"+WhatSysts[JecCounter]).c_str()]->Fill(nJets_CSVL, Sample, ScalePlots, Luminosity * ScaleFactor);
+				                MSPlot[("NCSVv2Mjets"+WhatSysts[JecCounter]).c_str()]->Fill(nJets_CSVM, Sample, ScalePlots, Luminosity * ScaleFactor);
+				                MSPlot[("NCSVv2Tjets"+WhatSysts[JecCounter]).c_str()]->Fill(nJets_CSVT, Sample, ScalePlots, Luminosity * ScaleFactor);
+				                MSPlot[("Njets"+WhatSysts[JecCounter]).c_str()]->Fill(nJets, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("LeptonPt"+WhatSysts[JecCounter]).c_str()]->Fill(pt_lepton, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("LeptonEta"+WhatSysts[JecCounter]).c_str()]->Fill(eta_lepton, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("LeptonPhi"+WhatSysts[JecCounter]).c_str()]->Fill(phi_lepton, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("LeptonCharge"+WhatSysts[JecCounter]).c_str()]->Fill(LepCharge, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("NPV"+WhatSysts[JecCounter]).c_str()]->Fill(nvtx, Sample, ScalePlots, Luminosity * ScaleFactor);
                         for(int i_Jet = 0; i_Jet < nJets; i_Jet++)
                         {
-                            MSPlot[("JetPt"+WhatSysts[JecCounter]).c_str()]->Fill(pt_jet[i_Jet], Sample, true, Luminosity * ScaleFactor);
-                            MSPlot[("JetEta"+WhatSysts[JecCounter]).c_str()]->Fill(eta_jet[i_Jet], Sample, true, Luminosity * ScaleFactor);
-                            MSPlot[("JetPhi"+WhatSysts[JecCounter]).c_str()]->Fill(phi_jet[i_Jet], Sample, true, Luminosity * ScaleFactor);
-                            MSPlot[("JetCSVv2"+WhatSysts[JecCounter]).c_str()]->Fill(CSVv2[i_Jet], Sample, true, Luminosity * ScaleFactor);
-                            MSPlot[("JetcMVAv2"+WhatSysts[JecCounter]).c_str()]->Fill(cMVA[i_Jet], Sample, true, Luminosity * ScaleFactor);
+                            MSPlot[("JetPt"+WhatSysts[JecCounter]).c_str()]->Fill(pt_jet[i_Jet], Sample, ScalePlots, Luminosity * ScaleFactor);
+                            MSPlot[("JetEta"+WhatSysts[JecCounter]).c_str()]->Fill(eta_jet[i_Jet], Sample, ScalePlots, Luminosity * ScaleFactor);
+                            MSPlot[("JetPhi"+WhatSysts[JecCounter]).c_str()]->Fill(phi_jet[i_Jet], Sample, ScalePlots, Luminosity * ScaleFactor);
+                            MSPlot[("JetCSVv2"+WhatSysts[JecCounter]).c_str()]->Fill(CSVv2[i_Jet], Sample, ScalePlots, Luminosity * ScaleFactor);
+                            MSPlot[("JetcMVAv2"+WhatSysts[JecCounter]).c_str()]->Fill(cMVA[i_Jet], Sample, ScalePlots, Luminosity * ScaleFactor);
                         }			                
 
 
-                        MSPlot[("HiggsMass_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsMass_TOPHLEPBB_hut, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsMass_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsMass_TOPHLEPBB_hct, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsEta_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsEta_TOPHLEPBB_hut, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsEta_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsEta_TOPHLEPBB_hct, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepMass_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepMass_TOPHLEPBB_hut, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepMass_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepMass_TOPHLEPBB_hct, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepPt_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepPt_TOPHLEPBB_hut, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepPt_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepPt_TOPHLEPBB_hct, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepEta_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepEta_TOPHLEPBB_hut, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepEta_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepEta_TOPHLEPBB_hct, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepHiggsDr_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepHiggsDr_TOPHLEPBB_hut, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepHiggsDr_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepHiggsDr_TOPHLEPBB_hct, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet1CSVv2_TOPHLEPBB_hut, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet1CSVv2_TOPHLEPBB_hct, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet2CSVv2_TOPHLEPBB_hut, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet2CSVv2_TOPHLEPBB_hct, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepBJetCSVv2_TOPHLEPBB_hut, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepBJetCSVv2_TOPHLEPBB_hct, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopHadMass_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopHadMass_TOPTOPLEPHAD, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepMass_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepMass_TOPTOPLEPHAD, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepTopHadDr_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepTopHadDr_TOPTOPLEPHAD, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepBJetCSVv2_TOPTOPLEPHAD, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopHadBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopHadBJetCSVv2_TOPTOPLEPHAD, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopHadWNonBJet1CSVv2_TOPTOPLEPHAD, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopHadWNonBJet2CSVv2_TOPTOPLEPHAD, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsMass_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsMass_TOPTOPLEPHBB, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepMass_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepMass_TOPTOPLEPHBB, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepHiggsDr_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepHiggsDr_TOPTOPLEPHBB, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsBJet1CSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet1CSVv2_TOPTOPLEPHBB, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet2CSVv2_TOPTOPLEPHBB, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepBJetCSVv2_TOPTOPLEPHBB, Sample, true, Luminosity * ScaleFactor);
-                        MSPlot[("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(TopHadNonBJetCSVv2_TOPTOPLEPHBB, Sample, true, Luminosity * ScaleFactor);
+                        MSPlot[("HiggsMass_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsMass_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("HiggsMass_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsMass_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("HiggsEta_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsEta_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("HiggsEta_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsEta_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopLepMass_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepMass_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopLepMass_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepMass_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopLepPt_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepPt_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopLepPt_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepPt_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopLepEta_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepEta_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopLepEta_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepEta_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopLepHiggsDr_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepHiggsDr_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopLepHiggsDr_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepHiggsDr_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet1CSVv2_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet1CSVv2_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet2CSVv2_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet2CSVv2_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepBJetCSVv2_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepBJetCSVv2_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopHadMass_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopHadMass_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopLepMass_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepMass_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopLepTopHadDr_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepTopHadDr_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepBJetCSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopHadBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopHadBJetCSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopHadWNonBJet1CSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopHadWNonBJet2CSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("HiggsMass_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsMass_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopLepMass_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepMass_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopLepHiggsDr_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepHiggsDr_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("HiggsBJet1CSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet1CSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet2CSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepBJetCSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(TopHadNonBJetCSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+
                }
 			                
 		        }//for-loop events
@@ -1192,10 +1286,12 @@ int main(int argc, char *argv[])
   mkdir(pathPNG.c_str(),0777);
   cout <<"Making directory :"<< pathPNG  <<endl;		//make directory
 
-  TFile *outfile = new TFile((pathPNG+"/Output.root").c_str(),"recreate");
-  outfile->cd();
+  string outfilename = pathPNG+"/Output.root";
 
+  TFile *outfile = new TFile(outfilename.c_str(),"recreate");
+//  outfile->cd();
 
+  vector<string> NominalVariableNames;
   // Loop over all the MSPlots
   for(map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
   {
@@ -1223,12 +1319,59 @@ int main(int argc, char *argv[])
           bool savePNG = false; //automatically save png files of MSPlots.
           */
       cout << "Drawing MSP: " << name << endl;
-      temp->Draw("MyMSP_"+name, 1, false, false, false, 1);//Do not save the pictures of the systematics
-      if(name.find("Minus") || name.find("Plus")) temp->Write(outfile, name, true,pathPNG, "png");
-      MSPlot.erase(name);
+      temp->Draw("MyMSP_"+name, 1, false, false, false, 1);
+      bool writePng = false;
+      if(name.find("Minus") == string::npos && name.find("Plus")== string::npos)//Do not save the pictures of the systematics
+      {
+          NominalVariableNames.push_back(name);
+          writePng = true;
+      }
+      temp->Write(outfile, name, false,pathPNG, "png");
 	}
 
-  	outfile->Write("kOverwrite");
+  outfile->Write("kOverwrite");
+  outfile->Close();
+  
+  cout << "  - Making total systematic bands " << endl;
+  string errorbandfile = (pathPNG+"/Systematics_BareHistos.root");
+  MakeTotalSystErrorBand_Distributions(outfilename, WhatSysts, datasetnames_backgrounds, NominalVariableNames, errorbandfile);
+
+
+
+  //Now remake MSPlots with systematic error bands
+  TFile *outfile_errorbands = new TFile((pathPNG+"/Output_withErrorBands.root").c_str(),"recreate");
+  outfile_errorbands->cd();
+
+  for(map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
+  {
+     	string name = it->first;
+
+      if(name.find("Minus") != string::npos || name.find("Plus")!= string::npos)//Do not save the pictures of the systematics
+      {
+          continue;
+      }
+
+
+     	MultiSamplePlot *temp = it->second;
+     	
+     	temp->setErrorBandFile(errorbandfile);
+
+
+     	
+      if (debug)
+      {
+          cout << "Saving the MSP" << endl;
+          cout << " and it->first is " << name << endl;
+          cout << " Luminosity is " << Luminosity << endl;
+      }
+      cout << "Drawing MSP: " << name << endl;
+      temp->Draw("MyMSP_"+name, 1, true, true, true, 1);
+      bool writePng = false;
+      temp->Write(outfile_errorbands, name, true,pathPNG, "png");
+	}
+	outfile_errorbands->Write("kOverwrite");
+
+
 
     cout << "It took us " << ((double)clock() - start) / CLOCKS_PER_SEC << " to run the program" << endl;
     cout << "********************************************" << endl;
@@ -1263,9 +1406,10 @@ void MakeNPV_Distributions(int baseline_jets, int baseline_bjets, string channel
 
 
     string xmlNom;
-    if(channel == "_El") xmlNom = "config/FullMcBkgdSamples_El_TreeProcessor.xml";
-    if(channel == "_Mu") xmlNom = "config/FullMcBkgdSamples_Mu_TreeProcessor.xml";
-    if(channel == "_All") xmlNom = "config/FullMcBkgdSamples_Mu_TreeProcessor.xml";
+    if(Manual_XML) xmlNom = manualxml;
+    else if(channel == "_El") xmlNom = "config/FullMcBkgdSamples_El_TreeProcessor.xml";
+    else if(channel == "_Mu") xmlNom = "config/FullMcBkgdSamples_Mu_TreeProcessor.xml";
+    else if(channel == "_All") xmlNom = "config/FullMcBkgdSamples_Mu_TreeProcessor.xml";
     TString TreePath = "Merged/Ntuples" + channel + "/Ntuples" + date;
 
   	const char *xmlfile = xmlNom.c_str();
@@ -1350,14 +1494,165 @@ void MakeNPV_Distributions(int baseline_jets, int baseline_bjets, string channel
 }
 
 
-void MakeTotalSystErrorBand_Distributions(TFile MSPlotFile, vector< string > systematics)
+void MakeTotalSystErrorBand_Distributions(string outfilename, vector< string > systematics, vector <string> datasetNames, vector<string> NominalVariableNames, string outputFile)
 {
 
+    TFile *MSPlotFile = new TFile(outfilename.c_str(),"read");
+
+    map<string,MultiSamplePlot*> MSPlot_ErrorBands;
+    map<string,TH1F*> histo1D_nominal;
+    map<string,TH1F*> histo1D_Up_SamplesAdded;
+    map<string,TH1F*> histo1D_Down_SamplesAdded;
+
+    map<string,TH1F*> histo1D_TotalUp;
+    map<string,TH1F*> histo1D_TotalDown;
+
+    for(int iVar = 0; iVar < NominalVariableNames.size(); iVar++)
+    {
+
+        cout << "  - MakeTotalSystErrorBand_Distributions(): Variable " << NominalVariableNames[iVar] << endl;
+
+        histo1D_nominal[NominalVariableNames[iVar].c_str()] = 0;
+        histo1D_TotalDown[NominalVariableNames[iVar].c_str()] =  0;
+        histo1D_TotalUp[NominalVariableNames[iVar].c_str()] =  0;
 
 
+        //Add the nominal samples into 1 histogram
+        for(int iDataName = 0; iDataName < datasetNames.size(); iDataName++)
+        {
+            TDirectory *subdir_nominal = (TDirectory*) MSPlotFile->Get(("MultiSamplePlot_"+NominalVariableNames[iVar]).c_str());
+            subdir_nominal->cd();
+            string nominalname = (NominalVariableNames[iVar]+"_"+datasetNames[iDataName]+"_");
+            
+            TH1F *h_tmp =  (TH1F*)subdir_nominal->Get(nominalname.c_str());
+            if(iDataName == 0) histo1D_nominal[NominalVariableNames[iVar].c_str()] = (TH1F*) h_tmp->Clone(/*NominalVariableNames[iVar].c_str()*/);
+            else histo1D_nominal[NominalVariableNames[iVar].c_str()]->Add(h_tmp);
+        }
+            
+        //Add the systematic samples for up-variation into 1 histogram and down-variation
+        for(int iSys = 0; iSys < systematics.size(); iSys++)
+        {
+            string varNameSys = NominalVariableNames[iVar]+systematics[iSys];
+            TDirectory *subdir_sys = (TDirectory*) MSPlotFile->Get(("MultiSamplePlot_"+varNameSys).c_str());
+            subdir_sys->cd();
+            cout << "  - MakeTotalSystErrorBand_Distributions(): Making systematic band for " << systematics[iSys] << endl;
+
+            histo1D_Up_SamplesAdded[(varNameSys+"Plus").c_str()] = 0;
+            histo1D_Down_SamplesAdded[(varNameSys+"Minus").c_str()] = 0;
+
+            for(int iDataName = 0; iDataName < datasetNames.size(); iDataName++)
+            {
+
+                TH1F *h_tmp =  (TH1F*)subdir_sys->Get((varNameSys+"_"+datasetNames[iDataName]+"_").c_str());
+                
+                if(systematics[iSys].find("Plus")!= string::npos)
+                {
+                    if(iDataName == 0) histo1D_Up_SamplesAdded[(varNameSys+"Plus").c_str()] = (TH1F*) h_tmp->Clone(/*(varNameSys+"Plus").c_str()*/);
+                    else histo1D_Up_SamplesAdded[(varNameSys+"Plus").c_str()]->Add(h_tmp);
+                }
+                else if(systematics[iSys].find("Minus")!= string::npos)
+                {
+                    if(iDataName == 0) histo1D_Down_SamplesAdded[(varNameSys+"Minus").c_str()] = (TH1F*) h_tmp->Clone(/*(varNameSys+"Minus").c_str()*/);
+                    else histo1D_Down_SamplesAdded[(varNameSys+"Minus").c_str()]->Add(h_tmp);
+//cout << "Integral of Minus systematic " << histo1D_Down_SamplesAdded[(varNameSys+"Minus").c_str()]->GetBinContent(0) << endl;
+                }
+            }
+        }
+            
+       
+        //Run over all systematics to add their effect in each bin in quadrature.
+        int nBins = histo1D_nominal[NominalVariableNames[iVar].c_str()]->GetNbinsX();
+        
+        //Initialize the total uncertainty histograms
+        histo1D_TotalUp[(NominalVariableNames[iVar]+"Plus").c_str()] = (TH1F*) histo1D_nominal[NominalVariableNames[iVar].c_str()]->Clone(/*(NominalVariableNames[iVar]+"Plus").c_str()*/);
+        histo1D_TotalDown[(NominalVariableNames[iVar]+"Minus").c_str()] = (TH1F*) histo1D_nominal[NominalVariableNames[iVar].c_str()]->Clone(/*(NominalVariableNames[iVar]+"Minus").c_str()*/);
+
+        for(int iBin = 0; iBin < nBins+1; iBin++)
+        {
+            float bincontent_nominal  = histo1D_nominal[NominalVariableNames[iVar].c_str()]->GetBinContent(iBin);
+            float bincontent_up_squared = 0.;
+            float bincontent_down_squared = 0.;
+            for(int iSys = 0; iSys < systematics.size(); iSys++)
+            {
+                string varNameSys = NominalVariableNames[iVar]+systematics[iSys];
+
+                
+                float bincontent_DiffSystUpNom = 0.;
+                float bincontent_DiffSystDownNom = 0.;
+                
+                if(systematics[iSys].find("Plus")!= string::npos)histo1D_Up_SamplesAdded[(varNameSys+"Plus").c_str()]->GetBinContent(iBin) - bincontent_nominal;
+                else if(systematics[iSys].find("Minus")!= string::npos) bincontent_nominal - histo1D_Down_SamplesAdded[(varNameSys+"Minus").c_str()]->GetBinContent(iBin);
+
+                if(bincontent_DiffSystUpNom < 0)
+                {
+                    cout << "    MakeTotalSystErrorBand_Distributions(): Found a downward variation for an up-syst wrt to nominal bincontent for " << NominalVariableNames[iVar] << "in bin " << iBin << endl;
+//                    cout << "    MakeTotalSystErrorBand_Distributions(): Putting this particular variation in this bin to 0" << endl;
+                }
+                if(bincontent_DiffSystDownNom > 0)
+                {
+                    cout << "    MakeTotalSystErrorBand_Distributions(): Found an upward variation for a down-syst wrt to nominal bincontent for " << NominalVariableNames[iVar] << "in bin " << iBin << endl;
+//                    cout << "    MakeTotalSystErrorBand_Distributions(): Putting this particular variation in this bin to 0" << endl;
+                }
+
+                if(systematics[iSys].find("Plus")!= string::npos) bincontent_up_squared += pow(bincontent_DiffSystUpNom,2);
+                else if(systematics[iSys].find("Minus")!= string::npos)bincontent_down_squared += pow(bincontent_DiffSystDownNom,2);
+            }
+            
+cout << "  - MakeTotalSystErrorBand_Distributions bincontent_up_squared: " << bincontent_up_squared << endl;            
+cout << "  - MakeTotalSystErrorBand_Distributions bincontent_down_squared" << bincontent_down_squared << endl;            
+            histo1D_TotalUp[(NominalVariableNames[iVar]+"Plus").c_str()]->SetBinContent(iBin,bincontent_nominal+pow(bincontent_up_squared,0.5));
+            histo1D_TotalDown[(NominalVariableNames[iVar]+"Minus").c_str()]->SetBinContent(iBin,bincontent_nominal-pow(bincontent_down_squared,0.5));
+        }
+        
+        
+    }
+
+
+    //Write output histos to a file  
+    TFile *fout = new TFile(outputFile.c_str(),"recreate");
+    for(int iVar = 0; iVar < NominalVariableNames.size(); iVar++)
+    {
+        fout->cd();
+        TDirectory* subdir = fout->mkdir(("MultiSamplePlot_"+NominalVariableNames[iVar]).c_str());
+        subdir->cd();
+        
+        //Write the histos according to the definitions from MultiSamplePlot to read the systematics
+        histo1D_nominal[NominalVariableNames[iVar].c_str()]->Write("Nominal");
+        histo1D_TotalUp[(NominalVariableNames[iVar]+"Plus").c_str()]->Write("Plus");
+        histo1D_TotalDown[(NominalVariableNames[iVar]+"Minus").c_str()]->Write("Minus");
+        
+        subdir->Write("kOverwrite");
+        subdir->Close();
+        delete subdir;
+
+    }
+    fout->Write("kOverwrite");
 }
 
 
-
-
-
+double WeightPrivateSignalSample(Int_t n_jets, string samplename)
+{
+    double weight = 1.;
+    if(samplename.find("Private")== string::npos) weight = 1.;
+    else
+    {
+        if(samplename.find("ST_tHToBB_1L_Kappa_hct")!= string::npos)
+        {
+            if (n_jets == 0) weight = 0;
+            else if (n_jets == 1) weight = 0;
+            else if (n_jets == 2) weight = 0;
+            else if (n_jets == 3) weight = 1.094071257;
+            else if (n_jets == 4) weight = 0.956789131;
+            else if (n_jets == 5) weight = 0.836715582;
+            else if (n_jets == 6) weight = 0.719082739;
+            else if (n_jets == 7) weight = 0.641676573;
+            else if (n_jets == 8) weight = 0.549510742;
+            else if (n_jets == 9) weight = 0.457332313;
+            else if (n_jets == 10) weight = 0.715143217;
+        }
+    }
+    
+//cout << "JetWeight: " << weight << endl;
+//weight = 1;
+    return weight;
+}

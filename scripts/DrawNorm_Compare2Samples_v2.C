@@ -1,19 +1,20 @@
 map<string,TH1F*> histo1D;
 
 
-void DrawNorm_Compare2Samples()
+void DrawNorm_Compare2Samples_v2()
 {
-  TFile *sample1= new TFile("/user/kderoove/FCNC/TopTreeFramework_Run2/CMSSW_8_0_24/src/TopBrussels/FCNCAnalysis/Merged/Ntuples_All/Ntuples_19_1_2017/FCNC_1L3B__Run2_TopTree_Study_NP_overlay_ST_tHToBB_1L_Kappa_hct.root","READ");
+  TFile *MSPlotFile= new TFile("../MSPlots/MSPlots_All/_19_1_2017/Inclusive/Output.root","READ");
   std::string label_sample1 = "ST-hct Official";
-  TFile *sample2= new TFile("/user/kderoove/FCNC/TopTreeFramework_Run2/CMSSW_8_0_24/src/TopBrussels/FCNCAnalysis/Merged/Ntuples_All/Ntuples_19_1_2017/FCNC_1L3B__Run2_TopTree_Study_NP_overlay_ST_tHToBB_1L_Kappa_hct-Private.root","READ");
+  std::string samplename1 = "NP_overlay_ST_tHToBB_1L_Kappa_hct";
   std::string label_sample2 = "ST-hct Private";
+  std::string samplename2 = "NP_overlay_ST_tHToBB_1L_Kappa_hct-Private";
 
-  string treename = "ObjectVarsTree";
+/*  ing treename = "ObjectVarsTree";
   TTree *tree_sample1 = (TTree*)sample1->Get(treename.c_str());
   TTree *tree_sample2 = (TTree*)sample2->Get(treename.c_str());
   
-  string condition = "20<I_nvtx&&I_nvtx<26";
-
+  string condition = "22<I_nvtx&&I_nvtx<26";
+*/
   vector<std::string> vars;
   vector<int> nbins;
   vector<double> xmin;
@@ -22,81 +23,81 @@ void DrawNorm_Compare2Samples()
 
 
   //Defining the variables we want to plot with the nbins, xmin and xmax
-  vars.push_back("I_nvtx");
+/*  vars.push_back("I_nvtx");
   nbins.push_back(51);
   xmin.push_back(-0.5);
   xmax.push_back(50.5);
-
-  vars.push_back("I_npu");
+*/
+  vars.push_back("NPV");
   nbins.push_back(51);
   xmin.push_back(-0.5);
   xmax.push_back(50.5);
   
-  vars.push_back("I_nJets_CSVL");
+  vars.push_back("NCSVv2Ljets");
   nbins.push_back(11);
   xmin.push_back(-0.5);
   xmax.push_back(10.5);
   
-  vars.push_back("I_nJets_CSVM");
+  vars.push_back("NCSVv2Mjets");
   nbins.push_back(11);
   xmin.push_back(-0.5);
   xmax.push_back(10.5);
   
-  vars.push_back("I_nJets_CSVT");
+  vars.push_back("NCSVv2Tjets");
   nbins.push_back(11);
   xmin.push_back(-0.5);
   xmax.push_back(10.5);
   
-  vars.push_back("I_nJets");
+  vars.push_back("Njets");
   nbins.push_back(11);
   xmin.push_back(-0.5);
   xmax.push_back(10.5); 
   
-  vars.push_back("pt_lepton");
+  vars.push_back("LeptonPt");
   nbins.push_back(50);
   xmin.push_back(20.);
   xmax.push_back(300.); 
   
-  vars.push_back("eta_lepton");
+  vars.push_back("LeptonEta");
   nbins.push_back(50);
   xmin.push_back(-2.5);
   xmax.push_back(2.5); 
   
-  vars.push_back("phi_lepton");
+  vars.push_back("LeptonPhi");
   nbins.push_back(50);
   xmin.push_back(-3.2);
   xmax.push_back(3.2); 
   
-  vars.push_back("I_LepCharge");
+  vars.push_back("LeptonCharge");
   nbins.push_back(3);
   xmin.push_back(-1.5);
   xmax.push_back(1.5); 
   
-  vars.push_back("pt_jet");
+  vars.push_back("JetPt");
   nbins.push_back(50);
   xmin.push_back(20.);
   xmax.push_back(300.);
   
-  vars.push_back("eta_jet");
+  vars.push_back("JetEta");
   nbins.push_back(50);
   xmin.push_back(-2.5);
   xmax.push_back(2.5); 
   
-  vars.push_back("phi_jet");
+  vars.push_back("JetPhi");
   nbins.push_back(50);
   xmin.push_back(-3.2);
   xmax.push_back(3.2);
   
-  vars.push_back("CSVv2");
+  vars.push_back("JetCSVv2");
   nbins.push_back(50);
   xmin.push_back(0.);
   xmax.push_back(1.);
   
-  vars.push_back("cMVA");
+  vars.push_back("JetcMVAv2");
   nbins.push_back(50);
   xmin.push_back(-1.);
   xmax.push_back(1.);
-
+/*
   vars.push_back("cdiscCvsL_jet");
   nbins.push_back(50);
   xmin.push_back(-1.);
@@ -121,7 +122,7 @@ void DrawNorm_Compare2Samples()
   nbins.push_back(60);
   xmin.push_back(-30.5);
   xmax.push_back(29.5);
-  
+*/  
 /*
   vars.push_back("HiggsMass_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("HiggsMass_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, 50., 250, "M(Higgs)","Events", category,"GeV");
   vars.push_back("HiggsMass_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("HiggsMass_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, 50., 250, "M(Higgs)","Events", category,"GeV");
@@ -173,12 +174,10 @@ void DrawNorm_Compare2Samples()
 
   for(int i_vars = 0; i_vars < vars.size(); i_vars++)
   {   
+
       histo1D[(vars[i_vars]+"_sample1").c_str()] = new TH1F(("h_"+vars[i_vars]+"_sample1").c_str(),vars[i_vars].c_str(),nbins[i_vars],xmin[i_vars],xmax[i_vars]);
       histo1D[(vars[i_vars]+"_sample2").c_str()] = new TH1F(("h_"+vars[i_vars]+"_sample2").c_str(),vars[i_vars].c_str(),nbins[i_vars],xmin[i_vars],xmax[i_vars]);
       gStyle->SetOptStat(kFALSE);
-      tree_sample1->Draw((vars[i_vars]+">>h_"+vars[i_vars]+"_sample1").c_str(),condition.c_str());
-      tree_sample2->Draw((vars[i_vars]+">>h_"+vars[i_vars]+"_sample2").c_str(),condition.c_str());
-
 
       if(!histo1D[(vars[i_vars]+"_sample1").c_str()] || !histo1D[(vars[i_vars]+"_sample2").c_str()])
       {
@@ -186,8 +185,10 @@ void DrawNorm_Compare2Samples()
           continue;
       }
 
-//      histo1D[(vars[i_vars]+"_sample1").c_str()] = tmp_hist_sample1->Clone();
-//      histo1D[(vars[i_vars]+"_sample2").c_str()] = tmp_hist_sample2->Clone();
+      TDirectory* subdir = (TDirectory*) MSPlotFile->Get(("MultiSamplePlot_"+vars[i_vars]+"OnlyPUSF").c_str());
+      subdir->cd();
+      histo1D[(vars[i_vars]+"_sample1").c_str()] = (TH1F*) subdir->Get( (vars[i_vars]+"OnlyPUSF"+"_"+samplename1).c_str());
+      histo1D[(vars[i_vars]+"_sample2").c_str()] = (TH1F*) subdir->Get( (vars[i_vars]+"OnlyPUSF"+"_"+samplename2).c_str());
 
       Double_t norm_sample1 = 1;
       Double_t scale_sample1 = norm_sample1/(histo1D[(vars[i_vars]+"_sample1").c_str()]->Integral());
