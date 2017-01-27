@@ -2043,7 +2043,7 @@ int main (int argc, char *argv[])
             //////////////////////////////////////////////////////////////////////
             // Cut on nb of jets and b-jets
             //////////////////////////////////////////////////////////////////////
-			      if(selectedJets.size() < 4)  continue;
+			      if(selectedJets.size() < 3)  continue;
             if(debug) cout << "Past cut 5: passed_FinalSelection number of jets cut" << endl;
             cutstep[7]=cutstep[7]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
             passed_Step8++;
@@ -2291,7 +2291,7 @@ int main (int argc, char *argv[])
                 {
                       if(i_Jet < 3 || selectedJets[i_Jet]->btag_combinedInclusiveSecondaryVertexV2BJetTags()>CSVv2_workingpointvalue_Medium)//The 3 jets with the highest CSVv2 value are used as b-jets.
                       {
-                          if(i_Jet < selectedJets.size())//If all jets are b-tagged, assign the last jet as non-b tagged jet
+                          if(i_Jet != selectedJets.size()-1)//If all jets are b-tagged, assign the last jet as non-b tagged jet
                           {
                               BJetPt_TTHypo.push_back(selectedJets[i_Jet]->Pt());
                               BJetEta_TTHypo.push_back(selectedJets[i_Jet]->Eta());
@@ -2321,9 +2321,10 @@ int main (int argc, char *argv[])
                           NonBJetPhi_STHypo.push_back(selectedJets[i_Jet]->Phi());
                           NonBJetE_STHypo.push_back(selectedJets[i_Jet]->E());
                       }
+
                       if(i_Jet < 2 || selectedJets[i_Jet]->btag_combinedInclusiveSecondaryVertexV2BJetTags()>CSVv2_workingpointvalue_Medium)//The 2 jets with the highest CSVv2 value are used as b-jets, in case the number of b-jets is samller than 2.
                       {
-                          if(i_Jet < selectedJets.size()-1)//If all jets are b-tagged, assign the last 2 jets as non-b tagged jet
+                          if(i_Jet != selectedJets.size()-2 && i_Jet != selectedJets.size()-1)//If all jets are b-tagged, assign the last 2 jets as non-b tagged jet
                           {
                               BJetPt_SMttHypo.push_back(selectedJets[i_Jet]->Pt());
                               BJetEta_SMttHypo.push_back(selectedJets[i_Jet]->Eta());
