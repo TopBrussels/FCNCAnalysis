@@ -126,22 +126,24 @@ int main(int argc, char *argv[])
     WhatSysts.push_back("pileupMinus");   
     WhatSysts.push_back("leptonPlus");
     WhatSysts.push_back("leptonMinus");
-    WhatSysts.push_back("noSF");
+    WhatSysts.push_back("TopPtPlus");
+    WhatSysts.push_back("TopPtMinus");
+/*    WhatSysts.push_back("noSF");
     WhatSysts.push_back("OnlyTopPtSF");
     WhatSysts.push_back("OnlyBTagSF");
     WhatSysts.push_back("OnlyPUSF");
-    WhatSysts.push_back("OnlyLepSF");
-    WhatSysts.push_back("OnlyNLOSF");
+//    WhatSysts.push_back("OnlyLepSF");
+//    WhatSysts.push_back("OnlyNLOSF");
     WhatSysts.push_back("NoTopPtSF");
     WhatSysts.push_back("NoBTagSF");
     WhatSysts.push_back("NoPUSF");
-    WhatSysts.push_back("NoLepSF");
-    WhatSysts.push_back("NoNLOSF");
+//    WhatSysts.push_back("NoLepSF");
+//    WhatSysts.push_back("NoNLOSF");
     if(doJESSys) WhatSysts.push_back("JESPlus");
     if(doJESSys) WhatSysts.push_back("JESMinus");
     if(doJERSys) WhatSysts.push_back("JERPlus");
     if(doJERSys) WhatSysts.push_back("JERMinus");
-    WhatSysts.push_back("");   
+*/    WhatSysts.push_back("");   
 
     vector<string> WhatSysts_noJECs;
     
@@ -165,18 +167,20 @@ int main(int argc, char *argv[])
     WhatSysts_noJECs.push_back("pileupMinus");   
     WhatSysts_noJECs.push_back("leptonPlus");
     WhatSysts_noJECs.push_back("leptonMinus");
-    WhatSysts_noJECs.push_back("noSF");
+    WhatSysts_noJECs.push_back("TopPtPlus");
+    WhatSysts_noJECs.push_back("TopPtMinus");
+/*    WhatSysts_noJECs.push_back("noSF");
     WhatSysts_noJECs.push_back("OnlyTopPtSF");
     WhatSysts_noJECs.push_back("OnlyBTagSF");
     WhatSysts_noJECs.push_back("OnlyPUSF");
-    WhatSysts_noJECs.push_back("OnlyLepSF");
-    WhatSysts_noJECs.push_back("OnlyNLOSF");
+//    WhatSysts_noJECs.push_back("OnlyLepSF");
+//    WhatSysts_noJECs.push_back("OnlyNLOSF");
     WhatSysts_noJECs.push_back("NoTopPtSF");
     WhatSysts_noJECs.push_back("NoBTagSF");
     WhatSysts_noJECs.push_back("NoPUSF");
-    WhatSysts_noJECs.push_back("NoLepSF");
-    WhatSysts_noJECs.push_back("NoNLOSF");
-
+//    WhatSysts_noJECs.push_back("NoLepSF");
+//    WhatSysts_noJECs.push_back("NoNLOSF");
+*/
 
     cout << "------------------------------------------------------------------------------------------------" << endl;
     cout << "Begin program" << endl;
@@ -303,7 +307,7 @@ int main(int argc, char *argv[])
         MSPlot[("LeptonEta"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("LeptonEta"+WhatSysts[iSyst]).c_str(), 50, -2.5, 2.5, "Lepton eta","Events", category); 
         MSPlot[("LeptonPhi"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("LeptonPhi"+WhatSysts[iSyst]).c_str(), 50, -3.2, 3.2, "Lepton phi","Events", category); 
         MSPlot[("LeptonCharge"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("LeptonCharge"+WhatSysts[iSyst]).c_str(), 3, -1.5, 1.5, "Lepton Charge","Events", category); 
-        MSPlot[("JetPt"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetPt"+WhatSysts[iSyst]).c_str(), 50, 20., 300., "Jet Pt","Events", category, "GeV"); 
+/*        MSPlot[("JetPt"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetPt"+WhatSysts[iSyst]).c_str(), 50, 20., 300., "Jet Pt","Events", category, "GeV"); 
         MSPlot[("JetEta"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetEta"+WhatSysts[iSyst]).c_str(), 50, -2.5, 2.5, "Jet eta","Events", category); 
         MSPlot[("JetPhi"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetPhi"+WhatSysts[iSyst]).c_str(), 50, -3.2, 3.2, "Jet phi","Events", category);
         MSPlot[("JetCSVv2"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetCSVv2"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "Jet CSVv2","Events", category);
@@ -344,7 +348,11 @@ int main(int argc, char *argv[])
         MSPlot[("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
         MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
         MSPlot[("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-    }
+        MSPlot[("MVA_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, -1., 1., "BDT disc.","Events", category);
+        MSPlot[("MVA_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, -1., 1., "BDT disc.","Events", category);
+        MSPlot[("MVA_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, -1., 1., "BDT disc.","Events", category);
+        MSPlot[("MVA_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 50, -1., 1., "BDT disc.","Events", category);
+*/    }
   
  
 
@@ -785,7 +793,8 @@ int main(int argc, char *argv[])
                 nloSF *= ((double) (nPos - nNeg))/((double) (nPos + nNeg));
             }		
 
-            Double_t average_TopPtWeight = 1.;
+            Double_t average_TopPtWeight = 0.;
+            Double_t average_TopPtWeight_Up = 0.;
             if(dataSetName.find("TTJets") != string::npos)
             {
                 int nEventsPassed = 0;
@@ -799,10 +808,14 @@ int main(int argc, char *argv[])
 		                    if(baseline_jets == 3 && nJets != baseline_jets) continue;
 		                    else if(baseline_jets == 4 && nJets < baseline_jets) continue;
 		                }
+		                double TopPtReweighing_Up = 1+ 2*(1-W_TopPtReweighing);
+
                     average_TopPtWeight = average_TopPtWeight + W_TopPtReweighing;
+                    average_TopPtWeight_Up = average_TopPtWeight_Up + TopPtReweighing_Up;
                     nEventsPassed++;
                 }
                 average_TopPtWeight = average_TopPtWeight/nEventsPassed;
+                average_TopPtWeight_Up = average_TopPtWeight_Up/nEventsPassed;
             }
 		
       	    //***********************************************RUNNING OVER EVENTS**********************************************
@@ -1083,6 +1096,25 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
                                 if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
+                            else if(WhatSysts_noJECs[iSyst_] == "TopPtPlus")
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                if(dataSetName.find("TTJets") != string::npos)
+                                {
+                                    double TopPtReweighing_Up = 1+ 2*(1-W_TopPtReweighing);
+                                    SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= TopPtReweighing_Up/average_TopPtWeight_Up;
+                                }
+                            }
+                            else if(WhatSysts_noJECs[iSyst_] == "TopPtMinus")//Apply no TopPt reweighing
+                            {
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                            }
                             else if(WhatSysts_noJECs[iSyst_] == "OnlyTopPtSF")
                             {
                                 if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
@@ -1154,7 +1186,7 @@ int main(int argc, char *argv[])
                         MSPlot[("LeptonPhi"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(phi_lepton, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                         MSPlot[("LeptonCharge"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(LepCharge, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                         MSPlot[("NPV"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(nvtx, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        for(int i_Jet = 0; i_Jet < nJets; i_Jet++)
+/*                        for(int i_Jet = 0; i_Jet < nJets; i_Jet++)
                         {
                             MSPlot[("JetPt"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(pt_jet[i_Jet], Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                             MSPlot[("JetEta"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(eta_jet[i_Jet], Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
@@ -1199,7 +1231,11 @@ int main(int argc, char *argv[])
                         MSPlot[("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet2CSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                         MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepBJetCSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                         MSPlot[("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopHadNonBJetCSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                    }
+                        MSPlot[("MVA_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVA_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("MVA_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVA_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("MVA_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVA_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        MSPlot[("MVA_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVA_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+*/                    }
                }
                 if(filepath.find("JESMinus") != string::npos || filepath.find("JESPlus") != string::npos  || filepath.find("JERMinus") != string::npos || filepath.find("JERPlus") != string::npos || isData || WhatSysts[JecCounter] == "")
                {
@@ -1212,7 +1248,7 @@ int main(int argc, char *argv[])
                         MSPlot[("LeptonPhi"+WhatSysts[JecCounter]).c_str()]->Fill(phi_lepton, Sample, ScalePlots, Luminosity * ScaleFactor);
                         MSPlot[("LeptonCharge"+WhatSysts[JecCounter]).c_str()]->Fill(LepCharge, Sample, ScalePlots, Luminosity * ScaleFactor);
                         MSPlot[("NPV"+WhatSysts[JecCounter]).c_str()]->Fill(nvtx, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        for(int i_Jet = 0; i_Jet < nJets; i_Jet++)
+/*                        for(int i_Jet = 0; i_Jet < nJets; i_Jet++)
                         {
                             MSPlot[("JetPt"+WhatSysts[JecCounter]).c_str()]->Fill(pt_jet[i_Jet], Sample, ScalePlots, Luminosity * ScaleFactor);
                             MSPlot[("JetEta"+WhatSysts[JecCounter]).c_str()]->Fill(eta_jet[i_Jet], Sample, ScalePlots, Luminosity * ScaleFactor);
@@ -1257,7 +1293,11 @@ int main(int argc, char *argv[])
                         MSPlot[("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet2CSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
                         MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepBJetCSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
                         MSPlot[("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(TopHadNonBJetCSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
-
+                        MSPlot[("MVA_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(MVA_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("MVA_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(MVA_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("MVA_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(MVA_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                        MSPlot[("MVA_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(MVA_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+*/
                }
 			                
 		        }//for-loop events
@@ -1321,7 +1361,12 @@ int main(int argc, char *argv[])
       cout << "Drawing MSP: " << name << endl;
       temp->Draw("MyMSP_"+name, 1, false, false, false, 1);
       bool writePng = false;
-      if(name.find("Minus") == string::npos && name.find("Plus")== string::npos)//Do not save the pictures of the systematics
+
+      if(name.find("Minus") == string::npos && name.find("Plus")== string::npos 
+        && name.find("noSF") == string::npos && name.find("OnlyTopPtSF") == string::npos && name.find("OnlyBTagSF") == string::npos && 
+        name.find("OnlyPUSF") == string::npos && name.find("OnlyLepSF") == string::npos && name.find("OnlyNLOSF") == string::npos && 
+        name.find("NoTopPtSF") == string::npos && name.find("NoBTagSF") == string::npos && name.find("NoPUSF") == string::npos && 
+        name.find("NoLepSF") == string::npos && name.find("NoNLOSF") == string::npos)//Do not save the pictures of the systematics
       {
           NominalVariableNames.push_back(name);
           writePng = true;
@@ -1346,7 +1391,11 @@ int main(int argc, char *argv[])
   {
      	string name = it->first;
 
-      if(name.find("Minus") != string::npos || name.find("Plus")!= string::npos)//Do not save the pictures of the systematics
+      if(name.find("Minus") != string::npos || name.find("Plus")!= string::npos 
+        || name.find("noSF") != string::npos || name.find("OnlyTopPtSF") != string::npos || name.find("OnlyBTagSF") != string::npos || 
+        name.find("OnlyPUSF") != string::npos || name.find("OnlyLepSF") != string::npos || name.find("OnlyNLOSF") != string::npos || 
+        name.find("NoTopPtSF") != string::npos || name.find("NoBTagSF") != string::npos || name.find("NoPUSF") != string::npos || 
+        name.find("NoLepSF") != string::npos || name.find("NoNLOSF") != string::npos)//Do not save the pictures of the systematics
       {
           continue;
       }
@@ -1377,6 +1426,9 @@ int main(int argc, char *argv[])
     cout << "********************************************" << endl;
     cout << "           End of the program !!            " << endl;
     cout << "********************************************" << endl;
+    
+    
+    return 0;
 
 }
 
@@ -1576,32 +1628,19 @@ void MakeTotalSystErrorBand_Distributions(string outfilename, vector< string > s
             {
                 string varNameSys = NominalVariableNames[iVar]+systematics[iSys];
 
+                float bincontent_Syst_vs_Nom = 0.;
                 
-                float bincontent_DiffSystUpNom = 0.;
-                float bincontent_DiffSystDownNom = 0.;
-                
-                if(systematics[iSys].find("Plus")!= string::npos)histo1D_Up_SamplesAdded[(varNameSys+"Plus").c_str()]->GetBinContent(iBin) - bincontent_nominal;
-                else if(systematics[iSys].find("Minus")!= string::npos) bincontent_nominal - histo1D_Down_SamplesAdded[(varNameSys+"Minus").c_str()]->GetBinContent(iBin);
+                if(systematics[iSys].find("Minus")!= string::npos)  bincontent_Syst_vs_Nom = bincontent_nominal - histo1D_Down_SamplesAdded[(varNameSys+"Minus").c_str()]->GetBinContent(iBin);
+                else if(systematics[iSys].find("Plus")!= string::npos) bincontent_Syst_vs_Nom = bincontent_nominal - histo1D_Up_SamplesAdded[(varNameSys+"Plus").c_str()]->GetBinContent(iBin);
 
-                if(bincontent_DiffSystUpNom < 0)
-                {
-                    cout << "    MakeTotalSystErrorBand_Distributions(): Found a downward variation for an up-syst wrt to nominal bincontent for " << NominalVariableNames[iVar] << "in bin " << iBin << endl;
-//                    cout << "    MakeTotalSystErrorBand_Distributions(): Putting this particular variation in this bin to 0" << endl;
-                }
-                if(bincontent_DiffSystDownNom > 0)
-                {
-                    cout << "    MakeTotalSystErrorBand_Distributions(): Found an upward variation for a down-syst wrt to nominal bincontent for " << NominalVariableNames[iVar] << "in bin " << iBin << endl;
-//                    cout << "    MakeTotalSystErrorBand_Distributions(): Putting this particular variation in this bin to 0" << endl;
-                }
-
-                if(systematics[iSys].find("Plus")!= string::npos) bincontent_up_squared += pow(bincontent_DiffSystUpNom,2);
-                else if(systematics[iSys].find("Minus")!= string::npos)bincontent_down_squared += pow(bincontent_DiffSystDownNom,2);
+                //Check whether the variation goes up or down wrt to the nominal and add in quadrature the contents to the relevant histo.
+                if(bincontent_Syst_vs_Nom > 0.) bincontent_down_squared += bincontent_Syst_vs_Nom*bincontent_Syst_vs_Nom;
+                else if(bincontent_Syst_vs_Nom < 0.) bincontent_up_squared += bincontent_Syst_vs_Nom*bincontent_Syst_vs_Nom;
             }
             
-cout << "  - MakeTotalSystErrorBand_Distributions bincontent_up_squared: " << bincontent_up_squared << endl;            
-cout << "  - MakeTotalSystErrorBand_Distributions bincontent_down_squared" << bincontent_down_squared << endl;            
-            histo1D_TotalUp[(NominalVariableNames[iVar]+"Plus").c_str()]->SetBinContent(iBin,bincontent_nominal+pow(bincontent_up_squared,0.5));
-            histo1D_TotalDown[(NominalVariableNames[iVar]+"Minus").c_str()]->SetBinContent(iBin,bincontent_nominal-pow(bincontent_down_squared,0.5));
+
+            histo1D_TotalUp[(NominalVariableNames[iVar]+"Plus").c_str()]->SetBinContent(iBin,bincontent_nominal + sqrt(bincontent_up_squared));
+            histo1D_TotalDown[(NominalVariableNames[iVar]+"Minus").c_str()]->SetBinContent(iBin,bincontent_nominal  - sqrt(bincontent_down_squared));
         }
         
         

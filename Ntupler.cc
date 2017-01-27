@@ -1999,6 +1999,9 @@ int main (int argc, char *argv[])
 			      // Jet variables //
 			      /////////////////////////////////////
 			      nJets = 0; 
+            nJets_CSVT =  0; 
+	          nJets_CSVM =  0;
+            nJets_CSVL =  0;
             for(Int_t seljet = 0; seljet < selectedJets.size(); seljet++)
             {
                       
@@ -2015,11 +2018,11 @@ int main (int argc, char *argv[])
                 if(cMVA[nJets] > cMVA_workingpointvalue_Loose) nJets_cMVAL++;
                 if(cMVA[nJets] > cMVA_workingpointvalue_Medium) nJets_cMVAM++;
                 if(cMVA[nJets] > cMVA_workingpointvalue_Tight) nJets_cMVAT++;
+                if(CSVv2[nJets] > CSVv2_workingpointvalue_Loose) nJets_CSVL++;
+                if(CSVv2[nJets] > CSVv2_workingpointvalue_Medium) nJets_CSVM++;
+                if(CSVv2[nJets] > CSVv2_workingpointvalue_Tight) nJets_CSVT++;
                 nJets++;
             }
-            nJets_CSVT =  selectedTBJets.size(); 
-	          nJets_CSVM =  selectedMBJets.size();
-            nJets_CSVL =  selectedLBJets.size();
 	          double met_px = mets[0]->Px();
 	          double met_py = mets[0]->Py();
             met_Pt = sqrt(met_px*met_px + met_py*met_py);
@@ -2040,7 +2043,7 @@ int main (int argc, char *argv[])
             //////////////////////////////////////////////////////////////////////
             // Cut on nb of jets and b-jets
             //////////////////////////////////////////////////////////////////////
-			      if(selectedJets.size() < 3)  continue;
+			      if(selectedJets.size() < 4)  continue;
             if(debug) cout << "Past cut 5: passed_FinalSelection number of jets cut" << endl;
             cutstep[7]=cutstep[7]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
             passed_Step8++;
@@ -2239,13 +2242,6 @@ int main (int argc, char *argv[])
             ////////////////////////////////////////////////////////////////////////////////
             if(applyMVAJetComb)
             {
-                vector<float> MapIndex_NonSortedToSorted;
-                //Make an association between the original jet-collection index and the Pt of the jet, such that after sorting, we can find the original jet-index back
-                //The vector-position is the index and the value is the Pt of the jet
-                for(int i_sortingAssoc = 0; i_sortingAssoc < selectedJets.size(); i_sortingAssoc++)
-                {
-                    MapIndex_NonSortedToSorted.push_back(selectedJets[i_sortingAssoc]->Pt());
-                }
                 sort(selectedJets.begin(), selectedJets.end(), HighestCSVBtag());//Sort according to the highest b-tag value.
                 
                 //First define all the variables that go into the kinfit procedure
@@ -2285,6 +2281,12 @@ int main (int argc, char *argv[])
 	              std::vector<float> MuonE;
 	              
                 
+/*
+                for(int i_Jet = 0; i_Jet < selectedJets.size(); i_Jet++)
+                {
+                    if(i_Jet <= 4)
+                }
+*/
                 for(int i_Jet = 0; i_Jet < selectedJets.size(); i_Jet++)
                 {
                       if(i_Jet < 3 || selectedJets[i_Jet]->btag_combinedInclusiveSecondaryVertexV2BJetTags()>CSVv2_workingpointvalue_Medium)//The 3 jets with the highest CSVv2 value are used as b-jets.
@@ -2344,6 +2346,7 @@ int main (int argc, char *argv[])
                           NonBJetE_SMttHypo.push_back(selectedJets[i_Jet]->E());
                       }
                 }
+
                 if(Electron)
                 {
                     ElectronPt.push_back(selectedElectrons[0]->Pt());
@@ -2368,29 +2371,14 @@ int main (int argc, char *argv[])
                 }
                 
                 
-                //Initialize the hypotheses
-                kfit_SMttHypo->SetBJet(BJetPt_SMttHypo,BJetEta_SMttHypo,BJetPhi_SMttHypo,BJetE_SMttHypo);
-                kfit_SMttHypo->SetNonBJet(NonBJetPt_SMttHypo,NonBJetEta_SMttHypo,NonBJetPhi_SMttHypo,NonBJetE_SMttHypo);
-                kfit_SMttHypo->SetMet(met_px,met_py);
-                kfit_SMttHypo->SetElectron(ElectronPt,ElectronEta,ElectronPhi,ElectronE);
-                kfit_SMttHypo->SetMuon(MuonPt,MuonEta,MuonPhi,MuonE);
-                kfit_TTHypo->SetBJet(BJetPt_TTHypo,BJetEta_TTHypo,BJetPhi_TTHypo,BJetE_TTHypo);
-                kfit_TTHypo->SetNonBJet(NonBJetPt_TTHypo,NonBJetEta_TTHypo,NonBJetPhi_TTHypo,NonBJetE_TTHypo);
-                kfit_TTHypo->SetMet(met_px,met_py);
-                kfit_TTHypo->SetElectron(ElectronPt,ElectronEta,ElectronPhi,ElectronE);
-                kfit_TTHypo->SetMuon(MuonPt,MuonEta,MuonPhi,MuonE);
                 kfit_STHypo->SetBJet(BJetPt_STHypo,BJetEta_STHypo,BJetPhi_STHypo,BJetE_STHypo);
                 kfit_STHypo->SetNonBJet(NonBJetPt_STHypo,NonBJetEta_STHypo,NonBJetPhi_STHypo,NonBJetE_STHypo);
                 kfit_STHypo->SetMet(met_px,met_py);
                 kfit_STHypo->SetElectron(ElectronPt,ElectronEta,ElectronPhi,ElectronE);
                 kfit_STHypo->SetMuon(MuonPt,MuonEta,MuonPhi,MuonE);
                 
-                kfit_SMttHypo->Run();
-                kfit_TTHypo->Run();
                 kfit_STHypo->Run();
                 
-		            int NPerm_SMttHypo = kfit_SMttHypo->GetNPerm();
-		            int NPerm_TTHypo = kfit_TTHypo->GetNPerm();
 		            int NPerm_STHypo = kfit_STHypo->GetNPerm();
 
 		            float TopLepWLepFitPt;
@@ -2415,6 +2403,22 @@ int main (int argc, char *argv[])
 		            
                 if(selectedJets.size() >=  4)
                 {
+                    //Initialize the hypotheses
+                    kfit_SMttHypo->SetBJet(BJetPt_SMttHypo,BJetEta_SMttHypo,BJetPhi_SMttHypo,BJetE_SMttHypo);
+                    kfit_SMttHypo->SetNonBJet(NonBJetPt_SMttHypo,NonBJetEta_SMttHypo,NonBJetPhi_SMttHypo,NonBJetE_SMttHypo);
+                    kfit_SMttHypo->SetMet(met_px,met_py);
+                    kfit_SMttHypo->SetElectron(ElectronPt,ElectronEta,ElectronPhi,ElectronE);
+                    kfit_SMttHypo->SetMuon(MuonPt,MuonEta,MuonPhi,MuonE);
+                    kfit_TTHypo->SetBJet(BJetPt_TTHypo,BJetEta_TTHypo,BJetPhi_TTHypo,BJetE_TTHypo);
+                    kfit_TTHypo->SetNonBJet(NonBJetPt_TTHypo,NonBJetEta_TTHypo,NonBJetPhi_TTHypo,NonBJetE_TTHypo);
+                    kfit_TTHypo->SetMet(met_px,met_py);
+                    kfit_TTHypo->SetElectron(ElectronPt,ElectronEta,ElectronPhi,ElectronE);
+                    kfit_TTHypo->SetMuon(MuonPt,MuonEta,MuonPhi,MuonE);
+
+                    kfit_SMttHypo->Run();
+                    kfit_TTHypo->Run();
+		                int NPerm_SMttHypo = kfit_SMttHypo->GetNPerm();
+		                int NPerm_TTHypo = kfit_TTHypo->GetNPerm();
                     //Run over SMttHypo
 		                for(int ip=0;ip<NPerm_SMttHypo;ip++)
 		                {

@@ -200,6 +200,9 @@ int main (int argc, char *argv[])
         histo1D["phi_antib_HiggsMother"] = new TH1F("phi_antib_HiggsMother", "phi_antib_HiggsMother", 100, -3.2, 3.2);
 
         histo1D["pt_AllMCParticles"] = new TH1F("pt_AllMCParticles", "pt_AllMCParticles", 100, 0., 500.);
+        histo1D["Mass_Higgs"] = new TH1F("Mass_Higgs", "Mass_Higgs", 100, 110., 140.);
+        histo1D["Mass_bH1bH2"] = new TH1F("Mass_bH1bH2", "Mass_bH1bH2", 100, 110., 140.);
+        histo1D["Mass_bH1bH2_JetMatched"] = new TH1F("Mass_bH1bH2_JetMatched", "Mass_bH1bH2_JetMatched", 100, 100., 150.);
 
         histo1D["DeltaR_b_antib_FromHiggs"] = new TH1F("DeltaR_b_antib_FromHiggs", "DeltaR_b_antib_FromHiggs", 100, 0., 5.5);
         histo1D["DeltaR_bFromHiggs_Higgs"] = new TH1F("DeltaR_bFromHiggs_Higgs", "DeltaR_bFromHiggs_Higgs", 100, 0., 5.5);
@@ -210,20 +213,31 @@ int main (int argc, char *argv[])
 
         for (unsigned int ievt = 0; ievt < numberOfEventsToRunOver; ievt++)
         {
-            vector<TLorentzVector> mcParticlesTLV, mcMuonsTLV, mcPartonsTLV;
+            vector<TRootPFJet*>    selectedJets;
+            vector<TLorentzVector> mcParticlesTLV, selectedJetsTLV;
             vector<TRootMCParticle*> mcParticlesMatching_,mcParticles;
-            vector<int> mcMuonIndex, mcPartonIndex;
-            JetPartonMatching muonMatching, jetMatching;
+            vector<int> mcPartonIndex;
+            JetPartonMatching jetMatching;
 
 
             event = treeLoader.LoadEvent (ievt, vertex, init_muons, init_electrons, init_jets, mets, false);  //load event
             datasets[d]->eventTree()->LoadTree(ievt);
 
+            float rho = event->fixedGridRhoFastjetAll();
+
+
+            Run2Selection r2selection(init_jets, init_muons, init_electrons, mets, rho);
+            r2selection.GetSelectedJets(30,2.4,true,"Loose"); // ApplyJetId
+
+
+            for (unsigned int i = 0; i < selectedJets.size(); i++) selectedJetsTLV.push_back(*selectedJets[i]);
+
             mcParticles.clear();
             treeLoader.LoadMCEvent(ievt, 0, mcParticles, false);
             sort(mcParticles.begin(),mcParticles.end(),HighestPt()); // HighestPt() is included from the Selection class
                   
-//cout  << " mcParticles.size(): " << mcParticles.size() << endl;      
+
+
                 bool foundTop = false;
                 bool foundAntiTop = false;
                 bool foundHiggs = false;
@@ -240,13 +254,15 @@ int main (int argc, char *argv[])
                 double phi_antib = 0;
                 double eta_b = 0;
                 double eta_antib = 0;
-                
+
+                TLorentzVector bH1;
+                TLorentzVector bH2;                
                 for (unsigned int i = 0; i < mcParticles.size(); i++)
                 {
                     if ( (mcParticles[i]->status() > 1 && mcParticles[i]->status() <= 20) || mcParticles[i]->status() >= 30 ) continue;  /// Final state particle or particle from hardest process                   
-//                    if ( mcParticles[i]->status() != 1 ) continue;  /// Final state particle or particle from hardest process                   
+
                     histo1D["pt_AllMCParticles"]->Fill(mcParticles[i]->Pt());
-//cout << "mcParticles[i]->Pt(): " << mcParticles[i]->Pt() << endl;
+
                     if(mcParticles[i]->type() == 6)
                     {
                         histo1D["eta_Top"]->Fill(mcParticles[i]->Eta());
@@ -272,6 +288,7 @@ int main (int argc, char *argv[])
                         histo1D["eta_Higgs"]->Fill(mcParticles[i]->Eta());
                         histo1D["phi_Higgs"]->Fill(mcParticles[i]->Phi());
                         histo1D["pt_Higgs"]->Fill(mcParticles[i]->Pt());
+                        histo1D["Mass_Higgs"]->Fill(mcParticles[i]->M());
                         foundHiggs = true;
                         
                         eta_Higgs = mcParticles[i]->Eta();
@@ -322,6 +339,9 @@ int main (int argc, char *argv[])
                         foundbFromHiggs = true;
                         phi_b = mcParticles[i]->Phi();
                         eta_b = mcParticles[i]->Eta();
+                        
+                        bH1.SetPtEtaPhiE(mcParticles[i]->Pt(),mcParticles[i]->Eta(),mcParticles[i]->Phi(),mcParticles[i]->E());
+                        mcParticlesTLV.push_back(*mcParticles[i]);
                     }
                     else if(mcParticles[i]->type() == -5  && mcParticles[i]->motherType() == 25)
                     {
@@ -332,9 +352,27 @@ int main (int argc, char *argv[])
                         foundantibFromHiggs = true;
                         phi_antib = mcParticles[i]->Phi();
                         eta_antib = mcParticles[i]->Eta();
+
+                        bH2.SetPtEtaPhiE(mcParticles[i]->Pt(),mcParticles[i]->Eta(),mcParticles[i]->Phi(),mcParticles[i]->E());
+                        mcParticlesTLV.push_back(*mcParticles[i]);
                     }
+
+
                 }
                 
+                    JetPartonMatching matching = JetPartonMatching(mcParticlesTLV, selectedJetsTLV, 2, true, true, 0.3);		// partons, jets, choose algorithm, use maxDist, use dR, set maxDist=0.3
+                    if (matching.getNumberOfAvailableCombinations() != 1) cerr << "matching.getNumberOfAvailableCombinations() = "<<matching.getNumberOfAvailableCombinations()<<" .  This should be equal to 1 !!!"<<endl;
+                    
+                    if(selectedJetsTLV.size() == 2)
+                    {
+                        TLorentzVector bH1Jet, bH2Jet;
+                        bH1Jet.SetPtEtaPhiE(selectedJetsTLV[0].Pt(),selectedJetsTLV[0].Eta(),selectedJetsTLV[0].Phi(),selectedJetsTLV[0].E());
+                        bH2Jet.SetPtEtaPhiE(selectedJetsTLV[1].Pt(),selectedJetsTLV[1].Eta(),selectedJetsTLV[1].Phi(),selectedJetsTLV[1].E());
+                        
+                        histo1D["Mass_bH1bH2_JetMatched"]->Fill( (bH1Jet+bH2Jet).M() );
+                    }
+
+
                 if(foundTop && foundHiggs)
                 {
                     double deltaR = sqrt( pow(eta_Top-eta_Higgs,2) + pow(phi_Top-phi_Higgs,2));
@@ -359,9 +397,11 @@ int main (int argc, char *argv[])
                 {
                     double deltaR = sqrt( pow(eta_b-eta_antib,2) + pow(phi_b-phi_antib,2));
                     histo1D["DeltaR_b_antib_FromHiggs"]->Fill(deltaR);
+                    histo1D["Mass_bH1bH2"]->Fill((bH1 + bH2).M());
                 }
 
         }
+
       
   }
 
