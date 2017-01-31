@@ -255,6 +255,7 @@ int main (int argc, char *argv[])
     cout<<" - Creating environment ..."<<endl;
     anaEnv.PrimaryVertexCollection = "PrimaryVertex";
     anaEnv.JetCollection = "PFJets_slimmedJets";
+    anaEnv.GenJetCollection = "GenJets_slimmedGenJets";
     anaEnv.FatJetCollection = "FatJets_slimmedJetsAK8";
     anaEnv.METCollection = "PFMET_slimmedMETs";
     anaEnv.MuonCollection = "Muons_slimmedMuons";
@@ -262,6 +263,7 @@ int main (int argc, char *argv[])
     anaEnv.NPGenEventCollection = "NPGenEvent";
     anaEnv.MCParticlesCollection = "MCParticles";
     anaEnv.loadFatJetCollection = false;
+    anaEnv.loadGenJetCollection = true;
     anaEnv.loadNPGenEventCollection = false;
     anaEnv.loadMCParticles = true;
     anaEnv.JetType = 2;
@@ -455,8 +457,8 @@ int main (int argc, char *argv[])
         }
         else if(Electron)
         {
-                electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_CutBasedMediumID.root","EGamma_SF2D",true,false,false);
-                electronSFWeightReco = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_GsfTrackingEff.root","EGamma_SF2D",true,false,false);
+                electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/egammaEffi.txt_EGM2D_CutBasedMediumID.root","EGamma_SF2D",true,false,false);
+                electronSFWeightReco = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/egammaEffi.txt_EGM2D_RecoEff.root","EGamma_SF2D",true,false,false);
         }
     }
 
@@ -2154,8 +2156,8 @@ int main (int argc, char *argv[])
                         jflav = BTagEntry::FLAV_UDSG;
                         isLFlav = true;
                     }
-                    if( doJESShift == 2)        bTagEff = reader_JESUp->eval(jflav, jeteta, jetpt, jetdisc);
-                    else if( doJESShift == 1) bTagEff = reader_JESDown->eval(jflav, jeteta, jetpt, jetdisc);
+                    if( doJESShift == 2 && !isCFlav)        bTagEff = reader_JESUp->eval(jflav, jeteta, jetpt, jetdisc);
+                    else if( doJESShift == 1 && !isCFlav) bTagEff = reader_JESDown->eval(jflav, jeteta, jetpt, jetdisc);
                     else bTagEff = bTagReader_shape->eval(jflav, jeteta, jetpt, jetdisc);
 
                     if( isBFlav ) bTagEff_LFUp = reader_LFUp->eval(jflav, jeteta, jetpt, jetdisc);
