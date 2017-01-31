@@ -1,4 +1,6 @@
 __init__.py
+*_bk*
+TopKinFit/README.md
 MCInfoPlotter
 MC_ComparisonOutput*
 scripts/plots_MCInfoComp*

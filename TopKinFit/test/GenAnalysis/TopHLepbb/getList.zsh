@@ -1,9 +1,8 @@
 #!/bin/env zsh
 
-#fpathMC="/opt/sbg/scratch1/cms/kskovpen/ttH/toyTEST/"
-fpathMC="/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/NtupleProducer/test/toyTEST/"
+fpathMC="/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/tHFCNC/NtupleProducer/test/toyTEST/"
 
-liMC=($(ls ${fpathMC}))
+liMC=($(ls ${fpathMC} | grep "ST_TH"))
 
 nFilesMC=1
 

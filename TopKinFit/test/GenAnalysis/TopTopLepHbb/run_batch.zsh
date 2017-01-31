@@ -1,14 +1,14 @@
 #!/bin/env zsh
 
-cp /tmp/x509up_u7989 /home-pbs/kskovpen/proxy/.
+cp /tmp/x509up_u20657 /user/kskovpen/proxy/.
 
-que="dteam"
+que="localgrid"
 
 jName=${1}
 
 export HOME=$(pwd)
 
-dout="/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/TopKinFit/test/GenAnalysis/TopTopLepHbb/"
+dout="/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/GenAnalysis/TopTopLepHbb/"
 
 fpath="${HOME}/lists/"
 
@@ -35,6 +35,10 @@ do
   lout=$(echo ${line}_${jidx} | sed 's%.txt%%g')
 
   echo "${dataset}"
-  qsub -N gen -q ${que} -o ${logName}/${sample}.log -j oe job.sh \
--v dout=${dout},line2=${fpath}${line},fout=${fout}
+  while [[ $(qsub -N gen -q ${que} \
+-l walltime=0:20:00 \
+-o ${logName}/${sample}.log -j oe job.sh \
+-v dout=${dout},line2=${fpath}${line},fout=${fout} 2>&1 | grep "Invalid credential") != "" ]];
+  do echo "one more try";
+  done
 done

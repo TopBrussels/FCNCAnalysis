@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export X509_USER_PROXY=/home-pbs/kskovpen/proxy/x509up_u7989
+export X509_USER_PROXY=/user/kskovpen/proxy/x509up_u20657
 
 export LD_PRELOAD=/usr/lib64/libglobus_gssapi_gsi.so.4
 
@@ -21,7 +21,7 @@ source $ROOTSYS/bin/thisroot.sh
 rootV=$(root-config --version)
 echo "ROOT v${rootV} has been set up"
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${dout}:/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/TopKinFit/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${dout}:/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/
 
 export LD_LIBRARY_PATH=\
 /cvmfs/cms.cern.ch/slc6_amd64_gcc530/external/gcc/5.3.0/lib64:\

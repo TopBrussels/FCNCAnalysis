@@ -17,31 +17,87 @@ void drawTest()
    TChain trFIT("trFIT");
    
 //   trFIT.Add("output.root");
-   trFIT.Add("runSIG_MERGED/TT_TopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
-   trFIT.Add("runSIG_MERGED/TT_AntitopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
+   trFIT.Add("runTEST_MERGED/TT_TopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
+   trFIT.Add("runTEST_MERGED/TT_AntitopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
 
    TChain trEFF("trEFF");
 
 //   trEFF.Add("output.root");
-   trEFF.Add("runSIG_MERGED/TT_TopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
-   trEFF.Add("runSIG_MERGED/TT_AntitopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
+   trEFF.Add("runTEST_MERGED/TT_TopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
+   trEFF.Add("runTEST_MERGED/TT_AntitopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
    
    std::vector<float> *DiscTruth = new std::vector<float>();
    std::vector<float> *MVADiscTruth = new std::vector<float>();
    std::vector<float> *MVAScoreTruth = new std::vector<float>();
    std::vector<float> *MVAHiggsRecMTruth = new std::vector<float>();
    std::vector<float> *MVATopLepRecMTruth = new std::vector<float>();
+   
    std::vector<bool> *MatchTruth = new std::vector<bool>();
    std::vector<float> *HiggsRecMTruth = new std::vector<float>();
    std::vector<float> *TopLepRecMTruth = new std::vector<float>();
    std::vector<float> *HiggsTopLepRecDrTruth = new std::vector<float>();
-   std::vector<float> *TopLepRecPtTruth = new std::vector<float>();
-   std::vector<float> *HiggsBJet1HiggsBJet2RecDrTruth = new std::vector<float>();
+   std::vector<float> *TopLepRecPtTruth = new std::vector<float>(); 
+//   std::vector<float> *HiggsBJet1HiggsBJet2RecDrTruth = new std::vector<float>();
    std::vector<float> *HiggsRecPtTruth = new std::vector<float>();
    std::vector<float> *TopLepRecMTTruth = new std::vector<float>();
    std::vector<float> *HiggsTopLepRecDphiTTruth = new std::vector<float>();
    std::vector<float> *TopLepRecPtTTruth = new std::vector<float>();
 
+   std::vector<float> *DiscHighestCSVv2 = new std::vector<float>();
+   std::vector<bool> *MatchHighestCSVv2 = new std::vector<bool>();
+   std::vector<float> *HiggsRecMHighestCSVv2 = new std::vector<float>();
+   std::vector<float> *TopLepRecMHighestCSVv2 = new std::vector<float>();
+   std::vector<float> *HiggsTopLepRecDrHighestCSVv2 = new std::vector<float>();
+   std::vector<float> *TopLepRecPtHighestCSVv2 = new std::vector<float>(); 
+   std::vector<float> *HiggsRecPtHighestCSVv2 = new std::vector<float>();
+   std::vector<float> *TopLepRecMTHighestCSVv2 = new std::vector<float>();
+   std::vector<float> *HiggsTopLepRecDphiTHighestCSVv2 = new std::vector<float>();
+   std::vector<float> *TopLepRecPtTHighestCSVv2 = new std::vector<float>();
+
+   std::vector<float> *DiscCSVv2L = new std::vector<float>();
+   std::vector<bool> *MatchCSVv2L = new std::vector<bool>();
+   std::vector<float> *HiggsRecMCSVv2L = new std::vector<float>();
+   std::vector<float> *TopLepRecMCSVv2L = new std::vector<float>();
+   std::vector<float> *HiggsTopLepRecDrCSVv2L = new std::vector<float>();
+   std::vector<float> *TopLepRecPtCSVv2L = new std::vector<float>(); 
+   std::vector<float> *HiggsRecPtCSVv2L = new std::vector<float>();
+   std::vector<float> *TopLepRecMTCSVv2L = new std::vector<float>();
+   std::vector<float> *HiggsTopLepRecDphiTCSVv2L = new std::vector<float>();
+   std::vector<float> *TopLepRecPtTCSVv2L = new std::vector<float>();
+
+   std::vector<float> *DiscCSVv2M = new std::vector<float>();
+   std::vector<bool> *MatchCSVv2M = new std::vector<bool>();
+   std::vector<float> *HiggsRecMCSVv2M = new std::vector<float>();
+   std::vector<float> *TopLepRecMCSVv2M = new std::vector<float>();
+   std::vector<float> *HiggsTopLepRecDrCSVv2M = new std::vector<float>();
+   std::vector<float> *TopLepRecPtCSVv2M = new std::vector<float>(); 
+   std::vector<float> *HiggsRecPtCSVv2M = new std::vector<float>();
+   std::vector<float> *TopLepRecMTCSVv2M = new std::vector<float>();
+   std::vector<float> *HiggsTopLepRecDphiTCSVv2M = new std::vector<float>();
+   std::vector<float> *TopLepRecPtTCSVv2M = new std::vector<float>();
+
+   std::vector<float> *DiscCSVv2T = new std::vector<float>();
+   std::vector<bool> *MatchCSVv2T = new std::vector<bool>();
+   std::vector<float> *HiggsRecMCSVv2T = new std::vector<float>();
+   std::vector<float> *TopLepRecMCSVv2T = new std::vector<float>();
+   std::vector<float> *HiggsTopLepRecDrCSVv2T = new std::vector<float>();
+   std::vector<float> *TopLepRecPtCSVv2T = new std::vector<float>(); 
+   std::vector<float> *HiggsRecPtCSVv2T = new std::vector<float>();
+   std::vector<float> *TopLepRecMTCSVv2T = new std::vector<float>();
+   std::vector<float> *HiggsTopLepRecDphiTCSVv2T = new std::vector<float>();
+   std::vector<float> *TopLepRecPtTCSVv2T = new std::vector<float>();
+
+   std::vector<float> *DiscAll = new std::vector<float>();
+   std::vector<bool> *MatchAll = new std::vector<bool>();
+   std::vector<float> *HiggsRecMAll = new std::vector<float>();
+   std::vector<float> *TopLepRecMAll = new std::vector<float>();
+   std::vector<float> *HiggsTopLepRecDrAll = new std::vector<float>();
+   std::vector<float> *TopLepRecPtAll = new std::vector<float>(); 
+   std::vector<float> *HiggsRecPtAll = new std::vector<float>();
+   std::vector<float> *TopLepRecMTAll = new std::vector<float>();
+   std::vector<float> *HiggsTopLepRecDphiTAll = new std::vector<float>();
+   std::vector<float> *TopLepRecPtTAll = new std::vector<float>();
+   
    float nEventsTruth;
    float nEventsHighestCSVv2;
    float nEventsCSVv2L;
@@ -96,16 +152,72 @@ void drawTest()
    trFIT.SetBranchAddress("MVAScoreTruth",&MVAScoreTruth);
    trFIT.SetBranchAddress("MVAHiggsRecMTruth",&MVAHiggsRecMTruth);
    trFIT.SetBranchAddress("MVATopLepRecMTruth",&MVATopLepRecMTruth);
+   
    trFIT.SetBranchAddress("MatchTruth",&MatchTruth);
    trFIT.SetBranchAddress("HiggsRecMTruth",&HiggsRecMTruth);
    trFIT.SetBranchAddress("TopLepRecMTruth",&TopLepRecMTruth);
    trFIT.SetBranchAddress("HiggsTopLepRecDrTruth",&HiggsTopLepRecDrTruth);
    trFIT.SetBranchAddress("TopLepRecPtTruth",&TopLepRecPtTruth);
-   trFIT.SetBranchAddress("HiggsBJet1HiggsBJet2RecDrTruth",&HiggsBJet1HiggsBJet2RecDrTruth);
+//   trFIT.SetBranchAddress("HiggsBJet1HiggsBJet2RecDrTruth",&HiggsBJet1HiggsBJet2RecDrTruth);
    trFIT.SetBranchAddress("HiggsRecPtTruth",&HiggsRecPtTruth);
    trFIT.SetBranchAddress("TopLepRecMTTruth",&TopLepRecMTTruth);
    trFIT.SetBranchAddress("HiggsTopLepRecDphiTTruth",&HiggsTopLepRecDphiTTruth);
    trFIT.SetBranchAddress("TopLepRecPtTTruth",&TopLepRecPtTTruth);
+
+   trFIT.SetBranchAddress("DiscHighestCSVv2",&DiscHighestCSVv2);
+   trFIT.SetBranchAddress("MatchHighestCSVv2",&MatchHighestCSVv2);
+   trFIT.SetBranchAddress("HiggsRecMHighestCSVv2",&HiggsRecMHighestCSVv2);
+   trFIT.SetBranchAddress("TopLepRecMHighestCSVv2",&TopLepRecMHighestCSVv2);
+   trFIT.SetBranchAddress("HiggsTopLepRecDrHighestCSVv2",&HiggsTopLepRecDrHighestCSVv2);
+   trFIT.SetBranchAddress("TopLepRecPtHighestCSVv2",&TopLepRecPtHighestCSVv2);
+   trFIT.SetBranchAddress("HiggsRecPtHighestCSVv2",&HiggsRecPtHighestCSVv2);
+   trFIT.SetBranchAddress("TopLepRecMTHighestCSVv2",&TopLepRecMTHighestCSVv2);
+   trFIT.SetBranchAddress("HiggsTopLepRecDphiTHighestCSVv2",&HiggsTopLepRecDphiTHighestCSVv2);
+   trFIT.SetBranchAddress("TopLepRecPtTHighestCSVv2",&TopLepRecPtTHighestCSVv2);
+
+   trFIT.SetBranchAddress("DiscCSVv2L",&DiscCSVv2L);
+   trFIT.SetBranchAddress("MatchCSVv2L",&MatchCSVv2L);
+   trFIT.SetBranchAddress("HiggsRecMCSVv2L",&HiggsRecMCSVv2L);
+   trFIT.SetBranchAddress("TopLepRecMCSVv2L",&TopLepRecMCSVv2L);
+   trFIT.SetBranchAddress("HiggsTopLepRecDrCSVv2L",&HiggsTopLepRecDrCSVv2L);
+   trFIT.SetBranchAddress("TopLepRecPtCSVv2L",&TopLepRecPtCSVv2L);
+   trFIT.SetBranchAddress("HiggsRecPtCSVv2L",&HiggsRecPtCSVv2L);
+   trFIT.SetBranchAddress("TopLepRecMTCSVv2L",&TopLepRecMTCSVv2L);
+   trFIT.SetBranchAddress("HiggsTopLepRecDphiTCSVv2L",&HiggsTopLepRecDphiTCSVv2L);
+   trFIT.SetBranchAddress("TopLepRecPtTCSVv2L",&TopLepRecPtTCSVv2L);
+
+   trFIT.SetBranchAddress("DiscCSVv2M",&DiscCSVv2M);
+   trFIT.SetBranchAddress("MatchCSVv2M",&MatchCSVv2M);
+   trFIT.SetBranchAddress("HiggsRecMCSVv2M",&HiggsRecMCSVv2M);
+   trFIT.SetBranchAddress("TopLepRecMCSVv2M",&TopLepRecMCSVv2M);
+   trFIT.SetBranchAddress("HiggsTopLepRecDrCSVv2M",&HiggsTopLepRecDrCSVv2M);
+   trFIT.SetBranchAddress("TopLepRecPtCSVv2M",&TopLepRecPtCSVv2M);
+   trFIT.SetBranchAddress("HiggsRecPtCSVv2M",&HiggsRecPtCSVv2M);
+   trFIT.SetBranchAddress("TopLepRecMTCSVv2M",&TopLepRecMTCSVv2M);
+   trFIT.SetBranchAddress("HiggsTopLepRecDphiTCSVv2M",&HiggsTopLepRecDphiTCSVv2M);
+   trFIT.SetBranchAddress("TopLepRecPtTCSVv2M",&TopLepRecPtTCSVv2M);
+
+   trFIT.SetBranchAddress("DiscCSVv2T",&DiscCSVv2T);
+   trFIT.SetBranchAddress("MatchCSVv2T",&MatchCSVv2T);
+   trFIT.SetBranchAddress("HiggsRecMCSVv2T",&HiggsRecMCSVv2T);
+   trFIT.SetBranchAddress("TopLepRecMCSVv2T",&TopLepRecMCSVv2T);
+   trFIT.SetBranchAddress("HiggsTopLepRecDrCSVv2T",&HiggsTopLepRecDrCSVv2T);
+   trFIT.SetBranchAddress("TopLepRecPtCSVv2T",&TopLepRecPtCSVv2T);
+   trFIT.SetBranchAddress("HiggsRecPtCSVv2T",&HiggsRecPtCSVv2T);
+   trFIT.SetBranchAddress("TopLepRecMTCSVv2T",&TopLepRecMTCSVv2T);
+   trFIT.SetBranchAddress("HiggsTopLepRecDphiTCSVv2T",&HiggsTopLepRecDphiTCSVv2T);
+   trFIT.SetBranchAddress("TopLepRecPtTCSVv2T",&TopLepRecPtTCSVv2T);
+
+   trFIT.SetBranchAddress("DiscAll",&DiscAll);
+   trFIT.SetBranchAddress("MatchAll",&MatchAll);
+   trFIT.SetBranchAddress("HiggsRecMAll",&HiggsRecMAll);
+   trFIT.SetBranchAddress("TopLepRecMAll",&TopLepRecMAll);
+   trFIT.SetBranchAddress("HiggsTopLepRecDrAll",&HiggsTopLepRecDrAll);
+   trFIT.SetBranchAddress("TopLepRecPtAll",&TopLepRecPtAll);
+   trFIT.SetBranchAddress("HiggsRecPtAll",&HiggsRecPtAll);
+   trFIT.SetBranchAddress("TopLepRecMTAll",&TopLepRecMTAll);
+   trFIT.SetBranchAddress("HiggsTopLepRecDphiTAll",&HiggsTopLepRecDphiTAll);
+   trFIT.SetBranchAddress("TopLepRecPtTAll",&TopLepRecPtTAll);
    
    trEFF.SetBranchAddress("nEventsTruth",&nEventsTruth);
    trEFF.SetBranchAddress("nEventsHighestCSVv2",&nEventsHighestCSVv2);
@@ -158,10 +270,10 @@ void drawTest()
    
    int nHist = 0;
    
-   TH1D *hMatch[1000];
-   TH1D *hNotMatch[1000];
-   std::string hName[1000];
-   std::string hLab[1000];
+   TH1D *hMatch[10000];
+   TH1D *hNotMatch[10000];
+   std::string hName[10000];
+   std::string hLab[10000];
 
    hMatch[nHist] = new TH1D("h_DiscTruthMatch","h_DiscTruthMatch",30,0.,150.);
    hMatch[nHist]->Sumw2();
@@ -203,13 +315,13 @@ void drawTest()
    hLab[nHist] = "p_{T}(TopLep) [GeV]";
    nHist++;
 
-   hMatch[nHist] = new TH1D("h_HiggsBJet1HiggsBJet2RecDrTruthMatch","h_HiggsBJet1HiggsBJet2RecDrTruthMatch",30,0.,5.);
-   hMatch[nHist]->Sumw2();
-   hNotMatch[nHist] = new TH1D("h_HiggsBJet1HiggsBJet2RecDrTruthNotMatch","h_HiggsBJet1HiggsBJet2RecDrTruthNotMatch",30,0.,5.);
-   hNotMatch[nHist]->Sumw2();
-   hName[nHist] = "HiggsBJet1HiggsBJet2RecDrTruth";
-   hLab[nHist] = "#Delta R (HiggsB1,HiggsB2)";
-   nHist++;
+//   hMatch[nHist] = new TH1D("h_HiggsBJet1HiggsBJet2RecDrTruthMatch","h_HiggsBJet1HiggsBJet2RecDrTruthMatch",30,0.,5.);
+//   hMatch[nHist]->Sumw2();
+//   hNotMatch[nHist] = new TH1D("h_HiggsBJet1HiggsBJet2RecDrTruthNotMatch","h_HiggsBJet1HiggsBJet2RecDrTruthNotMatch",30,0.,5.);
+//   hNotMatch[nHist]->Sumw2();
+//   hName[nHist] = "HiggsBJet1HiggsBJet2RecDrTruth";
+//   hLab[nHist] = "#Delta R (HiggsB1,HiggsB2)";
+//   nHist++;
 
    hMatch[nHist] = new TH1D("h_HiggsRecPtTruthMatch","h_HiggsRecPtTruthMatch",30,0.,250.);
    hMatch[nHist]->Sumw2();
@@ -243,6 +355,339 @@ void drawTest()
    hLab[nHist] = "p_{T}(TopLep) [GeV]";
    nHist++;
 
+   
+   
+   hMatch[nHist] = new TH1D("h_HiggsRecMHighestCSVv2Match","h_HiggsRecMHighestCSVv2Match",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsRecMHighestCSVv2NotMatch","h_HiggsRecMHighestCSVv2NotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsRecMHighestCSVv2";
+   hLab[nHist] = "m(Higgs) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMHighestCSVv2Match","h_TopLepRecMHighestCSVv2Match",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMHighestCSVv2NotMatch","h_TopLepRecMHighestCSVv2NotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMHighestCSVv2";
+   hLab[nHist] = "m(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_HiggsTopLepRecDrHighestCSVv2Match","h_HiggsTopLepRecDrHighestCSVv2Match",30,0.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsTopLepRecDrHighestCSVv2NotMatch","h_HiggsTopLepRecDrHighestCSVv2NotMatch",30,0.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsTopLepRecDrHighestCSVv2";
+   hLab[nHist] = "#Delta R (Higgs,TopLep)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtHighestCSVv2Match","h_TopLepRecPtHighestCSVv2Match",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtHighestCSVv2NotMatch","h_TopLepRecPtHighestCSVv2NotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtHighestCSVv2";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_HiggsRecPtHighestCSVv2Match","h_HiggsRecPtHighestCSVv2Match",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsRecPtHighestCSVv2NotMatch","h_HiggsRecPtHighestCSVv2NotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsRecPtHighestCSVv2";
+   hLab[nHist] = "p_{T}(Higgs) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMTHighestCSVv2Match","h_TopLepRecMTHighestCSVv2Match",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMTHighestCSVv2NotMatch","h_TopLepRecMTHighestCSVv2NotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMTHighestCSVv2";
+   hLab[nHist] = "m_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_HiggsTopLepRecDphiTHighestCSVv2Match","h_HiggsTopLepRecDphiTHighestCSVv2Match",30,-5.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsTopLepRecDphiTHighestCSVv2NotMatch","h_HiggsTopLepRecDphiTHighestCSVv2NotMatch",30,-5.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsTopLepRecDphiTHighestCSVv2";
+   hLab[nHist] = "#Delta #phi (Higgs,TopLep)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtTHighestCSVv2Match","h_TopLepRecPtTHighestCSVv2Match",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtTHighestCSVv2NotMatch","h_TopLepRecPtTHighestCSVv2NotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtTHighestCSVv2";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+
+   
+   
+   hMatch[nHist] = new TH1D("h_HiggsRecMCSVv2LMatch","h_HiggsRecMCSVv2LMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsRecMCSVv2LNotMatch","h_HiggsRecMCSVv2LNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsRecMCSVv2L";
+   hLab[nHist] = "m(Higgs) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMCSVv2LMatch","h_TopLepRecMCSVv2LMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMCSVv2LNotMatch","h_TopLepRecMCSVv2LNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMCSVv2L";
+   hLab[nHist] = "m(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_HiggsTopLepRecDrCSVv2LMatch","h_HiggsTopLepRecDrCSVv2LMatch",30,0.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsTopLepRecDrCSVv2LNotMatch","h_HiggsTopLepRecDrCSVv2LNotMatch",30,0.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsTopLepRecDrCSVv2L";
+   hLab[nHist] = "#Delta R (Higgs,TopLep)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtCSVv2LMatch","h_TopLepRecPtCSVv2LMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtCSVv2LNotMatch","h_TopLepRecPtCSVv2LNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtCSVv2L";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_HiggsRecPtCSVv2LMatch","h_HiggsRecPtCSVv2LMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsRecPtCSVv2LNotMatch","h_HiggsRecPtCSVv2LNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsRecPtCSVv2L";
+   hLab[nHist] = "p_{T}(Higgs) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMTCSVv2LMatch","h_TopLepRecMTCSVv2LMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMTCSVv2LNotMatch","h_TopLepRecMTCSVv2LNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMTCSVv2L";
+   hLab[nHist] = "m_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_HiggsTopLepRecDphiTCSVv2LMatch","h_HiggsTopLepRecDphiTCSVv2LMatch",30,-5.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsTopLepRecDphiTCSVv2LNotMatch","h_HiggsTopLepRecDphiTCSVv2LNotMatch",30,-5.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsTopLepRecDphiTCSVv2L";
+   hLab[nHist] = "#Delta #phi (Higgs,TopLep)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtTCSVv2LMatch","h_TopLepRecPtTCSVv2LMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtTCSVv2LNotMatch","h_TopLepRecPtTCSVv2LNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtTCSVv2L";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+
+   
+   
+   
+   hMatch[nHist] = new TH1D("h_HiggsRecMCSVv2MMatch","h_HiggsRecMCSVv2MMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsRecMCSVv2MNotMatch","h_HiggsRecMCSVv2MNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsRecMCSVv2M";
+   hLab[nHist] = "m(Higgs) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMCSVv2MMatch","h_TopLepRecMCSVv2MMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMCSVv2MNotMatch","h_TopLepRecMCSVv2MNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMCSVv2M";
+   hLab[nHist] = "m(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_HiggsTopLepRecDrCSVv2MMatch","h_HiggsTopLepRecDrCSVv2MMatch",30,0.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsTopLepRecDrCSVv2MNotMatch","h_HiggsTopLepRecDrCSVv2MNotMatch",30,0.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsTopLepRecDrCSVv2M";
+   hLab[nHist] = "#Delta R (Higgs,TopLep)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtCSVv2MMatch","h_TopLepRecPtCSVv2MMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtCSVv2MNotMatch","h_TopLepRecPtCSVv2MNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtCSVv2M";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_HiggsRecPtCSVv2MMatch","h_HiggsRecPtCSVv2MMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsRecPtCSVv2MNotMatch","h_HiggsRecPtCSVv2MNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsRecPtCSVv2M";
+   hLab[nHist] = "p_{T}(Higgs) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMTCSVv2MMatch","h_TopLepRecMTCSVv2MMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMTCSVv2MNotMatch","h_TopLepRecMTCSVv2MNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMTCSVv2M";
+   hLab[nHist] = "m_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_HiggsTopLepRecDphiTCSVv2MMatch","h_HiggsTopLepRecDphiTCSVv2MMatch",30,-5.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsTopLepRecDphiTCSVv2MNotMatch","h_HiggsTopLepRecDphiTCSVv2MNotMatch",30,-5.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsTopLepRecDphiTCSVv2M";
+   hLab[nHist] = "#Delta #phi (Higgs,TopLep)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtTCSVv2MMatch","h_TopLepRecPtTCSVv2MMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtTCSVv2MNotMatch","h_TopLepRecPtTCSVv2MNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtTCSVv2M";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+
+   
+   
+
+   hMatch[nHist] = new TH1D("h_HiggsRecMCSVv2TMatch","h_HiggsRecMCSVv2TMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsRecMCSVv2TNotMatch","h_HiggsRecMCSVv2TNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsRecMCSVv2T";
+   hLab[nHist] = "m(Higgs) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMCSVv2TMatch","h_TopLepRecMCSVv2TMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMCSVv2TNotMatch","h_TopLepRecMCSVv2TNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMCSVv2T";
+   hLab[nHist] = "m(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_HiggsTopLepRecDrCSVv2TMatch","h_HiggsTopLepRecDrCSVv2TMatch",30,0.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsTopLepRecDrCSVv2TNotMatch","h_HiggsTopLepRecDrCSVv2TNotMatch",30,0.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsTopLepRecDrCSVv2T";
+   hLab[nHist] = "#Delta R (Higgs,TopLep)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtCSVv2TMatch","h_TopLepRecPtCSVv2TMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtCSVv2TNotMatch","h_TopLepRecPtCSVv2TNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtCSVv2T";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_HiggsRecPtCSVv2TMatch","h_HiggsRecPtCSVv2TMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsRecPtCSVv2TNotMatch","h_HiggsRecPtCSVv2TNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsRecPtCSVv2T";
+   hLab[nHist] = "p_{T}(Higgs) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMTCSVv2TMatch","h_TopLepRecMTCSVv2TMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMTCSVv2TNotMatch","h_TopLepRecMTCSVv2TNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMTCSVv2T";
+   hLab[nHist] = "m_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_HiggsTopLepRecDphiTCSVv2TMatch","h_HiggsTopLepRecDphiTCSVv2TMatch",30,-5.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsTopLepRecDphiTCSVv2TNotMatch","h_HiggsTopLepRecDphiTCSVv2TNotMatch",30,-5.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsTopLepRecDphiTCSVv2T";
+   hLab[nHist] = "#Delta #phi (Higgs,TopLep)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtTCSVv2TMatch","h_TopLepRecPtTCSVv2TMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtTCSVv2TNotMatch","h_TopLepRecPtTCSVv2TNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtTCSVv2T";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+
+   
+   
+   
+   hMatch[nHist] = new TH1D("h_HiggsRecMAllMatch","h_HiggsRecMAllMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsRecMAllNotMatch","h_HiggsRecMAllNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsRecMAll";
+   hLab[nHist] = "m(Higgs) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMAllMatch","h_TopLepRecMAllMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMAllNotMatch","h_TopLepRecMAllNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMAll";
+   hLab[nHist] = "m(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_HiggsTopLepRecDrAllMatch","h_HiggsTopLepRecDrAllMatch",30,0.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsTopLepRecDrAllNotMatch","h_HiggsTopLepRecDrAllNotMatch",30,0.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsTopLepRecDrAll";
+   hLab[nHist] = "#Delta R (Higgs,TopLep)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtAllMatch","h_TopLepRecPtAllMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtAllNotMatch","h_TopLepRecPtAllNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtAll";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_HiggsRecPtAllMatch","h_HiggsRecPtAllMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsRecPtAllNotMatch","h_HiggsRecPtAllNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsRecPtAll";
+   hLab[nHist] = "p_{T}(Higgs) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMTAllMatch","h_TopLepRecMTAllMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMTAllNotMatch","h_TopLepRecMTAllNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMTAll";
+   hLab[nHist] = "m_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_HiggsTopLepRecDphiTAllMatch","h_HiggsTopLepRecDphiTAllMatch",30,-5.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_HiggsTopLepRecDphiTAllNotMatch","h_HiggsTopLepRecDphiTAllNotMatch",30,-5.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "HiggsTopLepRecDphiTAll";
+   hLab[nHist] = "#Delta #phi (Higgs,TopLep)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtTAllMatch","h_TopLepRecPtTAllMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtTAllNotMatch","h_TopLepRecPtTAllNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtTAll";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+   
    int nHistFit = 0;
 
    TH1D *hFit[1000];
@@ -310,11 +755,11 @@ void drawTest()
 			    if( MatchTruth->at(ip) ) hMatch[ih]->Fill(TopLepRecPtTruth->at(ip));
 			    else hNotMatch[ih]->Fill(TopLepRecPtTruth->at(ip));
 			 }
-		       else if( hName[ih] == "HiggsBJet1HiggsBJet2RecDrTruth" )
-			 {
-			    if( MatchTruth->at(ip) ) hMatch[ih]->Fill(HiggsBJet1HiggsBJet2RecDrTruth->at(ip));
-			    else hNotMatch[ih]->Fill(HiggsBJet1HiggsBJet2RecDrTruth->at(ip));
-			 }
+//		       else if( hName[ih] == "HiggsBJet1HiggsBJet2RecDrTruth" )
+//			 {
+//			    if( MatchTruth->at(ip) ) hMatch[ih]->Fill(HiggsBJet1HiggsBJet2RecDrTruth->at(ip));
+//			    else hNotMatch[ih]->Fill(HiggsBJet1HiggsBJet2RecDrTruth->at(ip));
+//			 }
 		       else if( hName[ih] == "HiggsRecPtTruth" )
 			 {
 			    if( MatchTruth->at(ip) ) hMatch[ih]->Fill(HiggsRecPtTruth->at(ip));
@@ -334,6 +779,241 @@ void drawTest()
 			 {
 			    if( MatchTruth->at(ip) ) hMatch[ih]->Fill(TopLepRecPtTTruth->at(ip));
 			    else hNotMatch[ih]->Fill(TopLepRecPtTTruth->at(ip));
+			 }
+		    }
+	       }
+	     
+	     for(int ip=0;ip<MatchHighestCSVv2->size();ip++)
+	       {		       
+		  if( DiscHighestCSVv2->at(ip) < 10E+10 )
+		    {				 
+		       if( hName[ih] == "HiggsRecMHighestCSVv2" )
+			 {
+			    if( MatchHighestCSVv2->at(ip) ) hMatch[ih]->Fill(HiggsRecMHighestCSVv2->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsRecMHighestCSVv2->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMHighestCSVv2" )
+			 {
+			    if( MatchHighestCSVv2->at(ip) ) hMatch[ih]->Fill(TopLepRecMHighestCSVv2->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMHighestCSVv2->at(ip));
+			 }
+		       else if( hName[ih] == "HiggsTopLepRecDrHighestCSVv2" )
+			 {
+			    if( MatchHighestCSVv2->at(ip) ) hMatch[ih]->Fill(HiggsTopLepRecDrHighestCSVv2->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsTopLepRecDrHighestCSVv2->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtHighestCSVv2" )
+			 {
+			    if( MatchHighestCSVv2->at(ip) ) hMatch[ih]->Fill(TopLepRecPtHighestCSVv2->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtHighestCSVv2->at(ip));
+			 }
+		       else if( hName[ih] == "HiggsRecPtHighestCSVv2" )
+			 {
+			    if( MatchHighestCSVv2->at(ip) ) hMatch[ih]->Fill(HiggsRecPtHighestCSVv2->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsRecPtHighestCSVv2->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMTHighestCSVv2" )
+			 {
+			    if( MatchHighestCSVv2->at(ip) ) hMatch[ih]->Fill(TopLepRecMTHighestCSVv2->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMTHighestCSVv2->at(ip));
+			 }
+		       else if( hName[ih] == "HiggsTopLepRecDphiTHighestCSVv2" )
+			 {
+			    if( MatchHighestCSVv2->at(ip) ) hMatch[ih]->Fill(HiggsTopLepRecDphiTHighestCSVv2->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsTopLepRecDphiTHighestCSVv2->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtTHighestCSVv2" )
+			 {
+			    if( MatchHighestCSVv2->at(ip) ) hMatch[ih]->Fill(TopLepRecPtTHighestCSVv2->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtTHighestCSVv2->at(ip));
+			 }
+		    }
+	       }	     
+		    
+	     for(int ip=0;ip<MatchCSVv2L->size();ip++)
+	       {		       
+		  if( DiscCSVv2L->at(ip) < 10E+10 )
+		    {				 
+		       if( hName[ih] == "HiggsRecMCSVv2L" )
+			 {
+			    if( MatchCSVv2L->at(ip) ) hMatch[ih]->Fill(HiggsRecMCSVv2L->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsRecMCSVv2L->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMCSVv2L" )
+			 {
+			    if( MatchCSVv2L->at(ip) ) hMatch[ih]->Fill(TopLepRecMCSVv2L->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMCSVv2L->at(ip));
+			 }
+		       else if( hName[ih] == "HiggsTopLepRecDrCSVv2L" )
+			 {
+			    if( MatchCSVv2L->at(ip) ) hMatch[ih]->Fill(HiggsTopLepRecDrCSVv2L->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsTopLepRecDrCSVv2L->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtCSVv2L" )
+			 {
+			    if( MatchCSVv2L->at(ip) ) hMatch[ih]->Fill(TopLepRecPtCSVv2L->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtCSVv2L->at(ip));
+			 }
+		       else if( hName[ih] == "HiggsRecPtCSVv2L" )
+			 {
+			    if( MatchCSVv2L->at(ip) ) hMatch[ih]->Fill(HiggsRecPtCSVv2L->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsRecPtCSVv2L->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMTCSVv2L" )
+			 {
+			    if( MatchCSVv2L->at(ip) ) hMatch[ih]->Fill(TopLepRecMTCSVv2L->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMTCSVv2L->at(ip));
+			 }
+		       else if( hName[ih] == "HiggsTopLepRecDphiTCSVv2L" )
+			 {
+			    if( MatchCSVv2L->at(ip) ) hMatch[ih]->Fill(HiggsTopLepRecDphiTCSVv2L->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsTopLepRecDphiTCSVv2L->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtTCSVv2L" )
+			 {
+			    if( MatchCSVv2L->at(ip) ) hMatch[ih]->Fill(TopLepRecPtTCSVv2L->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtTCSVv2L->at(ip));
+			 }
+		    }
+	       }
+	     
+	     for(int ip=0;ip<MatchCSVv2M->size();ip++)
+	       {		       		  
+		  if( DiscCSVv2M->at(ip) < 10E+10 )
+		    {
+		       if( hName[ih] == "HiggsRecMCSVv2M" )
+			 {
+			    if( MatchCSVv2M->at(ip) ) hMatch[ih]->Fill(HiggsRecMCSVv2M->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsRecMCSVv2M->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMCSVv2M" )
+			 {
+			    if( MatchCSVv2M->at(ip) ) hMatch[ih]->Fill(TopLepRecMCSVv2M->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMCSVv2M->at(ip));
+			 }
+		       else if( hName[ih] == "HiggsTopLepRecDrCSVv2M" )
+			 {
+			    if( MatchCSVv2M->at(ip) ) hMatch[ih]->Fill(HiggsTopLepRecDrCSVv2M->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsTopLepRecDrCSVv2M->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtCSVv2M" )
+			 {
+			    if( MatchCSVv2M->at(ip) ) hMatch[ih]->Fill(TopLepRecPtCSVv2M->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtCSVv2M->at(ip));
+			 }
+		       else if( hName[ih] == "HiggsRecPtCSVv2M" )
+			 {
+			    if( MatchCSVv2M->at(ip) ) hMatch[ih]->Fill(HiggsRecPtCSVv2M->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsRecPtCSVv2M->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMTCSVv2M" )
+			 {
+			    if( MatchCSVv2M->at(ip) ) hMatch[ih]->Fill(TopLepRecMTCSVv2M->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMTCSVv2M->at(ip));
+			 }
+		       else if( hName[ih] == "HiggsTopLepRecDphiTCSVv2M" )
+			 {
+			    if( MatchCSVv2M->at(ip) ) hMatch[ih]->Fill(HiggsTopLepRecDphiTCSVv2M->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsTopLepRecDphiTCSVv2M->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtTCSVv2M" )
+			 {
+			    if( MatchCSVv2M->at(ip) ) hMatch[ih]->Fill(TopLepRecPtTCSVv2M->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtTCSVv2M->at(ip));
+			 }
+		    }
+	       }	    
+		  		    		    
+	     for(int ip=0;ip<MatchCSVv2T->size();ip++)
+	       {		       
+		  if( DiscCSVv2T->at(ip) < 10E+10 )
+		    {
+		       if( hName[ih] == "HiggsRecMCSVv2T" )
+			 {
+			    if( MatchCSVv2T->at(ip) ) hMatch[ih]->Fill(HiggsRecMCSVv2T->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsRecMCSVv2T->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMCSVv2T" )
+			 {
+			    if( MatchCSVv2T->at(ip) ) hMatch[ih]->Fill(TopLepRecMCSVv2T->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMCSVv2T->at(ip));
+			 }
+		       else if( hName[ih] == "HiggsTopLepRecDrCSVv2T" )
+			 {
+			    if( MatchCSVv2T->at(ip) ) hMatch[ih]->Fill(HiggsTopLepRecDrCSVv2T->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsTopLepRecDrCSVv2T->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtCSVv2T" )
+			 {
+			    if( MatchCSVv2T->at(ip) ) hMatch[ih]->Fill(TopLepRecPtCSVv2T->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtCSVv2T->at(ip));
+			 }
+		       else if( hName[ih] == "HiggsRecPtCSVv2T" )
+			 {
+			    if( MatchCSVv2T->at(ip) ) hMatch[ih]->Fill(HiggsRecPtCSVv2T->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsRecPtCSVv2T->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMTCSVv2T" )
+			 {
+			    if( MatchCSVv2T->at(ip) ) hMatch[ih]->Fill(TopLepRecMTCSVv2T->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMTCSVv2T->at(ip));
+			 }
+		       else if( hName[ih] == "HiggsTopLepRecDphiTCSVv2T" )
+			 {
+			    if( MatchCSVv2T->at(ip) ) hMatch[ih]->Fill(HiggsTopLepRecDphiTCSVv2T->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsTopLepRecDphiTCSVv2T->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtTCSVv2T" )
+			 {
+			    if( MatchCSVv2T->at(ip) ) hMatch[ih]->Fill(TopLepRecPtTCSVv2T->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtTCSVv2T->at(ip));
+			 }
+		    }
+	       }	     
+		  		    
+	     for(int ip=0;ip<MatchAll->size();ip++)
+	       {		       
+		  if( DiscAll->at(ip) < 10E+10 )
+		    {		    
+		       if( hName[ih] == "HiggsRecMAll" )
+			 {
+			    if( MatchAll->at(ip) ) hMatch[ih]->Fill(HiggsRecMAll->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsRecMAll->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMAll" )
+			 {
+			    if( MatchAll->at(ip) ) hMatch[ih]->Fill(TopLepRecMAll->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMAll->at(ip));
+			 }
+		       else if( hName[ih] == "HiggsTopLepRecDrAll" )
+			 {
+			    if( MatchAll->at(ip) ) hMatch[ih]->Fill(HiggsTopLepRecDrAll->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsTopLepRecDrAll->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtAll" )
+			 {
+			    if( MatchAll->at(ip) ) hMatch[ih]->Fill(TopLepRecPtAll->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtAll->at(ip));
+			 }
+		       else if( hName[ih] == "HiggsRecPtAll" )
+			 {
+			    if( MatchAll->at(ip) ) hMatch[ih]->Fill(HiggsRecPtAll->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsRecPtAll->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMTAll" )
+			 {
+			    if( MatchAll->at(ip) ) hMatch[ih]->Fill(TopLepRecMTAll->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMTAll->at(ip));
+			 }
+		       else if( hName[ih] == "HiggsTopLepRecDphiTAll" )
+			 {
+			    if( MatchAll->at(ip) ) hMatch[ih]->Fill(HiggsTopLepRecDphiTAll->at(ip));
+			    else hNotMatch[ih]->Fill(HiggsTopLepRecDphiTAll->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtTAll" )
+			 {
+			    if( MatchAll->at(ip) ) hMatch[ih]->Fill(TopLepRecPtTAll->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtTAll->at(ip));
 			 }
 		    }		  
 	       }

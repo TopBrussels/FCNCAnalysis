@@ -60,62 +60,110 @@ int main(int argc, char *argv[])
    float MVAFullReco_TopLepRecMTruth;
    float MVAFullReco_HiggsTopLepRecDrTruth;
    float MVAFullReco_TopLepRecPtTruth;
+//   float MVAFullReco_TopLepBJetRecCSVv2Truth;
+//   float MVAFullReco_HiggsBJet1RecCSVv2Truth;
+//   float MVAFullReco_HiggsBJet2RecCSVv2Truth;
+//   float MVAFullReco_TopHadNonBJetRecCSVv2Truth;
 
    float MVAFullReco_HiggsRecMAll;
    float MVAFullReco_TopLepRecMAll;
    float MVAFullReco_HiggsTopLepRecDrAll;
    float MVAFullReco_TopLepRecPtAll;
+//   float MVAFullReco_TopLepBJetRecCSVv2All;
+//   float MVAFullReco_HiggsBJet1RecCSVv2All;
+//   float MVAFullReco_HiggsBJet2RecCSVv2All;
+//   float MVAFullReco_TopHadNonBJetRecCSVv2All;
    
    float MVAFullReco_HiggsRecMHighestCSVv2;
    float MVAFullReco_TopLepRecMHighestCSVv2;
    float MVAFullReco_HiggsTopLepRecDrHighestCSVv2;
    float MVAFullReco_TopLepRecPtHighestCSVv2;
+//   float MVAFullReco_TopLepBJetRecCSVv2HighestCSVv2;
+//   float MVAFullReco_HiggsBJet1RecCSVv2HighestCSVv2;
+//   float MVAFullReco_HiggsBJet2RecCSVv2HighestCSVv2;
+//   float MVAFullReco_TopHadNonBJetRecCSVv2HighestCSVv2;
 
    float MVAFullReco_HiggsRecMCSVv2L;
    float MVAFullReco_TopLepRecMCSVv2L;
    float MVAFullReco_HiggsTopLepRecDrCSVv2L;
    float MVAFullReco_TopLepRecPtCSVv2L;
+//   float MVAFullReco_TopLepBJetRecCSVv2CSVv2L;
+//   float MVAFullReco_HiggsBJet1RecCSVv2CSVv2L;
+//   float MVAFullReco_HiggsBJet2RecCSVv2CSVv2L;
+//   float MVAFullReco_TopHadNonBJetRecCSVv2CSVv2L;
 
    float MVAFullReco_HiggsRecMCSVv2M;
    float MVAFullReco_TopLepRecMCSVv2M;
    float MVAFullReco_HiggsTopLepRecDrCSVv2M;
    float MVAFullReco_TopLepRecPtCSVv2M;
+//   float MVAFullReco_TopLepBJetRecCSVv2CSVv2M;
+//   float MVAFullReco_HiggsBJet1RecCSVv2CSVv2M;
+//   float MVAFullReco_HiggsBJet2RecCSVv2CSVv2M;
+//   float MVAFullReco_TopHadNonBJetRecCSVv2CSVv2M;
 
    float MVAFullReco_HiggsRecMCSVv2T;
    float MVAFullReco_TopLepRecMCSVv2T;
    float MVAFullReco_HiggsTopLepRecDrCSVv2T;
    float MVAFullReco_TopLepRecPtCSVv2T;
+//   float MVAFullReco_TopLepBJetRecCSVv2CSVv2T;
+//   float MVAFullReco_HiggsBJet1RecCSVv2CSVv2T;
+//   float MVAFullReco_HiggsBJet2RecCSVv2CSVv2T;
+//   float MVAFullReco_TopHadNonBJetRecCSVv2CSVv2T;
 
    // PartReco
    float MVAPartReco_HiggsRecMTruth;
    float MVAPartReco_TopLepRecMTTruth;
    float MVAPartReco_HiggsTopLepRecDphiTTruth;
    float MVAPartReco_TopLepRecPtTTruth;
+//   float MVAPartReco_TopLepBJetRecCSVv2Truth;
+//   float MVAPartReco_HiggsBJet1RecCSVv2Truth;
+//   float MVAPartReco_HiggsBJet2RecCSVv2Truth;
+//   float MVAPartReco_TopHadNonBJetRecCSVv2Truth;
 
    float MVAPartReco_HiggsRecMAll;
    float MVAPartReco_TopLepRecMTAll;
    float MVAPartReco_HiggsTopLepRecDphiTAll;
    float MVAPartReco_TopLepRecPtTAll;
+//   float MVAPartReco_TopLepBJetRecCSVv2All;
+//   float MVAPartReco_HiggsBJet1RecCSVv2All;
+//   float MVAPartReco_HiggsBJet2RecCSVv2All;
+//   float MVAPartReco_TopHadNonBJetRecCSVv2All;
    
    float MVAPartReco_HiggsRecMHighestCSVv2;
    float MVAPartReco_TopLepRecMTHighestCSVv2;
    float MVAPartReco_HiggsTopLepRecDphiTHighestCSVv2;
    float MVAPartReco_TopLepRecPtTHighestCSVv2;
+//   float MVAPartReco_TopLepBJetRecCSVv2HighestCSVv2;
+//   float MVAPartReco_HiggsBJet1RecCSVv2HighestCSVv2;
+//   float MVAPartReco_HiggsBJet2RecCSVv2HighestCSVv2;
+//   float MVAPartReco_TopHadNonBJetRecCSVv2HighestCSVv2;
 
    float MVAPartReco_HiggsRecMCSVv2L;
    float MVAPartReco_TopLepRecMTCSVv2L;
    float MVAPartReco_HiggsTopLepRecDphiTCSVv2L;
    float MVAPartReco_TopLepRecPtTCSVv2L;
+//   float MVAPartReco_TopLepBJetRecCSVv2CSVv2L;
+//   float MVAPartReco_HiggsBJet1RecCSVv2CSVv2L;
+//   float MVAPartReco_HiggsBJet2RecCSVv2CSVv2L;
+//   float MVAPartReco_TopHadNonBJetRecCSVv2CSVv2L;
 
    float MVAPartReco_HiggsRecMCSVv2M;
    float MVAPartReco_TopLepRecMTCSVv2M;
    float MVAPartReco_HiggsTopLepRecDphiTCSVv2M;
    float MVAPartReco_TopLepRecPtTCSVv2M;
+//   float MVAPartReco_TopLepBJetRecCSVv2CSVv2M;
+//   float MVAPartReco_HiggsBJet1RecCSVv2CSVv2M;
+//   float MVAPartReco_HiggsBJet2RecCSVv2CSVv2M;
+//   float MVAPartReco_TopHadNonBJetRecCSVv2CSVv2M;
 
    float MVAPartReco_HiggsRecMCSVv2T;
    float MVAPartReco_TopLepRecMTCSVv2T;
    float MVAPartReco_HiggsTopLepRecDphiTCSVv2T;
    float MVAPartReco_TopLepRecPtTCSVv2T;
+//   float MVAPartReco_TopLepBJetRecCSVv2CSVv2T;
+//   float MVAPartReco_HiggsBJet1RecCSVv2CSVv2T;
+//   float MVAPartReco_HiggsBJet2RecCSVv2CSVv2T;
+//   float MVAPartReco_TopHadNonBJetRecCSVv2CSVv2T;
    
    if( applyMVA )
      {	
@@ -123,97 +171,145 @@ int main(int argc, char *argv[])
 	readerFullRecoTruth->AddVariable("TopLepRecMTruth",&MVAFullReco_TopLepRecMTruth);
 	readerFullRecoTruth->AddVariable("HiggsTopLepRecDrTruth",&MVAFullReco_HiggsTopLepRecDrTruth);
 	readerFullRecoTruth->AddVariable("TopLepRecPtTruth",&MVAFullReco_TopLepRecPtTruth);
+//	readerFullRecoTruth->AddVariable("TopLepBJetRecCSVv2Truth",&MVAFullReco_TopLepBJetRecCSVv2Truth);
+//	readerFullRecoTruth->AddVariable("HiggsBJet1RecCSVv2Truth",&MVAFullReco_HiggsBJet1RecCSVv2Truth);
+//	readerFullRecoTruth->AddVariable("HiggsBJet2RecCSVv2Truth",&MVAFullReco_HiggsBJet2RecCSVv2Truth);
+//	readerFullRecoTruth->AddVariable("TopHadNonBJetRecCSVv2Truth",&MVAFullReco_TopHadNonBJetRecCSVv2Truth);
 
-	std::string weightsFileFullRecoTruth = "/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoTruth_BDT.weights.xml";
+	std::string weightsFileFullRecoTruth = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoTruth_BDT.weights.xml";
 	readerFullRecoTruth->BookMVA("BDTG method",weightsFileFullRecoTruth.c_str());
 
 	readerFullRecoAll->AddVariable("HiggsRecMAll",&MVAFullReco_HiggsRecMAll);
 	readerFullRecoAll->AddVariable("TopLepRecMAll",&MVAFullReco_TopLepRecMAll);
 	readerFullRecoAll->AddVariable("HiggsTopLepRecDrAll",&MVAFullReco_HiggsTopLepRecDrAll);
 	readerFullRecoAll->AddVariable("TopLepRecPtAll",&MVAFullReco_TopLepRecPtAll);
+//	readerFullRecoAll->AddVariable("TopLepBJetRecCSVv2All",&MVAFullReco_TopLepBJetRecCSVv2All);
+//	readerFullRecoAll->AddVariable("HiggsBJet1RecCSVv2All",&MVAFullReco_HiggsBJet1RecCSVv2All);
+//	readerFullRecoAll->AddVariable("HiggsBJet2RecCSVv2All",&MVAFullReco_HiggsBJet2RecCSVv2All);
+//	readerFullRecoAll->AddVariable("TopHadNonBJetRecCSVv2All",&MVAFullReco_TopHadNonBJetRecCSVv2All);
 
-	std::string weightsFileFullRecoAll = "/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoAll_BDT.weights.xml";
+	std::string weightsFileFullRecoAll = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoAll_BDT.weights.xml";
 	readerFullRecoAll->BookMVA("BDTG method",weightsFileFullRecoAll.c_str());
 	
 	readerFullRecoHighestCSVv2->AddVariable("HiggsRecMHighestCSVv2",&MVAFullReco_HiggsRecMHighestCSVv2);
 	readerFullRecoHighestCSVv2->AddVariable("TopLepRecMHighestCSVv2",&MVAFullReco_TopLepRecMHighestCSVv2);
 	readerFullRecoHighestCSVv2->AddVariable("HiggsTopLepRecDrHighestCSVv2",&MVAFullReco_HiggsTopLepRecDrHighestCSVv2);
 	readerFullRecoHighestCSVv2->AddVariable("TopLepRecPtHighestCSVv2",&MVAFullReco_TopLepRecPtHighestCSVv2);
+//	readerFullRecoHighestCSVv2->AddVariable("TopLepBJetRecCSVv2HighestCSVv2",&MVAFullReco_TopLepBJetRecCSVv2HighestCSVv2);
+//	readerFullRecoHighestCSVv2->AddVariable("HiggsBJet1RecCSVv2HighestCSVv2",&MVAFullReco_HiggsBJet1RecCSVv2HighestCSVv2);
+//	readerFullRecoHighestCSVv2->AddVariable("HiggsBJet2RecCSVv2HighestCSVv2",&MVAFullReco_HiggsBJet2RecCSVv2HighestCSVv2);
+//	readerFullRecoHighestCSVv2->AddVariable("TopHadNonBJetRecCSVv2HighestCSVv2",&MVAFullReco_TopHadNonBJetRecCSVv2HighestCSVv2);
 
-	std::string weightsFileFullRecoHighestCSVv2 = "/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoHighestCSVv2_BDT.weights.xml";
+	std::string weightsFileFullRecoHighestCSVv2 = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoHighestCSVv2_BDT.weights.xml";
 	readerFullRecoHighestCSVv2->BookMVA("BDTG method",weightsFileFullRecoHighestCSVv2.c_str());
 
 	readerFullRecoCSVv2L->AddVariable("HiggsRecMCSVv2L",&MVAFullReco_HiggsRecMCSVv2L);
 	readerFullRecoCSVv2L->AddVariable("TopLepRecMCSVv2L",&MVAFullReco_TopLepRecMCSVv2L);
 	readerFullRecoCSVv2L->AddVariable("HiggsTopLepRecDrCSVv2L",&MVAFullReco_HiggsTopLepRecDrCSVv2L);
 	readerFullRecoCSVv2L->AddVariable("TopLepRecPtCSVv2L",&MVAFullReco_TopLepRecPtCSVv2L);
+//	readerFullRecoCSVv2L->AddVariable("TopLepBJetRecCSVv2CSVv2L",&MVAFullReco_TopLepBJetRecCSVv2CSVv2L);
+//	readerFullRecoCSVv2L->AddVariable("HiggsBJet1RecCSVv2CSVv2L",&MVAFullReco_HiggsBJet1RecCSVv2CSVv2L);
+//	readerFullRecoCSVv2L->AddVariable("HiggsBJet2RecCSVv2CSVv2L",&MVAFullReco_HiggsBJet2RecCSVv2CSVv2L);
+//	readerFullRecoCSVv2L->AddVariable("TopHadNonBJetRecCSVv2CSVv2L",&MVAFullReco_TopHadNonBJetRecCSVv2CSVv2L);
 
-	std::string weightsFileFullRecoCSVv2L = "/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoCSVv2L_BDT.weights.xml";
+	std::string weightsFileFullRecoCSVv2L = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoCSVv2L_BDT.weights.xml";
 	readerFullRecoCSVv2L->BookMVA("BDTG method",weightsFileFullRecoCSVv2L.c_str());
 
 	readerFullRecoCSVv2M->AddVariable("HiggsRecMCSVv2M",&MVAFullReco_HiggsRecMCSVv2M);
 	readerFullRecoCSVv2M->AddVariable("TopLepRecMCSVv2M",&MVAFullReco_TopLepRecMCSVv2M);
 	readerFullRecoCSVv2M->AddVariable("HiggsTopLepRecDrCSVv2M",&MVAFullReco_HiggsTopLepRecDrCSVv2M);
 	readerFullRecoCSVv2M->AddVariable("TopLepRecPtCSVv2M",&MVAFullReco_TopLepRecPtCSVv2M);
+//	readerFullRecoCSVv2M->AddVariable("TopLepBJetRecCSVv2CSVv2M",&MVAFullReco_TopLepBJetRecCSVv2CSVv2M);
+//	readerFullRecoCSVv2M->AddVariable("HiggsBJet1RecCSVv2CSVv2M",&MVAFullReco_HiggsBJet1RecCSVv2CSVv2M);
+//	readerFullRecoCSVv2M->AddVariable("HiggsBJet2RecCSVv2CSVv2M",&MVAFullReco_HiggsBJet2RecCSVv2CSVv2M);
+//	readerFullRecoCSVv2M->AddVariable("TopHadNonBJetRecCSVv2CSVv2M",&MVAFullReco_TopHadNonBJetRecCSVv2CSVv2M);
 
-	std::string weightsFileFullRecoCSVv2M = "/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoCSVv2M_BDT.weights.xml";
+	std::string weightsFileFullRecoCSVv2M = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoCSVv2M_BDT.weights.xml";
 	readerFullRecoCSVv2M->BookMVA("BDTG method",weightsFileFullRecoCSVv2M.c_str());
 
 	readerFullRecoCSVv2T->AddVariable("HiggsRecMCSVv2T",&MVAFullReco_HiggsRecMCSVv2T);
 	readerFullRecoCSVv2T->AddVariable("TopLepRecMCSVv2T",&MVAFullReco_TopLepRecMCSVv2T);
 	readerFullRecoCSVv2T->AddVariable("HiggsTopLepRecDrCSVv2T",&MVAFullReco_HiggsTopLepRecDrCSVv2T);
 	readerFullRecoCSVv2T->AddVariable("TopLepRecPtCSVv2T",&MVAFullReco_TopLepRecPtCSVv2T);
+//	readerFullRecoCSVv2T->AddVariable("TopLepBJetRecCSVv2CSVv2T",&MVAFullReco_TopLepBJetRecCSVv2CSVv2T);
+//	readerFullRecoCSVv2T->AddVariable("HiggsBJet1RecCSVv2CSVv2T",&MVAFullReco_HiggsBJet1RecCSVv2CSVv2T);
+//	readerFullRecoCSVv2T->AddVariable("HiggsBJet2RecCSVv2CSVv2T",&MVAFullReco_HiggsBJet2RecCSVv2CSVv2T);
+//	readerFullRecoCSVv2T->AddVariable("TopHadNonBJetRecCSVv2CSVv2T",&MVAFullReco_TopHadNonBJetRecCSVv2CSVv2T);
 
-	std::string weightsFileFullRecoCSVv2T = "/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoCSVv2T_BDT.weights.xml";
+	std::string weightsFileFullRecoCSVv2T = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoCSVv2T_BDT.weights.xml";
 	readerFullRecoCSVv2T->BookMVA("BDTG method",weightsFileFullRecoCSVv2T.c_str());
 
-     
+	
 	readerPartRecoTruth->AddVariable("HiggsRecMTruth",&MVAPartReco_HiggsRecMTruth);
 	readerPartRecoTruth->AddVariable("TopLepRecMTTruth",&MVAPartReco_TopLepRecMTTruth);
 	readerPartRecoTruth->AddVariable("HiggsTopLepRecDphiTTruth",&MVAPartReco_HiggsTopLepRecDphiTTruth);
 	readerPartRecoTruth->AddVariable("TopLepRecPtTTruth",&MVAPartReco_TopLepRecPtTTruth);
+//	readerPartRecoTruth->AddVariable("TopLepBJetRecCSVv2Truth",&MVAPartReco_TopLepBJetRecCSVv2Truth);
+//	readerPartRecoTruth->AddVariable("HiggsBJet1RecCSVv2Truth",&MVAPartReco_HiggsBJet1RecCSVv2Truth);
+//	readerPartRecoTruth->AddVariable("HiggsBJet2RecCSVv2Truth",&MVAPartReco_HiggsBJet2RecCSVv2Truth);
+//	readerPartRecoTruth->AddVariable("TopHadNonBJetRecCSVv2Truth",&MVAPartReco_TopHadNonBJetRecCSVv2Truth);
 
-	std::string weightsFilePartRecoTruth = "/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoTruth_BDT.weights.xml";
+	std::string weightsFilePartRecoTruth = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoTruth_BDT.weights.xml";
 	readerPartRecoTruth->BookMVA("BDTG method",weightsFilePartRecoTruth.c_str());
 
 	readerPartRecoAll->AddVariable("HiggsRecMAll",&MVAPartReco_HiggsRecMAll);
 	readerPartRecoAll->AddVariable("TopLepRecMTAll",&MVAPartReco_TopLepRecMTAll);
 	readerPartRecoAll->AddVariable("HiggsTopLepRecDphiTAll",&MVAPartReco_HiggsTopLepRecDphiTAll);
 	readerPartRecoAll->AddVariable("TopLepRecPtTAll",&MVAPartReco_TopLepRecPtTAll);
+//	readerPartRecoAll->AddVariable("TopLepBJetRecCSVv2All",&MVAPartReco_TopLepBJetRecCSVv2All);
+//	readerPartRecoAll->AddVariable("HiggsBJet1RecCSVv2All",&MVAPartReco_HiggsBJet1RecCSVv2All);
+//	readerPartRecoAll->AddVariable("HiggsBJet2RecCSVv2All",&MVAPartReco_HiggsBJet2RecCSVv2All);
+//	readerPartRecoAll->AddVariable("TopHadNonBJetRecCSVv2All",&MVAPartReco_TopHadNonBJetRecCSVv2All);
 
-	std::string weightsFilePartRecoAll = "/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoAll_BDT.weights.xml";
+	std::string weightsFilePartRecoAll = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoAll_BDT.weights.xml";
 	readerPartRecoAll->BookMVA("BDTG method",weightsFilePartRecoAll.c_str());
 	
 	readerPartRecoHighestCSVv2->AddVariable("HiggsRecMHighestCSVv2",&MVAPartReco_HiggsRecMHighestCSVv2);
 	readerPartRecoHighestCSVv2->AddVariable("TopLepRecMTHighestCSVv2",&MVAPartReco_TopLepRecMTHighestCSVv2);
 	readerPartRecoHighestCSVv2->AddVariable("HiggsTopLepRecDphiTHighestCSVv2",&MVAPartReco_HiggsTopLepRecDphiTHighestCSVv2);
 	readerPartRecoHighestCSVv2->AddVariable("TopLepRecPtTHighestCSVv2",&MVAPartReco_TopLepRecPtTHighestCSVv2);
+//	readerPartRecoHighestCSVv2->AddVariable("TopLepBJetRecCSVv2HighestCSVv2",&MVAPartReco_TopLepBJetRecCSVv2HighestCSVv2);
+//	readerPartRecoHighestCSVv2->AddVariable("HiggsBJet1RecCSVv2HighestCSVv2",&MVAPartReco_HiggsBJet1RecCSVv2HighestCSVv2);
+//	readerPartRecoHighestCSVv2->AddVariable("HiggsBJet2RecCSVv2HighestCSVv2",&MVAPartReco_HiggsBJet2RecCSVv2HighestCSVv2);
+//	readerPartRecoHighestCSVv2->AddVariable("TopHadNonBJetRecCSVv2HighestCSVv2",&MVAPartReco_TopHadNonBJetRecCSVv2HighestCSVv2);
 
-	std::string weightsFilePartRecoHighestCSVv2 = "/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoHighestCSVv2_BDT.weights.xml";
+	std::string weightsFilePartRecoHighestCSVv2 = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoHighestCSVv2_BDT.weights.xml";
 	readerPartRecoHighestCSVv2->BookMVA("BDTG method",weightsFilePartRecoHighestCSVv2.c_str());
 
 	readerPartRecoCSVv2L->AddVariable("HiggsRecMCSVv2L",&MVAPartReco_HiggsRecMCSVv2L);
 	readerPartRecoCSVv2L->AddVariable("TopLepRecMTCSVv2L",&MVAPartReco_TopLepRecMTCSVv2L);
 	readerPartRecoCSVv2L->AddVariable("HiggsTopLepRecDphiTCSVv2L",&MVAPartReco_HiggsTopLepRecDphiTCSVv2L);
 	readerPartRecoCSVv2L->AddVariable("TopLepRecPtTCSVv2L",&MVAPartReco_TopLepRecPtTCSVv2L);
+//	readerPartRecoCSVv2L->AddVariable("TopLepBJetRecCSVv2CSVv2L",&MVAPartReco_TopLepBJetRecCSVv2CSVv2L);
+//	readerPartRecoCSVv2L->AddVariable("HiggsBJet1RecCSVv2CSVv2L",&MVAPartReco_HiggsBJet1RecCSVv2CSVv2L);
+//	readerPartRecoCSVv2L->AddVariable("HiggsBJet2RecCSVv2CSVv2L",&MVAPartReco_HiggsBJet2RecCSVv2CSVv2L);
+//	readerPartRecoCSVv2L->AddVariable("TopHadNonBJetRecCSVv2CSVv2L",&MVAPartReco_TopHadNonBJetRecCSVv2CSVv2L);
 
-	std::string weightsFilePartRecoCSVv2L = "/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoCSVv2L_BDT.weights.xml";
+	std::string weightsFilePartRecoCSVv2L = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoCSVv2L_BDT.weights.xml";
 	readerPartRecoCSVv2L->BookMVA("BDTG method",weightsFilePartRecoCSVv2L.c_str());
 
 	readerPartRecoCSVv2M->AddVariable("HiggsRecMCSVv2M",&MVAPartReco_HiggsRecMCSVv2M);
 	readerPartRecoCSVv2M->AddVariable("TopLepRecMTCSVv2M",&MVAPartReco_TopLepRecMTCSVv2M);
 	readerPartRecoCSVv2M->AddVariable("HiggsTopLepRecDphiTCSVv2M",&MVAPartReco_HiggsTopLepRecDphiTCSVv2M);
 	readerPartRecoCSVv2M->AddVariable("TopLepRecPtTCSVv2M",&MVAPartReco_TopLepRecPtTCSVv2M);
+//	readerPartRecoCSVv2M->AddVariable("TopLepBJetRecCSVv2CSVv2M",&MVAPartReco_TopLepBJetRecCSVv2CSVv2M);
+//	readerPartRecoCSVv2M->AddVariable("HiggsBJet1RecCSVv2CSVv2M",&MVAPartReco_HiggsBJet1RecCSVv2CSVv2M);
+//	readerPartRecoCSVv2M->AddVariable("HiggsBJet2RecCSVv2CSVv2M",&MVAPartReco_HiggsBJet2RecCSVv2CSVv2M);
+//	readerPartRecoCSVv2M->AddVariable("TopHadNonBJetRecCSVv2CSVv2M",&MVAPartReco_TopHadNonBJetRecCSVv2CSVv2M);
 
-	std::string weightsFilePartRecoCSVv2M = "/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoCSVv2M_BDT.weights.xml";
+	std::string weightsFilePartRecoCSVv2M = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoCSVv2M_BDT.weights.xml";
 	readerPartRecoCSVv2M->BookMVA("BDTG method",weightsFilePartRecoCSVv2M.c_str());
 
 	readerPartRecoCSVv2T->AddVariable("HiggsRecMCSVv2T",&MVAPartReco_HiggsRecMCSVv2T);
 	readerPartRecoCSVv2T->AddVariable("TopLepRecMTCSVv2T",&MVAPartReco_TopLepRecMTCSVv2T);
 	readerPartRecoCSVv2T->AddVariable("HiggsTopLepRecDphiTCSVv2T",&MVAPartReco_HiggsTopLepRecDphiTCSVv2T);
 	readerPartRecoCSVv2T->AddVariable("TopLepRecPtTCSVv2T",&MVAPartReco_TopLepRecPtTCSVv2T);
+//	readerPartRecoCSVv2T->AddVariable("TopLepBJetRecCSVv2CSVv2T",&MVAPartReco_TopLepBJetRecCSVv2CSVv2T);
+//	readerPartRecoCSVv2T->AddVariable("HiggsBJet1RecCSVv2CSVv2T",&MVAPartReco_HiggsBJet1RecCSVv2CSVv2T);
+//	readerPartRecoCSVv2T->AddVariable("HiggsBJet2RecCSVv2CSVv2T",&MVAPartReco_HiggsBJet2RecCSVv2CSVv2T);
+//	readerPartRecoCSVv2T->AddVariable("TopHadNonBJetRecCSVv2CSVv2T",&MVAPartReco_TopHadNonBJetRecCSVv2CSVv2T);
 
-	std::string weightsFilePartRecoCSVv2T = "/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoCSVv2T_BDT.weights.xml";
+	std::string weightsFilePartRecoCSVv2T = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoCSVv2T_BDT.weights.xml";
 	readerPartRecoCSVv2T->BookMVA("BDTG method",weightsFilePartRecoCSVv2T.c_str());
      }
    
@@ -221,7 +317,7 @@ int main(int argc, char *argv[])
 
    kf->Init(TOPTOPLEPHBB);
 
-   std::string pdfFileName = "/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/TopKinFit/test/GenAnalysis/TopTopLepHbb/pdf.root";
+   std::string pdfFileName = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/GenAnalysis/TopTopLepHbb/pdf.root";
    kf->SetPDF("TopWMass",pdfFileName.c_str(),"TopLepWM_Fit");
    kf->SetPDF("TopMass",pdfFileName.c_str(),"TopLepRecM_Fit");
    kf->SetPDF("HiggsMass",pdfFileName.c_str(),"HiggsRecM_Fit");
@@ -453,7 +549,35 @@ int main(int argc, char *argv[])
 	std::vector<float> TopLepRecPtTCSVv2L;
 	std::vector<float> TopLepRecPtTCSVv2M;
 	std::vector<float> TopLepRecPtTCSVv2T;
-	
+
+/*	std::vector<float> TopLepBJetRecCSVv2Truth;
+	std::vector<float> TopLepBJetRecCSVv2All;
+	std::vector<float> TopLepBJetRecCSVv2HighestCSVv2;
+	std::vector<float> TopLepBJetRecCSVv2CSVv2L;
+	std::vector<float> TopLepBJetRecCSVv2CSVv2M;
+	std::vector<float> TopLepBJetRecCSVv2CSVv2T;
+
+	std::vector<float> HiggsBJet1RecCSVv2Truth;
+	std::vector<float> HiggsBJet1RecCSVv2All;
+	std::vector<float> HiggsBJet1RecCSVv2HighestCSVv2;
+	std::vector<float> HiggsBJet1RecCSVv2CSVv2L;
+	std::vector<float> HiggsBJet1RecCSVv2CSVv2M;
+	std::vector<float> HiggsBJet1RecCSVv2CSVv2T;
+
+	std::vector<float> HiggsBJet2RecCSVv2Truth;
+	std::vector<float> HiggsBJet2RecCSVv2All;
+	std::vector<float> HiggsBJet2RecCSVv2HighestCSVv2;
+	std::vector<float> HiggsBJet2RecCSVv2CSVv2L;
+	std::vector<float> HiggsBJet2RecCSVv2CSVv2M;
+	std::vector<float> HiggsBJet2RecCSVv2CSVv2T;
+
+	std::vector<float> TopHadNonBJetRecCSVv2Truth;
+	std::vector<float> TopHadNonBJetRecCSVv2All;
+	std::vector<float> TopHadNonBJetRecCSVv2HighestCSVv2;
+	std::vector<float> TopHadNonBJetRecCSVv2CSVv2L;
+	std::vector<float> TopHadNonBJetRecCSVv2CSVv2M;
+	std::vector<float> TopHadNonBJetRecCSVv2CSVv2T;
+*/	
 	int NBJetTruth;
 	int NBJetAll;
 	int NBJetHighestCSVv2;
@@ -643,7 +767,35 @@ int main(int argc, char *argv[])
 	trFIT->Branch("TopLepRecPtTCSVv2L","std::vector<float>",&TopLepRecPtTCSVv2L);
 	trFIT->Branch("TopLepRecPtTCSVv2M","std::vector<float>",&TopLepRecPtTCSVv2M);
 	trFIT->Branch("TopLepRecPtTCSVv2T","std::vector<float>",&TopLepRecPtTCSVv2T);
-	
+/*
+	trFIT->Branch("TopLepBJetRecCSVv2Truth","std::vector<float>",&TopLepBJetRecCSVv2Truth);
+	trFIT->Branch("TopLepBJetRecCSVv2All","std::vector<float>",&TopLepBJetRecCSVv2All);
+	trFIT->Branch("TopLepBJetRecCSVv2HighestCSVv2","std::vector<float>",&TopLepBJetRecCSVv2HighestCSVv2);
+	trFIT->Branch("TopLepBJetRecCSVv2CSVv2L","std::vector<float>",&TopLepBJetRecCSVv2CSVv2L);
+	trFIT->Branch("TopLepBJetRecCSVv2CSVv2M","std::vector<float>",&TopLepBJetRecCSVv2CSVv2M);
+	trFIT->Branch("TopLepBJetRecCSVv2CSVv2T","std::vector<float>",&TopLepBJetRecCSVv2CSVv2T);
+
+	trFIT->Branch("HiggsBJet1RecCSVv2Truth","std::vector<float>",&HiggsBJet1RecCSVv2Truth);
+	trFIT->Branch("HiggsBJet1RecCSVv2All","std::vector<float>",&HiggsBJet1RecCSVv2All);
+	trFIT->Branch("HiggsBJet1RecCSVv2HighestCSVv2","std::vector<float>",&HiggsBJet1RecCSVv2HighestCSVv2);
+	trFIT->Branch("HiggsBJet1RecCSVv2CSVv2L","std::vector<float>",&HiggsBJet1RecCSVv2CSVv2L);
+	trFIT->Branch("HiggsBJet1RecCSVv2CSVv2M","std::vector<float>",&HiggsBJet1RecCSVv2CSVv2M);
+	trFIT->Branch("HiggsBJet1RecCSVv2CSVv2T","std::vector<float>",&HiggsBJet1RecCSVv2CSVv2T);
+
+	trFIT->Branch("HiggsBJet2RecCSVv2Truth","std::vector<float>",&HiggsBJet2RecCSVv2Truth);
+	trFIT->Branch("HiggsBJet2RecCSVv2All","std::vector<float>",&HiggsBJet2RecCSVv2All);
+	trFIT->Branch("HiggsBJet2RecCSVv2HighestCSVv2","std::vector<float>",&HiggsBJet2RecCSVv2HighestCSVv2);
+	trFIT->Branch("HiggsBJet2RecCSVv2CSVv2L","std::vector<float>",&HiggsBJet2RecCSVv2CSVv2L);
+	trFIT->Branch("HiggsBJet2RecCSVv2CSVv2M","std::vector<float>",&HiggsBJet2RecCSVv2CSVv2M);
+	trFIT->Branch("HiggsBJet2RecCSVv2CSVv2T","std::vector<float>",&HiggsBJet2RecCSVv2CSVv2T);
+
+	trFIT->Branch("TopHadNonBJetRecCSVv2Truth","std::vector<float>",&TopHadNonBJetRecCSVv2Truth);
+	trFIT->Branch("TopHadNonBJetRecCSVv2All","std::vector<float>",&TopHadNonBJetRecCSVv2All);
+	trFIT->Branch("TopHadNonBJetRecCSVv2HighestCSVv2","std::vector<float>",&TopHadNonBJetRecCSVv2HighestCSVv2);
+	trFIT->Branch("TopHadNonBJetRecCSVv2CSVv2L","std::vector<float>",&TopHadNonBJetRecCSVv2CSVv2L);
+	trFIT->Branch("TopHadNonBJetRecCSVv2CSVv2M","std::vector<float>",&TopHadNonBJetRecCSVv2CSVv2M);
+	trFIT->Branch("TopHadNonBJetRecCSVv2CSVv2T","std::vector<float>",&TopHadNonBJetRecCSVv2CSVv2T);
+*/	
 	trFIT->Branch("NBJetTruth",&NBJetTruth,"NBJetTruth/I");
 	trFIT->Branch("NBJetAll",&NBJetAll,"NBJetAll/I");
 	trFIT->Branch("NBJetHighestCSVv2",&NBJetHighestCSVv2,"NBJetHighestCSVv2/I");
@@ -717,7 +869,8 @@ int main(int argc, char *argv[])
 	int nev = tr->GetEntries();
 	std::cout << "Total number of events = " << nev << std::endl;
 	
-	int nMax = 2000;
+//	int nMax = 2000;
+	int nMax = -1;
 //	int nMax = 1000;
 //	int nMax = 100;
 	
@@ -863,7 +1016,35 @@ int main(int argc, char *argv[])
 	     TopLepRecPtTCSVv2L.clear();
 	     TopLepRecPtTCSVv2M.clear();
 	     TopLepRecPtTCSVv2T.clear();
-	     
+/*
+	     TopLepBJetRecCSVv2Truth.clear();
+	     TopLepBJetRecCSVv2All.clear();
+	     TopLepBJetRecCSVv2HighestCSVv2.clear();
+	     TopLepBJetRecCSVv2CSVv2L.clear();
+	     TopLepBJetRecCSVv2CSVv2M.clear();
+	     TopLepBJetRecCSVv2CSVv2T.clear();
+
+	     HiggsBJet1RecCSVv2Truth.clear();
+	     HiggsBJet1RecCSVv2All.clear();
+	     HiggsBJet1RecCSVv2HighestCSVv2.clear();
+	     HiggsBJet1RecCSVv2CSVv2L.clear();
+	     HiggsBJet1RecCSVv2CSVv2M.clear();
+	     HiggsBJet1RecCSVv2CSVv2T.clear();
+
+	     HiggsBJet2RecCSVv2Truth.clear();
+	     HiggsBJet2RecCSVv2All.clear();
+	     HiggsBJet2RecCSVv2HighestCSVv2.clear();
+	     HiggsBJet2RecCSVv2CSVv2L.clear();
+	     HiggsBJet2RecCSVv2CSVv2M.clear();
+	     HiggsBJet2RecCSVv2CSVv2T.clear();
+
+	     TopHadNonBJetRecCSVv2Truth.clear();
+	     TopHadNonBJetRecCSVv2All.clear();
+	     TopHadNonBJetRecCSVv2HighestCSVv2.clear();
+	     TopHadNonBJetRecCSVv2CSVv2L.clear();
+	     TopHadNonBJetRecCSVv2CSVv2M.clear();
+	     TopHadNonBJetRecCSVv2CSVv2T.clear();
+*/	     
 	     for(int it=0;it<6;it++)
 	       {
 		  std::vector<float> BJetPt;
@@ -1143,6 +1324,7 @@ int main(int argc, char *argv[])
 		  std::vector<float> NonBJetFilteredEta;
 		  std::vector<float> NonBJetFilteredPhi;
 		  std::vector<float> NonBJetFilteredE;
+		  std::vector<float> NonBJetFilteredCSVv2;
 		  
 		  for(int inb=0;inb<nNonBJetMaxEvent;inb++)
 		    {
@@ -1152,6 +1334,7 @@ int main(int argc, char *argv[])
 		       NonBJetFilteredEta.push_back(NonBJetEta.at(idx));
 		       NonBJetFilteredPhi.push_back(NonBJetPhi.at(idx));
 		       NonBJetFilteredE.push_back(NonBJetE.at(idx));
+		       NonBJetFilteredCSVv2.push_back(NonBJetCSVv2.at(idx));
 		    }		  
 		  
 		  if( it == 0 ) nEventsTruth++;
@@ -1256,6 +1439,7 @@ int main(int argc, char *argv[])
 		       float TopLepBJetFitEta = BJetEta[idxTopLepBJetFit];
 		       float TopLepBJetFitPhi = BJetPhi[idxTopLepBJetFit];
 		       float TopLepBJetFitE = BJetE[idxTopLepBJetFit];
+		       float TopLepBJetFitCSVv2 = BJetCSVv2[idxTopLepBJetFit];
 		       
 		       TLorentzVector *TopLepBJetFitP4 = new TLorentzVector();
 		       TopLepBJetFitP4->SetPtEtaPhiE(TopLepBJetFitPt,TopLepBJetFitEta,TopLepBJetFitPhi,TopLepBJetFitE);
@@ -1264,6 +1448,7 @@ int main(int argc, char *argv[])
 		       float TopHadNonBJetFitEta = NonBJetFilteredEta[idxTopHadNonBJetFit];
 		       float TopHadNonBJetFitPhi = NonBJetFilteredPhi[idxTopHadNonBJetFit];
 		       float TopHadNonBJetFitE = NonBJetFilteredE[idxTopHadNonBJetFit];
+		       float TopHadNonBJetFitCSVv2 = NonBJetFilteredCSVv2[idxTopHadNonBJetFit];
 		       
 		       TLorentzVector *TopHadNonBJetFitP4 = new TLorentzVector();
 		       TopHadNonBJetFitP4->SetPtEtaPhiE(TopHadNonBJetFitPt,TopHadNonBJetFitEta,TopHadNonBJetFitPhi,TopHadNonBJetFitE);
@@ -1272,6 +1457,7 @@ int main(int argc, char *argv[])
 		       float HiggsBJet1FitEta = BJetEta[idxHiggsBJet1Fit];
 		       float HiggsBJet1FitPhi = BJetPhi[idxHiggsBJet1Fit];
 		       float HiggsBJet1FitE = BJetE[idxHiggsBJet1Fit];
+		       float HiggsBJet1FitCSVv2 = BJetCSVv2[idxHiggsBJet1Fit];
 		       
 		       TLorentzVector *HiggsBJet1FitP4 = new TLorentzVector();
 		       HiggsBJet1FitP4->SetPtEtaPhiE(HiggsBJet1FitPt,HiggsBJet1FitEta,HiggsBJet1FitPhi,HiggsBJet1FitE);
@@ -1280,6 +1466,7 @@ int main(int argc, char *argv[])
 		       float HiggsBJet2FitEta = BJetEta[idxHiggsBJet2Fit];
 		       float HiggsBJet2FitPhi = BJetPhi[idxHiggsBJet2Fit];
 		       float HiggsBJet2FitE = BJetE[idxHiggsBJet2Fit];
+		       float HiggsBJet2FitCSVv2 = BJetCSVv2[idxHiggsBJet2Fit];
 
 		       TLorentzVector *HiggsBJet2FitP4 = new TLorentzVector();
 		       HiggsBJet2FitP4->SetPtEtaPhiE(HiggsBJet2FitPt,HiggsBJet2FitEta,HiggsBJet2FitPhi,HiggsBJet2FitE);
@@ -1367,6 +1554,11 @@ int main(int argc, char *argv[])
 			    HiggsTopLepRecDphiTTruth.push_back(VarHiggsTopLepRecDphiT);
 			    TopLepRecPtTTruth.push_back(VarTopLepRecPtT);
 			    
+/*			    TopLepBJetRecCSVv2Truth.push_back(TopLepBJetFitCSVv2);
+			    HiggsBJet1RecCSVv2Truth.push_back(HiggsBJet1FitCSVv2);
+			    HiggsBJet2RecCSVv2Truth.push_back(HiggsBJet2FitCSVv2);
+			    TopHadNonBJetRecCSVv2Truth.push_back(TopHadNonBJetFitCSVv2);*/
+
 			    if( applyMVA ) 
 			      {
 				 if( disc < 10E+8 )
@@ -1375,6 +1567,10 @@ int main(int argc, char *argv[])
 				      MVAFullReco_TopLepRecMTruth = VarTopLepRecM;
 				      MVAFullReco_HiggsTopLepRecDrTruth = VarHiggsTopLepRecDr;
 				      MVAFullReco_TopLepRecPtTruth = VarTopLepRecPt;
+/*				      MVAFullReco_TopLepBJetRecCSVv2Truth = TopLepBJetFitCSVv2;
+				      MVAFullReco_HiggsBJet1RecCSVv2Truth = HiggsBJet1FitCSVv2;
+				      MVAFullReco_HiggsBJet2RecCSVv2Truth = HiggsBJet2FitCSVv2;
+				      MVAFullReco_TopHadNonBJetRecCSVv2Truth = TopHadNonBJetFitCSVv2;*/
 				      
 				      MVATruth.push_back(std::make_pair(readerFullRecoTruth->EvaluateMVA("BDTG method"),ip));
 				   }				 
@@ -1384,6 +1580,10 @@ int main(int argc, char *argv[])
 				      MVAPartReco_TopLepRecMTTruth = VarTopLepRecMT;
 				      MVAPartReco_HiggsTopLepRecDphiTTruth = VarHiggsTopLepRecDphiT;
 				      MVAPartReco_TopLepRecPtTTruth = VarTopLepRecPtT;
+/*				      MVAPartReco_TopLepBJetRecCSVv2Truth = TopLepBJetFitCSVv2;
+				      MVAPartReco_HiggsBJet1RecCSVv2Truth = HiggsBJet1FitCSVv2;
+				      MVAPartReco_HiggsBJet2RecCSVv2Truth = HiggsBJet2FitCSVv2;
+				      MVAPartReco_TopHadNonBJetRecCSVv2Truth = TopHadNonBJetFitCSVv2;*/
 				      
 				      MVATruth.push_back(std::make_pair(readerPartRecoTruth->EvaluateMVA("BDTG method"),ip));
 				   }				 
@@ -1410,6 +1610,11 @@ int main(int argc, char *argv[])
 			    HiggsTopLepRecDphiTHighestCSVv2.push_back(VarHiggsTopLepRecDphiT);
 			    TopLepRecPtTHighestCSVv2.push_back(VarTopLepRecPtT);
 
+/*			    TopLepBJetRecCSVv2HighestCSVv2.push_back(TopLepBJetFitCSVv2);
+			    HiggsBJet1RecCSVv2HighestCSVv2.push_back(HiggsBJet1FitCSVv2);
+			    HiggsBJet2RecCSVv2HighestCSVv2.push_back(HiggsBJet2FitCSVv2);
+			    TopHadNonBJetRecCSVv2HighestCSVv2.push_back(TopHadNonBJetFitCSVv2);*/
+			    
 			    if( applyMVA ) 
 			      {
 				 if( disc < 10E+8 )
@@ -1418,7 +1623,11 @@ int main(int argc, char *argv[])
 				      MVAFullReco_TopLepRecMHighestCSVv2 = VarTopLepRecM;
 				      MVAFullReco_HiggsTopLepRecDrHighestCSVv2 = VarHiggsTopLepRecDr;
 				      MVAFullReco_TopLepRecPtHighestCSVv2 = VarTopLepRecPt;
-				      
+/*				      MVAFullReco_TopLepBJetRecCSVv2HighestCSVv2 = TopLepBJetFitCSVv2;
+				      MVAFullReco_HiggsBJet1RecCSVv2HighestCSVv2 = HiggsBJet1FitCSVv2;
+				      MVAFullReco_HiggsBJet2RecCSVv2HighestCSVv2 = HiggsBJet2FitCSVv2;
+				      MVAFullReco_TopHadNonBJetRecCSVv2HighestCSVv2 = TopHadNonBJetFitCSVv2;
+*/				      
 				      MVAHighestCSVv2.push_back(std::make_pair(readerFullRecoHighestCSVv2->EvaluateMVA("BDTG method"),ip));
 				   }
 				 else
@@ -1427,7 +1636,11 @@ int main(int argc, char *argv[])
 				      MVAPartReco_TopLepRecMTHighestCSVv2 = VarTopLepRecMT;
 				      MVAPartReco_HiggsTopLepRecDphiTHighestCSVv2 = VarHiggsTopLepRecDphiT;
 				      MVAPartReco_TopLepRecPtTHighestCSVv2 = VarTopLepRecPtT;
-				      
+/*				      MVAPartReco_TopLepBJetRecCSVv2HighestCSVv2 = TopLepBJetFitCSVv2;
+				      MVAPartReco_HiggsBJet1RecCSVv2HighestCSVv2 = HiggsBJet1FitCSVv2;
+				      MVAPartReco_HiggsBJet2RecCSVv2HighestCSVv2 = HiggsBJet2FitCSVv2;
+				      MVAPartReco_TopHadNonBJetRecCSVv2HighestCSVv2 = TopHadNonBJetFitCSVv2;
+*/				      
 				      MVAHighestCSVv2.push_back(std::make_pair(readerPartRecoHighestCSVv2->EvaluateMVA("BDTG method"),ip));
 				   }				 
 			      }
@@ -1453,6 +1666,11 @@ int main(int argc, char *argv[])
 			    HiggsTopLepRecDphiTCSVv2L.push_back(VarHiggsTopLepRecDphiT);
 			    TopLepRecPtTCSVv2L.push_back(VarTopLepRecPtT);
 
+/*			    TopLepBJetRecCSVv2CSVv2L.push_back(TopLepBJetFitCSVv2);
+			    HiggsBJet1RecCSVv2CSVv2L.push_back(HiggsBJet1FitCSVv2);
+			    HiggsBJet2RecCSVv2CSVv2L.push_back(HiggsBJet2FitCSVv2);
+			    TopHadNonBJetRecCSVv2CSVv2L.push_back(TopHadNonBJetFitCSVv2);*/
+			    
 			    if( applyMVA ) 
 			      {
 				 if( disc < 10E+8 )
@@ -1461,6 +1679,10 @@ int main(int argc, char *argv[])
 				      MVAFullReco_TopLepRecMCSVv2L = VarTopLepRecM;
 				      MVAFullReco_HiggsTopLepRecDrCSVv2L = VarHiggsTopLepRecDr;
 				      MVAFullReco_TopLepRecPtCSVv2L = VarTopLepRecPt;
+/*				      MVAFullReco_TopLepBJetRecCSVv2CSVv2L = TopLepBJetFitCSVv2;
+				      MVAFullReco_HiggsBJet1RecCSVv2CSVv2L = HiggsBJet1FitCSVv2;
+				      MVAFullReco_HiggsBJet2RecCSVv2CSVv2L = HiggsBJet2FitCSVv2;
+				      MVAFullReco_TopHadNonBJetRecCSVv2CSVv2L = TopHadNonBJetFitCSVv2;*/
 				 
 				      MVACSVv2L.push_back(std::make_pair(readerFullRecoCSVv2L->EvaluateMVA("BDTG method"),ip));
 				   }
@@ -1470,6 +1692,10 @@ int main(int argc, char *argv[])
 				      MVAPartReco_TopLepRecMTCSVv2L = VarTopLepRecMT;
 				      MVAPartReco_HiggsTopLepRecDphiTCSVv2L = VarHiggsTopLepRecDphiT;
 				      MVAPartReco_TopLepRecPtTCSVv2L = VarTopLepRecPtT;
+/*				      MVAPartReco_TopLepBJetRecCSVv2CSVv2L = TopLepBJetFitCSVv2;
+				      MVAPartReco_HiggsBJet1RecCSVv2CSVv2L = HiggsBJet1FitCSVv2;
+				      MVAPartReco_HiggsBJet2RecCSVv2CSVv2L = HiggsBJet2FitCSVv2;
+				      MVAPartReco_TopHadNonBJetRecCSVv2CSVv2L = TopHadNonBJetFitCSVv2;*/
 				      
 				      MVACSVv2L.push_back(std::make_pair(readerPartRecoCSVv2L->EvaluateMVA("BDTG method"),ip));
 				   }				 
@@ -1496,6 +1722,11 @@ int main(int argc, char *argv[])
 			    HiggsTopLepRecDphiTCSVv2M.push_back(VarHiggsTopLepRecDphiT);
 			    TopLepRecPtTCSVv2M.push_back(VarTopLepRecPtT);
 
+/*			    TopLepBJetRecCSVv2CSVv2M.push_back(TopLepBJetFitCSVv2);
+			    HiggsBJet1RecCSVv2CSVv2M.push_back(HiggsBJet1FitCSVv2);
+			    HiggsBJet2RecCSVv2CSVv2M.push_back(HiggsBJet2FitCSVv2);
+			    TopHadNonBJetRecCSVv2CSVv2M.push_back(TopHadNonBJetFitCSVv2);*/
+			    
 			    if( applyMVA ) 
 			      {
 				 if( disc < 10E+8 )
@@ -1504,6 +1735,10 @@ int main(int argc, char *argv[])
 				      MVAFullReco_TopLepRecMCSVv2M = VarTopLepRecM;
 				      MVAFullReco_HiggsTopLepRecDrCSVv2M = VarHiggsTopLepRecDr;
 				      MVAFullReco_TopLepRecPtCSVv2M = VarTopLepRecPt;
+/*				      MVAFullReco_TopLepBJetRecCSVv2CSVv2M = TopLepBJetFitCSVv2;
+				      MVAFullReco_HiggsBJet1RecCSVv2CSVv2M = HiggsBJet1FitCSVv2;
+				      MVAFullReco_HiggsBJet2RecCSVv2CSVv2M = HiggsBJet2FitCSVv2;
+				      MVAFullReco_TopHadNonBJetRecCSVv2CSVv2M = TopHadNonBJetFitCSVv2;*/
 				      
 				      MVACSVv2M.push_back(std::make_pair(readerFullRecoCSVv2M->EvaluateMVA("BDTG method"),ip));
 				   }
@@ -1513,6 +1748,10 @@ int main(int argc, char *argv[])
 				      MVAPartReco_TopLepRecMTCSVv2M = VarTopLepRecMT;
 				      MVAPartReco_HiggsTopLepRecDphiTCSVv2M = VarHiggsTopLepRecDphiT;
 				      MVAPartReco_TopLepRecPtTCSVv2M = VarTopLepRecPtT;
+/*				      MVAPartReco_TopLepBJetRecCSVv2CSVv2M = TopLepBJetFitCSVv2;
+				      MVAPartReco_HiggsBJet1RecCSVv2CSVv2M = HiggsBJet1FitCSVv2;
+				      MVAPartReco_HiggsBJet2RecCSVv2CSVv2M = HiggsBJet2FitCSVv2;
+				      MVAPartReco_TopHadNonBJetRecCSVv2CSVv2M = TopHadNonBJetFitCSVv2;*/
 				      
 				      MVACSVv2M.push_back(std::make_pair(readerPartRecoCSVv2M->EvaluateMVA("BDTG method"),ip));
 				   }				 
@@ -1539,6 +1778,11 @@ int main(int argc, char *argv[])
 			    HiggsTopLepRecDphiTCSVv2T.push_back(VarHiggsTopLepRecDphiT);
 			    TopLepRecPtTCSVv2T.push_back(VarTopLepRecPtT);
 
+/*			    TopLepBJetRecCSVv2CSVv2T.push_back(TopLepBJetFitCSVv2);
+			    HiggsBJet1RecCSVv2CSVv2T.push_back(HiggsBJet1FitCSVv2);
+			    HiggsBJet2RecCSVv2CSVv2T.push_back(HiggsBJet2FitCSVv2);
+			    TopHadNonBJetRecCSVv2CSVv2T.push_back(TopHadNonBJetFitCSVv2);*/
+			    
 			    if( applyMVA ) 
 			      {
 				 if( disc < 10E+8 )
@@ -1547,6 +1791,10 @@ int main(int argc, char *argv[])
 				      MVAFullReco_TopLepRecMCSVv2T = VarTopLepRecM;
 				      MVAFullReco_HiggsTopLepRecDrCSVv2T = VarHiggsTopLepRecDr;
 				      MVAFullReco_TopLepRecPtCSVv2T = VarTopLepRecPt;
+/*				      MVAFullReco_TopLepBJetRecCSVv2CSVv2T = TopLepBJetFitCSVv2;
+				      MVAFullReco_HiggsBJet1RecCSVv2CSVv2T = HiggsBJet1FitCSVv2;
+				      MVAFullReco_HiggsBJet2RecCSVv2CSVv2T = HiggsBJet2FitCSVv2;
+				      MVAFullReco_TopHadNonBJetRecCSVv2CSVv2T = TopHadNonBJetFitCSVv2;*/
 				 
 				      MVACSVv2T.push_back(std::make_pair(readerFullRecoCSVv2T->EvaluateMVA("BDTG method"),ip));
 				   }
@@ -1556,6 +1804,10 @@ int main(int argc, char *argv[])
 				      MVAPartReco_TopLepRecMTCSVv2T = VarTopLepRecMT;
 				      MVAPartReco_HiggsTopLepRecDphiTCSVv2T = VarHiggsTopLepRecDphiT;
 				      MVAPartReco_TopLepRecPtTCSVv2T = VarTopLepRecPtT;
+/*				      MVAPartReco_TopLepBJetRecCSVv2CSVv2T = TopLepBJetFitCSVv2;
+				      MVAPartReco_HiggsBJet1RecCSVv2CSVv2T = HiggsBJet1FitCSVv2;
+				      MVAPartReco_HiggsBJet2RecCSVv2CSVv2T = HiggsBJet2FitCSVv2;
+				      MVAPartReco_TopHadNonBJetRecCSVv2CSVv2T = TopHadNonBJetFitCSVv2;*/
 				      
 				      MVACSVv2T.push_back(std::make_pair(readerPartRecoCSVv2T->EvaluateMVA("BDTG method"),ip));
 				   }				 
@@ -1582,6 +1834,11 @@ int main(int argc, char *argv[])
 			    HiggsTopLepRecDphiTAll.push_back(VarHiggsTopLepRecDphiT);
 			    TopLepRecPtTAll.push_back(VarTopLepRecPtT);
 
+/*			    TopLepBJetRecCSVv2All.push_back(TopLepBJetFitCSVv2);
+			    HiggsBJet1RecCSVv2All.push_back(HiggsBJet1FitCSVv2);
+			    HiggsBJet2RecCSVv2All.push_back(HiggsBJet2FitCSVv2);
+			    TopHadNonBJetRecCSVv2All.push_back(TopHadNonBJetFitCSVv2);*/
+			    
 			    if( applyMVA ) 
 			      {
 				 if( disc < 10E+8 )
@@ -1590,7 +1847,11 @@ int main(int argc, char *argv[])
 				      MVAFullReco_TopLepRecMAll = VarTopLepRecM;
 				      MVAFullReco_HiggsTopLepRecDrAll = VarHiggsTopLepRecDr;
 				      MVAFullReco_TopLepRecPtAll = VarTopLepRecPt;
-				 
+/*				      MVAFullReco_TopLepBJetRecCSVv2All = TopLepBJetFitCSVv2;
+				      MVAFullReco_HiggsBJet1RecCSVv2All = HiggsBJet1FitCSVv2;
+				      MVAFullReco_HiggsBJet2RecCSVv2All = HiggsBJet2FitCSVv2;
+				      MVAFullReco_TopHadNonBJetRecCSVv2All = TopHadNonBJetFitCSVv2;*/
+
 				      MVAAll.push_back(std::make_pair(readerFullRecoAll->EvaluateMVA("BDTG method"),ip));
 				   }
 				 else
@@ -1599,6 +1860,10 @@ int main(int argc, char *argv[])
 				      MVAPartReco_TopLepRecMTAll = VarTopLepRecMT;
 				      MVAPartReco_HiggsTopLepRecDphiTAll = VarHiggsTopLepRecDphiT;
 				      MVAPartReco_TopLepRecPtTAll = VarTopLepRecPtT;
+/*				      MVAPartReco_TopLepBJetRecCSVv2All = TopLepBJetFitCSVv2;
+				      MVAPartReco_HiggsBJet1RecCSVv2All = HiggsBJet1FitCSVv2;
+				      MVAPartReco_HiggsBJet2RecCSVv2All = HiggsBJet2FitCSVv2;
+				      MVAPartReco_TopHadNonBJetRecCSVv2All = TopHadNonBJetFitCSVv2;*/
 				      
 				      MVAAll.push_back(std::make_pair(readerPartRecoAll->EvaluateMVA("BDTG method"),ip));
 				   }				 

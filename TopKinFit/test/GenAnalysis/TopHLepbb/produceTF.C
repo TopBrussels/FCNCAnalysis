@@ -16,8 +16,8 @@ void produceTF()
    setTDRStyle();
    
    TChain ch("trGEN");
-   ch.Add("run_MERGED/ST_TH_1L3B/data.root");
-   ch.Add("run_MERGED/ST_TH_1L3B_Hct/data.root");
+   ch.Add("runTEST_MERGED/ST_TH_1L3B/data.root");
+   ch.Add("runTEST_MERGED/ST_TH_1L3B_Hct/data.root");
 
    float dMetPx, dMetPy;
    float dTopLepBJetPx, dTopLepBJetPy, dTopLepBJetPz, dTopLepBJetE;

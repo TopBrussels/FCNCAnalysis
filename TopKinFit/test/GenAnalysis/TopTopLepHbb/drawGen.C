@@ -13,8 +13,8 @@ void drawGen()
    setTDRStyle();
    
    TChain ch("trGEN");
-   ch.Add("run_MERGED/TT_TopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
-   ch.Add("run_MERGED/TT_AntitopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
+   ch.Add("runTEST_MERGED/TT_TopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
+   ch.Add("runTEST_MERGED/TT_AntitopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
 
    float TopLepPt, TopLepEta, TopLepPhi, TopLepE;
    float HiggsPt, HiggsEta, HiggsPhi, HiggsE;

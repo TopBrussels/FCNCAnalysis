@@ -7,8 +7,8 @@ dirName=${1}
 #  exit
 #fi
 
-dpath="/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/TopKinFit/test/GenAnalysis/TopHLepbb/run${dirName}/"
-opath="/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/TopKinFit/test/GenAnalysis/TopHLepbb/run${dirName}_MERGED/"
+dpath="/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/GenAnalysis/TopHLepbb/run${dirName}/"
+opath="/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/GenAnalysis/TopHLepbb/run${dirName}_MERGED/"
 
 rm -rf ${opath}
 mkdir ${opath}

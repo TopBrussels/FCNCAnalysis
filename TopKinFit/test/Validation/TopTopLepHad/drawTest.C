@@ -16,27 +16,85 @@ void drawTest()
    
    TChain trFIT("trFIT");
    
-   trFIT.Add("runSIG_MERGED/TT_TuneCUETP8M1_13TeV-powheg-pythia8/data.root");
+//   trFIT.Add("output.root");
+   trFIT.Add("runTEST_MERGED/TT_TuneCUETP8M1_13TeV-powheg-pythia8/data.root");
 
    TChain trEFF("trEFF");
 
-   trEFF.Add("runSIG_MERGED/TT_TuneCUETP8M1_13TeV-powheg-pythia8/data.root");
+//   trEFF.Add("output.root");
+   trEFF.Add("runTEST_MERGED/TT_TuneCUETP8M1_13TeV-powheg-pythia8/data.root");
    
    std::vector<float> *DiscTruth = new std::vector<float>();
    std::vector<float> *MVADiscTruth = new std::vector<float>();
    std::vector<float> *MVAScoreTruth = new std::vector<float>();
    std::vector<float> *MVATopHadRecMTruth = new std::vector<float>();
    std::vector<float> *MVATopLepRecMTruth = new std::vector<float>();
+   
    std::vector<bool> *MatchTruth = new std::vector<bool>();
    std::vector<float> *TopHadRecMTruth = new std::vector<float>();
    std::vector<float> *TopLepRecMTruth = new std::vector<float>();
    std::vector<float> *TopLepTopHadRecDrTruth = new std::vector<float>();
-   std::vector<float> *TopLepRecPtTruth = new std::vector<float>();
+   std::vector<float> *TopLepRecPtTruth = new std::vector<float>(); 
    std::vector<float> *TopHadRecPtTruth = new std::vector<float>();
    std::vector<float> *TopLepRecMTTruth = new std::vector<float>();
    std::vector<float> *TopLepTopHadRecDphiTTruth = new std::vector<float>();
    std::vector<float> *TopLepRecPtTTruth = new std::vector<float>();
 
+   std::vector<float> *DiscHighestCSVv2 = new std::vector<float>();
+   std::vector<bool> *MatchHighestCSVv2 = new std::vector<bool>();
+   std::vector<float> *TopHadRecMHighestCSVv2 = new std::vector<float>();
+   std::vector<float> *TopLepRecMHighestCSVv2 = new std::vector<float>();
+   std::vector<float> *TopLepTopHadRecDrHighestCSVv2 = new std::vector<float>();
+   std::vector<float> *TopLepRecPtHighestCSVv2 = new std::vector<float>(); 
+   std::vector<float> *TopHadRecPtHighestCSVv2 = new std::vector<float>();
+   std::vector<float> *TopLepRecMTHighestCSVv2 = new std::vector<float>();
+   std::vector<float> *TopLepTopHadRecDphiTHighestCSVv2 = new std::vector<float>();
+   std::vector<float> *TopLepRecPtTHighestCSVv2 = new std::vector<float>();
+
+   std::vector<float> *DiscCSVv2L = new std::vector<float>();
+   std::vector<bool> *MatchCSVv2L = new std::vector<bool>();
+   std::vector<float> *TopHadRecMCSVv2L = new std::vector<float>();
+   std::vector<float> *TopLepRecMCSVv2L = new std::vector<float>();
+   std::vector<float> *TopLepTopHadRecDrCSVv2L = new std::vector<float>();
+   std::vector<float> *TopLepRecPtCSVv2L = new std::vector<float>(); 
+   std::vector<float> *TopHadRecPtCSVv2L = new std::vector<float>();
+   std::vector<float> *TopLepRecMTCSVv2L = new std::vector<float>();
+   std::vector<float> *TopLepTopHadRecDphiTCSVv2L = new std::vector<float>();
+   std::vector<float> *TopLepRecPtTCSVv2L = new std::vector<float>();
+
+   std::vector<float> *DiscCSVv2M = new std::vector<float>();
+   std::vector<bool> *MatchCSVv2M = new std::vector<bool>();
+   std::vector<float> *TopHadRecMCSVv2M = new std::vector<float>();
+   std::vector<float> *TopLepRecMCSVv2M = new std::vector<float>();
+   std::vector<float> *TopLepTopHadRecDrCSVv2M = new std::vector<float>();
+   std::vector<float> *TopLepRecPtCSVv2M = new std::vector<float>(); 
+   std::vector<float> *TopHadRecPtCSVv2M = new std::vector<float>();
+   std::vector<float> *TopLepRecMTCSVv2M = new std::vector<float>();
+   std::vector<float> *TopLepTopHadRecDphiTCSVv2M = new std::vector<float>();
+   std::vector<float> *TopLepRecPtTCSVv2M = new std::vector<float>();
+
+   std::vector<float> *DiscCSVv2T = new std::vector<float>();
+   std::vector<bool> *MatchCSVv2T = new std::vector<bool>();
+   std::vector<float> *TopHadRecMCSVv2T = new std::vector<float>();
+   std::vector<float> *TopLepRecMCSVv2T = new std::vector<float>();
+   std::vector<float> *TopLepTopHadRecDrCSVv2T = new std::vector<float>();
+   std::vector<float> *TopLepRecPtCSVv2T = new std::vector<float>(); 
+   std::vector<float> *TopHadRecPtCSVv2T = new std::vector<float>();
+   std::vector<float> *TopLepRecMTCSVv2T = new std::vector<float>();
+   std::vector<float> *TopLepTopHadRecDphiTCSVv2T = new std::vector<float>();
+   std::vector<float> *TopLepRecPtTCSVv2T = new std::vector<float>();
+
+   std::vector<float> *DiscAll = new std::vector<float>();
+   std::vector<bool> *MatchAll = new std::vector<bool>();
+   std::vector<float> *TopHadRecMAll = new std::vector<float>();
+   std::vector<float> *TopLepRecMAll = new std::vector<float>();
+   std::vector<float> *TopLepTopHadRecDrAll = new std::vector<float>();
+   std::vector<float> *TopLepRecPtAll = new std::vector<float>(); 
+   std::vector<float> *TopHadRecPtAll = new std::vector<float>();
+   std::vector<float> *TopLepRecMTAll = new std::vector<float>();
+   std::vector<float> *TopLepTopHadRecDphiTAll = new std::vector<float>();
+   std::vector<float> *TopLepRecPtTAll = new std::vector<float>();
+   
    float nEventsTruth;
    float nEventsHighestCSVv2;
    float nEventsCSVv2L;
@@ -91,6 +149,7 @@ void drawTest()
    trFIT.SetBranchAddress("MVAScoreTruth",&MVAScoreTruth);
    trFIT.SetBranchAddress("MVATopHadRecMTruth",&MVATopHadRecMTruth);
    trFIT.SetBranchAddress("MVATopLepRecMTruth",&MVATopLepRecMTruth);
+   
    trFIT.SetBranchAddress("MatchTruth",&MatchTruth);
    trFIT.SetBranchAddress("TopHadRecMTruth",&TopHadRecMTruth);
    trFIT.SetBranchAddress("TopLepRecMTruth",&TopLepRecMTruth);
@@ -100,6 +159,61 @@ void drawTest()
    trFIT.SetBranchAddress("TopLepRecMTTruth",&TopLepRecMTTruth);
    trFIT.SetBranchAddress("TopLepTopHadRecDphiTTruth",&TopLepTopHadRecDphiTTruth);
    trFIT.SetBranchAddress("TopLepRecPtTTruth",&TopLepRecPtTTruth);
+
+   trFIT.SetBranchAddress("DiscHighestCSVv2",&DiscHighestCSVv2);
+   trFIT.SetBranchAddress("MatchHighestCSVv2",&MatchHighestCSVv2);
+   trFIT.SetBranchAddress("TopHadRecMHighestCSVv2",&TopHadRecMHighestCSVv2);
+   trFIT.SetBranchAddress("TopLepRecMHighestCSVv2",&TopLepRecMHighestCSVv2);
+   trFIT.SetBranchAddress("TopLepTopHadRecDrHighestCSVv2",&TopLepTopHadRecDrHighestCSVv2);
+   trFIT.SetBranchAddress("TopLepRecPtHighestCSVv2",&TopLepRecPtHighestCSVv2);
+   trFIT.SetBranchAddress("TopHadRecPtHighestCSVv2",&TopHadRecPtHighestCSVv2);
+   trFIT.SetBranchAddress("TopLepRecMTHighestCSVv2",&TopLepRecMTHighestCSVv2);
+   trFIT.SetBranchAddress("TopLepTopHadRecDphiTHighestCSVv2",&TopLepTopHadRecDphiTHighestCSVv2);
+   trFIT.SetBranchAddress("TopLepRecPtTHighestCSVv2",&TopLepRecPtTHighestCSVv2);
+
+   trFIT.SetBranchAddress("DiscCSVv2L",&DiscCSVv2L);
+   trFIT.SetBranchAddress("MatchCSVv2L",&MatchCSVv2L);
+   trFIT.SetBranchAddress("TopHadRecMCSVv2L",&TopHadRecMCSVv2L);
+   trFIT.SetBranchAddress("TopLepRecMCSVv2L",&TopLepRecMCSVv2L);
+   trFIT.SetBranchAddress("TopLepTopHadRecDrCSVv2L",&TopLepTopHadRecDrCSVv2L);
+   trFIT.SetBranchAddress("TopLepRecPtCSVv2L",&TopLepRecPtCSVv2L);
+   trFIT.SetBranchAddress("TopHadRecPtCSVv2L",&TopHadRecPtCSVv2L);
+   trFIT.SetBranchAddress("TopLepRecMTCSVv2L",&TopLepRecMTCSVv2L);
+   trFIT.SetBranchAddress("TopLepTopHadRecDphiTCSVv2L",&TopLepTopHadRecDphiTCSVv2L);
+   trFIT.SetBranchAddress("TopLepRecPtTCSVv2L",&TopLepRecPtTCSVv2L);
+
+   trFIT.SetBranchAddress("DiscCSVv2M",&DiscCSVv2M);
+   trFIT.SetBranchAddress("MatchCSVv2M",&MatchCSVv2M);
+   trFIT.SetBranchAddress("TopHadRecMCSVv2M",&TopHadRecMCSVv2M);
+   trFIT.SetBranchAddress("TopLepRecMCSVv2M",&TopLepRecMCSVv2M);
+   trFIT.SetBranchAddress("TopLepTopHadRecDrCSVv2M",&TopLepTopHadRecDrCSVv2M);
+   trFIT.SetBranchAddress("TopLepRecPtCSVv2M",&TopLepRecPtCSVv2M);
+   trFIT.SetBranchAddress("TopHadRecPtCSVv2M",&TopHadRecPtCSVv2M);
+   trFIT.SetBranchAddress("TopLepRecMTCSVv2M",&TopLepRecMTCSVv2M);
+   trFIT.SetBranchAddress("TopLepTopHadRecDphiTCSVv2M",&TopLepTopHadRecDphiTCSVv2M);
+   trFIT.SetBranchAddress("TopLepRecPtTCSVv2M",&TopLepRecPtTCSVv2M);
+
+   trFIT.SetBranchAddress("DiscCSVv2T",&DiscCSVv2T);
+   trFIT.SetBranchAddress("MatchCSVv2T",&MatchCSVv2T);
+   trFIT.SetBranchAddress("TopHadRecMCSVv2T",&TopHadRecMCSVv2T);
+   trFIT.SetBranchAddress("TopLepRecMCSVv2T",&TopLepRecMCSVv2T);
+   trFIT.SetBranchAddress("TopLepTopHadRecDrCSVv2T",&TopLepTopHadRecDrCSVv2T);
+   trFIT.SetBranchAddress("TopLepRecPtCSVv2T",&TopLepRecPtCSVv2T);
+   trFIT.SetBranchAddress("TopHadRecPtCSVv2T",&TopHadRecPtCSVv2T);
+   trFIT.SetBranchAddress("TopLepRecMTCSVv2T",&TopLepRecMTCSVv2T);
+   trFIT.SetBranchAddress("TopLepTopHadRecDphiTCSVv2T",&TopLepTopHadRecDphiTCSVv2T);
+   trFIT.SetBranchAddress("TopLepRecPtTCSVv2T",&TopLepRecPtTCSVv2T);
+
+   trFIT.SetBranchAddress("DiscAll",&DiscAll);
+   trFIT.SetBranchAddress("MatchAll",&MatchAll);
+   trFIT.SetBranchAddress("TopHadRecMAll",&TopHadRecMAll);
+   trFIT.SetBranchAddress("TopLepRecMAll",&TopLepRecMAll);
+   trFIT.SetBranchAddress("TopLepTopHadRecDrAll",&TopLepTopHadRecDrAll);
+   trFIT.SetBranchAddress("TopLepRecPtAll",&TopLepRecPtAll);
+   trFIT.SetBranchAddress("TopHadRecPtAll",&TopHadRecPtAll);
+   trFIT.SetBranchAddress("TopLepRecMTAll",&TopLepRecMTAll);
+   trFIT.SetBranchAddress("TopLepTopHadRecDphiTAll",&TopLepTopHadRecDphiTAll);
+   trFIT.SetBranchAddress("TopLepRecPtTAll",&TopLepRecPtTAll);
    
    trEFF.SetBranchAddress("nEventsTruth",&nEventsTruth);
    trEFF.SetBranchAddress("nEventsHighestCSVv2",&nEventsHighestCSVv2);
@@ -152,10 +266,10 @@ void drawTest()
    
    int nHist = 0;
    
-   TH1D *hMatch[1000];
-   TH1D *hNotMatch[1000];
-   std::string hName[1000];
-   std::string hLab[1000];
+   TH1D *hMatch[10000];
+   TH1D *hNotMatch[10000];
+   std::string hName[10000];
+   std::string hLab[10000];
 
    hMatch[nHist] = new TH1D("h_DiscTruthMatch","h_DiscTruthMatch",30,0.,150.);
    hMatch[nHist]->Sumw2();
@@ -229,6 +343,339 @@ void drawTest()
    hLab[nHist] = "p_{T}(TopLep) [GeV]";
    nHist++;
 
+   
+   
+   hMatch[nHist] = new TH1D("h_TopHadRecMHighestCSVv2Match","h_TopHadRecMHighestCSVv2Match",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopHadRecMHighestCSVv2NotMatch","h_TopHadRecMHighestCSVv2NotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopHadRecMHighestCSVv2";
+   hLab[nHist] = "m(TopHad) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMHighestCSVv2Match","h_TopLepRecMHighestCSVv2Match",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMHighestCSVv2NotMatch","h_TopLepRecMHighestCSVv2NotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMHighestCSVv2";
+   hLab[nHist] = "m(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepTopHadRecDrHighestCSVv2Match","h_TopLepTopHadRecDrHighestCSVv2Match",30,0.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepTopHadRecDrHighestCSVv2NotMatch","h_TopLepTopHadRecDrHighestCSVv2NotMatch",30,0.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepTopHadRecDrHighestCSVv2";
+   hLab[nHist] = "#Delta R (TopLep,TopHad)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtHighestCSVv2Match","h_TopLepRecPtHighestCSVv2Match",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtHighestCSVv2NotMatch","h_TopLepRecPtHighestCSVv2NotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtHighestCSVv2";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopHadRecPtHighestCSVv2Match","h_TopHadRecPtHighestCSVv2Match",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopHadRecPtHighestCSVv2NotMatch","h_TopHadRecPtHighestCSVv2NotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopHadRecPtHighestCSVv2";
+   hLab[nHist] = "p_{T}(TopHad) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMTHighestCSVv2Match","h_TopLepRecMTHighestCSVv2Match",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMTHighestCSVv2NotMatch","h_TopLepRecMTHighestCSVv2NotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMTHighestCSVv2";
+   hLab[nHist] = "m_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepTopHadRecDphiTHighestCSVv2Match","h_TopLepTopHadRecDphiTHighestCSVv2Match",30,-5.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepTopHadRecDphiTHighestCSVv2NotMatch","h_TopLepTopHadRecDphiTHighestCSVv2NotMatch",30,-5.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepTopHadRecDphiTHighestCSVv2";
+   hLab[nHist] = "#Delta #phi (TopLep,TopHad)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtTHighestCSVv2Match","h_TopLepRecPtTHighestCSVv2Match",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtTHighestCSVv2NotMatch","h_TopLepRecPtTHighestCSVv2NotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtTHighestCSVv2";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+
+   
+   
+   hMatch[nHist] = new TH1D("h_TopHadRecMCSVv2LMatch","h_TopHadRecMCSVv2LMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopHadRecMCSVv2LNotMatch","h_TopHadRecMCSVv2LNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopHadRecMCSVv2L";
+   hLab[nHist] = "m(TopHad) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMCSVv2LMatch","h_TopLepRecMCSVv2LMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMCSVv2LNotMatch","h_TopLepRecMCSVv2LNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMCSVv2L";
+   hLab[nHist] = "m(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepTopHadRecDrCSVv2LMatch","h_TopLepTopHadRecDrCSVv2LMatch",30,0.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepTopHadRecDrCSVv2LNotMatch","h_TopLepTopHadRecDrCSVv2LNotMatch",30,0.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepTopHadRecDrCSVv2L";
+   hLab[nHist] = "#Delta R (TopLep,TopHad)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtCSVv2LMatch","h_TopLepRecPtCSVv2LMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtCSVv2LNotMatch","h_TopLepRecPtCSVv2LNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtCSVv2L";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopHadRecPtCSVv2LMatch","h_TopHadRecPtCSVv2LMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopHadRecPtCSVv2LNotMatch","h_TopHadRecPtCSVv2LNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopHadRecPtCSVv2L";
+   hLab[nHist] = "p_{T}(TopHad) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMTCSVv2LMatch","h_TopLepRecMTCSVv2LMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMTCSVv2LNotMatch","h_TopLepRecMTCSVv2LNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMTCSVv2L";
+   hLab[nHist] = "m_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepTopHadRecDphiTCSVv2LMatch","h_TopLepTopHadRecDphiTCSVv2LMatch",30,-5.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepTopHadRecDphiTCSVv2LNotMatch","h_TopLepTopHadRecDphiTCSVv2LNotMatch",30,-5.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepTopHadRecDphiTCSVv2L";
+   hLab[nHist] = "#Delta #phi (TopLep,TopHad)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtTCSVv2LMatch","h_TopLepRecPtTCSVv2LMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtTCSVv2LNotMatch","h_TopLepRecPtTCSVv2LNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtTCSVv2L";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+
+   
+   
+   
+   hMatch[nHist] = new TH1D("h_TopHadRecMCSVv2MMatch","h_TopHadRecMCSVv2MMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopHadRecMCSVv2MNotMatch","h_TopHadRecMCSVv2MNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopHadRecMCSVv2M";
+   hLab[nHist] = "m(TopHad) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMCSVv2MMatch","h_TopLepRecMCSVv2MMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMCSVv2MNotMatch","h_TopLepRecMCSVv2MNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMCSVv2M";
+   hLab[nHist] = "m(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepTopHadRecDrCSVv2MMatch","h_TopLepTopHadRecDrCSVv2MMatch",30,0.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepTopHadRecDrCSVv2MNotMatch","h_TopLepTopHadRecDrCSVv2MNotMatch",30,0.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepTopHadRecDrCSVv2M";
+   hLab[nHist] = "#Delta R (TopLep,TopHad)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtCSVv2MMatch","h_TopLepRecPtCSVv2MMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtCSVv2MNotMatch","h_TopLepRecPtCSVv2MNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtCSVv2M";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopHadRecPtCSVv2MMatch","h_TopHadRecPtCSVv2MMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopHadRecPtCSVv2MNotMatch","h_TopHadRecPtCSVv2MNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopHadRecPtCSVv2M";
+   hLab[nHist] = "p_{T}(TopHad) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMTCSVv2MMatch","h_TopLepRecMTCSVv2MMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMTCSVv2MNotMatch","h_TopLepRecMTCSVv2MNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMTCSVv2M";
+   hLab[nHist] = "m_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepTopHadRecDphiTCSVv2MMatch","h_TopLepTopHadRecDphiTCSVv2MMatch",30,-5.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepTopHadRecDphiTCSVv2MNotMatch","h_TopLepTopHadRecDphiTCSVv2MNotMatch",30,-5.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepTopHadRecDphiTCSVv2M";
+   hLab[nHist] = "#Delta #phi (TopLep,TopHad)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtTCSVv2MMatch","h_TopLepRecPtTCSVv2MMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtTCSVv2MNotMatch","h_TopLepRecPtTCSVv2MNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtTCSVv2M";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+
+   
+   
+
+   hMatch[nHist] = new TH1D("h_TopHadRecMCSVv2TMatch","h_TopHadRecMCSVv2TMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopHadRecMCSVv2TNotMatch","h_TopHadRecMCSVv2TNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopHadRecMCSVv2T";
+   hLab[nHist] = "m(TopHad) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMCSVv2TMatch","h_TopLepRecMCSVv2TMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMCSVv2TNotMatch","h_TopLepRecMCSVv2TNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMCSVv2T";
+   hLab[nHist] = "m(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepTopHadRecDrCSVv2TMatch","h_TopLepTopHadRecDrCSVv2TMatch",30,0.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepTopHadRecDrCSVv2TNotMatch","h_TopLepTopHadRecDrCSVv2TNotMatch",30,0.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepTopHadRecDrCSVv2T";
+   hLab[nHist] = "#Delta R (TopLep,TopHad)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtCSVv2TMatch","h_TopLepRecPtCSVv2TMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtCSVv2TNotMatch","h_TopLepRecPtCSVv2TNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtCSVv2T";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopHadRecPtCSVv2TMatch","h_TopHadRecPtCSVv2TMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopHadRecPtCSVv2TNotMatch","h_TopHadRecPtCSVv2TNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopHadRecPtCSVv2T";
+   hLab[nHist] = "p_{T}(TopHad) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMTCSVv2TMatch","h_TopLepRecMTCSVv2TMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMTCSVv2TNotMatch","h_TopLepRecMTCSVv2TNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMTCSVv2T";
+   hLab[nHist] = "m_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepTopHadRecDphiTCSVv2TMatch","h_TopLepTopHadRecDphiTCSVv2TMatch",30,-5.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepTopHadRecDphiTCSVv2TNotMatch","h_TopLepTopHadRecDphiTCSVv2TNotMatch",30,-5.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepTopHadRecDphiTCSVv2T";
+   hLab[nHist] = "#Delta #phi (TopLep,TopHad)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtTCSVv2TMatch","h_TopLepRecPtTCSVv2TMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtTCSVv2TNotMatch","h_TopLepRecPtTCSVv2TNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtTCSVv2T";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+
+   
+   
+   
+   hMatch[nHist] = new TH1D("h_TopHadRecMAllMatch","h_TopHadRecMAllMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopHadRecMAllNotMatch","h_TopHadRecMAllNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopHadRecMAll";
+   hLab[nHist] = "m(TopHad) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMAllMatch","h_TopLepRecMAllMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMAllNotMatch","h_TopLepRecMAllNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMAll";
+   hLab[nHist] = "m(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepTopHadRecDrAllMatch","h_TopLepTopHadRecDrAllMatch",30,0.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepTopHadRecDrAllNotMatch","h_TopLepTopHadRecDrAllNotMatch",30,0.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepTopHadRecDrAll";
+   hLab[nHist] = "#Delta R (TopLep,TopHad)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtAllMatch","h_TopLepRecPtAllMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtAllNotMatch","h_TopLepRecPtAllNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtAll";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopHadRecPtAllMatch","h_TopHadRecPtAllMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopHadRecPtAllNotMatch","h_TopHadRecPtAllNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopHadRecPtAll";
+   hLab[nHist] = "p_{T}(TopHad) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecMTAllMatch","h_TopLepRecMTAllMatch",30,0.,500.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecMTAllNotMatch","h_TopLepRecMTAllNotMatch",30,0.,500.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecMTAll";
+   hLab[nHist] = "m_{T}(TopLep) [GeV]";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepTopHadRecDphiTAllMatch","h_TopLepTopHadRecDphiTAllMatch",30,-5.,5.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepTopHadRecDphiTAllNotMatch","h_TopLepTopHadRecDphiTAllNotMatch",30,-5.,5.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepTopHadRecDphiTAll";
+   hLab[nHist] = "#Delta #phi (TopLep,TopHad)";
+   nHist++;
+
+   hMatch[nHist] = new TH1D("h_TopLepRecPtTAllMatch","h_TopLepRecPtTAllMatch",30,0.,250.);
+   hMatch[nHist]->Sumw2();
+   hNotMatch[nHist] = new TH1D("h_TopLepRecPtTAllNotMatch","h_TopLepRecPtTAllNotMatch",30,0.,250.);
+   hNotMatch[nHist]->Sumw2();
+   hName[nHist] = "TopLepRecPtTAll";
+   hLab[nHist] = "p_{T}(TopLep) [GeV]";
+   nHist++;
+   
    int nHistFit = 0;
 
    TH1D *hFit[1000];
@@ -247,7 +694,7 @@ void drawTest()
    hLabFit[nHistFit] = "MVA output";
    nHistFit++;
    
-   hFit[nHistFit] = new TH1D("h_MVATopHadRecMTruthFit","h_MVATopHadRecMTruthFit",30,0.,500.);
+   hFit[nHistFit] = new TH1D("h_MVATopHadRecMTruthFit","h_MVATopHadRecMTruthFit",30,0.,250.);
    hFit[nHistFit]->Sumw2();
    hNameFit[nHistFit] = "MVATopHadRecMTruthFit";
    hLabFit[nHistFit] = "m(TopHad) [GeV]";
@@ -270,7 +717,7 @@ void drawTest()
 	     for(int ip=0;ip<MatchTruth->size();ip++)
 	       {
 		  if( DiscTruth->at(ip) < 10E+10 )
-		    {
+		    {				 
 		       if( hName[ih] == "DiscTruth" )
 			 {
 			    if( MatchTruth->at(ip) ) hMatch[ih]->Fill(DiscTruth->at(ip));
@@ -316,14 +763,249 @@ void drawTest()
 			    if( MatchTruth->at(ip) ) hMatch[ih]->Fill(TopLepRecPtTTruth->at(ip));
 			    else hNotMatch[ih]->Fill(TopLepRecPtTTruth->at(ip));
 			 }
+		    }
+	       }
+	     
+	     for(int ip=0;ip<MatchHighestCSVv2->size();ip++)
+	       {		       
+		  if( DiscHighestCSVv2->at(ip) < 10E+10 )
+		    {				 
+		       if( hName[ih] == "TopHadRecMHighestCSVv2" )
+			 {
+			    if( MatchHighestCSVv2->at(ip) ) hMatch[ih]->Fill(TopHadRecMHighestCSVv2->at(ip));
+			    else hNotMatch[ih]->Fill(TopHadRecMHighestCSVv2->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMHighestCSVv2" )
+			 {
+			    if( MatchHighestCSVv2->at(ip) ) hMatch[ih]->Fill(TopLepRecMHighestCSVv2->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMHighestCSVv2->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepTopHadRecDrHighestCSVv2" )
+			 {
+			    if( MatchHighestCSVv2->at(ip) ) hMatch[ih]->Fill(TopLepTopHadRecDrHighestCSVv2->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepTopHadRecDrHighestCSVv2->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtHighestCSVv2" )
+			 {
+			    if( MatchHighestCSVv2->at(ip) ) hMatch[ih]->Fill(TopLepRecPtHighestCSVv2->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtHighestCSVv2->at(ip));
+			 }
+		       else if( hName[ih] == "TopHadRecPtHighestCSVv2" )
+			 {
+			    if( MatchHighestCSVv2->at(ip) ) hMatch[ih]->Fill(TopHadRecPtHighestCSVv2->at(ip));
+			    else hNotMatch[ih]->Fill(TopHadRecPtHighestCSVv2->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMTHighestCSVv2" )
+			 {
+			    if( MatchHighestCSVv2->at(ip) ) hMatch[ih]->Fill(TopLepRecMTHighestCSVv2->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMTHighestCSVv2->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepTopHadRecDphiTHighestCSVv2" )
+			 {
+			    if( MatchHighestCSVv2->at(ip) ) hMatch[ih]->Fill(TopLepTopHadRecDphiTHighestCSVv2->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepTopHadRecDphiTHighestCSVv2->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtTHighestCSVv2" )
+			 {
+			    if( MatchHighestCSVv2->at(ip) ) hMatch[ih]->Fill(TopLepRecPtTHighestCSVv2->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtTHighestCSVv2->at(ip));
+			 }
+		    }
+	       }	     
+		    
+	     for(int ip=0;ip<MatchCSVv2L->size();ip++)
+	       {		       
+		  if( DiscCSVv2L->at(ip) < 10E+10 )
+		    {				 
+		       if( hName[ih] == "TopHadRecMCSVv2L" )
+			 {
+			    if( MatchCSVv2L->at(ip) ) hMatch[ih]->Fill(TopHadRecMCSVv2L->at(ip));
+			    else hNotMatch[ih]->Fill(TopHadRecMCSVv2L->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMCSVv2L" )
+			 {
+			    if( MatchCSVv2L->at(ip) ) hMatch[ih]->Fill(TopLepRecMCSVv2L->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMCSVv2L->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepTopHadRecDrCSVv2L" )
+			 {
+			    if( MatchCSVv2L->at(ip) ) hMatch[ih]->Fill(TopLepTopHadRecDrCSVv2L->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepTopHadRecDrCSVv2L->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtCSVv2L" )
+			 {
+			    if( MatchCSVv2L->at(ip) ) hMatch[ih]->Fill(TopLepRecPtCSVv2L->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtCSVv2L->at(ip));
+			 }
+		       else if( hName[ih] == "TopHadRecPtCSVv2L" )
+			 {
+			    if( MatchCSVv2L->at(ip) ) hMatch[ih]->Fill(TopHadRecPtCSVv2L->at(ip));
+			    else hNotMatch[ih]->Fill(TopHadRecPtCSVv2L->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMTCSVv2L" )
+			 {
+			    if( MatchCSVv2L->at(ip) ) hMatch[ih]->Fill(TopLepRecMTCSVv2L->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMTCSVv2L->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepTopHadRecDphiTCSVv2L" )
+			 {
+			    if( MatchCSVv2L->at(ip) ) hMatch[ih]->Fill(TopLepTopHadRecDphiTCSVv2L->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepTopHadRecDphiTCSVv2L->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtTCSVv2L" )
+			 {
+			    if( MatchCSVv2L->at(ip) ) hMatch[ih]->Fill(TopLepRecPtTCSVv2L->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtTCSVv2L->at(ip));
+			 }
+		    }
+	       }
+	     
+	     for(int ip=0;ip<MatchCSVv2M->size();ip++)
+	       {		       		  
+		  if( DiscCSVv2M->at(ip) < 10E+10 )
+		    {
+		       if( hName[ih] == "TopHadRecMCSVv2M" )
+			 {
+			    if( MatchCSVv2M->at(ip) ) hMatch[ih]->Fill(TopHadRecMCSVv2M->at(ip));
+			    else hNotMatch[ih]->Fill(TopHadRecMCSVv2M->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMCSVv2M" )
+			 {
+			    if( MatchCSVv2M->at(ip) ) hMatch[ih]->Fill(TopLepRecMCSVv2M->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMCSVv2M->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepTopHadRecDrCSVv2M" )
+			 {
+			    if( MatchCSVv2M->at(ip) ) hMatch[ih]->Fill(TopLepTopHadRecDrCSVv2M->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepTopHadRecDrCSVv2M->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtCSVv2M" )
+			 {
+			    if( MatchCSVv2M->at(ip) ) hMatch[ih]->Fill(TopLepRecPtCSVv2M->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtCSVv2M->at(ip));
+			 }
+		       else if( hName[ih] == "TopHadRecPtCSVv2M" )
+			 {
+			    if( MatchCSVv2M->at(ip) ) hMatch[ih]->Fill(TopHadRecPtCSVv2M->at(ip));
+			    else hNotMatch[ih]->Fill(TopHadRecPtCSVv2M->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMTCSVv2M" )
+			 {
+			    if( MatchCSVv2M->at(ip) ) hMatch[ih]->Fill(TopLepRecMTCSVv2M->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMTCSVv2M->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepTopHadRecDphiTCSVv2M" )
+			 {
+			    if( MatchCSVv2M->at(ip) ) hMatch[ih]->Fill(TopLepTopHadRecDphiTCSVv2M->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepTopHadRecDphiTCSVv2M->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtTCSVv2M" )
+			 {
+			    if( MatchCSVv2M->at(ip) ) hMatch[ih]->Fill(TopLepRecPtTCSVv2M->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtTCSVv2M->at(ip));
+			 }
+		    }
+	       }	    
+		  		    		    
+	     for(int ip=0;ip<MatchCSVv2T->size();ip++)
+	       {		       
+		  if( DiscCSVv2T->at(ip) < 10E+10 )
+		    {
+		       if( hName[ih] == "TopHadRecMCSVv2T" )
+			 {
+			    if( MatchCSVv2T->at(ip) ) hMatch[ih]->Fill(TopHadRecMCSVv2T->at(ip));
+			    else hNotMatch[ih]->Fill(TopHadRecMCSVv2T->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMCSVv2T" )
+			 {
+			    if( MatchCSVv2T->at(ip) ) hMatch[ih]->Fill(TopLepRecMCSVv2T->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMCSVv2T->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepTopHadRecDrCSVv2T" )
+			 {
+			    if( MatchCSVv2T->at(ip) ) hMatch[ih]->Fill(TopLepTopHadRecDrCSVv2T->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepTopHadRecDrCSVv2T->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtCSVv2T" )
+			 {
+			    if( MatchCSVv2T->at(ip) ) hMatch[ih]->Fill(TopLepRecPtCSVv2T->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtCSVv2T->at(ip));
+			 }
+		       else if( hName[ih] == "TopHadRecPtCSVv2T" )
+			 {
+			    if( MatchCSVv2T->at(ip) ) hMatch[ih]->Fill(TopHadRecPtCSVv2T->at(ip));
+			    else hNotMatch[ih]->Fill(TopHadRecPtCSVv2T->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMTCSVv2T" )
+			 {
+			    if( MatchCSVv2T->at(ip) ) hMatch[ih]->Fill(TopLepRecMTCSVv2T->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMTCSVv2T->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepTopHadRecDphiTCSVv2T" )
+			 {
+			    if( MatchCSVv2T->at(ip) ) hMatch[ih]->Fill(TopLepTopHadRecDphiTCSVv2T->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepTopHadRecDphiTCSVv2T->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtTCSVv2T" )
+			 {
+			    if( MatchCSVv2T->at(ip) ) hMatch[ih]->Fill(TopLepRecPtTCSVv2T->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtTCSVv2T->at(ip));
+			 }
+		    }
+	       }	     
+		  		    
+	     for(int ip=0;ip<MatchAll->size();ip++)
+	       {		       
+		  if( DiscAll->at(ip) < 10E+10 )
+		    {		    
+		       if( hName[ih] == "TopHadRecMAll" )
+			 {
+			    if( MatchAll->at(ip) ) hMatch[ih]->Fill(TopHadRecMAll->at(ip));
+			    else hNotMatch[ih]->Fill(TopHadRecMAll->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMAll" )
+			 {
+			    if( MatchAll->at(ip) ) hMatch[ih]->Fill(TopLepRecMAll->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMAll->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepTopHadRecDrAll" )
+			 {
+			    if( MatchAll->at(ip) ) hMatch[ih]->Fill(TopLepTopHadRecDrAll->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepTopHadRecDrAll->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtAll" )
+			 {
+			    if( MatchAll->at(ip) ) hMatch[ih]->Fill(TopLepRecPtAll->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtAll->at(ip));
+			 }
+		       else if( hName[ih] == "TopHadRecPtAll" )
+			 {
+			    if( MatchAll->at(ip) ) hMatch[ih]->Fill(TopHadRecPtAll->at(ip));
+			    else hNotMatch[ih]->Fill(TopHadRecPtAll->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecMTAll" )
+			 {
+			    if( MatchAll->at(ip) ) hMatch[ih]->Fill(TopLepRecMTAll->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecMTAll->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepTopHadRecDphiTAll" )
+			 {
+			    if( MatchAll->at(ip) ) hMatch[ih]->Fill(TopLepTopHadRecDphiTAll->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepTopHadRecDphiTAll->at(ip));
+			 }
+		       else if( hName[ih] == "TopLepRecPtTAll" )
+			 {
+			    if( MatchAll->at(ip) ) hMatch[ih]->Fill(TopLepRecPtTAll->at(ip));
+			    else hNotMatch[ih]->Fill(TopLepRecPtTAll->at(ip));
+			 }
 		    }		  
 	       }
 	  }
-
+	
 	for(int ih=0;ih<nHistFit;ih++)
 	  {
 	     if( hNameFit[ih] == "MVADiscTruthFit" )
-	       {		  
+	       {
 		  hFit[ih]->Fill(MVADiscTruth->at(0));
 	       }
 	     else if( hNameFit[ih] == "MVAScoreTruthFit" )

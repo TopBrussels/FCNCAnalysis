@@ -2,9 +2,11 @@
 
 CC = g++
 
-NTUINC    = -I/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/NtupleProducer/
-NTULIB    = -L/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/NtupleProducer/\
+NTUINC    = -I/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/tHFCNC/NtupleProducer/
+NTULIB    = -L/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/tHFCNC/NtupleProducer/\
               -lNtuple
+	      
+JECLIB      = -L/cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw/CMSSW_8_0_12/lib/slc6_amd64_gcc530/ -lCondFormatsJetMETObjects -lJetMETCorrectionsModules -lRecoEgammaEgammaTools
 
 SOVERSION               = $(shell echo $(VERSION) | \
                                sed 's/\(.*\)\.\(.*\)\.\(.*\)/\1:\2:0/')
@@ -17,7 +19,7 @@ INCLUDES                = $(shell $(ROOTCONF) --incdir) $(ROOTCFLAGS)
 CINTINCLUDES            = $(shell $(ROOTCONF) --incdir)
 LIBS                    = $(ROOTLIBS)
 
-LDLIBS  = $(ROOTLIBS) $(NTULIB)
+LDLIBS  = $(ROOTLIBS) $(NTULIB) $(JECLIB)
 
 ADDINC = $(NTUINC)
 

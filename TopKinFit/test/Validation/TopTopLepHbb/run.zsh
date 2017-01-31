@@ -1,8 +1,8 @@
 #!/bin/env zsh
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home-pbs/kskovpen/tHFCNC2016/CMSSW_8_0_12/src/TopKinFit/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/
 
-nToys=1
+nToys=20
 isSig=1
 applyMVA=1
 nNonBJetMax=-1

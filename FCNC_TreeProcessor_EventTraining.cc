@@ -42,6 +42,7 @@ map<string,TTree*> ttree;
 map<string,MultiSamplePlot*> MSPlot_nPV;
 
 int nTrainingVars = 0;
+bool PrivateSampleTraining = false;
 
 
 
@@ -229,6 +230,8 @@ int main(int argc, char *argv[])
 		        else if(SignalSample == "TThct" && dataSetName.find("TTtoTHToBB-1L-Kappa-hct")!=string::npos) isSignal = true;
 		        
 		        if(!isSignal) continue;
+		        
+		        if(PrivateSampleTraining && dataSetName.find("Private")==string::npos) continue;//Don't train over non-private signal samples
 	      }
 
 
@@ -246,17 +249,8 @@ int main(int argc, char *argv[])
         //Weights
         Double_t W_puSF;
         Double_t W_fleptonSF;
-        Double_t W_btagWeight_CSVv2M_mujets_central;
         Double_t W_btagWeight_shape;
         Double_t W_nloWeight;// for amc@nlo samples
-        Double_t W_weight1;
-        Double_t W_weight2;
-        Double_t W_weight3;
-        Double_t W_weight4;
-        Double_t W_weight5;
-        Double_t W_weight6;
-        Double_t W_weight7;
-        Double_t W_weight8; 
         Double_t W_TopPtReweighing;
       
         Int_t run_num;
@@ -266,56 +260,13 @@ int main(int argc, char *argv[])
         Int_t npu;
 
         //variable for  leptons
-        Double_t pt_lepton;
-        Double_t eta_lepton;
-        Double_t phi_lepton;
-        Double_t E_lepton;
         Int_t LepCharge;
   
         //variable for jets 
-        Int_t nJets;
-	      Int_t nJets_CSVL; 
+	      Int_t nJets; 
 	      Int_t nJets_CSVM; 
-	      Int_t nJets_CSVT;
-	      Int_t nJets_cMVAL; 
-	      Int_t nJets_cMVAM; 
-	      Int_t nJets_cMVAT;
-        Double_t pt_jet[20];
-        Double_t phi_jet[20];
-        Double_t eta_jet[20];
-        Double_t E_jet[20];
-        Double_t charge_jet[20];
-        Double_t incl_charge_jet[20];
-        Double_t CSVv2[20];
-        Double_t cMVA[20];
-        Double_t cdiscCvsL_jet[20]; 
-	      Double_t cdiscCvsB_jet[20];
-	      Double_t jet_matchedMC_pdgID[20];
-	      Double_t jet_matchedMC_motherpdgID[20];
-	      Double_t jet_matchedMC_grannypdgID[20];
-      
-        // met 
-        Double_t met_Px; 
-        Double_t met_Py; 
-        Double_t met_Pt; 
-	      Double_t met_Phi; 
-	      Double_t met_Eta;
 	      
 	      //JetIndices_correctJetComb
-	      Int_t TOPTOPLEPHAD_JetIdx_LepTop = -99;
-	      Int_t TOPTOPLEPHAD_JetIdx_HadTop = -99;
-	      Int_t TOPTOPLEPHAD_JetIdx_W1 = -99;
-	      Int_t TOPTOPLEPHAD_JetIdx_W2 = -99;
-	      Int_t TOPTOPLEPHBB_JetIdx_LepTop = -99;
-	      Int_t TOPTOPLEPHBB_JetIdx_HadTop = -99;
-	      Int_t TOPTOPLEPHBB_JetIdx_H1 = -99;
-	      Int_t TOPTOPLEPHBB_JetIdx_H2 = -99;
-	      Int_t TOPHLEPBB_JetIdx_LepTop_hut = -99;
-	      Int_t TOPHLEPBB_JetIdx_H1_hut = -99;
-	      Int_t TOPHLEPBB_JetIdx_H2_hut = -99;
-	      Int_t TOPHLEPBB_JetIdx_LepTop_hct = -99;
-	      Int_t TOPHLEPBB_JetIdx_H1_hct = -99;
-	      Int_t TOPHLEPBB_JetIdx_H2_hct = -99;
         Double_t MVA_TOPTOPLEPHAD = -999.;
         Double_t MVA_TOPTOPLEPHBB = -999.;
         Double_t MVA_TOPHLEPBB_hut = -999.;
@@ -357,23 +308,12 @@ int main(int argc, char *argv[])
         Double_t TopLepBJetCSVv2_TOPTOPLEPHBB;
         Double_t TopHadNonBJetCSVv2_TOPTOPLEPHBB;
 
-        Double_t MC_TopPt;
-        Double_t MC_AntiTopPt;
-        
+       
         // Weights
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_fleptonSF",&W_fleptonSF); //Contains, if muon, the  isoSF, idSF & trigSF
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_puSF",&W_puSF);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_CSVv2M_mujets_central",&W_btagWeight_CSVv2M_mujets_central); 
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape",&W_btagWeight_shape); 
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_nloWeight",&W_nloWeight); 
-        ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight1",&W_weight1);  
-        ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight2",&W_weight2);  
-        ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight3",&W_weight3); 
-        ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight4",&W_weight4);  
-        ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight5",&W_weight5); 
-        ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight6",&W_weight6);  
-        ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight7",&W_weight7); 
-        ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight8",&W_weight8);  
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_TopPtReweighing",&W_TopPtReweighing);  
 
         ttree[(dataSetName).c_str()]->SetBranchAddress("I_run_num",&run_num);
@@ -384,56 +324,13 @@ int main(int argc, char *argv[])
 
 
         //SelectedLepton
-        ttree[(dataSetName).c_str()]->SetBranchAddress("pt_lepton",&pt_lepton);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("phi_lepton",&phi_lepton);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("eta_lepton",&eta_lepton);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("E_lepton",&E_lepton);
         ttree[(dataSetName).c_str()]->SetBranchAddress("I_LepCharge",&LepCharge);
         
         // jets
         ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets",&nJets);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVL",&nJets_CSVL);
         ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVM",&nJets_CSVM);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVT",&nJets_CSVT);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_cMVAL",&nJets_cMVAL);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_cMVAM",&nJets_cMVAM);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_cMVAT",&nJets_cMVAT);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("pt_jet",&pt_jet);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("phi_jet",&phi_jet);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("eta_jet",&eta_jet);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("E_jet",&E_jet);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("charge_jet",&charge_jet);	    
-        ttree[(dataSetName).c_str()]->SetBranchAddress("incl_charge_jet",&incl_charge_jet);	    
-        ttree[(dataSetName).c_str()]->SetBranchAddress("CSVv2",&CSVv2);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("cMVA",&cMVA);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("cdiscCvsL_jet",&cdiscCvsL_jet);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("cdiscCvsB_jet",&cdiscCvsB_jet);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("jet_matchedMC_pdgID",&jet_matchedMC_pdgID);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("jet_matchedMC_motherpdgID",&jet_matchedMC_motherpdgID);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("jet_matchedMC_grannypdgID",&jet_matchedMC_grannypdgID);
        
-        // met 
-        ttree[(dataSetName).c_str()]->SetBranchAddress("met_Px", &met_Px); 
-        ttree[(dataSetName).c_str()]->SetBranchAddress("met_Py", &met_Py); 
-        ttree[(dataSetName).c_str()]->SetBranchAddress("met_Pt", &met_Pt); 
-        ttree[(dataSetName).c_str()]->SetBranchAddress("met_Eta", &met_Eta); 
-        ttree[(dataSetName).c_str()]->SetBranchAddress("met_Phi", &met_Phi); 
-
         // Jet-indices associated to the jet-assignment in the bMVA method
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_LepTop",&TOPTOPLEPHAD_JetIdx_LepTop);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_HadTop",&TOPTOPLEPHAD_JetIdx_HadTop);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_W1",&TOPTOPLEPHAD_JetIdx_W1);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_W2",&TOPTOPLEPHAD_JetIdx_W2);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_LepTop",&TOPTOPLEPHBB_JetIdx_LepTop);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_HadTop",&TOPTOPLEPHBB_JetIdx_HadTop);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_H1",&TOPTOPLEPHBB_JetIdx_H1);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_H2",&TOPTOPLEPHBB_JetIdx_H2);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_LepTop_hut",&TOPHLEPBB_JetIdx_LepTop_hut);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H1_hut",&TOPHLEPBB_JetIdx_H1_hut);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H2_hut",&TOPHLEPBB_JetIdx_H2_hut);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_LepTop_hct",&TOPHLEPBB_JetIdx_LepTop_hct);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H1_hct",&TOPHLEPBB_JetIdx_H1_hct);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H2_hct",&TOPHLEPBB_JetIdx_H2_hct);
         ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPTOPLEPHAD",&MVA_TOPTOPLEPHAD);
         ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPTOPLEPHBB",&MVA_TOPTOPLEPHBB);
         ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPHLEPBB_hut",&MVA_TOPHLEPBB_hut);
@@ -475,10 +372,6 @@ int main(int argc, char *argv[])
         ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetCSVv2_TOPTOPLEPHBB",&TopLepBJetCSVv2_TOPTOPLEPHBB);
         ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadNonBJetCSVv2_TOPTOPLEPHBB",&TopHadNonBJetCSVv2_TOPTOPLEPHBB);
                   
-        //MC variables (affected by TopPtReweighing
-        ttree[(dataSetName).c_str()]->SetBranchAddress("MC_TopPt",&MC_TopPt);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("MC_AntiTopPt",&MC_AntiTopPt);
-
         double nloSF = 1.;
         int nPos = 0; 
         int nNeg = 0;
@@ -503,9 +396,13 @@ int main(int argc, char *argv[])
             }
             average_TopPtWeight = average_TopPtWeight/nEntries;
         }
-		
+
+        int nTrainingEntries = nEntries;
+        nTrainingEntries = int(nEntries/2);
+        
+        
   	    //***********************************************RUNNING OVER EVENTS**********************************************
-		    for (int j = 0; j<int(nEntries/2); j++)
+		    for (int j = 0; j<nTrainingEntries; j++)
 		    {
 		              
             if(debug)
@@ -560,9 +457,7 @@ int main(int argc, char *argv[])
 
 		           ScaleFactor = ScaleFactor * W_puSF_applied;
                ScaleFactor = ScaleFactor * W_fleptonSF;
-//  			          ScaleFactor = ScaleFactor * W_btagWeight_CSVv2M_mujets_central;
-               ScaleFactor = ScaleFactor * W_btagWeight_shape;
-                
+  			       ScaleFactor = ScaleFactor * W_btagWeight_shape;
                ScaleFactor = ScaleFactor * nloSF;
                if(dataSetName.find("TTJets") != string::npos) ScaleFactor = ScaleFactor * W_TopPtReweighing/average_TopPtWeight;
                
@@ -570,7 +465,7 @@ int main(int argc, char *argv[])
 
 			      if(debug)
 			      {
-                cout << "----- Event " << j << "Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_CSVv2M_mujets_central=" << W_btagWeight_CSVv2M_mujets_central << "; nloSF=" << nloSF << endl;
+                cout << "----- Event " << j << "Weights are: W_puSF=" << W_puSF << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_shape=" << W_btagWeight_shape << "; nloSF=" << nloSF << endl;
                 cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
 			          cout << "   SCALE FACTOR is: " << ScaleFactor << endl;
 			      }
@@ -751,7 +646,7 @@ int main(int argc, char *argv[])
 					      "SplitMode=Random:NormMode=NumEvents:!V" );
 	
 	  factory->BookMethod(TMVA::Types::kBDT,"BDT",
-			      "!H:!V:NTrees=100:MaxDepth=3:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:IgnoreNegWeightsInTraining" );
+			      "!H:!V:NTrees=300:MaxDepth=3:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:IgnoreNegWeightsInTraining" );
 	
 	  factory->TrainAllMethods();
 	

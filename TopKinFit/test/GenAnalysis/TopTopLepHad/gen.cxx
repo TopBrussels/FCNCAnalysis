@@ -41,8 +41,8 @@ int main(int argc, char *argv[])
    tr->SetBranchAddress("Truth",&truth);
    tr->SetBranchAddress("Jet",&jets);
    tr->SetBranchAddress("Event",&event);
-   tr->SetBranchAddress("Electron",&electrons);
-   tr->SetBranchAddress("Muon",&muons);
+   tr->SetBranchAddress("ElectronTight",&electrons);
+   tr->SetBranchAddress("MuonTight",&muons);
 
    TFile *fout = new TFile(foutName.c_str(),"RECREATE");
 
@@ -466,6 +466,8 @@ int main(int argc, char *argv[])
 	     
 	for(int ij=0;ij<NJet;ij++)
 	  {
+	     if( !jets->at(ij).isTight() ) continue;
+	     
 	     float pt = jets->at(ij).pt();
 	     float eta = jets->at(ij).eta();
 	     float phi = jets->at(ij).phi();
@@ -503,6 +505,8 @@ int main(int argc, char *argv[])
 	     
 	for(int ij=0;ij<NJet;ij++)
 	  {
+	     if( !jets->at(ij).isTight() ) continue;
+	     
 	     float pt = jets->at(ij).pt();
 	     float eta = jets->at(ij).eta();
 	     float phi = jets->at(ij).phi();
@@ -542,6 +546,8 @@ int main(int argc, char *argv[])
 
 	for(int ij=0;ij<NJet;ij++)
 	  {
+	     if( !jets->at(ij).isTight() ) continue;
+	     
 	     float pt = jets->at(ij).pt();
 	     float eta = jets->at(ij).eta();
 	     float phi = jets->at(ij).phi();
@@ -721,6 +727,8 @@ int main(int argc, char *argv[])
 
 	for(int ij=0;ij<NJet;ij++)
 	  {
+	     if( !jets->at(ij).isTight() ) continue;
+	     
 	     float pt = jets->at(ij).pt();
 	     float eta = jets->at(ij).eta();
 	     float phi = jets->at(ij).phi();

@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     WhatSysts.push_back("iterativefit_cferr1Minus");   
     WhatSysts.push_back("iterativefit_cferr2Plus");   
     WhatSysts.push_back("iterativefit_cferr2Minus");   
-    WhatSysts.push_back("pileupPlus");   
+/*    WhatSysts.push_back("pileupPlus");   
     WhatSysts.push_back("pileupMinus");   
     WhatSysts.push_back("leptonPlus");
     WhatSysts.push_back("leptonMinus");
@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
     WhatSysts_noJECs.push_back("iterativefit_cferr1Minus");   
     WhatSysts_noJECs.push_back("iterativefit_cferr2Plus");   
     WhatSysts_noJECs.push_back("iterativefit_cferr2Minus");   
-    WhatSysts_noJECs.push_back("pileupPlus");   
+/*    WhatSysts_noJECs.push_back("pileupPlus");   
     WhatSysts_noJECs.push_back("pileupMinus");   
     WhatSysts_noJECs.push_back("leptonPlus");
     WhatSysts_noJECs.push_back("leptonMinus");
@@ -262,9 +262,9 @@ int main(int argc, char *argv[])
             ttbar_cc->SetEquivalentLuminosity(datasets[d]->EquivalentLumi());
             ttbar_bb->SetEquivalentLuminosity(datasets[d]->EquivalentLumi());
             
-            ttbar_ll->SetColor(kBlue);
-            ttbar_cc->SetColor(kBlue-3);
-            ttbar_bb->SetColor(kBlue+2);
+            ttbar_ll->SetColor(kAzure+7);
+            ttbar_cc->SetColor(kAzure+5);
+            ttbar_bb->SetColor(kAzure+3);
             
             datasets_splittedTTbar.pop_back();
             datasets_splittedTTbar.push_back(ttbar_ll);
@@ -298,60 +298,187 @@ int main(int argc, char *argv[])
     {
     
     
-        MSPlot[("NPV"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("NPV"+WhatSysts[iSyst]).c_str(), 51, -0.5, 50.5, "Number of PV","Events", category); 
-        MSPlot[("NCSVv2Ljets"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("NCSVv2Ljets"+WhatSysts[iSyst]).c_str(), 11, -0.5, 10.5, "Number of CSVv2 L jets","Events", category); 
-        MSPlot[("NCSVv2Mjets"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("NCSVv2Mjets"+WhatSysts[iSyst]).c_str(), 11, -0.5, 10.5, "Number of CSVv2 M jets","Events", category); 
-        MSPlot[("NCSVv2Tjets"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("NCSVv2Tjets"+WhatSysts[iSyst]).c_str(), 11, -0.5, 10.5, "Number of CSVv2 T jets","Events", category); 
-        MSPlot[("Njets"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("Njets"+WhatSysts[iSyst]).c_str(), 11, -0.5, 10.5, "Number jets","Events", category); 
-        MSPlot[("LeptonPt"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("LeptonPt"+WhatSysts[iSyst]).c_str(), 50, 20., 300., "Lepton Pt","Events", category, "GeV"); 
-        MSPlot[("LeptonEta"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("LeptonEta"+WhatSysts[iSyst]).c_str(), 50, -2.5, 2.5, "Lepton eta","Events", category); 
-        MSPlot[("LeptonPhi"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("LeptonPhi"+WhatSysts[iSyst]).c_str(), 50, -3.2, 3.2, "Lepton phi","Events", category); 
-        MSPlot[("LeptonCharge"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("LeptonCharge"+WhatSysts[iSyst]).c_str(), 3, -1.5, 1.5, "Lepton Charge","Events", category); 
-/*        MSPlot[("JetPt"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetPt"+WhatSysts[iSyst]).c_str(), 50, 20., 300., "Jet Pt","Events", category, "GeV"); 
-        MSPlot[("JetEta"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetEta"+WhatSysts[iSyst]).c_str(), 50, -2.5, 2.5, "Jet eta","Events", category); 
-        MSPlot[("JetPhi"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetPhi"+WhatSysts[iSyst]).c_str(), 50, -3.2, 3.2, "Jet phi","Events", category);
-        MSPlot[("JetCSVv2"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetCSVv2"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "Jet CSVv2","Events", category);
-        MSPlot[("JetcMVAv2"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetcMVAv2"+WhatSysts[iSyst]).c_str(), 50, -1., 1., "Jet cMVAv2","Events", category); 
+        MSPlot[("NPV"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("NPV"+WhatSysts[iSyst]).c_str(), 51, -0.5, 50.5, "nb. PV","Events", ""); 
+        MSPlot[("NCSVv2Ljets"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("NCSVv2Ljets"+WhatSysts[iSyst]).c_str(), 11, -0.5, 10.5, "nb. CSVv2 loose jets","Events", ""); 
+        MSPlot[("NCSVv2Mjets"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("NCSVv2Mjets"+WhatSysts[iSyst]).c_str(), 11, -0.5, 10.5, "nb. of CSVv2 medium jets","Events", ""); 
+        MSPlot[("NCSVv2Tjets"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("NCSVv2Tjets"+WhatSysts[iSyst]).c_str(), 11, -0.5, 10.5, "nb. of CSVv2 tight jets","Events", ""); 
+        MSPlot[("Njets"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("Njets"+WhatSysts[iSyst]).c_str(), 11, -0.5, 10.5, "nb. jets","Events", ""); 
+        MSPlot[("LeptonPt"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("LeptonPt"+WhatSysts[iSyst]).c_str(), 30, 0., 300., "p_{T_{lep}}","Events", "", "GeV"); 
+        MSPlot[("LeptonEta"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("LeptonEta"+WhatSysts[iSyst]).c_str(), 30, -2.5, 2.5, "#eta_{lep}","Events", ""); 
+        MSPlot[("LeptonPhi"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("LeptonPhi"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{lep}","Events", ""); 
+        MSPlot[("LeptonCharge"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("LeptonCharge"+WhatSysts[iSyst]).c_str(), 3, -1.5, 1.5, "q_{lep}","Events", ""); 
+/*
+        MSPlot[("JetPt"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetPt"+WhatSysts[iSyst]).c_str(), 30, 0., 300., "p_{T_{jets}}","Events", "", "GeV"); 
+        MSPlot[("JetEta"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetEta"+WhatSysts[iSyst]).c_str(), 30, -2.5, 2.5, "#eta_{jets}","Events", ""); 
+        MSPlot[("JetPhi"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetPhi"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{jets}","Events", "");
+        MSPlot[("JetCSVv2"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetCSVv2"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "CSVv2_{jets}","Events", "");
+        MSPlot[("JetcMVAv2"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetcMVAv2"+WhatSysts[iSyst]).c_str(), 30, -1., 1., "cMVAv2_{jets}","Events", ""); 
+        MSPlot[("JetCvsB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetCvsB"+WhatSysts[iSyst]).c_str(), 30, -1., 1., "CvsB_{jets}","Events", ""); 
+        MSPlot[("JetCvsL"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetCvsL"+WhatSysts[iSyst]).c_str(), 30, -1., 1., "CvsL_{jets}","Events", ""); 
 
-        MSPlot[("HiggsMass_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsMass_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, 50., 250, "M(Higgs)","Events", category,"GeV");
-        MSPlot[("HiggsMass_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsMass_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, 50., 250, "M(Higgs)","Events", category,"GeV");
-        MSPlot[("HiggsEta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsEta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, -5.0, 5.0, "eta (Higgs)","Events", category);
-        MSPlot[("HiggsEta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsEta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, -5.0, 5.0, "eta (Higgs)","Events", category);
-        MSPlot[("TopLepMass_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepMass_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, 80., 300., "M(LepTop)","Events", category,"GeV");
-        MSPlot[("TopLepMass_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepMass_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, 80., 300., "M(LepTop)","Events", category,"GeV");
-        MSPlot[("TopLepPt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepPt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, 80., 300., "Pt(LepTop)","Events", category,"GeV");
-        MSPlot[("TopLepPt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepPt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, 80., 300., "Pt(LepTop)","Events", category,"GeV");
-        MSPlot[("TopLepEta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepEta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, -5.0, 5.0, "eta (LepTop)","Events", category);
-        MSPlot[("TopLepEta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepEta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, -5.0, 5.0, "eta (LepTop)","Events", category);
-        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, 0., 5.0, "DR(Hb1,Hb2)","Events", category);
-        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, 0., 5.0, "DR(Hb1,Hb2)","Events", category);
-        MSPlot[("TopLepHiggsDr_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepHiggsDr_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, 0., 5.0, "#Delta R(H,LepTop)","Events", category);
-        MSPlot[("TopLepHiggsDr_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepHiggsDr_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, 0., 5.0, "#Delta R(H,LepTop)","Events", category);
-        MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-        MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-        MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-        MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-        MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetCSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-        MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetCSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-        MSPlot[("TopHadMass_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadMass_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 50, 80., 300., "M(HadTop)","Events", category,"GeV");
-        MSPlot[("TopLepMass_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepMass_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 50, 80., 300., "M(LepTop)","Events", category,"GeV");
-        MSPlot[("TopLepTopHadDr_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepTopHadDr_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 50, 0., 5.0, "DR(HadTop,LepTop)","Events", category);
-        MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetCSVv2_TOPTOPLEPHAF"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-        MSPlot[("TopHadBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-        MSPlot[("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-        MSPlot[("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-        MSPlot[("HiggsMass_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsMass_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 50., 250, "M(Higgs)","Events", category,"GeV");
-        MSPlot[("TopLepMass_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepMass_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 80., 300., "M(LepTop)","Events", category,"GeV");
-        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 0., 5.0, "DR(Hb1,Hb2)","Events", category);
-        MSPlot[("TopLepHiggsDr_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepHiggsDr_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 0., 5.0, "DR(H,LepTop)","Events", category);
-        MSPlot[("HiggsBJet1CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-        MSPlot[("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-        MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-        MSPlot[("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-        MSPlot[("MVA_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, -1., 1., "BDT disc.","Events", category);
-        MSPlot[("MVA_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, -1., 1., "BDT disc.","Events", category);
-        MSPlot[("MVA_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, -1., 1., "BDT disc.","Events", category);
-        MSPlot[("MVA_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 50, -1., 1., "BDT disc.","Events", category);
+        if(!doInclusive)
+        {
+            if(baseline_jets != 3)
+            {
+                MSPlot[("TopHadMass_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadMass_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "M_{HadTop}","Events", "","GeV");
+                MSPlot[("TopHadEta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadEta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{HadTop}","Events", "");
+                MSPlot[("TopHadPhi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadPhi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{HadTop}","Events", "");
+                MSPlot[("TopHadPt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadPt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{HadTop}}","Events", "","GeV");
+
+                MSPlot[("TopLepMass_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepMass_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "M_{LepTop}","Events", "","GeV");
+                MSPlot[("TopLepEta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepEta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{LepTop}","Events", "");
+                MSPlot[("TopLepPhi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepPhi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{LepTop}","Events", "");
+                MSPlot[("TopLepPt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepPt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{LepTop}}","Events", "","GeV");
+
+                MSPlot[("TopHadWMass_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWMass_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 250, "M_{WHad}","Events", "","GeV");
+                MSPlot[("TopHadWEta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWEta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{WHad}","Events", "");
+                MSPlot[("TopHadWPhi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWPhi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{WHad}","Events", "");
+                MSPlot[("TopHadWPt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWPt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{HadTop}}","Events", "","GeV");
+
+                MSPlot[("TopLepTopHadDr_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepTopHadDr_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 5., "#Delta R(LepTop,HadTop)","Events", "");
+                MSPlot[("WJet1WJet2Dr_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("WJet1WJet2Dr_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 5., "#Delta R(j_{WHad1},j_{WHad2})","Events", "");
+                MSPlot[("TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 2., "|q_{b_{HadTop}+q_{b_{LepTop}|","Events", "");
+                MSPlot[("TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 2., "|q_{b_{HadTop}+q_{lep}|","Events", "");
+
+                MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{LepTop} CSVv2","Events", "");
+                MSPlot[("TopLepBJetPt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetPt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{LepTop}}}","Events", "","GeV");
+                MSPlot[("TopLepBJetPhi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetPhi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{LepTop}}","Events", "");
+                MSPlot[("TopLepBJetEta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetEta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{LepTop}}","Events", "");
+                MSPlot[("TopLepBJetE_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetE_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{LepTop}}","Events", "","GeV");
+
+                MSPlot[("TopHadBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{HadTop} CSVv2","Events", "");
+                MSPlot[("TopHadBJetPt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadBJetPt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{HadTop}}}","Events", "","GeV");
+                MSPlot[("TopHadBJetPhi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadBJetPhi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{HadTop}}","Events", "");
+                MSPlot[("TopHadBJetEta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadBJetEta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{HadTop}}","Events", "");
+                MSPlot[("TopHadBJetE_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadBJetE_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{HadTop}}","Events", "","GeV");
+
+                MSPlot[("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "j_{WHad1} CSVv2","Events", "");
+                MSPlot[("TopHadWNonBJet1Pt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet1Pt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{j_{WHad1}}}","Events", "","GeV");
+                MSPlot[("TopHadWNonBJet1Phi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet1Phi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{j_{WHad1}}","Events", "");
+                MSPlot[("TopHadWNonBJet1Eta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet1Eta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{j_{WHad1}}","Events", "");
+                MSPlot[("TopHadWNonBJet1E_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet1E_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{j_{WHad1}}","Events", "","GeV");
+
+                MSPlot[("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "j_{WHad2} CSVv2","Events", "");
+                MSPlot[("TopHadWNonBJet2Pt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet2Pt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{j_{WHad2}}}","Events", "","GeV");
+                MSPlot[("TopHadWNonBJet2Phi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet2Phi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{j_{WHad2}}","Events", "");
+                MSPlot[("TopHadWNonBJet2Eta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet2Eta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{j_{WHad2}}","Events", "");
+                MSPlot[("TopHadWNonBJet2E_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet2E_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{j_{WHad2}}","Events", "","GeV");
+
+                MSPlot[("TopHadMass_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadMass_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "M_{HadTop}","Events", "","GeV");
+                MSPlot[("TopHadEta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadEta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{HadTop}","Events", "");
+                MSPlot[("TopHadPhi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadPhi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{HadTop}","Events", "");
+                MSPlot[("TopHadPt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadPt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{HadTop}}","Events", "","GeV");
+
+                MSPlot[("TopLepMass_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepMass_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "M_{LepTop}","Events", "","GeV");
+                MSPlot[("TopLepEta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepEta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{LepTop}","Events", "");
+                MSPlot[("TopLepPhi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepPhi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{LepTop}","Events", "");
+                MSPlot[("TopLepPt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepPt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{LepTop}}","Events", "","GeV");
+
+                MSPlot[("HiggsMass_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsMass_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 250, "M_{H}","Events", "","GeV");
+                MSPlot[("HiggsEta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsEta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{H}","Events", "");
+                MSPlot[("HiggsPhi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsPhi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{H}","Events", "");
+                MSPlot[("HiggsPt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsPt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 300, "p_{T_{H}}","Events", "","GeV");
+
+                MSPlot[("TopLepTopHadDr_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepTopHadDr_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 5., "#Delta R(LepTop,HadTop)","Events", "");
+                MSPlot[("TopLepHiggsDr_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepHiggsDr_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 5., "#Delta R(LepTop,H)","Events", "");
+                MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 5., "#Delta R(b_{H1},b_{H2})","Events", "");
+                MSPlot[("TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 2., "|q_{j_{HadTop}+q_{b_{LepTop}|","Events", "");
+                MSPlot[("TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 2., "|q_{j_{HadTop}+q_{lep}|","Events", "");
+
+                MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{LepTop} CSVv2","Events", "");
+                MSPlot[("TopLepBJetPt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetPt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{LepTop}}}","Events", "","GeV");
+                MSPlot[("TopLepBJetPhi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetPhi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{LepTop}}","Events", "");
+                MSPlot[("TopLepBJetEta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetEta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{LepTop}}","Events", "");
+                MSPlot[("TopLepBJetE_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetE_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{LepTop}}","Events", "","GeV");
+
+                MSPlot[("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "j_{HadTop} CSVv2","Events", "");
+                MSPlot[("TopHadNonBJetPt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadNonBJetPt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{j_{HadTop}}}","Events", "","GeV");
+                MSPlot[("TopHadNonBJetPhi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadNonBJetPhi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{j_{HadTop}}","Events", "");
+                MSPlot[("TopHadNonBJetEta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TTopHadNonBJetEta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{j_{HadTop}}","Events", "");
+                MSPlot[("TopHadNonBJetE_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadNonBJetE_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{j_{HadTop}}","Events", "","GeV");
+
+                MSPlot[("HiggsBJet1CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{H1} CSVv2","Events", "");
+                MSPlot[("HiggsBJet1Pt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1Pt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{H1}}}","Events", "","GeV");
+                MSPlot[("HiggsBJet1Phi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1Phi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{H1}}","Events", "");
+                MSPlot[("HiggsBJet1Eta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1Eta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{H1}}","Events", "");
+                MSPlot[("HiggsBJet1E_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1E_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{H1}}","Events", "","GeV");
+
+                MSPlot[("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{H2} CSVv2","Events", "");
+                MSPlot[("HiggsBJet2Pt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2Pt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{H2}}}","Events", "","GeV");
+                MSPlot[("HiggsBJet2Phi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2Phi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{H2}}","Events", "");
+                MSPlot[("HiggsBJet2Eta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2Eta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{H2}}","Events", "");
+                MSPlot[("HiggsBJet2E_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2E_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{H2}}","Events", "","GeV");
+            }
+
+                MSPlot[("TopLepMass_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepMass_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "M_{LepTop}","Events", "","GeV");
+                MSPlot[("TopLepEta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepEta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{LepTop}","Events", "");
+                MSPlot[("TopLepPhi_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepPhi_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{LepTop}","Events", "");
+                MSPlot[("TopLepPt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepPt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{LepTop}}","Events", "","GeV");
+
+                MSPlot[("HiggsMass_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsMass_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 250, "M_{H}","Events", "","GeV");
+                MSPlot[("HiggsEta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsEta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{H}","Events", "");
+                MSPlot[("HiggsPhi_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsPhi_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{H}","Events", "");
+                MSPlot[("HiggsPt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsPt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 300, "p_{T_{H}}","Events", "","GeV");
+
+                MSPlot[("TopLepHiggsDr_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepHiggsDr_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 5., "#Delta R(LepTop,H)","Events", "");
+                MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 5., "#Delta R(b_{H1},b_{H2})","Events", "");
+
+                MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetCSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{LepTop} CSVv2","Events", "");
+                MSPlot[("TopLepBJetPt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetPt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{LepTop}}}","Events", "","GeV");
+                MSPlot[("TopLepBJetPhi_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetPhi_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{LepTop}}","Events", "");
+                MSPlot[("TopLepBJetEta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetEta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{LepTop}}","Events", "");
+                MSPlot[("TopLepBJetE_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetE_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{LepTop}}","Events", "","GeV");
+
+                MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{H1} CSVv2","Events", "");
+                MSPlot[("HiggsBJet1Pt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1Pt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{H1}}}","Events", "","GeV");
+                MSPlot[("HiggsBJet1Phi_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1Phi_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{H1}}","Events", "");
+                MSPlot[("HiggsBJet1Eta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1Eta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{H1}}","Events", "");
+                MSPlot[("HiggsBJet1E_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1E_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{H1}}","Events", "","GeV");
+
+                MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{H2} CSVv2","Events", "");
+                MSPlot[("HiggsBJet2Pt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2Pt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{H2}}}","Events", "","GeV");
+                MSPlot[("HiggsBJet2Phi_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2Phi_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{H2}}","Events", "");
+                MSPlot[("HiggsBJet2Eta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2Eta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{H2}}","Events", "");
+                MSPlot[("HiggsBJet2E_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2E_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{H2}}","Events", "","GeV");
+
+                MSPlot[("TopLepMass_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepMass_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "M_{LepTop}","Events", "","GeV");
+                MSPlot[("TopLepEta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepEta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{LepTop}","Events", "");
+                MSPlot[("TopLepPhi_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepPhi_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{LepTop}","Events", "");
+                MSPlot[("TopLepPt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepPt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{LepTop}}","Events", "","GeV");
+
+                MSPlot[("HiggsMass_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsMass_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 250, "M_{H}","Events", "","GeV");
+                MSPlot[("HiggsEta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsEta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{H}","Events", "");
+                MSPlot[("HiggsPhi_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsPhi_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{H}","Events", "");
+                MSPlot[("HiggsPt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsPt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 300, "p_{T_{H}}","Events", "","GeV");
+
+                MSPlot[("TopLepHiggsDr_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepHiggsDr_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 5., "#Delta R(LepTop,H)","Events", "");
+                MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 5., "#Delta R(b_{H1},b_{H2})","Events", "");
+
+                MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetCSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{LepTop} CSVv2","Events", "");
+                MSPlot[("TopLepBJetPt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetPt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{LepTop}}}","Events", "","GeV");
+                MSPlot[("TopLepBJetPhi_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetPhi_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{LepTop}}","Events", "");
+                MSPlot[("TopLepBJetEta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetEta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{LepTop}}","Events", "");
+                MSPlot[("TopLepBJetE_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetE_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{LepTop}}","Events", "","GeV");
+
+                MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{H1} CSVv2","Events", "");
+                MSPlot[("HiggsBJet1Pt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1Pt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{H1}}}","Events", "","GeV");
+                MSPlot[("HiggsBJet1Phi_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1Phi_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{H1}}","Events", "");
+                MSPlot[("HiggsBJet1Eta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1Eta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{H1}}","Events", "");
+                MSPlot[("HiggsBJet1E_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1E_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{H1}}","Events", "","GeV");
+
+                MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{H2} CSVv2","Events", "");
+                MSPlot[("HiggsBJet2Pt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2Pt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{H2}}}","Events", "","GeV");
+                MSPlot[("HiggsBJet2Phi_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2Phi_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{H2}}","Events", "");
+                MSPlot[("HiggsBJet2Eta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2Eta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{H2}}","Events", "");
+                MSPlot[("HiggsBJet2E_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2E_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{H2}}","Events", "","GeV");
+
+
+                MSPlot[("MVA_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -1., 1., "bMVA TopTopLepHad","Events", "");
+                MSPlot[("MVA_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -1., 1., "bMVA TopTopLepHbb","Events", "");
+                MSPlot[("MVA_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -1., 1., "bMVA TopHLepbb","Events", "");
+                MSPlot[("MVA_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -1., 1., "bMVa TopHLepbb","Events", "");
+            
+        }
 */    }
   
  
@@ -459,21 +586,6 @@ int main(int argc, char *argv[])
             Double_t W_btagWeight_shape_up_cferr2; 
             Double_t W_btagWeight_shape_down_cferr2; 
             Double_t W_nloWeight;// for amc@nlo samples
-            Double_t W_weight1;
-            Double_t W_weight2;
-            Double_t W_weight3;
-            Double_t W_weight4;
-            Double_t W_weight5;
-            Double_t W_weight6;
-            Double_t W_weight7;
-            Double_t W_weight8;
-            Double_t W_MuonIDSF; //One of the 3 components for the total muon SF
-            Double_t W_MuonIsoSF; //One of the 3 components for the total muon SF
-            Double_t W_MuonTrigSF;//One of the 3 components for the total muon SF
-            Double_t W_MuonTrigSF_Runs273158to274093;//Used in calculation for W_MuonTrigSF
-            Double_t W_MuonTrigSF_Runs274094to276097;//Used in calculation for W_MuonTrigSF
-            Double_t W_ElectronIDSF; //One of the 2 components for the total electron SF
-            Double_t W_ElectronRecoSF; //One of the 2 components for the total electron SF
             Double_t W_TopPtReweighing;
           
             Int_t run_num;
@@ -483,32 +595,6 @@ int main(int argc, char *argv[])
             Int_t npu;
             Int_t genTTX;
 
-	          // variables for electrons
-            Double_t eta_superCluster_electron;
-            Double_t d0_electron;
-            Double_t d0BeamSpot_electron;
-            Double_t chargedHadronIso_electron;
-            Double_t neutralHadronIso_electron;
-            Double_t photonIso_electron;
-            Double_t pfIso_electron;
-            Double_t charge_electron;
-            Double_t sigmaIEtaIEta_electron;
-	          Double_t deltaEtaIn_electron;
-	          Double_t deltaPhiIn_electron;
-	          Double_t hadronicOverEm_electron;
-	          Int_t missingHits_electron;
-	          Bool_t passConversion_electron;
-            Bool_t isEBEEGap; 
-          
-            //variable for muons
-            Double_t d0_muon;
-            Double_t d0BeamSpot_muon;
-            Double_t chargedHadronIso_muon;
-            Double_t neutralHadronIso_muon;
-            Double_t photonIso_muon;
-            Double_t pfIso_muon;
-            Double_t charge_muon;
-            
             //variable for  leptons
             Double_t pt_lepton;
             Double_t eta_lepton;
@@ -528,81 +614,183 @@ int main(int argc, char *argv[])
             Double_t phi_jet[20];
             Double_t eta_jet[20];
             Double_t E_jet[20];
-            Double_t charge_jet[20];
             Double_t incl_charge_jet[20];
             Double_t CSVv2[20];
             Double_t cMVA[20];
             Double_t cdiscCvsL_jet[20]; 
 	          Double_t cdiscCvsB_jet[20];
-	          Double_t jet_matchedMC_pdgID[20];
-	          Double_t jet_matchedMC_motherpdgID[20];
-	          Double_t jet_matchedMC_grannypdgID[20];
-          
-            // met 
-            Double_t met_Px; 
-            Double_t met_Py; 
+
             Double_t met_Pt; 
 	          Double_t met_Phi; 
 	          Double_t met_Eta;
 	          
-	          //JetIndices_correctJetComb
-	          Int_t TOPTOPLEPHAD_JetIdx_LepTop = -99;
-	          Int_t TOPTOPLEPHAD_JetIdx_HadTop = -99;
-	          Int_t TOPTOPLEPHAD_JetIdx_W1 = -99;
-	          Int_t TOPTOPLEPHAD_JetIdx_W2 = -99;
-	          Int_t TOPTOPLEPHBB_JetIdx_LepTop = -99;
-	          Int_t TOPTOPLEPHBB_JetIdx_HadTop = -99;
-	          Int_t TOPTOPLEPHBB_JetIdx_H1 = -99;
-	          Int_t TOPTOPLEPHBB_JetIdx_H2 = -99;
-	          Int_t TOPHLEPBB_JetIdx_LepTop_hut = -99;
-	          Int_t TOPHLEPBB_JetIdx_H1_hut = -99;
-	          Int_t TOPHLEPBB_JetIdx_H2_hut = -99;
-	          Int_t TOPHLEPBB_JetIdx_LepTop_hct = -99;
-	          Int_t TOPHLEPBB_JetIdx_H1_hct = -99;
-	          Int_t TOPHLEPBB_JetIdx_H2_hct = -99;
-            Double_t MVA_TOPTOPLEPHAD = -999.;
-            Double_t MVA_TOPTOPLEPHBB = -999.;
-            Double_t MVA_TOPHLEPBB_hut = -999.;
-            Double_t MVA_TOPHLEPBB_hct = -999.;
-            //Variables for signal/background training
-	          Double_t HiggsMass_TOPHLEPBB_hut;
-	          Double_t HiggsMass_TOPHLEPBB_hct;
-	          Double_t HiggsEta_TOPHLEPBB_hut;
-	          Double_t HiggsEta_TOPHLEPBB_hct;
-	          Double_t TopLepMass_TOPHLEPBB_hut;
-	          Double_t TopLepMass_TOPHLEPBB_hct;
-            Double_t TopLepPt_TOPHLEPBB_hut;
-            Double_t TopLepPt_TOPHLEPBB_hct;
-            Double_t TopLepEta_TOPHLEPBB_hut;
-            Double_t TopLepEta_TOPHLEPBB_hct;
-            Double_t HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut;
-            Double_t HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct;
-            Double_t TopLepHiggsDr_TOPHLEPBB_hut;
-            Double_t TopLepHiggsDr_TOPHLEPBB_hct;
-            Double_t HiggsBJet1CSVv2_TOPHLEPBB_hut;
-            Double_t HiggsBJet1CSVv2_TOPHLEPBB_hct;
-            Double_t HiggsBJet2CSVv2_TOPHLEPBB_hut;
-            Double_t HiggsBJet2CSVv2_TOPHLEPBB_hct;
-            Double_t TopLepBJetCSVv2_TOPHLEPBB_hut;
-            Double_t TopLepBJetCSVv2_TOPHLEPBB_hct;
-            Double_t TopHadMass_TOPTOPLEPHAD;
-            Double_t TopLepMass_TOPTOPLEPHAD;
-            Double_t TopLepTopHadDr_TOPTOPLEPHAD;
-            Double_t TopLepBJetCSVv2_TOPTOPLEPHAD;
-            Double_t TopHadBJetCSVv2_TOPTOPLEPHAD;
-            Double_t TopHadWNonBJet1CSVv2_TOPTOPLEPHAD;
-            Double_t TopHadWNonBJet2CSVv2_TOPTOPLEPHAD;
-            Double_t HiggsMass_TOPTOPLEPHBB;
-            Double_t TopLepMass_TOPTOPLEPHBB;
-            Double_t HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB;
-            Double_t TopLepHiggsDr_TOPTOPLEPHBB;
-            Double_t HiggsBJet1CSVv2_TOPTOPLEPHBB;
-            Double_t HiggsBJet2CSVv2_TOPTOPLEPHBB;
-            Double_t TopLepBJetCSVv2_TOPTOPLEPHBB;
-            Double_t TopHadNonBJetCSVv2_TOPTOPLEPHBB;
+	          Int_t TOPTOPLEPHAD_JetIdx_LepTop;
+	          Int_t TOPTOPLEPHAD_JetIdx_HadTop;
+	          Int_t TOPTOPLEPHAD_JetIdx_W1;
+	          Int_t TOPTOPLEPHAD_JetIdx_W2;
+	          Int_t TOPTOPLEPHBB_JetIdx_LepTop;
+	          Int_t TOPTOPLEPHBB_JetIdx_HadTop;
+	          Int_t TOPTOPLEPHBB_JetIdx_H1;
+	          Int_t TOPTOPLEPHBB_JetIdx_H2;
+	          Int_t TOPHLEPBB_JetIdx_LepTop_hut;
+	          Int_t TOPHLEPBB_JetIdx_H1_hut;
+	          Int_t TOPHLEPBB_JetIdx_H2_hut;
+	          Int_t TOPHLEPBB_JetIdx_LepTop_hct;
+	          Int_t TOPHLEPBB_JetIdx_H1_hct;
+	          Int_t TOPHLEPBB_JetIdx_H2_hct;
+            Double_t MVA_TOPTOPLEPHAD;
+            Double_t MVA_TOPTOPLEPHBB;
+            Double_t MVA_TOPHLEPBB_hut;
+            Double_t MVA_TOPHLEPBB_hct;
 
-            Double_t MC_TopPt;
-            Double_t MC_AntiTopPt;
+            //Variables for signal/background training
+            //Variables from bMVA method
+            Double_t TopHadMass_TOPTOPLEPHAD;
+            Double_t TopHadEta_TOPTOPLEPHAD;
+            Double_t TopHadPhi_TOPTOPLEPHAD;
+            Double_t TopHadPt_TOPTOPLEPHAD;
+
+            Double_t TopLepMass_TOPTOPLEPHAD;
+            Double_t TopLepEta_TOPTOPLEPHAD;
+            Double_t TopLepPhi_TOPTOPLEPHAD;
+            Double_t TopLepPt_TOPTOPLEPHAD;
+
+            Double_t TopHadWMass_TOPTOPLEPHAD;
+            Double_t TopHadWEta_TOPTOPLEPHAD;
+            Double_t TopHadWPhi_TOPTOPLEPHAD;
+            Double_t TopHadWPt_TOPTOPLEPHAD;
+
+            Double_t TopLepTopHadDr_TOPTOPLEPHAD;
+            Double_t WJet1WJet2Dr_TOPTOPLEPHAD;
+
+            Double_t TopLepBJetCSVv2_TOPTOPLEPHAD;
+            Double_t TopLepBJetPt_TOPTOPLEPHAD;
+            Double_t TopLepBJetPhi_TOPTOPLEPHAD;
+            Double_t TopLepBJetEta_TOPTOPLEPHAD;
+            Double_t TopLepBJetE_TOPTOPLEPHAD;
+
+            Double_t TopHadBJetCSVv2_TOPTOPLEPHAD;
+            Double_t TopHadBJetPt_TOPTOPLEPHAD;
+            Double_t TopHadBJetPhi_TOPTOPLEPHAD;
+            Double_t TopHadBJetEta_TOPTOPLEPHAD;
+            Double_t TopHadBJetE_TOPTOPLEPHAD;
+
+            Double_t TopHadWNonBJet1CSVv2_TOPTOPLEPHAD;
+            Double_t TopHadWNonBJet1Pt_TOPTOPLEPHAD;
+            Double_t TopHadWNonBJet1Phi_TOPTOPLEPHAD;
+            Double_t TopHadWNonBJet1Eta_TOPTOPLEPHAD;
+            Double_t TopHadWNonBJet1E_TOPTOPLEPHAD;
+
+            Double_t TopHadWNonBJet2CSVv2_TOPTOPLEPHAD;
+            Double_t TopHadWNonBJet2Pt_TOPTOPLEPHAD;
+            Double_t TopHadWNonBJet2Phi_TOPTOPLEPHAD;
+            Double_t TopHadWNonBJet2Eta_TOPTOPLEPHAD;
+            Double_t TopHadWNonBJet2E_TOPTOPLEPHAD;
+
+            Double_t TopHadMass_TOPTOPLEPHBB;
+            Double_t TopHadEta_TOPTOPLEPHBB;
+            Double_t TopHadPhi_TOPTOPLEPHBB;
+            Double_t TopHadPt_TOPTOPLEPHBB;
+
+            Double_t TopLepMass_TOPTOPLEPHBB;
+            Double_t TopLepEta_TOPTOPLEPHBB;
+            Double_t TopLepPhi_TOPTOPLEPHBB;
+            Double_t TopLepPt_TOPTOPLEPHBB;
+
+            Double_t HiggsMass_TOPTOPLEPHBB;
+            Double_t HiggsEta_TOPTOPLEPHBB;
+            Double_t HiggsPhi_TOPTOPLEPHBB;
+            Double_t HiggsPt_TOPTOPLEPHBB;
+
+            Double_t TopLepTopHadDr_TOPTOPLEPHBB;
+            Double_t TopLepHiggsDr_TOPTOPLEPHBB;
+            Double_t HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB;
+
+            Double_t TopLepBJetCSVv2_TOPTOPLEPHBB;
+            Double_t TopLepBJetPt_TOPTOPLEPHBB;
+            Double_t TopLepBJetPhi_TOPTOPLEPHBB;
+            Double_t TopLepBJetEta_TOPTOPLEPHBB;
+            Double_t TopLepBJetE_TOPTOPLEPHBB;
+
+            Double_t TopHadNonBJetCSVv2_TOPTOPLEPHBB;
+            Double_t TopHadNonBJetPt_TOPTOPLEPHBB;
+            Double_t TopHadNonBJetPhi_TOPTOPLEPHBB;
+            Double_t TopHadNonBJetEta_TOPTOPLEPHBB;
+            Double_t TopHadNonBJetE_TOPTOPLEPHBB;
+
+            Double_t HiggsBJet1CSVv2_TOPTOPLEPHBB;
+            Double_t HiggsBJet1Pt_TOPTOPLEPHBB;
+            Double_t HiggsBJet1Phi_TOPTOPLEPHBB;
+            Double_t HiggsBJet1Eta_TOPTOPLEPHBB;
+            Double_t HiggsBJet1E_TOPTOPLEPHBB;
+
+            Double_t HiggsBJet2CSVv2_TOPTOPLEPHBB;
+            Double_t HiggsBJet2Pt_TOPTOPLEPHBB;
+            Double_t HiggsBJet2Phi_TOPTOPLEPHBB;
+            Double_t HiggsBJet2Eta_TOPTOPLEPHBB;
+            Double_t HiggsBJet2E_TOPTOPLEPHBB;
+
+            Double_t TopLepMass_TOPHLEPBB_hut;
+            Double_t TopLepEta_TOPHLEPBB_hut;
+            Double_t TopLepPhi_TOPHLEPBB_hut;
+            Double_t TopLepPt_TOPHLEPBB_hut;
+
+            Double_t HiggsMass_TOPHLEPBB_hut;
+            Double_t HiggsEta_TOPHLEPBB_hut;
+            Double_t HiggsPhi_TOPHLEPBB_hut;
+            Double_t HiggsPt_TOPHLEPBB_hut;
+
+            Double_t TopLepHiggsDr_TOPHLEPBB_hut;
+            Double_t HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut;
+
+            Double_t TopLepBJetCSVv2_TOPHLEPBB_hut;
+            Double_t TopLepBJetPt_TOPHLEPBB_hut;
+            Double_t TopLepBJetPhi_TOPHLEPBB_hut;
+            Double_t TopLepBJetEta_TOPHLEPBB_hut;
+            Double_t TopLepBJetE_TOPHLEPBB_hut;
+
+            Double_t HiggsBJet1CSVv2_TOPHLEPBB_hut;
+            Double_t HiggsBJet1Pt_TOPHLEPBB_hut;
+            Double_t HiggsBJet1Phi_TOPHLEPBB_hut;
+            Double_t HiggsBJet1Eta_TOPHLEPBB_hut;
+            Double_t HiggsBJet1E_TOPHLEPBB_hut;
+
+            Double_t HiggsBJet2CSVv2_TOPHLEPBB_hut;
+            Double_t HiggsBJet2Pt_TOPHLEPBB_hut;
+            Double_t HiggsBJet2Phi_TOPHLEPBB_hut;
+            Double_t HiggsBJet2Eta_TOPHLEPBB_hut;
+            Double_t HiggsBJet2E_TOPHLEPBB_hut;
+
+            Double_t TopLepMass_TOPHLEPBB_hct;
+            Double_t TopLepEta_TOPHLEPBB_hct;
+            Double_t TopLepPhi_TOPHLEPBB_hct;
+            Double_t TopLepPt_TOPHLEPBB_hct;
+
+            Double_t HiggsMass_TOPHLEPBB_hct;
+            Double_t HiggsEta_TOPHLEPBB_hct;
+            Double_t HiggsPhi_TOPHLEPBB_hct;
+            Double_t HiggsPt_TOPHLEPBB_hct;
+
+            Double_t TopLepHiggsDr_TOPHLEPBB_hct;
+            Double_t HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct;
+
+            Double_t TopLepBJetCSVv2_TOPHLEPBB_hct;
+            Double_t TopLepBJetPt_TOPHLEPBB_hct;
+            Double_t TopLepBJetPhi_TOPHLEPBB_hct;
+            Double_t TopLepBJetEta_TOPHLEPBB_hct;
+            Double_t TopLepBJetE_TOPHLEPBB_hct;
+
+            Double_t HiggsBJet1CSVv2_TOPHLEPBB_hct;
+            Double_t HiggsBJet1Pt_TOPHLEPBB_hct;
+            Double_t HiggsBJet1Phi_TOPHLEPBB_hct;
+            Double_t HiggsBJet1Eta_TOPHLEPBB_hct;
+            Double_t HiggsBJet1E_TOPHLEPBB_hct;
+
+            Double_t HiggsBJet2CSVv2_TOPHLEPBB_hct;
+            Double_t HiggsBJet2Pt_TOPHLEPBB_hct;
+            Double_t HiggsBJet2Phi_TOPHLEPBB_hct;
+            Double_t HiggsBJet2Eta_TOPHLEPBB_hct;
+            Double_t HiggsBJet2E_TOPHLEPBB_hct;
             
             // Weights
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_fleptonSF",&W_fleptonSF); //Contains, if muon, the  isoSF, idSF & trigSF
@@ -611,9 +799,6 @@ int main(int argc, char *argv[])
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_puSF",&W_puSF);
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_puSF_Minus",&W_puSF_Minus);
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_puSF_Plus",&W_puSF_Plus);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_CSVv2M_mujets_central",&W_btagWeight_CSVv2M_mujets_central); 
-            ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_CSVv2M_mujets_up",&W_btagWeight_CSVv2M_mujets_up);  
-            ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_CSVv2M_mujets_down",&W_btagWeight_CSVv2M_mujets_down); 
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape",&W_btagWeight_shape); 
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_up_lf",&W_btagWeight_shape_up_lf); 
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_down_lf",&W_btagWeight_shape_down_lf); 
@@ -632,14 +817,6 @@ int main(int argc, char *argv[])
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_up_cferr2",&W_btagWeight_shape_up_cferr2); 
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_down_cferr2",&W_btagWeight_shape_down_cferr2); 
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_nloWeight",&W_nloWeight); 
-            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight1",&W_weight1);  
-            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight2",&W_weight2);  
-            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight3",&W_weight3); 
-            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight4",&W_weight4);  
-            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight5",&W_weight5); 
-            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight6",&W_weight6);  
-            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight7",&W_weight7); 
-            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight8",&W_weight8);  
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_TopPtReweighing",&W_TopPtReweighing);  
 
             ttree[(dataSetName).c_str()]->SetBranchAddress("I_run_num",&run_num);
@@ -650,31 +827,7 @@ int main(int argc, char *argv[])
             ttree[(dataSetName).c_str()]->SetBranchAddress("I_genTTX",&genTTX);
 
 
-            // electrons
-            ttree[(dataSetName).c_str()]->SetBranchAddress("eta_superCluster_electron",&eta_superCluster_electron);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("chargedHadronIso_electron",&chargedHadronIso_electron);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("neutralHadronIso_electron",&neutralHadronIso_electron);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("photonIso_electron",&photonIso_electron);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("pfIso_electron",&pfIso_electron);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("charge_electron",&charge_electron);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("d0_electron",&d0_electron);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("d0BeamSpot_electron",&d0BeamSpot_electron);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("sigmaIEtaIEta_electron",&sigmaIEtaIEta_electron);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("deltaEtaIn_electron",&deltaEtaIn_electron);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("deltaPhiIn_electron",&deltaPhiIn_electron);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("hadronicOverEm_electron",&hadronicOverEm_electron);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_missingHits_electron",&missingHits_electron);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_passConversion_electron",&passConversion_electron);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_isEBEEGap",&isEBEEGap);
-          
             // muons
-            ttree[(dataSetName).c_str()]->SetBranchAddress("chargedHadronIso_muon",&chargedHadronIso_muon);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("neutralHadronIso_muon",&neutralHadronIso_muon);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("photonIso_muon",&photonIso_muon);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("pfIso_muon",&pfIso_muon);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("charge_muon",&charge_muon);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("d0_muon",&d0_muon);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("d0BeamSpot_muon",&d0BeamSpot_muon);
 
             //SelectedLepton
             ttree[(dataSetName).c_str()]->SetBranchAddress("pt_lepton",&pt_lepton);
@@ -695,82 +848,184 @@ int main(int argc, char *argv[])
             ttree[(dataSetName).c_str()]->SetBranchAddress("phi_jet",&phi_jet);
             ttree[(dataSetName).c_str()]->SetBranchAddress("eta_jet",&eta_jet);
             ttree[(dataSetName).c_str()]->SetBranchAddress("E_jet",&E_jet);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("charge_jet",&charge_jet);	    
             ttree[(dataSetName).c_str()]->SetBranchAddress("incl_charge_jet",&incl_charge_jet);	    
             ttree[(dataSetName).c_str()]->SetBranchAddress("CSVv2",&CSVv2);
             ttree[(dataSetName).c_str()]->SetBranchAddress("cMVA",&cMVA);
             ttree[(dataSetName).c_str()]->SetBranchAddress("cdiscCvsL_jet",&cdiscCvsL_jet);
             ttree[(dataSetName).c_str()]->SetBranchAddress("cdiscCvsB_jet",&cdiscCvsB_jet);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("jet_matchedMC_pdgID",&jet_matchedMC_pdgID);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("jet_matchedMC_motherpdgID",&jet_matchedMC_motherpdgID);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("jet_matchedMC_grannypdgID",&jet_matchedMC_grannypdgID);
            
             // met 
-            ttree[(dataSetName).c_str()]->SetBranchAddress("met_Px", &met_Px); 
-            ttree[(dataSetName).c_str()]->SetBranchAddress("met_Py", &met_Py); 
             ttree[(dataSetName).c_str()]->SetBranchAddress("met_Pt", &met_Pt); 
             ttree[(dataSetName).c_str()]->SetBranchAddress("met_Eta", &met_Eta); 
             ttree[(dataSetName).c_str()]->SetBranchAddress("met_Phi", &met_Phi); 
 
             // Jet-indices associated to the jet-assignment in the bMVA method
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_LepTop",&TOPTOPLEPHAD_JetIdx_LepTop);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_HadTop",&TOPTOPLEPHAD_JetIdx_HadTop);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_W1",&TOPTOPLEPHAD_JetIdx_W1);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_W2",&TOPTOPLEPHAD_JetIdx_W2);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_LepTop",&TOPTOPLEPHBB_JetIdx_LepTop);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_HadTop",&TOPTOPLEPHBB_JetIdx_HadTop);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_H1",&TOPTOPLEPHBB_JetIdx_H1);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_H2",&TOPTOPLEPHBB_JetIdx_H2);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_LepTop_hut",&TOPHLEPBB_JetIdx_LepTop_hut);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H1_hut",&TOPHLEPBB_JetIdx_H1_hut);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H2_hut",&TOPHLEPBB_JetIdx_H2_hut);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_LepTop_hct",&TOPHLEPBB_JetIdx_LepTop_hct);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H1_hct",&TOPHLEPBB_JetIdx_H1_hct);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H2_hct",&TOPHLEPBB_JetIdx_H2_hct);
             ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPTOPLEPHAD",&MVA_TOPTOPLEPHAD);
             ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPTOPLEPHBB",&MVA_TOPTOPLEPHBB);
             ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPHLEPBB_hut",&MVA_TOPHLEPBB_hut);
             ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPHLEPBB_hct",&MVA_TOPHLEPBB_hct);
+           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_LepTop",&TOPTOPLEPHAD_JetIdx_LepTop);
+           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_HadTop",&TOPTOPLEPHAD_JetIdx_HadTop);
+           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_W1",&TOPTOPLEPHAD_JetIdx_W1);
+           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_W2",&TOPTOPLEPHAD_JetIdx_W2);
+           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_LepTop",&TOPTOPLEPHBB_JetIdx_LepTop);
+           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_HadTop",&TOPTOPLEPHBB_JetIdx_HadTop);
+           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_H1",&TOPTOPLEPHBB_JetIdx_H1);
+           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_H2",&TOPTOPLEPHBB_JetIdx_H2);
+           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_LepTop_hut",&TOPHLEPBB_JetIdx_LepTop_hut);
+           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H1_hut",&TOPHLEPBB_JetIdx_H1_hut);
+           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H2_hut",&TOPHLEPBB_JetIdx_H2_hut);
+           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_LepTop_hct",&TOPHLEPBB_JetIdx_LepTop_hct);
+           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H1_hct",&TOPHLEPBB_JetIdx_H1_hct);
+           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H2_hct",&TOPHLEPBB_JetIdx_H2_hct);
             //Variables for signal/background training
-	          ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsMass_TOPHLEPBB_hut",&HiggsMass_TOPHLEPBB_hut);
-	          ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsMass_TOPHLEPBB_hct",&HiggsMass_TOPHLEPBB_hct);
-	          ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsEta_TOPHLEPBB_hut",&HiggsEta_TOPHLEPBB_hut);
-	          ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsEta_TOPHLEPBB_hct",&HiggsEta_TOPHLEPBB_hct);
-	          ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepMass_TOPHLEPBB_hut",&TopLepMass_TOPHLEPBB_hut);
-	          ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepMass_TOPHLEPBB_hct",&TopLepMass_TOPHLEPBB_hut);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPt_TOPHLEPBB_hut",&TopLepPt_TOPHLEPBB_hut);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPt_TOPHLEPBB_hct",&TopLepPt_TOPHLEPBB_hct);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepEta_TOPHLEPBB_hut",&TopLepEta_TOPHLEPBB_hut);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepEta_TOPHLEPBB_hct",&TopLepEta_TOPHLEPBB_hct);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut",&HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct",&HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepHiggsDr_TOPHLEPBB_hut",&TopLepHiggsDr_TOPHLEPBB_hut);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepHiggsDr_TOPHLEPBB_hct",&TopLepHiggsDr_TOPHLEPBB_hct);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1CSVv2_TOPHLEPBB_hut",&HiggsBJet1CSVv2_TOPHLEPBB_hut);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1CSVv2_TOPHLEPBB_hct",&HiggsBJet1CSVv2_TOPHLEPBB_hct);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2CSVv2_TOPHLEPBB_hut",&HiggsBJet2CSVv2_TOPHLEPBB_hut);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2CSVv2_TOPHLEPBB_hct",&HiggsBJet2CSVv2_TOPHLEPBB_hct);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetCSVv2_TOPHLEPBB_hut",&TopLepBJetCSVv2_TOPHLEPBB_hut);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetCSVv2_TOPHLEPBB_hct",&TopLepBJetCSVv2_TOPHLEPBB_hct);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadMass_TOPTOPLEPHAD",&TopHadMass_TOPTOPLEPHAD);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepMass_TOPTOPLEPHAD",&TopLepMass_TOPTOPLEPHAD);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepTopHadDr_TOPTOPLEPHAD",&TopLepTopHadDr_TOPTOPLEPHAD);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetCSVv2_TOPTOPLEPHAD",&TopLepBJetCSVv2_TOPTOPLEPHAD);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadBJetCSVv2_TOPTOPLEPHAD",&TopHadBJetCSVv2_TOPTOPLEPHAD);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet1CSVv2_TOPTOPLEPHAD);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet2CSVv2_TOPTOPLEPHAD);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsMass_TOPTOPLEPHBB",&HiggsMass_TOPTOPLEPHBB);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepMass_TOPTOPLEPHBB",&TopLepMass_TOPTOPLEPHBB);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB",&HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepHiggsDr_TOPTOPLEPHBB",&TopLepHiggsDr_TOPTOPLEPHBB);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1CSVv2_TOPTOPLEPHBB",&HiggsBJet1CSVv2_TOPTOPLEPHBB);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2CSVv2_TOPTOPLEPHBB",&HiggsBJet2CSVv2_TOPTOPLEPHBB);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetCSVv2_TOPTOPLEPHBB",&TopLepBJetCSVv2_TOPTOPLEPHBB);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadNonBJetCSVv2_TOPTOPLEPHBB",&TopHadNonBJetCSVv2_TOPTOPLEPHBB);
-                      
-            //MC variables (affected by TopPtReweighing
-            ttree[(dataSetName).c_str()]->SetBranchAddress("MC_TopPt",&MC_TopPt);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("MC_AntiTopPt",&MC_AntiTopPt);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadMass_TOPTOPLEPHAD",&TopHadMass_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadEta_TOPTOPLEPHAD",&TopHadEta_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadPhi_TOPTOPLEPHAD",&TopHadPhi_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadPt_TOPTOPLEPHAD",&TopHadPt_TOPTOPLEPHAD);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepMass_TOPTOPLEPHAD",&TopLepMass_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepEta_TOPTOPLEPHAD",&TopLepEta_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPhi_TOPTOPLEPHAD",&TopLepPhi_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPt_TOPTOPLEPHAD",&TopLepPt_TOPTOPLEPHAD);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWMass_TOPTOPLEPHAD",&TopHadWMass_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWEta_TOPTOPLEPHAD",&TopHadWEta_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWPhi_TOPTOPLEPHAD",&TopHadWPhi_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWPt_TOPTOPLEPHAD",&TopHadWPt_TOPTOPLEPHAD);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepTopHadDr_TOPTOPLEPHAD",&TopLepTopHadDr_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("WJet1WJet2Dr_TOPTOPLEPHAD",&WJet1WJet2Dr_TOPTOPLEPHAD);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetCSVv2_TOPTOPLEPHAD",&TopLepBJetCSVv2_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPt_TOPTOPLEPHAD",&TopLepBJetPt_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPhi_TOPTOPLEPHAD",&TopLepBJetPhi_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetEta_TOPTOPLEPHAD",&TopLepBJetEta_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetE_TOPTOPLEPHAD",&TopLepBJetE_TOPTOPLEPHAD);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadBJetCSVv2_TOPTOPLEPHAD",&TopHadBJetCSVv2_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadBJetPt_TOPTOPLEPHAD",&TopHadBJetPt_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadBJetPhi_TOPTOPLEPHAD",&TopHadBJetPhi_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadBJetEta_TOPTOPLEPHAD",&TopHadBJetEta_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadBJetE_TOPTOPLEPHAD",&TopHadBJetE_TOPTOPLEPHAD);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet1CSVv2_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet1Pt_TOPTOPLEPHAD",&TopHadWNonBJet1Pt_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet1Phi_TOPTOPLEPHAD",&TopHadWNonBJet1Phi_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet1Eta_TOPTOPLEPHAD",&TopHadWNonBJet1Eta_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet1E_TOPTOPLEPHAD",&TopHadWNonBJet1E_TOPTOPLEPHAD);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet2CSVv2_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet2Pt_TOPTOPLEPHAD",&TopHadWNonBJet2Pt_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet2Phi_TOPTOPLEPHAD",&TopHadWNonBJet2Phi_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet2Eta_TOPTOPLEPHAD",&TopHadWNonBJet2Eta_TOPTOPLEPHAD);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet2E_TOPTOPLEPHAD",&TopHadWNonBJet2E_TOPTOPLEPHAD);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadMass_TOPTOPLEPHBB",&TopHadMass_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadEta_TOPTOPLEPHBB",&TopHadEta_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadPhi_TOPTOPLEPHBB",&TopHadPhi_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadPt_TOPTOPLEPHBB",&TopHadPt_TOPTOPLEPHBB);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepMass_TOPTOPLEPHBB",&TopLepMass_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepEta_TOPTOPLEPHBB",&TopLepEta_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPhi_TOPTOPLEPHBB",&TopLepPhi_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPt_TOPTOPLEPHBB",&TopLepPt_TOPTOPLEPHBB);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsMass_TOPTOPLEPHBB",&HiggsMass_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsEta_TOPTOPLEPHBB",&HiggsEta_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsPhi_TOPTOPLEPHBB",&HiggsPhi_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsPt_TOPTOPLEPHBB",&HiggsPt_TOPTOPLEPHBB);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepTopHadDr_TOPTOPLEPHBB",&TopLepTopHadDr_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepHiggsDr_TOPTOPLEPHBB",&TopLepHiggsDr_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB",&HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetCSVv2_TOPTOPLEPHBB",&TopLepBJetCSVv2_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPt_TOPTOPLEPHBB",&TopLepBJetPt_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPhi_TOPTOPLEPHBB",&TopLepBJetPhi_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetEta_TOPTOPLEPHBB",&TopLepBJetEta_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetE_TOPTOPLEPHBB",&TopLepBJetE_TOPTOPLEPHBB);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadNonBJetCSVv2_TOPTOPLEPHBB",&TopHadNonBJetCSVv2_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadNonBJetPt_TOPTOPLEPHBB",&TopHadNonBJetPt_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadNonBJetPhi_TOPTOPLEPHBB",&TopHadNonBJetPhi_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadNonBJetEta_TOPTOPLEPHBB",&TopHadNonBJetEta_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadNonBJetE_TOPTOPLEPHBB",&TopHadNonBJetE_TOPTOPLEPHBB);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1CSVv2_TOPTOPLEPHBB",&HiggsBJet1CSVv2_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Pt_TOPTOPLEPHBB",&HiggsBJet1Pt_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Phi_TOPTOPLEPHBB",&HiggsBJet1Phi_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Eta_TOPTOPLEPHBB",&HiggsBJet1Eta_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1E_TOPTOPLEPHBB",&HiggsBJet1E_TOPTOPLEPHBB);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2CSVv2_TOPTOPLEPHBB",&HiggsBJet2CSVv2_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Pt_TOPTOPLEPHBB",&HiggsBJet2Pt_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Phi_TOPTOPLEPHBB",&HiggsBJet2Phi_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Eta_TOPTOPLEPHBB",&HiggsBJet2Eta_TOPTOPLEPHBB);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2E_TOPTOPLEPHBB",&HiggsBJet2E_TOPTOPLEPHBB);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepMass_TOPHLEPBB_hut",&TopLepMass_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepEta_TOPHLEPBB_hut",&TopLepEta_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPhi_TOPHLEPBB_hut",&TopLepPhi_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPt_TOPHLEPBB_hut",&TopLepPt_TOPHLEPBB_hut);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsMass_TOPHLEPBB_hut",&HiggsMass_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsEta_TOPHLEPBB_hut",&HiggsEta_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsPhi_TOPHLEPBB_hut",&HiggsPhi_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsPt_TOPHLEPBB_hut",&HiggsPt_TOPHLEPBB_hut);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepHiggsDr_TOPHLEPBB_hut",&TopLepHiggsDr_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut",&HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetCSVv2_TOPHLEPBB_hut",&TopLepBJetCSVv2_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPt_TOPHLEPBB_hut",&TopLepBJetPt_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPhi_TOPHLEPBB_hut",&TopLepBJetPhi_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetEta_TOPHLEPBB_hut",&TopLepBJetEta_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetE_TOPHLEPBB_hut",&TopLepBJetE_TOPHLEPBB_hut);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1CSVv2_TOPHLEPBB_hut",&HiggsBJet1CSVv2_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Pt_TOPHLEPBB_hut",&HiggsBJet1Pt_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Phi_TOPHLEPBB_hut",&HiggsBJet1Phi_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Eta_TOPHLEPBB_hut",&HiggsBJet1Eta_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1E_TOPHLEPBB_hut",&HiggsBJet1E_TOPHLEPBB_hut);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2CSVv2_TOPHLEPBB_hut",&HiggsBJet2CSVv2_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Pt_TOPHLEPBB_hut",&HiggsBJet2Pt_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Phi_TOPHLEPBB_hut",&HiggsBJet2Phi_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Eta_TOPHLEPBB_hut",&HiggsBJet2Eta_TOPHLEPBB_hut);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2E_TOPHLEPBB_hut",&HiggsBJet2E_TOPHLEPBB_hut);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepMass_TOPHLEPBB_hct",&TopLepMass_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepEta_TOPHLEPBB_hct",&TopLepEta_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPhi_TOPHLEPBB_hct",&TopLepPhi_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPt_TOPHLEPBB_hct",&TopLepPt_TOPHLEPBB_hct);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsMass_TOPHLEPBB_hct",&HiggsMass_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsEta_TOPHLEPBB_hct",&HiggsEta_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsPhi_TOPHLEPBB_hct",&HiggsPhi_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsPt_TOPHLEPBB_hct",&HiggsPt_TOPHLEPBB_hct);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepHiggsDr_TOPHLEPBB_hct",&TopLepHiggsDr_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct",&HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetCSVv2_TOPHLEPBB_hct",&TopLepBJetCSVv2_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPt_TOPHLEPBB_hct",&TopLepBJetPt_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPhi_TOPHLEPBB_hct",&TopLepBJetPhi_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetEta_TOPHLEPBB_hct",&TopLepBJetEta_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetE_TOPHLEPBB_hct",&TopLepBJetE_TOPHLEPBB_hct);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1CSVv2_TOPHLEPBB_hct",&HiggsBJet1CSVv2_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Pt_TOPHLEPBB_hct",&HiggsBJet1Pt_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Phi_TOPHLEPBB_hct",&HiggsBJet1Phi_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Eta_TOPHLEPBB_hct",&HiggsBJet1Eta_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1E_TOPHLEPBB_hct",&HiggsBJet1E_TOPHLEPBB_hct);
+
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2CSVv2_TOPHLEPBB_hct",&HiggsBJet2CSVv2_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Pt_TOPHLEPBB_hct",&HiggsBJet2Pt_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Phi_TOPHLEPBB_hct",&HiggsBJet2Phi_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Eta_TOPHLEPBB_hct",&HiggsBJet2Eta_TOPHLEPBB_hct);
+			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2E_TOPHLEPBB_hct",&HiggsBJet2E_TOPHLEPBB_hct);
+                        
 
             double nloSF = 1.;
             int nPos = 0; 
@@ -875,30 +1130,34 @@ int main(int argc, char *argv[])
 			              {
 			                  W_puSF_applied = W_nPV.ITweight( (int)nvtx );
 			              }
+			              
 
-                    //Safety triggers in case there are strange things happening in the event weights
-                    if(W_fleptonSF < 0 || W_btagWeight_shape < 0 || nloSF < 0 || Luminosity < 0 || W_puSF_applied < 0)
+                    if(debug)
                     {
-                          cout << "----- Event " << j << " has a negative weight. Weights are: W_puSF=" << W_puSF_applied << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_shape=" << W_btagWeight_shape << "; nloSF=" << nloSF << "; Luminosity=" << Luminosity << endl;
-                          cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
-                          cout << "----- The event will be skipped....." << endl;
-                          continue;
+                        //Safety triggers in case there are strange things happening in the event weights
+                        if(W_fleptonSF < 0 || W_btagWeight_shape < 0 || nloSF < 0 || Luminosity < 0 || W_puSF_applied < 0)
+                        {
+                              cout << "----- Event " << j << " has a negative weight. Weights are: W_puSF=" << W_puSF_applied << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_shape=" << W_btagWeight_shape << "; nloSF=" << nloSF << "; Luminosity=" << Luminosity << endl;
+                              cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
+                              cout << "----- The event will be skipped....." << endl;
+                              continue;
+                        }
+                        else if(W_fleptonSF != W_fleptonSF || W_btagWeight_shape != W_btagWeight_shape || nloSF != nloSF || W_puSF_applied != W_puSF_applied)
+                        {
+                              cout << "----- Event " << j << " has a Nan weight. Weights are: W_puSF=" << W_puSF_applied << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_shape=" << W_btagWeight_shape << "; nloSF=" << nloSF << endl;
+                              cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
+                              cout << "----- The event will be skipped....." << endl;
+                              continue;
+                        }
+                        else if(W_fleptonSF >= 40 || W_btagWeight_shape >= 40 || nloSF >= 40 || W_puSF_applied >= 40)
+                        {
+                              cout << "----- Event " << j << " has a weight larger than 40. Weights are: W_puSF=" << W_puSF_applied << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_shape=" << W_btagWeight_shape << "; nloSF=" << nloSF << endl;
+                              cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
+                              //cout << "----- The event will be skipped....." << endl;
+                              //continue;
+                        }
                     }
-                    else if(W_fleptonSF != W_fleptonSF || W_btagWeight_shape != W_btagWeight_shape || nloSF != nloSF || W_puSF_applied != W_puSF_applied)
-                    {
-                          cout << "----- Event " << j << " has a Nan weight. Weights are: W_puSF=" << W_puSF_applied << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_shape=" << W_btagWeight_shape << "; nloSF=" << nloSF << endl;
-                          cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
-                          cout << "----- The event will be skipped....." << endl;
-                          continue;
-                    }
-                    else if(W_fleptonSF >= 40 || W_btagWeight_shape >= 40 || nloSF >= 40 || W_puSF_applied >= 40)
-                    {
-                          cout << "----- Event " << j << " has a weight larger than 40. Weights are: W_puSF=" << W_puSF_applied << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_shape=" << W_btagWeight_shape << "; nloSF=" << nloSF << endl;
-                          cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
-                          //cout << "----- The event will be skipped....." << endl;
-                          //continue;
-                    }
-                
+                    
 
 
                     //Nominal scale factor -- scale factors for systematic shifts are calculated below
@@ -923,6 +1182,12 @@ int main(int argc, char *argv[])
                 
                 bool ScalePlots = true;
                 if(isData) ScalePlots = false;
+
+                //Defining jetcharge related variables
+                Double_t TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB = fabs(incl_charge_jet[TOPTOPLEPHBB_JetIdx_HadTop]+incl_charge_jet[TOPTOPLEPHBB_JetIdx_LepTop]);
+                Double_t TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB = fabs(incl_charge_jet[TOPTOPLEPHBB_JetIdx_HadTop]+LepCharge);
+                Double_t TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD = fabs(incl_charge_jet[TOPTOPLEPHAD_JetIdx_HadTop]+incl_charge_jet[TOPTOPLEPHAD_JetIdx_LepTop]);
+                Double_t TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD = fabs(incl_charge_jet[TOPTOPLEPHAD_JetIdx_HadTop]+LepCharge);
 
                 if(filepath.find("JESMinus") == string::npos && filepath.find("JESPlus") == string::npos  && filepath.find("JERMinus") == string::npos && filepath.find("JERPlus") == string::npos)
                 {
@@ -1193,48 +1458,172 @@ int main(int argc, char *argv[])
                             MSPlot[("JetPhi"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(phi_jet[i_Jet], Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                             MSPlot[("JetCSVv2"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(CSVv2[i_Jet], Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                             MSPlot[("JetcMVAv2"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(cMVA[i_Jet], Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                            MSPlot[("JetCvsB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(cdiscCvsB_jet[i_Jet], Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]); 
+                            MSPlot[("JetCvsL"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(cdiscCvsL_jet[i_Jet], Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                         }			                
 
+                        if(!doInclusive)
+                        {
+                            if(baseline_jets != 3)
+                            {
+                                MSPlot[("TopHadMass_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadMass_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadEta_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadEta_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadPhi_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadPhi_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadPt_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadPt_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
 
-                        MSPlot[("HiggsMass_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsMass_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("HiggsMass_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsMass_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("HiggsEta_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsEta_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("HiggsEta_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsEta_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopLepMass_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepMass_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopLepMass_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepMass_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopLepPt_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepPt_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopLepPt_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepPt_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopLepEta_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepEta_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopLepEta_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepEta_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopLepHiggsDr_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepHiggsDr_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopLepHiggsDr_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepHiggsDr_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet1CSVv2_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet1CSVv2_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet2CSVv2_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet2CSVv2_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepBJetCSVv2_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepBJetCSVv2_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopHadMass_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopHadMass_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopLepMass_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepMass_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopLepTopHadDr_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepTopHadDr_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepBJetCSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopHadBJetCSVv2_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopHadBJetCSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopHadWNonBJet1CSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopHadWNonBJet2CSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("HiggsMass_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsMass_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopLepMass_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepMass_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopLepHiggsDr_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepHiggsDr_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("HiggsBJet1CSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet1CSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(HiggsBJet2CSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopLepBJetCSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(TopHadNonBJetCSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("MVA_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVA_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("MVA_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVA_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("MVA_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVA_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-                        MSPlot[("MVA_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVA_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepMass_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepMass_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepEta_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepEta_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepPhi_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepPhi_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepPt_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepPt_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("TopHadWMass_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadWMass_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadWEta_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadWEta_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadWPhi_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadWPhi_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadWPt_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadWPt_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("TopLepTopHadDr_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepTopHadDr_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("WJet1WJet2Dr_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(WJet1WJet2Dr_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetCSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepBJetPt_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetPt_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepBJetPhi_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetPhi_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepBJetEta_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetEta_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepBJetE_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetE_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("TopHadBJetCSVv2_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadBJetCSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadBJetPt_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadBJetPt_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadBJetPhi_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadBJetPhi_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadBJetEta_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadBJetEta_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadBJetE_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadBJetE_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadWNonBJet1CSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadWNonBJet1Pt_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadWNonBJet1Pt_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadWNonBJet1Phi_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadWNonBJet1Phi_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadWNonBJet1Eta_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadWNonBJet1Eta_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadWNonBJet1E_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadWNonBJet1E_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadWNonBJet2CSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadWNonBJet2Pt_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadWNonBJet2Pt_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadWNonBJet2Phi_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadWNonBJet2Phi_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadWNonBJet2Eta_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadWNonBJet2Eta_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadWNonBJet2E_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadWNonBJet2E_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("TopHadMass_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadMass_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadEta_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadEta_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadPhi_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadPhi_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadPt_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadPt_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("TopLepMass_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepMass_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepEta_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepEta_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepPhi_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepPhi_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepPt_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepPt_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("HiggsMass_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsMass_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsEta_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsEta_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsPhi_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsPhi_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsPt_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsPt_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("TopLepTopHadDr_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepTopHadDr_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepHiggsDr_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepHiggsDr_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetCSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepBJetPt_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetPt_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepBJetPhi_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetPhi_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepBJetEta_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetEta_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepBJetE_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetE_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadNonBJetCSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadNonBJetPt_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadNonBJetPt_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadNonBJetPhi_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadNonBJetPhi_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadNonBJetEta_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadNonBJetEta_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopHadNonBJetE_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopHadNonBJetE_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("HiggsBJet1CSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet1CSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet1Pt_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet1Pt_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet1Phi_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet1Phi_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet1Eta_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet1Eta_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet1E_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet1E_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet2CSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet2Pt_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet2Pt_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet2Phi_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet2Phi_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet2Eta_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet2Eta_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet2E_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet2E_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                            }
+
+                                MSPlot[("TopLepMass_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepMass_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepEta_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepEta_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepPhi_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepPhi_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepPt_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepPt_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("HiggsMass_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsMass_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsEta_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsEta_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsPhi_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsPhi_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsPt_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsPt_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("TopLepHiggsDr_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepHiggsDr_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetCSVv2_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepBJetPt_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetPt_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepBJetPhi_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetPhi_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepBJetEta_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetEta_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepBJetE_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetE_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet1CSVv2_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet1Pt_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet1Pt_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet1Phi_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet1Phi_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet1Eta_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet1Eta_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet1E_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet1E_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet2CSVv2_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet2Pt_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet2Pt_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet2Phi_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet2Phi_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet2Eta_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet2Eta_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet2E_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet2E_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("TopLepMass_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepMass_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepEta_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepEta_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepPhi_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepPhi_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepPt_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepPt_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("HiggsMass_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsMass_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsEta_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsEta_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsPhi_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsPhi_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsPt_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsPt_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("TopLepHiggsDr_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepHiggsDr_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetCSVv2_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepBJetPt_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetPt_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepBJetPhi_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetPhi_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepBJetEta_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetEta_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("TopLepBJetE_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(TopLepBJetE_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet1CSVv2_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet1Pt_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet1Pt_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet1Phi_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet1Phi_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet1Eta_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet1Eta_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet1E_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet1E_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+                                MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet2CSVv2_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet2Pt_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet2Pt_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet2Phi_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet2Phi_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet2Eta_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet2Eta_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("HiggsBJet2E_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(HiggsBJet2E_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
+
+                                MSPlot[("MVA_TOPTOPLEPHAD"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(MVA_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("MVA_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(MVA_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("MVA_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(MVA_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                                MSPlot[("MVA_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(MVA_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+                        }
 */                    }
                }
                 if(filepath.find("JESMinus") != string::npos || filepath.find("JESPlus") != string::npos  || filepath.find("JERMinus") != string::npos || filepath.find("JERPlus") != string::npos || isData || WhatSysts[JecCounter] == "")
@@ -1255,50 +1644,174 @@ int main(int argc, char *argv[])
                             MSPlot[("JetPhi"+WhatSysts[JecCounter]).c_str()]->Fill(phi_jet[i_Jet], Sample, ScalePlots, Luminosity * ScaleFactor);
                             MSPlot[("JetCSVv2"+WhatSysts[JecCounter]).c_str()]->Fill(CSVv2[i_Jet], Sample, ScalePlots, Luminosity * ScaleFactor);
                             MSPlot[("JetcMVAv2"+WhatSysts[JecCounter]).c_str()]->Fill(cMVA[i_Jet], Sample, ScalePlots, Luminosity * ScaleFactor);
+                            MSPlot[("JetCvsB"+WhatSysts[JecCounter]).c_str() ]->Fill(cdiscCvsB_jet[i_Jet], Sample, ScalePlots, Luminosity * ScaleFactor); 
+                            MSPlot[("JetCvsL"+WhatSysts[JecCounter]).c_str() ]->Fill(cdiscCvsL_jet[i_Jet], Sample, ScalePlots, Luminosity * ScaleFactor);
                         }			                
 
+                        if(!doInclusive)
+                        {
+                            if(baseline_jets != 3)
+                            {
+                                MSPlot[("TopHadMass_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadMass_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadEta_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadEta_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadPhi_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadPhi_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadPt_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadPt_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
 
-                        MSPlot[("HiggsMass_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsMass_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsMass_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsMass_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsEta_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsEta_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsEta_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsEta_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepMass_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepMass_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepMass_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepMass_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepPt_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepPt_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepPt_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepPt_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepEta_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepEta_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepEta_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepEta_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepHiggsDr_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepHiggsDr_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepHiggsDr_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepHiggsDr_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet1CSVv2_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet1CSVv2_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet2CSVv2_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet2CSVv2_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepBJetCSVv2_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepBJetCSVv2_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopHadMass_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopHadMass_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepMass_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepMass_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepTopHadDr_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepTopHadDr_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepBJetCSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopHadBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopHadBJetCSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopHadWNonBJet1CSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(TopHadWNonBJet2CSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsMass_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsMass_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepMass_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepMass_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepHiggsDr_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepHiggsDr_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsBJet1CSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet1CSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(HiggsBJet2CSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(TopLepBJetCSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(TopHadNonBJetCSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("MVA_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str()]->Fill(MVA_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("MVA_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str()]->Fill(MVA_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("MVA_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str()]->Fill(MVA_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
-                        MSPlot[("MVA_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str()]->Fill(MVA_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
-*/
-               }
+                                MSPlot[("TopLepMass_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepMass_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepEta_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepEta_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepPhi_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepPhi_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepPt_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepPt_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("TopHadWMass_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadWMass_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadWEta_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadWEta_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadWPhi_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadWPhi_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadWPt_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadWPt_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("TopLepTopHadDr_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepTopHadDr_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("WJet1WJet2Dr_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(WJet1WJet2Dr_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetCSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepBJetPt_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetPt_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepBJetPhi_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetPhi_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepBJetEta_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetEta_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepBJetE_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetE_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("TopHadBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadBJetCSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadBJetPt_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadBJetPt_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadBJetPhi_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadBJetPhi_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadBJetEta_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadBJetEta_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadBJetE_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadBJetE_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadWNonBJet1CSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadWNonBJet1Pt_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadWNonBJet1Pt_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadWNonBJet1Phi_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadWNonBJet1Phi_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadWNonBJet1Eta_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadWNonBJet1Eta_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadWNonBJet1E_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadWNonBJet1E_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadWNonBJet2CSVv2_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadWNonBJet2Pt_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadWNonBJet2Pt_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadWNonBJet2Phi_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadWNonBJet2Phi_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadWNonBJet2Eta_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadWNonBJet2Eta_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadWNonBJet2E_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadWNonBJet2E_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("TopHadMass_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadMass_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadEta_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadEta_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadPhi_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadPhi_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadPt_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadPt_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("TopLepMass_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepMass_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepEta_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepEta_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepPhi_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepPhi_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepPt_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepPt_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("HiggsMass_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsMass_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsEta_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsEta_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsPhi_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsPhi_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsPt_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsPt_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("TopLepTopHadDr_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepTopHadDr_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepHiggsDr_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepHiggsDr_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetCSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepBJetPt_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetPt_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepBJetPhi_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetPhi_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepBJetEta_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetEta_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepBJetE_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetE_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadNonBJetCSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadNonBJetPt_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadNonBJetPt_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadNonBJetPhi_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadNonBJetPhi_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadNonBJetEta_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadNonBJetEta_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopHadNonBJetE_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(TopHadNonBJetE_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("HiggsBJet1CSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet1CSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet1Pt_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet1Pt_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet1Phi_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet1Phi_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet1Eta_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet1Eta_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet1E_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet1E_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet2CSVv2_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet2Pt_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet2Pt_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet2Phi_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet2Phi_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet2Eta_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet2Eta_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet2E_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet2E_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                            }
+
+                                MSPlot[("TopLepMass_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepMass_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepEta_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepEta_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepPhi_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepPhi_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepPt_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepPt_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("HiggsMass_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsMass_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsEta_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsEta_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsPhi_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsPhi_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsPt_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsPt_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("TopLepHiggsDr_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepHiggsDr_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetCSVv2_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepBJetPt_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetPt_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepBJetPhi_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetPhi_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepBJetEta_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetEta_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepBJetE_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetE_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet1CSVv2_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet1Pt_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet1Pt_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet1Phi_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet1Phi_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet1Eta_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet1Eta_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet1E_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet1E_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet2CSVv2_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet2Pt_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet2Pt_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet2Phi_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet2Phi_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet2Eta_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet2Eta_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet2E_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet2E_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("TopLepMass_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepMass_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepEta_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepEta_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepPhi_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepPhi_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepPt_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepPt_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("HiggsMass_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsMass_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsEta_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsEta_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsPhi_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsPhi_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsPt_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsPt_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("TopLepHiggsDr_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepHiggsDr_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetCSVv2_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepBJetPt_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetPt_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepBJetPhi_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetPhi_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepBJetEta_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetEta_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("TopLepBJetE_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(TopLepBJetE_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet1CSVv2_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet1Pt_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet1Pt_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet1Phi_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet1Phi_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet1Eta_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet1Eta_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet1E_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet1E_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+                                MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet2CSVv2_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet2Pt_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet2Pt_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet2Phi_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet2Phi_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet2Eta_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet2Eta_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("HiggsBJet2E_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(HiggsBJet2E_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+
+
+                                MSPlot[("MVA_TOPTOPLEPHAD"+WhatSysts[JecCounter]).c_str() ]->Fill(MVA_TOPTOPLEPHAD, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("MVA_TOPTOPLEPHBB"+WhatSysts[JecCounter]).c_str() ]->Fill(MVA_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("MVA_TOPHLEPBB_hut"+WhatSysts[JecCounter]).c_str() ]->Fill(MVA_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * ScaleFactor);
+                                MSPlot[("MVA_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(MVA_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
+                            
+                        }
+*/               }
 			                
 		        }//for-loop events
 		    }//for-loop JEC systematic samples              
@@ -1359,7 +1872,8 @@ int main(int argc, char *argv[])
           bool savePNG = false; //automatically save png files of MSPlots.
           */
       cout << "Drawing MSP: " << name << endl;
-      temp->Draw("MyMSP_"+name, 1, false, false, false, 1);
+      temp->showNumberEntries(false);
+//      temp->Draw("MyMSP_"+name, 1, false, false, false, 1);
       bool writePng = false;
 
       if(name.find("Minus") == string::npos && name.find("Plus")== string::npos 
@@ -1379,6 +1893,7 @@ int main(int argc, char *argv[])
   
   cout << "  - Making total systematic bands " << endl;
   string errorbandfile = (pathPNG+"/Systematics_BareHistos.root");
+  WhatSysts.pop_back();//Delete the last entry (which should be "") for the systematics plotting
   MakeTotalSystErrorBand_Distributions(outfilename, WhatSysts, datasetnames_backgrounds, NominalVariableNames, errorbandfile);
 
 
@@ -1414,9 +1929,13 @@ int main(int argc, char *argv[])
           cout << " Luminosity is " << Luminosity << endl;
       }
       cout << "Drawing MSP: " << name << endl;
+      temp->showNumberEntries(false);
+      temp->setChannel(true,category);
       temp->Draw("MyMSP_"+name, 1, true, true, true, 1);
       bool writePng = false;
       temp->Write(outfile_errorbands, name, true,pathPNG, "png");
+      temp->Write(outfile_errorbands, name, true,pathPNG, "eps");
+      temp->Write(outfile_errorbands, name, true,pathPNG, "pdf");
 	}
 	outfile_errorbands->Write("kOverwrite");
 
@@ -1476,7 +1995,7 @@ void MakeNPV_Distributions(int baseline_jets, int baseline_bjets, string channel
     //***************************************************CREATING PLOT****************************************************
     //Format of MSPlots: MultiSamplePlot(vector<Dataset*> datasets, string PlotName, int Nbins, float Min, float Max, string XaxisLabel, string YaxisLabel, string Text, string Units)
 
-    MSPlot_nPV["NPV_unw"] = new MultiSamplePlot(datasets, "NPV_unw", 51, -0.5, 50.5, "Number of PV","Events", category); 
+    MSPlot_nPV["NPV_unw"] = new MultiSamplePlot(datasets, "NPV_unw", 51, -0.5, 50.5, "Number of PV","Events", ""); 
 
   
  
@@ -1559,6 +2078,14 @@ void MakeTotalSystErrorBand_Distributions(string outfilename, vector< string > s
     map<string,TH1F*> histo1D_TotalUp;
     map<string,TH1F*> histo1D_TotalDown;
 
+    //Define rate uncertainties
+    Double_t LumiUncPlus = 0.062;
+    Double_t LumiUncMinus = 0.062;
+    Double_t XSecTTJetPlus = 0.055;
+    Double_t XSecTTJetMinus = 0.055;
+    Double_t XSecOtherPlus = 0.1;
+    Double_t XSecOtherMinus = 0.1;
+
     for(int iVar = 0; iVar < NominalVariableNames.size(); iVar++)
     {
 
@@ -1577,9 +2104,43 @@ void MakeTotalSystErrorBand_Distributions(string outfilename, vector< string > s
             string nominalname = (NominalVariableNames[iVar]+"_"+datasetNames[iDataName]+"_");
             
             TH1F *h_tmp =  (TH1F*)subdir_nominal->Get(nominalname.c_str());
-            if(iDataName == 0) histo1D_nominal[NominalVariableNames[iVar].c_str()] = (TH1F*) h_tmp->Clone(/*NominalVariableNames[iVar].c_str()*/);
-            else histo1D_nominal[NominalVariableNames[iVar].c_str()]->Add(h_tmp);
+            TH1F* h_tmp__scaleup = (TH1F*) h_tmp->Clone();//Make a new tmp which will be scaled according to the cross section uncertainty 
+            TH1F* h_tmp__scaledown = (TH1F*) h_tmp->Clone();//Make a new tmp which will be scaled according to the cross section uncertainty
+
+            if(datasetNames[iDataName].find("TTJets")!= string::npos)
+            {
+                h_tmp__scaleup->Scale(1+XSecTTJetPlus);
+                h_tmp__scaledown->Scale(1-XSecTTJetMinus);
+            }
+            else
+            {
+                h_tmp__scaleup->Scale(1+XSecOtherPlus);
+                h_tmp__scaledown->Scale(1-XSecOtherMinus);
+            }
+
+            if(iDataName == 0)
+            {
+                histo1D_nominal[NominalVariableNames[iVar].c_str()] = (TH1F*) h_tmp->Clone();
+                histo1D_Up_SamplesAdded[(NominalVariableNames[iVar]+"LumiUncPlusPlus").c_str()] = (TH1F*) h_tmp->Clone();//PlusPlus in the object name due to convention down below
+                histo1D_Down_SamplesAdded[(NominalVariableNames[iVar]+"LumiUncMinusMinus").c_str()] = (TH1F*) h_tmp->Clone();
+
+                histo1D_Up_SamplesAdded[(NominalVariableNames[iVar]+"XSecUncPlusPlus").c_str()] = (TH1F*) h_tmp__scaleup->Clone();//PlusPlus in the object name due to convention down below
+                histo1D_Down_SamplesAdded[(NominalVariableNames[iVar]+"XSecUncMinusMinus").c_str()] = (TH1F*) h_tmp__scaledown->Clone();
+            }
+            else
+            {
+                histo1D_nominal[NominalVariableNames[iVar].c_str()]->Add(h_tmp);
+                histo1D_Up_SamplesAdded[(NominalVariableNames[iVar]+"LumiUncPlusPlus").c_str()]->Add(h_tmp);
+                histo1D_Down_SamplesAdded[(NominalVariableNames[iVar]+"LumiUncMinusMinus").c_str()]->Add(h_tmp);
+                histo1D_Up_SamplesAdded[(NominalVariableNames[iVar]+"XSecUncPlusPlus").c_str()]->Add(h_tmp__scaleup);
+                histo1D_Down_SamplesAdded[(NominalVariableNames[iVar]+"XSecUncMinusMinus").c_str()]->Add(h_tmp__scaledown);
+            }
         }
+
+        //Scale the  Lumi Uncertainties
+        histo1D_Up_SamplesAdded[(NominalVariableNames[iVar]+"LumiUncPlusPlus").c_str()]->Scale(1+LumiUncPlus);
+        histo1D_Down_SamplesAdded[(NominalVariableNames[iVar]+"LumiUncMinusMinus").c_str()]->Scale(1-LumiUncMinus);
+        
             
         //Add the systematic samples for up-variation into 1 histogram and down-variation
         for(int iSys = 0; iSys < systematics.size(); iSys++)
@@ -1599,18 +2160,23 @@ void MakeTotalSystErrorBand_Distributions(string outfilename, vector< string > s
                 
                 if(systematics[iSys].find("Plus")!= string::npos)
                 {
-                    if(iDataName == 0) histo1D_Up_SamplesAdded[(varNameSys+"Plus").c_str()] = (TH1F*) h_tmp->Clone(/*(varNameSys+"Plus").c_str()*/);
+                    if(iDataName == 0) histo1D_Up_SamplesAdded[(varNameSys+"Plus").c_str()] = (TH1F*) h_tmp->Clone();
                     else histo1D_Up_SamplesAdded[(varNameSys+"Plus").c_str()]->Add(h_tmp);
                 }
                 else if(systematics[iSys].find("Minus")!= string::npos)
                 {
-                    if(iDataName == 0) histo1D_Down_SamplesAdded[(varNameSys+"Minus").c_str()] = (TH1F*) h_tmp->Clone(/*(varNameSys+"Minus").c_str()*/);
+                    if(iDataName == 0) histo1D_Down_SamplesAdded[(varNameSys+"Minus").c_str()] = (TH1F*) h_tmp->Clone();
                     else histo1D_Down_SamplesAdded[(varNameSys+"Minus").c_str()]->Add(h_tmp);
-//cout << "Integral of Minus systematic " << histo1D_Down_SamplesAdded[(varNameSys+"Minus").c_str()]->GetBinContent(0) << endl;
                 }
             }
         }
             
+
+        // Add the rate systematic undertainties to the systematics list, as well as the MC statistical uncertainty
+        systematics.push_back("LumiUncPlus");
+        systematics.push_back("LumiUncMinus");
+        systematics.push_back("XSecUncPlus");
+        systematics.push_back("XSecUncMinus");
        
         //Run over all systematics to add their effect in each bin in quadrature.
         int nBins = histo1D_nominal[NominalVariableNames[iVar].c_str()]->GetNbinsX();
@@ -1639,11 +2205,15 @@ void MakeTotalSystErrorBand_Distributions(string outfilename, vector< string > s
             }
             
 
-            histo1D_TotalUp[(NominalVariableNames[iVar]+"Plus").c_str()]->SetBinContent(iBin,bincontent_nominal + sqrt(bincontent_up_squared));
-            histo1D_TotalDown[(NominalVariableNames[iVar]+"Minus").c_str()]->SetBinContent(iBin,bincontent_nominal  - sqrt(bincontent_down_squared));
+            histo1D_TotalUp[(NominalVariableNames[iVar]+"Plus").c_str()]->SetBinContent(iBin,bincontent_nominal + sqrt(bincontent_up_squared + bincontent_nominal));//Also add once the statistical uncertainty on the MC
+            histo1D_TotalDown[(NominalVariableNames[iVar]+"Minus").c_str()]->SetBinContent(iBin,bincontent_nominal  - sqrt(bincontent_down_squared + bincontent_nominal));//Also add once the statistical uncertainty on the MC
         }
         
-        
+        //Delete the last entries for the systematics that were added in MakeTotalSystErrorBand_Distributions
+        systematics.pop_back();    
+        systematics.pop_back();    
+        systematics.pop_back();    
+        systematics.pop_back();    
     }
 
 

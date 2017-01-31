@@ -313,7 +313,7 @@ int main (int argc, char *argv[])
         if(dName.find("Data")==string::npos)
         //Btag documentation : http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
         {
-            bTagCalib_CSVv2 = new BTagCalibration("CSVv2","../TopTreeAnalysisBase/Calibrations/BTagging/ttH_BTV_CSVv2_13TeV_2016All_36p5_2017_1_10.csv");
+            bTagCalib_CSVv2 = new BTagCalibration("CSVv2","../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2Moriond17_2017_1_26_BtoH.csv");
 
             if(CSVv2nonshape) bTagReader_CSVv2M_mujets_central = new BTagCalibrationReader(bTagCalib_CSVv2,BTagEntry::OP_MEDIUM,"mujets","central"); //mujets
             bTagReader_shape = new BTagCalibrationReader(bTagCalib_CSVv2,BTagEntry::OP_RESHAPING,"iterativefit","central"); //reshaping
@@ -721,42 +721,156 @@ int main (int argc, char *argv[])
         Double_t MVA_TOPHLEPBB_hut;
         Double_t MVA_TOPHLEPBB_hct;
 
-        //Variables for signal/background training
-	      Double_t HiggsMass_TOPHLEPBB_hut;
-	      Double_t HiggsMass_TOPHLEPBB_hct;
-	      Double_t HiggsEta_TOPHLEPBB_hut;
-	      Double_t HiggsEta_TOPHLEPBB_hct;
-	      Double_t TopLepMass_TOPHLEPBB_hut;
-	      Double_t TopLepMass_TOPHLEPBB_hct;
-        Double_t TopLepPt_TOPHLEPBB_hut;
-        Double_t TopLepPt_TOPHLEPBB_hct;
-        Double_t TopLepEta_TOPHLEPBB_hut;
-        Double_t TopLepEta_TOPHLEPBB_hct;
-        Double_t HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut;
-        Double_t HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct;
-        Double_t TopLepHiggsDr_TOPHLEPBB_hut;
-        Double_t TopLepHiggsDr_TOPHLEPBB_hct;
-        Double_t HiggsBJet1CSVv2_TOPHLEPBB_hut;
-        Double_t HiggsBJet1CSVv2_TOPHLEPBB_hct;
-        Double_t HiggsBJet2CSVv2_TOPHLEPBB_hut;
-        Double_t HiggsBJet2CSVv2_TOPHLEPBB_hct;
-        Double_t TopLepBJetCSVv2_TOPHLEPBB_hut;
-        Double_t TopLepBJetCSVv2_TOPHLEPBB_hct;
+        //Variables from bMVA method
         Double_t TopHadMass_TOPTOPLEPHAD;
+        Double_t TopHadEta_TOPTOPLEPHAD;
+        Double_t TopHadPhi_TOPTOPLEPHAD;
+        Double_t TopHadPt_TOPTOPLEPHAD;
+
         Double_t TopLepMass_TOPTOPLEPHAD;
+        Double_t TopLepEta_TOPTOPLEPHAD;
+        Double_t TopLepPhi_TOPTOPLEPHAD;
+        Double_t TopLepPt_TOPTOPLEPHAD;
+
+        Double_t TopHadWMass_TOPTOPLEPHAD;
+        Double_t TopHadWEta_TOPTOPLEPHAD;
+        Double_t TopHadWPhi_TOPTOPLEPHAD;
+        Double_t TopHadWPt_TOPTOPLEPHAD;
+
         Double_t TopLepTopHadDr_TOPTOPLEPHAD;
+        Double_t WJet1WJet2Dr_TOPTOPLEPHAD;
+
         Double_t TopLepBJetCSVv2_TOPTOPLEPHAD;
+        Double_t TopLepBJetPt_TOPTOPLEPHAD;
+        Double_t TopLepBJetPhi_TOPTOPLEPHAD;
+        Double_t TopLepBJetEta_TOPTOPLEPHAD;
+        Double_t TopLepBJetE_TOPTOPLEPHAD;
+
         Double_t TopHadBJetCSVv2_TOPTOPLEPHAD;
+        Double_t TopHadBJetPt_TOPTOPLEPHAD;
+        Double_t TopHadBJetPhi_TOPTOPLEPHAD;
+        Double_t TopHadBJetEta_TOPTOPLEPHAD;
+        Double_t TopHadBJetE_TOPTOPLEPHAD;
+
         Double_t TopHadWNonBJet1CSVv2_TOPTOPLEPHAD;
+        Double_t TopHadWNonBJet1Pt_TOPTOPLEPHAD;
+        Double_t TopHadWNonBJet1Phi_TOPTOPLEPHAD;
+        Double_t TopHadWNonBJet1Eta_TOPTOPLEPHAD;
+        Double_t TopHadWNonBJet1E_TOPTOPLEPHAD;
+
         Double_t TopHadWNonBJet2CSVv2_TOPTOPLEPHAD;
-        Double_t HiggsMass_TOPTOPLEPHBB;
+        Double_t TopHadWNonBJet2Pt_TOPTOPLEPHAD;
+        Double_t TopHadWNonBJet2Phi_TOPTOPLEPHAD;
+        Double_t TopHadWNonBJet2Eta_TOPTOPLEPHAD;
+        Double_t TopHadWNonBJet2E_TOPTOPLEPHAD;
+
+        Double_t TopHadMass_TOPTOPLEPHBB;
+        Double_t TopHadEta_TOPTOPLEPHBB;
+        Double_t TopHadPhi_TOPTOPLEPHBB;
+        Double_t TopHadPt_TOPTOPLEPHBB;
+
         Double_t TopLepMass_TOPTOPLEPHBB;
-        Double_t HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB;
+        Double_t TopLepEta_TOPTOPLEPHBB;
+        Double_t TopLepPhi_TOPTOPLEPHBB;
+        Double_t TopLepPt_TOPTOPLEPHBB;
+
+        Double_t HiggsMass_TOPTOPLEPHBB;
+        Double_t HiggsEta_TOPTOPLEPHBB;
+        Double_t HiggsPhi_TOPTOPLEPHBB;
+        Double_t HiggsPt_TOPTOPLEPHBB;
+
+        Double_t TopLepTopHadDr_TOPTOPLEPHBB;
         Double_t TopLepHiggsDr_TOPTOPLEPHBB;
-        Double_t HiggsBJet1CSVv2_TOPTOPLEPHBB;
-        Double_t HiggsBJet2CSVv2_TOPTOPLEPHBB;
+        Double_t HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB;
+
         Double_t TopLepBJetCSVv2_TOPTOPLEPHBB;
+        Double_t TopLepBJetPt_TOPTOPLEPHBB;
+        Double_t TopLepBJetPhi_TOPTOPLEPHBB;
+        Double_t TopLepBJetEta_TOPTOPLEPHBB;
+        Double_t TopLepBJetE_TOPTOPLEPHBB;
+
         Double_t TopHadNonBJetCSVv2_TOPTOPLEPHBB;
+        Double_t TopHadNonBJetPt_TOPTOPLEPHBB;
+        Double_t TopHadNonBJetPhi_TOPTOPLEPHBB;
+        Double_t TopHadNonBJetEta_TOPTOPLEPHBB;
+        Double_t TopHadNonBJetE_TOPTOPLEPHBB;
+
+        Double_t HiggsBJet1CSVv2_TOPTOPLEPHBB;
+        Double_t HiggsBJet1Pt_TOPTOPLEPHBB;
+        Double_t HiggsBJet1Phi_TOPTOPLEPHBB;
+        Double_t HiggsBJet1Eta_TOPTOPLEPHBB;
+        Double_t HiggsBJet1E_TOPTOPLEPHBB;
+
+        Double_t HiggsBJet2CSVv2_TOPTOPLEPHBB;
+        Double_t HiggsBJet2Pt_TOPTOPLEPHBB;
+        Double_t HiggsBJet2Phi_TOPTOPLEPHBB;
+        Double_t HiggsBJet2Eta_TOPTOPLEPHBB;
+        Double_t HiggsBJet2E_TOPTOPLEPHBB;
+
+        Double_t TopLepMass_TOPHLEPBB_hut;
+        Double_t TopLepEta_TOPHLEPBB_hut;
+        Double_t TopLepPhi_TOPHLEPBB_hut;
+        Double_t TopLepPt_TOPHLEPBB_hut;
+
+        Double_t HiggsMass_TOPHLEPBB_hut;
+        Double_t HiggsEta_TOPHLEPBB_hut;
+        Double_t HiggsPhi_TOPHLEPBB_hut;
+        Double_t HiggsPt_TOPHLEPBB_hut;
+
+        Double_t TopLepHiggsDr_TOPHLEPBB_hut;
+        Double_t HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut;
+
+        Double_t TopLepBJetCSVv2_TOPHLEPBB_hut;
+        Double_t TopLepBJetPt_TOPHLEPBB_hut;
+        Double_t TopLepBJetPhi_TOPHLEPBB_hut;
+        Double_t TopLepBJetEta_TOPHLEPBB_hut;
+        Double_t TopLepBJetE_TOPHLEPBB_hut;
+
+        Double_t HiggsBJet1CSVv2_TOPHLEPBB_hut;
+        Double_t HiggsBJet1Pt_TOPHLEPBB_hut;
+        Double_t HiggsBJet1Phi_TOPHLEPBB_hut;
+        Double_t HiggsBJet1Eta_TOPHLEPBB_hut;
+        Double_t HiggsBJet1E_TOPHLEPBB_hut;
+
+        Double_t HiggsBJet2CSVv2_TOPHLEPBB_hut;
+        Double_t HiggsBJet2Pt_TOPHLEPBB_hut;
+        Double_t HiggsBJet2Phi_TOPHLEPBB_hut;
+        Double_t HiggsBJet2Eta_TOPHLEPBB_hut;
+        Double_t HiggsBJet2E_TOPHLEPBB_hut;
+
+        Double_t TopLepMass_TOPHLEPBB_hct;
+        Double_t TopLepEta_TOPHLEPBB_hct;
+        Double_t TopLepPhi_TOPHLEPBB_hct;
+        Double_t TopLepPt_TOPHLEPBB_hct;
+
+        Double_t HiggsMass_TOPHLEPBB_hct;
+        Double_t HiggsEta_TOPHLEPBB_hct;
+        Double_t HiggsPhi_TOPHLEPBB_hct;
+        Double_t HiggsPt_TOPHLEPBB_hct;
+
+        Double_t TopLepHiggsDr_TOPHLEPBB_hct;
+        Double_t HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct;
+
+        Double_t TopLepBJetCSVv2_TOPHLEPBB_hct;
+        Double_t TopLepBJetPt_TOPHLEPBB_hct;
+        Double_t TopLepBJetPhi_TOPHLEPBB_hct;
+        Double_t TopLepBJetEta_TOPHLEPBB_hct;
+        Double_t TopLepBJetE_TOPHLEPBB_hct;
+
+        Double_t HiggsBJet1CSVv2_TOPHLEPBB_hct;
+        Double_t HiggsBJet1Pt_TOPHLEPBB_hct;
+        Double_t HiggsBJet1Phi_TOPHLEPBB_hct;
+        Double_t HiggsBJet1Eta_TOPHLEPBB_hct;
+        Double_t HiggsBJet1E_TOPHLEPBB_hct;
+
+        Double_t HiggsBJet2CSVv2_TOPHLEPBB_hct;
+        Double_t HiggsBJet2Pt_TOPHLEPBB_hct;
+        Double_t HiggsBJet2Phi_TOPHLEPBB_hct;
+        Double_t HiggsBJet2Eta_TOPHLEPBB_hct;
+        Double_t HiggsBJet2E_TOPHLEPBB_hct;
+
+
+
 
         // global data set variables
         tup_ntupleinfo->Branch("I_nofPosWeights",&nofPosWeights,"nofPosWeights/I");  
@@ -910,41 +1024,152 @@ int main (int argc, char *argv[])
        tup_ObjectVars->Branch("MVA_TOPHLEPBB_hct",&MVA_TOPHLEPBB_hct,"MVA_TOPHLEPBB_hct/D");
 
         //Variables for signal/background training
-	    tup_ObjectVars->Branch("HiggsMass_TOPHLEPBB_hut",&HiggsMass_TOPHLEPBB_hut,"HiggsMass_TOPHLEPBB_hut/D");
-	    tup_ObjectVars->Branch("HiggsMass_TOPHLEPBB_hct",&HiggsMass_TOPHLEPBB_hct,"HiggsMass_TOPHLEPBB_hct/D");
-	    tup_ObjectVars->Branch("HiggsEta_TOPHLEPBB_hut",&HiggsEta_TOPHLEPBB_hut,"HiggsEta_TOPHLEPBB_hut/D");
-	    tup_ObjectVars->Branch("HiggsEta_TOPHLEPBB_hct",&HiggsEta_TOPHLEPBB_hct,"HiggsEta_TOPHLEPBB_hct/D");
-	    tup_ObjectVars->Branch("TopLepMass_TOPHLEPBB_hut",&TopLepMass_TOPHLEPBB_hut,"TopLepMass_TOPHLEPBB_hut/D");
-	    tup_ObjectVars->Branch("TopLepMass_TOPHLEPBB_hct",&TopLepMass_TOPHLEPBB_hut,"TopLepMass_TOPHLEPBB_hut/D");
-      tup_ObjectVars->Branch("TopLepPt_TOPHLEPBB_hut",&TopLepPt_TOPHLEPBB_hut,"TopLepPt_TOPHLEPBB_hut/D");
-      tup_ObjectVars->Branch("TopLepPt_TOPHLEPBB_hct",&TopLepPt_TOPHLEPBB_hct,"TopLepPt_TOPHLEPBB_hct/D");
-      tup_ObjectVars->Branch("TopLepEta_TOPHLEPBB_hut",&TopLepEta_TOPHLEPBB_hut,"TopLepEta_TOPHLEPBB_hut/D");
-      tup_ObjectVars->Branch("TopLepEta_TOPHLEPBB_hct",&TopLepEta_TOPHLEPBB_hct,"TopLepEta_TOPHLEPBB_hct/D");
-      tup_ObjectVars->Branch("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut",&HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut,"HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut/D");
-      tup_ObjectVars->Branch("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct",&HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct,"HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct/D");
-      tup_ObjectVars->Branch("TopLepHiggsDr_TOPHLEPBB_hut",&TopLepHiggsDr_TOPHLEPBB_hut,"TopLepHiggsDr_TOPHLEPBB_hut/D");
-      tup_ObjectVars->Branch("TopLepHiggsDr_TOPHLEPBB_hct",&TopLepHiggsDr_TOPHLEPBB_hct,"TopLepHiggsDr_TOPHLEPBB_hct/D");
-      tup_ObjectVars->Branch("HiggsBJet1CSVv2_TOPHLEPBB_hut",&HiggsBJet1CSVv2_TOPHLEPBB_hut,"HiggsBJet1CSVv2_TOPHLEPBB_hut/D");
-      tup_ObjectVars->Branch("HiggsBJet1CSVv2_TOPHLEPBB_hct",&HiggsBJet1CSVv2_TOPHLEPBB_hct,"HiggsBJet1CSVv2_TOPHLEPBB_hct/D");
-      tup_ObjectVars->Branch("HiggsBJet2CSVv2_TOPHLEPBB_hut",&HiggsBJet2CSVv2_TOPHLEPBB_hut,"HiggsBJet2CSVv2_TOPHLEPBB_hut/D");
-      tup_ObjectVars->Branch("HiggsBJet2CSVv2_TOPHLEPBB_hct",&HiggsBJet2CSVv2_TOPHLEPBB_hct,"HiggsBJet2CSVv2_TOPHLEPBB_hct/D");
-      tup_ObjectVars->Branch("TopLepBJetCSVv2_TOPHLEPBB_hut",&TopLepBJetCSVv2_TOPHLEPBB_hut,"TopLepBJetCSVv2_TOPHLEPBB_hut/D");
-      tup_ObjectVars->Branch("TopLepBJetCSVv2_TOPHLEPBB_hct",&TopLepBJetCSVv2_TOPHLEPBB_hct,"TopLepBJetCSVv2_TOPHLEPBB_hct/D");
-      tup_ObjectVars->Branch("TopHadMass_TOPTOPLEPHAD",&TopHadMass_TOPTOPLEPHAD,"TopHadMass_TOPTOPLEPHAD/D");
-      tup_ObjectVars->Branch("TopLepMass_TOPTOPLEPHAD",&TopLepMass_TOPTOPLEPHAD,"TopLepMass_TOPTOPLEPHAD/D");
-      tup_ObjectVars->Branch("TopLepTopHadDr_TOPTOPLEPHAD",&TopLepTopHadDr_TOPTOPLEPHAD,"TopLepTopHadDr_TOPTOPLEPHAD/D");
-      tup_ObjectVars->Branch("TopLepBJetCSVv2_TOPTOPLEPHAD",&TopLepBJetCSVv2_TOPTOPLEPHAD,"TopLepBJetCSVv2_TOPTOPLEPHAD/D");
-      tup_ObjectVars->Branch("TopHadBJetCSVv2_TOPTOPLEPHAD",&TopHadBJetCSVv2_TOPTOPLEPHAD,"TopHadBJetCSVv2_TOPTOPLEPHAD/D");
-      tup_ObjectVars->Branch("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet1CSVv2_TOPTOPLEPHAD,"TopHadWNonBJet1CSVv2_TOPTOPLEPHAD/D");
-      tup_ObjectVars->Branch("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet2CSVv2_TOPTOPLEPHAD,"TopHadWNonBJet2CSVv2_TOPTOPLEPHAD/D");
-      tup_ObjectVars->Branch("HiggsMass_TOPTOPLEPHBB",&HiggsMass_TOPTOPLEPHBB,"HiggsMass_TOPTOPLEPHBB/D");
-      tup_ObjectVars->Branch("TopLepMass_TOPTOPLEPHBB",&TopLepMass_TOPTOPLEPHBB,"TopLepMass_TOPTOPLEPHBB/D");
-      tup_ObjectVars->Branch("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB",&HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB,"HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB/D");
-      tup_ObjectVars->Branch("TopLepHiggsDr_TOPTOPLEPHBB",&TopLepHiggsDr_TOPTOPLEPHBB,"TopLepHiggsDr_TOPTOPLEPHBB/D");
-      tup_ObjectVars->Branch("HiggsBJet1CSVv2_TOPTOPLEPHBB",&HiggsBJet1CSVv2_TOPTOPLEPHBB,"HiggsBJet1CSVv2_TOPTOPLEPHBB/D");
-      tup_ObjectVars->Branch("HiggsBJet2CSVv2_TOPTOPLEPHBB",&HiggsBJet2CSVv2_TOPTOPLEPHBB,"HiggsBJet2CSVv2_TOPTOPLEPHBB/D");
-      tup_ObjectVars->Branch("TopLepBJetCSVv2_TOPTOPLEPHBB",&TopLepBJetCSVv2_TOPTOPLEPHBB,"TopLepBJetCSVv2_TOPTOPLEPHBB/D");
-      tup_ObjectVars->Branch("TopHadNonBJetCSVv2_TOPTOPLEPHBB",&TopHadNonBJetCSVv2_TOPTOPLEPHBB,"TopHadNonBJetCSVv2_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("TopHadMass_TOPTOPLEPHAD",&TopHadMass_TOPTOPLEPHAD,"TopHadMass_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopHadEta_TOPTOPLEPHAD",&TopHadEta_TOPTOPLEPHAD,"TopHadEta_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopHadPhi_TOPTOPLEPHAD",&TopHadPhi_TOPTOPLEPHAD,"TopHadPhi_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopHadPt_TOPTOPLEPHAD",&TopHadPt_TOPTOPLEPHAD,"TopHadPt_TOPTOPLEPHAD/D");
+
+       tup_ObjectVars->Branch("TopLepMass_TOPTOPLEPHAD",&TopLepMass_TOPTOPLEPHAD,"TopLepMass_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopLepEta_TOPTOPLEPHAD",&TopLepEta_TOPTOPLEPHAD,"TopLepEta_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopLepPhi_TOPTOPLEPHAD",&TopLepPhi_TOPTOPLEPHAD,"TopLepPhi_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopLepPt_TOPTOPLEPHAD",&TopLepPt_TOPTOPLEPHAD,"TopLepPt_TOPTOPLEPHAD/D");
+
+       tup_ObjectVars->Branch("TopHadWMass_TOPTOPLEPHAD",&TopHadWMass_TOPTOPLEPHAD,"TopHadWMass_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopHadWEta_TOPTOPLEPHAD",&TopHadWEta_TOPTOPLEPHAD,"TopHadWEta_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopHadWPhi_TOPTOPLEPHAD",&TopHadWPhi_TOPTOPLEPHAD,"TopHadWPhi_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopHadWPt_TOPTOPLEPHAD",&TopHadWPt_TOPTOPLEPHAD,"TopHadWPt_TOPTOPLEPHAD/D");
+
+       tup_ObjectVars->Branch("TopLepTopHadDr_TOPTOPLEPHAD",&TopLepTopHadDr_TOPTOPLEPHAD,"TopLepTopHadDr_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("WJet1WJet2Dr_TOPTOPLEPHAD",&WJet1WJet2Dr_TOPTOPLEPHAD,"WJet1WJet2Dr_TOPTOPLEPHAD/D");
+
+       tup_ObjectVars->Branch("TopLepBJetCSVv2_TOPTOPLEPHAD",&TopLepBJetCSVv2_TOPTOPLEPHAD,"TopLepBJetCSVv2_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopLepBJetPt_TOPTOPLEPHAD",&TopLepBJetPt_TOPTOPLEPHAD,"TopLepBJetPt_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopLepBJetPhi_TOPTOPLEPHAD",&TopLepBJetPhi_TOPTOPLEPHAD,"TopLepBJetPhi_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopLepBJetEta_TOPTOPLEPHAD",&TopLepBJetEta_TOPTOPLEPHAD,"TopLepBJetEta_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopLepBJetE_TOPTOPLEPHAD",&TopLepBJetE_TOPTOPLEPHAD,"TopLepBJetE_TOPTOPLEPHAD/D");
+
+       tup_ObjectVars->Branch("TopHadBJetCSVv2_TOPTOPLEPHAD",&TopHadBJetCSVv2_TOPTOPLEPHAD,"TopHadBJetCSVv2_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopHadBJetPt_TOPTOPLEPHAD",&TopHadBJetPt_TOPTOPLEPHAD,"TopHadBJetPt_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopHadBJetPhi_TOPTOPLEPHAD",&TopHadBJetPhi_TOPTOPLEPHAD,"TopHadBJetPhi_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopHadBJetEta_TOPTOPLEPHAD",&TopHadBJetEta_TOPTOPLEPHAD,"TopHadBJetEta_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopHadBJetE_TOPTOPLEPHAD",&TopHadBJetE_TOPTOPLEPHAD,"TopHadBJetE_TOPTOPLEPHAD/D");
+
+       tup_ObjectVars->Branch("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet1CSVv2_TOPTOPLEPHAD,"TopHadWNonBJet1CSVv2_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopHadWNonBJet1Pt_TOPTOPLEPHAD",&TopHadWNonBJet1Pt_TOPTOPLEPHAD,"TopHadWNonBJet1Pt_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopHadWNonBJet1Phi_TOPTOPLEPHAD",&TopHadWNonBJet1Phi_TOPTOPLEPHAD,"TopHadWNonBJet1Phi_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopHadWNonBJet1Eta_TOPTOPLEPHAD",&TopHadWNonBJet1Eta_TOPTOPLEPHAD,"TopHadWNonBJet1Eta_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopHadWNonBJet1E_TOPTOPLEPHAD",&TopHadWNonBJet1E_TOPTOPLEPHAD,"TopHadWNonBJet1E_TOPTOPLEPHAD/D");
+
+       tup_ObjectVars->Branch("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet2CSVv2_TOPTOPLEPHAD,"TopHadWNonBJet2CSVv2_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopHadWNonBJet2Pt_TOPTOPLEPHAD",&TopHadWNonBJet2Pt_TOPTOPLEPHAD,"TopHadWNonBJet2Pt_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopHadWNonBJet2Phi_TOPTOPLEPHAD",&TopHadWNonBJet2Phi_TOPTOPLEPHAD,"TopHadWNonBJet2Phi_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopHadWNonBJet2Eta_TOPTOPLEPHAD",&TopHadWNonBJet2Eta_TOPTOPLEPHAD,"TopHadWNonBJet2Eta_TOPTOPLEPHAD/D");
+       tup_ObjectVars->Branch("TopHadWNonBJet2E_TOPTOPLEPHAD",&TopHadWNonBJet2E_TOPTOPLEPHAD,"TopHadWNonBJet2E_TOPTOPLEPHAD/D");
+
+       tup_ObjectVars->Branch("TopHadMass_TOPTOPLEPHBB",&TopHadMass_TOPTOPLEPHBB,"TopHadMass_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("TopHadEta_TOPTOPLEPHBB",&TopHadEta_TOPTOPLEPHBB,"TopHadEta_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("TopHadPhi_TOPTOPLEPHBB",&TopHadPhi_TOPTOPLEPHBB,"TopHadPhi_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("TopHadPt_TOPTOPLEPHBB",&TopHadPt_TOPTOPLEPHBB,"TopHadPt_TOPTOPLEPHBB/D");
+
+       tup_ObjectVars->Branch("TopLepMass_TOPTOPLEPHBB",&TopLepMass_TOPTOPLEPHBB,"TopLepMass_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("TopLepEta_TOPTOPLEPHBB",&TopLepEta_TOPTOPLEPHBB,"TopLepEta_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("TopLepPhi_TOPTOPLEPHBB",&TopLepPhi_TOPTOPLEPHBB,"TopLepPhi_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("TopLepPt_TOPTOPLEPHBB",&TopLepPt_TOPTOPLEPHBB,"TopLepPt_TOPTOPLEPHBB/D");
+
+       tup_ObjectVars->Branch("HiggsMass_TOPTOPLEPHBB",&HiggsMass_TOPTOPLEPHBB,"HiggsMass_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("HiggsEta_TOPTOPLEPHBB",&HiggsEta_TOPTOPLEPHBB,"HiggsEta_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("HiggsPhi_TOPTOPLEPHBB",&HiggsPhi_TOPTOPLEPHBB,"HiggsPhi_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("HiggsPt_TOPTOPLEPHBB",&HiggsPt_TOPTOPLEPHBB,"HiggsPt_TOPTOPLEPHBB/D");
+
+       tup_ObjectVars->Branch("TopLepTopHadDr_TOPTOPLEPHBB",&TopLepTopHadDr_TOPTOPLEPHBB,"TopLepTopHadDr_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("TopLepHiggsDr_TOPTOPLEPHBB",&TopLepHiggsDr_TOPTOPLEPHBB,"TopLepHiggsDr_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB",&HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB,"HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB/D");
+
+       tup_ObjectVars->Branch("TopLepBJetCSVv2_TOPTOPLEPHBB",&TopLepBJetCSVv2_TOPTOPLEPHBB,"TopLepBJetCSVv2_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("TopLepBJetPt_TOPTOPLEPHBB",&TopLepBJetPt_TOPTOPLEPHBB,"TopLepBJetPt_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("TopLepBJetPhi_TOPTOPLEPHBB",&TopLepBJetPhi_TOPTOPLEPHBB,"TopLepBJetPhi_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("TopLepBJetEta_TOPTOPLEPHBB",&TopLepBJetEta_TOPTOPLEPHBB,"TopLepBJetEta_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("TopLepBJetE_TOPTOPLEPHBB",&TopLepBJetE_TOPTOPLEPHBB,"TopLepBJetE_TOPTOPLEPHBB/D");
+
+       tup_ObjectVars->Branch("TopHadNonBJetCSVv2_TOPTOPLEPHBB",&TopHadNonBJetCSVv2_TOPTOPLEPHBB,"TopHadNonBJetCSVv2_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("TopHadNonBJetPt_TOPTOPLEPHBB",&TopHadNonBJetPt_TOPTOPLEPHBB,"TopHadNonBJetPt_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("TopHadNonBJetPhi_TOPTOPLEPHBB",&TopHadNonBJetPhi_TOPTOPLEPHBB,"TopHadNonBJetPhi_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("TopHadNonBJetEta_TOPTOPLEPHBB",&TopHadNonBJetEta_TOPTOPLEPHBB,"TopHadNonBJetEta_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("TopHadNonBJetE_TOPTOPLEPHBB",&TopHadNonBJetE_TOPTOPLEPHBB,"TopHadNonBJetE_TOPTOPLEPHBB/D");
+
+       tup_ObjectVars->Branch("HiggsBJet1CSVv2_TOPTOPLEPHBB",&HiggsBJet1CSVv2_TOPTOPLEPHBB,"HiggsBJet1CSVv2_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("HiggsBJet1Pt_TOPTOPLEPHBB",&HiggsBJet1Pt_TOPTOPLEPHBB,"HiggsBJet1Pt_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("HiggsBJet1Phi_TOPTOPLEPHBB",&HiggsBJet1Phi_TOPTOPLEPHBB,"HiggsBJet1Phi_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("HiggsBJet1Eta_TOPTOPLEPHBB",&HiggsBJet1Eta_TOPTOPLEPHBB,"HiggsBJet1Eta_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("HiggsBJet1E_TOPTOPLEPHBB",&HiggsBJet1E_TOPTOPLEPHBB,"HiggsBJet1E_TOPTOPLEPHBB/D");
+
+       tup_ObjectVars->Branch("HiggsBJet2CSVv2_TOPTOPLEPHBB",&HiggsBJet2CSVv2_TOPTOPLEPHBB,"HiggsBJet2CSVv2_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("HiggsBJet2Pt_TOPTOPLEPHBB",&HiggsBJet2Pt_TOPTOPLEPHBB,"HiggsBJet2Pt_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("HiggsBJet2Phi_TOPTOPLEPHBB",&HiggsBJet2Phi_TOPTOPLEPHBB,"HiggsBJet2Phi_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("HiggsBJet2Eta_TOPTOPLEPHBB",&HiggsBJet2Eta_TOPTOPLEPHBB,"HiggsBJet2Eta_TOPTOPLEPHBB/D");
+       tup_ObjectVars->Branch("HiggsBJet2E_TOPTOPLEPHBB",&HiggsBJet2E_TOPTOPLEPHBB,"HiggsBJet2E_TOPTOPLEPHBB/D");
+
+       tup_ObjectVars->Branch("TopLepMass_TOPHLEPBB_hut",&TopLepMass_TOPHLEPBB_hut,"TopLepMass_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("TopLepEta_TOPHLEPBB_hut",&TopLepEta_TOPHLEPBB_hut,"TopLepEta_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("TopLepPhi_TOPHLEPBB_hut",&TopLepPhi_TOPHLEPBB_hut,"TopLepPhi_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("TopLepPt_TOPHLEPBB_hut",&TopLepPt_TOPHLEPBB_hut,"TopLepPt_TOPHLEPBB_hut/D");
+
+       tup_ObjectVars->Branch("HiggsMass_TOPHLEPBB_hut",&HiggsMass_TOPHLEPBB_hut,"HiggsMass_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("HiggsEta_TOPHLEPBB_hut",&HiggsEta_TOPHLEPBB_hut,"HiggsEta_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("HiggsPhi_TOPHLEPBB_hut",&HiggsPhi_TOPHLEPBB_hut,"HiggsPhi_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("HiggsPt_TOPHLEPBB_hut",&HiggsPt_TOPHLEPBB_hut,"HiggsPt_TOPHLEPBB_hut/D");
+
+       tup_ObjectVars->Branch("TopLepHiggsDr_TOPHLEPBB_hut",&TopLepHiggsDr_TOPHLEPBB_hut,"TopLepHiggsDr_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut",&HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut,"HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut/D");
+
+       tup_ObjectVars->Branch("TopLepBJetCSVv2_TOPHLEPBB_hut",&TopLepBJetCSVv2_TOPHLEPBB_hut,"TopLepBJetCSVv2_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("TopLepBJetPt_TOPHLEPBB_hut",&TopLepBJetPt_TOPHLEPBB_hut,"TopLepBJetPt_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("TopLepBJetPhi_TOPHLEPBB_hut",&TopLepBJetPhi_TOPHLEPBB_hut,"TopLepBJetPhi_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("TopLepBJetEta_TOPHLEPBB_hut",&TopLepBJetEta_TOPHLEPBB_hut,"TopLepBJetEta_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("TopLepBJetE_TOPHLEPBB_hut",&TopLepBJetE_TOPHLEPBB_hut,"TopLepBJetE_TOPHLEPBB_hut/D");
+
+       tup_ObjectVars->Branch("HiggsBJet1CSVv2_TOPHLEPBB_hut",&HiggsBJet1CSVv2_TOPHLEPBB_hut,"HiggsBJet1CSVv2_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("HiggsBJet1Pt_TOPHLEPBB_hut",&HiggsBJet1Pt_TOPHLEPBB_hut,"HiggsBJet1Pt_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("HiggsBJet1Phi_TOPHLEPBB_hut",&HiggsBJet1Phi_TOPHLEPBB_hut,"HiggsBJet1Phi_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("HiggsBJet1Eta_TOPHLEPBB_hut",&HiggsBJet1Eta_TOPHLEPBB_hut,"HiggsBJet1Eta_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("HiggsBJet1E_TOPHLEPBB_hut",&HiggsBJet1E_TOPHLEPBB_hut,"HiggsBJet1E_TOPHLEPBB_hut/D");
+
+       tup_ObjectVars->Branch("HiggsBJet2CSVv2_TOPHLEPBB_hut",&HiggsBJet2CSVv2_TOPHLEPBB_hut,"HiggsBJet2CSVv2_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("HiggsBJet2Pt_TOPHLEPBB_hut",&HiggsBJet2Pt_TOPHLEPBB_hut,"HiggsBJet2Pt_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("HiggsBJet2Phi_TOPHLEPBB_hut",&HiggsBJet2Phi_TOPHLEPBB_hut,"HiggsBJet2Phi_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("HiggsBJet2Eta_TOPHLEPBB_hut",&HiggsBJet2Eta_TOPHLEPBB_hut,"HiggsBJet2Eta_TOPHLEPBB_hut/D");
+       tup_ObjectVars->Branch("HiggsBJet2E_TOPHLEPBB_hut",&HiggsBJet2E_TOPHLEPBB_hut,"HiggsBJet2E_TOPHLEPBB_hut/D");
+
+       tup_ObjectVars->Branch("TopLepMass_TOPHLEPBB_hct",&TopLepMass_TOPHLEPBB_hct,"TopLepMass_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("TopLepEta_TOPHLEPBB_hct",&TopLepEta_TOPHLEPBB_hct,"TopLepEta_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("TopLepPhi_TOPHLEPBB_hct",&TopLepPhi_TOPHLEPBB_hct,"TopLepPhi_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("TopLepPt_TOPHLEPBB_hct",&TopLepPt_TOPHLEPBB_hct,"TopLepPt_TOPHLEPBB_hct/D");
+
+       tup_ObjectVars->Branch("HiggsMass_TOPHLEPBB_hct",&HiggsMass_TOPHLEPBB_hct,"HiggsMass_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("HiggsEta_TOPHLEPBB_hct",&HiggsEta_TOPHLEPBB_hct,"HiggsEta_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("HiggsPhi_TOPHLEPBB_hct",&HiggsPhi_TOPHLEPBB_hct,"HiggsPhi_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("HiggsPt_TOPHLEPBB_hct",&HiggsPt_TOPHLEPBB_hct,"HiggsPt_TOPHLEPBB_hct/D");
+
+       tup_ObjectVars->Branch("TopLepHiggsDr_TOPHLEPBB_hct",&TopLepHiggsDr_TOPHLEPBB_hct,"TopLepHiggsDr_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct",&HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct,"HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct/D");
+
+       tup_ObjectVars->Branch("TopLepBJetCSVv2_TOPHLEPBB_hct",&TopLepBJetCSVv2_TOPHLEPBB_hct,"TopLepBJetCSVv2_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("TopLepBJetPt_TOPHLEPBB_hct",&TopLepBJetPt_TOPHLEPBB_hct,"TopLepBJetPt_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("TopLepBJetPhi_TOPHLEPBB_hct",&TopLepBJetPhi_TOPHLEPBB_hct,"TopLepBJetPhi_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("TopLepBJetEta_TOPHLEPBB_hct",&TopLepBJetEta_TOPHLEPBB_hct,"TopLepBJetEta_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("TopLepBJetE_TOPHLEPBB_hct",&TopLepBJetE_TOPHLEPBB_hct,"TopLepBJetE_TOPHLEPBB_hct/D");
+
+       tup_ObjectVars->Branch("HiggsBJet1CSVv2_TOPHLEPBB_hct",&HiggsBJet1CSVv2_TOPHLEPBB_hct,"HiggsBJet1CSVv2_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("HiggsBJet1Pt_TOPHLEPBB_hct",&HiggsBJet1Pt_TOPHLEPBB_hct,"HiggsBJet1Pt_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("HiggsBJet1Phi_TOPHLEPBB_hct",&HiggsBJet1Phi_TOPHLEPBB_hct,"HiggsBJet1Phi_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("HiggsBJet1Eta_TOPHLEPBB_hct",&HiggsBJet1Eta_TOPHLEPBB_hct,"HiggsBJet1Eta_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("HiggsBJet1E_TOPHLEPBB_hct",&HiggsBJet1E_TOPHLEPBB_hct,"HiggsBJet1E_TOPHLEPBB_hct/D");
+
+       tup_ObjectVars->Branch("HiggsBJet2CSVv2_TOPHLEPBB_hct",&HiggsBJet2CSVv2_TOPHLEPBB_hct,"HiggsBJet2CSVv2_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("HiggsBJet2Pt_TOPHLEPBB_hct",&HiggsBJet2Pt_TOPHLEPBB_hct,"HiggsBJet2Pt_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("HiggsBJet2Phi_TOPHLEPBB_hct",&HiggsBJet2Phi_TOPHLEPBB_hct,"HiggsBJet2Phi_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("HiggsBJet2Eta_TOPHLEPBB_hct",&HiggsBJet2Eta_TOPHLEPBB_hct,"HiggsBJet2Eta_TOPHLEPBB_hct/D");
+       tup_ObjectVars->Branch("HiggsBJet2E_TOPHLEPBB_hct",&HiggsBJet2E_TOPHLEPBB_hct,"HiggsBJet2E_TOPHLEPBB_hct/D");
 
         if(debug)cout<<"created ntuples"<<endl;
 
@@ -1185,13 +1410,13 @@ int main (int argc, char *argv[])
         }
         else
         {
-            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10_MC_L1FastJet_AK4PFchs.txt");
+            JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer16_23Sep2016V3_MC/Summer16_23Sep2016V3_MC_L1FastJet_AK4PFchs.txt");
             vCorrParam.push_back(*L1JetCorPar);
-            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10_MC_L2Relative_AK4PFchs.txt");
+            JetCorrectorParameters *L2JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer16_23Sep2016V3_MC/Summer16_23Sep2016V3_MC_L2Relative_AK4PFchs.txt");
             vCorrParam.push_back(*L2JetCorPar);
-            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10_MC_L3Absolute_AK4PFchs.txt");
+            JetCorrectorParameters *L3JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer16_23Sep2016V3_MC/Summer16_23Sep2016V3_MC_L3Absolute_AK4PFchs.txt");
             vCorrParam.push_back(*L3JetCorPar);
-            jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Spring16_25nsV10/Spring16_25nsV10_MC_Uncertainty_AK4PFchs.txt");
+            jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer16_23Sep2016V3_MC/Summer16_23Sep2016V3_MC_Uncertainty_AK4PFchs.txt");
         }
 
         JetTools *jetTools = new JetTools(vCorrParam, jecUnc, true);
@@ -1300,41 +1525,152 @@ int main (int argc, char *argv[])
             MVA_TOPHLEPBB_hut = -999.;
             MVA_TOPHLEPBB_hct = -999.;
 
-            HiggsMass_TOPHLEPBB_hut = -999.;
-            HiggsMass_TOPHLEPBB_hct = -999.;
-            HiggsEta_TOPHLEPBB_hut = -999.;
-            HiggsEta_TOPHLEPBB_hct = -999.;
-            TopLepMass_TOPHLEPBB_hut = -999.;
-            TopLepMass_TOPHLEPBB_hct = -999.;
-            TopLepPt_TOPHLEPBB_hut = -999.;
-            TopLepPt_TOPHLEPBB_hct = -999.;
-            TopLepEta_TOPHLEPBB_hut = -999.;
-            TopLepEta_TOPHLEPBB_hct = -999.;
-            HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut = -999.;
-            HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct = -999.;
-            TopLepHiggsDr_TOPHLEPBB_hut = -999.;
-            TopLepHiggsDr_TOPHLEPBB_hct = -999.;
-            HiggsBJet1CSVv2_TOPHLEPBB_hut = -999.;
-            HiggsBJet1CSVv2_TOPHLEPBB_hct = -999.;
-            HiggsBJet2CSVv2_TOPHLEPBB_hut = -999.;
-            HiggsBJet2CSVv2_TOPHLEPBB_hct = -999.;
-            TopLepBJetCSVv2_TOPHLEPBB_hut = -999.;
-            TopLepBJetCSVv2_TOPHLEPBB_hct = -999.;
             TopHadMass_TOPTOPLEPHAD = -999.;
+            TopHadEta_TOPTOPLEPHAD = -999.;
+            TopHadPhi_TOPTOPLEPHAD = -999.;
+            TopHadPt_TOPTOPLEPHAD = -999.;
+
             TopLepMass_TOPTOPLEPHAD = -999.;
+            TopLepEta_TOPTOPLEPHAD = -999.;
+            TopLepPhi_TOPTOPLEPHAD = -999.;
+            TopLepPt_TOPTOPLEPHAD = -999.;
+
+            TopHadWMass_TOPTOPLEPHAD = -999.;
+            TopHadWEta_TOPTOPLEPHAD = -999.;
+            TopHadWPhi_TOPTOPLEPHAD = -999.;
+            TopHadWPt_TOPTOPLEPHAD = -999.;
+
             TopLepTopHadDr_TOPTOPLEPHAD = -999.;
+            WJet1WJet2Dr_TOPTOPLEPHAD = -999.;
+
             TopLepBJetCSVv2_TOPTOPLEPHAD = -999.;
+            TopLepBJetPt_TOPTOPLEPHAD = -999.;
+            TopLepBJetPhi_TOPTOPLEPHAD = -999.;
+            TopLepBJetEta_TOPTOPLEPHAD = -999.;
+            TopLepBJetE_TOPTOPLEPHAD = -999.;
+
             TopHadBJetCSVv2_TOPTOPLEPHAD = -999.;
+            TopHadBJetPt_TOPTOPLEPHAD = -999.;
+            TopHadBJetPhi_TOPTOPLEPHAD = -999.;
+            TopHadBJetEta_TOPTOPLEPHAD = -999.;
+            TopHadBJetE_TOPTOPLEPHAD = -999.;
+
             TopHadWNonBJet1CSVv2_TOPTOPLEPHAD = -999.;
+            TopHadWNonBJet1Pt_TOPTOPLEPHAD = -999.;
+            TopHadWNonBJet1Phi_TOPTOPLEPHAD = -999.;
+            TopHadWNonBJet1Eta_TOPTOPLEPHAD = -999.;
+            TopHadWNonBJet1E_TOPTOPLEPHAD = -999.;
+
             TopHadWNonBJet2CSVv2_TOPTOPLEPHAD = -999.;
-            HiggsMass_TOPTOPLEPHBB = -999.;
+            TopHadWNonBJet2Pt_TOPTOPLEPHAD = -999.;
+            TopHadWNonBJet2Phi_TOPTOPLEPHAD = -999.;
+            TopHadWNonBJet2Eta_TOPTOPLEPHAD = -999.;
+            TopHadWNonBJet2E_TOPTOPLEPHAD = -999.;
+
+            TopHadMass_TOPTOPLEPHBB = -999.;
+            TopHadEta_TOPTOPLEPHBB = -999.;
+            TopHadPhi_TOPTOPLEPHBB = -999.;
+            TopHadPt_TOPTOPLEPHBB = -999.;
+
             TopLepMass_TOPTOPLEPHBB = -999.;
-            HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB = -999.;
+            TopLepEta_TOPTOPLEPHBB = -999.;
+            TopLepPhi_TOPTOPLEPHBB = -999.;
+            TopLepPt_TOPTOPLEPHBB = -999.;
+
+            HiggsMass_TOPTOPLEPHBB = -999.;
+            HiggsEta_TOPTOPLEPHBB = -999.;
+            HiggsPhi_TOPTOPLEPHBB = -999.;
+            HiggsPt_TOPTOPLEPHBB = -999.;
+
+            TopLepTopHadDr_TOPTOPLEPHBB = -999.;
             TopLepHiggsDr_TOPTOPLEPHBB = -999.;
-            HiggsBJet1CSVv2_TOPTOPLEPHBB = -999.;
-            HiggsBJet2CSVv2_TOPTOPLEPHBB = -999.;
+            HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB = -999.;
+
             TopLepBJetCSVv2_TOPTOPLEPHBB = -999.;
+            TopLepBJetPt_TOPTOPLEPHBB = -999.;
+            TopLepBJetPhi_TOPTOPLEPHBB = -999.;
+            TopLepBJetEta_TOPTOPLEPHBB = -999.;
+            TopLepBJetE_TOPTOPLEPHBB = -999.;
+
             TopHadNonBJetCSVv2_TOPTOPLEPHBB = -999.;
+            TopHadNonBJetPt_TOPTOPLEPHBB = -999.;
+            TopHadNonBJetPhi_TOPTOPLEPHBB = -999.;
+            TopHadNonBJetEta_TOPTOPLEPHBB = -999.;
+            TopHadNonBJetE_TOPTOPLEPHBB = -999.;
+
+            HiggsBJet1CSVv2_TOPTOPLEPHBB = -999.;
+            HiggsBJet1Pt_TOPTOPLEPHBB = -999.;
+            HiggsBJet1Phi_TOPTOPLEPHBB = -999.;
+            HiggsBJet1Eta_TOPTOPLEPHBB = -999.;
+            HiggsBJet1E_TOPTOPLEPHBB = -999.;
+
+            HiggsBJet2CSVv2_TOPTOPLEPHBB = -999.;
+            HiggsBJet2Pt_TOPTOPLEPHBB = -999.;
+            HiggsBJet2Phi_TOPTOPLEPHBB = -999.;
+            HiggsBJet2Eta_TOPTOPLEPHBB = -999.;
+            HiggsBJet2E_TOPTOPLEPHBB = -999.;
+
+            TopLepMass_TOPHLEPBB_hut = -999.;
+            TopLepEta_TOPHLEPBB_hut = -999.;
+            TopLepPhi_TOPHLEPBB_hut = -999.;
+            TopLepPt_TOPHLEPBB_hut = -999.;
+
+            HiggsMass_TOPHLEPBB_hut = -999.;
+            HiggsEta_TOPHLEPBB_hut = -999.;
+            HiggsPhi_TOPHLEPBB_hut = -999.;
+            HiggsPt_TOPHLEPBB_hut = -999.;
+
+            TopLepHiggsDr_TOPHLEPBB_hut = -999.;
+            HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut = -999.;
+
+            TopLepBJetCSVv2_TOPHLEPBB_hut = -999.;
+            TopLepBJetPt_TOPHLEPBB_hut = -999.;
+            TopLepBJetPhi_TOPHLEPBB_hut = -999.;
+            TopLepBJetEta_TOPHLEPBB_hut = -999.;
+            TopLepBJetE_TOPHLEPBB_hut = -999.;
+
+            HiggsBJet1CSVv2_TOPHLEPBB_hut = -999.;
+            HiggsBJet1Pt_TOPHLEPBB_hut = -999.;
+            HiggsBJet1Phi_TOPHLEPBB_hut = -999.;
+            HiggsBJet1Eta_TOPHLEPBB_hut = -999.;
+            HiggsBJet1E_TOPHLEPBB_hut = -999.;
+
+            HiggsBJet2CSVv2_TOPHLEPBB_hut = -999.;
+            HiggsBJet2Pt_TOPHLEPBB_hut = -999.;
+            HiggsBJet2Phi_TOPHLEPBB_hut = -999.;
+            HiggsBJet2Eta_TOPHLEPBB_hut = -999.;
+            HiggsBJet2E_TOPHLEPBB_hut = -999.;
+
+            TopLepMass_TOPHLEPBB_hct = -999.;
+            TopLepEta_TOPHLEPBB_hct = -999.;
+            TopLepPhi_TOPHLEPBB_hct = -999.;
+            TopLepPt_TOPHLEPBB_hct = -999.;
+
+            HiggsMass_TOPHLEPBB_hct = -999.;
+            HiggsEta_TOPHLEPBB_hct = -999.;
+            HiggsPhi_TOPHLEPBB_hct = -999.;
+            HiggsPt_TOPHLEPBB_hct = -999.;
+
+            TopLepHiggsDr_TOPHLEPBB_hct = -999.;
+            HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct = -999.;
+
+            TopLepBJetCSVv2_TOPHLEPBB_hct = -999.;
+            TopLepBJetPt_TOPHLEPBB_hct = -999.;
+            TopLepBJetPhi_TOPHLEPBB_hct = -999.;
+            TopLepBJetEta_TOPHLEPBB_hct = -999.;
+            TopLepBJetE_TOPHLEPBB_hct = -999.;
+
+            HiggsBJet1CSVv2_TOPHLEPBB_hct = -999.;
+            HiggsBJet1Pt_TOPHLEPBB_hct = -999.;
+            HiggsBJet1Phi_TOPHLEPBB_hct = -999.;
+            HiggsBJet1Eta_TOPHLEPBB_hct = -999.;
+            HiggsBJet1E_TOPHLEPBB_hct = -999.;
+
+            HiggsBJet2CSVv2_TOPHLEPBB_hct = -999.;
+            HiggsBJet2Pt_TOPHLEPBB_hct = -999.;
+            HiggsBJet2Phi_TOPHLEPBB_hct = -999.;
+            HiggsBJet2Eta_TOPHLEPBB_hct = -999.;
+            HiggsBJet2E_TOPHLEPBB_hct = -999.;
 
             if(debug)cout<<"before tree load"<<endl;
             event = treeLoader.LoadEvent (ievt, vertex, init_muons, init_electrons, init_jets, mets, debug);  //load event
@@ -1345,23 +1681,6 @@ int main (int argc, char *argv[])
             //////////////////////////////////////////////////////////////////
             datasets[d]->eventTree()->LoadTree(ievt);
             if(datasets[d]->eventTree()->GetBranch("genTTX_id_")) genTTX = event->getgenTTX_id(); //Safety check to make sure the code doesn't crash when using trees that do not have the genTTX_id variable
-
-		        if(dName.find("TTJets")!=string::npos)//Split ttbar samples into ttbb, ttcc and ttlf
-		        {
-                bool isttbb = (genTTX == 051 || genTTX == 151 || genTTX == 251 ||
-		              genTTX == 052 || genTTX == 152 || genTTX == 252 ||
-		              genTTX == 053 || genTTX == 153 || genTTX == 253 ||
-		              genTTX == 054 || genTTX == 154 || genTTX == 254 ||
-		              genTTX == 055 || genTTX == 155 || genTTX == 255);
-               
-                bool isttcc = (genTTX == 041 || genTTX == 141 || genTTX == 241 ||
-		              genTTX == 042 || genTTX == 142 || genTTX == 242 ||
-		              genTTX == 043 || genTTX == 143 || genTTX == 243 ||
-		              genTTX == 044 || genTTX == 144 || genTTX == 244 ||
-		              genTTX == 045 || genTTX == 145 || genTTX == 245);
-               
-                bool isttlf = (!isttbb && !isttcc);
-            }
 
 	          run_num = event->runId(); 
 	          evt_num = event->eventId();
@@ -2066,7 +2385,7 @@ int main (int argc, char *argv[])
                 continue;
             }
 
-		  	    if(selectedMBJets.size() < 1) continue;
+		  	    if(selectedMBJets.size() < 2) continue;
 	          if (debug)	cout <<"Cut on nb b-jets..."<<endl;
             if(debug) cout << "Past cut 7: passed_FinalSelection cut on number of b-jets" << endl;
             cutstep[8]=cutstep[8]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
@@ -2354,10 +2673,6 @@ int main (int argc, char *argv[])
                     ElectronEta.push_back(selectedElectrons[0]->Eta());
                     ElectronPhi.push_back(selectedElectrons[0]->Phi());
                     ElectronE.push_back(selectedElectrons[0]->E());
-                    MuonPt.push_back(0.);
-                    MuonEta.push_back(0.);
-                    MuonPhi.push_back(0.);
-                    MuonE.push_back(0.);
                 }
                 else if(Muon)
                 {
@@ -2365,10 +2680,6 @@ int main (int argc, char *argv[])
                     MuonEta.push_back(selectedMuons[0]->Eta());
                     MuonPhi.push_back(selectedMuons[0]->Phi());
                     MuonE.push_back(selectedMuons[0]->E());
-                    ElectronPt.push_back(0.);
-                    ElectronEta.push_back(0.);
-                    ElectronPhi.push_back(0.);
-                    ElectronE.push_back(0.);
                 }
                 
                 
@@ -2546,43 +2857,60 @@ int main (int argc, char *argv[])
 				                            else if(float(pt_jet[i_IndexMatch]) == BJetPt_SMttHypo[idxTopHadBJetFit]) TOPTOPLEPHAD_JetIdx_HadTop = i_IndexMatch;
 				                            else if(float(pt_jet[i_IndexMatch]) == NonBJetPt_SMttHypo[idxTopHadWNonBJet1Fit]) TOPTOPLEPHAD_JetIdx_W1 = i_IndexMatch;
 				                            else if(float(pt_jet[i_IndexMatch]) == NonBJetPt_SMttHypo[idxTopHadWNonBJet2Fit]) TOPTOPLEPHAD_JetIdx_W2 = i_IndexMatch;
-        /*				                    else
-				                            {
-				                                cout << "An error occurred in the jet-index matching of the sorted jet collection to the original jet collection" << endl;
-				                                return 1;
-				                            }
-        */				                
                                 }
                                   
                                 TopHadMass_TOPTOPLEPHAD = TopHad.M();
-                                TopLepMass_TOPTOPLEPHAD = TopLep.M();
-                                TopLepTopHadDr_TOPTOPLEPHAD = TopLep.DeltaR(TopHad);
-                                TopLepBJetCSVv2_TOPTOPLEPHAD = CSVv2[TOPTOPLEPHAD_JetIdx_LepTop];
-                                TopHadBJetCSVv2_TOPTOPLEPHAD = CSVv2[TOPTOPLEPHAD_JetIdx_HadTop];
-                                TopHadWNonBJet1CSVv2_TOPTOPLEPHAD = CSVv2[TOPTOPLEPHAD_JetIdx_W1];
-                                TopHadWNonBJet2CSVv2_TOPTOPLEPHAD = CSVv2[TOPTOPLEPHAD_JetIdx_W2];
+                                TopHadEta_TOPTOPLEPHAD = TopHad.Eta();
+                                TopHadPhi_TOPTOPLEPHAD = TopHad.Phi();
+                                TopHadPt_TOPTOPLEPHAD = TopHad.Pt();
 
-/*
-    cout << " JetIndices: " << TOPTOPLEPHAD_JetIdx_W1 << " " << TOPTOPLEPHAD_JetIdx_W2 << " " << TOPTOPLEPHAD_JetIdx_LepTop << " " << TOPTOPLEPHAD_JetIdx_HadTop << endl;
-    cout << " - pt_jet[TOPTOPLEPHAD_JetIdx_W1]: " << pt_jet[TOPTOPLEPHAD_JetIdx_W1] << endl;
-    cout << " - pt_jet[TOPTOPLEPHAD_JetIdx_W2]: " << pt_jet[TOPTOPLEPHAD_JetIdx_W2] << endl;
-    cout << " - pt_jet[TOPTOPLEPHAD_JetIdx_LepTop]: " << pt_jet[TOPTOPLEPHAD_JetIdx_LepTop] << endl;
-    cout << " - pt_jet[TOPTOPLEPHAD_JetIdx_HadTop]: " << pt_jet[TOPTOPLEPHAD_JetIdx_HadTop] << endl;
-    cout << " - eta_jet[TOPTOPLEPHAD_JetIdx_W1]: " << eta_jet[TOPTOPLEPHAD_JetIdx_W1] << endl;
-    cout << " - eta_jet[TOPTOPLEPHAD_JetIdx_W2]: " << eta_jet[TOPTOPLEPHAD_JetIdx_W2] << endl;
-    cout << " - eta_jet[TOPTOPLEPHAD_JetIdx_LepTop]: " << eta_jet[TOPTOPLEPHAD_JetIdx_LepTop] << endl;
-    cout << " - eta_jet[TOPTOPLEPHAD_JetIdx_HadTop]: " << eta_jet[TOPTOPLEPHAD_JetIdx_HadTop] << endl;
-    cout << " - phi_jet[TOPTOPLEPHAD_JetIdx_W1]: " << phi_jet[TOPTOPLEPHAD_JetIdx_W1] << endl;
-    cout << " - phi_jet[TOPTOPLEPHAD_JetIdx_W2]: " << phi_jet[TOPTOPLEPHAD_JetIdx_W2] << endl;
-    cout << " - phi_jet[TOPTOPLEPHAD_JetIdx_LepTop]: " << phi_jet[TOPTOPLEPHAD_JetIdx_LepTop] << endl;
-    cout << " - phi_jet[TOPTOPLEPHAD_JetIdx_HadTop]: " << phi_jet[TOPTOPLEPHAD_JetIdx_HadTop] << endl;
-    cout << " - E_jet[TOPTOPLEPHAD_JetIdx_W1]: " << E_jet[TOPTOPLEPHAD_JetIdx_W1] << endl;
-    cout << " - E_jet[TOPTOPLEPHAD_JetIdx_W2]: " << E_jet[TOPTOPLEPHAD_JetIdx_W2] << endl;
-    cout << " - E_jet[TOPTOPLEPHAD_JetIdx_LepTop]: " << E_jet[TOPTOPLEPHAD_JetIdx_LepTop] << endl;
-    cout << " - E_jet[TOPTOPLEPHAD_JetIdx_HadTop]: " << E_jet[TOPTOPLEPHAD_JetIdx_HadTop] << endl;
-    cout << "HadTopMass (TOPTOPLEPHAD): " << VarTopHadRecM << endl;
-    cout << "HiggsMass (TOPTOPLEPHAD): " << VarTopHadWRecM << endl;
-*/				                   }
+                                TopLepMass_TOPTOPLEPHAD = TopLep.M();
+if(TopLepMass_TOPTOPLEPHAD != TopLepMass_TOPTOPLEPHAD)
+{
+//    cin.get();
+    cout << "" << endl;
+    
+    cout << "Four-momentum netrino (px,py,pz,E): (" << NuPx << ","  << NuPy << "," << NuPz << "," << NuE << ")" << endl;
+    cout << "Four-momentum lepton (pt,eta,phi,E): (" << TopLepWLepFitPt << ","  << TopLepWLepFitEta << "," << TopLepWLepFitPhi << "," << TopLepWLepFitE << ")" << endl;
+    cout << "Four-momentum bjet (pt,eta,phi,E): (" << TopLepBJetFitPt << ","  << TopLepBJetFitEta << "," << TopLepBJetFitPhi << "," << TopLepBJetFitE << ")" << endl;
+
+}
+                                TopLepEta_TOPTOPLEPHAD = TopLep.Eta();
+                                TopLepPhi_TOPTOPLEPHAD = TopLep.Phi();
+                                TopLepPt_TOPTOPLEPHAD = TopLep.Pt();
+
+                                TopHadWMass_TOPTOPLEPHAD = TopHadW.M();
+                                TopHadWEta_TOPTOPLEPHAD = TopHadW.Eta();
+                                TopHadWPhi_TOPTOPLEPHAD = TopHadW.Phi();
+                                TopHadWPt_TOPTOPLEPHAD = TopHadW.Pt();
+
+                                TopLepTopHadDr_TOPTOPLEPHAD = TopLep.DeltaR(TopHad);
+                                WJet1WJet2Dr_TOPTOPLEPHAD = sqrt( pow(TopHadWNonBJet2FitPhi-TopHadWNonBJet1FitPhi,2) + pow(TopHadWNonBJet2FitEta-TopHadWNonBJet1FitEta,2) );
+
+                                TopLepBJetCSVv2_TOPTOPLEPHAD = CSVv2[TOPTOPLEPHAD_JetIdx_LepTop];
+                                TopLepBJetPt_TOPTOPLEPHAD = TopLepBJetFitPt;
+                                TopLepBJetPhi_TOPTOPLEPHAD = TopLepBJetFitPhi;
+                                TopLepBJetEta_TOPTOPLEPHAD = TopLepBJetFitEta;
+                                TopLepBJetE_TOPTOPLEPHAD = TopLepBJetFitE;
+
+                                TopHadBJetCSVv2_TOPTOPLEPHAD = CSVv2[TOPTOPLEPHAD_JetIdx_HadTop];
+                                TopHadBJetPt_TOPTOPLEPHAD = TopHadBJetFitPt;
+                                TopHadBJetPhi_TOPTOPLEPHAD = TopHadBJetFitPhi;
+                                TopHadBJetEta_TOPTOPLEPHAD = TopHadBJetFitEta;
+                                TopHadBJetE_TOPTOPLEPHAD = TopHadBJetFitE;
+
+                                TopHadWNonBJet1CSVv2_TOPTOPLEPHAD = CSVv2[TOPTOPLEPHAD_JetIdx_W1];
+                                TopHadWNonBJet1Pt_TOPTOPLEPHAD = TopHadWNonBJet1FitPt;
+                                TopHadWNonBJet1Phi_TOPTOPLEPHAD = TopHadWNonBJet1FitPhi;
+                                TopHadWNonBJet1Eta_TOPTOPLEPHAD = TopHadWNonBJet1FitEta;
+                                TopHadWNonBJet1E_TOPTOPLEPHAD = TopHadWNonBJet1FitE;
+
+                                TopHadWNonBJet2CSVv2_TOPTOPLEPHAD = CSVv2[TOPTOPLEPHAD_JetIdx_W2];
+                                TopHadWNonBJet2Pt_TOPTOPLEPHAD = TopHadWNonBJet2FitPt;
+                                TopHadWNonBJet2Phi_TOPTOPLEPHAD = TopHadWNonBJet2FitPhi;
+                                TopHadWNonBJet2Eta_TOPTOPLEPHAD = TopHadWNonBJet2FitEta;
+                                TopHadWNonBJet2E_TOPTOPLEPHAD = TopHadWNonBJet2FitE;
+				                   }
 
                     }
                     //Run over TTHypo
@@ -2615,6 +2943,14 @@ int main (int argc, char *argv[])
 		                     
 		                     TLorentzVector *TopLepBJetFitP4 = new TLorentzVector();
 		                     TopLepBJetFitP4->SetPtEtaPhiE(TopLepBJetFitPt,TopLepBJetFitEta,TopLepBJetFitPhi,TopLepBJetFitE);
+
+		                     float TopHadNonBJetFitPt = NonBJetPt_TTHypo[idxTopHadNonBJetFit];
+		                     float TopHadNonBJetFitEta = NonBJetEta_TTHypo[idxTopHadNonBJetFit];
+		                     float TopHadNonBJetFitPhi = NonBJetPhi_TTHypo[idxTopHadNonBJetFit];
+		                     float TopHadNonBJetFitE = NonBJetE_TTHypo[idxTopHadNonBJetFit];
+		                     
+		                     TLorentzVector *TopHadNonBJetFitP4 = new TLorentzVector();
+		                     TopHadNonBJetFitP4->SetPtEtaPhiE(TopHadNonBJetFitPt,TopHadNonBJetFitEta,TopHadNonBJetFitPhi,TopHadNonBJetFitE);
 		                     
 		                     float HiggsBJet1FitPt = BJetPt_TTHypo[idxHiggsBJet1Fit];
 		                     float HiggsBJet1FitEta = BJetEta_TTHypo[idxHiggsBJet1Fit];
@@ -2635,6 +2971,7 @@ int main (int argc, char *argv[])
 		                     
 		                     TLorentzVector Higgs = *HiggsBJet1FitP4+*HiggsBJet2FitP4;
 		                     TLorentzVector TopLep = *TopLepWLepFitP4+*TopLepWNuFitP4+*TopLepBJetFitP4;
+		                     TLorentzVector TopHad = *HiggsBJet1FitP4+*HiggsBJet2FitP4+*TopHadNonBJetFitP4;
 
 		                     float VarHiggsRecM = Higgs.M();
 		                     float VarTopLepRecM = TopLep.M();
@@ -2698,40 +3035,50 @@ int main (int argc, char *argv[])
 				                            else if(float(pt_jet[i_IndexMatch]) == NonBJetPt_TTHypo[idxTopHadNonBJetFit]) TOPTOPLEPHBB_JetIdx_HadTop = i_IndexMatch;
 				                            else if(float(pt_jet[i_IndexMatch]) == BJetPt_TTHypo[idxHiggsBJet1Fit]) TOPTOPLEPHBB_JetIdx_H1 = i_IndexMatch;
 				                            else if(float(pt_jet[i_IndexMatch]) ==BJetPt_TTHypo[idxHiggsBJet2Fit]) TOPTOPLEPHBB_JetIdx_H2 = i_IndexMatch;
-        /*				                    else
-				                            {
-				                                cout << "An error occurred in the jet-index matching of the sorted jet collection to the original jet collection" << endl;
-				                                return 1;
-				                            }
-        */				                }
-/*    cout << " JetIndices: " << TOPTOPLEPHBB_JetIdx_W1 << " " << TOPTOPLEPHBB_JetIdx_W2 << " " << TOPTOPLEPHBB_JetIdx_LepTop << " " << TOPTOPLEPHBB_JetIdx_HadTop << endl;
-    cout << " - pt_jet[TOPTOPLEPHBB_JetIdx_W1]: " << pt_jet[TOPTOPLEPHBB_JetIdx_W1] << endl;
-    cout << " - pt_jet[TOPTOPLEPHBB_JetIdx_W2]: " << pt_jet[TOPTOPLEPHBB_JetIdx_W2] << endl;
-    cout << " - pt_jet[TOPTOPLEPHBB_JetIdx_LepTop]: " << pt_jet[TOPTOPLEPHBB_JetIdx_LepTop] << endl;
-    cout << " - pt_jet[TOPTOPLEPHBB_JetIdx_HadTop]: " << pt_jet[TOPTOPLEPHBB_JetIdx_HadTop] << endl;
-    cout << " - eta_jet[TOPTOPLEPHBB_JetIdx_W1]: " << eta_jet[TOPTOPLEPHBB_JetIdx_W1] << endl;
-    cout << " - eta_jet[TOPTOPLEPHBB_JetIdx_W2]: " << eta_jet[TOPTOPLEPHBB_JetIdx_W2] << endl;
-    cout << " - eta_jet[TOPTOPLEPHBB_JetIdx_LepTop]: " << eta_jet[TOPTOPLEPHBB_JetIdx_LepTop] << endl;
-    cout << " - eta_jet[TOPTOPLEPHBB_JetIdx_HadTop]: " << eta_jet[TOPTOPLEPHBB_JetIdx_HadTop] << endl;
-    cout << " - phi_jet[TOPTOPLEPHBB_JetIdx_W1]: " << phi_jet[TOPTOPLEPHBB_JetIdx_W1] << endl;
-    cout << " - phi_jet[TOPTOPLEPHBB_JetIdx_W2]: " << phi_jet[TOPTOPLEPHBB_JetIdx_W2] << endl;
-    cout << " - phi_jet[TOPTOPLEPHBB_JetIdx_LepTop]: " << phi_jet[TOPTOPLEPHBB_JetIdx_LepTop] << endl;
-    cout << " - phi_jet[TOPTOPLEPHBB_JetIdx_HadTop]: " << phi_jet[TOPTOPLEPHBB_JetIdx_HadTop] << endl;
-    cout << " - E_jet[TOPTOPLEPHBB_JetIdx_W1]: " << E_jet[TOPTOPLEPHBB_JetIdx_W1] << endl;
-    cout << " - E_jet[TOPTOPLEPHBB_JetIdx_W2]: " << E_jet[TOPTOPLEPHBB_JetIdx_W2] << endl;
-    cout << " - E_jet[TOPTOPLEPHBB_JetIdx_LepTop]: " << E_jet[TOPTOPLEPHBB_JetIdx_LepTop] << endl;
-    cout << " - E_jet[TOPTOPLEPHBB_JetIdx_HadTop]: " << E_jet[TOPTOPLEPHBB_JetIdx_HadTop] << endl;
-    cout << "HadTopMass (TOPTOPLEPHBB): " << VarTopHadRecM << endl;
-    cout << "HiggsMass (TOPTOPLEPHBB): " << VarTopHadHRecM << endl;
-*/
-                              HiggsMass_TOPTOPLEPHBB = Higgs.M();
-                              TopLepMass_TOPTOPLEPHBB = TopLep.M();
-                              HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB = HiggsBJet1FitP4->DeltaR(*HiggsBJet2FitP4);
-                              TopLepHiggsDr_TOPTOPLEPHBB = Higgs.DeltaR(TopLep);
-                              HiggsBJet1CSVv2_TOPTOPLEPHBB = CSVv2[TOPTOPLEPHBB_JetIdx_H1];
-                              HiggsBJet2CSVv2_TOPTOPLEPHBB = CSVv2[TOPTOPLEPHBB_JetIdx_H2];
-                              TopLepBJetCSVv2_TOPTOPLEPHBB = CSVv2[TOPTOPLEPHBB_JetIdx_LepTop];
-                              TopHadNonBJetCSVv2_TOPTOPLEPHBB = CSVv2[TOPTOPLEPHBB_JetIdx_HadTop];
+        				                }
+        				                
+                                TopHadMass_TOPTOPLEPHBB = TopHad.M();
+                                TopHadEta_TOPTOPLEPHBB = TopHad.Eta();
+                                TopHadPhi_TOPTOPLEPHBB = TopHad.Phi();
+                                TopHadPt_TOPTOPLEPHBB = TopHad.Pt();
+
+                                TopLepMass_TOPTOPLEPHBB = TopLep.M();
+                                TopLepEta_TOPTOPLEPHBB = TopLep.Eta();
+                                TopLepPhi_TOPTOPLEPHBB = TopLep.Phi();
+                                TopLepPt_TOPTOPLEPHBB = TopLep.Pt();
+
+                                HiggsMass_TOPTOPLEPHBB = Higgs.M();
+                                HiggsEta_TOPTOPLEPHBB = Higgs.Eta();
+                                HiggsPhi_TOPTOPLEPHBB = Higgs.Phi();
+                                HiggsPt_TOPTOPLEPHBB = Higgs.Pt();
+
+                                TopLepTopHadDr_TOPTOPLEPHBB = TopLep.DeltaR(TopHad);
+                                TopLepHiggsDr_TOPTOPLEPHBB = TopLep.DeltaR(Higgs);
+                                HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB = sqrt( pow(HiggsBJet1FitPhi-HiggsBJet2FitPhi,2) + pow(HiggsBJet1FitEta-HiggsBJet2FitEta,2) );
+
+                                TopLepBJetCSVv2_TOPTOPLEPHBB = CSVv2[TOPTOPLEPHBB_JetIdx_LepTop];
+                                TopLepBJetPt_TOPTOPLEPHBB = TopLepBJetFitPt;
+                                TopLepBJetPhi_TOPTOPLEPHBB = TopLepBJetFitPhi;
+                                TopLepBJetEta_TOPTOPLEPHBB = TopLepBJetFitEta;
+                                TopLepBJetE_TOPTOPLEPHBB = TopLepBJetFitE;
+
+                                TopHadNonBJetCSVv2_TOPTOPLEPHBB = CSVv2[TOPTOPLEPHBB_JetIdx_HadTop];
+                                TopHadNonBJetPt_TOPTOPLEPHBB = TopHadNonBJetFitPt;
+                                TopHadNonBJetPhi_TOPTOPLEPHBB = TopHadNonBJetFitPhi;
+                                TopHadNonBJetEta_TOPTOPLEPHBB = TopHadNonBJetFitEta;
+                                TopHadNonBJetE_TOPTOPLEPHBB = TopHadNonBJetFitE;
+
+                                HiggsBJet1CSVv2_TOPTOPLEPHBB = CSVv2[TOPTOPLEPHBB_JetIdx_H1];
+                                HiggsBJet1Pt_TOPTOPLEPHBB = HiggsBJet1FitPt;
+                                HiggsBJet1Phi_TOPTOPLEPHBB = HiggsBJet1FitPhi;
+                                HiggsBJet1Eta_TOPTOPLEPHBB = HiggsBJet1FitEta;
+                                HiggsBJet1E_TOPTOPLEPHBB = HiggsBJet1FitE;
+
+                                HiggsBJet2CSVv2_TOPTOPLEPHBB = CSVv2[TOPTOPLEPHBB_JetIdx_H2];
+                                HiggsBJet2Pt_TOPTOPLEPHBB = HiggsBJet2FitPt;
+                                HiggsBJet2Phi_TOPTOPLEPHBB = HiggsBJet2FitPhi;
+                                HiggsBJet2Eta_TOPTOPLEPHBB = HiggsBJet2FitEta;
+                                HiggsBJet2E_TOPTOPLEPHBB = HiggsBJet2FitE;
 				                   }
 
                     }
@@ -2851,22 +3198,37 @@ int main (int argc, char *argv[])
 				                        if(float(pt_jet[i_IndexMatch]) == BJetPt_STHypo[idxTopLepBJetFit]) TOPHLEPBB_JetIdx_LepTop_hut = i_IndexMatch;
 				                        else if(float(pt_jet[i_IndexMatch]) == BJetPt_STHypo[idxHiggsBJet1Fit]) TOPHLEPBB_JetIdx_H1_hut = i_IndexMatch;
 				                        else if(float(pt_jet[i_IndexMatch]) == BJetPt_STHypo[idxHiggsBJet2Fit]) TOPHLEPBB_JetIdx_H2_hut = i_IndexMatch;
-    /*				                    else
-				                        {
-				                            cout << "An error occurred in the jet-index matching of the sorted jet collection to the original jet collection" << endl;
-				                            return 1;
-				                        }
-    */				                }
-	                          HiggsMass_TOPHLEPBB_hut = Higgs.M();
-	                          HiggsEta_TOPHLEPBB_hut = Higgs.Eta();
-	                          TopLepMass_TOPHLEPBB_hut = TopLep.M();
-                            TopLepPt_TOPHLEPBB_hut = TopLep.Pt();
-                            TopLepEta_TOPHLEPBB_hut = TopLep.Eta();
-                            HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut = HiggsBJet1FitP4->DeltaR(*HiggsBJet2FitP4);
-                            TopLepHiggsDr_TOPHLEPBB_hut = Higgs.DeltaR(TopLep);
-                            HiggsBJet1CSVv2_TOPHLEPBB_hut = CSVv2[TOPHLEPBB_JetIdx_H1_hct];
-                            HiggsBJet2CSVv2_TOPHLEPBB_hut = CSVv2[TOPHLEPBB_JetIdx_H2_hct];
-                            TopLepBJetCSVv2_TOPHLEPBB_hut = CSVv2[TOPHLEPBB_JetIdx_LepTop_hct];
+    				                }
+                                TopLepMass_TOPHLEPBB_hut = TopLep.M();
+                                TopLepEta_TOPHLEPBB_hut = TopLep.Eta();
+                                TopLepPhi_TOPHLEPBB_hut = TopLep.Phi();
+                                TopLepPt_TOPHLEPBB_hut = TopLep.Pt();
+
+                                HiggsMass_TOPHLEPBB_hut = Higgs.M();
+                                HiggsEta_TOPHLEPBB_hut = Higgs.Eta();
+                                HiggsPhi_TOPHLEPBB_hut = Higgs.Phi();
+                                HiggsPt_TOPHLEPBB_hut = Higgs.Pt();
+
+                                TopLepHiggsDr_TOPHLEPBB_hut = Higgs.DeltaR(TopLep);
+                                HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut = sqrt( pow(HiggsBJet1FitPhi-HiggsBJet2FitPhi,2) + pow(HiggsBJet1FitEta-HiggsBJet2FitEta,2) );
+
+                                TopLepBJetCSVv2_TOPHLEPBB_hut = CSVv2[TOPHLEPBB_JetIdx_LepTop_hut];
+                                TopLepBJetPt_TOPHLEPBB_hut = TopLepBJetFitPt;
+                                TopLepBJetPhi_TOPHLEPBB_hut = TopLepBJetFitPhi;
+                                TopLepBJetEta_TOPHLEPBB_hut = TopLepBJetFitEta;
+                                TopLepBJetE_TOPHLEPBB_hut = TopLepBJetFitE;
+
+                                HiggsBJet1CSVv2_TOPHLEPBB_hut = CSVv2[TOPHLEPBB_JetIdx_H1_hut];
+                                HiggsBJet1Pt_TOPHLEPBB_hut = HiggsBJet1FitPt;
+                                HiggsBJet1Phi_TOPHLEPBB_hut = HiggsBJet1FitPhi;
+                                HiggsBJet1Eta_TOPHLEPBB_hut = HiggsBJet1FitEta;
+                                HiggsBJet1E_TOPHLEPBB_hut = HiggsBJet1FitE;
+
+                                HiggsBJet2CSVv2_TOPHLEPBB_hut = CSVv2[TOPHLEPBB_JetIdx_H2_hut];
+                                HiggsBJet2Pt_TOPHLEPBB_hut = HiggsBJet2FitPt;
+                                HiggsBJet2Phi_TOPHLEPBB_hut = HiggsBJet2FitPhi;
+                                HiggsBJet2Eta_TOPHLEPBB_hut = HiggsBJet2FitEta;
+                                HiggsBJet2E_TOPHLEPBB_hut = HiggsBJet2FitE;
 				               }
 				               if(MVA_tmp_hct > MVA_TOPHLEPBB_hct)
 				               {
@@ -2876,23 +3238,38 @@ int main (int argc, char *argv[])
 				                        if(float(pt_jet[i_IndexMatch]) == BJetPt_STHypo[idxTopLepBJetFit]) TOPHLEPBB_JetIdx_LepTop_hct = i_IndexMatch;
 				                        else if(float(pt_jet[i_IndexMatch]) == BJetPt_STHypo[idxHiggsBJet1Fit]) TOPHLEPBB_JetIdx_H1_hct = i_IndexMatch;
 				                        else if(float(pt_jet[i_IndexMatch]) == BJetPt_STHypo[idxHiggsBJet2Fit]) TOPHLEPBB_JetIdx_H2_hct = i_IndexMatch;
-    /*				                    else
-				                        {
-				                            cout << "An error occurred in the jet-index matching of the sorted jet collection to the original jet collection" << endl;
-				                            return 1;
-				                        }
-    */				                }
+    				                }
 
-	                          HiggsMass_TOPHLEPBB_hct = Higgs.M();
-	                          HiggsEta_TOPHLEPBB_hct = Higgs.Eta();
-	                          TopLepMass_TOPHLEPBB_hct = TopLep.M();
-                            TopLepPt_TOPHLEPBB_hct = TopLep.Pt();
-                            TopLepEta_TOPHLEPBB_hct = TopLep.Eta();
-                            HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct = HiggsBJet1FitP4->DeltaR(*HiggsBJet2FitP4);
-                            TopLepHiggsDr_TOPHLEPBB_hct = Higgs.DeltaR(TopLep);
-                            HiggsBJet1CSVv2_TOPHLEPBB_hct = CSVv2[TOPHLEPBB_JetIdx_H1_hct];
-                            HiggsBJet2CSVv2_TOPHLEPBB_hct = CSVv2[TOPHLEPBB_JetIdx_H2_hct];
-                            TopLepBJetCSVv2_TOPHLEPBB_hct = CSVv2[TOPHLEPBB_JetIdx_LepTop_hct];
+                                TopLepMass_TOPHLEPBB_hct = TopLep.M();
+                                TopLepEta_TOPHLEPBB_hct = TopLep.Eta();
+                                TopLepPhi_TOPHLEPBB_hct = TopLep.Phi();
+                                TopLepPt_TOPHLEPBB_hct = TopLep.Pt();
+
+                                HiggsMass_TOPHLEPBB_hct = Higgs.M();
+                                HiggsEta_TOPHLEPBB_hct = Higgs.Eta();
+                                HiggsPhi_TOPHLEPBB_hct = Higgs.Phi();
+                                HiggsPt_TOPHLEPBB_hct = Higgs.Pt();
+
+                                TopLepHiggsDr_TOPHLEPBB_hct = Higgs.DeltaR(TopLep);
+                                HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct = sqrt( pow(HiggsBJet1FitPhi-HiggsBJet2FitPhi,2) + pow(HiggsBJet1FitEta-HiggsBJet2FitEta,2) );
+
+                                TopLepBJetCSVv2_TOPHLEPBB_hct = CSVv2[TOPHLEPBB_JetIdx_LepTop_hct];
+                                TopLepBJetPt_TOPHLEPBB_hct = TopLepBJetFitPt;
+                                TopLepBJetPhi_TOPHLEPBB_hct = TopLepBJetFitPhi;
+                                TopLepBJetEta_TOPHLEPBB_hct = TopLepBJetFitEta;
+                                TopLepBJetE_TOPHLEPBB_hct = TopLepBJetFitE;
+
+                                HiggsBJet1CSVv2_TOPHLEPBB_hct = CSVv2[TOPHLEPBB_JetIdx_H1_hct];
+                                HiggsBJet1Pt_TOPHLEPBB_hct = HiggsBJet1FitPt;
+                                HiggsBJet1Phi_TOPHLEPBB_hct = HiggsBJet1FitPhi;
+                                HiggsBJet1Eta_TOPHLEPBB_hct = HiggsBJet1FitEta;
+                                HiggsBJet1E_TOPHLEPBB_hct = HiggsBJet1FitE;
+
+                                HiggsBJet2CSVv2_TOPHLEPBB_hct = CSVv2[TOPHLEPBB_JetIdx_H2_hct];
+                                HiggsBJet2Pt_TOPHLEPBB_hct = HiggsBJet2FitPt;
+                                HiggsBJet2Phi_TOPHLEPBB_hct = HiggsBJet2FitPhi;
+                                HiggsBJet2Eta_TOPHLEPBB_hct = HiggsBJet2FitEta;
+                                HiggsBJet2E_TOPHLEPBB_hct = HiggsBJet2FitE;
 				               }
 
                 }

@@ -16,8 +16,8 @@ void produceTF()
    setTDRStyle();
    
    TChain ch("trGEN");
-   ch.Add("run_MERGED/TT_TopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
-   ch.Add("run_MERGED/TT_AntitopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
+   ch.Add("runTEST_MERGED/TT_TopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
+   ch.Add("runTEST_MERGED/TT_AntitopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
 
    bool Pass;
    float dMetPx, dMetPy;
@@ -339,7 +339,7 @@ void produceTF()
 	     double sigma = 20.;
 
 	     std::string funcGausName = hName[i]+"_Fit";
-	     TF1 *funcGaus = new TF1(funcGausName.c_str(),"[9]*(gaus(0)+gaus(3)+gaus(6)+gaus(9))",h[i]->GetXaxis()->GetBinLowEdge(1),
+	     TF1 *funcGaus = new TF1(funcGausName.c_str(),"[12]*(gaus(0)+gaus(3)+gaus(6)+gaus(9))",h[i]->GetXaxis()->GetBinLowEdge(1),
 				     h[i]->GetXaxis()->GetBinUpEdge(h[i]->GetXaxis()->GetNbins()));
 
 	     funcGaus->FixParameter(12,1.0);
@@ -347,7 +347,7 @@ void produceTF()
 	     funcGaus->SetParameter(0,0.6);
 	     funcGaus->SetParameter(1,mean);
 	     funcGaus->SetParameter(2,sigma);
-	     if( hName[i] == "dBJetPz" ) funcGaus->SetParameter(0,0.4);
+//	     if( hName[i] == "dBJetPz" ) funcGaus->SetParameter(0,0.4);
 	     if( hName[i] == "dBJetE" ) funcGaus->SetParameter(0,0.6);
 
 	     funcGaus->SetParameter(3,0.3);
@@ -355,6 +355,7 @@ void produceTF()
 	     funcGaus->SetParameter(5,sigma*2.);
 	     if( hName[i] == "dBJetPz" ) funcGaus->SetParameter(3,0.15);
 	     if( hName[i] == "dBJetPy" ) funcGaus->SetParameter(3,0.2);
+	     if( hName[i] == "dBJetPx" ) funcGaus->SetParameter(3,0.2);
 	     if( hName[i] == "dBJetE" ) funcGaus->SetParameter(3,0.2);
 	     if( hName[i] == "dBJetE" ) funcGaus->SetParameter(5,sigma*6);
 

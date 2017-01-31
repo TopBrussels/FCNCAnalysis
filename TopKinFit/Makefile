@@ -39,13 +39,6 @@ $(LIB):	      $(INC) $(SRC)
 	      @echo  "####### Removing generated dictionary"
 	      @rm -f kinfitDict.cxx kinfitDict.h
 	      @rm -f *.o
-	      
-	      @echo  "####### Copying to ~/lib/"
-	      @cp kinfitDict_rdict.pcm ~/lib/
-	      @cp libKinFit.so ~/lib/
 
 clean:
-	      @echo  "####### Cleaning..."
 	      @rm -f $(OBJS) $(EXE) kinfitDict.cxx kinfitDict.h $(LIB)
-	      @rm ~/lib/kinfitDict_rdict.pcm
-	      @rm ~/lib/libKinFit.so
