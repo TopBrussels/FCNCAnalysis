@@ -325,10 +325,11 @@ int main(int argc, char *argv[])
         for(int JecCounter = WhatSysts_noJECs.size(); JecCounter < WhatSysts.size(); JecCounter++)
         {
             string postfix = "";
+            if(isData && WhatSysts[JecCounter] != "") continue;
             if(!isData) postfix = WhatSysts[JecCounter];
 	      
 
-		        cout<<"Dataset:  :"<<dataSetName<<endl;
+		        cout<<"Dataset:  :"<<(dataSetName+WhatSysts[JecCounter]).c_str()<<endl;
 		        filepath = TreePath+"/FCNC_1L3B__Run2_TopTree_Study_"+dataSetName + postfix + ".root";
 		        if (debug)
 		        {

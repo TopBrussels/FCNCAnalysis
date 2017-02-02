@@ -1,7 +1,7 @@
 #! /bin/bash
 
 g++ -g -std=c++11 -L ~/lib -I ../ -l TopTreeAnaContent80 -l TopTreeAna80 -l MLP -l TreePlayer -l KinFit -l TMVA -l XMLIO -I `root-config --incdir` `root-config --libs` Ntupler.cc -o TreeMaker
-g++ -g -std=c++11 -L ~/lib -I ../ -l TopTreeAnaContent80 -l TopTreeAna80 -l MLP -l TreePlayer -l XMLIO -I `root-config --incdir` `root-config --libs` Ntupler_MCinfo.cc -o MCInfoPlotter
+#g++ -g -std=c++11 -L ~/lib -I ../ -l TopTreeAnaContent80 -l TopTreeAna80 -l MLP -l TreePlayer -l XMLIO -I `root-config --incdir` `root-config --libs` Ntupler_MCinfo.cc -o MCInfoPlotter
 g++ -g -std=c++11 -L ~/lib -I ../ -l TopTreeAnaContent80 -l TopTreeAna80 -l MLP -l TreePlayer -l KinFit -l TMVA -l XMLIO -I `root-config --incdir` `root-config --libs` FCNC_TreeProcessor_ControlPlots.cc -o TreeProcessor_ControlPlots
 g++ -g -std=c++11 -L ~/lib -I ../ -l TopTreeAnaContent80 -l TopTreeAna80 -l MLP -l TreePlayer -l KinFit -l TMVA -l XMLIO -I `root-config --incdir` `root-config --libs` FCNC_TreeProcessor_EventTraining.cc -o TreeProcessor_EventTraining
 g++ -g -std=c++11 -L ~/lib -I ../ -l TopTreeAnaContent80 -l TopTreeAna80 -l MLP -l TreePlayer -l KinFit -l TMVA -l XMLIO -I `root-config --incdir` `root-config --libs` FCNC_TreeProcessor_CutFlowMaker.cc -o TreeProcessor_CutFlowMaker

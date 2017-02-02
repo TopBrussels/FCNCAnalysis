@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
 
     vector<string> WhatSysts;
     
-    WhatSysts.push_back("iterativefit_lfPlus");   
+/*    WhatSysts.push_back("iterativefit_lfPlus");   
     WhatSysts.push_back("iterativefit_lfMinus");   
     WhatSysts.push_back("iterativefit_hfPlus");   
     WhatSysts.push_back("iterativefit_hfMinus");   
@@ -139,15 +139,15 @@ int main(int argc, char *argv[])
     WhatSysts.push_back("NoPUSF");
 //    WhatSysts.push_back("NoLepSF");
 //    WhatSysts.push_back("NoNLOSF");
-    if(doJESSys) WhatSysts.push_back("JESPlus");
+*/    if(doJESSys) WhatSysts.push_back("JESPlus");
     if(doJESSys) WhatSysts.push_back("JESMinus");
     if(doJERSys) WhatSysts.push_back("JERPlus");
     if(doJERSys) WhatSysts.push_back("JERMinus");
-*/    WhatSysts.push_back("");   
+    WhatSysts.push_back("");   
 
     vector<string> WhatSysts_noJECs;
     
-    WhatSysts_noJECs.push_back("iterativefit_lfPlus");   
+/*    WhatSysts_noJECs.push_back("iterativefit_lfPlus");   
     WhatSysts_noJECs.push_back("iterativefit_lfMinus");   
     WhatSysts_noJECs.push_back("iterativefit_hfPlus");   
     WhatSysts_noJECs.push_back("iterativefit_hfMinus");   
@@ -307,7 +307,7 @@ int main(int argc, char *argv[])
         MSPlot[("LeptonEta"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("LeptonEta"+WhatSysts[iSyst]).c_str(), 30, -2.5, 2.5, "#eta_{lep}","Events", ""); 
         MSPlot[("LeptonPhi"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("LeptonPhi"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{lep}","Events", ""); 
         MSPlot[("LeptonCharge"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("LeptonCharge"+WhatSysts[iSyst]).c_str(), 3, -1.5, 1.5, "q_{lep}","Events", ""); 
-/*
+
         MSPlot[("JetPt"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetPt"+WhatSysts[iSyst]).c_str(), 30, 0., 300., "p_{T_{jets}}","Events", "", "GeV"); 
         MSPlot[("JetEta"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetEta"+WhatSysts[iSyst]).c_str(), 30, -2.5, 2.5, "#eta_{jets}","Events", ""); 
         MSPlot[("JetPhi"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("JetPhi"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{jets}","Events", "");
@@ -479,7 +479,7 @@ int main(int argc, char *argv[])
                 MSPlot[("MVA_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -1., 1., "bMVa TopHLepbb","Events", "");
             
         }
-*/    }
+    }
   
  
 
@@ -501,10 +501,11 @@ int main(int argc, char *argv[])
         for(int JecCounter = WhatSysts_noJECs.size(); JecCounter < WhatSysts.size(); JecCounter++)
         {
             string postfix = "";
+            if(isData && WhatSysts[JecCounter] != "") continue;
             if(!isData) postfix = WhatSysts[JecCounter];
 	      
 
-		        cout<<"Dataset:  :"<<dataSetName<<endl;
+		        cout<<"Dataset:  :"<<(dataSetName+WhatSysts[JecCounter]).c_str()<<endl;
 		        filepath = TreePath+"/FCNC_1L3B__Run2_TopTree_Study_"+dataSetName + postfix + ".root";
 		        if (debug)
 		        {
@@ -1451,7 +1452,7 @@ int main(int argc, char *argv[])
                         MSPlot[("LeptonPhi"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(phi_lepton, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                         MSPlot[("LeptonCharge"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(LepCharge, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                         MSPlot[("NPV"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(nvtx, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
-/*                        for(int i_Jet = 0; i_Jet < nJets; i_Jet++)
+                        for(int i_Jet = 0; i_Jet < nJets; i_Jet++)
                         {
                             MSPlot[("JetPt"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(pt_jet[i_Jet], Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                             MSPlot[("JetEta"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(eta_jet[i_Jet], Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
@@ -1624,7 +1625,7 @@ int main(int argc, char *argv[])
                                 MSPlot[("MVA_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(MVA_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                                 MSPlot[("MVA_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(MVA_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                         }
-*/                    }
+                    }
                }
                 if(filepath.find("JESMinus") != string::npos || filepath.find("JESPlus") != string::npos  || filepath.find("JERMinus") != string::npos || filepath.find("JERPlus") != string::npos || isData || WhatSysts[JecCounter] == "")
                {
@@ -1637,7 +1638,7 @@ int main(int argc, char *argv[])
                         MSPlot[("LeptonPhi"+WhatSysts[JecCounter]).c_str()]->Fill(phi_lepton, Sample, ScalePlots, Luminosity * ScaleFactor);
                         MSPlot[("LeptonCharge"+WhatSysts[JecCounter]).c_str()]->Fill(LepCharge, Sample, ScalePlots, Luminosity * ScaleFactor);
                         MSPlot[("NPV"+WhatSysts[JecCounter]).c_str()]->Fill(nvtx, Sample, ScalePlots, Luminosity * ScaleFactor);
-/*                        for(int i_Jet = 0; i_Jet < nJets; i_Jet++)
+                        for(int i_Jet = 0; i_Jet < nJets; i_Jet++)
                         {
                             MSPlot[("JetPt"+WhatSysts[JecCounter]).c_str()]->Fill(pt_jet[i_Jet], Sample, ScalePlots, Luminosity * ScaleFactor);
                             MSPlot[("JetEta"+WhatSysts[JecCounter]).c_str()]->Fill(eta_jet[i_Jet], Sample, ScalePlots, Luminosity * ScaleFactor);
@@ -1811,7 +1812,7 @@ int main(int argc, char *argv[])
                                 MSPlot[("MVA_TOPHLEPBB_hct"+WhatSysts[JecCounter]).c_str() ]->Fill(MVA_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * ScaleFactor);
                             
                         }
-*/               }
+               }
 			                
 		        }//for-loop events
 		    }//for-loop JEC systematic samples              

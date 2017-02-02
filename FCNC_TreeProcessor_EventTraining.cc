@@ -139,11 +139,6 @@ int main(int argc, char *argv[])
     else if(channel == "_Mu") xmlNom = "config/FullMcBkgdSamples_Mu_TreeProcessor.xml";
     else if(channel == "_All") xmlNom = "config/FullMcBkgdSamples_Mu_TreeProcessor.xml";//The xml file for the combined lepton channel doesn't really matter. Just make sure the correct data-lumi is in there
     TString TreePath = "Merged/Ntuples" + channel + "/Ntuples" + date;
-    if(!FileExists(string(TreePath+"/FCNC_1L3B__Run2_TopTree_Study_Data.root")))
-    {
-        system(("hadd "+TreePath+"/FCNC_1L3B__Run2_TopTree_Study_Data.root "+TreePath+"/FCNC_1L3B__Run2_TopTree_Study_Data_*.root").Data());
-    }
-
 
   	const char *xmlfile = xmlNom.c_str();
   	cout << "used config file: " << xmlfile << endl;
@@ -398,7 +393,7 @@ int main(int argc, char *argv[])
         }
 
         int nTrainingEntries = nEntries;
-        nTrainingEntries = int(nEntries/2);
+//        nTrainingEntries = int(nEntries/2);
         
         
   	    //***********************************************RUNNING OVER EVENTS**********************************************
@@ -450,8 +445,8 @@ int main(int argc, char *argv[])
                 {
                       cout << "----- Event " << j << " has a weight larger than 20. Weights are: W_puSF=" << W_puSF_applied << "; W_fleptonSF=" << W_fleptonSF << "; W_btagWeight_shape=" << W_btagWeight_shape << "; nloSF=" << nloSF << endl;
                       cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
-                      cout << "----- The event will be skipped....." << endl;
-                      continue;
+//                      cout << "----- The event will be skipped....." << endl;
+//                      continue;
                 }
 
 
@@ -476,7 +471,7 @@ int main(int argc, char *argv[])
 	          if( HiggsMass_TOPHLEPBB_hct > 500. ) HiggsMass_TOPHLEPBB_hct = 500.;
 	          if( TopLepMass_TOPHLEPBB_hct > 500. ) TopLepMass_TOPHLEPBB_hct = 500.;
 	          if( TopLepPt_TOPHLEPBB_hct > 1000. ) TopLepPt_TOPHLEPBB_hct = 1000.;
-	          if( TopLepMass_TOPTOPLEPHAD > 500. || TopLepMass_TOPTOPLEPHAD != TopLepMass_TOPTOPLEPHAD) TopLepMass_TOPTOPLEPHAD = 500.;
+	          if( TopLepMass_TOPTOPLEPHAD > 500. || TopLepMass_TOPTOPLEPHAD) TopLepMass_TOPTOPLEPHAD = 500.;
 	          if( HiggsMass_TOPTOPLEPHBB > 500. ) HiggsMass_TOPTOPLEPHBB = 500.;
 	          if( TopLepMass_TOPTOPLEPHBB > 500. ) TopLepMass_TOPTOPLEPHBB = 500.;
 	         
@@ -646,7 +641,7 @@ int main(int argc, char *argv[])
 					      "SplitMode=Random:NormMode=NumEvents:!V" );
 	
 	  factory->BookMethod(TMVA::Types::kBDT,"BDT",
-			      "!H:!V:NTrees=300:MaxDepth=3:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:IgnoreNegWeightsInTraining" );
+			      "!H:!V:NTrees=100:MaxDepth=3:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning:IgnoreNegWeightsInTraining" );
 	
 	  factory->TrainAllMethods();
 	

@@ -86,12 +86,17 @@ for chan in channels:
         if d.attrib['add'] == '1':
             print "found dataset to be added..." + str(d.attrib['name'])
             commandString = "./TreeMaker "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff']) +" "+ str(Luminosity_)
+            if "Data" not in str(d.attrib['name']):
+                commandString_JESPlus = "./TreeMaker_JESPlus "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff']) +" "+ str(Luminosity_)
+                commandString_JESMinus = "./TreeMaker_JESMinus "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff']) +" "+ str(Luminosity_)
+                commandString_JERPlus = "./TreeMaker_JERPlus "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff']) +" "+ str(Luminosity_)
+                commandString_JERMinus = "./TreeMaker_JERMinus "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff']) +" "+ str(Luminosity_)
             topTrees = glob.glob(d.attrib['filenames'])
 
             # setting the number of file per job depending whether it is data sample or not
             # this ca be tweaked
             if "Data" in str(d.attrib['name']):
-                FilePerJob= 20
+                FilePerJob= 60
             else:
                 FilePerJob=1
 
@@ -104,7 +109,12 @@ for chan in channels:
             outfileTest = open (filenameTest, 'a')
             if not len(topTrees) == 0:
                 print >> outfileTest, commandString, "dcap://maite.iihe.ac.be:"+topTrees[0], " ", chan , " " , 1 , " 0" , " 10000"
-                
+                if "Data" not in str(d.attrib['name']):
+                    print >> outfileTest, commandString_JESPlus, "dcap://maite.iihe.ac.be:"+topTrees[0], " ", chan , " " , 1 , " 0" , " 10000"
+                    print >> outfileTest, commandString_JESMinus, "dcap://maite.iihe.ac.be:"+topTrees[0], " ", chan , " " , 1 , " 0" , " 10000"
+                    print >> outfileTest, commandString_JERPlus, "dcap://maite.iihe.ac.be:"+topTrees[0], " ", chan , " " , 1 , " 0" , " 10000"
+                    print >> outfileTest, commandString_JERMinus, "dcap://maite.iihe.ac.be:"+topTrees[0], " ", chan , " " , 1 , " 0" , " 10000"
+                    
             N_job = 0
             N_file = 1
             remainder= len(topTrees)%FilePerJob
@@ -159,6 +169,11 @@ for chan in channels:
                     # run on the files
                     print >> outfile, "# now run on the file copied under /$TMPDIR/ "
                     print >> outfile, commandString, scractFiles_str , " ", chan , " " , str(N_job+1) , " 0" , " 10000000" 
+                    if "Data" not in str(d.attrib['name']):
+                        print >> outfile, commandString_JESPlus, scractFiles_str , " ", chan , " " , str(N_job+1) , " 0" , " 10000000" 
+                        print >> outfile, commandString_JESMinus, scractFiles_str , " ", chan , " " , str(N_job+1) , " 0" , " 10000000" 
+                        print >> outfile, commandString_JERPlus, scractFiles_str , " ", chan , " " , str(N_job+1) , " 0" , " 10000000" 
+                        print >> outfile, commandString_JERMinus, scractFiles_str , " ", chan , " " , str(N_job+1) , " 0" , " 10000000" 
 
                     # cleaning
                     listOfFiles=[]

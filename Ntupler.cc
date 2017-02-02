@@ -170,7 +170,7 @@ int main (int argc, char *argv[])
     int doJESShift = 0; // 0: off 1: minus 2: plus
     cout << "doJESShift: " << doJESShift << endl;
 
-    int doJERShift = 0; // 0: off (except nominal scalefactor for jer) 1: minus 2: plus
+    int doJERShift = 2; // 0: off (except nominal scalefactor for jer) 1: minus 2: plus
     cout << "doJERShift: " << doJERShift << endl;
 
     int dobTagEffShift = 0; //0: off (except nominal scalefactor for btag eff) 1: minus 2: plus
@@ -1985,10 +1985,11 @@ int main (int argc, char *argv[])
               
             }
             else trigged = true;
-//             if(dName.find("NP")!=string::npos)
-//            {
-//                trigged = true;
-//            }
+            //List of samples for which for some reason the triggers don't work
+            if(dName.find("ttW")!=string::npos || dName.find("ttZ")!=string::npos || dName.find("ST-s")!=string::npos || dName.find("ST-t")!=string::npos || dName.find("ST-Top-tW")!=string::npos || dName.find("ST-AntiTop-tW")!=string::npos)
+            {
+                trigged = true;
+            }
 
             //Event cleaning filters
             if(isData)
