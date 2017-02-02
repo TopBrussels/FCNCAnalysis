@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
   float Luminosity = 0;
   
   
-  MultiSamplePlot* cutFlowPlot = new MultiSamplePlot(datasets, "Cut Flow", 10, -0.5, 9.5, "Applied Cut");
+  MultiSamplePlot* cutFlowPlot = new MultiSamplePlot(datasets, "Cut Flow", 12, -0.5, 11.5, "Applied Cut");
   MultiSamplePlot* detailcutFlowPlot = new MultiSamplePlot(datasets, "Cut Flow Detail", 10, -0.5, 9.5, "Applied Cut");
   MultiSamplePlot* detailcutFlowPlot3 = new MultiSamplePlot(datasets, "Cut Flow Last 3 cuts", 10, -0.5, 9.5, "Applied Cut");
   
@@ -139,13 +139,13 @@ int main(int argc, char *argv[])
   cutstep_string.push_back("3lep");
   cutstep_string.push_back("VetoMu");
   cutstep_string.push_back("VetoEl");
-  cutstep_string.push_back("OSSF");
+  //cutstep_string.push_back("OSSF");
   cutstep_string.push_back("Zmass");
-  cutstep_string.push_back(">1jet");
-  cutstep_string.push_back(">0CSVL");
-  cutstep_string.push_back("mWt");
-  cutstep_string.push_back("SMtop");
-  cutstep_string.push_back("METfilter");
+ // cutstep_string.push_back(">1jet");
+ // cutstep_string.push_back(">0CSVL");
+ // cutstep_string.push_back("mWt");
+ // cutstep_string.push_back("SMtop");
+  //cutstep_string.push_back("METfilter");
   
   for(int iC = 0 ; iC < cutstep_string.size(); iC++){
     if(debug) cout << "cut " << iC  << " label " << cutstep_string[iC] <<  endl;
@@ -157,10 +157,10 @@ int main(int argc, char *argv[])
     if(debug) cout << "cut " << iC  << " label " << cutstep_string[iC] <<  endl;
     CutsselecTabledetail.push_back(cutstep_string[iC]);
   }
-  for(int iC = 6 ; iC < cutstep_string.size(); iC++){
+ /* for(int iC = 6 ; iC < cutstep_string.size(); iC++){
     if(debug) cout << "cut " << iC  << " label " << cutstep_string[iC] <<  endl;
     CutsselecTabledetail3.push_back(cutstep_string[iC]);
-  }
+  }*/
   cout << " end defining cuts" << endl;
   
   //***************************************************GETTING LUMI FROM DATA IN XML****************************************************
@@ -192,10 +192,11 @@ int main(int argc, char *argv[])
   {
     
     dataSetName = datasets[d]->Name();
-    cout<<"Dataset:  :"<<dataSetName<<endl;
-    if(dataSetName.find("tZq")==string::npos) continue;
+    
+    cout<<"Dataset:  :"<<dataSetName<< " with title " << datasets[d]->Title() <<  endl;
+ //   if(dataSetName.find("tZq")==string::npos) continue;
     filepath = TreePath+"/"+dataSetName + ".root";
-    filepath = "NtupleMakerOutput/Ntuples/Ntuples_170117/FCNC_3L_tZq_80X_1.root";
+  //  filepath = "NtupleMakerOutput/Ntuples/Ntuples_170117/FCNC_3L_tZq_80X_1.root";
     
     if (debug)
     {
@@ -211,7 +212,11 @@ int main(int argc, char *argv[])
       if(debug) cout << "Data found" << endl;
       isData =true;
     }
-    else if(dataSetName.find("NLO") != string::npos || dataSetName.find("nlo") !=string::npos || dataSetName.find("amc") !=string::npos) isAMC = true;
+    else if(dataSetName.find("NLO") != string::npos || dataSetName.find("nlo") !=string::npos || dataSetName.find("amc") !=string::npos) {
+      
+       isAMC = true;
+      cout << "is amc" << endl;
+    }
     
     std::vector<double> cuts;
     
@@ -230,11 +235,11 @@ int main(int argc, char *argv[])
     
     
     
-    Int_t cutst[15]; //
-    Int_t cutst_eee[15];
-    Int_t cutst_eeu[15];
-    Int_t cutst_uuu[15];
-    Int_t cutst_uue[15];
+    Float_t cutst[15]; //
+    Float_t cutst_eee[15];
+    Float_t cutst_eeu[15];
+    Float_t cutst_uuu[15];
+    Float_t cutst_uue[15];
     
     Int_t nCuts_ = 10; //REDEFINE if ncuts change
     
@@ -427,6 +432,7 @@ int main(int argc, char *argv[])
     }
     
     globalSF = globalSF * nloSF;
+    cout << "global SF " << globalSF << endl; 
     
     //***********************************************RUNNING OVER EVENTS**********************************************
     int nTrigg_total = 0;
@@ -576,43 +582,43 @@ int main(int argc, char *argv[])
       cutFlowPlot->Fill(1, datasets[d], true, n3lep_total*Luminosity*globalSF/EquilumiSF);
       cutFlowPlot->Fill(2, datasets[d], true, nVetoMu_total*Luminosity*globalSF/EquilumiSF);
       cutFlowPlot->Fill(3, datasets[d], true, nVetoEl_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(4, datasets[d], true, nOS_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(5, datasets[d], true, nZmass_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(6, datasets[d], true, nJet_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(7, datasets[d], true, nBJet_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(8, datasets[d], true, nMWT_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(9, datasets[d], true, nMET_total*Luminosity*globalSF/EquilumiSF);
+    //  cutFlowPlot->Fill(4, datasets[d], true, nOS_total*Luminosity*globalSF/EquilumiSF);
+      cutFlowPlot->Fill(4, datasets[d], true, nZmass_total*Luminosity*globalSF/EquilumiSF);
+    //  cutFlowPlot->Fill(5, datasets[d], true, nJet_total*Luminosity*globalSF/EquilumiSF);
+    //  cutFlowPlot->Fill(6, datasets[d], true, nBJet_total*Luminosity*globalSF/EquilumiSF);
+    //  cutFlowPlot->Fill(8, datasets[d], true, nMWT_total*Luminosity*globalSF/EquilumiSF);
+    //  cutFlowPlot->Fill(7, datasets[d], true, nMET_total*Luminosity*globalSF/EquilumiSF);
       
       
       detailcutFlowPlot->Fill(0, datasets[d], true, n3lep_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot->Fill(1, datasets[d], true, nVetoMu_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot->Fill(2, datasets[d], true, nVetoEl_total*Luminosity*globalSF/EquilumiSF);
-      detailcutFlowPlot->Fill(3, datasets[d], true, nOS_total*Luminosity*globalSF/EquilumiSF);
-      detailcutFlowPlot->Fill(4, datasets[d], true, nZmass_total*Luminosity*globalSF/EquilumiSF);
-      detailcutFlowPlot->Fill(5, datasets[d], true, nJet_total*Luminosity*globalSF/EquilumiSF);
-      detailcutFlowPlot->Fill(6, datasets[d], true, nBJet_total*Luminosity*globalSF/EquilumiSF);
-      detailcutFlowPlot->Fill(7, datasets[d], true, nMWT_total*Luminosity*globalSF/EquilumiSF);
-      detailcutFlowPlot->Fill(8, datasets[d], true, nMET_total*Luminosity*globalSF/EquilumiSF);
+     // detailcutFlowPlot->Fill(3, datasets[d], true, nOS_total*Luminosity*globalSF/EquilumiSF);
+      detailcutFlowPlot->Fill(3, datasets[d], true, nZmass_total*Luminosity*globalSF/EquilumiSF);
+    /*  detailcutFlowPlot->Fill(4, datasets[d], true, nJet_total*Luminosity*globalSF/EquilumiSF);
+      detailcutFlowPlot->Fill(5, datasets[d], true, nBJet_total*Luminosity*globalSF/EquilumiSF);
+      detailcutFlowPlot->Fill(6, datasets[d], true, nMWT_total*Luminosity*globalSF/EquilumiSF);
+      detailcutFlowPlot->Fill(7, datasets[d], true, nMET_total*Luminosity*globalSF/EquilumiSF);
+      */
       
-      
-      
+     /*
       detailcutFlowPlot3->Fill(0, datasets[d], true, nZmass_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot3->Fill(1, datasets[d], true, nJet_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot3->Fill(2, datasets[d], true, nBJet_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot3->Fill(3, datasets[d], true, nMWT_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot3->Fill(4, datasets[d], true, nMET_total*Luminosity*globalSF/EquilumiSF);
-      
+     */
       selecTable.Fill(d, 0, nTrigg_total *Luminosity*globalSF/EquilumiSF);
       selecTable.Fill(d, 1, n3lep_total *Luminosity*globalSF/EquilumiSF);
       selecTable.Fill(d, 2, nVetoMu_total *Luminosity*globalSF/EquilumiSF);
       selecTable.Fill(d, 3, nVetoEl_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 4, nOS_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 5, nZmass_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 6, nJet_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 7, nBJet_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 8, nMWT_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 9, nMET_total *Luminosity*globalSF/EquilumiSF);
-      
+    //  selecTable.Fill(d, 4, nOS_total *Luminosity*globalSF/EquilumiSF);
+      selecTable.Fill(d, 4, nZmass_total *Luminosity*globalSF/EquilumiSF);
+    /*  selecTable.Fill(d, 5, nJet_total *Luminosity*globalSF/EquilumiSF);
+      selecTable.Fill(d, 6, nBJet_total *Luminosity*globalSF/EquilumiSF);
+    //  selecTable.Fill(d, 8, nMWT_total *Luminosity*globalSF/EquilumiSF);
+      selecTable.Fill(d, 7, nMET_total *Luminosity*globalSF/EquilumiSF);
+      */
     }
     else if(dChan == 3) // eee
     {
@@ -620,14 +626,14 @@ int main(int argc, char *argv[])
       cutFlowPlot->Fill(1, datasets[d], true, n3lep_eee_total*Luminosity*globalSF/EquilumiSF);
       cutFlowPlot->Fill(2, datasets[d], true, nVetoMu_eee_total*Luminosity*globalSF/EquilumiSF);
       cutFlowPlot->Fill(3, datasets[d], true, nVetoEl_eee_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(4, datasets[d], true, nOS_eee_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(5, datasets[d], true, nZmass_eee_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(6, datasets[d], true, nJet_eee_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(7, datasets[d], true, nBJet_eee_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(8, datasets[d], true, nMWT_eee_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(9, datasets[d], true, nMET_eee_total*Luminosity*globalSF/EquilumiSF);
-      
-      
+    //  cutFlowPlot->Fill(4, datasets[d], true, nOS_eee_total*Luminosity*globalSF/EquilumiSF);
+      cutFlowPlot->Fill(4, datasets[d], true, nZmass_eee_total*Luminosity*globalSF/EquilumiSF);
+   /*   cutFlowPlot->Fill(5, datasets[d], true, nJet_eee_total*Luminosity*globalSF/EquilumiSF);
+      cutFlowPlot->Fill(6, datasets[d], true, nBJet_eee_total*Luminosity*globalSF/EquilumiSF);
+     // cutFlowPlot->Fill(8, datasets[d], true, nMWT_eee_total*Luminosity*globalSF/EquilumiSF);
+      cutFlowPlot->Fill(7, datasets[d], true, nMET_eee_total*Luminosity*globalSF/EquilumiSF);
+     */
+   /*
       detailcutFlowPlot->Fill(0, datasets[d], true, n3lep_eee_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot->Fill(1, datasets[d], true, nVetoMu_eee_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot->Fill(2, datasets[d], true, nVetoEl_eee_total*Luminosity*globalSF/EquilumiSF);
@@ -645,18 +651,18 @@ int main(int argc, char *argv[])
       detailcutFlowPlot3->Fill(2, datasets[d], true, nBJet_eee_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot3->Fill(3, datasets[d], true, nMWT_eee_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot3->Fill(4, datasets[d], true, nMET_eee_total*Luminosity*globalSF/EquilumiSF);
-      
+      */
       selecTable.Fill(d, 0, nTrigg_eee_total *Luminosity*globalSF/EquilumiSF);
       selecTable.Fill(d, 1, n3lep_eee_total *Luminosity*globalSF/EquilumiSF);
       selecTable.Fill(d, 2, nVetoMu_eee_total *Luminosity*globalSF/EquilumiSF);
       selecTable.Fill(d, 3, nVetoEl_eee_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 4, nOS_eee_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 5, nZmass_eee_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 6, nJet_eee_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 7, nBJet_eee_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 8, nMWT_eee_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 9, nMET_eee_total *Luminosity*globalSF/EquilumiSF);
-      
+     // selecTable.Fill(d, 4, nOS_eee_total *Luminosity*globalSF/EquilumiSF);
+      selecTable.Fill(d, 4, nZmass_eee_total *Luminosity*globalSF/EquilumiSF);
+     /* selecTable.Fill(d, 5, nJet_eee_total *Luminosity*globalSF/EquilumiSF);
+      selecTable.Fill(d, 6, nBJet_eee_total *Luminosity*globalSF/EquilumiSF);
+     // selecTable.Fill(d, 8, nMWT_eee_total *Luminosity*globalSF/EquilumiSF);
+      selecTable.Fill(d, 7, nMET_eee_total *Luminosity*globalSF/EquilumiSF);
+      */
     }
     else if(dChan == 2) // eeu
     {
@@ -664,13 +670,13 @@ int main(int argc, char *argv[])
       cutFlowPlot->Fill(1, datasets[d], true, n3lep_eeu_total*Luminosity*globalSF/EquilumiSF);
       cutFlowPlot->Fill(2, datasets[d], true, nVetoMu_eeu_total*Luminosity*globalSF/EquilumiSF);
       cutFlowPlot->Fill(3, datasets[d], true, nVetoEl_eeu_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(4, datasets[d], true, nOS_eeu_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(5, datasets[d], true, nZmass_eeu_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(6, datasets[d], true, nJet_eeu_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(7, datasets[d], true, nBJet_eeu_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(8, datasets[d], true, nMWT_eeu_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(9, datasets[d], true, nMET_eeu_total*Luminosity*globalSF/EquilumiSF);
-      
+    //  cutFlowPlot->Fill(4, datasets[d], true, nOS_eeu_total*Luminosity*globalSF/EquilumiSF);
+      cutFlowPlot->Fill(4, datasets[d], true, nZmass_eeu_total*Luminosity*globalSF/EquilumiSF);
+  /*    cutFlowPlot->Fill(5, datasets[d], true, nJet_eeu_total*Luminosity*globalSF/EquilumiSF);
+      cutFlowPlot->Fill(6, datasets[d], true, nBJet_eeu_total*Luminosity*globalSF/EquilumiSF);
+    //  cutFlowPlot->Fill(8, datasets[d], true, nMWT_eeu_total*Luminosity*globalSF/EquilumiSF);
+      cutFlowPlot->Fill(7, datasets[d], true, nMET_eeu_total*Luminosity*globalSF/EquilumiSF);
+     */ /*
       
       detailcutFlowPlot->Fill(0, datasets[d], true, n3lep_eeu_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot->Fill(1, datasets[d], true, nVetoMu_eeu_total*Luminosity*globalSF/EquilumiSF);
@@ -690,17 +696,17 @@ int main(int argc, char *argv[])
       detailcutFlowPlot3->Fill(3, datasets[d], true, nMWT_eeu_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot3->Fill(4, datasets[d], true, nMET_eeu_total*Luminosity*globalSF/EquilumiSF);
       
-      selecTable.Fill(d, 0, nTrigg_eeu_total *Luminosity*globalSF/EquilumiSF);
+    */  selecTable.Fill(d, 0, nTrigg_eeu_total *Luminosity*globalSF/EquilumiSF);
       selecTable.Fill(d, 1, n3lep_eeu_total *Luminosity*globalSF/EquilumiSF);
       selecTable.Fill(d, 2, nVetoMu_eeu_total *Luminosity*globalSF/EquilumiSF);
       selecTable.Fill(d, 3, nVetoEl_eeu_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 4, nOS_eeu_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 5, nZmass_eeu_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 6, nJet_eeu_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 7, nBJet_eeu_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 8, nMWT_eeu_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 9, nMET_eeu_total *Luminosity*globalSF/EquilumiSF);
-      
+    //  selecTable.Fill(d, 4, nOS_eeu_total *Luminosity*globalSF/EquilumiSF);
+      selecTable.Fill(d, 4, nZmass_eeu_total *Luminosity*globalSF/EquilumiSF);
+  /*    selecTable.Fill(d, 5, nJet_eeu_total *Luminosity*globalSF/EquilumiSF);
+      selecTable.Fill(d, 6, nBJet_eeu_total *Luminosity*globalSF/EquilumiSF);
+   //   selecTable.Fill(d, 8, nMWT_eeu_total *Luminosity*globalSF/EquilumiSF);
+      selecTable.Fill(d, 7, nMET_eeu_total *Luminosity*globalSF/EquilumiSF);
+   */
     }
     else if(dChan==1) // uue
     {
@@ -708,14 +714,14 @@ int main(int argc, char *argv[])
       cutFlowPlot->Fill(1, datasets[d], true, n3lep_uue_total*Luminosity*globalSF/EquilumiSF);
       cutFlowPlot->Fill(2, datasets[d], true, nVetoMu_uue_total*Luminosity*globalSF/EquilumiSF);
       cutFlowPlot->Fill(3, datasets[d], true, nVetoEl_uue_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(4, datasets[d], true, nOS_uue_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(5, datasets[d], true, nZmass_uue_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(6, datasets[d], true, nJet_uue_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(7, datasets[d], true, nBJet_uue_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(8, datasets[d], true, nMWT_uue_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(9, datasets[d], true, nMET_uue_total*Luminosity*globalSF/EquilumiSF);
-      
-      
+      //cutFlowPlot->Fill(4, datasets[d], true, nOS_uue_total*Luminosity*globalSF/EquilumiSF);
+      cutFlowPlot->Fill(4, datasets[d], true, nZmass_uue_total*Luminosity*globalSF/EquilumiSF);
+   /*   cutFlowPlot->Fill(5, datasets[d], true, nJet_uue_total*Luminosity*globalSF/EquilumiSF);
+      cutFlowPlot->Fill(6, datasets[d], true, nBJet_uue_total*Luminosity*globalSF/EquilumiSF);
+     // cutFlowPlot->Fill(8, datasets[d], true, nMWT_uue_total*Luminosity*globalSF/EquilumiSF);
+      cutFlowPlot->Fill(7, datasets[d], true, nMET_uue_total*Luminosity*globalSF/EquilumiSF);
+     */
+      /*
       detailcutFlowPlot->Fill(0, datasets[d], true, n3lep_uue_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot->Fill(1, datasets[d], true, nVetoMu_uue_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot->Fill(2, datasets[d], true, nVetoEl_uue_total*Luminosity*globalSF/EquilumiSF);
@@ -733,17 +739,17 @@ int main(int argc, char *argv[])
       detailcutFlowPlot3->Fill(2, datasets[d], true, nBJet_uue_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot3->Fill(3, datasets[d], true, nMWT_uue_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot3->Fill(4, datasets[d], true, nMET_uue_total*Luminosity*globalSF/EquilumiSF);
-      
+      */
       selecTable.Fill(d, 0, nTrigg_uue_total *Luminosity*globalSF/EquilumiSF);
       selecTable.Fill(d, 1, n3lep_uue_total *Luminosity*globalSF/EquilumiSF);
       selecTable.Fill(d, 2, nVetoMu_uue_total *Luminosity*globalSF/EquilumiSF);
       selecTable.Fill(d, 3, nVetoEl_uue_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 4, nOS_uue_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 5, nZmass_uue_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 6, nJet_uue_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 7, nBJet_uue_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 8, nMWT_uue_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 9, nMET_uue_total *Luminosity*globalSF/EquilumiSF);
+    //  selecTable.Fill(d, 4, nOS_uue_total *Luminosity*globalSF/EquilumiSF);
+      selecTable.Fill(d, 4, nZmass_uue_total *Luminosity*globalSF/EquilumiSF);
+   //   selecTable.Fill(d, 5, nJet_uue_total *Luminosity*globalSF/EquilumiSF);
+   //   selecTable.Fill(d, 6, nBJet_uue_total *Luminosity*globalSF/EquilumiSF);
+   //   selecTable.Fill(d, 8, nMWT_uue_total *Luminosity*globalSF/EquilumiSF);
+   //   selecTable.Fill(d, 7, nMET_uue_total *Luminosity*globalSF/EquilumiSF);
       
     }
     else if(dChan == 0) /// uuu
@@ -752,14 +758,14 @@ int main(int argc, char *argv[])
       cutFlowPlot->Fill(1, datasets[d], true, n3lep_uuu_total*Luminosity*globalSF/EquilumiSF);
       cutFlowPlot->Fill(2, datasets[d], true, nVetoMu_uuu_total*Luminosity*globalSF/EquilumiSF);
       cutFlowPlot->Fill(3, datasets[d], true, nVetoEl_uuu_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(4, datasets[d], true, nOS_uuu_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(5, datasets[d], true, nZmass_uuu_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(6, datasets[d], true, nJet_uuu_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(7, datasets[d], true, nBJet_uuu_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(8, datasets[d], true, nMWT_uuu_total*Luminosity*globalSF/EquilumiSF);
-      cutFlowPlot->Fill(9, datasets[d], true, nMET_uuu_total*Luminosity*globalSF/EquilumiSF);
-      
-      
+     // cutFlowPlot->Fill(4, datasets[d], true, nOS_uuu_total*Luminosity*globalSF/EquilumiSF);
+      cutFlowPlot->Fill(4, datasets[d], true, nZmass_uuu_total*Luminosity*globalSF/EquilumiSF);
+   /*   cutFlowPlot->Fill(5, datasets[d], true, nJet_uuu_total*Luminosity*globalSF/EquilumiSF);
+      cutFlowPlot->Fill(6, datasets[d], true, nBJet_uuu_total*Luminosity*globalSF/EquilumiSF);
+     // cutFlowPlot->Fill(8, datasets[d], true, nMWT_uuu_total*Luminosity*globalSF/EquilumiSF);
+      cutFlowPlot->Fill(7, datasets[d], true, nMET_uuu_total*Luminosity*globalSF/EquilumiSF);
+      */
+      /*
       detailcutFlowPlot->Fill(0, datasets[d], true, n3lep_uuu_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot->Fill(1, datasets[d], true, nVetoMu_uuu_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot->Fill(2, datasets[d], true, nVetoEl_uuu_total*Luminosity*globalSF/EquilumiSF);
@@ -777,18 +783,18 @@ int main(int argc, char *argv[])
       detailcutFlowPlot3->Fill(2, datasets[d], true, nBJet_uuu_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot3->Fill(3, datasets[d], true, nMWT_uuu_total*Luminosity*globalSF/EquilumiSF);
       detailcutFlowPlot3->Fill(4, datasets[d], true, nMET_uuu_total*Luminosity*globalSF/EquilumiSF);
-      
+      */
       selecTable.Fill(d, 0, nTrigg_uuu_total *Luminosity*globalSF/EquilumiSF);
       selecTable.Fill(d, 1, n3lep_uuu_total *Luminosity*globalSF/EquilumiSF);
       selecTable.Fill(d, 2, nVetoMu_uuu_total *Luminosity*globalSF/EquilumiSF);
       selecTable.Fill(d, 3, nVetoEl_uuu_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 4, nOS_uuu_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 5, nZmass_uuu_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 6, nJet_uuu_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 7, nBJet_uuu_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 8, nMWT_uuu_total *Luminosity*globalSF/EquilumiSF);
-      selecTable.Fill(d, 9, nMET_uuu_total *Luminosity*globalSF/EquilumiSF);
-      
+     // selecTable.Fill(d, 4, nOS_uuu_total *Luminosity*globalSF/EquilumiSF);
+      selecTable.Fill(d, 4, nZmass_uuu_total *Luminosity*globalSF/EquilumiSF);
+   /*   selecTable.Fill(d, 5, nJet_uuu_total *Luminosity*globalSF/EquilumiSF);
+      selecTable.Fill(d, 6, nBJet_uuu_total *Luminosity*globalSF/EquilumiSF);
+    //  selecTable.Fill(d, 8, nMWT_uuu_total *Luminosity*globalSF/EquilumiSF);
+      selecTable.Fill(d, 7, nMET_uuu_total *Luminosity*globalSF/EquilumiSF);
+      */
     }
     
     
@@ -807,6 +813,8 @@ int main(int argc, char *argv[])
   cout << "Writing Cut Flow Plot" << endl;
   string pathPNG = "MSPlotsCutflow/";
   mkdir(pathPNG.c_str(),0777);
+  pathPNG += date +"/";
+  mkdir(pathPNG.c_str(),0777);
   pathPNG += decaychannel;
   pathPNG += "/";
   mkdir(pathPNG.c_str(),0777);
@@ -818,22 +826,23 @@ int main(int argc, char *argv[])
   cutFlowPlot->setChannel(true, decaychannel);
   cutFlowPlot->setBins(CutsselecTable);
   cutFlowPlot->doCutFlowPlot();
-  cutFlowPlot->Draw("Cut Flow", 1, false, false, false, 1);
+  cutFlowPlot->Draw("Cut Flow", 1, false, false, false, 10);
   cutFlowPlot->Write(outfile, "CutFlow_"+decaychannel, true, pathPNG, "png");
   
   detailcutFlowPlot->setChannel(true, decaychannel);
   detailcutFlowPlot->setBins(CutsselecTabledetail);
   detailcutFlowPlot->doCutFlowPlot();
-  detailcutFlowPlot->Draw("Cut Flow Detail", 1, false, false, false, 1);
+  detailcutFlowPlot->Draw("Cut Flow Detail", 1, false, false, false, 10);
   detailcutFlowPlot->Write(outfile, "CutFlowDetail_"+decaychannel, true, pathPNG, "png");
-  
+  /*
   detailcutFlowPlot3->setChannel(true, decaychannel);
   detailcutFlowPlot3->setBins(CutsselecTabledetail3);
   detailcutFlowPlot3->doCutFlowPlot();
   detailcutFlowPlot3->Draw("Cut Flow Detail Last 3", 1, false, false, false, 1);
   detailcutFlowPlot3->Write(outfile, "CutFlowDetail3_"+decaychannel, true, pathPNG, "png");
   //(bool mergeTT, bool mergeQCD, bool mergeW, bool mergeZ, bool mergeST)
-  selecTable.TableCalculator(true, true, true, true, true);
+ */
+   selecTable.TableCalculator(true, true, true, true, true);
   
   // Options : WithError (false), writeMerged (true), useBookTabs (false), addRawsyNumbers (false), addEfficiencies
   // (false), addTotalEfficiencies (false), writeLandscape (false)
