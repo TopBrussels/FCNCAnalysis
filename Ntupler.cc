@@ -170,7 +170,7 @@ int main (int argc, char *argv[])
     int doJESShift = 0; // 0: off 1: minus 2: plus
     cout << "doJESShift: " << doJESShift << endl;
 
-    int doJERShift = 2; // 0: off (except nominal scalefactor for jer) 1: minus 2: plus
+    int doJERShift = 0; // 0: off (except nominal scalefactor for jer) 1: minus 2: plus
     cout << "doJERShift: " << doJERShift << endl;
 
     int dobTagEffShift = 0; //0: off (except nominal scalefactor for btag eff) 1: minus 2: plus
@@ -2324,6 +2324,9 @@ int main (int argc, char *argv[])
             nJets_CSVT =  0; 
 	          nJets_CSVM =  0;
             nJets_CSVL =  0;
+            nJets_cMVAT =  0; 
+	          nJets_cMVAM =  0;
+            nJets_cMVAL =  0;
             for(Int_t seljet = 0; seljet < selectedJets.size(); seljet++)
             {
                       
@@ -2334,6 +2337,7 @@ int main (int argc, char *argv[])
                 charge_jet[nJets]=selectedJets[seljet]->charge();
                 incl_charge_jet[nJets]=selectedJets[seljet]->inclusiveJetCharge();
                 CSVv2[nJets]=selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags() ;
+                if(CSVv2[nJets] < 0) CSVv2[nJets] =0;
                 cMVA[nJets]=selectedJets[seljet]->btag_PFCombinedMVAV2BJetTags() ;
                 cdiscCvsB_jet[nJets]=selectedJets[seljet]->ctag_pfCombinedCvsBJetTags() ;
                 cdiscCvsL_jet[nJets]=selectedJets[seljet]->ctag_pfCombinedCvsLJetTags() ;

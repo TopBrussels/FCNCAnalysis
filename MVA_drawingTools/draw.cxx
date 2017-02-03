@@ -7,16 +7,53 @@
 #include "TMath.h"
 #include "TFile.h"
 #include "TLegend.h"
+#include <cmath>
+#include <fstream>
+#include <sstream>
+#include <sys/stat.h>
+#include <string>
+#include "TRandom3.h"
+#include "TNtuple.h"
+#include <sstream>
+#include <ctime>
 
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <sys/stat.h>
 
-int main()
+std::string intToStr (int number);
+
+using namespace std;
+int main(int argc, char *argv[])
 {
-   SetPlotStyle();
 
-   TFile f("../weights/Training_SThut_All_b3j3.root");
+    if(argc < 4)
+    {
+        std::cout << "INVALID number of arguments. The necessary arguments are: " << std::endl;
+        std::cout << "    int baseline_bjets             = strtol(argv[1], NULL,10);" << std::endl;
+        std::cout << "    int baseline_jets                 = strtol(argv[2], NULL,10);" << std::endl;
+        std::cout << "    std::string SignalSample            = argv[3];" << std::endl;
+        std::cout << "    std::string channel            = argv[3];" << std::endl;
+
+        return 1;
+    }
+
+
+    int baseline_bjets             = strtol(argv[1], NULL,10);
+    int baseline_jets                 = strtol(argv[2], NULL,10);
+    std::string SignalSample  = argv[3];//Valid arguments are: SThut, SThct, TThct, TThut
+    std::string channel            = argv[4];
+
+    SetPlotStyle();
+   
+    std::string category = "b"+intToStr(baseline_bjets)+"j"+intToStr(baseline_jets);
+    std::string TrainingName = "Training_" + SignalSample + "_" + channel + "_" +  category;//Example: Training_SThut_El_b3j3
+    std::string outputpics = "pics/"+TrainingName+"/";
+    mkdir("pics",0777);
+    mkdir(outputpics.c_str(),0777);
+
+   TFile f(("../weights/"+TrainingName+".root").c_str());
 
    TH1D *h_sig_train = (TH1D*)f.Get("Method_BDT/BDT/MVA_BDT_Train_S");
    TH1D *h_bkg_train = (TH1D*)f.Get("Method_BDT/BDT/MVA_BDT_Train_B");
@@ -74,7 +111,7 @@ int main()
    leg0->AddEntry(h_bkg_test,"Background (test)","f");
    leg0->Draw();
    
-   c1->Print("pics/disc.eps");
+   c1->Print((outputpics+"disc.eps").c_str());
    c1->Clear();   
    
    TH1D *h_S = (TH1D*)h_bkg_test->Clone("h_S");
@@ -101,18 +138,138 @@ int main()
 //   h_S->SetMinimum(3.8);
 //   h_S->SetMaximum(3.7);
 //   h_S->SetMinimum(3.6);
-   c1->Print("pics/sign.eps");
+   c1->Print((outputpics+"sign.eps").c_str());
    c1->Clear();
 
    TH1D *h_CorrelationMatrixS = (TH1D*)f.Get("CorrelationMatrixS");
    h_CorrelationMatrixS->Draw("COLZ");
-   c1->Print("pics/corS.eps");
+   c1->Print((outputpics+"corS.eps").c_str());
    c1->Clear();
    
    TH1D *h_CorrelationMatrixB = (TH1D*)f.Get("CorrelationMatrixB");
    h_CorrelationMatrixB->Draw("COLZ");
-   c1->Print("pics/corB.eps");
+   c1->Print((outputpics+"corB.eps").c_str());
    c1->Clear();
+
+  std::vector<std::string> MVAvars;
+
+
+    MVAvars.push_back("MVA_TOPTOPLEPHAD");
+    MVAvars.push_back("MVA_TOPTOPLEPHBB");
+    MVAvars.push_back("MVA_TOPHLEPBB_hut");
+    MVAvars.push_back("MVA_TOPHLEPBB_hct");
+	  MVAvars.push_back("HiggsMass_TOPHLEPBB");
+	  MVAvars.push_back("HiggsMass_TOPHLEPBB");
+	  MVAvars.push_back("HiggsEta_TOPHLEPBB");
+	  MVAvars.push_back("HiggsEta_TOPHLEPBB");
+	  MVAvars.push_back("TopLepMass_TOPHLEPBB");
+	  MVAvars.push_back("TopLepMass_TOPHLEPBB");
+    MVAvars.push_back("TopLepPt_TOPHLEPBB");
+    MVAvars.push_back("TopLepPt_TOPHLEPBB");
+    MVAvars.push_back("TopLepEta_TOPHLEPBB");
+    MVAvars.push_back("TopLepEta_TOPHLEPBB");
+    MVAvars.push_back("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB");
+    MVAvars.push_back("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB");
+    MVAvars.push_back("TopLepHiggsDr_TOPHLEPBB");
+    MVAvars.push_back("TopLepHiggsDr_TOPHLEPBB");
+    MVAvars.push_back("HiggsBJet1CSVv2_TOPHLEPBB");
+    MVAvars.push_back("HiggsBJet1CSVv2_TOPHLEPBB");
+    MVAvars.push_back("HiggsBJet2CSVv2_TOPHLEPBB");
+    MVAvars.push_back("HiggsBJet2CSVv2_TOPHLEPBB");
+    MVAvars.push_back("TopLepBJetCSVv2_TOPHLEPBB");
+    MVAvars.push_back("TopLepBJetCSVv2_TOPHLEPBB");
+    MVAvars.push_back("TopHadMass_TOPTOPLEPHAD");
+    MVAvars.push_back("TopLepMass_TOPTOPLEPHAD");
+    MVAvars.push_back("TopLepTopHadDr_TOPTOPLEPHAD");
+    MVAvars.push_back("TopLepBJetCSVv2_TOPTOPLEPHAD");
+    MVAvars.push_back("TopHadBJetCSVv2_TOPTOPLEPHAD");
+    MVAvars.push_back("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD");
+    MVAvars.push_back("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD");
+    MVAvars.push_back("HiggsMass_TOPTOPLEPHBB");
+    MVAvars.push_back("TopLepMass_TOPTOPLEPHBB");
+    MVAvars.push_back("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB");
+    MVAvars.push_back("TopLepHiggsDr_TOPTOPLEPHBB");
+    MVAvars.push_back("HiggsBJet1CSVv2_TOPTOPLEPHBB");
+    MVAvars.push_back("HiggsBJet2CSVv2_TOPTOPLEPHBB");
+    MVAvars.push_back("TopLepBJetCSVv2_TOPTOPLEPHBB");
+    MVAvars.push_back("TopHadNonBJetCSVv2_TOPTOPLEPHBB");
+    MVAvars.push_back("TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB");
+    MVAvars.push_back("TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB");
+    MVAvars.push_back("TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD");
+    MVAvars.push_back("TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD");
+
+
+    for(int i_vars = 0; i_vars < MVAvars.size(); i_vars++)
+    {   
+        TH1F *HistoNorm_S = 0;
+        TH1F *HistoNorm_B = 0;
+	      TH1F *histo_S( (TH1F*) f.Get(("Method_BDT/BDT/"+MVAvars[i_vars]+"__Signal").c_str()));
+	      TH1F *histo_B( (TH1F*) f.Get(("Method_BDT/BDT/"+MVAvars[i_vars]+"__Background").c_str()));
+
+        if(histo_S)
+        {
+          HistoNorm_S = new TH1F(*histo_S);
+        }
+        else
+        {
+            std::cout << "Input histo doesn't exist" << std::endl;
+            continue;
+        }
+        if(histo_B)
+        {
+          HistoNorm_B = new TH1F(*histo_B);
+        }
+        else std::cout << "Input histo doesn't exist" << std::endl;
+
+        Double_t norm_S = 1;
+        Double_t scale_S = norm_S/(HistoNorm_S->Integral());
+        HistoNorm_S->Scale(scale_S);
+        Double_t norm_B = 1;
+        Double_t scale_B = norm_B/(HistoNorm_B->Integral());
+        HistoNorm_B->Scale(scale_B);
+        
+        HistoNorm_S->GetXaxis()->SetTitle(MVAvars[i_vars].c_str());
+        HistoNorm_S->SetLineColor(4);
+        HistoNorm_B->SetLineColor(2);
+        HistoNorm_S->SetFillColor(4);
+        HistoNorm_B->SetFillColor(2);
+        HistoNorm_S->SetFillStyle(3004);
+        HistoNorm_B->SetFillStyle(3005);
+
+        float maxhist= HistoNorm_S->GetMaximum();
+        if (HistoNorm_B->GetMaximum() > maxhist) maxhist = HistoNorm_B->GetMaximum();
+        
+        maxhist = maxhist*1.4;
+       
+        HistoNorm_S->SetMaximum(maxhist);
+        HistoNorm_B->SetMaximum(maxhist);
+
+        TCanvas *c1 = new TCanvas();
+        c1->cd();
+        HistoNorm_S->Draw("hist");
+        HistoNorm_B->Draw("hist same");
+
+        TLegend *leg = new TLegend(0.7,0.75,0.98,0.95);
+         leg->AddEntry(HistoNorm_S,"Signal","f");
+         leg->AddEntry(HistoNorm_B,"Background","f");
+         leg->Draw();
+
+
+
+        c1->SaveAs((outputpics+MVAvars[i_vars]+"_Norm.png").c_str());
+
+      delete c1;
+    }
+
    
    f.Close();
 }
+
+
+std::string intToStr (int number)
+{
+  	std::ostringstream buff;
+  	buff<<number;
+  	return buff.str();
+}
+
