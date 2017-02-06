@@ -21,9 +21,9 @@ nToys=20
 isSig=1
 applyMVA=1
 nNonBJetMax=-1
-coup="Hct"
+coup="Hut"
 
-dout="/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopHLepbb/"
+dout="/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/test/Validation/TopHLepbb/"
 
 fpath="${HOME}/lists/"
 
@@ -51,7 +51,7 @@ do
 
   echo "${dataset}"
   while [[ $(qsub -N TopKinFit -q ${que} \
-  -l walltime=2:00:00 \
+  -l walltime=6:00:00 \
 -o ${logName}/${sample}.log -j oe job.sh \
 -v dout=${dout},line2=${fpath}${line},fout=${fout},nToys=${nToys},isSig=${isSig},applyMVA=${applyMVA},nNonBJetMax=${nNonBJetMax},coup=${coup} 2>&1 | grep "Invalid credential") != "" ]];
   do echo "one more try";

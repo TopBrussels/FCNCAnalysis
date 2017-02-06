@@ -2,7 +2,7 @@
 
 int main(int argc, char *argv[])
 {
-   float trainFrac = 0.3;
+   float trainFrac = 0.5;
    
    // Truth
      {	
@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 	factoryTruth->AddVariable("TopLepRecPtTruth",'F');
 	
 	TChain trFIT("trFIT");
-	std::string f1 = "../runTEST_MERGED/TT_TuneCUETP8M1_13TeV-powheg-pythia8/data.root";
+	std::string f1 = "../runTEST_MERGED/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/data.root";
 	trFIT.Add(f1.c_str());
 	
 	trFIT.SetBranchAddress("DiscTruth",&DiscTruth);
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
 	factoryHighestCSVv2->AddVariable("TopLepRecPtHighestCSVv2",'F');
 	
 	TChain trFIT("trFIT");
-	std::string f1 = "../runTEST_MERGED/TT_TuneCUETP8M1_13TeV-powheg-pythia8/data.root";
+	std::string f1 = "../runTEST_MERGED/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/data.root";
 	trFIT.Add(f1.c_str());
 	
 	trFIT.SetBranchAddress("DiscHighestCSVv2",&DiscHighestCSVv2);
@@ -200,7 +200,7 @@ int main(int argc, char *argv[])
 	factoryCSVv2L->AddVariable("TopLepRecPtCSVv2L",'F');
 	
 	TChain trFIT("trFIT");
-	std::string f1 = "../runTEST_MERGED/TT_TuneCUETP8M1_13TeV-powheg-pythia8/data.root";
+	std::string f1 = "../runTEST_MERGED/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/data.root";
 	trFIT.Add(f1.c_str());
 	
 	trFIT.SetBranchAddress("DiscCSVv2L",&DiscCSVv2L);
@@ -288,7 +288,7 @@ int main(int argc, char *argv[])
 	factoryCSVv2M->AddVariable("TopLepRecPtCSVv2M",'F');
 	
 	TChain trFIT("trFIT");
-	std::string f1 = "../runTEST_MERGED/TT_TuneCUETP8M1_13TeV-powheg-pythia8/data.root";
+	std::string f1 = "../runTEST_MERGED/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/data.root";
 	trFIT.Add(f1.c_str());
 	
 	trFIT.SetBranchAddress("DiscCSVv2M",&DiscCSVv2M);
@@ -376,7 +376,7 @@ int main(int argc, char *argv[])
 	factoryCSVv2T->AddVariable("TopLepRecPtCSVv2T",'F');
 	
 	TChain trFIT("trFIT");
-	std::string f1 = "../runTEST_MERGED/TT_TuneCUETP8M1_13TeV-powheg-pythia8/data.root";
+	std::string f1 = "../runTEST_MERGED/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/data.root";
 	trFIT.Add(f1.c_str());
 	
 	trFIT.SetBranchAddress("DiscCSVv2T",&DiscCSVv2T);
@@ -464,7 +464,7 @@ int main(int argc, char *argv[])
 	factoryAll->AddVariable("TopLepRecPtAll",'F');
 	
 	TChain trFIT("trFIT");
-	std::string f1 = "../runTEST_MERGED/TT_TuneCUETP8M1_13TeV-powheg-pythia8/data.root";
+	std::string f1 = "../runTEST_MERGED/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/data.root";
 	trFIT.Add(f1.c_str());
 	
 	trFIT.SetBranchAddress("DiscAll",&DiscAll);

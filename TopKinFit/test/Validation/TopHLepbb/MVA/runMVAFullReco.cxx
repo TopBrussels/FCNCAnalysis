@@ -2,7 +2,7 @@
 
 int main(int argc, char *argv[])
 {
-   float trainFrac = 0.3;
+   float trainFrac = 0.5;
    std::string coup = "Hct";
    
    // Truth
@@ -27,8 +27,9 @@ int main(int argc, char *argv[])
 	factoryTruth->AddVariable("TopLepRecPtTruth",'F');
 	
 	TChain trFIT("trFIT");
-	std::string f1 = "../runTEST_MERGED/ST_TH_1L3B_"+coup+"/data.root";
-	if( coup == "Hut" ) f1 = "../runTEST_MERGED/ST_TH_1L3B/data.root";
+	coup[0] = tolower(coup[0]);
+	std::string f1 = "../runTEST_MERGED/ST_FCNC-TH_Tleptonic_HTobb_eta_"+coup+"-MadGraph5-pythia8/data.root";
+	coup[0] = toupper(coup[0]);
 	trFIT.Add(f1.c_str());
 	
 	trFIT.SetBranchAddress("DiscTruth",&DiscTruth);
@@ -118,8 +119,9 @@ int main(int argc, char *argv[])
 	factoryHighestCSVv2->AddVariable("TopLepRecPtHighestCSVv2",'F');
 	
 	TChain trFIT("trFIT");
-	std::string f1 = "../runTEST_MERGED/ST_TH_1L3B_"+coup+"/data.root";
-	if( coup == "Hut" ) f1 = "../runTEST_MERGED/ST_TH_1L3B/data.root";
+	coup[0] = tolower(coup[0]);
+	std::string f1 = "../runTEST_MERGED/ST_FCNC-TH_Tleptonic_HTobb_eta_"+coup+"-MadGraph5-pythia8/data.root";
+	coup[0] = toupper(coup[0]);
 	trFIT.Add(f1.c_str());
 	
 	trFIT.SetBranchAddress("DiscHighestCSVv2",&DiscHighestCSVv2);
@@ -209,8 +211,9 @@ int main(int argc, char *argv[])
 	factoryCSVv2L->AddVariable("TopLepRecPtCSVv2L",'F');
 	
 	TChain trFIT("trFIT");
-	std::string f1 = "../runTEST_MERGED/ST_TH_1L3B_"+coup+"/data.root";
-	if( coup == "Hut" ) f1 = "../runTEST_MERGED/ST_TH_1L3B/data.root";
+	coup[0] = tolower(coup[0]);
+	std::string f1 = "../runTEST_MERGED/ST_FCNC-TH_Tleptonic_HTobb_eta_"+coup+"-MadGraph5-pythia8/data.root";
+	coup[0] = toupper(coup[0]);
 	trFIT.Add(f1.c_str());
 	
 	trFIT.SetBranchAddress("DiscCSVv2L",&DiscCSVv2L);
@@ -300,8 +303,9 @@ int main(int argc, char *argv[])
 	factoryCSVv2M->AddVariable("TopLepRecPtCSVv2M",'F');
 	
 	TChain trFIT("trFIT");
-	std::string f1 = "../runTEST_MERGED/ST_TH_1L3B_"+coup+"/data.root";
-	if( coup == "Hut" ) f1 = "../runTEST_MERGED/ST_TH_1L3B/data.root";
+	coup[0] = tolower(coup[0]);
+	std::string f1 = "../runTEST_MERGED/ST_FCNC-TH_Tleptonic_HTobb_eta_"+coup+"-MadGraph5-pythia8/data.root";
+	coup[0] = toupper(coup[0]);
 	trFIT.Add(f1.c_str());
 	
 	trFIT.SetBranchAddress("DiscCSVv2M",&DiscCSVv2M);
@@ -391,8 +395,9 @@ int main(int argc, char *argv[])
 	factoryCSVv2T->AddVariable("TopLepRecPtCSVv2T",'F');
 	
 	TChain trFIT("trFIT");
-	std::string f1 = "../runTEST_MERGED/ST_TH_1L3B_"+coup+"/data.root";
-	if( coup == "Hut" ) f1 = "../runTEST_MERGED/ST_TH_1L3B/data.root";
+	coup[0] = tolower(coup[0]);
+	std::string f1 = "../runTEST_MERGED/ST_FCNC-TH_Tleptonic_HTobb_eta_"+coup+"-MadGraph5-pythia8/data.root";
+	coup[0] = toupper(coup[0]);
 	trFIT.Add(f1.c_str());
 	
 	trFIT.SetBranchAddress("DiscCSVv2T",&DiscCSVv2T);
@@ -482,8 +487,9 @@ int main(int argc, char *argv[])
 	factoryAll->AddVariable("TopLepRecPtAll",'F');
 	
 	TChain trFIT("trFIT");
-	std::string f1 = "../runTEST_MERGED/ST_TH_1L3B_"+coup+"/data.root";
-	if( coup == "Hut" ) f1 = "../runTEST_MERGED/ST_TH_1L3B/data.root";
+	coup[0] = tolower(coup[0]);
+	std::string f1 = "../runTEST_MERGED/ST_FCNC-TH_Tleptonic_HTobb_eta_"+coup+"-MadGraph5-pythia8/data.root";
+	coup[0] = toupper(coup[0]);
 	trFIT.Add(f1.c_str());
 	
 	trFIT.SetBranchAddress("DiscAll",&DiscAll);

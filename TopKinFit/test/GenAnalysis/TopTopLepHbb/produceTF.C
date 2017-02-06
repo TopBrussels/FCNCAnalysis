@@ -16,8 +16,10 @@ void produceTF()
    setTDRStyle();
    
    TChain ch("trGEN");
-   ch.Add("runTEST_MERGED/TT_TopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
-   ch.Add("runTEST_MERGED/TT_AntitopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
+   ch.Add("runTEST_MERGED/TT_FCNC-TtoHJ_aTleptonic_HTobb_eta_hut-MadGraph5-pythia8/data.root");
+   ch.Add("runTEST_MERGED/TT_FCNC-aTtoHJ_Tleptonic_HTobb_eta_hut-MadGraph5-pythia8/data.root");
+   ch.Add("runTEST_MERGED/TT_FCNC-T2HJ_aTleptonic_HTobb_eta_hct-MadGraph5-pythia8/data.root");
+   ch.Add("runTEST_MERGED/TT_FCNC-aTtoHJ_Tleptonic_HTobb_eta_hct-MadGraph5-pythia8/data.root");
 
    bool Pass;
    float dMetPx, dMetPy;
@@ -356,9 +358,9 @@ void produceTF()
 	     if( hName[i] == "dBJetPz" ) funcGaus->SetParameter(3,0.15);
 	     if( hName[i] == "dBJetPy" ) funcGaus->SetParameter(3,0.2);
 	     if( hName[i] == "dBJetPx" ) funcGaus->SetParameter(3,0.2);
-	     if( hName[i] == "dBJetE" ) funcGaus->SetParameter(3,0.2);
-	     if( hName[i] == "dBJetE" ) funcGaus->SetParameter(5,sigma*6);
-
+	     if( hName[i] == "dBJetE" ) funcGaus->SetParameter(3,0.3);
+	     if( hName[i] == "dBJetE" ) funcGaus->SetParameter(5,sigma*4);
+	     
 	     funcGaus->SetParameter(6,1.);
 	     funcGaus->SetParameter(7,mean);
 	     funcGaus->SetParameter(8,sigma/2.);
@@ -408,7 +410,7 @@ void produceTF()
 	     funcGaus->SetParameter(5,sigma*2.);
 	     if( hName[i] == "dNonBJetPz" ) funcGaus->SetParameter(3,0.2);
 	     if( hName[i] == "dNonBJetE" ) funcGaus->SetParameter(3,0.2);
-	     if( hName[i] == "dNonBJetE" ) funcGaus->SetParameter(5,sigma*6);
+	     if( hName[i] == "dNonBJetE" ) funcGaus->SetParameter(5,sigma*5);
 
 	     funcGaus->SetParameter(6,1.);
 	     funcGaus->SetParameter(7,mean);

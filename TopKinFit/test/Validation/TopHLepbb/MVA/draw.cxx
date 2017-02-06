@@ -20,7 +20,7 @@ int main()
 
    for(int iv=0;iv<6;iv++)
      {
-	std::string fname = "TMVAPartRecoHct"+v[iv]+".root";
+	std::string fname = "TMVAFullRecoHut"+v[iv]+".root";
 
 	TFile f(fname.c_str());
 

@@ -17,12 +17,12 @@ void drawTest()
    TChain trFIT("trFIT");
    
 //   trFIT.Add("output.root");
-   trFIT.Add("runTEST_MERGED/TT_TuneCUETP8M1_13TeV-powheg-pythia8/data.root");
+   trFIT.Add("runTEST_MERGED/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/data.root");
 
    TChain trEFF("trEFF");
 
 //   trEFF.Add("output.root");
-   trEFF.Add("runTEST_MERGED/TT_TuneCUETP8M1_13TeV-powheg-pythia8/data.root");
+   trEFF.Add("runTEST_MERGED/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/data.root");
    
    std::vector<float> *DiscTruth = new std::vector<float>();
    std::vector<float> *MVADiscTruth = new std::vector<float>();

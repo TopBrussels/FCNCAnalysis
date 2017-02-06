@@ -1,6 +1,6 @@
 #!/bin/env zsh
 
-fpathMC="/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/GenAnalysis/TopTopLepHbb/runTEST/"
+fpathMC="/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/test/GenAnalysis/TopTopLepHbb/runTEST/"
 
 liMC=($(ls ${fpathMC}))
 

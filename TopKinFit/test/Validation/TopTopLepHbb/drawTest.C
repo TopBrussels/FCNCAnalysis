@@ -17,14 +17,14 @@ void drawTest()
    TChain trFIT("trFIT");
    
 //   trFIT.Add("output.root");
-   trFIT.Add("runTEST_MERGED/TT_TopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
-   trFIT.Add("runTEST_MERGED/TT_AntitopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
+   trFIT.Add("runTEST_MERGED/TT_FCNC-TtoHJ_aTleptonic_HTobb_eta_hut-MadGraph5-pythia8/data.root");
+   trFIT.Add("runTEST_MERGED/TT_FCNC-aTtoHJ_Tleptonic_HTobb_eta_hut-MadGraph5-pythia8/data.root");
 
    TChain trEFF("trEFF");
 
 //   trEFF.Add("output.root");
-   trEFF.Add("runTEST_MERGED/TT_TopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
-   trEFF.Add("runTEST_MERGED/TT_AntitopLeptonicDecay_TH_1L3B_Eta_Hut/data.root");
+   trEFF.Add("runTEST_MERGED/TT_FCNC-TtoHJ_aTleptonic_HTobb_eta_hut-MadGraph5-pythia8/data.root");
+   trEFF.Add("runTEST_MERGED/TT_FCNC-aTtoHJ_Tleptonic_HTobb_eta_hut-MadGraph5-pythia8/data.root");
    
    std::vector<float> *DiscTruth = new std::vector<float>();
    std::vector<float> *MVADiscTruth = new std::vector<float>();

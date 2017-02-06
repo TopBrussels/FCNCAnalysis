@@ -1,8 +1,8 @@
 #!/bin/env zsh
 
-fpathMC="/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/tHFCNC/NtupleProducer/test/toyTEST/"
+fpathMC="/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/tHFCNC/NtupleProducer/test/toyTEST/"
 
-liMC=($(ls ${fpathMC} | grep "TT_TuneCUETP8M1_13TeV-powheg-pythia8"))
+liMC=($(ls ${fpathMC} | grep "TT_TuneCUETP8M2T4_13TeV-powheg-pythia8"))
 
 nFilesMC=1
 

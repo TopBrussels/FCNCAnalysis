@@ -1614,6 +1614,7 @@ int main(int argc, char *argv[])
                                 MSPlot[("MVA_TOPTOPLEPHBB"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(MVA_TOPTOPLEPHBB, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                                 MSPlot[("MVA_TOPHLEPBB_hut"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(MVA_TOPHLEPBB_hut, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                                 MSPlot[("MVA_TOPHLEPBB_hct"+WhatSysts_noJECs[iSyst_]).c_str() ]->Fill(MVA_TOPHLEPBB_hct, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+
                         }
                     }
                }
@@ -1833,7 +1834,7 @@ int main(int argc, char *argv[])
   string outfilename = pathPNG+"/Output.root";
 
   TFile *outfile = new TFile(outfilename.c_str(),"recreate");
-//  outfile->cd();
+  outfile->cd();
 
   vector<string> NominalVariableNames;
   // Loop over all the MSPlots
@@ -2095,8 +2096,20 @@ void MakeTotalSystErrorBand_Distributions(string outfilename, vector< string > s
             string nominalname = (NominalVariableNames[iVar]+"_"+datasetNames[iDataName]+"_");
             
             TH1F *h_tmp =  (TH1F*)subdir_nominal->Get(nominalname.c_str());
+//cout << "h_tmp->GetBinContent(h_tmp->GetNbinsX()): " << h_tmp->GetBinContent(h_tmp->GetNbinsX()) << endl;
+/*
+            //making sure that the overflow is transferred to the last 'visible' bin; analogously for underflow...
+            TH1F* h_tmp = (TH1F*) h_tmp_->Clone();
+            int Nbins_ = h_tmp->GetNbinsX();
+            h_tmp->SetBinContent(Nbins_,h_tmp->GetBinContent(Nbins_)+h_tmp->GetBinContent(Nbins_+1));
+            h_tmp->SetBinContent(Nbins_+1,0);
+            h_tmp->SetBinContent(1,h_tmp->GetBinContent(0)+h_tmp->GetBinContent(1));
+            h_tmp->SetBinContent(0,0);
+*/
             TH1F* h_tmp__scaleup = (TH1F*) h_tmp->Clone();//Make a new tmp which will be scaled according to the cross section uncertainty 
             TH1F* h_tmp__scaledown = (TH1F*) h_tmp->Clone();//Make a new tmp which will be scaled according to the cross section uncertainty
+
+
 
             if(datasetNames[iDataName].find("TTJets")!= string::npos)
             {
@@ -2148,6 +2161,7 @@ void MakeTotalSystErrorBand_Distributions(string outfilename, vector< string > s
             {
 
                 TH1F *h_tmp =  (TH1F*)subdir_sys->Get((varNameSys+"_"+datasetNames[iDataName]+"_").c_str());
+//cout << "h_tmp->GetBinContent(h_tmp->GetNbinsX()): " << h_tmp->GetBinContent(h_tmp->GetNbinsX()) << endl;
                 
                 if(systematics[iSys].find("Plus")!= string::npos)
                 {
@@ -2195,6 +2209,9 @@ void MakeTotalSystErrorBand_Distributions(string outfilename, vector< string > s
                 else if(bincontent_Syst_vs_Nom < 0.) bincontent_up_squared += bincontent_Syst_vs_Nom*bincontent_Syst_vs_Nom;
             }
             
+//if(iBin == nBins) cout << "Content of last bin for Plus: " << bincontent_nominal + sqrt(bincontent_up_squared + bincontent_nominal) << endl;
+//if(iBin == nBins) cout << "Content of last bin for Minus: " << bincontent_nominal  - sqrt(bincontent_down_squared + bincontent_nominal) << endl;
+//if(iBin == nBins) cout << "Content of last bin for Nominal: " << bincontent_nominal << endl;
 
             histo1D_TotalUp[(NominalVariableNames[iVar]+"Plus").c_str()]->SetBinContent(iBin,bincontent_nominal + sqrt(bincontent_up_squared + bincontent_nominal));//Also add once the statistical uncertainty on the MC
             histo1D_TotalDown[(NominalVariableNames[iVar]+"Minus").c_str()]->SetBinContent(iBin,bincontent_nominal  - sqrt(bincontent_down_squared + bincontent_nominal));//Also add once the statistical uncertainty on the MC

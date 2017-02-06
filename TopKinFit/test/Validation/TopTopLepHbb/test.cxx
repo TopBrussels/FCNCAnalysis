@@ -6,9 +6,9 @@
 #include "TMVA/Tools.h"
 #include "TMVA/Reader.h"
 
-#define CSVv2L 0.460
-#define CSVv2M 0.800
-#define CSVv2T 0.935
+#define CSVv2L 0.5426
+#define CSVv2M 0.8484
+#define CSVv2T 0.9535
 
 float GetDeltaR(float eta1,float phi1,float eta2,float phi2);
 float errf(float v1,float ve1,float v2,float ve2);
@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
 //	readerFullRecoTruth->AddVariable("HiggsBJet2RecCSVv2Truth",&MVAFullReco_HiggsBJet2RecCSVv2Truth);
 //	readerFullRecoTruth->AddVariable("TopHadNonBJetRecCSVv2Truth",&MVAFullReco_TopHadNonBJetRecCSVv2Truth);
 
-	std::string weightsFileFullRecoTruth = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoTruth_BDT.weights.xml";
+	std::string weightsFileFullRecoTruth = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoTruth_BDT.weights.xml";
 	readerFullRecoTruth->BookMVA("BDTG method",weightsFileFullRecoTruth.c_str());
 
 	readerFullRecoAll->AddVariable("HiggsRecMAll",&MVAFullReco_HiggsRecMAll);
@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
 //	readerFullRecoAll->AddVariable("HiggsBJet2RecCSVv2All",&MVAFullReco_HiggsBJet2RecCSVv2All);
 //	readerFullRecoAll->AddVariable("TopHadNonBJetRecCSVv2All",&MVAFullReco_TopHadNonBJetRecCSVv2All);
 
-	std::string weightsFileFullRecoAll = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoAll_BDT.weights.xml";
+	std::string weightsFileFullRecoAll = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoAll_BDT.weights.xml";
 	readerFullRecoAll->BookMVA("BDTG method",weightsFileFullRecoAll.c_str());
 	
 	readerFullRecoHighestCSVv2->AddVariable("HiggsRecMHighestCSVv2",&MVAFullReco_HiggsRecMHighestCSVv2);
@@ -200,7 +200,7 @@ int main(int argc, char *argv[])
 //	readerFullRecoHighestCSVv2->AddVariable("HiggsBJet2RecCSVv2HighestCSVv2",&MVAFullReco_HiggsBJet2RecCSVv2HighestCSVv2);
 //	readerFullRecoHighestCSVv2->AddVariable("TopHadNonBJetRecCSVv2HighestCSVv2",&MVAFullReco_TopHadNonBJetRecCSVv2HighestCSVv2);
 
-	std::string weightsFileFullRecoHighestCSVv2 = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoHighestCSVv2_BDT.weights.xml";
+	std::string weightsFileFullRecoHighestCSVv2 = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoHighestCSVv2_BDT.weights.xml";
 	readerFullRecoHighestCSVv2->BookMVA("BDTG method",weightsFileFullRecoHighestCSVv2.c_str());
 
 	readerFullRecoCSVv2L->AddVariable("HiggsRecMCSVv2L",&MVAFullReco_HiggsRecMCSVv2L);
@@ -212,7 +212,7 @@ int main(int argc, char *argv[])
 //	readerFullRecoCSVv2L->AddVariable("HiggsBJet2RecCSVv2CSVv2L",&MVAFullReco_HiggsBJet2RecCSVv2CSVv2L);
 //	readerFullRecoCSVv2L->AddVariable("TopHadNonBJetRecCSVv2CSVv2L",&MVAFullReco_TopHadNonBJetRecCSVv2CSVv2L);
 
-	std::string weightsFileFullRecoCSVv2L = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoCSVv2L_BDT.weights.xml";
+	std::string weightsFileFullRecoCSVv2L = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoCSVv2L_BDT.weights.xml";
 	readerFullRecoCSVv2L->BookMVA("BDTG method",weightsFileFullRecoCSVv2L.c_str());
 
 	readerFullRecoCSVv2M->AddVariable("HiggsRecMCSVv2M",&MVAFullReco_HiggsRecMCSVv2M);
@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
 //	readerFullRecoCSVv2M->AddVariable("HiggsBJet2RecCSVv2CSVv2M",&MVAFullReco_HiggsBJet2RecCSVv2CSVv2M);
 //	readerFullRecoCSVv2M->AddVariable("TopHadNonBJetRecCSVv2CSVv2M",&MVAFullReco_TopHadNonBJetRecCSVv2CSVv2M);
 
-	std::string weightsFileFullRecoCSVv2M = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoCSVv2M_BDT.weights.xml";
+	std::string weightsFileFullRecoCSVv2M = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoCSVv2M_BDT.weights.xml";
 	readerFullRecoCSVv2M->BookMVA("BDTG method",weightsFileFullRecoCSVv2M.c_str());
 
 	readerFullRecoCSVv2T->AddVariable("HiggsRecMCSVv2T",&MVAFullReco_HiggsRecMCSVv2T);
@@ -236,7 +236,7 @@ int main(int argc, char *argv[])
 //	readerFullRecoCSVv2T->AddVariable("HiggsBJet2RecCSVv2CSVv2T",&MVAFullReco_HiggsBJet2RecCSVv2CSVv2T);
 //	readerFullRecoCSVv2T->AddVariable("TopHadNonBJetRecCSVv2CSVv2T",&MVAFullReco_TopHadNonBJetRecCSVv2CSVv2T);
 
-	std::string weightsFileFullRecoCSVv2T = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoCSVv2T_BDT.weights.xml";
+	std::string weightsFileFullRecoCSVv2T = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAFullRecoCSVv2T_BDT.weights.xml";
 	readerFullRecoCSVv2T->BookMVA("BDTG method",weightsFileFullRecoCSVv2T.c_str());
 
 	
@@ -249,7 +249,7 @@ int main(int argc, char *argv[])
 //	readerPartRecoTruth->AddVariable("HiggsBJet2RecCSVv2Truth",&MVAPartReco_HiggsBJet2RecCSVv2Truth);
 //	readerPartRecoTruth->AddVariable("TopHadNonBJetRecCSVv2Truth",&MVAPartReco_TopHadNonBJetRecCSVv2Truth);
 
-	std::string weightsFilePartRecoTruth = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoTruth_BDT.weights.xml";
+	std::string weightsFilePartRecoTruth = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoTruth_BDT.weights.xml";
 	readerPartRecoTruth->BookMVA("BDTG method",weightsFilePartRecoTruth.c_str());
 
 	readerPartRecoAll->AddVariable("HiggsRecMAll",&MVAPartReco_HiggsRecMAll);
@@ -261,7 +261,7 @@ int main(int argc, char *argv[])
 //	readerPartRecoAll->AddVariable("HiggsBJet2RecCSVv2All",&MVAPartReco_HiggsBJet2RecCSVv2All);
 //	readerPartRecoAll->AddVariable("TopHadNonBJetRecCSVv2All",&MVAPartReco_TopHadNonBJetRecCSVv2All);
 
-	std::string weightsFilePartRecoAll = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoAll_BDT.weights.xml";
+	std::string weightsFilePartRecoAll = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoAll_BDT.weights.xml";
 	readerPartRecoAll->BookMVA("BDTG method",weightsFilePartRecoAll.c_str());
 	
 	readerPartRecoHighestCSVv2->AddVariable("HiggsRecMHighestCSVv2",&MVAPartReco_HiggsRecMHighestCSVv2);
@@ -273,7 +273,7 @@ int main(int argc, char *argv[])
 //	readerPartRecoHighestCSVv2->AddVariable("HiggsBJet2RecCSVv2HighestCSVv2",&MVAPartReco_HiggsBJet2RecCSVv2HighestCSVv2);
 //	readerPartRecoHighestCSVv2->AddVariable("TopHadNonBJetRecCSVv2HighestCSVv2",&MVAPartReco_TopHadNonBJetRecCSVv2HighestCSVv2);
 
-	std::string weightsFilePartRecoHighestCSVv2 = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoHighestCSVv2_BDT.weights.xml";
+	std::string weightsFilePartRecoHighestCSVv2 = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoHighestCSVv2_BDT.weights.xml";
 	readerPartRecoHighestCSVv2->BookMVA("BDTG method",weightsFilePartRecoHighestCSVv2.c_str());
 
 	readerPartRecoCSVv2L->AddVariable("HiggsRecMCSVv2L",&MVAPartReco_HiggsRecMCSVv2L);
@@ -285,7 +285,7 @@ int main(int argc, char *argv[])
 //	readerPartRecoCSVv2L->AddVariable("HiggsBJet2RecCSVv2CSVv2L",&MVAPartReco_HiggsBJet2RecCSVv2CSVv2L);
 //	readerPartRecoCSVv2L->AddVariable("TopHadNonBJetRecCSVv2CSVv2L",&MVAPartReco_TopHadNonBJetRecCSVv2CSVv2L);
 
-	std::string weightsFilePartRecoCSVv2L = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoCSVv2L_BDT.weights.xml";
+	std::string weightsFilePartRecoCSVv2L = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoCSVv2L_BDT.weights.xml";
 	readerPartRecoCSVv2L->BookMVA("BDTG method",weightsFilePartRecoCSVv2L.c_str());
 
 	readerPartRecoCSVv2M->AddVariable("HiggsRecMCSVv2M",&MVAPartReco_HiggsRecMCSVv2M);
@@ -297,7 +297,7 @@ int main(int argc, char *argv[])
 //	readerPartRecoCSVv2M->AddVariable("HiggsBJet2RecCSVv2CSVv2M",&MVAPartReco_HiggsBJet2RecCSVv2CSVv2M);
 //	readerPartRecoCSVv2M->AddVariable("TopHadNonBJetRecCSVv2CSVv2M",&MVAPartReco_TopHadNonBJetRecCSVv2CSVv2M);
 
-	std::string weightsFilePartRecoCSVv2M = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoCSVv2M_BDT.weights.xml";
+	std::string weightsFilePartRecoCSVv2M = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoCSVv2M_BDT.weights.xml";
 	readerPartRecoCSVv2M->BookMVA("BDTG method",weightsFilePartRecoCSVv2M.c_str());
 
 	readerPartRecoCSVv2T->AddVariable("HiggsRecMCSVv2T",&MVAPartReco_HiggsRecMCSVv2T);
@@ -309,7 +309,7 @@ int main(int argc, char *argv[])
 //	readerPartRecoCSVv2T->AddVariable("HiggsBJet2RecCSVv2CSVv2T",&MVAPartReco_HiggsBJet2RecCSVv2CSVv2T);
 //	readerPartRecoCSVv2T->AddVariable("TopHadNonBJetRecCSVv2CSVv2T",&MVAPartReco_TopHadNonBJetRecCSVv2CSVv2T);
 
-	std::string weightsFilePartRecoCSVv2T = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoCSVv2T_BDT.weights.xml";
+	std::string weightsFilePartRecoCSVv2T = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/test/Validation/TopTopLepHbb/MVA/weights/TMVAPartRecoCSVv2T_BDT.weights.xml";
 	readerPartRecoCSVv2T->BookMVA("BDTG method",weightsFilePartRecoCSVv2T.c_str());
      }
    
@@ -317,7 +317,7 @@ int main(int argc, char *argv[])
 
    kf->Init(TOPTOPLEPHBB);
 
-   std::string pdfFileName = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/GenAnalysis/TopTopLepHbb/pdf.root";
+   std::string pdfFileName = "/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/test/GenAnalysis/TopTopLepHbb/pdf.root";
    kf->SetPDF("TopWMass",pdfFileName.c_str(),"TopLepWM_Fit");
    kf->SetPDF("TopMass",pdfFileName.c_str(),"TopLepRecM_Fit");
    kf->SetPDF("HiggsMass",pdfFileName.c_str(),"HiggsRecM_Fit");

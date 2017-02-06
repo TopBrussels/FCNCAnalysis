@@ -13,7 +13,7 @@ void drawGen()
    setTDRStyle();
    
    TChain ch("trGEN");
-   ch.Add("run_MERGED/TT_TuneCUETP8M1_13TeV-powheg-pythia8/data.root");
+   ch.Add("runTEST_MERGED/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/data.root");
 
    float TopLepPt, TopLepEta, TopLepPhi, TopLepE;
    float TopHadPt, TopHadEta, TopHadPhi, TopHadE;

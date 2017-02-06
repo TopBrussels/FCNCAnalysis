@@ -2,8 +2,8 @@
 
 CC = g++
 
-KFIINC    = -I/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/
-KFILIB    = -L/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/\
+KFIINC    = -I/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/
+KFILIB    = -L/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/\
               -lKinFit
 
 SOVERSION               = $(shell echo $(VERSION) | \

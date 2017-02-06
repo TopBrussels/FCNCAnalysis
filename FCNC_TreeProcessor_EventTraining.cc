@@ -629,11 +629,11 @@ int main(int argc, char *argv[])
 	               vars[13] = TopHadBJetCSVv2_TOPTOPLEPHAD;
 	               vars[14] = TopHadWNonBJet1CSVv2_TOPTOPLEPHAD;
 	               vars[15] = TopHadWNonBJet2CSVv2_TOPTOPLEPHAD;
-	               vars[16] = TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB;
+/*	               vars[16] = TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB;
 	               vars[17] = TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB;
 	               vars[18] = TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD;
 	               vars[19] = TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD;
-            }
+*/            }
             else if(TrainingName.find("TThct")!=string::npos && TrainingName.find("j4")!=string::npos)
             {
 	               vars[0] = HiggsMass_TOPTOPLEPHBB;
@@ -652,11 +652,11 @@ int main(int argc, char *argv[])
 	               vars[13] = TopHadBJetCSVv2_TOPTOPLEPHAD;
 	               vars[14] = TopHadWNonBJet1CSVv2_TOPTOPLEPHAD;
 	               vars[15] = TopHadWNonBJet2CSVv2_TOPTOPLEPHAD;
-	               vars[16] = TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB;
+/*	               vars[16] = TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB;
 	               vars[17] = TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB;
 	               vars[18] = TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD;
 	               vars[19] = TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD;
-            }
+*/            }
 
 
 
@@ -947,11 +947,11 @@ TMVA::Factory *TrainingFACTORY(string trName, TFile *outfile)
 	    factory->AddVariable("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD",'D');
 	    factory->AddVariable("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD",'D');
 
-	    factory->AddVariable("TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB",'D');
+/*	    factory->AddVariable("TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB",'D');
 	    factory->AddVariable("TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB",'D');
 	    factory->AddVariable("TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD",'D');
 	    factory->AddVariable("TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD",'D');
-	    nTrainingVars = 20;
+*/	    nTrainingVars = 16;
   }
   else if(trName.find("TThct")!=string::npos && trName.find("j4")!=string::npos)
   {
@@ -972,11 +972,11 @@ TMVA::Factory *TrainingFACTORY(string trName, TFile *outfile)
 	    factory->AddVariable("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD",'D');
 	    factory->AddVariable("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD",'D');
 
-	    factory->AddVariable("TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB",'D');
+/*	    factory->AddVariable("TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB",'D');
 	    factory->AddVariable("TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB",'D');
 	    factory->AddVariable("TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD",'D');
 	    factory->AddVariable("TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD",'D');
-	    nTrainingVars = 20;
+*/	    nTrainingVars = 16;
   }
   else
   {

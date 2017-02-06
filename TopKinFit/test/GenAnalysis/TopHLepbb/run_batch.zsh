@@ -8,7 +8,7 @@ jName=${1}
 
 export HOME=$(pwd)
 
-dout="/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/test/GenAnalysis/TopHLepbb/"
+dout="/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/test/GenAnalysis/TopHLepbb/"
 
 fpath="${HOME}/lists/"
 

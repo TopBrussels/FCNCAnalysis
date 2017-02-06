@@ -1,8 +1,8 @@
 #!/bin/env zsh
 
-fpathMC="/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/tHFCNC/NtupleProducer/test/toyTEST/"
+fpathMC="/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/tHFCNC/NtupleProducer/test/toyTEST/"
 
-liMC=($(ls ${fpathMC} | grep "LeptonicDecay_TH"))
+liMC=($(ls ${fpathMC} | grep "TT_FCNC"))
 
 nFilesMC=1
 

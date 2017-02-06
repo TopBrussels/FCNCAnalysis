@@ -1,6 +1,6 @@
 #!/bin/env zsh
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_12/src/TopKinFit/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/user/kskovpen/analysis/tHFCNC/CMSSW_8_0_25/src/TopKinFit/
 
 nToys=20
 isSig=1

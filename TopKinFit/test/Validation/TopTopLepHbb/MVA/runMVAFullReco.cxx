@@ -2,8 +2,8 @@
 
 int main(int argc, char *argv[])
 {
-   float trainFrac = 0.3;
-   std::string coup = "Hut";
+   float trainFrac = 0.5;
+//   std::string coup = "Hut";
    
    // Truth
      {	
@@ -34,10 +34,14 @@ int main(int argc, char *argv[])
 	
 	TChain trFIT("trFIT");
 //	trFIT.Add("../output.root");
-	std::string f1 = "../runTEST_MERGED/TT_TopLeptonicDecay_TH_1L3B_Eta_"+coup+"/data.root";
+	std::string f1 = "../runTEST_MERGED/TT_FCNC-TtoHJ_aTleptonic_HTobb_eta_hut-MadGraph5-pythia8/data.root";
 	trFIT.Add(f1.c_str());
-	std::string f2 = "../runTEST_MERGED/TT_AntitopLeptonicDecay_TH_1L3B_Eta_"+coup+"/data.root";
+	std::string f2 = "../runTEST_MERGED/TT_FCNC-T2HJ_aTleptonic_HTobb_eta_hct-MadGraph5-pythia8/data.root";
 	trFIT.Add(f2.c_str());
+	std::string f3 = "../runTEST_MERGED/TT_FCNC-aTtoHJ_Tleptonic_HTobb_eta_hut-MadGraph5-pythia8/data.root";
+	trFIT.Add(f3.c_str());
+	std::string f4 = "../runTEST_MERGED/TT_FCNC-aTtoHJ_Tleptonic_HTobb_eta_hct-MadGraph5-pythia8/data.root";
+	trFIT.Add(f4.c_str());
 	
 	trFIT.SetBranchAddress("DiscTruth",&DiscTruth);
 	trFIT.SetBranchAddress("HiggsRecMTruth",&HiggsRecMTruth);
@@ -144,11 +148,14 @@ int main(int argc, char *argv[])
 //	factoryHighestCSVv2->AddVariable("TopHadNonBJetRecCSVv2HighestCSVv2",'F');
 	
 	TChain trFIT("trFIT");
-//	trFIT.Add("../output.root");
-	std::string f1 = "../runTEST_MERGED/TT_TopLeptonicDecay_TH_1L3B_Eta_"+coup+"/data.root";
+	std::string f1 = "../runTEST_MERGED/TT_FCNC-TtoHJ_aTleptonic_HTobb_eta_hut-MadGraph5-pythia8/data.root";
 	trFIT.Add(f1.c_str());
-	std::string f2 = "../runTEST_MERGED/TT_AntitopLeptonicDecay_TH_1L3B_Eta_"+coup+"/data.root";
+	std::string f2 = "../runTEST_MERGED/TT_FCNC-T2HJ_aTleptonic_HTobb_eta_hct-MadGraph5-pythia8/data.root";
 	trFIT.Add(f2.c_str());
+	std::string f3 = "../runTEST_MERGED/TT_FCNC-aTtoHJ_Tleptonic_HTobb_eta_hut-MadGraph5-pythia8/data.root";
+	trFIT.Add(f3.c_str());
+	std::string f4 = "../runTEST_MERGED/TT_FCNC-aTtoHJ_Tleptonic_HTobb_eta_hct-MadGraph5-pythia8/data.root";
+	trFIT.Add(f4.c_str());
 	
 	trFIT.SetBranchAddress("DiscHighestCSVv2",&DiscHighestCSVv2);
 	trFIT.SetBranchAddress("HiggsRecMHighestCSVv2",&HiggsRecMHighestCSVv2);
@@ -255,11 +262,14 @@ int main(int argc, char *argv[])
 //	factoryCSVv2L->AddVariable("TopHadNonBJetRecCSVv2CSVv2L",'F');
 	
 	TChain trFIT("trFIT");
-//	trFIT.Add("../output.root");
-	std::string f1 = "../runTEST_MERGED/TT_TopLeptonicDecay_TH_1L3B_Eta_"+coup+"/data.root";
+	std::string f1 = "../runTEST_MERGED/TT_FCNC-TtoHJ_aTleptonic_HTobb_eta_hut-MadGraph5-pythia8/data.root";
 	trFIT.Add(f1.c_str());
-	std::string f2 = "../runTEST_MERGED/TT_AntitopLeptonicDecay_TH_1L3B_Eta_"+coup+"/data.root";
+	std::string f2 = "../runTEST_MERGED/TT_FCNC-T2HJ_aTleptonic_HTobb_eta_hct-MadGraph5-pythia8/data.root";
 	trFIT.Add(f2.c_str());
+	std::string f3 = "../runTEST_MERGED/TT_FCNC-aTtoHJ_Tleptonic_HTobb_eta_hut-MadGraph5-pythia8/data.root";
+	trFIT.Add(f3.c_str());
+	std::string f4 = "../runTEST_MERGED/TT_FCNC-aTtoHJ_Tleptonic_HTobb_eta_hct-MadGraph5-pythia8/data.root";
+	trFIT.Add(f4.c_str());
 	
 	trFIT.SetBranchAddress("DiscCSVv2L",&DiscCSVv2L);
 	trFIT.SetBranchAddress("HiggsRecMCSVv2L",&HiggsRecMCSVv2L);
@@ -366,11 +376,14 @@ int main(int argc, char *argv[])
 //	factoryCSVv2M->AddVariable("TopHadNonBJetRecCSVv2CSVv2M",'F');
 	
 	TChain trFIT("trFIT");
-//	trFIT.Add("../output.root");
-	std::string f1 = "../runTEST_MERGED/TT_TopLeptonicDecay_TH_1L3B_Eta_"+coup+"/data.root";
+	std::string f1 = "../runTEST_MERGED/TT_FCNC-TtoHJ_aTleptonic_HTobb_eta_hut-MadGraph5-pythia8/data.root";
 	trFIT.Add(f1.c_str());
-	std::string f2 = "../runTEST_MERGED/TT_AntitopLeptonicDecay_TH_1L3B_Eta_"+coup+"/data.root";
+	std::string f2 = "../runTEST_MERGED/TT_FCNC-T2HJ_aTleptonic_HTobb_eta_hct-MadGraph5-pythia8/data.root";
 	trFIT.Add(f2.c_str());
+	std::string f3 = "../runTEST_MERGED/TT_FCNC-aTtoHJ_Tleptonic_HTobb_eta_hut-MadGraph5-pythia8/data.root";
+	trFIT.Add(f3.c_str());
+	std::string f4 = "../runTEST_MERGED/TT_FCNC-aTtoHJ_Tleptonic_HTobb_eta_hct-MadGraph5-pythia8/data.root";
+	trFIT.Add(f4.c_str());
 	
 	trFIT.SetBranchAddress("DiscCSVv2M",&DiscCSVv2M);
 	trFIT.SetBranchAddress("HiggsRecMCSVv2M",&HiggsRecMCSVv2M);
@@ -479,11 +492,14 @@ int main(int argc, char *argv[])
 //	factoryCSVv2T->AddVariable("TopHadNonBJetRecCSVv2CSVv2T",'F');
 	
 	TChain trFIT("trFIT");
-//	trFIT.Add("../output.root");
-	std::string f1 = "../runTEST_MERGED/TT_TopLeptonicDecay_TH_1L3B_Eta_"+coup+"/data.root";
+	std::string f1 = "../runTEST_MERGED/TT_FCNC-TtoHJ_aTleptonic_HTobb_eta_hut-MadGraph5-pythia8/data.root";
 	trFIT.Add(f1.c_str());
-	std::string f2 = "../runTEST_MERGED/TT_AntitopLeptonicDecay_TH_1L3B_Eta_"+coup+"/data.root";
+	std::string f2 = "../runTEST_MERGED/TT_FCNC-T2HJ_aTleptonic_HTobb_eta_hct-MadGraph5-pythia8/data.root";
 	trFIT.Add(f2.c_str());
+	std::string f3 = "../runTEST_MERGED/TT_FCNC-aTtoHJ_Tleptonic_HTobb_eta_hut-MadGraph5-pythia8/data.root";
+	trFIT.Add(f3.c_str());
+	std::string f4 = "../runTEST_MERGED/TT_FCNC-aTtoHJ_Tleptonic_HTobb_eta_hct-MadGraph5-pythia8/data.root";
+	trFIT.Add(f4.c_str());
 	
 	trFIT.SetBranchAddress("DiscCSVv2T",&DiscCSVv2T);
 	trFIT.SetBranchAddress("HiggsRecMCSVv2T",&HiggsRecMCSVv2T);
@@ -590,11 +606,14 @@ int main(int argc, char *argv[])
 //	factoryAll->AddVariable("TopHadNonBJetRecCSVv2All",'F');
 	
 	TChain trFIT("trFIT");
-//	trFIT.Add("../output.root");
-	std::string f1 = "../runTEST_MERGED/TT_TopLeptonicDecay_TH_1L3B_Eta_"+coup+"/data.root";
+	std::string f1 = "../runTEST_MERGED/TT_FCNC-TtoHJ_aTleptonic_HTobb_eta_hut-MadGraph5-pythia8/data.root";
 	trFIT.Add(f1.c_str());
-	std::string f2 = "../runTEST_MERGED/TT_AntitopLeptonicDecay_TH_1L3B_Eta_"+coup+"/data.root";
+	std::string f2 = "../runTEST_MERGED/TT_FCNC-T2HJ_aTleptonic_HTobb_eta_hct-MadGraph5-pythia8/data.root";
 	trFIT.Add(f2.c_str());
+	std::string f3 = "../runTEST_MERGED/TT_FCNC-aTtoHJ_Tleptonic_HTobb_eta_hut-MadGraph5-pythia8/data.root";
+	trFIT.Add(f3.c_str());
+	std::string f4 = "../runTEST_MERGED/TT_FCNC-aTtoHJ_Tleptonic_HTobb_eta_hct-MadGraph5-pythia8/data.root";
+	trFIT.Add(f4.c_str());
 	
 	trFIT.SetBranchAddress("DiscAll",&DiscAll);
 	trFIT.SetBranchAddress("HiggsRecMAll",&HiggsRecMAll);
