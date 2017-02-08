@@ -92,7 +92,7 @@ std::pair <Double_t, Double_t> c_workingpointvalue_Tight(0.69, -0.45); // reduce
 
 //What you want to do
 bool synchex = false;
-bool Assigned = false;
+
 
 
 // home made functions
@@ -104,8 +104,8 @@ float EffectiveAreaRho(TRootElectron *el, float _rho) ;
 float EffectiveArea(TRootElectron *el) ;
 float relPfIsoEl(TRootElectron *el, float _rho);
 float IsoDBeta(TRootMuon *mu);
-vector<TLorentzVector> LeptonAssigner(std::vector<TRootElectron*> electrons,std::vector<TRootMuon*> muons);
-vector<TLorentzVector> LeptonAssignerv2(std::vector<TRootElectron*> electrons,std::vector<TRootMuon*> muons);
+pair< vector <TLorentzVector> , vector < pair < string , int > > >  LeptonAssigner(std::vector<TRootElectron*> electrons,std::vector<TRootMuon*> muons);
+//vector<TLorentzVector> LeptonAssignerv2(std::vector<TRootElectron*> electrons,std::vector<TRootMuon*> muons);
 
 bool isVetoElectronSpring2016(TRootElectron electron);
 bool isTightElectronSpring2016(TRootElectron electron);
@@ -113,22 +113,19 @@ TLorentzVector MetzCalculator(TLorentzVector leptW, TLorentzVector v_met);
 // administration functions
 string ConvertIntToString(int Number, bool pad);
 string MakeTimeStamp();
-int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TLorentzVector> selectedleptons);
-
-
+pair< vector< pair<unsigned int, unsigned int>>, vector <string> >  Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TLorentzVector> selectedobjects);
+pair< vector< pair<unsigned int, unsigned int>>, vector <string> >  MatcherST(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TLorentzVector> selectedobjects);
+pair< vector< pair<unsigned int, unsigned int>>, vector <string> >  MatchertZq(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TLorentzVector> selectedobjects);
 // members
 //   bool stop_program;
 double M_W  = 80.4;
 double M_mu =  0.10566; // 105.66 MeV/c^2
 double M_el = 0.000510999; // 0.510998910 Mev/c^2
 
-bool elecbool = false;
-bool mubool = false;
-vector <int> muIndices;
-vector <int> elecIndices;
-vector <int> WmuIndices;
-vector <int> WelecIndices;
+//bool elecbool = false;
+//bool mubool = false;
 
+pair< vector< pair<unsigned int, unsigned int>>, vector <string> >   MatcherPair;
 
 
 int main (int argc, char *argv[])
@@ -210,9 +207,10 @@ int main (int argc, char *argv[])
   const float PreselEff 	  = strtod(argv[10], NULL);
   string fileName		  = argv[11];
   // if there only two arguments after the fileName, the jobNum will be set to 0 by default as an integer is expected and it will get a string (lastfile of the list)
-  const int JES                 =  strtol(argv[argc-6], NULL,10);
-  const int JER                 =  strtol(argv[argc-5], NULL,10);
-  const int FillBtagHisto	 =  strtol(argv[argc-4], NULL,10);
+  const int JES                 =  strtol(argv[argc-7], NULL,10);
+  const int JER                 =  strtol(argv[argc-6], NULL,10);
+  const int FillBtagHisto	 =  strtol(argv[argc-5], NULL,10);
+  const int Usettbar = strtol(argv[argc-4], NULL,10);
   const int JobNum		  = strtol(argv[argc-3], NULL, 10);
   const int startEvent  	  = strtol(argv[argc-2], NULL, 10);
   const int endEvent		  = strtol(argv[argc-1], NULL, 10);
@@ -245,10 +243,13 @@ int main (int argc, char *argv[])
       cout << "file number " << nfiles << " is " << vecfileNames[nfiles] << endl;
     }
   }
-  /// define channels
+  /// define decays
   //
   
-  cout << " --> Using the all  channel <-- " << endl;
+  string sdecay = "";
+  if(Usettbar) sdecay = "ttbar";
+  else sdecay = "singletop";
+  cout << " --> Using the " << sdecay << "  decay <-- " << endl;
   xmlFileName = "config/Run2TriLepton.xml" ;
   dataLumi = 36000; //pb
   
@@ -274,7 +275,7 @@ int main (int argc, char *argv[])
     cout << "running on data !!!!" << endl;
     cout << "luminosity is " << dataLumi << endl;
   }
-  if( dName.find("NP_overlay_TT_FCNC")!=string::npos || dName.find("tZq")!=string::npos )
+  if( dName.find("NP_overlay_TT_FCNC")!=string::npos || dName.find("tZq")!=string::npos || dName.find("NP_overlay_ST_FCNC")!=string::npos  )
   {
     matching = true;
     cout << " looking at mcParticles !! " << endl;
@@ -359,9 +360,11 @@ int main (int argc, char *argv[])
   stringstream ss;
   ss << JobNum;
   string strJobNum = ss.str();
-  string histo_dir = "NtupleMakerOutput/TriLepton_histos";
-  string histo_dir_date = histo_dir+"/TriLepton_histos_" + dateString +"/";
+  string histo_dir = "NtupleMakerOutput/TriLepton_histos/";
+  string histo_dirdecay = histo_dir +sdecay;
+  string histo_dir_date = histo_dirdecay+"/TriLepton_histos_" + dateString +"/";
   mkdir(histo_dir.c_str(),0777);
+  mkdir(histo_dirdecay.c_str(),0777);
   mkdir(histo_dir_date.c_str(),0777);
   
   string rootFileName (histo_dir_date+"/FCNC_3L_"+dName+".root");
@@ -437,11 +440,12 @@ int main (int argc, char *argv[])
   
   
   histo1D["matchedZmass"] = new TH1F("matchedZmass","matchedZmass",500,0,500);
-  histo1D["matchedFCNCTopmass"] = new TH1F("matchedFCNCTopmass","matchedFCNCTopmass",500,0,500);
+  if(Usettbar && !istZq) histo1D["matchedFCNCTopmass"] = new TH1F("matchedFCNCTopmass","matchedFCNCTopmass",500,0,500);
   histo1D["matchedSMTopmass"] = new TH1F("matchedSMTopmass","matchedSMTopmass",500,0,500);
   
   histo1D["recoZmass"] = new TH1F("recoZmass","recoZmass",500,0,500);
-  histo1D["recoFCNCTopmass"] = new TH1F("recoFCNCTopmass","recoFCNCTopmass",500,0,500);
+  histo1D["recomWt"] = new TH1F("recomWt","recomWt",150,0,150);
+  if(Usettbar && !istZq) histo1D["recoFCNCTopmass"] = new TH1F("recoFCNCTopmass","recoFCNCTopmass",500,0,500);
   histo1D["recoSMTopmass"] = new TH1F("recoSMTopmass","recoSMTopmass",500,0,500);
   
   
@@ -454,6 +458,7 @@ int main (int argc, char *argv[])
   histo1D["pt_lvb"] = new TH1F("pt_lvb","pt_lvb",500,0,500);
   histo1D["eta_lvb"]= new TH1F("eta_lvb","eta_lvb",30,-3,3);
   histo1D["phi_lvb"]= new TH1F("phi_lvb","phi_lvb",32,-3.2,3.2);
+  
   
   histo1D["Topmass_tq"] = new TH1F("Topmass_tq","Topmass_tq",500,0,500);
   histo1D["pt_tq"] = new TH1F("pt_tq","pt_tq",500,0,500);
@@ -473,44 +478,39 @@ int main (int argc, char *argv[])
   histo2D["phi_top_Wb"]= new TH2F("phi_top_Wb","phi:Wb:t",32,-3.2,3.2,32,-3.2,3.2);
   
   
-  histo1D["Topmass_Zq"] = new TH1F("Topmass_Zq","Topmass_Zq",500,0,500);
-  histo1D["pt_Zq"] = new TH1F("pt_Zq","pt_Zq",500,0,500);
-  histo1D["eta_Zq"]= new TH1F("eta_Zq","eta_Zq",30,-3,3);
-  histo1D["phi_Zq"]= new TH1F("phi_Zq","phi_Zq",32,-3.2,3.2);
-  
-  histo1D["Topmass_llq"] = new TH1F("Topmass_llq","Topmass_llq",500,0,500);
-  histo1D["pt_llq"] = new TH1F("pt_llq","pt_llq",500,0,500);
-  histo1D["eta_llq"]= new TH1F("eta_llq","eta_llq",30,-3,3);
-  histo1D["phi_llq"]= new TH1F("phi_llq","phi_llq",32,-3.2,3.2);
-  
-  histo1D["Topmass_fcnctq"] = new TH1F("Topmass_fcnctq","Topmass_fcnctq",500,0,500);
-  histo1D["pt_fcnctq"] = new TH1F("pt_fcnctq","pt_fcnctq",500,0,500);
-  histo1D["eta_fcnctq"]= new TH1F("eta_fcnctq","eta_fcnctq",30,-3,3);
-  histo1D["phi_fcnctq"]= new TH1F("phi_fcnctq","phi_fcnctq",32,-3.2,3.2);
-  
-  histo1D["mass_FCNCq"] = new TH1F("mass_FCNCq","mass_fcnc q",100,0,10);
-  histo1D["pt_FCNCq"] = new TH1F("pt_FCNCq","pt_fcnc q",500,0,500);
-  histo1D["eta_FCNCq"]= new TH1F("eta_FCNCq","eta_fcnc q",30,-3,3);
-  histo1D["phi_FCNCq"]= new TH1F("phi_FCNCq","phi_fcnc q",32,-3.2,3.2);
-  
-  histo1D["dR_llq"] =  new TH1F("DRllq", "dR llq", 500,0, 5);
-  histo1D["dR_Zq"] =  new TH1F("DRZq", "dR Zq", 500,0, 5);
-  histo1D["dR_Zqtop"]  = new TH1F("DRZqtop", "dR Zq-top", 500,0, 5);
-  histo1D["dPhi_llq"]  = new TH1F("DPhiZq", "dPhi Zq", 140,-7, 7);
-  histo1D["dPhi_Zq"]  = new TH1F("DPhillq", "dPhi llq", 140,-7, 7);
-  histo1D["dPhi_Zqtop"]  = new TH1F("DPhiZqtop", "dPhi Zq-top", 140,-7, 7);
-  
-  histo2D["Topmass_top_Zq"] = new TH2F("Topmass_top_Zq","Topmass:Zq:t",500,0,500,500,0,500);
-  histo2D["pt_top_Zq"] = new TH2F("pt_top_Zq","pt:Zq:t",500,0,500,500,0,500);
-  histo2D["eta_top_Zq"]= new TH2F("eta_top_Zq","eta:Zq:t",30,-3,3,30,-3,3);
-  histo2D["phi_top_Zq"]= new TH2F("phi_top_Zq","phi:Zq:t",32,-3.2,3.2,32,-3.2,3.2);
-  
-  
-  
-  
-  
-  
-  
+  if(Usettbar && !istZq){
+    histo1D["Topmass_Zq"] = new TH1F("Topmass_Zq","Topmass_Zq",500,0,500);
+    histo1D["pt_Zq"] = new TH1F("pt_Zq","pt_Zq",500,0,500);
+    histo1D["eta_Zq"]= new TH1F("eta_Zq","eta_Zq",30,-3,3);
+    histo1D["phi_Zq"]= new TH1F("phi_Zq","phi_Zq",32,-3.2,3.2);
+    
+    histo1D["Topmass_llq"] = new TH1F("Topmass_llq","Topmass_llq",500,0,500);
+    histo1D["pt_llq"] = new TH1F("pt_llq","pt_llq",500,0,500);
+    histo1D["eta_llq"]= new TH1F("eta_llq","eta_llq",30,-3,3);
+    histo1D["phi_llq"]= new TH1F("phi_llq","phi_llq",32,-3.2,3.2);
+    
+    histo1D["Topmass_fcnctq"] = new TH1F("Topmass_fcnctq","Topmass_fcnctq",500,0,500);
+    histo1D["pt_fcnctq"] = new TH1F("pt_fcnctq","pt_fcnctq",500,0,500);
+    histo1D["eta_fcnctq"]= new TH1F("eta_fcnctq","eta_fcnctq",30,-3,3);
+    histo1D["phi_fcnctq"]= new TH1F("phi_fcnctq","phi_fcnctq",32,-3.2,3.2);
+    
+    histo1D["mass_FCNCq"] = new TH1F("mass_FCNCq","mass_fcnc q",100,0,10);
+    histo1D["pt_FCNCq"] = new TH1F("pt_FCNCq","pt_fcnc q",500,0,500);
+    histo1D["eta_FCNCq"]= new TH1F("eta_FCNCq","eta_fcnc q",30,-3,3);
+    histo1D["phi_FCNCq"]= new TH1F("phi_FCNCq","phi_fcnc q",32,-3.2,3.2);
+    
+    histo1D["dR_llq"] =  new TH1F("DRllq", "dR llq", 500,0, 5);
+    histo1D["dR_Zq"] =  new TH1F("DRZq", "dR Zq", 500,0, 5);
+    histo1D["dR_Zqtop"]  = new TH1F("DRZqtop", "dR Zq-top", 500,0, 5);
+    histo1D["dPhi_llq"]  = new TH1F("DPhiZq", "dPhi Zq", 140,-7, 7);
+    histo1D["dPhi_Zq"]  = new TH1F("DPhillq", "dPhi llq", 140,-7, 7);
+    histo1D["dPhi_Zqtop"]  = new TH1F("DPhiZqtop", "dPhi Zq-top", 140,-7, 7);
+    
+    histo2D["Topmass_top_Zq"] = new TH2F("Topmass_top_Zq","Topmass:Zq:t",500,0,500,500,0,500);
+    histo2D["pt_top_Zq"] = new TH2F("pt_top_Zq","pt:Zq:t",500,0,500,500,0,500);
+    histo2D["eta_top_Zq"]= new TH2F("eta_top_Zq","eta:Zq:t",30,-3,3,30,-3,3);
+    histo2D["phi_top_Zq"]= new TH2F("phi_top_Zq","phi:Zq:t",32,-3.2,3.2,32,-3.2,3.2);
+  }
   histo1D["mass_lep1"]                                  = new TH1F("mass_lep1","mass_lep1",250,0,0.5);
   histo1D["mass_lep2"]                                  = new TH1F("mass_lep2","mass_lep2",250,0,0.5);
   histo1D["Zmass_Zlep"]                                  = new TH1F("Zmass_Zlep","Zmass_lep",200,0,200);
@@ -633,7 +633,7 @@ int main (int argc, char *argv[])
       
       
     }
-    
+    cout << "check " << endl;
     if(verbose>1) cout << "btag done" << endl;
     
     
@@ -732,8 +732,8 @@ int main (int argc, char *argv[])
     // Setup Date string and nTuple for output
     ///////////////////////////////////////////////////////////
     
-    string channel_dir = "NtupleMakerOutput/Ntuples";
-    string date_dir = channel_dir+"/Ntuples_" + dateString +"/";
+    string channel_dir = "NtupleMakerOutput/Ntuples/"+sdecay+"/" ;
+    string date_dir = channel_dir+ "/" + dateString +"/";
     mkdir(channel_dir.c_str(),0777);
     mkdir(date_dir.c_str(),0777);
     
@@ -1065,11 +1065,31 @@ int main (int argc, char *argv[])
     int nMET_uue;
     int nEvPassed;
     double xsec;
+    int matchedZlep_1;
+    int matchedZlep_0;
+    int matchedWlep;
+    int matchedEvents_Wlep;
+    int matchedEvents_Zlep;
+    int int_eventForWlepmatching;
+    int int_eventForWlepmatchingmatched;
+    int int_eventForZlepmatching;
+    int int_eventForZlepmatchingmatched0;
+    int int_eventForZlepmatchingmatched1;
+    bool eventForWlepmatchingmatched;
+    bool eventForZlepmatching;
+    bool eventForZlepmatchingmatched0;
+    bool eventForZlepmatchingmatched1;
+    bool eventForWlepmatching;
     globalTree->Branch("nofEventsHLTv2",&nofEventsHLTv2,"nofEventsHLTv2/I");
     globalTree->Branch("nofEventsHLTv3",&nofEventsHLTv3,"nofEventsHLTv3/I");
     globalTree->Branch("nofPosWeights",&nofPosWeights,"nofPosWeights/I");
     globalTree->Branch("nofNegWeights",&nofNegWeights,"nofNegWeights/I");
     globalTree->Branch("nEv" , &nEv, "nEv/I");
+    globalTree->Branch("matchedZlep_1" , &matchedZlep_1, "matchedZlep_1/I");
+    globalTree->Branch("matchedZlep_0" , &matchedZlep_0, "matchedZlep_0/I");
+    globalTree->Branch("matchedWlep" , &matchedWlep, "matchedWlep/I");
+    globalTree->Branch("matchedEvents_Wlep" , &matchedEvents_Wlep, "matchedEvents_Wlep/I");
+    globalTree->Branch("matchedEvents_Zlep" , &matchedEvents_Zlep, "matchedEvents_Zlep/I");
     globalTree->Branch("sumW", &sumW, "sumW/I");
     globalTree->Branch("nCuts",&nCuts, "nCuts/I");
     globalTree->Branch("cutstep_string", &cutstep_string, "cutstep_string");
@@ -1084,13 +1104,14 @@ int main (int argc, char *argv[])
     globalTree->Branch("WPb_L", &WPb_L, "WPb_L/D");
     globalTree->Branch("WPb_M", &WPb_M, "WPb_M/D");
     globalTree->Branch("WPb_T", &WPb_T, "WPb_T/D");
-    globalTree->Branch("WPc_CvsB_Loose", &WPc_CvsB_Loose, "WPc_CvsB_Loose/D");
-    globalTree->Branch("WPc_CvsB_Medium", &WPc_CvsB_Medium, "WPc_CvsB_Medium/D");
-    globalTree->Branch("WPc_CvsB_Tight", &WPc_CvsB_Tight, "WPc_CvsB_Tight/D");
-    globalTree->Branch("WPc_CvsL_Loose", &WPc_CvsL_Loose, "WPc_CvsL_Loose/D");
-    globalTree->Branch("WPc_CvsL_Medium", &WPc_CvsL_Medium, "WPc_CvsL_Medium/D");
-    globalTree->Branch("WPc_CvsL_Tight", &WPc_CvsL_Tight, "WPc_CvsL_Tight/D");
-    
+    if(Usettbar){
+      globalTree->Branch("WPc_CvsB_Loose", &WPc_CvsB_Loose, "WPc_CvsB_Loose/D");
+      globalTree->Branch("WPc_CvsB_Medium", &WPc_CvsB_Medium, "WPc_CvsB_Medium/D");
+      globalTree->Branch("WPc_CvsB_Tight", &WPc_CvsB_Tight, "WPc_CvsB_Tight/D");
+      globalTree->Branch("WPc_CvsL_Loose", &WPc_CvsL_Loose, "WPc_CvsL_Loose/D");
+      globalTree->Branch("WPc_CvsL_Medium", &WPc_CvsL_Medium, "WPc_CvsL_Medium/D");
+      globalTree->Branch("WPc_CvsL_Tight", &WPc_CvsL_Tight, "WPc_CvsL_Tight/D");
+    }
     globalTree->Branch("nTrigg", &nTrigg, "nTrigg/I");
     globalTree->Branch("n3lep", &n3lep, "n3lep/I");
     globalTree->Branch("nVetoMu", &nVetoMu, "nVetoMu/I");
@@ -1289,55 +1310,56 @@ int main (int argc, char *argv[])
     myTree->Branch("nJets_nonCSVL",&nJets_nonCSVL,"nJets_nonCSVL/I");
     myTree->Branch("nJets_nonCSVM",&nJets_nonCSVM,"nJets_nonCSVM/I");
     myTree->Branch("nJets_nonCSVT",&nJets_nonCSVT,"nJets_nonCSVT/I");
-    myTree->Branch("nJets_nonCharmLCSVL",&nJets_nonCharmLCSVL,"nJets_nonCharmLCSVL/I");
-    myTree->Branch("nJets_nonCharmLCSVM",&nJets_nonCharmLCSVM,"nJets_nonCharmLCSVM/I");
-    myTree->Branch("nJets_nonCharmLCSVT",&nJets_nonCharmLCSVT,"nJets_nonCharmLCSVT/I");
-    myTree->Branch("nJets_nonCharmMCSVL",&nJets_nonCharmMCSVL,"nJets_nonCharmMCSVL/I");
-    myTree->Branch("nJets_nonCharmMCSVM",&nJets_nonCharmMCSVM,"nJets_nonCharmMCSVM/I");
-    myTree->Branch("nJets_nonCharmMCSVT",&nJets_nonCharmMCSVT,"nJets_nonCharmMCSVT/I");
-    myTree->Branch("nJets_nonCharmTCSVL",&nJets_nonCharmTCSVL,"nJets_nonCharmTCSVL/I");
-    myTree->Branch("nJets_nonCharmTCSVM",&nJets_nonCharmTCSVM,"nJets_nonCharmTCSVM/I");
-    myTree->Branch("nJets_nonCharmTCSVT",&nJets_nonCharmTCSVT,"nJets_nonCharmTCSVT/I");
-    
-    myTree->Branch("nJets_nonCharmLnonCSVL",&nJets_nonCharmLnonCSVL,"nJets_nonCharmLnonCSVL/I");
-    myTree->Branch("nJets_nonCharmLnonCSVM",&nJets_nonCharmLnonCSVM,"nJets_nonCharmLnonCSVM/I");
-    myTree->Branch("nJets_nonCharmLnonCSVT",&nJets_nonCharmLnonCSVT,"nJets_nonCharmLnonCSVT/I");
-    myTree->Branch("nJets_nonCharmMnonCSVL",&nJets_nonCharmMnonCSVL,"nJets_nonCharmMnonCSVL/I");
-    myTree->Branch("nJets_nonCharmMnonCSVM",&nJets_nonCharmMnonCSVM,"nJets_nonCharmMnonCSVM/I");
-    myTree->Branch("nJets_nonCharmMnonCSVT",&nJets_nonCharmMnonCSVT,"nJets_nonCharmMnonCSVT/I");
-    myTree->Branch("nJets_nonCharmTnonCSVL",&nJets_nonCharmTnonCSVL,"nJets_nonCharmTnonCSVL/I");
-    myTree->Branch("nJets_nonCharmTnonCSVM",&nJets_nonCharmTnonCSVM,"nJets_nonCharmTnonCSVM/I");
-    myTree->Branch("nJets_nonCharmTnonCSVT",&nJets_nonCharmTnonCSVT,"nJets_nonCharmTnonCSVT/I");
-    
-    myTree->Branch("nJets_CharmLnonCSVL",&nJets_CharmLnonCSVL,"nJets_CharmLnonCSVL/I");
-    myTree->Branch("nJets_CharmLnonCSVM",&nJets_CharmLnonCSVM,"nJets_CharmLnonCSVM/I");
-    myTree->Branch("nJets_CharmLnonCSVT",&nJets_CharmLnonCSVT,"nJets_CharmLnonCSVT/I");
-    myTree->Branch("nJets_CharmMnonCSVL",&nJets_CharmMnonCSVL,"nJets_CharmMnonCSVL/I");
-    myTree->Branch("nJets_CharmMnonCSVM",&nJets_CharmMnonCSVM,"nJets_CharmMnonCSVM/I");
-    myTree->Branch("nJets_CharmMnonCSVT",&nJets_CharmMnonCSVT,"nJets_CharmMnonCSVT/I");
-    myTree->Branch("nJets_CharmTnonCSVL",&nJets_CharmTnonCSVL,"nJets_CharmTnonCSVL/I");
-    myTree->Branch("nJets_CharmTnonCSVM",&nJets_CharmTnonCSVM,"nJets_CharmTnonCSVM/I");
-    myTree->Branch("nJets_CharmTnonCSVT",&nJets_CharmTnonCSVT,"nJets_CharmTnonCSVT/I");
-    
-    myTree->Branch("nJets_CharmLCSVL",&nJets_CharmLCSVL,"nJets_CharmLCSVL/I");
-    myTree->Branch("nJets_CharmLCSVM",&nJets_CharmLCSVM,"nJets_CharmLCSVM/I");
-    myTree->Branch("nJets_CharmLCSVT",&nJets_CharmLCSVT,"nJets_CharmLCSVT/I");
-    myTree->Branch("nJets_CharmMCSVL",&nJets_CharmMCSVL,"nJets_CharmMCSVL/I");
-    myTree->Branch("nJets_CharmMCSVM",&nJets_CharmMCSVM,"nJets_CharmMCSVM/I");
-    myTree->Branch("nJets_CharmMCSVT",&nJets_CharmMCSVT,"nJets_CharmMCSVT/I");
-    myTree->Branch("nJets_CharmTCSVL",&nJets_CharmTCSVL,"nJets_CharmTCSVL/I");
-    myTree->Branch("nJets_CharmTCSVM",&nJets_CharmTCSVM,"nJets_CharmTCSVM/I");
-    myTree->Branch("nJets_CharmTCSVT",&nJets_CharmTCSVT,"nJets_CharmTCSVT/I");
-    
-    
-    myTree->Branch("nJets_CharmL",&nJets_CharmL,"nJets_CharmL/I");
-    myTree->Branch("nJets_CharmM",&nJets_CharmM,"nJets_CharmM/I");
-    myTree->Branch("nJets_CharmT",&nJets_CharmT,"nJets_CharmT/I");
-    myTree->Branch("nJets_nonCharmL",&nJets_nonCharmL,"nJets_nonCharmL/I");
-    myTree->Branch("nJets_nonCharmM",&nJets_nonCharmM,"nJets_nonCharmM/I");
-    myTree->Branch("nJets_nonCharmT",&nJets_nonCharmT,"nJets_nonCharmT/I");
-    
-    
+    if(Usettbar){
+      myTree->Branch("nJets_nonCharmLCSVL",&nJets_nonCharmLCSVL,"nJets_nonCharmLCSVL/I");
+      myTree->Branch("nJets_nonCharmLCSVM",&nJets_nonCharmLCSVM,"nJets_nonCharmLCSVM/I");
+      myTree->Branch("nJets_nonCharmLCSVT",&nJets_nonCharmLCSVT,"nJets_nonCharmLCSVT/I");
+      myTree->Branch("nJets_nonCharmMCSVL",&nJets_nonCharmMCSVL,"nJets_nonCharmMCSVL/I");
+      myTree->Branch("nJets_nonCharmMCSVM",&nJets_nonCharmMCSVM,"nJets_nonCharmMCSVM/I");
+      myTree->Branch("nJets_nonCharmMCSVT",&nJets_nonCharmMCSVT,"nJets_nonCharmMCSVT/I");
+      myTree->Branch("nJets_nonCharmTCSVL",&nJets_nonCharmTCSVL,"nJets_nonCharmTCSVL/I");
+      myTree->Branch("nJets_nonCharmTCSVM",&nJets_nonCharmTCSVM,"nJets_nonCharmTCSVM/I");
+      myTree->Branch("nJets_nonCharmTCSVT",&nJets_nonCharmTCSVT,"nJets_nonCharmTCSVT/I");
+      
+      myTree->Branch("nJets_nonCharmLnonCSVL",&nJets_nonCharmLnonCSVL,"nJets_nonCharmLnonCSVL/I");
+      myTree->Branch("nJets_nonCharmLnonCSVM",&nJets_nonCharmLnonCSVM,"nJets_nonCharmLnonCSVM/I");
+      myTree->Branch("nJets_nonCharmLnonCSVT",&nJets_nonCharmLnonCSVT,"nJets_nonCharmLnonCSVT/I");
+      myTree->Branch("nJets_nonCharmMnonCSVL",&nJets_nonCharmMnonCSVL,"nJets_nonCharmMnonCSVL/I");
+      myTree->Branch("nJets_nonCharmMnonCSVM",&nJets_nonCharmMnonCSVM,"nJets_nonCharmMnonCSVM/I");
+      myTree->Branch("nJets_nonCharmMnonCSVT",&nJets_nonCharmMnonCSVT,"nJets_nonCharmMnonCSVT/I");
+      myTree->Branch("nJets_nonCharmTnonCSVL",&nJets_nonCharmTnonCSVL,"nJets_nonCharmTnonCSVL/I");
+      myTree->Branch("nJets_nonCharmTnonCSVM",&nJets_nonCharmTnonCSVM,"nJets_nonCharmTnonCSVM/I");
+      myTree->Branch("nJets_nonCharmTnonCSVT",&nJets_nonCharmTnonCSVT,"nJets_nonCharmTnonCSVT/I");
+      
+      myTree->Branch("nJets_CharmLnonCSVL",&nJets_CharmLnonCSVL,"nJets_CharmLnonCSVL/I");
+      myTree->Branch("nJets_CharmLnonCSVM",&nJets_CharmLnonCSVM,"nJets_CharmLnonCSVM/I");
+      myTree->Branch("nJets_CharmLnonCSVT",&nJets_CharmLnonCSVT,"nJets_CharmLnonCSVT/I");
+      myTree->Branch("nJets_CharmMnonCSVL",&nJets_CharmMnonCSVL,"nJets_CharmMnonCSVL/I");
+      myTree->Branch("nJets_CharmMnonCSVM",&nJets_CharmMnonCSVM,"nJets_CharmMnonCSVM/I");
+      myTree->Branch("nJets_CharmMnonCSVT",&nJets_CharmMnonCSVT,"nJets_CharmMnonCSVT/I");
+      myTree->Branch("nJets_CharmTnonCSVL",&nJets_CharmTnonCSVL,"nJets_CharmTnonCSVL/I");
+      myTree->Branch("nJets_CharmTnonCSVM",&nJets_CharmTnonCSVM,"nJets_CharmTnonCSVM/I");
+      myTree->Branch("nJets_CharmTnonCSVT",&nJets_CharmTnonCSVT,"nJets_CharmTnonCSVT/I");
+      
+      myTree->Branch("nJets_CharmLCSVL",&nJets_CharmLCSVL,"nJets_CharmLCSVL/I");
+      myTree->Branch("nJets_CharmLCSVM",&nJets_CharmLCSVM,"nJets_CharmLCSVM/I");
+      myTree->Branch("nJets_CharmLCSVT",&nJets_CharmLCSVT,"nJets_CharmLCSVT/I");
+      myTree->Branch("nJets_CharmMCSVL",&nJets_CharmMCSVL,"nJets_CharmMCSVL/I");
+      myTree->Branch("nJets_CharmMCSVM",&nJets_CharmMCSVM,"nJets_CharmMCSVM/I");
+      myTree->Branch("nJets_CharmMCSVT",&nJets_CharmMCSVT,"nJets_CharmMCSVT/I");
+      myTree->Branch("nJets_CharmTCSVL",&nJets_CharmTCSVL,"nJets_CharmTCSVL/I");
+      myTree->Branch("nJets_CharmTCSVM",&nJets_CharmTCSVM,"nJets_CharmTCSVM/I");
+      myTree->Branch("nJets_CharmTCSVT",&nJets_CharmTCSVT,"nJets_CharmTCSVT/I");
+      
+      
+      myTree->Branch("nJets_CharmL",&nJets_CharmL,"nJets_CharmL/I");
+      myTree->Branch("nJets_CharmM",&nJets_CharmM,"nJets_CharmM/I");
+      myTree->Branch("nJets_CharmT",&nJets_CharmT,"nJets_CharmT/I");
+      myTree->Branch("nJets_nonCharmL",&nJets_nonCharmL,"nJets_nonCharmL/I");
+      myTree->Branch("nJets_nonCharmM",&nJets_nonCharmM,"nJets_nonCharmM/I");
+      myTree->Branch("nJets_nonCharmT",&nJets_nonCharmT,"nJets_nonCharmT/I");
+      
+    }
     myTree->Branch("pt_jet",pt_jet,"pt_jet[nJets]/F");
     myTree->Branch("px_jet",px_jet,"px_jet[nJets]/F");
     myTree->Branch("py_jet",py_jet,"py_jet[nJets]/F");
@@ -1347,10 +1369,12 @@ int main (int argc, char *argv[])
     myTree->Branch("E_jet",E_jet,"E_jet[nJets]/F");
     myTree->Branch("charge_jet",charge_jet,"charge_jet[nJets]/I");
     myTree->Branch("bdisc_jet",bdisc_jet,"bdisc_jet[nJets]/F");
-    myTree->Branch("cdiscCvsL_jet",cdiscCvsL_jet,"cdiscCvsL_jet[nJets]/F");
-    myTree->Branch("cdiscCvsB_jet",cdiscCvsB_jet,"cdiscCvsB_jet[nJets]/F");
-    myTree->Branch("cdiscCvsL_jet_1",&cdiscCvsL_jet_1,"cdiscCvsL_jet_1/F");
-    myTree->Branch("cdiscCvsB_jet_1",&cdiscCvsB_jet_1,"cdiscCvsB_jet_1/F");
+    if(Usettbar){
+      myTree->Branch("cdiscCvsL_jet",cdiscCvsL_jet,"cdiscCvsL_jet[nJets]/F");
+      myTree->Branch("cdiscCvsB_jet",cdiscCvsB_jet,"cdiscCvsB_jet[nJets]/F");
+      myTree->Branch("cdiscCvsL_jet_1",&cdiscCvsL_jet_1,"cdiscCvsL_jet_1/F");
+      myTree->Branch("cdiscCvsB_jet_1",&cdiscCvsB_jet_1,"cdiscCvsB_jet_1/F");
+    }
     myTree->Branch("pt_jet_1",&pt_jet_1,"pt_jet_1/F");
     myTree->Branch("pt_jet_2",&pt_jet_2,"pt_jet_2/F");
     myTree->Branch("pt_jet_3",&pt_jet_3,"pt_jet_3/F");
@@ -1361,59 +1385,61 @@ int main (int argc, char *argv[])
     baselineTree->Branch("nJets_CSVL",&nJets_CSVL,"nJets_CSVL/I");
     baselineTree->Branch("nJets_CSVM",&nJets_CSVM,"nJets_CSVM/I");
     baselineTree->Branch("nJets_CSVT",&nJets_CSVT,"nJets_CSVT/I");
-    baselineTree->Branch("nJets_CharmL",&nJets_CharmL,"nJets_CharmL/I");
-    baselineTree->Branch("nJets_CharmM",&nJets_CharmM,"nJets_CharmM/I");
-    baselineTree->Branch("nJets_CharmT",&nJets_CharmT,"nJets_CharmT/I");
-    baselineTree->Branch("nJets_nonCSVL",&nJets_nonCSVL,"nJets_nonCSVL/I");
-    baselineTree->Branch("nJets_nonCSVM",&nJets_nonCSVM,"nJets_nonCSVM/I");
-    baselineTree->Branch("nJets_nonCSVT",&nJets_nonCSVT,"nJets_nonCSVT/I");
-    baselineTree->Branch("nJets_nonCharmLCSVL",&nJets_nonCharmLCSVL,"nJets_nonCharmLCSVL/I");
-    baselineTree->Branch("nJets_nonCharmLCSVM",&nJets_nonCharmLCSVM,"nJets_nonCharmLCSVM/I");
-    baselineTree->Branch("nJets_nonCharmLCSVT",&nJets_nonCharmLCSVT,"nJets_nonCharmLCSVT/I");
-    baselineTree->Branch("nJets_nonCharmMCSVL",&nJets_nonCharmMCSVL,"nJets_nonCharmMCSVL/I");
-    baselineTree->Branch("nJets_nonCharmMCSVM",&nJets_nonCharmMCSVM,"nJets_nonCharmMCSVM/I");
-    baselineTree->Branch("nJets_nonCharmMCSVT",&nJets_nonCharmMCSVT,"nJets_nonCharmMCSVT/I");
-    baselineTree->Branch("nJets_nonCharmTCSVL",&nJets_nonCharmTCSVL,"nJets_nonCharmTCSVL/I");
-    baselineTree->Branch("nJets_nonCharmTCSVM",&nJets_nonCharmTCSVM,"nJets_nonCharmTCSVM/I");
-    baselineTree->Branch("nJets_nonCharmTCSVT",&nJets_nonCharmTCSVT,"nJets_nonCharmTCSVT/I");
-    baselineTree->Branch("nJets_nonCharmLnonCSVL",&nJets_nonCharmLnonCSVL,"nJets_nonCharmLnonCSVL/I");
-    baselineTree->Branch("nJets_nonCharmLnonCSVM",&nJets_nonCharmLnonCSVM,"nJets_nonCharmLnonCSVM/I");
-    baselineTree->Branch("nJets_nonCharmLnonCSVT",&nJets_nonCharmLnonCSVT,"nJets_nonCharmLnonCSVT/I");
-    baselineTree->Branch("nJets_nonCharmMnonCSVL",&nJets_nonCharmMnonCSVL,"nJets_nonCharmMnonCSVL/I");
-    baselineTree->Branch("nJets_nonCharmMnonCSVM",&nJets_nonCharmMnonCSVM,"nJets_nonCharmMnonCSVM/I");
-    baselineTree->Branch("nJets_nonCharmMnonCSVT",&nJets_nonCharmMnonCSVT,"nJets_nonCharmMnonCSVT/I");
-    baselineTree->Branch("nJets_nonCharmTnonCSVL",&nJets_nonCharmTnonCSVL,"nJets_nonCharmTnonCSVL/I");
-    baselineTree->Branch("nJets_nonCharmTnonCSVM",&nJets_nonCharmTnonCSVM,"nJets_nonCharmTnonCSVM/I");
-    baselineTree->Branch("nJets_nonCharmTnonCSVT",&nJets_nonCharmTnonCSVT,"nJets_nonCharmTnonCSVT/I");
-    
-    baselineTree->Branch("nJets_CharmLnonCSVL",&nJets_CharmLnonCSVL,"nJets_CharmLnonCSVL/I");
-    baselineTree->Branch("nJets_CharmLnonCSVM",&nJets_CharmLnonCSVM,"nJets_CharmLnonCSVM/I");
-    baselineTree->Branch("nJets_CharmLnonCSVT",&nJets_CharmLnonCSVT,"nJets_CharmLnonCSVT/I");
-    baselineTree->Branch("nJets_CharmMnonCSVL",&nJets_CharmMnonCSVL,"nJets_CharmMnonCSVL/I");
-    baselineTree->Branch("nJets_CharmMnonCSVM",&nJets_CharmMnonCSVM,"nJets_CharmMnonCSVM/I");
-    baselineTree->Branch("nJets_CharmMnonCSVT",&nJets_CharmMnonCSVT,"nJets_CharmMnonCSVT/I");
-    baselineTree->Branch("nJets_CharmTnonCSVL",&nJets_CharmTnonCSVL,"nJets_CharmTnonCSVL/I");
-    baselineTree->Branch("nJets_CharmTnonCSVM",&nJets_CharmTnonCSVM,"nJets_CharmTnonCSVM/I");
-    baselineTree->Branch("nJets_CharmTnonCSVT",&nJets_CharmTnonCSVT,"nJets_CharmTnonCSVT/I");
-    
-    
-    baselineTree->Branch("nJets_CharmL",&nJets_CharmL,"nJets_CharmL/I");
-    baselineTree->Branch("nJets_CharmM",&nJets_CharmM,"nJets_CharmM/I");
-    baselineTree->Branch("nJets_CharmT",&nJets_CharmT,"nJets_CharmT/I");
-    baselineTree->Branch("nJets_nonCharmL",&nJets_nonCharmL,"nJets_nonCharmL/I");
-    baselineTree->Branch("nJets_nonCharmM",&nJets_nonCharmM,"nJets_nonCharmM/I");
-    baselineTree->Branch("nJets_nonCharmT",&nJets_nonCharmT,"nJets_nonCharmT/I");
-    
-    baselineTree->Branch("nJets_CharmLCSVL",&nJets_CharmLCSVL,"nJets_CharmLCSVL/I");
-    baselineTree->Branch("nJets_CharmLCSVM",&nJets_CharmLCSVM,"nJets_CharmLCSVM/I");
-    baselineTree->Branch("nJets_CharmLCSVT",&nJets_CharmLCSVT,"nJets_CharmLCSVT/I");
-    baselineTree->Branch("nJets_CharmMCSVL",&nJets_CharmMCSVL,"nJets_CharmMCSVL/I");
-    baselineTree->Branch("nJets_CharmMCSVM",&nJets_CharmMCSVM,"nJets_CharmMCSVM/I");
-    baselineTree->Branch("nJets_CharmMCSVT",&nJets_CharmMCSVT,"nJets_CharmMCSVT/I");
-    baselineTree->Branch("nJets_CharmTCSVL",&nJets_CharmTCSVL,"nJets_CharmTCSVL/I");
-    baselineTree->Branch("nJets_CharmTCSVM",&nJets_CharmTCSVM,"nJets_CharmTCSVM/I");
-    baselineTree->Branch("nJets_CharmTCSVT",&nJets_CharmTCSVT,"nJets_CharmTCSVT/I");
-    
+    if(Usettbar){
+      baselineTree->Branch("nJets_CharmL",&nJets_CharmL,"nJets_CharmL/I");
+      baselineTree->Branch("nJets_CharmM",&nJets_CharmM,"nJets_CharmM/I");
+      baselineTree->Branch("nJets_CharmT",&nJets_CharmT,"nJets_CharmT/I");
+      baselineTree->Branch("nJets_nonCSVL",&nJets_nonCSVL,"nJets_nonCSVL/I");
+      baselineTree->Branch("nJets_nonCSVM",&nJets_nonCSVM,"nJets_nonCSVM/I");
+      baselineTree->Branch("nJets_nonCSVT",&nJets_nonCSVT,"nJets_nonCSVT/I");
+      baselineTree->Branch("nJets_nonCharmLCSVL",&nJets_nonCharmLCSVL,"nJets_nonCharmLCSVL/I");
+      baselineTree->Branch("nJets_nonCharmLCSVM",&nJets_nonCharmLCSVM,"nJets_nonCharmLCSVM/I");
+      baselineTree->Branch("nJets_nonCharmLCSVT",&nJets_nonCharmLCSVT,"nJets_nonCharmLCSVT/I");
+      baselineTree->Branch("nJets_nonCharmMCSVL",&nJets_nonCharmMCSVL,"nJets_nonCharmMCSVL/I");
+      baselineTree->Branch("nJets_nonCharmMCSVM",&nJets_nonCharmMCSVM,"nJets_nonCharmMCSVM/I");
+      baselineTree->Branch("nJets_nonCharmMCSVT",&nJets_nonCharmMCSVT,"nJets_nonCharmMCSVT/I");
+      baselineTree->Branch("nJets_nonCharmTCSVL",&nJets_nonCharmTCSVL,"nJets_nonCharmTCSVL/I");
+      baselineTree->Branch("nJets_nonCharmTCSVM",&nJets_nonCharmTCSVM,"nJets_nonCharmTCSVM/I");
+      baselineTree->Branch("nJets_nonCharmTCSVT",&nJets_nonCharmTCSVT,"nJets_nonCharmTCSVT/I");
+      baselineTree->Branch("nJets_nonCharmLnonCSVL",&nJets_nonCharmLnonCSVL,"nJets_nonCharmLnonCSVL/I");
+      baselineTree->Branch("nJets_nonCharmLnonCSVM",&nJets_nonCharmLnonCSVM,"nJets_nonCharmLnonCSVM/I");
+      baselineTree->Branch("nJets_nonCharmLnonCSVT",&nJets_nonCharmLnonCSVT,"nJets_nonCharmLnonCSVT/I");
+      baselineTree->Branch("nJets_nonCharmMnonCSVL",&nJets_nonCharmMnonCSVL,"nJets_nonCharmMnonCSVL/I");
+      baselineTree->Branch("nJets_nonCharmMnonCSVM",&nJets_nonCharmMnonCSVM,"nJets_nonCharmMnonCSVM/I");
+      baselineTree->Branch("nJets_nonCharmMnonCSVT",&nJets_nonCharmMnonCSVT,"nJets_nonCharmMnonCSVT/I");
+      baselineTree->Branch("nJets_nonCharmTnonCSVL",&nJets_nonCharmTnonCSVL,"nJets_nonCharmTnonCSVL/I");
+      baselineTree->Branch("nJets_nonCharmTnonCSVM",&nJets_nonCharmTnonCSVM,"nJets_nonCharmTnonCSVM/I");
+      baselineTree->Branch("nJets_nonCharmTnonCSVT",&nJets_nonCharmTnonCSVT,"nJets_nonCharmTnonCSVT/I");
+      
+      baselineTree->Branch("nJets_CharmLnonCSVL",&nJets_CharmLnonCSVL,"nJets_CharmLnonCSVL/I");
+      baselineTree->Branch("nJets_CharmLnonCSVM",&nJets_CharmLnonCSVM,"nJets_CharmLnonCSVM/I");
+      baselineTree->Branch("nJets_CharmLnonCSVT",&nJets_CharmLnonCSVT,"nJets_CharmLnonCSVT/I");
+      baselineTree->Branch("nJets_CharmMnonCSVL",&nJets_CharmMnonCSVL,"nJets_CharmMnonCSVL/I");
+      baselineTree->Branch("nJets_CharmMnonCSVM",&nJets_CharmMnonCSVM,"nJets_CharmMnonCSVM/I");
+      baselineTree->Branch("nJets_CharmMnonCSVT",&nJets_CharmMnonCSVT,"nJets_CharmMnonCSVT/I");
+      baselineTree->Branch("nJets_CharmTnonCSVL",&nJets_CharmTnonCSVL,"nJets_CharmTnonCSVL/I");
+      baselineTree->Branch("nJets_CharmTnonCSVM",&nJets_CharmTnonCSVM,"nJets_CharmTnonCSVM/I");
+      baselineTree->Branch("nJets_CharmTnonCSVT",&nJets_CharmTnonCSVT,"nJets_CharmTnonCSVT/I");
+      
+      
+      baselineTree->Branch("nJets_CharmL",&nJets_CharmL,"nJets_CharmL/I");
+      baselineTree->Branch("nJets_CharmM",&nJets_CharmM,"nJets_CharmM/I");
+      baselineTree->Branch("nJets_CharmT",&nJets_CharmT,"nJets_CharmT/I");
+      baselineTree->Branch("nJets_nonCharmL",&nJets_nonCharmL,"nJets_nonCharmL/I");
+      baselineTree->Branch("nJets_nonCharmM",&nJets_nonCharmM,"nJets_nonCharmM/I");
+      baselineTree->Branch("nJets_nonCharmT",&nJets_nonCharmT,"nJets_nonCharmT/I");
+      
+      baselineTree->Branch("nJets_CharmLCSVL",&nJets_CharmLCSVL,"nJets_CharmLCSVL/I");
+      baselineTree->Branch("nJets_CharmLCSVM",&nJets_CharmLCSVM,"nJets_CharmLCSVM/I");
+      baselineTree->Branch("nJets_CharmLCSVT",&nJets_CharmLCSVT,"nJets_CharmLCSVT/I");
+      baselineTree->Branch("nJets_CharmMCSVL",&nJets_CharmMCSVL,"nJets_CharmMCSVL/I");
+      baselineTree->Branch("nJets_CharmMCSVM",&nJets_CharmMCSVM,"nJets_CharmMCSVM/I");
+      baselineTree->Branch("nJets_CharmMCSVT",&nJets_CharmMCSVT,"nJets_CharmMCSVT/I");
+      baselineTree->Branch("nJets_CharmTCSVL",&nJets_CharmTCSVL,"nJets_CharmTCSVL/I");
+      baselineTree->Branch("nJets_CharmTCSVM",&nJets_CharmTCSVM,"nJets_CharmTCSVM/I");
+      baselineTree->Branch("nJets_CharmTCSVT",&nJets_CharmTCSVT,"nJets_CharmTCSVT/I");
+      
+    }
     
     baselineTree->Branch("pt_jet",pt_jet,"pt_jet[nJets]/F");
     baselineTree->Branch("phi_jet",phi_jet,"phi_jet[nJets]/F");
@@ -1421,8 +1447,10 @@ int main (int argc, char *argv[])
     baselineTree->Branch("E_jet",E_jet,"E_jet[nJets]/F");
     baselineTree->Branch("charge_jet",charge_jet,"charge_jet[nJets]/I");
     baselineTree->Branch("bdisc_jet",bdisc_jet,"bdisc_jet[nJets]/F");
-    baselineTree->Branch("cdiscCvsL_jet",cdiscCvsL_jet,"cdiscCvsL_jet[nJets]/F");
-    baselineTree->Branch("cdiscCvsB_jet",cdiscCvsB_jet,"cdiscCvsB_jet[nJets]/F");
+    if(Usettbar){
+      baselineTree->Branch("cdiscCvsL_jet",cdiscCvsL_jet,"cdiscCvsL_jet[nJets]/F");
+      baselineTree->Branch("cdiscCvsB_jet",cdiscCvsB_jet,"cdiscCvsB_jet[nJets]/F");
+    }
     baselineTree->Branch("pt_jet_1",&pt_jet_1,"pt_jet_1/F");
     baselineTree->Branch("pt_jet_2",&pt_jet_2,"pt_jet_2/F");
     baselineTree->Branch("pt_jet_3",&pt_jet_3,"pt_jet_3/F");
@@ -1434,53 +1462,60 @@ int main (int argc, char *argv[])
     baselineTree->Branch("Zboson2_M",&Zboson2_M,"Zboson2_M/F");
     myTree->Branch("mWt",&mWt,"mWt/F");
     baselineTree->Branch("mWt",&mWt,"mWt/F");
-    myTree->Branch("FCNCtop_M",&FCNCtop_M,"FCNCtop_M/F");
-    myTree->Branch("FCNCtop_tagger",&FCNCtop_M_tagger,"FCNCtop_M_tagger/F");
-    baselineTree->Branch("FCNCtop_tagger",&FCNCtop_M_tagger,"FCNCtop_M_tagger/F");
+    if(Usettbar){
+      myTree->Branch("FCNCtop_M",&FCNCtop_M,"FCNCtop_M/F");
+      myTree->Branch("FCNCtop_tagger",&FCNCtop_M_tagger,"FCNCtop_M_tagger/F");
+      baselineTree->Branch("FCNCtop_tagger",&FCNCtop_M_tagger,"FCNCtop_M_tagger/F");
+    }
     myTree->Branch("SMtop_M",&SMtop_M, "SMtop_M/F");
     baselineTree->Branch("SMtop_M",&SMtop_M, "SMtop_M/F");
     myTree->Branch("Zboson_Px",&Zboson_Px,"Zboson_Px/F");
     myTree->Branch("Zboson_Py",&Zboson_Py,"Zboson_Py/F");
     myTree->Branch("Zboson_Pz",&Zboson_Pz,"Zboson_Pz/F");
     myTree->Branch("Zboson_Energy",&Zboson_Energy,"Zboson_Energy/F");
-    myTree->Branch("cjet_Pt",&cjet_Pt,"cjet_Pt/F");
-    baselineTree->Branch("cjet_Pt",&cjet_Pt,"cjet_Pt/F");
-    myTree->Branch("cjet_Pt_tagger",&cjet_Pt_tagger,"cjet_Pt_tagger/F");
-    baselineTree->Branch("cjet_Pt_tagger",&cjet_Pt_tagger,"cjet_Pt_tagger/F");
+    if(Usettbar){
+      myTree->Branch("cjet_Pt",&cjet_Pt,"cjet_Pt/F");
+      baselineTree->Branch("cjet_Pt",&cjet_Pt,"cjet_Pt/F");
+      myTree->Branch("cjet_Pt_tagger",&cjet_Pt_tagger,"cjet_Pt_tagger/F");
+      baselineTree->Branch("cjet_Pt_tagger",&cjet_Pt_tagger,"cjet_Pt_tagger/F");
+    }
     myTree->Branch("mlb",&mlb,"mlb/F");
     baselineTree->Branch("mlb",&mlb,"mlb/F");
-    myTree->Branch("dRSMFCNCtop",&dRSMFCNCtop,"dRSMFCNCtop/F");
-    myTree->Branch("dRSMFCNCtop_tagger",&dRSMFCNCtop_tagger,"dRSMFCNCtop_tagger/F");
-    baselineTree->Branch("dRSMFCNCtop_tagger",&dRSMFCNCtop_tagger,"dRSMFCNCtop_tagger/F");
     myTree->Branch("dRWlepb",&dRWlepb,"dRWlepb/F");
-    myTree->Branch("dRWlepc",&dRWlepc,"dRWlepc/F");
-    myTree->Branch("dRWlepc_tagger",&dRWlepc_tagger,"dRWlepc_tagger/F");
-    baselineTree->Branch("dRWlepc_tagger",&dRWlepc_tagger,"dRWlepc_tagger/F");
     myTree->Branch("dRZb",&dRZb,"dRZb/F");
-    myTree->Branch("dRZc",&dRZc,"dRZc/F");
-    myTree->Branch("dRZc_tagger",&dRZc_tagger,"dRZc_tagger/F");
-    baselineTree->Branch("dRZc_tagger",&dRZc_tagger,"dRZc_tagger/F");
-    myTree->Branch("dPhiSMFCNCtop",&dPhiSMFCNCtop,"dPhiSMFCNCtop/F");
-    myTree->Branch("dPhiSMFCNCtop_tagger",&dPhiSMFCNCtop_tagger,"dPhiSMFCNCtop_tagger/F");
-    baselineTree->Branch("dPhiSMFCNCtop_tagger",&dPhiSMFCNCtop_tagger,"dPhiSMFCNCtop_tagger/F");
+    if(Usettbar){
+      myTree->Branch("dRWlepc",&dRWlepc,"dRWlepc/F");
+      myTree->Branch("dRWlepc_tagger",&dRWlepc_tagger,"dRWlepc_tagger/F");
+      baselineTree->Branch("dRWlepc_tagger",&dRWlepc_tagger,"dRWlepc_tagger/F");
+      myTree->Branch("dRZc",&dRZc,"dRZc/F");
+      myTree->Branch("dRZc_tagger",&dRZc_tagger,"dRZc_tagger/F");
+      baselineTree->Branch("dRZc_tagger",&dRZc_tagger,"dRZc_tagger/F");
+      myTree->Branch("dPhiSMFCNCtop",&dPhiSMFCNCtop,"dPhiSMFCNCtop/F");
+      myTree->Branch("dPhiSMFCNCtop_tagger",&dPhiSMFCNCtop_tagger,"dPhiSMFCNCtop_tagger/F");
+      baselineTree->Branch("dPhiSMFCNCtop_tagger",&dPhiSMFCNCtop_tagger,"dPhiSMFCNCtop_tagger/F");
+      myTree->Branch("dPhiWlepc",&dPhiWlepc,"dPhiWlepc/F");
+      baselineTree->Branch("dPhiWlepc_tagger",&dPhiWlepc_tagger,"dPhiWlepc_tagger/F");
+      myTree->Branch("dPhiWlepc_tagger",&dPhiWlepc_tagger,"dPhiWlepc_tagger/F");
+      myTree->Branch("dPhiZc",&dPhiZc,"dPhiZc/F");
+      myTree->Branch("dPhiZc_tagger",&dPhiZc_tagger,"dPhiZc_tagger/F");
+      baselineTree->Branch("dPhiZc_tagger",&dPhiZc_tagger,"dPhiZc_tagger/F");
+      baselineTree->Branch("dRSMFCNCtop",&dRSMFCNCtop,"dRSMFCNCtop/F");
+      baselineTree->Branch("dRWlepc",&dRWlepc,"dRWlepc/F");
+      baselineTree->Branch("dRZc",&dRZc,"dRZc/F");
+      baselineTree->Branch("dPhiWlepc",&dPhiWlepc,"dPhiWlepc/F");
+      baselineTree->Branch("dPhiZc",&dPhiZc,"dPhiZc/F");
+      baselineTree->Branch("dPhiSMFCNCtop",&dPhiSMFCNCtop,"dPhiSMFCNCtop/F");
+      myTree->Branch("dRSMFCNCtop",&dRSMFCNCtop,"dRSMFCNCtop/F");
+      myTree->Branch("dRSMFCNCtop_tagger",&dRSMFCNCtop_tagger,"dRSMFCNCtop_tagger/F");
+      baselineTree->Branch("dRSMFCNCtop_tagger",&dRSMFCNCtop_tagger,"dRSMFCNCtop_tagger/F");
+    }
     myTree->Branch("dPhiWlepb",&dPhiWlepb,"dPhiWlepb/F");
-    myTree->Branch("dPhiWlepc",&dPhiWlepc,"dPhiWlepc/F");
-    baselineTree->Branch("dPhiWlepc_tagger",&dPhiWlepc_tagger,"dPhiWlepc_tagger/F");
-    myTree->Branch("dPhiWlepc_tagger",&dPhiWlepc_tagger,"dPhiWlepc_tagger/F");
     myTree->Branch("dPhiZb",&dPhiZb,"dPhiZb/F");
-    myTree->Branch("dPhiZc",&dPhiZc,"dPhiZc/F");
-    myTree->Branch("dPhiZc_tagger",&dPhiZc_tagger,"dPhiZc_tagger/F");
-    baselineTree->Branch("dPhiZc_tagger",&dPhiZc_tagger,"dPhiZc_tagger/F");
-    baselineTree->Branch("dRSMFCNCtop",&dRSMFCNCtop,"dRSMFCNCtop/F");
     baselineTree->Branch("dRWlepb",&dRWlepb,"dRWlepb/F");
-    baselineTree->Branch("dRWlepc",&dRWlepc,"dRWlepc/F");
     baselineTree->Branch("dRZb",&dRZb,"dRZb/F");
-    baselineTree->Branch("dRZc",&dRZc,"dRZc/F");
-    baselineTree->Branch("dPhiSMFCNCtop",&dPhiSMFCNCtop,"dPhiSMFCNCtop/F");
     baselineTree->Branch("dPhiWlepb",&dPhiWlepb,"dPhiWlepb/F");
-    baselineTree->Branch("dPhiWlepc",&dPhiWlepc,"dPhiWlepc/F");
     baselineTree->Branch("dPhiZb",&dPhiZb,"dPhiZb/F");
-    baselineTree->Branch("dPhiZc",&dPhiZc,"dPhiZc/F");
+    
     
     // met
     myTree->Branch("met_Pt", &met_Pt, "met_Pt/F");
@@ -1559,6 +1594,7 @@ int main (int argc, char *argv[])
     int itrigger = -1, previousRun = -1, start = 0;
     int currentRun;
     int iFile = -1;
+    cout << "before" << endl;
     unsigned int ending = datasets[d]->NofEvtsToRunOver();
     cout <<"Number of events = "<<  ending  <<endl;
     
@@ -1593,12 +1629,12 @@ int main (int argc, char *argv[])
     vector < TRootJet* >      init_jets_corrected;
     vector < TRootGenJet* >   genjets;
     vector < TRootMET* >      mets;
-    vector<TRootElectron*> selectedElectrons;
-    vector<TRootElectron*> selectedVetoElectrons;
-    vector<TRootPFJet*>    selectedJets;
-    vector<TRootPFJet*>    PreselectedJets;
-    vector<TRootMuon*>     selectedMuons;
-    vector<TRootMuon*>     selectedLooseMuons;
+    vector<TRootElectron*>    selectedElectrons;
+    vector<TRootElectron*>    selectedVetoElectrons;
+    vector<TRootPFJet*>       selectedJets;
+    vector<TRootPFJet*>       PreselectedJets;
+    vector<TRootMuon*>        selectedMuons;
+    vector<TRootMuon*>        selectedLooseMuons;
     vector<TRootPFJet*>      selectedCSVLBJets;
     vector<TRootPFJet*>      selectedCSVMBJets;
     vector<TRootPFJet*>      selectedCSVTBJets;
@@ -1606,9 +1642,9 @@ int main (int argc, char *argv[])
     
     vector<TRootMCParticle*> mcParticles;
     vector <TRootPFJet*>     selectednonCSVLJets;
-    vector<TRootPFJet*>      selectedCharmLJets;
-    vector<TRootPFJet*>     selectedCharmMJets;
-    vector<TRootPFJet*>     selectedCharmTJets;
+    vector<TRootPFJet*>       selectedCharmLJets;
+    vector<TRootPFJet*>       selectedCharmMJets;
+    vector<TRootPFJet*>       selectedCharmTJets;
     vector <TRootPFJet*>     selectednonCSVMJets;
     vector <TRootPFJet*>     selectednonCSVTJets;
     vector<TRootPFJet*>      selectednonCharmLJets;
@@ -1663,7 +1699,7 @@ int main (int argc, char *argv[])
     TLorentzVector SMtop;
     TLorentzVector FCNCtop;
     TLorentzVector FCNCtop_tagger;
-    vector<TLorentzVector> AssignedLeptons;
+    pair< vector <TLorentzVector> , vector < pair < string , int > > >  AssignedLeptons;
     //////////////////////////////////////
     // Begin Event Loop
     //////////////////////////////////////
@@ -1675,6 +1711,18 @@ int main (int argc, char *argv[])
     float eventweight = 1;
     bool continueFlow ;
     nbSelectedEvents = 0;
+    
+    matchedWlep = 0;
+    matchedZlep_0 = 0;
+    matchedZlep_1 = 0;
+    matchedEvents_Wlep = 0;
+    matchedEvents_Zlep = 0;
+    int_eventForZlepmatchingmatched1 = 0;
+    int_eventForWlepmatching = 0;
+    int_eventForWlepmatchingmatched = 0;
+    int_eventForZlepmatchingmatched0 = 0;
+    int_eventForZlepmatching = 0;
+    
     int nbEvents_0 = 0;
     int nbEvents_test = 0;
     int nbEvents_1 = 0;
@@ -1781,17 +1829,35 @@ int main (int argc, char *argv[])
     cutstep_eeu.clear();
     cutstep_uue.clear();
     cutstep_uuu.clear();
+    bool leptonsAssigned ;
+    
+    int ZmuIndiceF_0 = -999;
+    int ZmuIndiceF_1 = -999;
+    int ZelecIndiceF_0 = -999;
+    int ZelecIndiceF_1= -999;
+    int WmuIndiceF = -999;
+    int WelecIndiceF = -999;
     for (unsigned int ievt = event_start; ievt < end_d; ievt++)
     {
-      elecbool = false;
-      mubool = false;
-      
+      eventForWlepmatchingmatched = false;
+      eventForZlepmatching = false;
+      eventForZlepmatchingmatched0 = false;
+      eventForZlepmatchingmatched1 = false;
+      eventForWlepmatching = false;
+      leptonsAssigned = false;
+      //elecbool = false;
+      // mubool = false;
+      ZmuIndiceF_0 = -999;
+      ZmuIndiceF_1 = -999;
+      ZelecIndiceF_0 = -999;
+      ZelecIndiceF_1= -999;
+      WmuIndiceF= -999;
+      WelecIndiceF = -999;
       eventSelected = false;
       baseSelected = false;
       continueFlow = true;
       lep3 = false;
       lep2 = false;
-      AssignedLeptons.clear();
       leading_jetPt = 0.;
       met = 0.;
       leading_jet_btagDiscr = 0.;
@@ -2252,36 +2318,58 @@ int main (int argc, char *argv[])
       
       
       
-      TLorentzVector tempLep;
-      vector <TLorentzVector> selectedleptons_;
-      selectedleptons_.clear();
+      TLorentzVector tempObj;
+      vector <TLorentzVector> selectedobjects_;
+      vector <TLorentzVector> selectedleptonss_;
+      selectedobjects_.clear();
       for(unsigned int iLep = 0 ; iLep < selectedElectrons.size(); iLep++)
       {
-        tempLep.Clear();
-        tempLep.SetPtEtaPhiE(selectedElectrons[iLep]->Pt(), selectedElectrons[iLep]->Eta(), selectedElectrons[iLep]->Phi(), selectedElectrons[iLep]->E());
-        selectedleptons_.push_back(tempLep);
+        tempObj.Clear();
+        tempObj.SetPtEtaPhiE(selectedElectrons[iLep]->Pt(), selectedElectrons[iLep]->Eta(), selectedElectrons[iLep]->Phi(), selectedElectrons[iLep]->E());
+        selectedobjects_.push_back(tempObj);
         
         
       }
       for(unsigned int iLep = 0 ; iLep < selectedMuons.size(); iLep++)
       {
-        tempLep.Clear();
-        tempLep.SetPtEtaPhiE(selectedMuons[iLep]->Pt(), selectedMuons[iLep]->Eta(), selectedMuons[iLep]->Phi(), selectedMuons[iLep]->E());
-        selectedleptons_.push_back(tempLep);
+        tempObj.Clear();
+        tempObj.SetPtEtaPhiE(selectedMuons[iLep]->Pt(), selectedMuons[iLep]->Eta(), selectedMuons[iLep]->Phi(), selectedMuons[iLep]->E());
+        selectedobjects_.push_back(tempObj);
         
         
       }
-      for(unsigned int iLep = 0 ; iLep < selectedJets.size(); iLep++)
+      /*for(unsigned int iLep = 0 ; iLep < selectedJets.size(); iLep++)
       {
         tempLep.Clear();
         tempLep.SetPtEtaPhiE(selectedJets[iLep]->Pt(), selectedJets[iLep]->Eta(), selectedJets[iLep]->Phi(), selectedJets[iLep]->E());
-        selectedleptons_.push_back(tempLep);
+        selectedobjects_.push_back(tempLep);
         
+        
+      }*/
+      
+      bool foundAllObjects = true;
+      
+      if(matching && !istZq && Usettbar) {
+        MatcherPair =  Matcher(mcParticles, evt_num, selectedobjects_);
+        if((MatcherPair.second).size() < 3) foundAllObjects = false; // only when all partons have found a match
+        //cout << "matching (MatcherPair.second).size() " << (MatcherPair.second).size() << endl;
+        //cout << "matching (MatcherPair.first).size() " << (MatcherPair.first).size() << endl;
         
       }
-      
-      
-      if(matching && !istZq) {Matcher(mcParticles, evt_num, selectedleptons_);}
+      if(matching && !istZq && !Usettbar) {
+        MatcherPair =  MatcherST(mcParticles, evt_num, selectedobjects_);
+        if((MatcherPair.second).size() < 3) foundAllObjects = false; // only when all partons have found a match
+        //cout << "matching (MatcherPair.second).size() " << (MatcherPair.second).size() << endl;
+        //cout << "matching (MatcherPair.first).size() " << (MatcherPair.first).size() << endl;
+        
+      }
+      if(matching && istZq ) {
+        MatcherPair =  MatchertZq(mcParticles, evt_num, selectedobjects_);
+        if((MatcherPair.second).size() <3) foundAllObjects = false; // only when all partons have found a match
+        //cout << "matching (MatcherPair.second).size() " << (MatcherPair.second).size() << endl;
+        //cout << "matching (MatcherPair.first).size() " << (MatcherPair.first).size() << endl;
+        
+      }
       
       ////////////////////////////////////////////////
       // Pre cut operations
@@ -2361,94 +2449,96 @@ int main (int argc, char *argv[])
         if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight){ selectedCSVTBJets.push_back(selectedJets[iJ]);}
         else {selectednonCSVTJets.push_back(selectedJets[iJ]);}
         
-        //cjets
-        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first){   selectedCharmLJets.push_back(selectedJets[iJ]);   }
-        else{   selectednonCharmLJets.push_back(selectedJets[iJ]);}
-        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first){   selectedCharmMJets.push_back(selectedJets[iJ]);   }
-        else{   selectednonCharmMJets.push_back(selectedJets[iJ]);    }
-        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first){   selectedCharmTJets.push_back(selectedJets[iJ]);   }
-        else{   selectednonCharmTJets.push_back(selectedJets[iJ]);    }
-        
-        
-        /// c and b loose combi
-        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose ) {   selectedCLBLJets.push_back(selectedJets[iJ]);  }
-        else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose){  selectednonCLBLJets.push_back(selectedJets[iJ]);   }
-        else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first ){
-          selectedCLnonBLJets.push_back(selectedJets[iJ]);
+        if(Usettbar){
+          //cjets
+          if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first){   selectedCharmLJets.push_back(selectedJets[iJ]);   }
+          else{   selectednonCharmLJets.push_back(selectedJets[iJ]);}
+          if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first){   selectedCharmMJets.push_back(selectedJets[iJ]);   }
+          else{   selectednonCharmMJets.push_back(selectedJets[iJ]);    }
+          if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first){   selectedCharmTJets.push_back(selectedJets[iJ]);   }
+          else{   selectednonCharmTJets.push_back(selectedJets[iJ]);    }
+          
+          
+          /// c and b loose combi
+          if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose ) {   selectedCLBLJets.push_back(selectedJets[iJ]);  }
+          else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose){  selectednonCLBLJets.push_back(selectedJets[iJ]);   }
+          else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first ){
+            selectedCLnonBLJets.push_back(selectedJets[iJ]);
+          }
+          else { selectednonCLnonBLJets.push_back(selectedJets[iJ]);}
+          
+          if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose ) {   selectedCMBLJets.push_back(selectedJets[iJ]);  }
+          else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose){  selectednonCMBLJets.push_back(selectedJets[iJ]);   }
+          else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first ){
+            selectedCMnonBLJets.push_back(selectedJets[iJ]);
+          }
+          else { selectednonCMnonBLJets.push_back(selectedJets[iJ]);}
+          
+          if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose ) {   selectedCTBLJets.push_back(selectedJets[iJ]);  }
+          else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose){  selectednonCTBLJets.push_back(selectedJets[iJ]);   }
+          else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first ){
+            selectedCTnonBLJets.push_back(selectedJets[iJ]);
+          }
+          else { selectednonCTnonBLJets.push_back(selectedJets[iJ]);}
+          
+          /// c and b medium combi
+          if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium ) {   selectedCLBMJets.push_back(selectedJets[iJ]);  }
+          else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium){  selectednonCLBMJets.push_back(selectedJets[iJ]);   }
+          else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first ){
+            selectedCLnonBMJets.push_back(selectedJets[iJ]);
+          }
+          else { selectednonCLnonBMJets.push_back(selectedJets[iJ]);}
+          
+          if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium ) {   selectedCMBLJets.push_back(selectedJets[iJ]);  }
+          else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium){  selectednonCMBMJets.push_back(selectedJets[iJ]);   }
+          else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first ){
+            selectedCMnonBMJets.push_back(selectedJets[iJ]);
+          }
+          else { selectednonCMnonBMJets.push_back(selectedJets[iJ]);}
+          
+          if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium ) {   selectedCTBMJets.push_back(selectedJets[iJ]);  }
+          else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium){  selectednonCTBMJets.push_back(selectedJets[iJ]);   }
+          else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first ){
+            selectedCTnonBMJets.push_back(selectedJets[iJ]);
+          }
+          else { selectednonCTnonBMJets.push_back(selectedJets[iJ]);}
+          
+          /// c and b tight combi
+          if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight ) {   selectedCLBLJets.push_back(selectedJets[iJ]);  }
+          else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight){  selectednonCLBTJets.push_back(selectedJets[iJ]);   }
+          else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first ){
+            selectedCLnonBTJets.push_back(selectedJets[iJ]);
+          }
+          else { selectednonCLnonBTJets.push_back(selectedJets[iJ]);}
+          
+          if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight ) {   selectedCMBLJets.push_back(selectedJets[iJ]);  }
+          else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight){  selectednonCMBTJets.push_back(selectedJets[iJ]);   }
+          else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first ){
+            selectedCMnonBTJets.push_back(selectedJets[iJ]);
+          }
+          else { selectednonCMnonBTJets.push_back(selectedJets[iJ]);}
+          
+          if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight ) {   selectedCTBLJets.push_back(selectedJets[iJ]);  }
+          else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight){  selectednonCTBTJets.push_back(selectedJets[iJ]);   }
+          else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first ){
+            selectedCTnonBTJets.push_back(selectedJets[iJ]);
+          }
+          else { selectednonCTnonBTJets.push_back(selectedJets[iJ]);}
         }
-        else { selectednonCLnonBLJets.push_back(selectedJets[iJ]);}
-        
-        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose ) {   selectedCMBLJets.push_back(selectedJets[iJ]);  }
-        else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose){  selectednonCMBLJets.push_back(selectedJets[iJ]);   }
-        else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first ){
-          selectedCMnonBLJets.push_back(selectedJets[iJ]);
-        }
-        else { selectednonCMnonBLJets.push_back(selectedJets[iJ]);}
-        
-        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose ) {   selectedCTBLJets.push_back(selectedJets[iJ]);  }
-        else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Loose){  selectednonCTBLJets.push_back(selectedJets[iJ]);   }
-        else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first ){
-          selectedCTnonBLJets.push_back(selectedJets[iJ]);
-        }
-        else { selectednonCTnonBLJets.push_back(selectedJets[iJ]);}
-        
-        /// c and b medium combi
-        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium ) {   selectedCLBMJets.push_back(selectedJets[iJ]);  }
-        else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium){  selectednonCLBMJets.push_back(selectedJets[iJ]);   }
-        else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first ){
-          selectedCLnonBMJets.push_back(selectedJets[iJ]);
-        }
-        else { selectednonCLnonBMJets.push_back(selectedJets[iJ]);}
-        
-        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium ) {   selectedCMBLJets.push_back(selectedJets[iJ]);  }
-        else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium){  selectednonCMBMJets.push_back(selectedJets[iJ]);   }
-        else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first ){
-          selectedCMnonBMJets.push_back(selectedJets[iJ]);
-        }
-        else { selectednonCMnonBMJets.push_back(selectedJets[iJ]);}
-        
-        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium ) {   selectedCTBMJets.push_back(selectedJets[iJ]);  }
-        else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Medium){  selectednonCTBMJets.push_back(selectedJets[iJ]);   }
-        else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first ){
-          selectedCTnonBMJets.push_back(selectedJets[iJ]);
-        }
-        else { selectednonCTnonBMJets.push_back(selectedJets[iJ]);}
-        
-        /// c and b tight combi
-        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight ) {   selectedCLBLJets.push_back(selectedJets[iJ]);  }
-        else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight){  selectednonCLBTJets.push_back(selectedJets[iJ]);   }
-        else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Loose.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Loose.first ){
-          selectedCLnonBTJets.push_back(selectedJets[iJ]);
-        }
-        else { selectednonCLnonBTJets.push_back(selectedJets[iJ]);}
-        
-        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight ) {   selectedCMBLJets.push_back(selectedJets[iJ]);  }
-        else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight){  selectednonCMBTJets.push_back(selectedJets[iJ]);   }
-        else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Medium.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Medium.first ){
-          selectedCMnonBTJets.push_back(selectedJets[iJ]);
-        }
-        else { selectednonCMnonBTJets.push_back(selectedJets[iJ]);}
-        
-        if( selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first && selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight ) {   selectedCTBLJets.push_back(selectedJets[iJ]);  }
-        else if(selectedJets[iJ]->btag_combinedInclusiveSecondaryVertexV2BJetTags() > workingpointvalue_Tight){  selectednonCTBTJets.push_back(selectedJets[iJ]);   }
-        else if(selectedJets[iJ]->ctag_pfCombinedCvsBJetTags() > c_workingpointvalue_Tight.second && selectedJets[iJ]->ctag_pfCombinedCvsLJetTags() > c_workingpointvalue_Tight.first ){
-          selectedCTnonBTJets.push_back(selectedJets[iJ]);
-        }
-        else { selectednonCTnonBTJets.push_back(selectedJets[iJ]);}
-        
         
         
       }
       WPb_L =  workingpointvalue_Loose;
       WPb_M =  workingpointvalue_Medium;
       WPb_T =  workingpointvalue_Tight;
-      WPc_CvsL_Loose = c_workingpointvalue_Loose.first;
-      WPc_CvsB_Loose = c_workingpointvalue_Loose.second;
-      WPc_CvsL_Medium = c_workingpointvalue_Medium.first;
-      WPc_CvsB_Medium = c_workingpointvalue_Medium.second;
-      WPc_CvsL_Tight = c_workingpointvalue_Tight.first;
-      WPc_CvsB_Tight = c_workingpointvalue_Tight.second;
-      
+      if(Usettbar){
+        WPc_CvsL_Loose = c_workingpointvalue_Loose.first;
+        WPc_CvsB_Loose = c_workingpointvalue_Loose.second;
+        WPc_CvsL_Medium = c_workingpointvalue_Medium.first;
+        WPc_CvsB_Medium = c_workingpointvalue_Medium.second;
+        WPc_CvsL_Tight = c_workingpointvalue_Tight.first;
+        WPc_CvsB_Tight = c_workingpointvalue_Tight.second;
+      }
       
       ////////////////////////////////////
       //   Event Weights               ///
@@ -2648,19 +2738,20 @@ int main (int argc, char *argv[])
       if(lep2)
       {
         // cout << "in two leptons " << selectedElectrons.size() << " " << selectedMuons.size() << endl;
-        vector <TLorentzVector> leptons = LeptonAssignerv2(selectedElectrons, selectedMuons);
-        if(Assigned){
-          TLorentzVector lep0;
-          TLorentzVector lep1;
-          lep0.SetPxPyPzE(leptons[0].Px(), leptons[0].Py(), leptons[0].Pz(), leptons[0].Energy());
-          lep1.SetPxPyPzE(leptons[1].Px(), leptons[1].Py(), leptons[1].Pz(), leptons[1].Energy());
-          TLorentzVector Zboson2;
-          Zboson2.SetPxPyPzE(( lep0 + lep1).Px() ,( lep0 + lep1).Py(),( lep0 + lep1).Pz(),( lep0 + lep1).Energy()) ;
-          Zboson2_M = (lep0+lep1).M();
-          Zboson2_Px = ( lep0 + lep1).Px();
-          Zboson2_Py = ( lep0 + lep1).Py();
-          Zboson2_Pz = ( lep0 + lep1).Pz();
-          Zboson2_Energy = ( lep0 + lep1).Energy();}
+        // vector <TLorentzVector> leptons = LeptonAssignerv2(selectedElectrons, selectedMuons);
+        /* if(Assigned){
+         TLorentzVector lep0;
+         TLorentzVector lep1;
+         lep0.SetPxPyPzE(leptons[0].Px(), leptons[0].Py(), leptons[0].Pz(), leptons[0].Energy());
+         lep1.SetPxPyPzE(leptons[1].Px(), leptons[1].Py(), leptons[1].Pz(), leptons[1].Energy());
+         TLorentzVector Zboson2;
+         Zboson2.SetPxPyPzE(( lep0 + lep1).Px() ,( lep0 + lep1).Py(),( lep0 + lep1).Pz(),( lep0 + lep1).Energy()) ;
+         Zboson2_M = (lep0+lep1).M();
+         Zboson2_Px = ( lep0 + lep1).Px();
+         Zboson2_Py = ( lep0 + lep1).Py();
+         Zboson2_Pz = ( lep0 + lep1).Pz();
+         Zboson2_Energy = ( lep0 + lep1).Energy();
+         }*/
         
       }
       
@@ -2669,11 +2760,222 @@ int main (int argc, char *argv[])
         
         AssignedLeptons = LeptonAssigner(selectedElectrons, selectedMuons);
         
-        if(Assigned){
+        
+        //vector < TLorentzVector > FoundLeptons;
+        //FoundLeptons = AssignedLeptons.first;
+        //vector< pair < string, int > > FoundLeptonsIndices;
+        //FoundLeptonsIndices = AssignedLeptons.second;
+        
+        for(unsigned int iF = 0; iF < (AssignedLeptons.second).size(); iF++){
+          if((((AssignedLeptons.second)[iF]).first).find("Wmu")!=string::npos) WmuIndiceF = ((AssignedLeptons.second)[iF]).second;
+          if((((AssignedLeptons.second)[iF]).first).find("Wel")!=string::npos) WelecIndiceF = ((AssignedLeptons.second)[iF]).second;
+          if((((AssignedLeptons.second)[iF]).first).find("Zmu_0")!=string::npos) ZmuIndiceF_0 = ((AssignedLeptons.second)[iF]).second;
+          if((((AssignedLeptons.second)[iF]).first).find("Zmu_1")!=string::npos) ZmuIndiceF_1 = ((AssignedLeptons.second)[iF]).second;
+          if((((AssignedLeptons.second)[iF]).first).find("Zel_0")!=string::npos) ZelecIndiceF_0 = ((AssignedLeptons.second)[iF]).second;
+          if((((AssignedLeptons.second)[iF]).first).find("Zel_1")!=string::npos) ZelecIndiceF_1 = ((AssignedLeptons.second)[iF]).second;
+        }
+        
+        int WlepIndice = -999;
+        int ZlepIndice_0 = -999;
+        int ZlepIndice_1 = -999;
+        
+        if(WelecIndiceF != -999) WlepIndice = WelecIndiceF;
+        if(WmuIndiceF != -999) WlepIndice = WmuIndiceF;
+        if(ZmuIndiceF_0 != -999) ZlepIndice_0 = ZmuIndiceF_0;
+        if(ZelecIndiceF_0 != -999) ZlepIndice_0 = ZelecIndiceF_0;
+        if(ZmuIndiceF_1 != -999) ZlepIndice_1 = ZmuIndiceF_1;
+        if(ZelecIndiceF_1 != -999) ZlepIndice_1 = ZelecIndiceF_1;
+        if(WlepIndice != -999 && ZlepIndice_0 != -999 && ZlepIndice_1 != -999){ leptonsAssigned = true; }
+        //cout << "evt " << evt_num << " assigned " << leptonsAssigned <<  " found all objects " << foundAllObjects <<  endl;
+        //cout << "WmuIndice " << WmuIndiceF << " WelecIndice "<< WelecIndiceF << " ZmuIndice_0 "<< ZmuIndiceF_0 << " ZmuIndice_1 "<< ZmuIndiceF_1 <<" ZelecIndice_0 "<< ZelecIndiceF_0 <<" ZelecIndice_1 "<< ZelecIndiceF_1 << endl;
+       // cout << "WlepIndice " << WlepIndice << " ZlepIndice_0 "<< ZlepIndice_0 << " ZlepIndice_1 "<< ZlepIndice_1 << endl;
+        
+        
+        if(leptonsAssigned){
+          if(matching && foundAllObjects && !istZq && Usettbar ){
+            
+            
+            //NPair = MatcherPair.second
+            //PPair = vector< pair<unsigned int, unsigned int>> (MatcherPair.first)
+            
+            // cout << "(MatcherPair.second).size() " << (MatcherPair.second).size() << endl;
+            // cout << "(MatcherPair.first).size() " << (MatcherPair.first).size() << endl;
+            int WmuIndiceM = -999;
+            int WelecIndiceM = -999;
+            int ZelecIndiceM_0 = -999;
+            int ZelecIndiceM_1 = -999;
+            int ZmuIndiceM_0 = -999;
+            int ZmuIndiceM_1 = -999;
+            
+            
+            
+            for(unsigned int iPart = 0 ; iPart < (MatcherPair.second).size(); iPart++){
+              if((MatcherPair.second)[iPart].find("SMmu")!=string::npos){ WmuIndiceM = (MatcherPair.first)[iPart].second -  selectedElectrons.size() ; }
+              if((MatcherPair.second)[iPart].find("SMel")!=string::npos){ WelecIndiceM = (MatcherPair.first)[iPart].second ; }
+              if((MatcherPair.second)[iPart].find("FCNCmumin")!=string::npos){ ZmuIndiceM_0 = ((MatcherPair.first)[iPart].second -  selectedElectrons.size() ); }
+              if((MatcherPair.second)[iPart].find("FCNCelmin")!=string::npos){ ZelecIndiceM_0 = (MatcherPair.first)[iPart].second; }
+              if((MatcherPair.second)[iPart].find("FCNCmuplus")!=string::npos){ ZmuIndiceM_1 = ((MatcherPair.first)[iPart].second -  selectedElectrons.size() ); }
+              if((MatcherPair.second)[iPart].find("FCNCelplus")!=string::npos){ZelecIndiceM_1 = (MatcherPair.first)[iPart].second; }
+            }
+            
+            // cout << "WmuIndiceM " << WmuIndiceM << " WelecIndiceM "<< WelecIndiceM << " ZmuIndiceM_0 "<< ZmuIndiceM_0 << " ZmuIndiceM_1 "<< ZmuIndiceM_1 <<" ZelecIndiceM_0 "<< ZelecIndiceM_0 <<" ZelecIndiceM_1 "<< ZelecIndiceM_1 << endl;
+            
+            if( WmuIndiceM != -999 && WmuIndiceF != -999){
+              matchedEvents_Wlep++;
+              eventForWlepmatching = true;
+              if(WmuIndiceM == WmuIndiceF){ matchedWlep++;    eventForWlepmatchingmatched = true; }
+            }
+            if( WelecIndiceM != -999 && WelecIndiceF != -999){
+              matchedEvents_Wlep++;
+              eventForWlepmatching = true;
+              if(WelecIndiceM == WelecIndiceF){ matchedWlep++;  eventForWlepmatchingmatched = true;}
+            }
+            if(ZmuIndiceM_0 != -999 && ZmuIndiceM_1 != -999 && ZmuIndiceF_0 != -999 && ZmuIndiceF_1 != -999){
+              matchedEvents_Zlep++;
+              eventForZlepmatching = true;
+              if(ZmuIndiceM_0 == ZmuIndiceF_0) { matchedZlep_0++;  eventForZlepmatchingmatched0 = true;  }
+              else if(ZmuIndiceM_0 == ZmuIndiceF_1) { matchedZlep_0++; eventForZlepmatchingmatched0 = true; }
+              if(ZmuIndiceM_1 == ZmuIndiceF_0) { matchedZlep_1++; eventForZlepmatchingmatched1 = true;  }
+              else if(ZmuIndiceM_1 == ZmuIndiceF_1) { matchedZlep_1++; eventForZlepmatchingmatched1 = true;  }
+            }
+            if(ZelecIndiceM_0 != -999 && ZelecIndiceM_1 != -999 && ZelecIndiceF_0 != -999 && ZelecIndiceF_1 != -999){
+              matchedEvents_Zlep++;
+              eventForZlepmatching = true;
+              if(ZelecIndiceM_0 == ZelecIndiceF_0) { matchedZlep_0++; eventForZlepmatchingmatched0 = true;    }
+              else if(ZelecIndiceM_0 == ZelecIndiceF_1) { matchedZlep_0++; eventForZlepmatchingmatched0 = true;   }
+              if(ZelecIndiceM_1 == ZelecIndiceF_0) { matchedZlep_1++; eventForZlepmatchingmatched1 = true;   }
+              else if(ZelecIndiceM_1 == ZelecIndiceF_1) { matchedZlep_1++; eventForZlepmatchingmatched1 = true;   }
+            }
+            
+            
+          }
+          else if(matching && foundAllObjects && !istZq && !Usettbar ){
+            
+            
+            //NPair = MatcherPair.second
+            //PPair = vector< pair<unsigned int, unsigned int>> (MatcherPair.first)
+            
+            // cout << "(MatcherPair.second).size() " << (MatcherPair.second).size() << endl;
+            // cout << "(MatcherPair.first).size() " << (MatcherPair.first).size() << endl;
+            int WmuIndiceM = -999;
+            int WelecIndiceM = -999;
+            int ZelecIndiceM_0 = -999;
+            int ZelecIndiceM_1 = -999;
+            int ZmuIndiceM_0 = -999;
+            int ZmuIndiceM_1 = -999;
+            
+            
+            
+            for(unsigned int iPart = 0 ; iPart < (MatcherPair.second).size(); iPart++){
+              if((MatcherPair.second)[iPart].find("SMmu")!=string::npos){ WmuIndiceM = (MatcherPair.first)[iPart].second -  selectedElectrons.size() ; }
+              if((MatcherPair.second)[iPart].find("SMel")!=string::npos){ WelecIndiceM = (MatcherPair.first)[iPart].second ; }
+              if((MatcherPair.second)[iPart].find("FCNCmumin")!=string::npos){ ZmuIndiceM_0 = ((MatcherPair.first)[iPart].second -  selectedElectrons.size() ); }
+              if((MatcherPair.second)[iPart].find("FCNCelmin")!=string::npos){ ZelecIndiceM_0 = (MatcherPair.first)[iPart].second; }
+              if((MatcherPair.second)[iPart].find("FCNCmuplus")!=string::npos){ ZmuIndiceM_1 = ((MatcherPair.first)[iPart].second -  selectedElectrons.size() ); }
+              if((MatcherPair.second)[iPart].find("FCNCelplus")!=string::npos){ZelecIndiceM_1 = (MatcherPair.first)[iPart].second; }
+            }
+            
+            //cout << "WmuIndiceM " << WmuIndiceM << " WelecIndiceM "<< WelecIndiceM << " ZmuIndiceM_0 "<< ZmuIndiceM_0 << " ZmuIndiceM_1 "<< ZmuIndiceM_1 <<" ZelecIndiceM_0 "<< ZelecIndiceM_0 <<" ZelecIndiceM_1 "<< ZelecIndiceM_1 << endl;
+            
+            
+            if( WmuIndiceM != -999 && WmuIndiceF != -999){
+              matchedEvents_Wlep++;
+              eventForWlepmatching = true;
+              if(WmuIndiceM == WmuIndiceF){ matchedWlep++;    eventForWlepmatchingmatched = true; }
+            }
+            if( WelecIndiceM != -999 && WelecIndiceF != -999){
+              matchedEvents_Wlep++;
+              eventForWlepmatching = true;
+              if(WelecIndiceM == WelecIndiceF){ matchedWlep++;  eventForWlepmatchingmatched = true;}
+            }
+            if(ZmuIndiceM_0 != -999 && ZmuIndiceM_1 != -999 && ZmuIndiceF_0 != -999 && ZmuIndiceF_1 != -999){
+              matchedEvents_Zlep++;
+              eventForZlepmatching = true;
+              if(ZmuIndiceM_0 == ZmuIndiceF_0) { matchedZlep_0++;  eventForZlepmatchingmatched0 = true;  }
+              else if(ZmuIndiceM_0 == ZmuIndiceF_1) { matchedZlep_0++; eventForZlepmatchingmatched0 = true; }
+              if(ZmuIndiceM_1 == ZmuIndiceF_0) { matchedZlep_1++; eventForZlepmatchingmatched1 = true;  }
+              else if(ZmuIndiceM_1 == ZmuIndiceF_1) { matchedZlep_1++; eventForZlepmatchingmatched1 = true;  }
+            }
+            if(ZelecIndiceM_0 != -999 && ZelecIndiceM_1 != -999 && ZelecIndiceF_0 != -999 && ZelecIndiceF_1 != -999){
+              matchedEvents_Zlep++;
+              eventForZlepmatching = true;
+              if(ZelecIndiceM_0 == ZelecIndiceF_0) { matchedZlep_0++; eventForZlepmatchingmatched0 = true;    }
+              else if(ZelecIndiceM_0 == ZelecIndiceF_1) { matchedZlep_0++; eventForZlepmatchingmatched0 = true;   }
+              if(ZelecIndiceM_1 == ZelecIndiceF_0) { matchedZlep_1++; eventForZlepmatchingmatched1 = true;   }
+              else if(ZelecIndiceM_1 == ZelecIndiceF_1) { matchedZlep_1++; eventForZlepmatchingmatched1 = true;   }
+            }
+
+            
+            
+          } // ST matching
+          else if(matching && foundAllObjects && istZq  ){
+            
+            
+            //NPair = MatcherPair.second
+            //PPair = vector< pair<unsigned int, unsigned int>> (MatcherPair.first)
+            
+            // cout << "(MatcherPair.second).size() " << (MatcherPair.second).size() << endl;
+            // cout << "(MatcherPair.first).size() " << (MatcherPair.first).size() << endl;
+            int WmuIndiceM = -999;
+            int WelecIndiceM = -999;
+            int ZelecIndiceM_0 = -999;
+            int ZelecIndiceM_1 = -999;
+            int ZmuIndiceM_0 = -999;
+            int ZmuIndiceM_1 = -999;
+            
+            
+            
+            for(unsigned int iPart = 0 ; iPart < (MatcherPair.second).size(); iPart++){
+              if((MatcherPair.second)[iPart].find("SMmu")!=string::npos){ WmuIndiceM = (MatcherPair.first)[iPart].second -  selectedElectrons.size() ; }
+              if((MatcherPair.second)[iPart].find("SMel")!=string::npos){ WelecIndiceM = (MatcherPair.first)[iPart].second ; }
+              if((MatcherPair.second)[iPart].find("Radmumin")!=string::npos){ ZmuIndiceM_0 = ((MatcherPair.first)[iPart].second -  selectedElectrons.size() ); }
+              if((MatcherPair.second)[iPart].find("Radelmin")!=string::npos){ ZelecIndiceM_0 = (MatcherPair.first)[iPart].second; }
+              if((MatcherPair.second)[iPart].find("Radmuplus")!=string::npos){ ZmuIndiceM_1 = ((MatcherPair.first)[iPart].second -  selectedElectrons.size() ); }
+              if((MatcherPair.second)[iPart].find("Radelplus")!=string::npos){ZelecIndiceM_1 = (MatcherPair.first)[iPart].second; }
+            }
+            
+           // cout << "WmuIndiceM " << WmuIndiceM << " WelecIndiceM "<< WelecIndiceM << " ZmuIndiceM_0 "<< ZmuIndiceM_0 << " ZmuIndiceM_1 "<< ZmuIndiceM_1 <<" ZelecIndiceM_0 "<< ZelecIndiceM_0 <<" ZelecIndiceM_1 "<< ZelecIndiceM_1 << endl;
+            
+            //cout << "WmuIndiceF " << WmuIndiceF << " WelecIndiceF "<< WelecIndiceF << " ZmuIndiceF_0 "<< ZmuIndiceF_0 << " ZmuIndiceF_1 "<< ZmuIndiceF_1 <<" ZelecIndiceF_0 "<< ZelecIndiceF_0 <<" ZelecIndiceF_1 "<< ZelecIndiceF_1 << endl;
+            
+            
+            if( WmuIndiceM != -999 && WmuIndiceF != -999){
+              matchedEvents_Wlep++;
+              eventForWlepmatching = true;
+              if(WmuIndiceM == WmuIndiceF){ matchedWlep++;    eventForWlepmatchingmatched = true; }
+            }
+            if( WelecIndiceM != -999 && WelecIndiceF != -999){
+              matchedEvents_Wlep++;
+              eventForWlepmatching = true;
+              if(WelecIndiceM == WelecIndiceF){ matchedWlep++;  eventForWlepmatchingmatched = true;}
+            }
+            if(ZmuIndiceM_0 != -999 && ZmuIndiceM_1 != -999 && ZmuIndiceF_0 != -999 && ZmuIndiceF_1 != -999){
+              matchedEvents_Zlep++;
+              eventForZlepmatching = true;
+              if(ZmuIndiceM_0 == ZmuIndiceF_0) { matchedZlep_0++;  eventForZlepmatchingmatched0 = true;  }
+              else if(ZmuIndiceM_0 == ZmuIndiceF_1) { matchedZlep_0++; eventForZlepmatchingmatched0 = true; }
+              if(ZmuIndiceM_1 == ZmuIndiceF_0) { matchedZlep_1++; eventForZlepmatchingmatched1 = true;  }
+              else if(ZmuIndiceM_1 == ZmuIndiceF_1) { matchedZlep_1++; eventForZlepmatchingmatched1 = true;  }
+            }
+            if(ZelecIndiceM_0 != -999 && ZelecIndiceM_1 != -999 && ZelecIndiceF_0 != -999 && ZelecIndiceF_1 != -999){
+              matchedEvents_Zlep++;
+              eventForZlepmatching = true;
+              if(ZelecIndiceM_0 == ZelecIndiceF_0) { matchedZlep_0++; eventForZlepmatchingmatched0 = true;    }
+              else if(ZelecIndiceM_0 == ZelecIndiceF_1) { matchedZlep_0++; eventForZlepmatchingmatched0 = true;   }
+              if(ZelecIndiceM_1 == ZelecIndiceF_0) { matchedZlep_1++; eventForZlepmatchingmatched1 = true;   }
+              else if(ZelecIndiceM_1 == ZelecIndiceF_1) { matchedZlep_1++; eventForZlepmatchingmatched1 = true;   }
+            }
+            
+           // cout <<" matchedEvents_Wlep "<< matchedEvents_Wlep <<" matchedWlep "<< matchedWlep <<" matchedEvents_Zlep "<< matchedEvents_Zlep << " matchedZlep_0 "<< matchedZlep_0 <<" matchedZlep_1 "<< matchedZlep_1 << endl;
+            
+          } // tZq matching
           
-          Zlep0.SetPxPyPzE(AssignedLeptons[0].Px(), AssignedLeptons[0].Py(), AssignedLeptons[0].Pz(), AssignedLeptons[0].Energy());
-          Zlep1.SetPxPyPzE(AssignedLeptons[1].Px(), AssignedLeptons[1].Py(), AssignedLeptons[1].Pz(), AssignedLeptons[1].Energy());
-          Wlep.SetPxPyPzE(AssignedLeptons[2].Px(), AssignedLeptons[2].Py(), AssignedLeptons[2].Pz(), AssignedLeptons[2].Energy());
+          
+          
+          
+          Zlep0.SetPxPyPzE(AssignedLeptons.first[ZlepIndice_0].Px(), AssignedLeptons.first[ZlepIndice_0].Py(), AssignedLeptons.first[ZlepIndice_0].Pz(), AssignedLeptons.first[ZlepIndice_0].Energy());
+          Zlep1.SetPxPyPzE(AssignedLeptons.first[ZlepIndice_1].Px(), AssignedLeptons.first[ZlepIndice_1].Py(), AssignedLeptons.first[ZlepIndice_1].Pz(), AssignedLeptons.first[ZlepIndice_1].Energy());
+          Wlep.SetPxPyPzE(AssignedLeptons.first[WlepIndice].Px(), AssignedLeptons.first[WlepIndice].Py(), AssignedLeptons.first[WlepIndice].Pz(),AssignedLeptons.first[WlepIndice].Energy());
           
           //double phis = Wlep.Phi() - mets[0]->Phi();
           //double cosphis = TMath::Cos(phis);
@@ -2699,7 +3001,7 @@ int main (int argc, char *argv[])
           Zboson_Energy = ( Zlep0 + Zlep1).Energy();
           
           histo1D["recoZmass"]->Fill((Zlep0+Zlep1).M());
-          
+          histo1D["recomWt"]->Fill(mWt);
           
           
         }
@@ -2747,11 +3049,11 @@ int main (int argc, char *argv[])
       }
       
       
-      if(selectedJets.size() < 2){
+      if( Usettbar && selectedJets.size() < 2){
         selections.push_back(0);
         continueFlow = false;
       }
-      else{
+      else if(Usettbar){
         selections.push_back(1);
         if(continueFlow){
           histo1D["cutFlow"]->Fill(4., eventweight);
@@ -2764,11 +3066,30 @@ int main (int argc, char *argv[])
           else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_4++; }
         }
       }
-      if(selectedCSVLBJets.size()  < 1){
+      if( !Usettbar && selectedJets.size() != 1){
         selections.push_back(0);
         continueFlow = false;
       }
-      else{
+      else if(!Usettbar){
+        selections.push_back(1);
+        if(continueFlow){
+          histo1D["cutFlow"]->Fill(4., eventweight);
+          nCuts++;
+          nbEvents_4++;
+          
+          if(selectedMuons.size() == 3) {nbEvents_uuu_4++;}
+          else if(selectedElectrons.size() == 3) {nbEvents_eee_4++;}
+          else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_4++; }
+          else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_4++; }
+        }
+      }
+      
+      
+      if( Usettbar && selectedCSVLBJets.size()  < 1){
+        selections.push_back(0);
+        continueFlow = false;
+      }
+      else if(Usettbar){
         selections.push_back(1);
         if(continueFlow){
           histo1D["cutFlow"]->Fill(5., eventweight);
@@ -2782,7 +3103,23 @@ int main (int argc, char *argv[])
         }
       }
       
-      
+      if( !Usettbar && selectedCSVLBJets.size()  != 1){
+        selections.push_back(0);
+        continueFlow = false;
+      }
+      else if(!Usettbar){
+        selections.push_back(1);
+        if(continueFlow){
+          histo1D["cutFlow"]->Fill(5., eventweight);
+          nCuts++;
+          nbEvents_5++;
+          
+          if(selectedMuons.size() == 3) {nbEvents_uuu_5++;}
+          else if(selectedElectrons.size() == 3) {nbEvents_eee_5++;}
+          else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_5++; }
+          else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_5++; }
+        }
+      }
       
       if(false){ // no mWT cut
         selections.push_back(0);
@@ -2823,7 +3160,7 @@ int main (int argc, char *argv[])
         // cout << "SMbjetindex " << SMbjetindex << endl;
         SMbjet.SetPxPyPzE(selectedJets[SMbjetindex]->Px(),selectedJets[SMbjetindex]->Py(),selectedJets[SMbjetindex]->Pz(),selectedJets[SMbjetindex]->Energy());
         
-        if(Assigned && continueFlow)  {
+        if(leptonsAssigned && continueFlow)  {
           SMtop_M = (Wlep+SMbjet+metTLV).M();
           SMtop.SetPxPyPzE((SMbjet.Px()+Wlep.Px()+metTLV.Px()),(SMbjet.Py()+Wlep.Py()+metTLV.Py()),(SMbjet.Pz()+Wlep.Pz()+metTLV.Pz()),(SMbjet.Energy()+Wlep.Energy()+metTLV.Energy()));
           mlb = (Wlep+SMbjet).M();
@@ -2850,11 +3187,13 @@ int main (int argc, char *argv[])
       FCNCtop_tagger.Clear();
       int cjetindex = -5;
       int cjetindex_tagger = -5;
-      if(Assigned && continueFlow && selectedJets.size()>1) {
+      if(Usettbar && leptonsAssigned && continueFlow && selectedJets.size()>1) {
         cjetindex = FCNCjetCalculator(selectedJets,Zboson ,SMbjetindex, 3);
-        //cout << "bjet_index " << SMbjetindex << endl;
+        //if(cjetindex == -5 )cout << "evt " << evt_num << " cjetindex " << cjetindex << endl;
+        // cout << "bjet_index " << SMbjetindex << endl;
         cjetindex_tagger = FCNCjetCalculatorTagger(selectedJets,SMbjetindex, 3);
-        // cout << "cjet index " << cjetindex << endl;
+        //cout << "cjetindex tag " << cjetindex_tagger << endl;
+        //cout << "cjet index " << cjetindex << endl;
         cjet.SetPxPyPzE(selectedJets[cjetindex]->Px(),selectedJets[cjetindex]->Py(),selectedJets[cjetindex]->Pz(),selectedJets[cjetindex]->Energy());
         //cout << "cjetindex_tagger " << cjetindex_tagger << endl;
         cjet_tagger.SetPxPyPzE(selectedJets[cjetindex_tagger]->Px(),selectedJets[cjetindex_tagger]->Py(),selectedJets[cjetindex_tagger]->Pz(),selectedJets[cjetindex_tagger]->Energy());
@@ -2880,10 +3219,10 @@ int main (int argc, char *argv[])
         dRSMFCNCtop_tagger = SMtop.DeltaR(FCNCtop_tagger);
         dPhiSMFCNCtop_tagger = SMtop.DeltaPhi(FCNCtop_tagger);
         
-        histo1D["recoFCNCTopmass"]->Fill((Zlep0+Zlep1+cjet_tagger).M());
+        if(Usettbar && !istZq) histo1D["recoFCNCTopmass"]->Fill((Zlep0+Zlep1+cjet_tagger).M());
         
       }
-      else {
+      else if(Usettbar){
         FCNCtop_M = -5.;
         // cout << "event: " << evt_num << " - Zboson.M()= " << Zboson.M() << " - cjet.M()= " << cjet.M() << " - top.M()= " << (Zboson+cjet).M() << endl;
         dRZc = -5;
@@ -2914,29 +3253,56 @@ int main (int argc, char *argv[])
       else{
         selections.push_back(1);
         if(continueFlow){
-          histo1D["cutFlow"]->Fill(7., eventweight);
-          nCuts++;
-          nbEvents_7++;
-          //cout << "ncuts " << nCuts << endl;
           
-          if(selectedMuons.size() == 3) {nbEvents_uuu_7++;}
-          else if(selectedElectrons.size() == 3) {nbEvents_eee_7++;}
-          else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_7++; }
-          else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_7++; }
+          
+          nCuts++;
+          
+          if(Usettbar){
+            histo1D["cutFlow"]->Fill(7., eventweight);
+            nbEvents_7++;
+            //cout << "ncuts " << nCuts << endl;
+            
+            if(selectedMuons.size() == 3) {nbEvents_uuu_7++;}
+            else if(selectedElectrons.size() == 3) {nbEvents_eee_7++;}
+            else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_7++; }
+            else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_7++; }
+          }
+          else if(!Usettbar){
+            histo1D["cutFlow"]->Fill(6., eventweight);
+            nbEvents_6++;
+            //cout << "ncuts " << nCuts << endl;
+            
+            if(selectedMuons.size() == 3) {nbEvents_uuu_6++;}
+            else if(selectedElectrons.size() == 3) {nbEvents_eee_6++;}
+            else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_6++; }
+            else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_6++; }
+          }
+          
         }
       }
       
       //	   if(continueFlow)  eventSelected = true;
       //	   else eventSelected = false;
       if(passedMET && continueFlow){
-        histo1D["cutFlow"]->Fill(8., eventweight);
         nCuts++;
-        nbEvents_8++;
-        
-        if(selectedMuons.size() == 3) {nbEvents_uuu_8++;}
-        else if(selectedElectrons.size() == 3) {nbEvents_eee_8++;}
-        else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_8++; }
-        else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_8++; }
+        if(Usettbar){
+          histo1D["cutFlow"]->Fill(8., eventweight);
+          nbEvents_8++;
+          
+          if(selectedMuons.size() == 3) {nbEvents_uuu_8++;}
+          else if(selectedElectrons.size() == 3) {nbEvents_eee_8++;}
+          else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_8++; }
+          else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_8++; }
+        }
+        else if(!Usettbar){
+          histo1D["cutFlow"]->Fill(7., eventweight);
+          nbEvents_7++;
+          
+          if(selectedMuons.size() == 3) {nbEvents_uuu_7++;}
+          else if(selectedElectrons.size() == 3) {nbEvents_eee_7++;}
+          else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {nbEvents_eeu_7++; }
+          else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_7++; }
+        }
         
         
       }
@@ -2960,12 +3326,12 @@ int main (int argc, char *argv[])
           E_jet[nJets]=selectedJets[seljet]->E();
           charge_jet[nJets]=selectedJets[seljet]->charge();
           bdisc_jet[nJets]=selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags() ;
-          cdiscCvsB_jet[nJets]=selectedJets[seljet]->ctag_pfCombinedCvsBJetTags() ;
-          cdiscCvsL_jet[nJets]=selectedJets[seljet]->ctag_pfCombinedCvsLJetTags() ;
+          if(Usettbar) cdiscCvsB_jet[nJets]=selectedJets[seljet]->ctag_pfCombinedCvsBJetTags() ;
+          if(Usettbar)cdiscCvsL_jet[nJets]=selectedJets[seljet]->ctag_pfCombinedCvsLJetTags() ;
           nJets++;
         }
-        if(selectedJets.size()>0) cdiscCvsB_jet_1 = selectedJets[0]->ctag_pfCombinedCvsBJetTags();
-        if(selectedJets.size()>0) cdiscCvsL_jet_1 = selectedJets[0]->ctag_pfCombinedCvsLJetTags();
+        if(selectedJets.size()>0 && Usettbar) cdiscCvsB_jet_1 = selectedJets[0]->ctag_pfCombinedCvsBJetTags();
+        if(selectedJets.size()>0 && Usettbar) cdiscCvsL_jet_1 = selectedJets[0]->ctag_pfCombinedCvsLJetTags();
         if(selectedJets.size()>0) pt_jet_1 = selectedJets[0]->Pt();
         if(selectedJets.size()>1) pt_jet_2 = selectedJets[1]->Pt();
         if(selectedJets.size()>2) pt_jet_3 = selectedJets[2]->Pt();
@@ -2976,61 +3342,61 @@ int main (int argc, char *argv[])
         nJets_nonCSVL = selectednonCSVLJets.size();
         nJets_nonCSVM = selectednonCSVMJets.size();
         nJets_nonCSVT = selectednonCSVTJets.size();
-        
-        // charm jets
-        nJets_CharmL = selectedCharmLJets.size();
-        nJets_CharmM = selectedCharmMJets.size();
-        nJets_CharmT = selectedCharmTJets.size();
-        nJets_nonCharmL = selectednonCharmLJets.size();
-        nJets_nonCharmM = selectednonCharmMJets.size();
-        nJets_nonCharmT = selectednonCharmTJets.size();
-        
-        
-        // charm b jets
-        nJets_CharmLCSVL = selectedCLBLJets.size();
-        nJets_CharmLCSVM = selectedCLBMJets.size();
-        nJets_CharmLCSVT = selectedCLBTJets.size();
-        nJets_CharmMCSVL = selectedCMBLJets.size();
-        nJets_CharmMCSVM = selectedCMBMJets.size();
-        nJets_CharmMCSVT = selectedCMBTJets.size();
-        nJets_CharmTCSVL = selectedCTBLJets.size();
-        nJets_CharmTCSVM = selectedCTBMJets.size();
-        nJets_CharmTCSVT = selectedCTBTJets.size();
-        
-        // non charm b jets
-        nJets_nonCharmLCSVL = selectednonCLBLJets.size();
-        nJets_nonCharmLCSVM = selectednonCLBMJets.size();
-        nJets_nonCharmLCSVT = selectednonCLBTJets.size();
-        nJets_nonCharmMCSVL = selectednonCMBLJets.size();
-        nJets_nonCharmMCSVM = selectednonCMBMJets.size();
-        nJets_nonCharmMCSVT = selectednonCMBTJets.size();
-        nJets_nonCharmTCSVL = selectednonCTBLJets.size();
-        nJets_nonCharmTCSVM = selectednonCTBMJets.size();
-        nJets_nonCharmTCSVT = selectednonCTBTJets.size();
-        
-        //  charm non b jets
-        nJets_CharmLnonCSVL = selectedCLnonBLJets.size();
-        nJets_CharmLnonCSVM = selectedCLnonBMJets.size();
-        nJets_CharmLnonCSVT = selectedCLnonBTJets.size();
-        nJets_CharmMnonCSVL = selectedCMnonBLJets.size();
-        nJets_CharmMnonCSVM = selectedCMnonBMJets.size();
-        nJets_CharmMnonCSVT = selectedCMnonBTJets.size();
-        nJets_CharmTnonCSVL = selectedCTnonBLJets.size();
-        nJets_CharmTnonCSVM = selectedCTnonBMJets.size();
-        nJets_CharmTnonCSVT = selectedCTnonBTJets.size();
-        
-        // non charm non b jets
-        nJets_nonCharmLnonCSVL = selectednonCLnonBLJets.size();
-        nJets_nonCharmLnonCSVM = selectednonCLnonBMJets.size();
-        nJets_nonCharmLnonCSVT = selectednonCLnonBTJets.size();
-        nJets_nonCharmMnonCSVL = selectednonCMnonBLJets.size();
-        nJets_nonCharmMnonCSVM = selectednonCMnonBMJets.size();
-        nJets_nonCharmMnonCSVT = selectednonCMnonBTJets.size();
-        nJets_nonCharmTnonCSVL = selectednonCTnonBLJets.size();
-        nJets_nonCharmTnonCSVM = selectednonCTnonBMJets.size();
-        nJets_nonCharmTnonCSVT = selectednonCTnonBTJets.size();
-        
-        
+        if(Usettbar){
+          // charm jets
+          nJets_CharmL = selectedCharmLJets.size();
+          nJets_CharmM = selectedCharmMJets.size();
+          nJets_CharmT = selectedCharmTJets.size();
+          nJets_nonCharmL = selectednonCharmLJets.size();
+          nJets_nonCharmM = selectednonCharmMJets.size();
+          nJets_nonCharmT = selectednonCharmTJets.size();
+          
+          
+          // charm b jets
+          nJets_CharmLCSVL = selectedCLBLJets.size();
+          nJets_CharmLCSVM = selectedCLBMJets.size();
+          nJets_CharmLCSVT = selectedCLBTJets.size();
+          nJets_CharmMCSVL = selectedCMBLJets.size();
+          nJets_CharmMCSVM = selectedCMBMJets.size();
+          nJets_CharmMCSVT = selectedCMBTJets.size();
+          nJets_CharmTCSVL = selectedCTBLJets.size();
+          nJets_CharmTCSVM = selectedCTBMJets.size();
+          nJets_CharmTCSVT = selectedCTBTJets.size();
+          
+          // non charm b jets
+          nJets_nonCharmLCSVL = selectednonCLBLJets.size();
+          nJets_nonCharmLCSVM = selectednonCLBMJets.size();
+          nJets_nonCharmLCSVT = selectednonCLBTJets.size();
+          nJets_nonCharmMCSVL = selectednonCMBLJets.size();
+          nJets_nonCharmMCSVM = selectednonCMBMJets.size();
+          nJets_nonCharmMCSVT = selectednonCMBTJets.size();
+          nJets_nonCharmTCSVL = selectednonCTBLJets.size();
+          nJets_nonCharmTCSVM = selectednonCTBMJets.size();
+          nJets_nonCharmTCSVT = selectednonCTBTJets.size();
+          
+          //  charm non b jets
+          nJets_CharmLnonCSVL = selectedCLnonBLJets.size();
+          nJets_CharmLnonCSVM = selectedCLnonBMJets.size();
+          nJets_CharmLnonCSVT = selectedCLnonBTJets.size();
+          nJets_CharmMnonCSVL = selectedCMnonBLJets.size();
+          nJets_CharmMnonCSVM = selectedCMnonBMJets.size();
+          nJets_CharmMnonCSVT = selectedCMnonBTJets.size();
+          nJets_CharmTnonCSVL = selectedCTnonBLJets.size();
+          nJets_CharmTnonCSVM = selectedCTnonBMJets.size();
+          nJets_CharmTnonCSVT = selectedCTnonBTJets.size();
+          
+          // non charm non b jets
+          nJets_nonCharmLnonCSVL = selectednonCLnonBLJets.size();
+          nJets_nonCharmLnonCSVM = selectednonCLnonBMJets.size();
+          nJets_nonCharmLnonCSVT = selectednonCLnonBTJets.size();
+          nJets_nonCharmMnonCSVL = selectednonCMnonBLJets.size();
+          nJets_nonCharmMnonCSVM = selectednonCMnonBMJets.size();
+          nJets_nonCharmMnonCSVT = selectednonCMnonBTJets.size();
+          nJets_nonCharmTnonCSVL = selectednonCTnonBLJets.size();
+          nJets_nonCharmTnonCSVM = selectednonCTnonBMJets.size();
+          nJets_nonCharmTnonCSVT = selectednonCTnonBTJets.size();
+          
+        }
         
         
         
@@ -3088,13 +3454,21 @@ int main (int argc, char *argv[])
         
       }
       
+      
+      
       if(eventSelected){
         nbSelectedEvents++;
         
         myTree->Fill();
+        
+        if(eventForWlepmatching) int_eventForWlepmatching++;
+        if(eventForWlepmatchingmatched) int_eventForWlepmatchingmatched++;
+        if(eventForZlepmatching) int_eventForZlepmatching++;
+        if(eventForZlepmatchingmatched0) int_eventForZlepmatchingmatched0++;
+        if(eventForZlepmatchingmatched1) int_eventForZlepmatchingmatched1++;
       }
       if(baseSelected){ baselineTree->Fill(); }
-      if(selections.size() != 8) cout << "ERROR SOMETHING WENT WRONG WITH THE SELECTIONS " << endl;
+      //if(selections.size() != 8) cout << "ERROR SOMETHING WENT WRONG WITH THE SELECTIONS " << endl;
       for(int inb = 0; inb <selections.size(); inb++)
       {
         selectionsnb << selections[inb];
@@ -3290,6 +3664,17 @@ int main (int argc, char *argv[])
       // Determine scale factor due to negative weights
       nloSF = ((double) (nofPosWeights - nofNegWeights))/((double) (nofPosWeights + nofNegWeights));
       cout << "This corresponds to an event scale factor of " << nloSF  << endl;
+      
+      
+    }
+    if(matching){
+      cout << " MATCHING INFO " << endl;
+      cout << " W lepton " << matchedWlep << " from " << matchedEvents_Wlep << " or " <<((double) matchedWlep / (double)matchedEvents_Wlep)*100 << " % matched" << endl;
+      cout << " Z lepton " << (double) (matchedZlep_1+matchedZlep_0)/2 << " from " << matchedEvents_Zlep << " or " << ((double)(matchedZlep_1 + (double)matchedZlep_0) / (2*(double)matchedEvents_Zlep))*100 << " % matched" << endl;
+      cout << "for selected events " << endl;
+      cout << int_eventForZlepmatching << " events out of " << nbSelectedEvents << " could be used for matching or " << ((double) int_eventForZlepmatching / (double) nbSelectedEvents)*100 << " %" << endl;
+      cout << " W lepton " << int_eventForWlepmatchingmatched << " from " << int_eventForWlepmatching << " or " <<((double) int_eventForWlepmatchingmatched / (double)int_eventForWlepmatching)*100 << " % matched" << endl;
+      cout << " Z lepton " << (double) (int_eventForZlepmatchingmatched0 + int_eventForZlepmatchingmatched1)/2 << " from " << int_eventForZlepmatching << " or " << ((double)(int_eventForZlepmatchingmatched0 + (double)int_eventForZlepmatchingmatched1) / (2*(double)int_eventForZlepmatching))*100 << " % matched" << endl;
     }
     tupfile->cd();
     myTree->Write();
@@ -3430,8 +3815,8 @@ int FCNCjetCalculator(std::vector<TRootPFJet*> Jets, TLorentzVector recoZ ,int i
   double TempMinMass = 100000.00;
   double TopMass = 172.9;
   TLorentzVector Jetcandidate;
-  int NbInColl = -1;
-  if(Jets.size() > 1){
+  int NbInColl = -5;
+  if(Jets.size() > 0){
     //cout << " non bjets: " << nonBJets.size() << " possibilities " <<endl;
     for( int iJ = 0; iJ < Jets.size(); iJ++)
     {
@@ -3447,7 +3832,6 @@ int FCNCjetCalculator(std::vector<TRootPFJet*> Jets, TLorentzVector recoZ ,int i
         
       }
       //cout << " NbInColl is " << iJ << endl;
-      //  269297.249181
     }
   }
   else{
@@ -3544,24 +3928,30 @@ float IsoDBeta(TRootMuon *mu)
   
 }
 
-vector <TLorentzVector> LeptonAssigner(std::vector<TRootElectron*> electrons,std::vector<TRootMuon*> muons)
+pair< vector <TLorentzVector> , vector < pair < string , int > > > LeptonAssigner(std::vector<TRootElectron*> electrons,std::vector<TRootMuon*> muons)
 {
   //  cout << " in assigner " << endl;
+  pair< vector <TLorentzVector> , vector < pair < string , int > > >  Returner;
+  vector < pair < string , int > > Indices;
+  Indices.clear();
   vector<TLorentzVector> ReturnColl;
-  Assigned = false;
+  ReturnColl.clear();
+  bool Assigned = false;
   
   if(electrons.size() + muons.size() != 3){
     cout << " WARNING: not 3 leptons " << endl;
     cout << "muons " << muons.size() << " electrons " << electrons.size() << endl;
-    return ReturnColl;
+    return Returner;
   }
-  elecbool = false;
-  mubool = false;
-  elecIndices.clear();
-  muIndices.clear();
-  WelecIndices.clear();
-  WmuIndices.clear();
-  //  cout << " in 3 lep " << endl;
+  //elecbool = false;
+  //mubool = false;
+  int ZelecIndice_0 = -999;
+  int ZelecIndice_1 = -999;
+  int ZmuIndice_0 = -999;
+  int ZmuIndice_1 = -999;
+  int WelecIndice = -999;
+  int WmuIndice = -999;
+  //cout << " in 3 lep " << endl;
   
   TLorentzVector Zlepcan0;
   Zlepcan0.SetPxPyPzE(0.,0.,0.,0.);
@@ -3577,11 +3967,11 @@ vector <TLorentzVector> LeptonAssigner(std::vector<TRootElectron*> electrons,std
       Zlepcan1.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
       Wlepcan.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
       Assigned = true;
-      elecbool = true;
-      elecIndices.push_back(0);
-      elecIndices.push_back(1);
-      WmuIndices.push_back(0);
+      ZelecIndice_0 = 0;
+      ZelecIndice_1 = 1;
+      WmuIndice = 0;
     }
+    else Assigned = false;
   }
   else if(muons.size() == 2){
     //    cout << "2 muons" << endl;
@@ -3590,18 +3980,18 @@ vector <TLorentzVector> LeptonAssigner(std::vector<TRootElectron*> electrons,std
       Zlepcan1.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
       Wlepcan.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
       Assigned = true;
-      mubool = true;
-      muIndices.push_back(0);
-      muIndices.push_back(1);
-      WelecIndices.push_back(0);
+      
+      ZmuIndice_0 = 0;
+      ZmuIndice_1 = 1;
+      WelecIndice = 0;
     }
+    else Assigned = false;
   }
   else if(electrons.size() ==3){
-    //    cout << " 3 electrons " << endl;
+    //cout << " 3 electrons " << endl;
     bool can01 = false;
     bool can02= false;
     bool can12 = false;
-    elecbool = true;
     if(electrons[0]->charge() != electrons[1]->charge()) can01 = true;
     if(electrons[0]->charge() != electrons[2]->charge()) can02 = true;
     if(electrons[2]->charge() != electrons[1]->charge()) can12 = true;
@@ -3609,42 +3999,47 @@ vector <TLorentzVector> LeptonAssigner(std::vector<TRootElectron*> electrons,std
     double mass01 = 9999.;
     double mass02 = 9999.;
     double mass12 = 9999.;
+    
     TLorentzVector temp0;
     temp0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
     TLorentzVector temp1;
     temp1.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
     TLorentzVector temp2;
     temp2.SetPxPyPzE(electrons[2]->Px(), electrons[2]->Py(),electrons[2]->Pz(),electrons[2]->Energy());
+    
     if(can01) mass01 = fabs(91.1-(temp1+temp0).M());
     if(can02) mass02 = fabs(91.1-(temp2+temp0).M());
     if(can12) mass12 = fabs(91.1-(temp1+temp2).M());
+    
     if(mass01 <= mass02 && mass01 <= mass12){
       Zlepcan0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
       Zlepcan1.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
       Wlepcan.SetPxPyPzE(electrons[2]->Px(), electrons[2]->Py(),electrons[2]->Pz(),electrons[2]->Energy());
       Assigned = true;
-      elecIndices.push_back(0); elecIndices.push_back(1); WelecIndices.push_back(2);
+      ZelecIndice_0 = 0;ZelecIndice_1 = 1;WelecIndice = 2;
     }
+    
     else if(mass02 <= mass12 && mass02 < mass01){
       Zlepcan0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
       Zlepcan1.SetPxPyPzE(electrons[2]->Px(), electrons[2]->Py(),electrons[2]->Pz(),electrons[2]->Energy());
       Wlepcan.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
       Assigned = true;
-      elecIndices.push_back(0); elecIndices.push_back(2); WelecIndices.push_back(1);
+      ZelecIndice_0 = 0; ZelecIndice_1=2;WelecIndice = 1;
     }
     else if(mass12 < mass01 && mass12 < mass02){
       Zlepcan0.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
       Zlepcan1.SetPxPyPzE(electrons[2]->Px(), electrons[2]->Py(),electrons[2]->Pz(),electrons[2]->Energy());
       Wlepcan.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
       Assigned = true;
-      elecIndices.push_back(1); elecIndices.push_back(2); WelecIndices.push_back(0);
+      ZelecIndice_0 = 1; ZelecIndice_1=2;WelecIndice = 0;
     }
+    else Assigned = false;
   }
   else if(muons.size() == 3){
     bool can01 = false;
     bool can02= false;
     bool can12 = false;
-    mubool = true;
+    
     if(muons[0]->charge() != muons[1]->charge()) can01 = true;
     if(muons[0]->charge() != muons[2]->charge()) can02 = true;
     if(muons[2]->charge() != muons[1]->charge()) can12 = true;
@@ -3666,177 +4061,185 @@ vector <TLorentzVector> LeptonAssigner(std::vector<TRootElectron*> electrons,std
       Zlepcan1.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
       Wlepcan.SetPxPyPzE(muons[2]->Px(), muons[2]->Py(),muons[2]->Pz(),muons[2]->Energy());
       Assigned = true;
-      muIndices.push_back(0); muIndices.push_back(1); WmuIndices.push_back(2);
+      ZmuIndice_0 = 0; ZmuIndice_1=1; WmuIndice = 2;
     }
     else if(mass02 <= mass12 && mass02 < mass01){
       Zlepcan0.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
       Zlepcan1.SetPxPyPzE(muons[2]->Px(), muons[2]->Py(),muons[2]->Pz(),muons[2]->Energy());
       Wlepcan.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
       Assigned = true;
-      muIndices.push_back(0); muIndices.push_back(2); WmuIndices.push_back(1);
+      ZmuIndice_0 = 0; ZmuIndice_1=2;WmuIndice = 1;
     }
     else if(mass12 < mass01 && mass12 < mass02){
       Zlepcan0.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
       Zlepcan1.SetPxPyPzE(muons[2]->Px(), muons[2]->Py(),muons[2]->Pz(),muons[2]->Energy());
       Wlepcan.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
       Assigned = true;
-      muIndices.push_back(1); muIndices.push_back(2); WmuIndices.push_back(0);
+      ZmuIndice_0 = 1; ZmuIndice_1=2;WmuIndice = 0;
     }
+    else Assigned = false;
   }
   if(Assigned){
     ReturnColl.push_back(Zlepcan0);
     ReturnColl.push_back(Zlepcan1);
     ReturnColl.push_back(Wlepcan);
-  }
-  if(!Assigned){
-    //    cout << " WARNING: leptons not set for assignment " << endl;
-    return ReturnColl;
+    
+    Indices.push_back( pair< string, int > ("Wmu", WmuIndice));
+    Indices.push_back( pair< string, int > ("Wel", WelecIndice));
+    Indices.push_back( pair< string, int > ("Zel_1", ZelecIndice_1));
+    Indices.push_back( pair< string, int > ("Zel_0", ZelecIndice_0));
+    Indices.push_back( pair< string, int > ("Zmu_1", ZmuIndice_1));
+    Indices.push_back( pair< string, int > ("Zmu_0", ZmuIndice_0));
+    
   }
   
-  
-  return ReturnColl;
+  Returner = pair < vector < TLorentzVector > , vector < pair < string, int > > > (ReturnColl, Indices);
+  return Returner;
 }
 
-vector <TLorentzVector> LeptonAssignerv2(std::vector<TRootElectron*> electrons,std::vector<TRootMuon*> muons)
-{
-  // cout << " in assigner " << endl;
-  vector<TLorentzVector> ReturnColl;
-  Assigned = false;
-  
-  
-  
-  elecbool = false;
-  mubool = false;
-  elecIndices.clear();
-  muIndices.clear();
-  
-  TLorentzVector Zlepcan0;
-  Zlepcan0.SetPxPyPzE(0.,0.,0.,0.);
-  TLorentzVector Zlepcan1;
-  Zlepcan1.SetPxPyPzE(0.,0.,0.,0.);
-  
-  
-  if(electrons.size() == 2){
-    //  cout << "2 electr " << electrons[0]->charge() << " " << electrons[1]->charge() << endl;
-    if(electrons[0]->charge() != electrons[1]->charge()){
-      Zlepcan0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
-      Zlepcan1.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
-      
-      Assigned = true;
-      elecbool = true;
-      elecIndices.push_back(0);
-      elecIndices.push_back(1);
-      //cout << "assigned " <<endl;
-    }
-  }
-  else if(muons.size() == 2){
-    //    cout << "2 muons" << endl;
-    if(muons[0]->charge() != muons[1]->charge()){
-      Zlepcan0.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
-      Zlepcan1.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
-      
-      Assigned = true;
-      mubool = true;
-      muIndices.push_back(0);
-      muIndices.push_back(1);
-      
-    }
-  }
-  else if(electrons.size() ==3){
-    //    cout << " 3 electrons " << endl;
-    bool can01 = false;
-    bool can02= false;
-    bool can12 = false;
-    elecbool = true;
-    if(electrons[0]->charge() != electrons[1]->charge()) can01 = true;
-    if(electrons[0]->charge() != electrons[2]->charge()) can02 = true;
-    if(electrons[2]->charge() != electrons[1]->charge()) can12 = true;
-    
-    double mass01 = 9999.;
-    double mass02 = 9999.;
-    double mass12 = 9999.;
-    TLorentzVector temp0;
-    temp0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
-    TLorentzVector temp1;
-    temp1.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
-    TLorentzVector temp2;
-    temp2.SetPxPyPzE(electrons[2]->Px(), electrons[2]->Py(),electrons[2]->Pz(),electrons[2]->Energy());
-    if(can01) mass01 = fabs(91.1-(temp1+temp0).M());
-    if(can02) mass02 = fabs(91.1-(temp2+temp0).M());
-    if(can12) mass12 = fabs(91.1-(temp1+temp2).M());
-    if(mass01 <= mass02 && mass01 <= mass12){
-      Zlepcan0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
-      Zlepcan1.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
-      Assigned = true;
-      elecIndices.push_back(0); elecIndices.push_back(1);
-    }
-    else if(mass02 <= mass12 && mass02 < mass01){
-      Zlepcan0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
-      Zlepcan1.SetPxPyPzE(electrons[2]->Px(), electrons[2]->Py(),electrons[2]->Pz(),electrons[2]->Energy());
-      Assigned = true;
-      elecIndices.push_back(0); elecIndices.push_back(2);
-    }
-    else if(mass12 < mass01 && mass12 < mass02){
-      Zlepcan0.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
-      Zlepcan1.SetPxPyPzE(electrons[2]->Px(), electrons[2]->Py(),electrons[2]->Pz(),electrons[2]->Energy());
-      Assigned = true;
-      elecIndices.push_back(1); elecIndices.push_back(2);
-    }
-  }
-  else if(muons.size() == 3){
-    bool can01 = false;
-    bool can02= false;
-    bool can12 = false;
-    mubool = true;
-    if(muons[0]->charge() != muons[1]->charge()) can01 = true;
-    if(muons[0]->charge() != muons[2]->charge()) can02 = true;
-    if(muons[2]->charge() != muons[1]->charge()) can12 = true;
-    
-    double mass01 = 9999.;
-    double mass02 = 9999.;
-    double mass12 = 9999.;
-    TLorentzVector temp0;
-    temp0.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
-    TLorentzVector temp1;
-    temp1.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
-    TLorentzVector temp2;
-    temp2.SetPxPyPzE(muons[2]->Px(), muons[2]->Py(),muons[2]->Pz(),muons[2]->Energy());
-    if(can01) mass01 = fabs(91.1-(temp1+temp0).M());
-    if(can02) mass02 = fabs(91.1-(temp2+temp0).M());
-    if(can12) mass12 = fabs(91.1-(temp1+temp2).M());
-    if(mass01 <= mass02 && mass01 <= mass12){
-      Zlepcan0.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
-      Zlepcan1.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
-      Assigned = true;
-      muIndices.push_back(0); muIndices.push_back(1);
-    }
-    else if(mass02 <= mass12 && mass02 < mass01){
-      Zlepcan0.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
-      Zlepcan1.SetPxPyPzE(muons[2]->Px(), muons[2]->Py(),muons[2]->Pz(),muons[2]->Energy());
-      Assigned = true;
-      muIndices.push_back(0); muIndices.push_back(2);
-    }
-    else if(mass12 < mass01 && mass12 < mass02){
-      Zlepcan0.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
-      Zlepcan1.SetPxPyPzE(muons[2]->Px(), muons[2]->Py(),muons[2]->Pz(),muons[2]->Energy());
-      Assigned = true;
-      muIndices.push_back(1); muIndices.push_back(2);
-    }
-  }
-  if(Assigned){
-    ReturnColl.push_back(Zlepcan0);
-    ReturnColl.push_back(Zlepcan1);
-    //   cout << "filled" << endl;
-    
-  }
-  if(!Assigned){
-    //    cout << " WARNING: leptons not set for assignment " << endl;
-    return ReturnColl;
-  }
-  
-  //cout << "returned" << endl;
-  return ReturnColl;
-}
+/*vector <TLorentzVector> LeptonAssignerv2(std::vector<TRootElectron*> electrons,std::vector<TRootMuon*> muons)
+ {
+ // cout << " in assigner " << endl;
+ vector<TLorentzVector> ReturnColl;
+ Assigned = false;
+ 
+ 
+ 
+ // elecbool = false;
+ // mubool = false;
+ ZelecIndice_0 = -999;
+ ZelecIndice_1 = -999;
+ ZmuIndice_1 = -999;
+ ZmuIndice_0 = -999;
+ 
+ TLorentzVector Zlepcan0;
+ Zlepcan0.SetPxPyPzE(0.,0.,0.,0.);
+ TLorentzVector Zlepcan1;
+ Zlepcan1.SetPxPyPzE(0.,0.,0.,0.);
+ 
+ 
+ if(electrons.size() == 2){
+ //  cout << "2 electr " << electrons[0]->charge() << " " << electrons[1]->charge() << endl;
+ if(electrons[0]->charge() != electrons[1]->charge()){
+ Zlepcan0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
+ Zlepcan1.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
+ 
+ Assigned = true;
+ // elecbool = true;
+ ZelecIndice_0 = 0;
+ ZelecIndice_1 = 1;
+ //cout << "assigned " <<endl;
+ }
+ }
+ else if(muons.size() == 2){
+ //    cout << "2 muons" << endl;
+ if(muons[0]->charge() != muons[1]->charge()){
+ Zlepcan0.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
+ Zlepcan1.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
+ 
+ Assigned = true;
+ // mubool = true;
+ ZmuIndice_0 = 0;
+ ZmuIndice_1 = 1;
+ 
+ }
+ }
+ else if(electrons.size() ==3){
+ //    cout << " 3 electrons " << endl;
+ bool can01 = false;
+ bool can02= false;
+ bool can12 = false;
+ // elecbool = true;
+ if(electrons[0]->charge() != electrons[1]->charge()) can01 = true;
+ if(electrons[0]->charge() != electrons[2]->charge()) can02 = true;
+ if(electrons[2]->charge() != electrons[1]->charge()) can12 = true;
+ 
+ double mass01 = 9999.;
+ double mass02 = 9999.;
+ double mass12 = 9999.;
+ TLorentzVector temp0;
+ temp0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
+ TLorentzVector temp1;
+ temp1.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
+ TLorentzVector temp2;
+ temp2.SetPxPyPzE(electrons[2]->Px(), electrons[2]->Py(),electrons[2]->Pz(),electrons[2]->Energy());
+ if(can01) mass01 = fabs(91.1-(temp1+temp0).M());
+ if(can02) mass02 = fabs(91.1-(temp2+temp0).M());
+ if(can12) mass12 = fabs(91.1-(temp1+temp2).M());
+ if(mass01 <= mass02 && mass01 <= mass12){
+ Zlepcan0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
+ Zlepcan1.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
+ Assigned = true;
+ ZelecIndice_0 = 0;ZelecIndice_1 = 1;
+ }
+ else if(mass02 <= mass12 && mass02 < mass01){
+ Zlepcan0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
+ Zlepcan1.SetPxPyPzE(electrons[2]->Px(), electrons[2]->Py(),electrons[2]->Pz(),electrons[2]->Energy());
+ Assigned = true;
+ ZelecIndice_0 = 0; ZelecIndice_1=2;
+ }
+ else if(mass12 < mass01 && mass12 < mass02){
+ Zlepcan0.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
+ Zlepcan1.SetPxPyPzE(electrons[2]->Px(), electrons[2]->Py(),electrons[2]->Pz(),electrons[2]->Energy());
+ Assigned = true;
+ ZelecIndice_0 = 1; ZelecIndice_1=2;
+ }
+ }
+ else if(muons.size() == 3){
+ bool can01 = false;
+ bool can02= false;
+ bool can12 = false;
+ // mubool = true;
+ if(muons[0]->charge() != muons[1]->charge()) can01 = true;
+ if(muons[0]->charge() != muons[2]->charge()) can02 = true;
+ if(muons[2]->charge() != muons[1]->charge()) can12 = true;
+ 
+ double mass01 = 9999.;
+ double mass02 = 9999.;
+ double mass12 = 9999.;
+ TLorentzVector temp0;
+ temp0.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
+ TLorentzVector temp1;
+ temp1.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
+ TLorentzVector temp2;
+ temp2.SetPxPyPzE(muons[2]->Px(), muons[2]->Py(),muons[2]->Pz(),muons[2]->Energy());
+ if(can01) mass01 = fabs(91.1-(temp1+temp0).M());
+ if(can02) mass02 = fabs(91.1-(temp2+temp0).M());
+ if(can12) mass12 = fabs(91.1-(temp1+temp2).M());
+ if(mass01 <= mass02 && mass01 <= mass12){
+ Zlepcan0.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
+ Zlepcan1.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
+ Assigned = true;
+ ZmuIndice_0 = 0; ZmuIndice_1=1;
+ }
+ else if(mass02 <= mass12 && mass02 < mass01){
+ Zlepcan0.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
+ Zlepcan1.SetPxPyPzE(muons[2]->Px(), muons[2]->Py(),muons[2]->Pz(),muons[2]->Energy());
+ Assigned = true;
+ ZmuIndice_0 = 0; ZmuIndice_1=2;
+ }
+ else if(mass12 < mass01 && mass12 < mass02){
+ Zlepcan0.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
+ Zlepcan1.SetPxPyPzE(muons[2]->Px(), muons[2]->Py(),muons[2]->Pz(),muons[2]->Energy());
+ Assigned = true;
+ ZmuIndice_0 = 1; ZmuIndice_1=2;
+ }
+ }
+ if(Assigned){
+ ReturnColl.push_back(Zlepcan0);
+ ReturnColl.push_back(Zlepcan1);
+ //   cout << "filled" << endl;
+ 
+ }
+ if(!Assigned){
+ //    cout << " WARNING: leptons not set for assignment " << endl;
+ return ReturnColl;
+ }
+ 
+ //cout << "returned" << endl;
+ return ReturnColl;
+ }
+ */
 
 TLorentzVector MetzCalculator(TLorentzVector leptW, TLorentzVector v_met)
 {
@@ -3896,7 +4299,7 @@ int SMjetCalculator(std::vector<TRootPFJet*> Jets,int verb){
 
 
 
-int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TLorentzVector> selectedleptons){
+pair< vector< pair<unsigned int, unsigned int>>, vector <string> >  Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TLorentzVector> selectedobjects){
   int nMCP = mcParticles_.size();
   TLorentzVector mcpart;
   vector <TLorentzVector> mcpartTLV;
@@ -3953,11 +4356,7 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
   
   
   
-  
-  vector <TLorentzVector> partons;
-  partons.clear();
-  vector <int> partonID;
-  partonID.clear();
+
   
   vector <int> storedMCParticles;
   storedMCParticles.clear();
@@ -3968,9 +4367,12 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
     mcpart.SetPtEtaPhiE(mcParticles_[iMC]->Pt(), mcParticles_[iMC]->Eta(), mcParticles_[iMC]->Phi(), mcParticles_[iMC]->E());
     mcpartTLV.push_back(mcpart);
   }
-  if(mcpartTLV.size() != mcParticles_.size()){cout << "mcP not filled correctly" << endl; return 0; }
+  if(mcpartTLV.size() != mcParticles_.size()){cout << "ERROR mcP not filled correctly" << endl;  }
+  
+  // plots for mcParticles
   
   //cout << "event " << evt_num_ << endl;
+  // search for the right events
   for (unsigned int iMC = 0; iMC < mcpartTLV.size(); iMC++)
   {
     if (false)
@@ -3983,73 +4385,66 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
     else if( mcParticles_[iMC]->type() == -6 ){ antitopQ = iMC; antitopfound = true; }
     
     //SM
-    else if( fabs(mcParticles_[iMC]->type()) ==  12 && mcParticles_[iMC]->motherType() ==-24 && mcParticles_[iMC]->grannyType()  == -6 ){
+    else if( abs(mcParticles_[iMC]->type()) ==  12 && mcParticles_[iMC]->motherType() ==-24 && mcParticles_[iMC]->grannyType()  == -6 ){
       if(mcParticles_[iMC]->status() == 23) {SMnuel = iMC;  }
       else if( mcParticles_[iMC]->status() != 23 && SMnuel == -999) {SMnuel = iMC;}
       SMnuelfound = true;
       //cout << "found nu from W- from tbar" << endl;
     } // nu el  from W from tbar
-    else if( fabs(mcParticles_[iMC]->type()) ==  12 && mcParticles_[iMC]->motherType() ==24 && mcParticles_[iMC]->grannyType()  == 6 ){
+    else if( abs(mcParticles_[iMC]->type()) ==  12 && mcParticles_[iMC]->motherType() ==24 && mcParticles_[iMC]->grannyType()  == 6 ){
       if(mcParticles_[iMC]->status() == 23) {SMnuel = iMC;  }
       else if( mcParticles_[iMC]->status() != 23 && SMnuel == -999) {SMnuel = iMC;}
       SMnuelfound = true;
       //cout << "found nu from W+ from t" << endl;
     } // nu el  from W from t
-    else if( fabs(mcParticles_[iMC]->type()) ==  14 && mcParticles_[iMC]->motherType() ==-24 && mcParticles_[iMC]->grannyType()  == -6 ){
+    else if( abs(mcParticles_[iMC]->type()) ==  14 && mcParticles_[iMC]->motherType() ==-24 && mcParticles_[iMC]->grannyType()  == -6 ){
       if(mcParticles_[iMC]->status() == 23) {SMnumu = iMC;  }
       else if( mcParticles_[iMC]->status() != 23 && SMnumu == -999) {SMnumu = iMC;}
       SMnumufound = true;
     } // nu mu  from W from tbar
-    else if( fabs(mcParticles_[iMC]->type()) ==  14 && mcParticles_[iMC]->motherType() ==24 && mcParticles_[iMC]->grannyType()  == 6 ){
+    else if( abs(mcParticles_[iMC]->type()) ==  14 && mcParticles_[iMC]->motherType() ==24 && mcParticles_[iMC]->grannyType()  == 6 ){
       if(mcParticles_[iMC]->status() == 23) {SMnumu = iMC;  }
       else if( mcParticles_[iMC]->status() != 23 && SMnumu == -999) {SMnumu = iMC;}
       SMnumufound = true;
     } // nu mu from W from t
     
-    else if( fabs(mcParticles_[iMC]->type()) ==  5 && mcParticles_[iMC]->motherType()  == -6 ){
+    else if( abs(mcParticles_[iMC]->type()) ==  5 && mcParticles_[iMC]->motherType()  == -6 ){
       if(mcParticles_[iMC]->status() == 23) {SMb = iMC;  }
       else if( mcParticles_[iMC]->status() != 23 && SMb == -999) {SMb = iMC;}
       SMbATop = true;
       //cout << "found b from tbar" << endl;
-      partons.push_back(mcpartTLV[iMC]);
-      partonID.push_back(iMC);
+      
     } // b from tbar
-    else if( fabs(mcParticles_[iMC]->type()) ==  5 && mcParticles_[iMC]->motherType()  == 6 ){
+    else if( abs(mcParticles_[iMC]->type()) ==  5 && mcParticles_[iMC]->motherType()  == 6 ){
       if(mcParticles_[iMC]->status() == 23) {SMb = iMC;  }
       else if( mcParticles_[iMC]->status() != 23 && SMb == -999) {SMb = iMC;}
       SMbTop = true;
-      partons.push_back(mcpartTLV[iMC]);
-      partonID.push_back(iMC);
+      
     } // b from t
     else if( mcParticles_[iMC]->type() ==  13 && mcParticles_[iMC]->motherType()  == -24 && mcParticles_[iMC]->grannyType()  == -6 ){
       if(mcParticles_[iMC]->status() == 23) {SMmu = iMC;  }
       else if( mcParticles_[iMC]->status() != 23 && SMmu == -999) {SMmu = iMC;}
       SMmuATop = true;
-      //cout << "found mu from tbar" << endl;
-      partons.push_back(mcpartTLV[iMC]);
-      partonID.push_back(iMC);
+      
     } // mu - from W - from tbar
     else if( mcParticles_[iMC]->type() ==  -13 && mcParticles_[iMC]->motherType()  == 24 && mcParticles_[iMC]->grannyType()  == 6 ){
       if(mcParticles_[iMC]->status() == 23) {SMmu = iMC;  }
       else if( mcParticles_[iMC]->status() != 23 && SMmu == -999) {SMmu = iMC;}
       SMmuTop = true;
-      partons.push_back(mcpartTLV[iMC]);
-      partonID.push_back(iMC);
+      
     } // mu+ from W+ from top
     else if( mcParticles_[iMC]->type() ==  11 && mcParticles_[iMC]->motherType()  == -24 && mcParticles_[iMC]->grannyType()  == -6 ){
       if(mcParticles_[iMC]->status() == 23) {SMel = iMC;  }
       else if( mcParticles_[iMC]->status() != 23 && SMel== -999) {SMel = iMC;}
       SMelATop = true;
       //cout << "found el from tbar" << endl;
-      partons.push_back(mcpartTLV[iMC]);
-      partonID.push_back(iMC);
+      
     } // el - from W - from tbar
     else if( mcParticles_[iMC]->type() ==  -11 && mcParticles_[iMC]->motherType()  == 24 && mcParticles_[iMC]->grannyType()  == 6 ){
       if(mcParticles_[iMC]->status() == 23) {SMel = iMC;  }
       else if( mcParticles_[iMC]->status() != 23 && SMel== -999) {SMel = iMC;}
       SMelTop = true;
-      partons.push_back(mcpartTLV[iMC]);
-      partonID.push_back(iMC);
+      
     } // el+ from W+ from top
     else if( mcParticles_[iMC]->type() ==  24 && mcParticles_[iMC]->motherType()  == 6   ){
       if(mcParticles_[iMC]->status() == 23) {SMW= iMC; nbWDaughters = mcParticles_[iMC]->nDau(); }
@@ -4063,23 +4458,27 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
       SMWATop = true;
       //cout << "W from tbar found  " << endl;
     } //W from atop
+    else if( abs(mcParticles_[iMC]->type()) ==  5  && mcParticles_[iMC]->motherType()  == 6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMb = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMb == -999) {SMb = iMC;}
+      SMbTop = true;
+      
+    } // b from t
     
     
     //FCNC
-    else if(( fabs(mcParticles_[iMC]->type()) ==  2 ||  fabs(mcParticles_[iMC]->type()) ==  4) && mcParticles_[iMC]->motherType()  ==  -6 ){
+    else if(( abs(mcParticles_[iMC]->type()) ==  2 ||  abs(mcParticles_[iMC]->type()) ==  4) && mcParticles_[iMC]->motherType()  ==  -6 ){
       if(mcParticles_[iMC]->status() == 23) {FCNCq = iMC;  }
       else if( mcParticles_[iMC]->status() != 23 && FCNCq== -999) {FCNCq = iMC;}
       FCNCqATop = true;
-      partons.push_back(mcpartTLV[iMC]);
-      partonID.push_back(iMC);
+      
       //cout << "q from tbar found  " << endl;
     } // q  from tbar
-    else if(( fabs(mcParticles_[iMC]->type()) ==  2 ||  fabs(mcParticles_[iMC]->type()) ==  4) && mcParticles_[iMC]->motherType()  ==  6 ){
+    else if(( abs(mcParticles_[iMC]->type()) ==  2 ||  abs(mcParticles_[iMC]->type()) ==  4) && mcParticles_[iMC]->motherType()  ==  6 ){
       if(mcParticles_[iMC]->status() == 23) {FCNCq = iMC;  }
       else if( mcParticles_[iMC]->status() != 23 && FCNCq== -999) {FCNCq = iMC;}
       FCNCqTop = true;
-      partons.push_back(mcpartTLV[iMC]);
-      partonID.push_back(iMC);
+      
       // cout << "q from t found  " << endl;
     } // q  from t
     else if( mcParticles_[iMC]->type() ==  13 && mcParticles_[iMC]->motherType()  == 23 && mcParticles_[iMC]->grannyType()  == -6 ){
@@ -4087,8 +4486,7 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
       else if( mcParticles_[iMC]->status() != 23 && FCNCmuMin== -999) {FCNCmuMin = iMC;}
       FCNCZATop = true;
       FCNCmuMinFound = true;
-      partons.push_back(mcpartTLV[iMC]);
-      partonID.push_back(iMC);
+      
       // cout << "mu from Z from tbar found  " << endl;
     } // mu - from Z  from tbar
     else if( mcParticles_[iMC]->type() ==  -13 && mcParticles_[iMC]->motherType()  == 23 && mcParticles_[iMC]->grannyType()  == -6 ){
@@ -4096,16 +4494,14 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
       else if( mcParticles_[iMC]->status() != 23 && FCNCmuPlus== -999) {FCNCmuPlus= iMC;}
       FCNCZATop = true;
       FCNCmuPlusFound = true;
-      partons.push_back(mcpartTLV[iMC]);
-      partonID.push_back(iMC);
+      
       //cout << "mu from Z from tbar found  " << endl;
     } // mu + from Z  from tbar
     else if( mcParticles_[iMC]->type() ==  -13 && mcParticles_[iMC]->motherType()  == 23 && mcParticles_[iMC]->grannyType()  == 6 ){
       if(mcParticles_[iMC]->status() == 23) {FCNCmuPlus = iMC;  }
       else if( mcParticles_[iMC]->status() != 23 && FCNCmuPlus== -999) {FCNCmuPlus = iMC;}
       FCNCmuMinFound = true;
-      partons.push_back(mcpartTLV[iMC]);
-      partonID.push_back(iMC);
+      
       //cout << "mu from Z from t found  " << endl;
     } // mu+ from Z from top
     else if( mcParticles_[iMC]->type() ==  13 && mcParticles_[iMC]->motherType()  == 23 && mcParticles_[iMC]->grannyType()  == 6 ){
@@ -4113,8 +4509,7 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
       else if( mcParticles_[iMC]->status() != 23 && FCNCmuMin== -999) {FCNCmuMin = iMC;}
       
       FCNCmuPlusFound = true;
-      partons.push_back(mcpartTLV[iMC]);
-      partonID.push_back(iMC);
+      
       // cout << "mu from Z from t found  " << endl;
     } // mu- from Z from top
     
@@ -4123,8 +4518,7 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
       else if( mcParticles_[iMC]->status() != 23 && FCNCelMin== -999) {FCNCelMin = iMC;}
       FCNCZATop = true;
       FCNCelMinFound = true;
-      partons.push_back(mcpartTLV[iMC]);
-      partonID.push_back(iMC);
+      
       //cout << "el from Z from tbar found  " << endl;
     } // el - from Z  from tbar
     else if( mcParticles_[iMC]->type() ==  -11 && mcParticles_[iMC]->motherType()  == 23 && mcParticles_[iMC]->grannyType()  == -6 ){
@@ -4132,8 +4526,7 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
       else if( mcParticles_[iMC]->status() != 23 && FCNCelPlus== -999) {FCNCelPlus = iMC;}
       FCNCZATop = true;
       FCNCelPlusFound = true;
-      partons.push_back(mcpartTLV[iMC]);
-      partonID.push_back(iMC);
+      
       // cout << "el from Z from tbar found  " << endl;
     } // el + from Z  from tbar
     else if( mcParticles_[iMC]->type() ==  -11 && mcParticles_[iMC]->motherType()  == 23 && mcParticles_[iMC]->grannyType()  == 6 ){
@@ -4141,8 +4534,7 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
       else if( mcParticles_[iMC]->status() != 23 && FCNCelPlus== -999) {FCNCelPlus = iMC;}
       
       FCNCelPlusFound = true;
-      partons.push_back(mcpartTLV[iMC]);
-      partonID.push_back(iMC);
+      
       //cout << "el from Z from t found  " << endl;
     } // el+ from Z from top
     else if( mcParticles_[iMC]->type() ==  11 && mcParticles_[iMC]->motherType()  == 23 && mcParticles_[iMC]->grannyType()  == 6 ){
@@ -4150,28 +4542,27 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
       else if( mcParticles_[iMC]->status() != 23 && FCNCelMin== -999) {FCNCelMin = iMC;}
       
       FCNCelMinFound = true;
-      partons.push_back(mcpartTLV[iMC]);
-      partonID.push_back(iMC);
+      
       // cout << "el from Z from t found  " << endl;
     } // el- from Z from top
-    else if( mcParticles_[iMC]->type() ==  23 && mcParticles_[iMC]->motherType()  == 6 && fabs(mcParticles_[iMC]->dauOneId())  == 13  ){
+    else if( mcParticles_[iMC]->type() ==  23 && mcParticles_[iMC]->motherType()  == 6 && abs(mcParticles_[iMC]->dauOneId())  == 13  ){
       if(mcParticles_[iMC]->status() == 23) {FCNCZ= iMC; nbZDaughters = mcParticles_[iMC]->nDau(); }
       else if( mcParticles_[iMC]->status() != 23 && FCNCZ== -999) {FCNCZ = iMC; nbZDaughters = mcParticles_[iMC]->nDau();}
       FCNCZTopMu = true;
     } //Z from top with mu decay
-    else if( mcParticles_[iMC]->type() ==  23 && mcParticles_[iMC]->motherType()  == 6 && fabs(mcParticles_[iMC]->dauOneId())  == 11  ){
+    else if( mcParticles_[iMC]->type() ==  23 && mcParticles_[iMC]->motherType()  == 6 && abs(mcParticles_[iMC]->dauOneId())  == 11  ){
       
       if(mcParticles_[iMC]->status() == 23) {FCNCZ= iMC;  nbZDaughters = mcParticles_[iMC]->nDau();}
       else if( mcParticles_[iMC]->status() != 23 && FCNCZ== -999) {FCNCZ = iMC; nbZDaughters = mcParticles_[iMC]->nDau();}
       FCNCZTopEl = true;
     } //Z from top with el decay
-    else if( mcParticles_[iMC]->type() ==  23 && mcParticles_[iMC]->motherType()  == -6 && fabs(mcParticles_[iMC]->dauOneId())  == 13  ){
+    else if( mcParticles_[iMC]->type() ==  23 && mcParticles_[iMC]->motherType()  == -6 && abs(mcParticles_[iMC]->dauOneId())  == 13  ){
       
       if(mcParticles_[iMC]->status() == 23) {FCNCZ= iMC; nbZDaughters = mcParticles_[iMC]->nDau(); }
       else if( mcParticles_[iMC]->status() != 23 && FCNCZ== -999) {FCNCZ = iMC;nbZDaughters = mcParticles_[iMC]->nDau();}
       FCNCZATopMu = true;
     } //Z from atop with mu decay
-    else if( mcParticles_[iMC]->type() ==  23 && mcParticles_[iMC]->motherType()  == -6 && fabs(mcParticles_[iMC]->dauOneId())  == 11  ){
+    else if( mcParticles_[iMC]->type() ==  23 && mcParticles_[iMC]->motherType()  == -6 && abs(mcParticles_[iMC]->dauOneId())  == 11  ){
       
       if(mcParticles_[iMC]->status() == 23) {FCNCZ= iMC;  nbZDaughters = mcParticles_[iMC]->nDau();}
       else if( mcParticles_[iMC]->status() != 23 && FCNCZ== -999) {FCNCZ = iMC; nbZDaughters = mcParticles_[iMC]->nDau();}
@@ -4200,41 +4591,25 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
   bool SMTopFCNCATop = false;
   if((SMmuTop|| SMelTop) && (FCNCZATopMu || FCNCZATopEl)){ SMTopFCNCATop = true; }
   bool SMATopFCNCTop = false;
-  if((SMmuATop|| SMelATop) && (FCNCZTopMu || FCNCZTopEl)){ SMATopFCNCTop = true; }
+  if((SMmuATop|| SMelATop) && (FCNCZTopMu || FCNCZTopEl) && SMbfound && FCNCqfound ){ SMATopFCNCTop = true; }
   bool foundDecay = false;
-  if( SMTopFCNCATop || SMATopFCNCTop ){ foundDecay = true;}
+  // if( SMTopFCNCATop || SMATopFCNCTop ){ foundDecay = true;}
   
   
-  
-  /* if(SMTopFCNCATop == 0 && SMATopFCNCTop == 0){
-   cout << "Event " << evt_num_ << endl;
-   for (unsigned int iMC = 0; iMC < mcpartTLV.size(); iMC++){
-   if ( (mcParticles_[iMC]->status() > 1 && mcParticles_[iMC]->status() <= 20) || mcParticles_[iMC]->status() >= 30 ) continue;  /// Final state particle or particle from hardest process
-   cout << setw(3) << right << iMC << "  Status: " << setw(2) << mcParticles_[iMC]->status() << "  pdgId: " << setw(3) << mcParticles_[iMC]->type() << "  Mother: " << setw(4) << mcParticles_[iMC]->motherType() << "  Granny: " << setw(4) << mcParticles_[iMC]->grannyType() << "  Pt: " << setw(7) << left << mcParticles_[iMC]->Pt() << "  Eta: " << mcParticles_[iMC]->Eta() << endl;
-   }
-   } // sometimes the whole evnet info is not there*/
-  
-  
-  
-  /*if(foundDecay){
-   cout << "Event " << evt_num_ << endl;
-   for(unsigned int iP = 0; iP < storedMCParticles.size(); iP++){
-   //  cout << storedMCParticles[iP] << endl;
-   if(storedMCParticles[iP]!=-999){
-   cout << setw(3) << right << storedMCParticles[iP] << "  Status: " << setw(2) << mcParticles_[storedMCParticles[iP]]->status() << "  pdgId: " << setw(3) << mcParticles_[storedMCParticles[iP]]->type() << "  Mother: " << setw(4) << mcParticles_[storedMCParticles[iP]]->motherType() << "  Granny: " << setw(4) << mcParticles_[storedMCParticles[iP]]->grannyType() << "  Pt: " << setw(7) << left << mcParticles_[storedMCParticles[iP]]->Pt() << "  Eta: " << mcParticles_[storedMCParticles[iP]]->Eta() << endl;
-   }
-   }
-   }*/
-  
-  //mWt = TMath::Sqrt((Wlep.Pt() + met_Pt)*(Wlep.Pt() +met_Pt)-(Wlep.Px() + met_px)*(Wlep.Px() + met_px) - (Wlep.Py() + met_py)* (Wlep.Py() + met_py));
+  if(( FCNCmufound || FCNCelfound ) && (SMmufound || SMelfound) && SMbfound && FCNCqfound){
+    foundDecay = true;
+    cout << "found decay" << endl;
+  }
+  if(!foundDecay) {
+    
+    pair< vector< pair<unsigned int, unsigned int>>, vector <string> >   returnVectorEr;
+    return returnVectorEr;
+  }
   
   
-  // cout << "SMbfound " << SMbfound << " SMWfound " << SMWfound << endl;
-  // cout << "SMWATop " << SMWATop << " SMWTop " << SMWTop  << endl;
-  // cout << "SMbATop " << SMbATop << " SMbTop " << SMbTop << endl;
   //SM TOP
   
-  if(foundDecay && SMbfound && SMWfound){
+  if( SMbfound && SMWfound){
     histo1D["Topmass_Wb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMW]).M());
     histo1D["pt_Wb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMW]).Pt());
     histo1D["eta_Wb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMW]).Eta());
@@ -4243,7 +4618,7 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
     histo1D["dR_Wb"]->Fill(ROOT::Math::VectorUtil::DeltaR(mcpartTLV[SMb],mcpartTLV[SMW]));
     
   }
-  if(foundDecay && SMbATop && SMWATop && antitopfound){
+  if( SMbATop && SMWATop && antitopfound){
     //cout << "in tbar" << endl;
     histo1D["Topmass_tq"]->Fill(mcpartTLV[antitopQ].M());
     histo1D["pt_tq"]->Fill(mcpartTLV[antitopQ].Pt());
@@ -4259,7 +4634,7 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
     histo1D["dR_Wbtop"]->Fill(ROOT::Math::VectorUtil::DeltaR(mcpartTLV[SMb]+mcpartTLV[SMW],mcpartTLV[antitopQ]));
     
   }
-  if(foundDecay && SMbTop && SMWTop && topfound){
+  if( SMbTop && SMWTop && topfound){
     //cout << "in top" << endl;
     histo1D["Topmass_tq"]->Fill(mcpartTLV[topQ].M());
     histo1D["pt_tq"]->Fill(mcpartTLV[topQ].Pt());
@@ -4276,7 +4651,7 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
     histo2D["eta_top_Wb"]->Fill((mcpartTLV[SMW] + mcpartTLV[SMb]).M(),mcpartTLV[topQ].Eta() );
     
   }
-  if(foundDecay && SMbfound && SMnumufound && SMmufound){
+  if( SMbfound && SMnumufound && SMmufound){
     histo1D["Topmass_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMmu]+ mcpartTLV[SMnumu]).M());
     histo1D["pt_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMmu]+ mcpartTLV[SMnumu]).Pt());
     histo1D["eta_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMmu]+ mcpartTLV[SMnumu]).Eta());
@@ -4287,7 +4662,7 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
     
     
   }
-  if(foundDecay && SMbfound && SMnuelfound && SMelfound){
+  if( SMbfound && SMnuelfound && SMelfound){
     histo1D["Topmass_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMel]+ mcpartTLV[SMnuel]).M());
     histo1D["pt_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMel]+ mcpartTLV[SMnuel]).Pt());
     histo1D["eta_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMel]+ mcpartTLV[SMnuel]).Eta());
@@ -4301,7 +4676,7 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
   
   
   //FCNC TOP
-  if(foundDecay && FCNCqfound && FCNCZfound ){
+  if( FCNCqfound && FCNCZfound ){
     histo1D["Topmass_Zq"]->Fill((mcpartTLV[FCNCq] + mcpartTLV[FCNCZ]).M());
     histo1D["pt_Zq"]->Fill((mcpartTLV[FCNCq] + mcpartTLV[FCNCZ]).Pt());
     histo1D["eta_Zq"]->Fill((mcpartTLV[FCNCq] + mcpartTLV[FCNCZ]).Eta());
@@ -4311,7 +4686,7 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
     histo1D["dR_Zq"]->Fill(ROOT::Math::VectorUtil::DeltaR(mcpartTLV[FCNCq],mcpartTLV[FCNCZ]));
     
   }
-  if(foundDecay && FCNCqATop && (FCNCZATopMu || FCNCZATopEl) && antitopfound){
+  if( FCNCqATop && (FCNCZATopMu || FCNCZATopEl) && antitopfound){
     //cout << "in tbar" << endl;
     histo1D["Topmass_fcnctq"]->Fill(mcpartTLV[antitopQ].M());
     histo1D["pt_fcnctq"]->Fill(mcpartTLV[antitopQ].Pt());
@@ -4328,7 +4703,7 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
     
   }
   
-  if(foundDecay && FCNCqTop && (FCNCZTopMu || FCNCZTopEl) && topfound){
+  if( FCNCqTop && (FCNCZTopMu || FCNCZTopEl) && topfound){
     // cout << "in top" << endl;
     // cout << "topQ " << topQ << " FCNCq " << FCNCq << " FCNCZ " << FCNCZ << endl;
     histo1D["Topmass_fcnctq"]->Fill(mcpartTLV[topQ].M());
@@ -4346,7 +4721,7 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
     histo2D["eta_top_Zq"]->Fill((mcpartTLV[FCNCZ] + mcpartTLV[FCNCq]).M(),mcpartTLV[topQ].Eta() );
     
   }
-  if(foundDecay && FCNCqfound &&  FCNCmufound){
+  if( FCNCqfound &&  FCNCmufound){
     histo1D["Topmass_llq"]->Fill((mcpartTLV[FCNCq] + mcpartTLV[FCNCmuPlus]+ mcpartTLV[FCNCmuMin]).M());
     histo1D["pt_llq"]->Fill((mcpartTLV[FCNCq] + mcpartTLV[FCNCmuPlus]+ mcpartTLV[FCNCmuMin]).Pt());
     histo1D["eta_llq"]->Fill((mcpartTLV[FCNCq] + mcpartTLV[FCNCmuPlus]+ mcpartTLV[FCNCmuMin]).Eta());
@@ -4357,7 +4732,7 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
     
     
   }
-  if(foundDecay && FCNCqfound &&  FCNCelfound){
+  if( FCNCqfound &&  FCNCelfound){
     histo1D["Topmass_llq"]->Fill((mcpartTLV[FCNCq] + mcpartTLV[ FCNCelPlus]+ mcpartTLV[ FCNCelMin]).M());
     histo1D["pt_llq"]->Fill((mcpartTLV[FCNCq] + mcpartTLV[FCNCelPlus]+ mcpartTLV[FCNCelMin]).Pt());
     histo1D["eta_llq"]->Fill((mcpartTLV[FCNCq] + mcpartTLV[FCNCelPlus]+ mcpartTLV[FCNCelMin]).Eta());
@@ -4369,7 +4744,7 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
     
   }
   
-  if(foundDecay && FCNCmufound){
+  if( FCNCmufound){
     histo1D["Zmass_Zlep"]->Fill((mcpartTLV[FCNCmuMin] + mcpartTLV[FCNCmuPlus]).M());
     histo1D["pt_Zlep"]->Fill((mcpartTLV[FCNCmuMin] + mcpartTLV[FCNCmuPlus]).Pt());
     histo1D["eta_Zlep"]->Fill((mcpartTLV[FCNCmuMin] + mcpartTLV[FCNCmuPlus]).Eta());
@@ -4390,7 +4765,7 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
     histo2D["mass_lep"]->Fill(mcpartTLV[FCNCmuMin].M(), mcpartTLV[FCNCmuPlus].M());
     
   }
-  if(foundDecay && FCNCelfound){
+  if( FCNCelfound){
     histo1D["Zmass_Zlep"]->Fill((mcpartTLV[FCNCelMin] + mcpartTLV[FCNCelPlus]).M());
     histo1D["pt_Zlep"]->Fill((mcpartTLV[FCNCelMin] + mcpartTLV[FCNCelPlus]).Pt());
     histo1D["eta_Zlep"]->Fill((mcpartTLV[FCNCelMin] + mcpartTLV[FCNCelPlus]).Eta());
@@ -4413,7 +4788,7 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
     
   }
   
-  if(foundDecay && FCNCZfound){
+  if( FCNCZfound){
     histo1D["Zmass_Zbos"]->Fill(mcpartTLV[FCNCZ].M());
     histo1D["pt_Zbos"]->Fill(mcpartTLV[FCNCZ].Pt());
     histo1D["phi_Zbos"]->Fill(mcpartTLV[FCNCZ].Phi());
@@ -4421,14 +4796,14 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
     histo1D["mc_nZLep"]->Fill(nbZDaughters);
     histo1D["mc_nZMu"]->Fill(nbZDaughters);
   }
-  if(foundDecay && FCNCZfound && FCNCmufound){
+  if( FCNCZfound && FCNCmufound){
     histo2D["Zmass_Zbos_Zlep"]->Fill((mcpartTLV[FCNCmuMin] + mcpartTLV[FCNCmuPlus]).M(),mcpartTLV[FCNCZ].M() );
     histo2D["pt_Z"]->Fill((mcpartTLV[FCNCmuMin] + mcpartTLV[FCNCmuPlus]).Pt(),mcpartTLV[FCNCZ].Pt() );
     histo2D["phi_Z"]->Fill((mcpartTLV[FCNCmuMin] + mcpartTLV[FCNCmuPlus]).Pt(),mcpartTLV[FCNCZ].Phi() );
     histo2D["eta_Z"]->Fill((mcpartTLV[FCNCmuMin] + mcpartTLV[FCNCmuPlus]).Pt(),mcpartTLV[FCNCZ].Eta() );
   }
   
-  if(foundDecay && FCNCelfound && FCNCZfound ){
+  if( FCNCelfound && FCNCZfound ){
     histo2D["Zmass_Zbos_Zlep"]->Fill((mcpartTLV[FCNCelMin] + mcpartTLV[FCNCelPlus]).M(),mcpartTLV[FCNCZ].M() );
     histo2D["pt_Z"]->Fill((mcpartTLV[FCNCelMin] + mcpartTLV[FCNCelPlus]).Pt(),mcpartTLV[FCNCZ].Pt() );
     histo2D["phi_Z"]->Fill((mcpartTLV[FCNCelMin] + mcpartTLV[FCNCelPlus]).Pt(),mcpartTLV[FCNCZ].Phi() );
@@ -4436,20 +4811,20 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
     
   }
   
-  if(foundDecay && SMWfound && SMelfound ){
+  if( SMWfound && SMelfound ){
     histo1D["mc_nWLep"]->Fill(nbWDaughters);
     histo1D["mc_nWEl"]->Fill(nbWDaughters);
     
   }
-  if(foundDecay && SMWfound && SMmufound){
+  if( SMWfound && SMmufound){
     histo1D["mc_nWLep"]->Fill(nbWDaughters);
     histo1D["mc_nWMu"]->Fill(nbWDaughters);
   }
-  if(foundDecay && SMWfound && FCNCZfound){
+  if( SMWfound && FCNCZfound){
     histo2D["nZbosonnWboson"]->Fill(nbZDaughters, nbWDaughters);
   }
   
-  if(foundDecay && FCNCqfound)
+  if( FCNCqfound)
   {
     histo1D["mass_FCNCq"]->Fill(mcpartTLV[FCNCq].M());
     histo1D["pt_FCNCq"]->Fill(mcpartTLV[FCNCq].Pt());
@@ -4458,125 +4833,1208 @@ int Matcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TL
     
   }
   
-  if(((FCNCmuPlusFound && FCNCmuMinFound) || (FCNCelPlusFound && FCNCelMinFound ))&& SMbfound && FCNCqfound && (SMmuATop|| SMmuTop || SMelATop || SMelTop)){
-    foundDecay = true;
-  }
-  else{ foundDecay = false; }
   
-  if(foundDecay)
-  {  JetPartonMatching matchingTool = JetPartonMatching(partons, selectedleptons,2,true,true,0.3 );
+  // end plots for mc particles
+  // begin matching
+  
+  vector <TLorentzVector> partons;
+  partons.clear();
+  vector <int> partonID;
+  partonID.clear();
+  
+  //cout << "event " << evt_num_ << endl;
+  for (unsigned int iMC = 0; iMC < mcpartTLV.size(); iMC++)
+  {
+    if (false)
+      cout << setw(3) << right << iMC << "  Status: " << setw(2) << mcParticles_[iMC]->status() << "  pdgId: " << setw(3) << mcParticles_[iMC]->type() << "  Mother: " << setw(4) << mcParticles_[iMC]->motherType() << "  Granny: " << setw(4) << mcParticles_[iMC]->grannyType() << "  Pt: " << setw(7) << left << mcParticles_[iMC]->Pt() << "  Eta: " << mcParticles_[iMC]->Eta() << endl;
     
-    if (matchingTool.getNumberOfAvailableCombinations() != 1)
-      cerr << "matching.getNumberOfAvailableCombinations() = " << matchingTool.getNumberOfAvailableCombinations() << " .  This should be equal to 1 !!!" << endl;
+    
+    if ( (mcParticles_[iMC]->status() > 1 && mcParticles_[iMC]->status() <= 20) || mcParticles_[iMC]->status() >= 30 ) continue;  /// Final state particle or particle from hardest process
     
     
-    /// Fill match in JetPartonPair;
-    vector< pair<unsigned int, unsigned int> > JetPartonPair; // First one is jet number, second one is mcParticle number
-    JetPartonPair.clear();
-    
-    if( partons.size()== 5){
-      for (unsigned int i = 0; i < partons.size(); i++)
-      {
-        int matchedJetNumber = matchingTool.getMatchForParton(i, 0);
-        if (matchedJetNumber > -1)
-          JetPartonPair.push_back( pair<unsigned int, unsigned int> (matchedJetNumber, i) );
-        // matched jet number is nb in selectedleptons collection
-        // i is nb in partons
-        // partonID contains place in mcParticles_ vector
-      }
+/*if( abs(mcParticles_[iMC]->type()) <=  5 || abs(mcParticles_[iMC]->type()) == 21 ){
+      partons.push_back(mcpartTLV[iMC]);
+      partonID.push_back(iMC);
     }
-    
-    
-    
-    vector< pair<unsigned int, unsigned int> > PPair; // First one is jet number, second one is mcParticle number
-    PPair.clear();
-    vector<string > NPair; // First one is jet number, second one is mcParticle number
-    NPair.clear();
-    if(JetPartonPair.size() ==5){
-      for (unsigned int i = 0; i < JetPartonPair.size(); i++)
-      {
-        unsigned int partonIDnb = JetPartonPair[i].second; // place in mcParticles_ vector
-        unsigned int particlenb = JetPartonPair[i].first;  // place in selectedLeptons vector
-        
-        //SM
-        
-        if( fabs(mcParticles_[partonID[partonIDnb]]->type()) ==  5 && fabs(mcParticles_[partonID[partonIDnb]]->motherType())  == 6 ){
-          PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
-          NPair.push_back("SMb");
-        } // b from t
-        if( fabs(mcParticles_[partonID[partonIDnb]]->type()) ==  13 && fabs(mcParticles_[partonID[partonIDnb]]->motherType())  == 24 && fabs(mcParticles_[partonID[partonIDnb]]->grannyType())  == 6 ){
-          PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
-          NPair.push_back("SMmu");
-        } // mu from W from t
-        if( fabs(mcParticles_[partonID[partonIDnb]]->type()) ==  11 && fabs(mcParticles_[partonID[partonIDnb]]->motherType())  == 24 && fabs(mcParticles_[partonID[partonIDnb]]->grannyType())  == 6 ){
-          PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
-          NPair.push_back("SMel");
-        } // el from W from t
-        
-        
-        //FCNC
-        if( (fabs(mcParticles_[partonID[partonIDnb]]->type()) ==  2 || fabs(mcParticles_[partonID[partonIDnb]]->type()) ==  4 )&& fabs(mcParticles_[partonID[partonIDnb]]->motherType())  == 6 ){
-          PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
-          NPair.push_back("FCNCq");
-        } // q from t
-        if( mcParticles_[partonID[partonIDnb]]->type() ==  13 && fabs(mcParticles_[partonID[partonIDnb]]->motherType())  == 23 && fabs(mcParticles_[partonID[partonIDnb]]->grannyType())  == 6 ){
-          PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
-          NPair.push_back("FCNCmumin");
-        } // mu- from Z from t
-        if( mcParticles_[partonID[partonIDnb]]->type() ==  11 && fabs(mcParticles_[partonID[partonIDnb]]->motherType())  == 23 && fabs(mcParticles_[partonID[partonIDnb]]->grannyType())  == 6 ){
-          PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
-          NPair.push_back("FCNCelmin");
-        } // el- from Z from t
-        if( mcParticles_[partonID[partonIDnb]]->type() ==  -13 && fabs(mcParticles_[partonID[partonIDnb]]->motherType())  == 23 && fabs(mcParticles_[partonID[partonIDnb]]->grannyType())  == 6 ){
-          PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
-          NPair.push_back("FCNCmuplus");
-        } // mu+ from Z from t
-        if( mcParticles_[partonID[partonIDnb]]->type() ==  -11 && fabs(mcParticles_[partonID[partonIDnb]]->motherType())  == 23 && fabs(mcParticles_[partonID[partonIDnb]]->grannyType())  == 6 ){
-          PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
-          NPair.push_back("FCNCelplus");
-        } // el+ from Z from t
-        
-        
-      }
-    }
-    if(PPair.size() == 5){
-      TLorentzVector tempB;
-      TLorentzVector tempQ;
-      TLorentzVector tempWlep;
-      TLorentzVector tempZlepm;
-      TLorentzVector tempZlepp;
-      tempB.Clear();
-      tempQ.Clear();
-      tempZlepm.Clear();
-      tempZlepp.Clear();
-      tempWlep.Clear();
-      
-      
-      for(unsigned int iPart = 0 ; iPart < PPair.size(); iPart++){
-        
-        // cout << " iPart " << iPart << endl;
-        if(NPair[iPart].find("SMb")!=string::npos){ tempB.SetPxPyPzE(selectedleptons[PPair[iPart].first].Px(), selectedleptons[PPair[iPart].first].Py(), selectedleptons[PPair[iPart].first].Pz(), selectedleptons[PPair[iPart].first].E()); }
-        if(NPair[iPart].find("SMmu")!=string::npos){ tempWlep.SetPxPyPzE(selectedleptons[PPair[iPart].first].Px(), selectedleptons[PPair[iPart].first].Py(), selectedleptons[PPair[iPart].first].Pz(), selectedleptons[PPair[iPart].first].E()); }
-        if(NPair[iPart].find("SMel")!=string::npos){ tempWlep.SetPxPyPzE(selectedleptons[PPair[iPart].first].Px(), selectedleptons[PPair[iPart].first].Py(), selectedleptons[PPair[iPart].first].Pz(), selectedleptons[PPair[iPart].first].E()); }
-        
-        if(NPair[iPart].find("FCNCmumin")!=string::npos){ tempZlepm.SetPxPyPzE(selectedleptons[PPair[iPart].first].Px(), selectedleptons[PPair[iPart].first].Py(), selectedleptons[PPair[iPart].first].Pz(), selectedleptons[PPair[iPart].first].E()); }
-        if(NPair[iPart].find("FCNCelmin")!=string::npos){ tempZlepm.SetPxPyPzE(selectedleptons[PPair[iPart].first].Px(), selectedleptons[PPair[iPart].first].Py(), selectedleptons[PPair[iPart].first].Pz(), selectedleptons[PPair[iPart].first].E()); }
-        if(NPair[iPart].find("FCNCmuplus")!=string::npos){ tempZlepp.SetPxPyPzE(selectedleptons[PPair[iPart].first].Px(), selectedleptons[PPair[iPart].first].Py(), selectedleptons[PPair[iPart].first].Pz(), selectedleptons[PPair[iPart].first].E()); }
-        if(NPair[iPart].find("FCNCelplus")!=string::npos){ tempZlepp.SetPxPyPzE(selectedleptons[PPair[iPart].first].Px(), selectedleptons[PPair[iPart].first].Py(), selectedleptons[PPair[iPart].first].Pz(), selectedleptons[PPair[iPart].first].E()); }
-        if(NPair[iPart].find("FCNCq")!=string::npos){ tempQ.SetPxPyPzE(selectedleptons[PPair[iPart].first].Px(), selectedleptons[PPair[iPart].first].Py(), selectedleptons[PPair[iPart].first].Pz(), selectedleptons[PPair[iPart].first].E()); }
-      }
-      
-      histo1D["matchedZmass"]->Fill((tempZlepm+tempZlepp).M());
-      histo1D["matchedFCNCTopmass"]->Fill((tempZlepm+tempZlepp+tempQ).M());
-      histo1D["matchedSMTopmass"]->Fill((tempWlep+tempB).M());
+    else*/
+    if( abs(mcParticles_[iMC]->type()) ==  13 ||  abs(mcParticles_[iMC]->type()) ==  11 ){
+      partons.push_back(mcpartTLV[iMC]);
+      partonID.push_back(iMC);
     }
   }
   
-  return 0;
+  
+  
+  
+  vector< pair<unsigned int, unsigned int> > PPair; // First one is jet number, second one is mcParticle number
+  PPair.clear();
+  vector<string > NPair; // First one is jet number, second one is mcParticle number
+  NPair.clear();
+  
+  
+  JetPartonMatching matchingTool = JetPartonMatching(partons, selectedobjects,2,true,true,0.3 );
+  
+  if (matchingTool.getNumberOfAvailableCombinations() != 1)
+    cerr << "matching.getNumberOfAvailableCombinations() = " << matchingTool.getNumberOfAvailableCombinations() << " .  This should be equal to 1 !!!" << endl;
+  
+  
+  /// Fill match in JetPartonPair;
+  vector< pair<unsigned int, unsigned int> > JetPartonPair; // First one is jet number, second one is mcParticle number
+  JetPartonPair.clear();
+  
+  
+  for (unsigned int i = 0; i < partons.size(); i++)
+  {
+    int matchedJetNumber = matchingTool.getMatchForParton(i, 0);
+    if (matchedJetNumber > -1)
+      JetPartonPair.push_back( pair<unsigned int, unsigned int> (matchedJetNumber, i) );
+    // matched jet number is nb in selectedobjects collection
+    // i is nb in partons
+    // partonID contains place in mcParticles_ vector
+  }
+  
+  
+  
+  if(JetPartonPair.size() < 3){
+    cout << "ERROR " << JetPartonPair.size() <<   endl;
+    cout << "partons " << partons.size() << endl;
+    pair< vector< pair<unsigned int, unsigned int>>, vector <string> >   returnVectorEr;
+    return returnVectorEr;
+  }
+  // find objects to be matched
+  
+  for (unsigned int i = 0; i < JetPartonPair.size(); i++)
+  {
+    unsigned int partonIDnb = JetPartonPair[i].second; // place in mcParticles_ vector
+    unsigned int particlenb = JetPartonPair[i].first;  // place in selectedLeptons vector
+    
+    //SM
+    
+   /* if( abs(mcParticles_[partonID[partonIDnb]]->type()) ==  5 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("SMb");
+    } // b from t */
+    if( abs(mcParticles_[partonID[partonIDnb]]->type()) ==  13 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 24 && abs(mcParticles_[partonID[partonIDnb]]->grannyType())  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("SMmu");
+    } // mu from W from t
+    if( abs(mcParticles_[partonID[partonIDnb]]->type()) ==  11 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 24 && abs(mcParticles_[partonID[partonIDnb]]->grannyType())  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("SMel");
+    } // el from W from t
+    
+    
+    //FCNC
+    /*if( (abs(mcParticles_[partonID[partonIDnb]]->type()) ==  2 || abs(mcParticles_[partonID[partonIDnb]]->type()) ==  4 )&& abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("FCNCq");
+    } // q from t*/
+    if( mcParticles_[partonID[partonIDnb]]->type() ==  13 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 23 && abs(mcParticles_[partonID[partonIDnb]]->grannyType())  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("FCNCmumin");
+    } // mu- from Z from t
+    if( mcParticles_[partonID[partonIDnb]]->type() ==  11 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 23 && abs(mcParticles_[partonID[partonIDnb]]->grannyType())  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("FCNCelmin");
+    } // el- from Z from t
+    if( mcParticles_[partonID[partonIDnb]]->type() ==  -13 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 23 && abs(mcParticles_[partonID[partonIDnb]]->grannyType())  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("FCNCmuplus");
+    } // mu+ from Z from t
+    if( mcParticles_[partonID[partonIDnb]]->type() ==  -11 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 23 && abs(mcParticles_[partonID[partonIDnb]]->grannyType())  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("FCNCelplus");
+    } // el+ from Z from t
+    
+    
+  }
+  
+  //cout << "PPair.size() " << PPair.size() << endl;
+  //cout << "NPair.size() "  << NPair.size() << endl;
+  
+  
+  TLorentzVector tempB;
+  TLorentzVector tempQ;
+  TLorentzVector tempWlep;
+  TLorentzVector tempZlepm;
+  TLorentzVector tempZlepp;
+  tempB.Clear();
+  tempQ.Clear();
+  tempZlepm.Clear();
+  tempZlepp.Clear();
+  tempWlep.Clear();
+  
+  
+  for(unsigned int iPart = 0 ; iPart < PPair.size(); iPart++){
+    
+    // cout << " iPart " << iPart << endl;
+   /* if(NPair[iPart].find("SMb")!=string::npos){ tempB.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E());}*/
+    if(NPair[iPart].find("SMmu")!=string::npos){ tempWlep.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E()); }
+    if(NPair[iPart].find("SMel")!=string::npos){ tempWlep.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E());}
+    
+    if(NPair[iPart].find("FCNCmumin")!=string::npos){ tempZlepm.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E());   }
+    if(NPair[iPart].find("FCNCelmin")!=string::npos){ tempZlepm.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E());  }
+    if(NPair[iPart].find("FCNCmuplus")!=string::npos){ tempZlepp.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E());   }
+    if(NPair[iPart].find("FCNCelplus")!=string::npos){ tempZlepp.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E()); }
+   /* if(NPair[iPart].find("FCNCq")!=string::npos){ tempQ.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E());  }*/
+  }
+  histo1D["matchedZmass"]->Fill((tempZlepm+tempZlepp).M());
+ // histo1D["matchedFCNCTopmass"]->Fill((tempZlepm+tempZlepp+tempQ).M());
+ // histo1D["matchedSMTopmass"]->Fill((tempWlep+tempB).M());
+  
+  
+  
+  
+  
+  pair< vector< pair<unsigned int, unsigned int>>, vector <string> >   returnVector;
+  returnVector = pair< vector< pair<unsigned int, unsigned int>>, vector <string> >( PPair , NPair ) ;
+  ////  cout << " (returnVector.second).size() " << (returnVector.second).size() << endl;
+  //  cout << " (returnVector.first).size() " << (returnVector.first).size() << endl;
+  //  cout << "Matcher PPair.size() " << PPair.size() << endl;
+  //  cout << "Matcher NPair.size() "  << NPair.size() << endl;
+  return returnVector;
+};
+
+pair< vector< pair<unsigned int, unsigned int>>, vector <string> >  MatcherST(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TLorentzVector> selectedobjects){
+  int nMCP = mcParticles_.size();
+  TLorentzVector mcpart;
+  vector <TLorentzVector> mcpartTLV;
+  
+  
+  int topQ = -999;
+  int antitopQ = -999;
+  int SMmu = -999;
+  int SMel = -999;
+  int FCNCmuPlus = -999;
+  int FCNCmuMin = -999;
+  int FCNCelPlus = -999;
+  int FCNCelMin = -999;
+  
+  int FCNCZ = -999;
+  int SMnuel = -999;
+  int SMnumu = -999;
+  int SMW = -999;
+  int SMb = -999;
+  
+  
+  bool SMmuTop = false;
+  bool SMmuATop = false;
+  bool SMtauATop = false;
+  bool SMtauTop = false;
+  bool SMelTop = false;
+  bool SMelATop = false;
+  
+  bool SMWATop = false;
+  bool SMWTop = false;
+  bool FCNCmuPlusFound = false;
+  bool FCNCelPlusFound = false;
+  bool FCNCelMinFound = false;
+  bool FCNCmuMinFound = false;
+  
+  bool FCNCZTopEl = false;
+  bool FCNCZTopMu = false;
+  bool SMbATop = false;
+  bool SMbTop = false;
+  bool SMnuelfound = false;
+  bool SMnumufound = false;
+  bool topfound = false;
+  bool antitopfound = false;
+  int nbZDaughters = 0;
+  int nbWDaughters = 0;
+  
+  
+  
+  
+  
+  vector <TLorentzVector> partons;
+  partons.clear();
+  vector <int> partonID;
+  partonID.clear();
+  
+  vector <int> storedMCParticles;
+  storedMCParticles.clear();
+  
+  for (int iMC = 0; iMC < nMCP; iMC++)
+  {
+    mcpart.Clear();
+    mcpart.SetPtEtaPhiE(mcParticles_[iMC]->Pt(), mcParticles_[iMC]->Eta(), mcParticles_[iMC]->Phi(), mcParticles_[iMC]->E());
+    mcpartTLV.push_back(mcpart);
+  }
+  if(mcpartTLV.size() != mcParticles_.size()){cout << "ERROR mcP not filled correctly" << endl;  }
+  
+  
+  // Plots of mc particles
+  
+  //cout << "event " << evt_num_ << endl;
+  for (unsigned int iMC = 0; iMC < mcpartTLV.size(); iMC++)
+  {
+    if (false)
+      cout << setw(3) << right << iMC << "  Status: " << setw(2) << mcParticles_[iMC]->status() << "  pdgId: " << setw(3) << mcParticles_[iMC]->type() << "  Mother: " << setw(4) << mcParticles_[iMC]->motherType() << "  Granny: " << setw(4) << mcParticles_[iMC]->grannyType() << "  Pt: " << setw(7) << left << mcParticles_[iMC]->Pt() << "  Eta: " << mcParticles_[iMC]->Eta() << endl;
+    
+    
+    if ( (mcParticles_[iMC]->status() > 1 && mcParticles_[iMC]->status() <= 20) || mcParticles_[iMC]->status() >= 30 ) continue;  /// Final state particle or particle from hardest process
+    
+    if( mcParticles_[iMC]->type() == 6 ){ topQ = iMC; topfound = true;  }
+    else if( mcParticles_[iMC]->type() == -6 ){ antitopQ = iMC; antitopfound = true; }
+    
+    //SM
+    else if( abs(mcParticles_[iMC]->type()) ==  12 && mcParticles_[iMC]->motherType() ==-24 && mcParticles_[iMC]->grannyType()  == -6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMnuel = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMnuel == -999) {SMnuel = iMC;}
+      SMnuelfound = true;
+      //cout << "found nu from W- from tbar" << endl;
+    } // nu el  from W from tbar
+    else if( abs(mcParticles_[iMC]->type()) ==  12 && mcParticles_[iMC]->motherType() ==24 && mcParticles_[iMC]->grannyType()  == 6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMnuel = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMnuel == -999) {SMnuel = iMC;}
+      SMnuelfound = true;
+      //cout << "found nu from W+ from t" << endl;
+    } // nu el  from W from t
+    else if( abs(mcParticles_[iMC]->type()) ==  14 && mcParticles_[iMC]->motherType() ==-24 && mcParticles_[iMC]->grannyType()  == -6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMnumu = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMnumu == -999) {SMnumu = iMC;}
+      SMnumufound = true;
+    } // nu mu  from W from tbar
+    else if( abs(mcParticles_[iMC]->type()) ==  14 && mcParticles_[iMC]->motherType() ==24 && mcParticles_[iMC]->grannyType()  == 6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMnumu = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMnumu == -999) {SMnumu = iMC;}
+      SMnumufound = true;
+    } // nu mu from W from t
+    
+    else if( abs(mcParticles_[iMC]->type()) ==  5 && mcParticles_[iMC]->motherType()  == -6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMb = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMb == -999) {SMb = iMC;}
+      SMbATop = true;
+      //cout << "found b from tbar" << endl;
+      
+    } // b from tbar
+    else if( abs(mcParticles_[iMC]->type()) ==  5 && mcParticles_[iMC]->motherType()  == 6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMb = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMb == -999) {SMb = iMC;}
+      SMbTop = true;
+      
+    } // b from t
+    else if( mcParticles_[iMC]->type() ==  13 && mcParticles_[iMC]->motherType()  == -24 && mcParticles_[iMC]->grannyType()  == -6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMmu = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMmu == -999) {SMmu = iMC;}
+      SMmuATop = true;
+      //cout << "found mu from tbar" << endl;
+      
+    } // mu - from W - from tbar
+    else if( mcParticles_[iMC]->type() ==  -13 && mcParticles_[iMC]->motherType()  == 24 && mcParticles_[iMC]->grannyType()  == 6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMmu = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMmu == -999) {SMmu = iMC;}
+      SMmuTop = true;
+      
+    } // mu+ from W+ from top
+    else if( mcParticles_[iMC]->type() ==  11 && mcParticles_[iMC]->motherType()  == -24 && mcParticles_[iMC]->grannyType()  == -6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMel = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMel== -999) {SMel = iMC;}
+      SMelATop = true;
+      //cout << "found el from tbar" << endl;
+      
+    } // el - from W - from tbar
+    else if( mcParticles_[iMC]->type() ==  -11 && mcParticles_[iMC]->motherType()  == 24 && mcParticles_[iMC]->grannyType()  == 6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMel = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMel== -999) {SMel = iMC;}
+      SMelTop = true;
+      
+    } // el+ from W+ from top
+    else if( mcParticles_[iMC]->type() ==  24 && mcParticles_[iMC]->motherType()  == 6   ){
+      if(mcParticles_[iMC]->status() == 23) {SMW= iMC; nbWDaughters = mcParticles_[iMC]->nDau(); }
+      else if( mcParticles_[iMC]->status() != 23 && SMW== -999) {SMW = iMC; nbWDaughters = mcParticles_[iMC]->nDau();}
+      SMWTop = true;
+      //cout << "W from t  found " << endl;
+    } //W from top
+    else if( mcParticles_[iMC]->type() ==  -24 && mcParticles_[iMC]->motherType()  == -6  ){
+      if(mcParticles_[iMC]->status() == 23) {SMW= iMC; nbWDaughters = mcParticles_[iMC]->nDau(); }
+      else if( mcParticles_[iMC]->status() != 23 && SMW== -999) {SMW = iMC;nbWDaughters = mcParticles_[iMC]->nDau();}
+      SMWATop = true;
+      //cout << "W from tbar found  " << endl;
+    } //W from atop
+    
+    
+    //FCNC
+    else if( mcParticles_[iMC]->type() ==  13 && mcParticles_[iMC]->motherType()  == 23 ){
+      if(mcParticles_[iMC]->status() == 23) {FCNCmuMin = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && FCNCmuMin== -999) {FCNCmuMin = iMC;}
+      FCNCmuMinFound = true;
+      
+      // cout << "mu from Z from tbar found  " << endl;
+    } // mu - from Z  from tbar
+    else if( mcParticles_[iMC]->type() ==  -13 && mcParticles_[iMC]->motherType()  == 23){
+      if(mcParticles_[iMC]->status() == 23) {FCNCmuPlus = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && FCNCmuPlus== -999) {FCNCmuPlus= iMC;}
+      FCNCmuPlusFound = true;
+      
+      //cout << "mu from Z from tbar found  " << endl;
+    } // mu + from Z  from tbar
+    
+    
+    else if( mcParticles_[iMC]->type() ==  11 && mcParticles_[iMC]->motherType()  == 23  ){
+      if(mcParticles_[iMC]->status() == 23) {FCNCelMin = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && FCNCelMin== -999) {FCNCelMin = iMC;}
+      FCNCelMinFound = true;
+      //cout << "el from Z from tbar found  " << endl;
+    } // el - from Z  from tbar
+    else if( mcParticles_[iMC]->type() ==  -11 && mcParticles_[iMC]->motherType()  == 23  ){
+      if(mcParticles_[iMC]->status() == 23) {FCNCelPlus= iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && FCNCelPlus== -999) {FCNCelPlus = iMC;}
+      FCNCelPlusFound = true;
+      
+      // cout << "el from Z from tbar found  " << endl;
+    } // el + from Z  from tbar
+    else if( mcParticles_[iMC]->type() ==  23 &&  abs(mcParticles_[iMC]->dauOneId())  == 13  ){
+      if(mcParticles_[iMC]->status() == 23) {FCNCZ= iMC; nbZDaughters = mcParticles_[iMC]->nDau(); }
+      else if( mcParticles_[iMC]->status() != 23 && FCNCZ== -999) {FCNCZ = iMC; nbZDaughters = mcParticles_[iMC]->nDau();}
+      FCNCZTopMu = true;
+    } //Z from top with mu decay
+    else if( mcParticles_[iMC]->type() ==  23 &&  abs(mcParticles_[iMC]->dauOneId())  == 11  ){
+      
+      if(mcParticles_[iMC]->status() == 23) {FCNCZ= iMC;  nbZDaughters = mcParticles_[iMC]->nDau();}
+      else if( mcParticles_[iMC]->status() != 23 && FCNCZ== -999) {FCNCZ = iMC; nbZDaughters = mcParticles_[iMC]->nDau();}
+      FCNCZTopEl = true;
+    } //Z from top with el decay
+    
+    
+  }
+  
+  bool SMWfound = false;
+  if(SMWATop || SMWTop){ SMWfound = true;}
+  bool SMbfound = false;
+  if(SMbATop || SMbTop){SMbfound = true;}
+  bool FCNCZfound = false;
+  if(FCNCZTopEl  || FCNCZTopMu) {FCNCZfound = true; }
+  bool SMmufound = false;
+  if(SMmuTop || SMmuATop){ SMmufound = true;}
+  bool SMelfound = false;
+  if(SMelTop || SMelATop){ SMelfound = true; }
+  bool FCNCmufound = false;
+  if(FCNCmuPlusFound && FCNCmuMinFound){ FCNCmufound = true; }
+  bool FCNCelfound = false;
+  if(FCNCelPlusFound && FCNCelMinFound){ FCNCelfound = true; }
+  
+  bool foundDecay = false;
+  if(  (SMmufound || SMelfound) && (FCNCelfound || FCNCmufound) && SMbfound ){ foundDecay = true;}
+  if(!foundDecay) {
+    pair< vector< pair<unsigned int, unsigned int>>, vector <string> >   returnVectorEr;
+    return returnVectorEr;
+  }
+  
+  //SM TOP
+  
+  if( SMbfound && SMWfound){
+    histo1D["Topmass_Wb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMW]).M());
+    histo1D["pt_Wb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMW]).Pt());
+    histo1D["eta_Wb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMW]).Eta());
+    histo1D["phi_Wb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMW]).Phi());
+    histo1D["dPhi_Wb"]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcpartTLV[SMb],mcpartTLV[SMW]));
+    histo1D["dR_Wb"]->Fill(ROOT::Math::VectorUtil::DeltaR(mcpartTLV[SMb],mcpartTLV[SMW]));
+    
+  }
+  if( SMbATop && SMWATop && antitopfound){
+    //cout << "in tbar" << endl;
+    histo1D["Topmass_tq"]->Fill(mcpartTLV[antitopQ].M());
+    histo1D["pt_tq"]->Fill(mcpartTLV[antitopQ].Pt());
+    histo1D["eta_tq"]->Fill(mcpartTLV[antitopQ].Eta());
+    histo1D["phi_tq"]->Fill(mcpartTLV[antitopQ].Phi());
+    
+    histo2D["Topmass_top_Wb"]->Fill((mcpartTLV[SMW] + mcpartTLV[SMb]).M(),mcpartTLV[antitopQ].M() );
+    histo2D["pt_top_Wb"]->Fill((mcpartTLV[SMW] + mcpartTLV[SMb]).M(),mcpartTLV[antitopQ].Pt() );
+    histo2D["phi_top_Wb"]->Fill((mcpartTLV[SMW] + mcpartTLV[SMb]).M(),mcpartTLV[antitopQ].Phi() );
+    histo2D["eta_top_Wb"]->Fill((mcpartTLV[SMW] + mcpartTLV[SMb]).M(),mcpartTLV[antitopQ].Eta() );
+    
+    histo1D["dPhi_Wbtop"]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcpartTLV[SMb]+mcpartTLV[SMW],mcpartTLV[antitopQ]));
+    histo1D["dR_Wbtop"]->Fill(ROOT::Math::VectorUtil::DeltaR(mcpartTLV[SMb]+mcpartTLV[SMW],mcpartTLV[antitopQ]));
+    
+  }
+  if( SMbTop && SMWTop && topfound){
+    //cout << "in top" << endl;
+    histo1D["Topmass_tq"]->Fill(mcpartTLV[topQ].M());
+    histo1D["pt_tq"]->Fill(mcpartTLV[topQ].Pt());
+    histo1D["eta_tq"]->Fill(mcpartTLV[topQ].Eta());
+    histo1D["phi_tq"]->Fill(mcpartTLV[topQ].Phi());
+    
+    histo1D["dPhi_Wbtop"]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcpartTLV[SMb]+mcpartTLV[SMW],mcpartTLV[topQ]));
+    histo1D["dR_Wbtop"]->Fill(ROOT::Math::VectorUtil::DeltaR(mcpartTLV[SMb]+mcpartTLV[SMW],mcpartTLV[topQ]));
+    
+    
+    histo2D["Topmass_top_Wb"]->Fill((mcpartTLV[SMW] + mcpartTLV[SMb]).M(),mcpartTLV[topQ].M() );
+    histo2D["pt_top_Wb"]->Fill((mcpartTLV[SMW] + mcpartTLV[SMb]).M(),mcpartTLV[topQ].Pt() );
+    histo2D["phi_top_Wb"]->Fill((mcpartTLV[SMW] + mcpartTLV[SMb]).M(),mcpartTLV[topQ].Phi() );
+    histo2D["eta_top_Wb"]->Fill((mcpartTLV[SMW] + mcpartTLV[SMb]).M(),mcpartTLV[topQ].Eta() );
+    
+  }
+  if( SMbfound && SMnumufound && SMmufound){
+    histo1D["Topmass_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMmu]+ mcpartTLV[SMnumu]).M());
+    histo1D["pt_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMmu]+ mcpartTLV[SMnumu]).Pt());
+    histo1D["eta_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMmu]+ mcpartTLV[SMnumu]).Eta());
+    histo1D["phi_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMmu]+ mcpartTLV[SMnumu]).Phi());
+    
+    histo1D["dPhi_lvb"]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcpartTLV[SMb] , mcpartTLV[SMmu]+ mcpartTLV[SMnumu]));
+    histo1D["dR_lvb"]->Fill(ROOT::Math::VectorUtil::DeltaR(mcpartTLV[SMb] , mcpartTLV[SMmu]+ mcpartTLV[SMnumu]));
+    
+    
+  }
+  if( SMbfound && SMnuelfound && SMelfound){
+    histo1D["Topmass_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMel]+ mcpartTLV[SMnuel]).M());
+    histo1D["pt_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMel]+ mcpartTLV[SMnuel]).Pt());
+    histo1D["eta_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMel]+ mcpartTLV[SMnuel]).Eta());
+    histo1D["phi_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMel]+ mcpartTLV[SMnuel]).Phi());
+    
+    histo1D["dPhi_lvb"]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcpartTLV[SMb] , mcpartTLV[SMel]+ mcpartTLV[SMnuel]));
+    histo1D["dR_lvb"]->Fill(ROOT::Math::VectorUtil::DeltaR(mcpartTLV[SMb] , mcpartTLV[SMel]+ mcpartTLV[SMnuel]));
+    
+    
+  }
+  
+  
+  //FCNC TOP
+  if( FCNCmufound){
+    histo1D["Zmass_Zlep"]->Fill((mcpartTLV[FCNCmuMin] + mcpartTLV[FCNCmuPlus]).M());
+    histo1D["pt_Zlep"]->Fill((mcpartTLV[FCNCmuMin] + mcpartTLV[FCNCmuPlus]).Pt());
+    histo1D["eta_Zlep"]->Fill((mcpartTLV[FCNCmuMin] + mcpartTLV[FCNCmuPlus]).Eta());
+    histo1D["phi_Zlep"]->Fill((mcpartTLV[FCNCmuMin] + mcpartTLV[FCNCmuPlus]).Phi());
+    histo2D["pt_lep"]->Fill(mcpartTLV[FCNCmuMin].Pt(), mcpartTLV[FCNCmuPlus].Pt());
+    histo2D["phi_lep"]->Fill(mcpartTLV[FCNCmuMin].Phi(), mcpartTLV[FCNCmuPlus].Phi());
+    histo2D["eta_lep"]->Fill(mcpartTLV[FCNCmuMin].Eta(), mcpartTLV[FCNCmuPlus].Eta());
+    histo1D["dPhi_lep"]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcpartTLV[FCNCmuMin],mcpartTLV[FCNCmuPlus]));
+    histo1D["dR_lep"]->Fill(ROOT::Math::VectorUtil::DeltaR(mcpartTLV[FCNCmuMin],mcpartTLV[FCNCmuPlus]));
+    histo1D["mass_lep1"]->Fill(mcpartTLV[FCNCmuMin].M());
+    histo1D["mass_lep2"]->Fill(mcpartTLV[FCNCmuPlus].M());
+    histo1D["pt_lep1"]->Fill(mcpartTLV[FCNCmuMin].Pt());
+    histo1D["pt_lep2"]->Fill(mcpartTLV[FCNCmuPlus].Pt());
+    histo1D["eta_lep1"]->Fill(mcpartTLV[FCNCmuMin].Eta());
+    histo1D["eta_lep2"]->Fill(mcpartTLV[FCNCmuPlus].Eta());
+    histo1D["phi_lep1"]->Fill(mcpartTLV[FCNCmuMin].Phi());
+    histo1D["phi_lep2"]->Fill(mcpartTLV[FCNCmuPlus].Phi());
+    histo2D["mass_lep"]->Fill(mcpartTLV[FCNCmuMin].M(), mcpartTLV[FCNCmuPlus].M());
+    
+  }
+  if( FCNCelfound){
+    histo1D["Zmass_Zlep"]->Fill((mcpartTLV[FCNCelMin] + mcpartTLV[FCNCelPlus]).M());
+    histo1D["pt_Zlep"]->Fill((mcpartTLV[FCNCelMin] + mcpartTLV[FCNCelPlus]).Pt());
+    histo1D["eta_Zlep"]->Fill((mcpartTLV[FCNCelMin] + mcpartTLV[FCNCelPlus]).Eta());
+    histo1D["phi_Zlep"]->Fill((mcpartTLV[FCNCelMin] + mcpartTLV[FCNCelPlus]).Phi());
+    histo2D["pt_lep"]->Fill(mcpartTLV[FCNCelMin].Pt(), mcpartTLV[FCNCelPlus].Pt());
+    histo2D["phi_lep"]->Fill(mcpartTLV[FCNCelMin].Phi(), mcpartTLV[FCNCelPlus].Phi());
+    histo2D["eta_lep"]->Fill(mcpartTLV[FCNCelMin].Eta(), mcpartTLV[FCNCelPlus].Eta());
+    histo1D["dPhi_lep"]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcpartTLV[FCNCelMin],mcpartTLV[FCNCelPlus]));
+    histo1D["dR_lep"]->Fill(ROOT::Math::VectorUtil::DeltaR(mcpartTLV[FCNCelMin],mcpartTLV[FCNCelPlus]));
+    
+    histo1D["mass_lep1"]->Fill(mcpartTLV[FCNCelMin].M());
+    histo1D["mass_lep2"]->Fill(mcpartTLV[FCNCelPlus].M());
+    histo1D["pt_lep1"]->Fill(mcpartTLV[FCNCelMin].Pt());
+    histo1D["pt_lep2"]->Fill(mcpartTLV[FCNCelPlus].Pt());
+    histo1D["eta_lep1"]->Fill(mcpartTLV[FCNCelMin].Eta());
+    histo1D["eta_lep2"]->Fill(mcpartTLV[FCNCelPlus].Eta());
+    histo1D["phi_lep1"]->Fill(mcpartTLV[FCNCelMin].Phi());
+    histo1D["phi_lep2"]->Fill(mcpartTLV[FCNCelPlus].Phi());
+    histo2D["mass_lep"]->Fill(mcpartTLV[FCNCelMin].M(), mcpartTLV[FCNCelPlus].M());
+    
+  }
+  
+  if( FCNCZfound){
+    histo1D["Zmass_Zbos"]->Fill(mcpartTLV[FCNCZ].M());
+    histo1D["pt_Zbos"]->Fill(mcpartTLV[FCNCZ].Pt());
+    histo1D["phi_Zbos"]->Fill(mcpartTLV[FCNCZ].Phi());
+    histo1D["eta_Zbos"]->Fill(mcpartTLV[FCNCZ].Eta());
+    histo1D["mc_nZLep"]->Fill(nbZDaughters);
+    histo1D["mc_nZMu"]->Fill(nbZDaughters);
+  }
+  if( FCNCZfound && FCNCmufound){
+    histo2D["Zmass_Zbos_Zlep"]->Fill((mcpartTLV[FCNCmuMin] + mcpartTLV[FCNCmuPlus]).M(),mcpartTLV[FCNCZ].M() );
+    histo2D["pt_Z"]->Fill((mcpartTLV[FCNCmuMin] + mcpartTLV[FCNCmuPlus]).Pt(),mcpartTLV[FCNCZ].Pt() );
+    histo2D["phi_Z"]->Fill((mcpartTLV[FCNCmuMin] + mcpartTLV[FCNCmuPlus]).Pt(),mcpartTLV[FCNCZ].Phi() );
+    histo2D["eta_Z"]->Fill((mcpartTLV[FCNCmuMin] + mcpartTLV[FCNCmuPlus]).Pt(),mcpartTLV[FCNCZ].Eta() );
+  }
+  
+  if( FCNCelfound && FCNCZfound ){
+    histo2D["Zmass_Zbos_Zlep"]->Fill((mcpartTLV[FCNCelMin] + mcpartTLV[FCNCelPlus]).M(),mcpartTLV[FCNCZ].M() );
+    histo2D["pt_Z"]->Fill((mcpartTLV[FCNCelMin] + mcpartTLV[FCNCelPlus]).Pt(),mcpartTLV[FCNCZ].Pt() );
+    histo2D["phi_Z"]->Fill((mcpartTLV[FCNCelMin] + mcpartTLV[FCNCelPlus]).Pt(),mcpartTLV[FCNCZ].Phi() );
+    histo2D["eta_Z"]->Fill((mcpartTLV[FCNCelMin] + mcpartTLV[FCNCelPlus]).Pt(),mcpartTLV[FCNCZ].Eta() );
+    
+  }
+  
+  if( SMWfound && SMelfound ){
+    histo1D["mc_nWLep"]->Fill(nbWDaughters);
+    histo1D["mc_nWEl"]->Fill(nbWDaughters);
+    
+  }
+  if( SMWfound && SMmufound){
+    histo1D["mc_nWLep"]->Fill(nbWDaughters);
+    histo1D["mc_nWMu"]->Fill(nbWDaughters);
+  }
+  if( SMWfound && FCNCZfound){
+    histo2D["nZbosonnWboson"]->Fill(nbZDaughters, nbWDaughters);
+  }
+  
+  // end plots
+  // begin matching
+  
+  
+  for (unsigned int iMC = 0; iMC < mcpartTLV.size(); iMC++)
+  {
+    if (false)
+      cout << setw(3) << right << iMC << "  Status: " << setw(2) << mcParticles_[iMC]->status() << "  pdgId: " << setw(3) << mcParticles_[iMC]->type() << "  Mother: " << setw(4) << mcParticles_[iMC]->motherType() << "  Granny: " << setw(4) << mcParticles_[iMC]->grannyType() << "  Pt: " << setw(7) << left << mcParticles_[iMC]->Pt() << "  Eta: " << mcParticles_[iMC]->Eta() << endl;
+    
+    
+    if ( (mcParticles_[iMC]->status() > 1 && mcParticles_[iMC]->status() <= 20) || mcParticles_[iMC]->status() >= 30 ) continue;  /// Final state particle or particle from hardest process
+    
+   /* if( abs(mcParticles_[iMC]->type()) <= 5 || abs(mcParticles_[iMC]->type()) == 21){
+      partons.push_back(mcpartTLV[iMC]);
+      partonID.push_back(iMC);
+    } // jets
+    else */if( abs(mcParticles_[iMC]->type()) ==  13 || abs(mcParticles_[iMC]->type()) ==  11 ){
+      partons.push_back(mcpartTLV[iMC]);
+      partonID.push_back(iMC);
+    } // leptons
+  }
+  
+  
+  
+  
+  
+  vector< pair<unsigned int, unsigned int> > PPair; // First one is jet number, second one is mcParticle number
+  PPair.clear();
+  vector<string > NPair; // First one is jet number, second one is mcParticle number
+  NPair.clear();
+  
+  
+  JetPartonMatching matchingTool = JetPartonMatching(partons, selectedobjects,2,true,true,0.3 );
+  
+  if (matchingTool.getNumberOfAvailableCombinations() != 1)
+    cerr << "matching.getNumberOfAvailableCombinations() = " << matchingTool.getNumberOfAvailableCombinations() << " .  This should be equal to 1 !!!" << endl;
+  
+  
+  /// Fill match in JetPartonPair;
+  vector< pair<unsigned int, unsigned int> > JetPartonPair; // First one is jet number, second one is mcParticle number
+  JetPartonPair.clear();
+  
+  
+  for (unsigned int i = 0; i < partons.size(); i++)
+  {
+    int matchedJetNumber = matchingTool.getMatchForParton(i, 0);
+    if (matchedJetNumber > -1)
+      JetPartonPair.push_back( pair<unsigned int, unsigned int> (matchedJetNumber, i) );
+    // matched jet number is nb in selectedobjects collection
+    // i is nb in partons
+    // partonID contains place in mcParticles_ vector
+  }
+  
+  
+  
+  if(JetPartonPair.size() < 3){
+    //cout << "ERROR" << endl;
+    pair< vector< pair<unsigned int, unsigned int>>, vector <string> >   returnVectorEr;
+    return returnVectorEr;
+  }
+  
+  for (unsigned int i = 0; i < JetPartonPair.size(); i++)
+  {
+    unsigned int partonIDnb = JetPartonPair[i].second; // place in mcParticles_ vector
+    unsigned int particlenb = JetPartonPair[i].first;  // place in selectedLeptons vector
+    
+    //SM
+    
+    /*if( abs(mcParticles_[partonID[partonIDnb]]->type()) ==  5 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("SMb");
+    } // b from t */
+    if( abs(mcParticles_[partonID[partonIDnb]]->type()) ==  13 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 24 && abs(mcParticles_[partonID[partonIDnb]]->grannyType())  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("SMmu");
+    } // mu from W from t
+    if( abs(mcParticles_[partonID[partonIDnb]]->type()) ==  11 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 24 && abs(mcParticles_[partonID[partonIDnb]]->grannyType())  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("SMel");
+    } // el from W from t
+    
+    
+    //FCNC
+    if( mcParticles_[partonID[partonIDnb]]->type() ==  13 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 23 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("FCNCmumin");
+    } // mu- from Z from t
+    if( mcParticles_[partonID[partonIDnb]]->type() ==  11 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 23  ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("FCNCelmin");
+    } // el- from Z from t
+    if( mcParticles_[partonID[partonIDnb]]->type() ==  -13 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 23  ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("FCNCmuplus");
+    } // mu+ from Z from t
+    if( mcParticles_[partonID[partonIDnb]]->type() ==  -11 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 23  ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("FCNCelplus");
+    } // el+ from Z from t
+    
+    
+  }
+  
+  //cout << "PPair.size() " << PPair.size() << endl;
+  //cout << "NPair.size() "  << NPair.size() << endl;
+  
+  
+  TLorentzVector tempB;
+  TLorentzVector tempWlep;
+  TLorentzVector tempZlepm;
+  TLorentzVector tempZlepp;
+  tempB.Clear();
+  tempZlepm.Clear();
+  tempZlepp.Clear();
+  tempWlep.Clear();
+  
+  
+  for(unsigned int iPart = 0 ; iPart < PPair.size(); iPart++){
+    
+    // cout << " iPart " << iPart << endl;
+  /*  if(NPair[iPart].find("SMb")!=string::npos){ tempB.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E()); } */
+    if(NPair[iPart].find("SMmu")!=string::npos){ tempWlep.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E()); }
+    if(NPair[iPart].find("SMel")!=string::npos){ tempWlep.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E()); }
+    
+    if(NPair[iPart].find("FCNCmumin")!=string::npos){ tempZlepm.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E()); }
+    if(NPair[iPart].find("FCNCelmin")!=string::npos){ tempZlepm.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E()); }
+    if(NPair[iPart].find("FCNCmuplus")!=string::npos){ tempZlepp.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E()); }
+    if(NPair[iPart].find("FCNCelplus")!=string::npos){ tempZlepp.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E()); }
+    
+  }
+  
+  histo1D["matchedZmass"]->Fill((tempZlepm+tempZlepp).M());
+  //histo1D["matchedSMTopmass"]->Fill((tempWlep+tempB).M());
+  
+  
+  
+  pair< vector< pair<unsigned int, unsigned int>>, vector <string> >   returnVector;
+  returnVector = pair< vector< pair<unsigned int, unsigned int>>, vector <string> >( PPair , NPair ) ;
+  ////  cout << " (returnVector.second).size() " << (returnVector.second).size() << endl;
+  //  cout << " (returnVector.first).size() " << (returnVector.first).size() << endl;
+  //  cout << "Matcher PPair.size() " << PPair.size() << endl;
+  //  cout << "Matcher NPair.size() "  << NPair.size() << endl;
+  return returnVector;
 };
 
 
 
+pair< vector< pair<unsigned int, unsigned int>>, vector <string> >  MatchertZq(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TLorentzVector> selectedobjects){
+  int nMCP = mcParticles_.size();
+  TLorentzVector mcpart;
+  vector <TLorentzVector> mcpartTLV;
+  
+  
+  int topQ = -999;
+  int antitopQ = -999;
+  int SMmu = -999;
+  int SMel = -999;
+  int radZ = -999;
+  int SMnuel = -999;
+  int SMnumu = -999;
+  int SMW = -999;
+  int SMb = -999;
+  int SMq = -999;
+  int RadmuPlus = -999;
+  int RadmuMin = -999;
+  int RadelMin = -999;
+  int RadelPlus = -999;
+  
+  bool SMmuTop = false;
+  bool SMmuATop = false;
+  bool SMelTop = false;
+  bool SMelATop = false;
+  bool RadelMinFound = false;
+  bool RadelPlusFound = false;
+  bool RadmuMinFound = false;
+  bool RadmuPlusFound = false;
+  
+  bool SMWATop = false;
+  bool SMWTop = false;
+  bool SMbATop = false;
+  bool SMbTop = false;
+  bool SMnuelfound = false;
+  bool SMnumufound = false;
+  bool topfound = false;
+  bool antitopfound = false;
+  bool SMqfound = false;
+  bool radZfound = false;
+  int nbZDaughters = 0;
+  int nbWDaughters = 0;
+  
+  
+  
+  
+  
+  vector <TLorentzVector> partons;
+  partons.clear();
+  vector <int> partonID;
+  partonID.clear();
+  
+  vector <int> storedMCParticles;
+  storedMCParticles.clear();
+  
+  for (int iMC = 0; iMC < nMCP; iMC++)
+  {
+    mcpart.Clear();
+    mcpart.SetPtEtaPhiE(mcParticles_[iMC]->Pt(), mcParticles_[iMC]->Eta(), mcParticles_[iMC]->Phi(), mcParticles_[iMC]->E());
+    mcpartTLV.push_back(mcpart);
+  }
+  if(mcpartTLV.size() != mcParticles_.size()){cout << "ERROR mcP not filled correctly" << endl;  }
+  
+  //cout << "event " << evt_num_ << endl;
+
+  
+  for (unsigned int iMC = 0; iMC < mcpartTLV.size(); iMC++)
+  {
+    if (false)
+      cout << setw(3) << right << iMC << "  Status: " << setw(2) << mcParticles_[iMC]->status() << "  pdgId: " << setw(3) << mcParticles_[iMC]->type() << "  Mother: " << setw(4) << mcParticles_[iMC]->motherType() << "  Granny: " << setw(4) << mcParticles_[iMC]->grannyType() << "  Pt: " << setw(7) << left << mcParticles_[iMC]->Pt() << "  Eta: " << mcParticles_[iMC]->Eta() << endl;
+    
+    
+    if ( (mcParticles_[iMC]->status() > 1 && mcParticles_[iMC]->status() <= 20) || mcParticles_[iMC]->status() >= 30 ) continue;  /// Final state particle or particle from hardest process
+    
+    if( mcParticles_[iMC]->type() == 6 ){ topQ = iMC; topfound = true;  }
+    else if( mcParticles_[iMC]->type() == -6 ){ antitopQ = iMC; antitopfound = true; }
+    
+    //SM
+    else if( abs(mcParticles_[iMC]->type()) ==  12 && mcParticles_[iMC]->motherType() ==-24 && mcParticles_[iMC]->grannyType()  == -6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMnuel = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMnuel == -999) {SMnuel = iMC;}
+      SMnuelfound = true;
+      //cout << "found nu from W- from tbar" << endl;
+    } // nu el  from W from tbar
+    else if( abs(mcParticles_[iMC]->type()) ==  12 && mcParticles_[iMC]->motherType() ==24 && mcParticles_[iMC]->grannyType()  == 6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMnuel = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMnuel == -999) {SMnuel = iMC;}
+      SMnuelfound = true;
+      //cout << "found nu from W+ from t" << endl;
+    } // nu el  from W from t
+    else if( abs(mcParticles_[iMC]->type()) ==  14 && mcParticles_[iMC]->motherType() ==-24 && mcParticles_[iMC]->grannyType()  == -6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMnumu = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMnumu == -999) {SMnumu = iMC;}
+      SMnumufound = true;
+    } // nu mu  from W from tbar
+    else if( abs(mcParticles_[iMC]->type()) ==  14 && mcParticles_[iMC]->motherType() ==24 && mcParticles_[iMC]->grannyType()  == 6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMnumu = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMnumu == -999) {SMnumu = iMC;}
+      SMnumufound = true;
+    } // nu mu from W from t
+    
+    else if( abs(mcParticles_[iMC]->type()) ==  5 && mcParticles_[iMC]->motherType()  == -6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMb = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMb == -999) {SMb = iMC;}
+      SMbATop = true;
+      //cout << iMC << " found b from tbar" << endl;
+      
+    } // b from tbar
+    else if( abs(mcParticles_[iMC]->type()) ==  5 && mcParticles_[iMC]->motherType()  == 6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMb = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMb == -999) {SMb = iMC;}
+      SMbTop = true;
+      //cout << iMC << " found b from t" << endl;
+      
+    } // b from t
+    else if( mcParticles_[iMC]->type() ==  13 && mcParticles_[iMC]->motherType()  == -24 && mcParticles_[iMC]->grannyType()  == -6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMmu = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMmu == -999) {SMmu = iMC;}
+      SMmuATop = true;
+      //cout << iMC << " found mu- from tbar" << endl;
+      
+    } // mu - from W - from tbar
+    else if( mcParticles_[iMC]->type() ==  -13 && mcParticles_[iMC]->motherType()  == 24 && mcParticles_[iMC]->grannyType()  == 6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMmu = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMmu == -999) {SMmu = iMC;}
+      SMmuTop = true;
+      //cout << iMC << " found m+ from t" << endl;
+      
+    } // mu+ from W+ from top
+    else if( mcParticles_[iMC]->type() ==  11 && mcParticles_[iMC]->motherType()  == -24 && mcParticles_[iMC]->grannyType()  == -6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMel = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMel== -999) {SMel = iMC;}
+      SMelATop = true;
+     // cout << iMC << " found e- from tbar" << endl;
+      
+    } // el - from W - from tbar
+    else if( mcParticles_[iMC]->type() ==  -11 && mcParticles_[iMC]->motherType()  == 24 && mcParticles_[iMC]->grannyType()  == 6 ){
+      if(mcParticles_[iMC]->status() == 23) {SMel = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMel== -999) {SMel = iMC;}
+      SMelTop = true;
+      //cout << iMC << " found e+ from t" << endl;
+    } // el+ from W+ from top
+    else if( mcParticles_[iMC]->type() ==  24 && mcParticles_[iMC]->motherType()  == 6   ){
+      if(mcParticles_[iMC]->status() == 23) {SMW= iMC; nbWDaughters = mcParticles_[iMC]->nDau(); }
+      else if( mcParticles_[iMC]->status() != 23 && SMW== -999) {SMW = iMC; nbWDaughters = mcParticles_[iMC]->nDau();}
+      SMWTop = true;
+      //cout << "W from t  found " << endl;
+    } //W from top
+    else if( mcParticles_[iMC]->type() ==  -24 && mcParticles_[iMC]->motherType()  == -6  ){
+      if(mcParticles_[iMC]->status() == 23) {SMW= iMC; nbWDaughters = mcParticles_[iMC]->nDau(); }
+      else if( mcParticles_[iMC]->status() != 23 && SMW== -999) {SMW = iMC;nbWDaughters = mcParticles_[iMC]->nDau();}
+      SMWATop = true;
+      //cout << "W from tbar found  " << endl;
+    } //W from atop
+    else if( abs(mcParticles_[iMC]->type()) >= 1 &&  abs(mcParticles_[iMC]->type())<  5){
+      if(mcParticles_[iMC]->status() == 23) {SMq = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && SMq== -999) {SMq = iMC;}
+      //cout << iMC << " found q " << endl;
+      SMqfound = true;
+    } // q
+    
+    //radiated Z
+    
+    else if( mcParticles_[iMC]->type() ==  13 && mcParticles_[iMC]->motherType()  == 23  ){
+      if(mcParticles_[iMC]->status() == 23) {RadmuMin = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && RadmuMin== -999) {RadmuMin = iMC;}
+      RadmuMinFound = true;
+      
+    } // mu - from Z
+    else if( mcParticles_[iMC]->type() ==  -13 && mcParticles_[iMC]->motherType()  == 23  ){
+      if(mcParticles_[iMC]->status() == 23) {RadmuPlus = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && RadmuPlus== -999) {RadmuPlus= iMC;}
+      RadmuPlusFound = true;
+      
+    } // mu + from Z  from tbar
+    else if( mcParticles_[iMC]->type() ==  11 && mcParticles_[iMC]->motherType()  == 23  ){
+      if(mcParticles_[iMC]->status() == 23) {RadelMin = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && RadelMin== -999) {RadelMin = iMC;}
+      RadelMinFound = true;
+      
+    } // e - from Z
+    else if( mcParticles_[iMC]->type() ==  -11 && mcParticles_[iMC]->motherType()  == 23  ){
+      if(mcParticles_[iMC]->status() == 23) {RadelPlus = iMC;  }
+      else if( mcParticles_[iMC]->status() != 23 && RadelPlus== -999) {RadelPlus= iMC;}
+      RadelPlusFound = true;
+      
+    } // e + from Z
+    
+    
+    else if( mcParticles_[iMC]->type() ==  23 && abs(mcParticles_[iMC]->dauOneId())  == 13  ){
+      if(mcParticles_[iMC]->status() == 23) {radZ= iMC; nbZDaughters = mcParticles_[iMC]->nDau(); }
+      else if( mcParticles_[iMC]->status() != 23 && radZ== -999) {radZ = iMC; nbZDaughters = mcParticles_[iMC]->nDau();}
+      radZfound = true;
+    } //Z  with mu decay
+    else if( mcParticles_[iMC]->type() ==  23 && mcParticles_[iMC]->motherType()  == 6 && abs(mcParticles_[iMC]->dauOneId())  == 11  ){
+      if(mcParticles_[iMC]->status() == 23) {radZ= iMC;  nbZDaughters = mcParticles_[iMC]->nDau();}
+      else if( mcParticles_[iMC]->status() != 23 && radZ== -999) {radZ = iMC; nbZDaughters = mcParticles_[iMC]->nDau();}
+      radZfound = true;
+    } //Z  with el decay
+  }
+  
+  bool SMWfound = false;
+  if(SMWATop || SMWTop){ SMWfound = true;}
+  bool SMbfound = false;
+  if(SMbATop || SMbTop){SMbfound = true;}
+  bool SMmufound = false;
+  if(SMmuTop || SMmuATop){ SMmufound = true;}
+  bool SMelfound = false;
+  if(SMelTop || SMelATop){ SMelfound = true; }
+  bool Radmufound = false;
+  if(RadmuPlusFound && RadmuMinFound){ Radmufound = true; }
+  bool Radelfound = false;
+  if(RadelPlusFound && RadelMinFound){ Radelfound = true; }
+  //bool Radqfound = false;
+  
+  bool foundDecay = false;
+  if((Radmufound || Radelfound) && (SMmufound || SMelfound) && SMbfound   ){
+    foundDecay = true;
+  }
+  
+  if(!foundDecay) {
+    pair< vector< pair<unsigned int, unsigned int>>, vector <string> >   returnVectorEr;
+    return returnVectorEr;
+  }
+  
+  //SM TOP
+  
+  if( SMbfound && SMWfound){
+    histo1D["Topmass_Wb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMW]).M());
+    histo1D["pt_Wb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMW]).Pt());
+    histo1D["eta_Wb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMW]).Eta());
+    histo1D["phi_Wb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMW]).Phi());
+    histo1D["dPhi_Wb"]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcpartTLV[SMb],mcpartTLV[SMW]));
+    histo1D["dR_Wb"]->Fill(ROOT::Math::VectorUtil::DeltaR(mcpartTLV[SMb],mcpartTLV[SMW]));
+    
+  }
+  if( SMbATop && SMWATop && antitopfound){
+    //cout << "in tbar" << endl;
+    histo1D["Topmass_tq"]->Fill(mcpartTLV[antitopQ].M());
+    histo1D["pt_tq"]->Fill(mcpartTLV[antitopQ].Pt());
+    histo1D["eta_tq"]->Fill(mcpartTLV[antitopQ].Eta());
+    histo1D["phi_tq"]->Fill(mcpartTLV[antitopQ].Phi());
+    
+    histo2D["Topmass_top_Wb"]->Fill((mcpartTLV[SMW] + mcpartTLV[SMb]).M(),mcpartTLV[antitopQ].M() );
+    histo2D["pt_top_Wb"]->Fill((mcpartTLV[SMW] + mcpartTLV[SMb]).M(),mcpartTLV[antitopQ].Pt() );
+    histo2D["phi_top_Wb"]->Fill((mcpartTLV[SMW] + mcpartTLV[SMb]).M(),mcpartTLV[antitopQ].Phi() );
+    histo2D["eta_top_Wb"]->Fill((mcpartTLV[SMW] + mcpartTLV[SMb]).M(),mcpartTLV[antitopQ].Eta() );
+    
+    histo1D["dPhi_Wbtop"]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcpartTLV[SMb]+mcpartTLV[SMW],mcpartTLV[antitopQ]));
+    histo1D["dR_Wbtop"]->Fill(ROOT::Math::VectorUtil::DeltaR(mcpartTLV[SMb]+mcpartTLV[SMW],mcpartTLV[antitopQ]));
+    
+  }
+  if( SMbTop && SMWTop && topfound){
+    //cout << "in top" << endl;
+    histo1D["Topmass_tq"]->Fill(mcpartTLV[topQ].M());
+    histo1D["pt_tq"]->Fill(mcpartTLV[topQ].Pt());
+    histo1D["eta_tq"]->Fill(mcpartTLV[topQ].Eta());
+    histo1D["phi_tq"]->Fill(mcpartTLV[topQ].Phi());
+    
+    histo1D["dPhi_Wbtop"]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcpartTLV[SMb]+mcpartTLV[SMW],mcpartTLV[topQ]));
+    histo1D["dR_Wbtop"]->Fill(ROOT::Math::VectorUtil::DeltaR(mcpartTLV[SMb]+mcpartTLV[SMW],mcpartTLV[topQ]));
+    
+    
+    histo2D["Topmass_top_Wb"]->Fill((mcpartTLV[SMW] + mcpartTLV[SMb]).M(),mcpartTLV[topQ].M() );
+    histo2D["pt_top_Wb"]->Fill((mcpartTLV[SMW] + mcpartTLV[SMb]).M(),mcpartTLV[topQ].Pt() );
+    histo2D["phi_top_Wb"]->Fill((mcpartTLV[SMW] + mcpartTLV[SMb]).M(),mcpartTLV[topQ].Phi() );
+    histo2D["eta_top_Wb"]->Fill((mcpartTLV[SMW] + mcpartTLV[SMb]).M(),mcpartTLV[topQ].Eta() );
+    
+  }
+  if( SMbfound && SMnumufound && SMmufound){
+    histo1D["Topmass_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMmu]+ mcpartTLV[SMnumu]).M());
+    histo1D["pt_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMmu]+ mcpartTLV[SMnumu]).Pt());
+    histo1D["eta_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMmu]+ mcpartTLV[SMnumu]).Eta());
+    histo1D["phi_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMmu]+ mcpartTLV[SMnumu]).Phi());
+    
+    histo1D["dPhi_lvb"]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcpartTLV[SMb] , mcpartTLV[SMmu]+ mcpartTLV[SMnumu]));
+    histo1D["dR_lvb"]->Fill(ROOT::Math::VectorUtil::DeltaR(mcpartTLV[SMb] , mcpartTLV[SMmu]+ mcpartTLV[SMnumu]));
+    
+    
+  }
+  if( SMbfound && SMnuelfound && SMelfound){
+    histo1D["Topmass_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMel]+ mcpartTLV[SMnuel]).M());
+    histo1D["pt_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMel]+ mcpartTLV[SMnuel]).Pt());
+    histo1D["eta_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMel]+ mcpartTLV[SMnuel]).Eta());
+    histo1D["phi_lvb"]->Fill((mcpartTLV[SMb] + mcpartTLV[SMel]+ mcpartTLV[SMnuel]).Phi());
+    
+    histo1D["dPhi_lvb"]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcpartTLV[SMb] , mcpartTLV[SMel]+ mcpartTLV[SMnuel]));
+    histo1D["dR_lvb"]->Fill(ROOT::Math::VectorUtil::DeltaR(mcpartTLV[SMb] , mcpartTLV[SMel]+ mcpartTLV[SMnuel]));
+    
+    
+  }
+  
+  if( Radmufound){
+    histo1D["Zmass_Zlep"]->Fill((mcpartTLV[RadmuMin] + mcpartTLV[RadmuPlus]).M());
+    histo1D["pt_Zlep"]->Fill((mcpartTLV[RadmuMin] + mcpartTLV[RadmuPlus]).Pt());
+    histo1D["eta_Zlep"]->Fill((mcpartTLV[RadmuMin] + mcpartTLV[RadmuPlus]).Eta());
+    histo1D["phi_Zlep"]->Fill((mcpartTLV[RadmuMin] + mcpartTLV[RadmuPlus]).Phi());
+    histo2D["pt_lep"]->Fill(mcpartTLV[RadmuMin].Pt(), mcpartTLV[RadmuPlus].Pt());
+    histo2D["phi_lep"]->Fill(mcpartTLV[RadmuMin].Phi(), mcpartTLV[RadmuPlus].Phi());
+    histo2D["eta_lep"]->Fill(mcpartTLV[RadmuMin].Eta(), mcpartTLV[RadmuPlus].Eta());
+    histo1D["dPhi_lep"]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcpartTLV[RadmuMin],mcpartTLV[RadmuPlus]));
+    histo1D["dR_lep"]->Fill(ROOT::Math::VectorUtil::DeltaR(mcpartTLV[RadmuMin],mcpartTLV[RadmuPlus]));
+    histo1D["mass_lep1"]->Fill(mcpartTLV[RadmuMin].M());
+    histo1D["mass_lep2"]->Fill(mcpartTLV[RadmuPlus].M());
+    histo1D["pt_lep1"]->Fill(mcpartTLV[RadmuMin].Pt());
+    histo1D["pt_lep2"]->Fill(mcpartTLV[RadmuPlus].Pt());
+    histo1D["eta_lep1"]->Fill(mcpartTLV[RadmuMin].Eta());
+    histo1D["eta_lep2"]->Fill(mcpartTLV[RadmuPlus].Eta());
+    histo1D["phi_lep1"]->Fill(mcpartTLV[RadmuMin].Phi());
+    histo1D["phi_lep2"]->Fill(mcpartTLV[RadmuPlus].Phi());
+    histo2D["mass_lep"]->Fill(mcpartTLV[RadmuMin].M(), mcpartTLV[RadmuPlus].M());
+    
+  }
+  if( Radelfound){
+    histo1D["Zmass_Zlep"]->Fill((mcpartTLV[RadelMin] + mcpartTLV[RadelPlus]).M());
+    histo1D["pt_Zlep"]->Fill((mcpartTLV[RadelMin] + mcpartTLV[RadelPlus]).Pt());
+    histo1D["eta_Zlep"]->Fill((mcpartTLV[RadelMin] + mcpartTLV[RadelPlus]).Eta());
+    histo1D["phi_Zlep"]->Fill((mcpartTLV[RadelMin] + mcpartTLV[RadelPlus]).Phi());
+    histo2D["pt_lep"]->Fill(mcpartTLV[RadelMin].Pt(), mcpartTLV[RadelPlus].Pt());
+    histo2D["phi_lep"]->Fill(mcpartTLV[RadelMin].Phi(), mcpartTLV[RadelPlus].Phi());
+    histo2D["eta_lep"]->Fill(mcpartTLV[RadelMin].Eta(), mcpartTLV[RadelPlus].Eta());
+    histo1D["dPhi_lep"]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcpartTLV[RadelMin],mcpartTLV[RadelPlus]));
+    histo1D["dR_lep"]->Fill(ROOT::Math::VectorUtil::DeltaR(mcpartTLV[RadelMin],mcpartTLV[RadelPlus]));
+    
+    histo1D["mass_lep1"]->Fill(mcpartTLV[RadelMin].M());
+    histo1D["mass_lep2"]->Fill(mcpartTLV[RadelPlus].M());
+    histo1D["pt_lep1"]->Fill(mcpartTLV[RadelMin].Pt());
+    histo1D["pt_lep2"]->Fill(mcpartTLV[RadelPlus].Pt());
+    histo1D["eta_lep1"]->Fill(mcpartTLV[RadelMin].Eta());
+    histo1D["eta_lep2"]->Fill(mcpartTLV[RadelPlus].Eta());
+    histo1D["phi_lep1"]->Fill(mcpartTLV[RadelMin].Phi());
+    histo1D["phi_lep2"]->Fill(mcpartTLV[RadelPlus].Phi());
+    histo2D["mass_lep"]->Fill(mcpartTLV[RadelMin].M(), mcpartTLV[RadelPlus].M());
+    
+  }
+  
+  if( radZfound){
+    histo1D["Zmass_Zbos"]->Fill(mcpartTLV[radZ].M());
+    histo1D["pt_Zbos"]->Fill(mcpartTLV[radZ].Pt());
+    histo1D["phi_Zbos"]->Fill(mcpartTLV[radZ].Phi());
+    histo1D["eta_Zbos"]->Fill(mcpartTLV[radZ].Eta());
+    histo1D["mc_nZLep"]->Fill(nbZDaughters);
+    histo1D["mc_nZMu"]->Fill(nbZDaughters);
+  }
+  if( radZfound && Radmufound){
+    histo2D["Zmass_Zbos_Zlep"]->Fill((mcpartTLV[RadmuMin] + mcpartTLV[RadmuPlus]).M(),mcpartTLV[radZ].M() );
+    histo2D["pt_Z"]->Fill((mcpartTLV[RadmuMin] + mcpartTLV[RadmuPlus]).Pt(),mcpartTLV[radZ].Pt() );
+    histo2D["phi_Z"]->Fill((mcpartTLV[RadmuMin] + mcpartTLV[RadmuPlus]).Pt(),mcpartTLV[radZ].Phi() );
+    histo2D["eta_Z"]->Fill((mcpartTLV[RadmuMin] + mcpartTLV[RadmuPlus]).Pt(),mcpartTLV[radZ].Eta() );
+  }
+  
+  if( Radelfound && radZfound ){
+    histo2D["Zmass_Zbos_Zlep"]->Fill((mcpartTLV[RadelMin] + mcpartTLV[RadelPlus]).M(),mcpartTLV[radZ].M() );
+    histo2D["pt_Z"]->Fill((mcpartTLV[RadelMin] + mcpartTLV[RadelPlus]).Pt(),mcpartTLV[radZ].Pt() );
+    histo2D["phi_Z"]->Fill((mcpartTLV[RadelMin] + mcpartTLV[RadelPlus]).Pt(),mcpartTLV[radZ].Phi() );
+    histo2D["eta_Z"]->Fill((mcpartTLV[RadelMin] + mcpartTLV[RadelPlus]).Pt(),mcpartTLV[radZ].Eta() );
+    
+  }
+  
+  if( SMWfound && SMelfound ){
+    histo1D["mc_nWLep"]->Fill(nbWDaughters);
+    histo1D["mc_nWEl"]->Fill(nbWDaughters);
+    
+  }
+  if( SMWfound && SMmufound){
+    histo1D["mc_nWLep"]->Fill(nbWDaughters);
+    histo1D["mc_nWMu"]->Fill(nbWDaughters);
+  }
+  if( SMWfound && radZfound){
+    histo2D["nZbosonnWboson"]->Fill(nbZDaughters, nbWDaughters);
+  }
+  
+  
+  
+  vector< pair<unsigned int, unsigned int> > PPair; // First one is jet number, second one is mcParticle number
+  PPair.clear();
+  vector<string > NPair; // First one is jet number, second one is mcParticle number
+  NPair.clear();
+  
+  
+  for (unsigned int iMC = 0; iMC < mcpartTLV.size(); iMC++)
+  {
+    if (false)
+      cout << setw(3) << right << iMC << "  Status: " << setw(2) << mcParticles_[iMC]->status() << "  pdgId: " << setw(3) << mcParticles_[iMC]->type() << "  Mother: " << setw(4) << mcParticles_[iMC]->motherType() << "  Granny: " << setw(4) << mcParticles_[iMC]->grannyType() << "  Pt: " << setw(7) << left << mcParticles_[iMC]->Pt() << "  Eta: " << mcParticles_[iMC]->Eta() << endl;
+    
+    
+    if ( (mcParticles_[iMC]->status() > 1 && mcParticles_[iMC]->status() <= 20) || mcParticles_[iMC]->status() >= 30 ) continue;  /// Final state particle or particle from hardest process
+    
+    /*if( abs(mcParticles_[iMC]->type()) <=  5 || abs(mcParticles_[iMC]->type()) ==  21 ){
+     
+     partons.push_back(mcpartTLV[iMC]);
+     partonID.push_back(iMC);
+     } //jets
+    else*/
+    if( abs(mcParticles_[iMC]->type() ) ==  13 || abs(mcParticles_[iMC]->type() ) ==  11 ){
+      partons.push_back(mcpartTLV[iMC]);
+      partonID.push_back(iMC);
+    } // leptons
+    
+  }
+  
+  JetPartonMatching matchingTool = JetPartonMatching(partons, selectedobjects,2,true,true,0.3 );
+  
+  if (matchingTool.getNumberOfAvailableCombinations() != 1)
+    cerr << "matching.getNumberOfAvailableCombinations() = " << matchingTool.getNumberOfAvailableCombinations() << " .  This should be equal to 1 !!!" << endl;
+  
+  
+  /// Fill match in JetPartonPair;
+  vector< pair<unsigned int, unsigned int> > JetPartonPair; // First one is jet number, second one is mcParticle number
+  JetPartonPair.clear();
+  
+  
+  for (unsigned int i = 0; i < partons.size(); i++)
+  {
+    int matchedJetNumber = matchingTool.getMatchForParton(i, 0);
+    if (matchedJetNumber > -1)
+      JetPartonPair.push_back( pair<unsigned int, unsigned int> (matchedJetNumber, i) );
+    // matched jet number is nb in selectedobjects collection
+    // i is nb in partons
+    // partonID contains place in mcParticles_ vector
+  }
+  
+  
+  
+  if(JetPartonPair.size() < 3){
+    ///cout << "NOT FOUND IT" << endl;
+    //cout << " JetPartonPair.size() " << JetPartonPair.size() << endl;
+    //cout << " partons.size() " << partons.size() << endl;
+   pair< vector< pair<unsigned int, unsigned int>>, vector <string> >   returnVectorEr;
+    return returnVectorEr;
+  }
+  
+  for (unsigned int i = 0; i < JetPartonPair.size(); i++)
+  {
+    unsigned int partonIDnb = JetPartonPair[i].second; // place in mcParticles_ vector
+    unsigned int particlenb = JetPartonPair[i].first;  // place in selectedLeptons vector
+    
+    //SM
+    
+   /* if( abs(mcParticles_[partonID[partonIDnb]]->type()) ==  5 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("SMb");
+    } // b from t*/
+    if( abs(mcParticles_[partonID[partonIDnb]]->type()) ==  13 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 24 && abs(mcParticles_[partonID[partonIDnb]]->grannyType())  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("SMmu");
+    } // mu from W from t
+    if( abs(mcParticles_[partonID[partonIDnb]]->type()) ==  11 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 24 && abs(mcParticles_[partonID[partonIDnb]]->grannyType())  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("SMel");
+    } // el from W from t
+   /* if( abs(mcParticles_[partonID[partonIDnb]]->type()) >=  1 && abs(mcParticles_[partonID[partonIDnb]]->type()) < 5 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("SMq");
+    } // q*/
+    if( mcParticles_[partonID[partonIDnb]]->type() ==  13 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 23  ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("Radmumin");
+    } // mu- from Z
+    if( mcParticles_[partonID[partonIDnb]]->type() ==  11 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 23  ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("Radelmin");
+    } // el- from Z
+    if( mcParticles_[partonID[partonIDnb]]->type() ==  -13 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 23 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("Radmuplus");
+    } // mu+ from Z
+    if( mcParticles_[partonID[partonIDnb]]->type() ==  -11 && abs(mcParticles_[partonID[partonIDnb]]->motherType())  == 23  ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,JetPartonPair[i].second));
+      NPair.push_back("Radelplus");
+    } // el+ from Z
+    
+    
+  }
+  
+  //cout << "PPair.size() " << PPair.size() << endl;
+  //cout << "NPair.size() "  << NPair.size() << endl;
+  
+  
+  TLorentzVector tempB;
+  TLorentzVector tempQ;
+  TLorentzVector tempWlep;
+  TLorentzVector tempZlepm;
+  TLorentzVector tempZlepp;
+  tempB.Clear();
+  tempQ.Clear();
+  tempZlepm.Clear();
+  tempZlepp.Clear();
+  tempWlep.Clear();
+  
+  
+  for(unsigned int iPart = 0 ; iPart < PPair.size(); iPart++){
+    
+    // cout << " iPart " << iPart << endl;
+   /* if(NPair[iPart].find("SMb")!=string::npos){ tempB.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E());}*/
+    if(NPair[iPart].find("SMmu")!=string::npos){ tempWlep.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E()); }
+    if(NPair[iPart].find("SMel")!=string::npos){ tempWlep.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E());}
+    
+    if(NPair[iPart].find("Radmumin")!=string::npos){ tempZlepm.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E());   }
+    if(NPair[iPart].find("Radelmin")!=string::npos){ tempZlepm.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E());  }
+    if(NPair[iPart].find("Radmuplus")!=string::npos){ tempZlepp.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E());   }
+    if(NPair[iPart].find("Radelplus")!=string::npos){ tempZlepp.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E()); }
+   /* if(NPair[iPart].find("SMq")!=string::npos){ tempQ.SetPxPyPzE(selectedobjects[PPair[iPart].first].Px(), selectedobjects[PPair[iPart].first].Py(), selectedobjects[PPair[iPart].first].Pz(), selectedobjects[PPair[iPart].first].E());  }*/
+  }
+  histo1D["matchedZmass"]->Fill((tempZlepm+tempZlepp).M());
+  //histo1D["matchedSMTopmass"]->Fill((tempWlep+tempB).M());
+  
+  
+  
+  
+  pair< vector< pair<unsigned int, unsigned int>>, vector <string> >   returnVector;
+  returnVector = pair< vector< pair<unsigned int, unsigned int>>, vector <string> >( PPair , NPair ) ;
+  ////  cout << " (returnVector.second).size() " << (returnVector.second).size() << endl;
+  //  cout << " (returnVector.first).size() " << (returnVector.first).size() << endl;
+  //  cout << "Matcher PPair.size() " << PPair.size() << endl;
+  //  cout << "Matcher NPair.size() "  << NPair.size() << endl;
+  return returnVector;
+};
 
 
 
