@@ -380,7 +380,7 @@ int main(int argc, char *argv[])
 		        }
 
             //*************Variables to be used for Reading the training********************
-            Int_t LepCharge_;
+            Float_t LepCharge_;
             Float_t MVA_TOPTOPLEPHAD_;
             Float_t MVA_TOPTOPLEPHBB_;
             Float_t MVA_TOPHLEPBB_hut_;
@@ -1274,7 +1274,7 @@ int main(int argc, char *argv[])
                         else if(Sample->Name().find("ST-") != string::npos) histo1D[("h_stop"+namingConventionFit[WhatSysts_noJECs[iSyst_]]).c_str()]->Fill(MVAvalue,Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling * Sample->NormFactor());
                         else if(Sample->Name().find("DYJets") != string::npos) histo1D[("h_zjets"+namingConventionFit[WhatSysts_noJECs[iSyst_]]).c_str()]->Fill(MVAvalue,Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling * Sample->NormFactor());
                         else if(Sample->Name().find("WJets") != string::npos) histo1D[("h_wjets"+namingConventionFit[WhatSysts_noJECs[iSyst_]]).c_str()]->Fill(MVAvalue,Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling * Sample->NormFactor());
-                        else histo1D[("h_other"+namingConventionFit[WhatSysts_noJECs[iSyst_]]).c_str()]->Fill(MVAvalue,Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling * Sample->NormFactor());
+                        else if(Sample->Name().find("Data") == string::npos) histo1D[("h_other"+namingConventionFit[WhatSysts_noJECs[iSyst_]]).c_str()]->Fill(MVAvalue,Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling * Sample->NormFactor());
                     }
                }
                if(filepath.find("JESMinus") != string::npos || filepath.find("JESPlus") != string::npos  || filepath.find("JERMinus") != string::npos || filepath.find("JERPlus") != string::npos || isData || WhatSysts[JecCounter] == "")
@@ -1290,10 +1290,10 @@ int main(int argc, char *argv[])
                         else if(Sample->Name().find("ST-") != string::npos) histo1D[("h_stop"+namingConventionFit[WhatSysts[JecCounter]]).c_str()]->Fill(MVAvalue,Luminosity * ScaleFactor * Doubling * Sample->NormFactor());
                         else if(Sample->Name().find("DYJets") != string::npos) histo1D[("h_zjets"+namingConventionFit[WhatSysts[JecCounter]]).c_str()]->Fill(MVAvalue,Luminosity * ScaleFactor * Doubling * Sample->NormFactor());
                         else if(Sample->Name().find("WJets") != string::npos) histo1D[("h_wjets"+namingConventionFit[WhatSysts[JecCounter]]).c_str()]->Fill(MVAvalue,Luminosity * ScaleFactor * Doubling * Sample->NormFactor());
-                        else histo1D[("h_other"+namingConventionFit[WhatSysts[JecCounter]]).c_str()]->Fill(MVAvalue,Luminosity * ScaleFactor * Doubling * Sample->NormFactor());
+                        else if(Sample->Name().find("Data") == string::npos) histo1D[("h_other"+namingConventionFit[WhatSysts[JecCounter]]).c_str()]->Fill(MVAvalue,Luminosity * ScaleFactor * Doubling * Sample->NormFactor());
 
-                        if(Sample->Name().find("Data") != string::npos) histo1D["h_data_obs"]->Fill(MVAvalue);
                }
+               if(Sample->Name().find("Data") != string::npos) histo1D["h_data_obs"]->Fill(MVAvalue);
 			                
 		        }//for-loop events
 		    }//for-loop JEC systematic samples              

@@ -1,0 +1,63 @@
+------------------------------------------------------------------------------------------------
+Begin program
+ - Category: b2j4
+------------------------------------------------------------------------------------------------
+ ... Making the TreeProcessor .xml files 
+
+Searching list of sample used for  Mu  channel!
+found  33 datasets
+
+Searching list of sample used for  El  channel!
+found  33 datasets
+used config file: config/FullMcBkgdSamples_Mu_TreeProcessor.xml
+ - split TTBar dataset into ...TTJets_ll, TTJets_cc and TTJets_ll
+Dataset:  :TTG_amcJESPlus
+                 nEntries: 193472
+Dataset:  :TTG_amcJESMinus
+                 nEntries: 186945
+Dataset:  :TTG_amcJERPlus
+                 nEntries: 190094
+Dataset:  :TTG_amcJERMinus
+                 nEntries: 190297
+Dataset:  :TTG_amc
+                 nEntries: 190199
+Dataset:  :WH_amcJESPlus
+                 nEntries: 64891
+Dataset:  :WH_amcJESMinus
+                 nEntries: 59949
+Dataset:  :WH_amcJERPlus
+                 nEntries: 62418
+Dataset:  :WH_amcJERMinus
+                 nEntries: 62453
+Dataset:  :WH_amc
+                 nEntries: 62435
+Dataset:  :WWJESPlus
+                 nEntries: 1473
+Dataset:  :WWJESMinus
+                 nEntries: 1329
+Dataset:  :WWJERPlus
+                 nEntries: 1409
+Dataset:  :WWJERMinus
+                 nEntries: 1403
+Dataset:  :WW
+                 nEntries: 1404
+Dataset:  :ZZ_amcJESPlus
+                 nEntries: 30578
+Dataset:  :ZZ_amcJESMinus
+                 nEntries: 27875
+Dataset:  :ZZ_amcJERPlus
+                 nEntries: 29336
+Dataset:  :ZZ_amcJERMinus
+                 nEntries: 29265
+Dataset:  :ZZ_amc
+                 nEntries: 29309
+Dataset:  :ttWJESPlus
+                 nEntries: 730608
+Dataset:  :ttWJESMinus
+                 nEntries: 710366
+Dataset:  :ttWJERPlus
+                 nEntries: 720270
+Dataset:  :ttWJERMinus
+                 nEntries: 720978
+Dataset:  :ttW
+                 nEntries: 720623
