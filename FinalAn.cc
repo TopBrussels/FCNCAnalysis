@@ -95,6 +95,10 @@ std::pair <Double_t, Double_t> c_workingpointvalue_Tight(0.69, -0.45); // reduce
 bool synchex = false;
 
 
+float lum_RunsBCDEF = 15.658183109;// /fb
+float lum_RunsGH = 15.199167277;// /fb
+
+
 
 // home made functions
 int FCNCjetCalculator(std::vector<TRootPFJet*> Jets, TLorentzVector recoZ ,int index, int verb);
@@ -611,7 +615,7 @@ int main (int argc, char *argv[])
     ///    Calibrations                  ///
     ////////////////////////////////////////
     string histfile = "BTagHistosPtEta/HistosPtEta_"+daName+ "_" + strJobNum +"_comb_central_" + sdecay + ".root";
-    string histreadfile = "BTagHistosPtEta/HistosPtEta_"+daName+ "_comb_central_"+ sdecay + ".root";
+    string histreadfile = "BTagHistosPtEta/Merged/"+daName+ "_comb_central_"+ sdecay + ".root";
     if(!isData && !btagShape)
     {
       // documentation at http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
@@ -628,9 +632,10 @@ int main (int argc, char *argv[])
       }
       else if(!fillBtagHisto)
       {
-        cout << "reading btag histo's" << endl;
+        cout << "reading btag histo's from " << histreadfile.c_str() << endl;
        // histoFileHandle = TFile::Open("BTagHistosPtEta/HistosPtEta_"+daName+ "_comb_central.root", "READ");
         //histoFileHandle = TFile::Open(histreadfile.c_str());
+        
         btwt = new BTagWeightTools(btagreader,histreadfile.c_str(),true,30,999,2.4);
         //btwt = new BTagWeightTools(btagreader,"BTagHistosPtEta/HistosPtEta_TTJets_mujets_central.root",false,30,999,2.4);
       }
@@ -652,22 +657,29 @@ int main (int argc, char *argv[])
     if(verbose>1) cout << "btag done" << endl;
     
     
-    //MuonSFWeight(const string &sfFile, const string &dataOverMC, const bool &extendRange, const bool &debug, const bool &printWarning)
-    string CaliPath = "../TopTreeAnalysisBase/Calibrations/";
-    MuonSFWeight* muonSFWeightID_T = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonID_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_TightIDandIPCut_DEN_genTracks_PAR_pt_spliteta_bin1/abseta_pt_ratio",true, printLeptonSF,printLeptonSF);
-    // MuonSFWeight* muonSFWeightID_M = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonID_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_MediumID_DEN_genTracks_PAR_pt_spliteta_bin1/abseta_pt_ratio",true,  printLeptonSF, printLeptonSF);
-    //MuonSFWeight* muonSFWeightID_L = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonID_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_LooseID_DEN_genTracks_PAR_pt_spliteta_bin1/abseta_pt_ratio", true, printLeptonSF, printLeptonSF);
-    MuonSFWeight* muonSFWeightIso_TT = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonIso_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_TightRelIso_DEN_TightID_PAR_pt_spliteta_bin1/abseta_pt_ratio",true, printLeptonSF,printLeptonSF);  // Tight RelIso, Tight ID
-    //  MuonSFWeight* muonSFWeightIso_TM = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonIso_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_TightRelIso_DEN_MediumID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true,printLeptonSF, printLeptonSF);  // Tight RelIso, Medium ID
-    //   MuonSFWeight* muonSFWeightIso_LT = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonIso_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_LooseRelIso_DEN_TightID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true,printLeptonSF, printLeptonSF);  // Loose RelIso, Tight ID
-    // MuonSFWeight* muonSFWeightIso_LM = new MuonSFWeight(CaliPath+"LeptonSF/MuonSF/"+"MuonIso_Z_RunBCD_prompt80X_7p65.root", "MC_NUM_LooseRelIso_DEN_MediumID_PAR_pt_spliteta_bin1/abseta_pt_ratio", true,printLeptonSF, printLeptonSF);  // Loose RelIso, Medium ID
+    MuonSFWeight* muonSFWeightID_BCDEF;
+    MuonSFWeight* muonSFWeightID_GH;
+    MuonSFWeight* muonSFWeightIso_BCDEF;
+    MuonSFWeight* muonSFWeightIso_GH;
+    MuonSFWeight* muonSFWeightTrig_BCDEF;
+    MuonSFWeight* muonSFWeightTrig_GH;
+    
+    
+    ElectronSFWeight* electronSFWeightID;
+    ElectronSFWeight* electronSFWeightReco;
+    
+    muonSFWeightID_BCDEF = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/MuonID_EfficienciesAndSF_BCDEF.root", "MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/abseta_pt_ratio", true, false, false);
+    muonSFWeightID_GH = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/MuonID_EfficienciesAndSF_GH.root", "MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/abseta_pt_ratio", true, false, false);
+    muonSFWeightIso_BCDEF = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/MuonIso_EfficienciesAndSF_BCDEF.root", "TightISO_TightID_pt_eta/abseta_pt_ratio", true, false, false);  // Tight RelIso, Tight ID
+    muonSFWeightIso_GH = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/MuonIso_EfficienciesAndSF_GH.root", "TightISO_TightID_pt_eta/abseta_pt_ratio", true, false, false);  // Tight RelIso, Tight ID
+    // muonSFWeightTrig_BCDEF = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/SingleMuonTrigger_EfficienciesAndSF_RunsBCDEF.root", "IsoMu24_OR_IsoTkMu24_PtEtaBins/abseta_pt_ratio", true, false, false);
+    //  muonSFWeightTrig_GH = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/SingleMuonTrigger_EfficienciesAndSF_RunsGH.root", "IsoMu24_OR_IsoTkMu24_PtEtaBins/abseta_pt_ratio", true, false, false);
     
     
     if(verbose>1) cout << "muon SF loaded" << endl;
     
-    
-    ElectronSFWeight* electronSFWeight = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_CutBasedTightID.root","EGamma_SF2D",true,false,false);
-    ElectronSFWeight* electronSFWeightReco = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/egammaEffi.txt_SF2D_GsfTrackingEff.root","EGamma_SF2D",true,false,false);
+    electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/egammaEffi.txt_EGM2D_CutBasedTightID.root","EGamma_SF2D",true,false,false);
+    electronSFWeightReco = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/egammaEffi.txt_EGM2D_RecoEff.root","EGamma_SF2D",true,false,false);
     
     if(verbose >1) cout << "electron SF loaded " << endl;
     
@@ -1784,7 +1796,7 @@ int main (int argc, char *argv[])
     nofEventsHLTv3 = 0;
     nofPosWeights = 0;
     nofNegWeights = 0;
-    float eventweight = 1;
+    float eventweight = 1.;
     bool continueFlow ;
     nbSelectedEvents = 0;
     
@@ -2025,7 +2037,7 @@ int main (int argc, char *argv[])
       badmu = false;
       EcalDead = false;
       //eeBad = false;
-      eventweight = 1;
+      eventweight = 1.;
       if(verbose > 0 ) cout << "new event " << ievt << endl;
       double ievt_d = ievt;
       debug = false;
@@ -2298,11 +2310,11 @@ int main (int argc, char *argv[])
       }
       
       /// propagate JEC to MET
-      METon = 0;
+
       orig_met_px = mets[0]->Px();
       orig_met_py = mets[0]->Py();
       orig_met_pt = sqrt(orig_met_px*orig_met_px + orig_met_py*orig_met_py);
-      if((applyJES ) // jer doesn't need to be applied ||  applyJER)) --> smeared type-1 corrected MET,  NOW only yes --> Type 1 corrected MET
+      if(applyJES ) // jer doesn't need to be applied ||  applyJER)) --> smeared type-1 corrected MET,  NOW only yes --> Type 1 corrected MET
       {
         jetTools->correctMETTypeOne(init_jets_corrected, mets[0], isData);
         METon = 1;
@@ -2381,7 +2393,7 @@ int main (int argc, char *argv[])
        double met_px = mets[0]->Px();
        double met_py = mets[0]->Py();
        
-       if(unclusteredUp){  --> now it should be each within their resolution 
+       if(unclusteredUp){  --> now it should be each within their resolution
        met_px += uncmet_px*0.1;
        met_py += uncmet_py*0.1;
        } if(unclusteredDown){
@@ -3637,9 +3649,11 @@ int main (int argc, char *argv[])
           if(!isData)
           {
             
-            MuonIDSF[nMuons] = muonSFWeightID_T->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
             
-            MuonIsoSF[nMuons] =  muonSFWeightIso_TT->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+            MuonIDSF[nMuons]  = (muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+            MuonIsoSF[nMuons] = (muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+            
+
             
           }
           else
@@ -3664,7 +3678,10 @@ int main (int argc, char *argv[])
           E_electron[nElectrons]=selectedElectrons[selel]->E();
           pfIso_electron[nElectrons]=selectedElectrons[selel]->relPfIso(3,0);
           charge_electron[nElectrons]=selectedElectrons[selel]->charge();
-          if(!isData) ElectronSF[nElectrons] = electronSFWeight->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0)*electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0);
+          if(!isData){
+            ElectronSF[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0)*electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0);
+            
+          }
           else ElectronSF[nElectrons] = 1.;
           
           nElectrons++;
