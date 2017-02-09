@@ -447,110 +447,111 @@ int main (int argc, char *argv[])
   histo1D["nbElectrons"]                                  = new TH1F("nbElectrons","nbElectrons",10,-0.5,9.5);
   histo1D["nbJets"]                                  = new TH1F("nbJets","nbJets",10,-0.5,9.5);
   
-  
-  histo1D["matchedZmass"] = new TH1F("matchedZmass","matchedZmass",500,0,500);
-  if(Usettbar && !istZq) histo1D["matchedFCNCTopmass"] = new TH1F("matchedFCNCTopmass","matchedFCNCTopmass",500,0,500);
-  histo1D["matchedSMTopmass"] = new TH1F("matchedSMTopmass","matchedSMTopmass",500,0,500);
-  
   histo1D["recoZmass"] = new TH1F("recoZmass","recoZmass",500,0,500);
   histo1D["recomWt"] = new TH1F("recomWt","recomWt",150,0,150);
   if(Usettbar && !istZq) histo1D["recoFCNCTopmass"] = new TH1F("recoFCNCTopmass","recoFCNCTopmass",500,0,500);
   histo1D["recoSMTopmass"] = new TH1F("recoSMTopmass","recoSMTopmass",500,0,500);
   
-  
-  histo1D["Topmass_Wb"] = new TH1F("Topmass_Wb","Topmass_Wb",500,0,500);
-  histo1D["pt_Wb"] = new TH1F("pt_Wb","pt_Wb",500,0,500);
-  histo1D["eta_Wb"]= new TH1F("eta_Wb","eta_Wb",30,-3,3);
-  histo1D["phi_Wb"]= new TH1F("phi_Wb","phi_Wb",32,-3.2,3.2);
-  
-  histo1D["Topmass_lvb"] = new TH1F("Topmass_lvb","Topmass_lvb",500,0,500);
-  histo1D["pt_lvb"] = new TH1F("pt_lvb","pt_lvb",500,0,500);
-  histo1D["eta_lvb"]= new TH1F("eta_lvb","eta_lvb",30,-3,3);
-  histo1D["phi_lvb"]= new TH1F("phi_lvb","phi_lvb",32,-3.2,3.2);
-  
-  
-  histo1D["Topmass_tq"] = new TH1F("Topmass_tq","Topmass_tq",500,0,500);
-  histo1D["pt_tq"] = new TH1F("pt_tq","pt_tq",500,0,500);
-  histo1D["eta_tq"]= new TH1F("eta_tq","eta_tq",30,-3,3);
-  histo1D["phi_tq"]= new TH1F("phi_tq","phi_tq",32,-3.2,3.2);
-  
-  histo1D["dR_lvb"] =  new TH1F("DRlvb", "dR lvb", 500,0, 5);
-  histo1D["dR_Wb"] =  new TH1F("DRWb", "dR Wb", 500,0, 5);
-  histo1D["dR_Wbtop"]  = new TH1F("DRWbtop", "dR Wb-top", 500,0, 5);
-  histo1D["dPhi_lvb"]  = new TH1F("DPhiWb", "dPhi Wb", 140,-7, 7);
-  histo1D["dPhi_Wb"]  = new TH1F("DPhilvb", "dPhi lvb", 140,-7, 7);
-  histo1D["dPhi_Wbtop"]  = new TH1F("DPhiWbtop", "dPhi Wb-top", 140,-7, 7);
-  
-  histo2D["Topmass_top_Wb"] = new TH2F("Topmass_top_Wb","Topmass:Wb:t",500,0,500,500,0,500);
-  histo2D["pt_top_Wb"] = new TH2F("pt_top_Wb","pt:Wb:t",500,0,500,500,0,500);
-  histo2D["eta_top_Wb"]= new TH2F("eta_top_Wb","eta:Wb:t",30,-3,3,30,-3,3);
-  histo2D["phi_top_Wb"]= new TH2F("phi_top_Wb","phi:Wb:t",32,-3.2,3.2,32,-3.2,3.2);
-  
-  
-  if(Usettbar && !istZq){
-    histo1D["Topmass_Zq"] = new TH1F("Topmass_Zq","Topmass_Zq",500,0,500);
-    histo1D["pt_Zq"] = new TH1F("pt_Zq","pt_Zq",500,0,500);
-    histo1D["eta_Zq"]= new TH1F("eta_Zq","eta_Zq",30,-3,3);
-    histo1D["phi_Zq"]= new TH1F("phi_Zq","phi_Zq",32,-3.2,3.2);
+  if(matching){
+    histo1D["matchedZmass"] = new TH1F("matchedZmass","matchedZmass",500,0,500);
+    if(Usettbar && !istZq) histo1D["matchedFCNCTopmass"] = new TH1F("matchedFCNCTopmass","matchedFCNCTopmass",500,0,500);
+    histo1D["matchedSMTopmass"] = new TH1F("matchedSMTopmass","matchedSMTopmass",500,0,500);
     
-    histo1D["Topmass_llq"] = new TH1F("Topmass_llq","Topmass_llq",500,0,500);
-    histo1D["pt_llq"] = new TH1F("pt_llq","pt_llq",500,0,500);
-    histo1D["eta_llq"]= new TH1F("eta_llq","eta_llq",30,-3,3);
-    histo1D["phi_llq"]= new TH1F("phi_llq","phi_llq",32,-3.2,3.2);
     
-    histo1D["Topmass_fcnctq"] = new TH1F("Topmass_fcnctq","Topmass_fcnctq",500,0,500);
-    histo1D["pt_fcnctq"] = new TH1F("pt_fcnctq","pt_fcnctq",500,0,500);
-    histo1D["eta_fcnctq"]= new TH1F("eta_fcnctq","eta_fcnctq",30,-3,3);
-    histo1D["phi_fcnctq"]= new TH1F("phi_fcnctq","phi_fcnctq",32,-3.2,3.2);
     
-    histo1D["mass_FCNCq"] = new TH1F("mass_FCNCq","mass_fcnc q",100,0,10);
-    histo1D["pt_FCNCq"] = new TH1F("pt_FCNCq","pt_fcnc q",500,0,500);
-    histo1D["eta_FCNCq"]= new TH1F("eta_FCNCq","eta_fcnc q",30,-3,3);
-    histo1D["phi_FCNCq"]= new TH1F("phi_FCNCq","phi_fcnc q",32,-3.2,3.2);
+    histo1D["Topmass_Wb"] = new TH1F("Topmass_Wb","Topmass_Wb",500,0,500);
+    histo1D["pt_Wb"] = new TH1F("pt_Wb","pt_Wb",500,0,500);
+    histo1D["eta_Wb"]= new TH1F("eta_Wb","eta_Wb",30,-3,3);
+    histo1D["phi_Wb"]= new TH1F("phi_Wb","phi_Wb",32,-3.2,3.2);
     
-    histo1D["dR_llq"] =  new TH1F("DRllq", "dR llq", 500,0, 5);
-    histo1D["dR_Zq"] =  new TH1F("DRZq", "dR Zq", 500,0, 5);
-    histo1D["dR_Zqtop"]  = new TH1F("DRZqtop", "dR Zq-top", 500,0, 5);
-    histo1D["dPhi_llq"]  = new TH1F("DPhiZq", "dPhi Zq", 140,-7, 7);
-    histo1D["dPhi_Zq"]  = new TH1F("DPhillq", "dPhi llq", 140,-7, 7);
-    histo1D["dPhi_Zqtop"]  = new TH1F("DPhiZqtop", "dPhi Zq-top", 140,-7, 7);
+    histo1D["Topmass_lvb"] = new TH1F("Topmass_lvb","Topmass_lvb",500,0,500);
+    histo1D["pt_lvb"] = new TH1F("pt_lvb","pt_lvb",500,0,500);
+    histo1D["eta_lvb"]= new TH1F("eta_lvb","eta_lvb",30,-3,3);
+    histo1D["phi_lvb"]= new TH1F("phi_lvb","phi_lvb",32,-3.2,3.2);
     
-    histo2D["Topmass_top_Zq"] = new TH2F("Topmass_top_Zq","Topmass:Zq:t",500,0,500,500,0,500);
-    histo2D["pt_top_Zq"] = new TH2F("pt_top_Zq","pt:Zq:t",500,0,500,500,0,500);
-    histo2D["eta_top_Zq"]= new TH2F("eta_top_Zq","eta:Zq:t",30,-3,3,30,-3,3);
-    histo2D["phi_top_Zq"]= new TH2F("phi_top_Zq","phi:Zq:t",32,-3.2,3.2,32,-3.2,3.2);
+    
+    histo1D["Topmass_tq"] = new TH1F("Topmass_tq","Topmass_tq",500,0,500);
+    histo1D["pt_tq"] = new TH1F("pt_tq","pt_tq",500,0,500);
+    histo1D["eta_tq"]= new TH1F("eta_tq","eta_tq",30,-3,3);
+    histo1D["phi_tq"]= new TH1F("phi_tq","phi_tq",32,-3.2,3.2);
+    
+    histo1D["dR_lvb"] =  new TH1F("DRlvb", "dR lvb", 500,0, 5);
+    histo1D["dR_Wb"] =  new TH1F("DRWb", "dR Wb", 500,0, 5);
+    histo1D["dR_Wbtop"]  = new TH1F("DRWbtop", "dR Wb-top", 500,0, 5);
+    histo1D["dPhi_lvb"]  = new TH1F("DPhiWb", "dPhi Wb", 140,-7, 7);
+    histo1D["dPhi_Wb"]  = new TH1F("DPhilvb", "dPhi lvb", 140,-7, 7);
+    histo1D["dPhi_Wbtop"]  = new TH1F("DPhiWbtop", "dPhi Wb-top", 140,-7, 7);
+    
+    histo2D["Topmass_top_Wb"] = new TH2F("Topmass_top_Wb","Topmass:Wb:t",500,0,500,500,0,500);
+    histo2D["pt_top_Wb"] = new TH2F("pt_top_Wb","pt:Wb:t",500,0,500,500,0,500);
+    histo2D["eta_top_Wb"]= new TH2F("eta_top_Wb","eta:Wb:t",30,-3,3,30,-3,3);
+    histo2D["phi_top_Wb"]= new TH2F("phi_top_Wb","phi:Wb:t",32,-3.2,3.2,32,-3.2,3.2);
+    
+    
+    if(Usettbar && !istZq){
+      histo1D["Topmass_Zq"] = new TH1F("Topmass_Zq","Topmass_Zq",500,0,500);
+      histo1D["pt_Zq"] = new TH1F("pt_Zq","pt_Zq",500,0,500);
+      histo1D["eta_Zq"]= new TH1F("eta_Zq","eta_Zq",30,-3,3);
+      histo1D["phi_Zq"]= new TH1F("phi_Zq","phi_Zq",32,-3.2,3.2);
+      
+      histo1D["Topmass_llq"] = new TH1F("Topmass_llq","Topmass_llq",500,0,500);
+      histo1D["pt_llq"] = new TH1F("pt_llq","pt_llq",500,0,500);
+      histo1D["eta_llq"]= new TH1F("eta_llq","eta_llq",30,-3,3);
+      histo1D["phi_llq"]= new TH1F("phi_llq","phi_llq",32,-3.2,3.2);
+      
+      histo1D["Topmass_fcnctq"] = new TH1F("Topmass_fcnctq","Topmass_fcnctq",500,0,500);
+      histo1D["pt_fcnctq"] = new TH1F("pt_fcnctq","pt_fcnctq",500,0,500);
+      histo1D["eta_fcnctq"]= new TH1F("eta_fcnctq","eta_fcnctq",30,-3,3);
+      histo1D["phi_fcnctq"]= new TH1F("phi_fcnctq","phi_fcnctq",32,-3.2,3.2);
+      
+      histo1D["mass_FCNCq"] = new TH1F("mass_FCNCq","mass_fcnc q",100,0,10);
+      histo1D["pt_FCNCq"] = new TH1F("pt_FCNCq","pt_fcnc q",500,0,500);
+      histo1D["eta_FCNCq"]= new TH1F("eta_FCNCq","eta_fcnc q",30,-3,3);
+      histo1D["phi_FCNCq"]= new TH1F("phi_FCNCq","phi_fcnc q",32,-3.2,3.2);
+      
+      histo1D["dR_llq"] =  new TH1F("DRllq", "dR llq", 500,0, 5);
+      histo1D["dR_Zq"] =  new TH1F("DRZq", "dR Zq", 500,0, 5);
+      histo1D["dR_Zqtop"]  = new TH1F("DRZqtop", "dR Zq-top", 500,0, 5);
+      histo1D["dPhi_llq"]  = new TH1F("DPhiZq", "dPhi Zq", 140,-7, 7);
+      histo1D["dPhi_Zq"]  = new TH1F("DPhillq", "dPhi llq", 140,-7, 7);
+      histo1D["dPhi_Zqtop"]  = new TH1F("DPhiZqtop", "dPhi Zq-top", 140,-7, 7);
+      
+      histo2D["Topmass_top_Zq"] = new TH2F("Topmass_top_Zq","Topmass:Zq:t",500,0,500,500,0,500);
+      histo2D["pt_top_Zq"] = new TH2F("pt_top_Zq","pt:Zq:t",500,0,500,500,0,500);
+      histo2D["eta_top_Zq"]= new TH2F("eta_top_Zq","eta:Zq:t",30,-3,3,30,-3,3);
+      histo2D["phi_top_Zq"]= new TH2F("phi_top_Zq","phi:Zq:t",32,-3.2,3.2,32,-3.2,3.2);
+    }
+    histo1D["mass_lep1"]                                  = new TH1F("mass_lep1","mass_lep1",250,0,0.5);
+    histo1D["mass_lep2"]                                  = new TH1F("mass_lep2","mass_lep2",250,0,0.5);
+    histo1D["Zmass_Zlep"]                                  = new TH1F("Zmass_Zlep","Zmass_lep",200,0,200);
+    histo1D["Zmass_Zbos"]                                  = new TH1F("Zmass_Zbos","Zmass_Zbos",200,0,200);
+    histo2D["mass_lep"]            = new TH2F("mass_lep", "mass lep;mass lep1;mass lep2", 250,0,0.5,250,0,0.5 );
+    histo2D["Zmass_Zbos_Zlep"]            = new TH2F("Zmass", "Zmass;Zmass_lep;Zmass_Zboson", 200,0,200,200,0,200 );
+    
+    histo1D["pt_lep1"]          = new TH1F("ptlep1", "Pt lep 1", 200,0,400);
+    histo1D["pt_lep2"]          = new TH1F("ptlep2", "Pt lep 2", 200,0,400);
+    histo1D["pt_Zbos"]          = new TH1F("ptZbos", "Pt Zboson", 200,0,400);
+    histo1D["pt_Zlep"]          = new TH1F("ptZlep", "Pt Zlep", 200,0,400);
+    histo2D["pt_lep"]          = new TH2F("ptlep", "Pt leptons;Pt lep 1;Pt lep 2", 200,0,400, 200,0,400);
+    histo2D["pt_Z"]          = new TH2F("ptZ", "Pt Z;Pt Zlep;Pt Zbos", 200,0,400, 200,0,400);
+    
+    histo1D["phi_lep1"]          = new TH1F("philep1", "phi lep 1",32,-3.2,3.2);
+    histo1D["phi_lep2"]          = new TH1F("philep2", "phi lep 2",32,-3.2,3.2);
+    histo1D["phi_Zbos"]          = new TH1F("phiZbos", "phi Zboson",32,-3.2,3.2);
+    histo1D["phi_Zlep"]          = new TH1F("phiZlep", "phi Zlep",32,-3.2,3.2);
+    histo2D["phi_lep"]          = new TH2F("philep", "phi lep;phi lep 1;phi lep 2",32,-3.2,3.2,32,-3.2,3.2);
+    histo2D["phi_Z"]          = new TH2F("phiZ", "phi Z;phi Zlep;phi Zbos",32,-3.2,3.2,32,-3.2,3.2);
+    
+    histo1D["eta_lep1"]          = new TH1F("etalep1", "eta lep 1", 30,-3,3);
+    histo1D["eta_lep2"]          = new TH1F("etalep2", "eta lep 2", 30,-3,3);
+    histo1D["eta_Zbos"]          = new TH1F("etaZbos", "eta Zboson", 30,-3,3);
+    histo1D["eta_Zlep"]          = new TH1F("etaZlep", "eta Zlep", 30,-3,3);
+    histo2D["eta_lep"]          = new TH2F("etalep", "eta lep;eta lep 1;eta lep 2", 30,-3,3, 30,-3,3);
+    histo2D["eta_Z"]          = new TH2F("etaZ", "eta Z;eta Zlep;eta Zbos", 30,-3,3, 30,-3,3);
+    
+    histo1D["dR_lep"]          = new TH1F("DRlep", "dR lep", 500,0, 5);
+    histo1D["dPhi_lep"]          = new TH1F("DPhilep", "dPhi lep", 140,-7, 7);
   }
-  histo1D["mass_lep1"]                                  = new TH1F("mass_lep1","mass_lep1",250,0,0.5);
-  histo1D["mass_lep2"]                                  = new TH1F("mass_lep2","mass_lep2",250,0,0.5);
-  histo1D["Zmass_Zlep"]                                  = new TH1F("Zmass_Zlep","Zmass_lep",200,0,200);
-  histo1D["Zmass_Zbos"]                                  = new TH1F("Zmass_Zbos","Zmass_Zbos",200,0,200);
-  histo2D["mass_lep"]            = new TH2F("mass_lep", "mass lep;mass lep1;mass lep2", 250,0,0.5,250,0,0.5 );
-  histo2D["Zmass_Zbos_Zlep"]            = new TH2F("Zmass", "Zmass;Zmass_lep;Zmass_Zboson", 200,0,200,200,0,200 );
-  
-  histo1D["pt_lep1"]          = new TH1F("ptlep1", "Pt lep 1", 200,0,400);
-  histo1D["pt_lep2"]          = new TH1F("ptlep2", "Pt lep 2", 200,0,400);
-  histo1D["pt_Zbos"]          = new TH1F("ptZbos", "Pt Zboson", 200,0,400);
-  histo1D["pt_Zlep"]          = new TH1F("ptZlep", "Pt Zlep", 200,0,400);
-  histo2D["pt_lep"]          = new TH2F("ptlep", "Pt leptons;Pt lep 1;Pt lep 2", 200,0,400, 200,0,400);
-  histo2D["pt_Z"]          = new TH2F("ptZ", "Pt Z;Pt Zlep;Pt Zbos", 200,0,400, 200,0,400);
-  
-  histo1D["phi_lep1"]          = new TH1F("philep1", "phi lep 1",32,-3.2,3.2);
-  histo1D["phi_lep2"]          = new TH1F("philep2", "phi lep 2",32,-3.2,3.2);
-  histo1D["phi_Zbos"]          = new TH1F("phiZbos", "phi Zboson",32,-3.2,3.2);
-  histo1D["phi_Zlep"]          = new TH1F("phiZlep", "phi Zlep",32,-3.2,3.2);
-  histo2D["phi_lep"]          = new TH2F("philep", "phi lep;phi lep 1;phi lep 2",32,-3.2,3.2,32,-3.2,3.2);
-  histo2D["phi_Z"]          = new TH2F("phiZ", "phi Z;phi Zlep;phi Zbos",32,-3.2,3.2,32,-3.2,3.2);
-  
-  histo1D["eta_lep1"]          = new TH1F("etalep1", "eta lep 1", 30,-3,3);
-  histo1D["eta_lep2"]          = new TH1F("etalep2", "eta lep 2", 30,-3,3);
-  histo1D["eta_Zbos"]          = new TH1F("etaZbos", "eta Zboson", 30,-3,3);
-  histo1D["eta_Zlep"]          = new TH1F("etaZlep", "eta Zlep", 30,-3,3);
-  histo2D["eta_lep"]          = new TH2F("etalep", "eta lep;eta lep 1;eta lep 2", 30,-3,3, 30,-3,3);
-  histo2D["eta_Z"]          = new TH2F("etaZ", "eta Z;eta Zlep;eta Zbos", 30,-3,3, 30,-3,3);
-  
-  histo1D["dR_lep"]          = new TH1F("DRlep", "dR lep", 500,0, 5);
-  histo1D["dPhi_lep"]          = new TH1F("DPhilep", "dPhi lep", 140,-7, 7);
-  
   histo1D["nRecoLeptons"] = new TH1F("nRecoLeptons","nRecoLeptons", 10,-0.5,9.5);
   histo1D["nIniRecoLeptons"] = new TH1F("nIniRecoLeptons","nIniRecoLeptons", 10,-0.5,9.5);
   histo1D["nRecoElectrons"] = new TH1F("nRecoElectrons","nRecoElectrons", 10,-0.5,9.5);
@@ -1007,6 +1008,32 @@ int main (int argc, char *argv[])
     
     Float_t dPhiZc_tagger;
     
+    
+    Int_t Wlep_Charge;
+    Float_t Wlep_Pt;
+    Float_t Wlep_Phi;
+    Float_t Wlep_Eta;
+    Float_t Zboson_Eta;
+    Float_t Zboson_Phi;
+    Float_t Zboson_Pt;
+    Float_t charge_asym;
+    Float_t dPhiZWlep;
+    Float_t dRZWlep;
+    Float_t SMtop_Eta;
+    Float_t SMtop_Phi;
+    Float_t SMtop_Pt;
+    Float_t dPhiZMET;
+    Float_t dPhiZSMtop;
+    Float_t dRZSMtop;
+    Float_t TotalPt;
+    Float_t TotalInvMass;
+    Float_t cdiscCvsB_jet_2;
+    Float_t cdiscCvsL_jet_2;
+    Float_t bdiscCSVv2_jet_2;
+    Float_t bdiscCSVv2_jet_1;
+    
+    
+    
     // mcparicles
     Int_t nMCParticles;
     Int_t mc_status[200];
@@ -1286,6 +1313,54 @@ int main (int argc, char *argv[])
     baselineTree->Branch("puSF",&puSF,"puSF/D");
     baselineTree->Branch("btagSF",&btagSF,"btagSF/D");
     baselineTree->Branch("nLeptons",&nLeptons, "nLeptons/I");//
+    
+    
+    myTree->Branch("Wlep_Charge",&Wlep_Charge,"Wlep_Charge/F");
+    myTree->Branch("Wlep_Phi", &Wlep_Phi, "Wlep_Phi/F");
+    myTree->Branch("Wlep_Eta", &Wlep_Eta, "Wlep_Eta/F");
+    myTree->Branch("Wlep_Pt", &Wlep_Pt, "Wlep_Pt/F");
+    myTree->Branch("Zboson_Phi", &Zboson_Phi, "Zboson_Phi/F");
+    myTree->Branch("Zboson_Pt", &Zboson_Pt, "Zboson_Pt/F");
+    myTree->Branch("Zboson_Eta", &Zboson_Eta, "Zboson_Eta/F");
+    myTree->Branch("charge_asym", &charge_asym, "charge_asym/F");
+    myTree->Branch("dPhiZWlep", &dPhiZWlep, "dPhiZWlep/F");
+    myTree->Branch("dRZWlep", &dRZWlep, "dRZWlep/F");
+    myTree->Branch("SMtop_Pt", &SMtop_Pt, "SMtop_Pt/F");
+    myTree->Branch("SMtop_Phi", &SMtop_Phi, "SMtop_Phi/F");
+    myTree->Branch("SMtop_Eta", &SMtop_Eta,"SMtop_Eta/F");
+    myTree->Branch("dPhiZMET", &dPhiZMET, "dPhiZMET/F");
+    myTree->Branch("dPhiZSMtop", &dPhiZSMtop, "dPhiZSMtop/F");
+    myTree->Branch("dRZSMtop", &dRZSMtop,"dRZSMtop/F");
+    myTree->Branch("TotalInvMass", &TotalInvMass, "TotalInvMass/F");
+    myTree->Branch("TotalPt", &TotalPt, "TotalPt/F");
+    myTree->Branch("cdiscCvsB_jet_2", &cdiscCvsB_jet_2, "cdiscCvsB_jet_2/F");
+    myTree->Branch("cdiscCvsL_jet_2", &cdiscCvsL_jet_2, "cdiscCvsL_jet_2/F");
+    myTree->Branch("bdiscCSVv2_jet_1", &bdiscCSVv2_jet_1, "bdiscCSVv2_jet_1/F");
+    myTree->Branch("bdiscCSVv2_jet_2", &bdiscCSVv2_jet_2, "bdiscCSVv2_jet_2/F");
+  
+    baselineTree->Branch("Wlep_Charge",&Wlep_Charge,"Wlep_Charge/F");
+    baselineTree->Branch("Wlep_Phi", &Wlep_Phi, "Wlep_Phi/F");
+    baselineTree->Branch("Wlep_Eta", &Wlep_Eta, "Wlep_Eta/F");
+    baselineTree->Branch("Wlep_Pt", &Wlep_Pt, "Wlep_Pt/F");
+    baselineTree->Branch("Zboson_Phi", &Zboson_Phi, "Zboson_Phi/F");
+    baselineTree->Branch("Zboson_Pt", &Zboson_Pt, "Zboson_Pt/F");
+    baselineTree->Branch("Zboson_Eta", &Zboson_Eta, "Zboson_Eta/F");
+    baselineTree->Branch("charge_asym", &charge_asym, "charge_asym/F");
+    baselineTree->Branch("dPhiZWlep", &dPhiZWlep, "dPhiZWlep/F");
+    baselineTree->Branch("dRZWlep", &dRZWlep, "dRZWlep/F");
+    baselineTree->Branch("SMtop_Pt", &SMtop_Pt, "SMtop_Pt/F");
+    baselineTree->Branch("SMtop_Phi", &SMtop_Phi, "SMtop_Phi/F");
+    baselineTree->Branch("SMtop_Eta", &SMtop_Eta,"SMtop_Eta/F");
+    baselineTree->Branch("dPhiZMET", &dPhiZMET, "dPhiZMET/F");
+    baselineTree->Branch("dPhiZSMtop", &dPhiZSMtop, "dPhiZSMtop/F");
+    baselineTree->Branch("dRZSMtop", &dRZSMtop,"dRZSMtop/F");
+    baselineTree->Branch("TotalInvMass", &TotalInvMass, "TotalInvMass/F");
+    baselineTree->Branch("TotalPt", &TotalPt, "TotalPt/F");
+    baselineTree->Branch("cdiscCvsB_jet_2", &cdiscCvsB_jet_2, "cdiscCvsB_jet_2/F");
+    baselineTree->Branch("cdiscCvsL_jet_2", &cdiscCvsL_jet_2, "cdiscCvsL_jet_2/F");
+    baselineTree->Branch("bdiscCSVv2_jet_1", &bdiscCSVv2_jet_1, "bdiscCSVv2_jet_1/F");
+    baselineTree->Branch("bdiscCSVv2_jet_2", &bdiscCSVv2_jet_2, "bdiscCSVv2_jet_2/F");
+    
     // electrons
     myTree->Branch("nElectrons",&nElectrons, "nElectrons/I");//
     myTree->Branch("ElectronSF",&ElectronSF,"ElectronSF[nElectrons]/F");
@@ -1959,10 +2034,11 @@ int main (int argc, char *argv[])
     
     vector <TLorentzVector> selectedobjects_;
     vector <TLorentzVector> selectedjets_;
-
+    TLorentzVector totalOfObjects;
     
     for (unsigned int ievt = event_start; ievt < end_d; ievt++)
     {
+      totalOfObjects.Clear();
       eventForCjetmatching_Ctight = false;
       eventForCjetmatching_Cmedium = false;
       eventForCjetmatching_Cloose = false;
@@ -2919,10 +2995,10 @@ int main (int argc, char *argv[])
         //FoundLeptons = AssignedLeptons.first;
         //vector< pair < string, int > > FoundLeptonsIndices;
         //FoundLeptonsIndices = AssignedLeptons.second;
-        
+       
         for(unsigned int iF = 0; iF < (AssignedLeptons.second).size(); iF++){
-          if((((AssignedLeptons.second)[iF]).first).find("Wmu")!=string::npos) WmuIndiceF = ((AssignedLeptons.second)[iF]).second;
-          if((((AssignedLeptons.second)[iF]).first).find("Wel")!=string::npos) WelecIndiceF = ((AssignedLeptons.second)[iF]).second;
+          if((((AssignedLeptons.second)[iF]).first).find("Wmu")!=string::npos){ WmuIndiceF = ((AssignedLeptons.second)[iF]).second;  }
+          if((((AssignedLeptons.second)[iF]).first).find("Wel")!=string::npos){ WelecIndiceF = ((AssignedLeptons.second)[iF]).second; }
           if((((AssignedLeptons.second)[iF]).first).find("Zmu_0")!=string::npos) ZmuIndiceF_0 = ((AssignedLeptons.second)[iF]).second;
           if((((AssignedLeptons.second)[iF]).first).find("Zmu_1")!=string::npos) ZmuIndiceF_1 = ((AssignedLeptons.second)[iF]).second;
           if((((AssignedLeptons.second)[iF]).first).find("Zel_0")!=string::npos) ZelecIndiceF_0 = ((AssignedLeptons.second)[iF]).second;
@@ -2933,16 +3009,16 @@ int main (int argc, char *argv[])
         int ZlepIndice_0 = -999;
         int ZlepIndice_1 = -999;
         
-        if(WelecIndiceF != -999) WlepIndice = WelecIndiceF;
-        if(WmuIndiceF != -999) WlepIndice = WmuIndiceF;
+        if(WelecIndiceF != -999){ WlepIndice = WelecIndiceF; }
+        if(WmuIndiceF != -999){ WlepIndice = WmuIndiceF; }
         if(ZmuIndiceF_0 != -999) ZlepIndice_0 = ZmuIndiceF_0;
         if(ZelecIndiceF_0 != -999) ZlepIndice_0 = ZelecIndiceF_0;
         if(ZmuIndiceF_1 != -999) ZlepIndice_1 = ZmuIndiceF_1;
         if(ZelecIndiceF_1 != -999) ZlepIndice_1 = ZelecIndiceF_1;
         if(WlepIndice != -999 && ZlepIndice_0 != -999 && ZlepIndice_1 != -999){ leptonsAssigned = true; }
-        //cout << "evt " << evt_num << " assigned " << leptonsAssigned <<  " found all objects " << foundAllLeptons <<  endl;
-        //cout << "WmuIndice " << WmuIndiceF << " WelecIndice "<< WelecIndiceF << " ZmuIndice_0 "<< ZmuIndiceF_0 << " ZmuIndice_1 "<< ZmuIndiceF_1 <<" ZelecIndice_0 "<< ZelecIndiceF_0 <<" ZelecIndice_1 "<< ZelecIndiceF_1 << endl;
-       // cout << "WlepIndice " << WlepIndice << " ZlepIndice_0 "<< ZlepIndice_0 << " ZlepIndice_1 "<< ZlepIndice_1 << endl;
+         //cout << "evt " << evt_num << " assigned " << leptonsAssigned <<  " found all objects " << foundAllLeptons <<  endl;
+         //cout << "WmuIndice " << WmuIndiceF << " WelecIndice "<< WelecIndiceF << " ZmuIndice_0 "<< ZmuIndiceF_0 << " ZmuIndice_1 "<< ZmuIndiceF_1 <<" ZelecIndice_0 "<< ZelecIndiceF_0 <<" ZelecIndice_1 "<< ZelecIndiceF_1 << endl;
+        // cout << "WlepIndice " << WlepIndice << " ZlepIndice_0 "<< ZlepIndice_0 << " ZlepIndice_1 "<< ZlepIndice_1 << endl;
         
         
         if(leptonsAssigned){
@@ -3124,12 +3200,14 @@ int main (int argc, char *argv[])
             
           } // tZq matching
           
+
+          if(ZmuIndiceF_0 != -999) Zlep0.SetPxPyPzE(selectedMuons[ZmuIndiceF_0]->Px(), selectedMuons[ZmuIndiceF_0]->Py(), selectedMuons[ZmuIndiceF_0]->Pz(), selectedMuons[ZmuIndiceF_0]->Energy());
+          if(ZmuIndiceF_1 != -999) Zlep1.SetPxPyPzE(selectedMuons[ZmuIndiceF_1]->Px(), selectedMuons[ZmuIndiceF_1]->Py(), selectedMuons[ZmuIndiceF_1]->Pz(), selectedMuons[ZmuIndiceF_1]->Energy());
+          if(WmuIndiceF != -999 ) Wlep.SetPxPyPzE(selectedMuons[WmuIndiceF]->Px(), selectedMuons[WmuIndiceF]->Py(), selectedMuons[WmuIndiceF]->Pz(),selectedMuons[WmuIndiceF]->Energy());
           
-          
-          
-          Zlep0.SetPxPyPzE(AssignedLeptons.first[ZlepIndice_0].Px(), AssignedLeptons.first[ZlepIndice_0].Py(), AssignedLeptons.first[ZlepIndice_0].Pz(), AssignedLeptons.first[ZlepIndice_0].Energy());
-          Zlep1.SetPxPyPzE(AssignedLeptons.first[ZlepIndice_1].Px(), AssignedLeptons.first[ZlepIndice_1].Py(), AssignedLeptons.first[ZlepIndice_1].Pz(), AssignedLeptons.first[ZlepIndice_1].Energy());
-          Wlep.SetPxPyPzE(AssignedLeptons.first[WlepIndice].Px(), AssignedLeptons.first[WlepIndice].Py(), AssignedLeptons.first[WlepIndice].Pz(),AssignedLeptons.first[WlepIndice].Energy());
+          if(ZelecIndiceF_0 != -999) Zlep0.SetPxPyPzE(selectedElectrons[ZelecIndiceF_0]->Px(), selectedElectrons[ZelecIndiceF_0]->Py(), selectedElectrons[ZelecIndiceF_0]->Pz(), selectedElectrons[ZelecIndiceF_0]->Energy());
+          if(ZelecIndiceF_1 != -999) Zlep1.SetPxPyPzE(selectedElectrons[ZelecIndiceF_1]->Px(), selectedElectrons[ZelecIndiceF_1]->Py(), selectedElectrons[ZelecIndiceF_1]->Pz(), selectedElectrons[ZelecIndiceF_1]->Energy());
+          if(WelecIndiceF != -999 ) Wlep.SetPxPyPzE(selectedElectrons[WelecIndiceF]->Px(), selectedElectrons[WelecIndiceF]->Py(), selectedElectrons[WelecIndiceF]->Pz(),selectedElectrons[WelecIndiceF]->Energy());
           
           //double phis = Wlep.Phi() - mets[0]->Phi();
           //double cosphis = TMath::Cos(phis);
@@ -3153,6 +3231,19 @@ int main (int argc, char *argv[])
           Zboson_Py = ( Zlep0 + Zlep1).Py();
           Zboson_Pz = ( Zlep0 + Zlep1).Pz();
           Zboson_Energy = ( Zlep0 + Zlep1).Energy();
+          Wlep_Pt = Wlep.Pt();
+          Wlep_Eta = Wlep.Eta();
+          Wlep_Phi = Wlep.Phi();
+          if(WelecIndiceF != -999){ if(selectedElectrons[WelecIndiceF]->charge() > 0){ Wlep_Charge = 1.;}else{Wlep_Charge = -1.; }}
+          if(WmuIndiceF != -999){ if(selectedMuons[WmuIndiceF]->charge() > 0){ Wlep_Charge = 1.;}else{Wlep_Charge = -1; }}
+          Zboson_Pt = Zboson.Pt();
+          Zboson_Eta = Zboson.Eta();
+          Zboson_Phi = Zboson.Phi();
+          charge_asym =Wlep_Charge*fabs(Wlep.Eta());
+          
+          dPhiZWlep = Zboson.DeltaPhi(Wlep);
+          dRZWlep = Zboson.DeltaR(Wlep);
+          
           
           histo1D["recoZmass"]->Fill((Zlep0+Zlep1).M());
           histo1D["recomWt"]->Fill(mWt);
@@ -3220,7 +3311,7 @@ int main (int argc, char *argv[])
           else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){nbEvents_uue_4++; }
         }
       }
-      if( !Usettbar && selectedJets.size() != 1){
+      else if( !Usettbar && selectedJets.size() != 1){
         selections.push_back(0);
         continueFlow = false;
       }
@@ -3341,12 +3432,17 @@ int main (int argc, char *argv[])
         if(leptonsAssigned && continueFlow)  {
           SMtop_M = (Wlep+SMbjet+metTLV).M();
           SMtop.SetPxPyPzE((SMbjet.Px()+Wlep.Px()+metTLV.Px()),(SMbjet.Py()+Wlep.Py()+metTLV.Py()),(SMbjet.Pz()+Wlep.Pz()+metTLV.Pz()),(SMbjet.Energy()+Wlep.Energy()+metTLV.Energy()));
+          SMtop_Pt = SMtop.Pt();
+          SMtop_Eta = SMtop.Eta();
+          SMtop_Phi = SMtop.Phi();
           mlb = (Wlep+SMbjet).M();
           dRWlepb = Wlep.DeltaR(SMbjet);
           dRZb = Zboson.DeltaR(SMbjet);
           dPhiWlepb = Wlep.DeltaPhi(SMbjet);
           dPhiZb = Zboson.DeltaPhi(SMbjet);
-          
+          dPhiZMET = Zboson.DeltaPhi(metTLV);
+          dRZSMtop = Zboson.DeltaR(SMtop);
+          dPhiZSMtop = Zboson.DeltaPhi(SMtop);
           
           histo1D["recoSMTopmass"]->Fill((Wlep+SMbjet).M());
         }
@@ -3550,9 +3646,12 @@ int main (int argc, char *argv[])
       if(eventSelected || baseSelected){
         
         nJets = 0;
+        TLorentzVector tempObject;
         for(Int_t seljet = 0; seljet < selectedJets.size(); seljet++)
         {
-          
+          tempObject.Clear();
+          tempObject.SetPxPyPzE(selectedJets[seljet]->Px(),selectedJets[seljet]->Py(),selectedJets[seljet]->Py(), selectedJets[seljet]->Energy());
+          totalOfObjects =  totalOfObjects+tempObject;
           pt_jet[nJets]=selectedJets[seljet]->Pt();
           px_jet[nJets]=selectedJets[seljet]->Px();
           py_jet[nJets]=selectedJets[seljet]->Py();
@@ -3568,6 +3667,10 @@ int main (int argc, char *argv[])
         }
         if(selectedJets.size()>0 && Usettbar) cdiscCvsB_jet_1 = selectedJets[0]->ctag_pfCombinedCvsBJetTags();
         if(selectedJets.size()>0 && Usettbar) cdiscCvsL_jet_1 = selectedJets[0]->ctag_pfCombinedCvsLJetTags();
+        if(selectedJets.size()>1 && Usettbar) cdiscCvsB_jet_2 = selectedJets[1]->ctag_pfCombinedCvsBJetTags();
+        if(selectedJets.size()>1 && Usettbar) cdiscCvsL_jet_2 = selectedJets[1]->ctag_pfCombinedCvsLJetTags();
+        if(selectedJets.size()>0 ) bdiscCSVv2_jet_1 = selectedJets[0]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
+        if(selectedJets.size()>1 ) bdiscCSVv2_jet_2 = selectedJets[1]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
         if(selectedJets.size()>0) pt_jet_1 = selectedJets[0]->Pt();
         if(selectedJets.size()>1) pt_jet_2 = selectedJets[1]->Pt();
         if(selectedJets.size()>2) pt_jet_3 = selectedJets[2]->Pt();
@@ -3637,9 +3740,12 @@ int main (int argc, char *argv[])
         
         
         nMuons = 0;
+        
         for (Int_t selmu =0; selmu < selectedMuons.size() ; selmu++ )
         {
-          
+          tempObject.Clear();
+          tempObject.SetPxPyPzE(selectedMuons[selmu]->Px(),selectedMuons[selmu]->Py(),selectedMuons[selmu]->Py(), selectedMuons[selmu]->Energy());
+          totalOfObjects =  totalOfObjects+tempObject;
           pt_muon[nMuons]=selectedMuons[selmu]->Pt();
           phi_muon[nMuons]=selectedMuons[selmu]->Phi();
           eta_muon[nMuons]=selectedMuons[selmu]->Eta();
@@ -3670,7 +3776,9 @@ int main (int argc, char *argv[])
         nElectrons=0;
         for (Int_t selel =0; selel < selectedElectrons.size() ; selel++ )
         {
-          
+          tempObject.Clear();
+          tempObject.SetPxPyPzE(selectedElectrons[selel]->Px(),selectedElectrons[selel]->Py(),selectedElectrons[selel]->Py(), selectedElectrons[selel]->Energy());
+          totalOfObjects =  totalOfObjects+tempObject;
           pt_electron[nElectrons]=selectedElectrons[selel]->Pt();
           phi_electron[nElectrons]=selectedElectrons[selel]->Phi();
           eta_electron[nElectrons]=selectedElectrons[selel]->Eta();
@@ -3690,6 +3798,8 @@ int main (int argc, char *argv[])
         if(selectedElectrons.size()>1) pt_electron_2 = selectedElectrons[1]->Pt();
         if(selectedElectrons.size()>2) pt_electron_3 = selectedElectrons[2]->Pt();
         
+        TotalInvMass = totalOfObjects.M();
+        TotalPt = totalOfObjects.Pt();
         
         nLeptons = nMuons + nElectrons;
         
