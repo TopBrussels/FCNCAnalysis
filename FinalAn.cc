@@ -351,7 +351,7 @@ int main (int argc, char *argv[])
   BTagCalibrationReader *btagreader;
   BTagWeightTools *btwt = 0;
   BTagCalibrationReader * reader_csvv2;
-  TFile *histoFileHandle = 0;
+  //TFile *histoFileHandle = 0;
   // for pu
   LumiReWeighting LumiWeights;
   
@@ -581,9 +581,9 @@ int main (int argc, char *argv[])
   
   /// LUMIREWEIGHING
   
-  LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring16MiniAODv2-Asympt.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting//pileup_2016Data80X_Run273158-276811Cert.root", "pileup", "pileup");
+  //LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring16MiniAODv2-Asympt.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting//pileup_2016Data80X_Run273158-276811Cert.root", "pileup", "pileup");
   
-  LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/MCPileup_Summer16.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2016Data80X_Run271036-284044Cert__Full2016DataSet.root", "pileup", "pileup");
+  LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/MCPileup_Summer16.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2016Data80X_Run271036-284044Cert__Full2016DataSet.root", "pileup", "pileup");
   
   /////////////////////////////////
   //       Loop on datasets      //
@@ -610,8 +610,8 @@ int main (int argc, char *argv[])
     /////////////////////////////////////////
     ///    Calibrations                  ///
     ////////////////////////////////////////
-    string histfile = "BTagHistosPtEta/HistosPtEta_"+daName+ "_" + strJobNum +"_comb_central.root";
-    string histreadfile = "BTagHistosPtEta/HistosPtEta_"+daName+ "_comb_central.root";
+    string histfile = "BTagHistosPtEta/HistosPtEta_"+daName+ "_" + strJobNum +"_comb_central_" + sdecay + ".root";
+    string histreadfile = "BTagHistosPtEta/HistosPtEta_"+daName+ "_comb_central_"+ sdecay + ".root";
     if(!isData && !btagShape)
     {
       // documentation at http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
@@ -623,13 +623,14 @@ int main (int argc, char *argv[])
       if(fillBtagHisto)  // before btag reweighting can be apply, you first have to make the histograms
       {
         cout << "filling btag histo's" << endl;
-        histoFileHandle = TFile::Open(histfile.c_str(), "UPDATE");
+        //histoFileHandle = TFile::Open(histfile.c_str(), "UPDATE");
         btwt = new BTagWeightTools(btagreader,histfile.c_str(),false,30,999,2.4);
       }
-      else
+      else if(!fillBtagHisto)
       {
+        cout << "reading btag histo's" << endl;
        // histoFileHandle = TFile::Open("BTagHistosPtEta/HistosPtEta_"+daName+ "_comb_central.root", "READ");
-        histoFileHandle = TFile::Open(histreadfile.c_str());
+        //histoFileHandle = TFile::Open(histreadfile.c_str());
         btwt = new BTagWeightTools(btagreader,histreadfile.c_str(),true,30,999,2.4);
         //btwt = new BTagWeightTools(btagreader,"BTagHistosPtEta/HistosPtEta_TTJets_mujets_central.root",false,30,999,2.4);
       }
@@ -638,6 +639,7 @@ int main (int argc, char *argv[])
     }
     else if(!isData) // NEEDS TO BE CHECKED FOR 80X
     {
+      cout << " WARNING: btag shape is used" << endl;
       BTagCalibration calib_csvv2("csvv2", "../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2Moriond17_2017_1_26_BtoH.csv");
       reader_csvv2 = new BTagCalibrationReader(&calib_csvv2, // calibration instance
                                                BTagEntry::OP_RESHAPING, // operating point
@@ -1665,7 +1667,7 @@ int main (int argc, char *argv[])
     int itrigger = -1, previousRun = -1, start = 0;
     int currentRun;
     int iFile = -1;
-    cout << "before" << endl;
+    //cout << "before" << endl; if you get a error for the line below, check vecFileNames
     unsigned int ending = datasets[d]->NofEvtsToRunOver();
     cout <<"Number of events = "<<  ending  <<endl;
     
@@ -2300,7 +2302,7 @@ int main (int argc, char *argv[])
       orig_met_px = mets[0]->Px();
       orig_met_py = mets[0]->Py();
       orig_met_pt = sqrt(orig_met_px*orig_met_px + orig_met_py*orig_met_py);
-      if((applyJES ||  applyJER))
+      if((applyJES ) // jer doesn't need to be applied ||  applyJER)) --> smeared type-1 corrected MET,  NOW only yes --> Type 1 corrected MET
       {
         jetTools->correctMETTypeOne(init_jets_corrected, mets[0], isData);
         METon = 1;
@@ -2357,7 +2359,7 @@ int main (int argc, char *argv[])
        3 parts: unc related to jets: JEC - JER
        unc related to unclustered E (see below)
        unc related to leptons --> can be accounted for in uncl energy
-       
+        SEE https://twiki.cern.ch/twiki/bin/view/CMS/TopJME#MET
        
        NOW different!!! see https://indico.cern.ch/event/510570/contributions/1190890/attachments/1246661/1836294/JME_METUnc_210316.pdf
        // Set up the unclustered MET systematic
@@ -2379,7 +2381,7 @@ int main (int argc, char *argv[])
        double met_px = mets[0]->Px();
        double met_py = mets[0]->Py();
        
-       if(unclusteredUp){
+       if(unclusteredUp){  --> now it should be each within their resolution 
        met_px += uncmet_px*0.1;
        met_py += uncmet_py*0.1;
        } if(unclusteredDown){
@@ -2725,9 +2727,8 @@ int main (int argc, char *argv[])
       float PUweight = 1;
       if(!isData)
       {
-        //PUweight = LumiWeights.ITweight((int)event->nTruePU());
-        //not ready yet !
-        PUweight = 1;
+        PUweight = LumiWeights.ITweight((int)event->nTruePU());
+
         
       }
       
@@ -3929,12 +3930,12 @@ int main (int argc, char *argv[])
     globalTree->Write();
     baselineTree->Write();
     tupfile->Close();
-    //histoFileHandle->Close();
+
     delete tupfile;
     if(!isData && !btagShape){
       delete btwt;
-      histoFileHandle->Close();
-      delete histoFileHandle;
+      //histoFileHandle->Close();
+      //delete histoFileHandle;
     }
     
     treeLoader.UnLoadDataset();
