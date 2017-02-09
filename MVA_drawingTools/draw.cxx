@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
     SetPlotStyle();
    
     std::string category = "b"+intToStr(baseline_bjets)+"j"+intToStr(baseline_jets);
-    std::string TrainingName = "Training_" + SignalSample + "_" + channel + "_" +  category;//Example: Training_SThut_El_b3j3
+    std::string TrainingName = "Training_" + SignalSample + channel + "_" +  category;//Example: Training_SThut_El_b3j3
     std::string outputpics = "pics/"+TrainingName+"/";
     mkdir("pics",0777);
     mkdir(outputpics.c_str(),0777);

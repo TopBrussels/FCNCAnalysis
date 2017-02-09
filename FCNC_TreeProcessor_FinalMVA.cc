@@ -224,8 +224,8 @@ int main(int argc, char *argv[])
 
     clock_t start = clock();
 
-    cout << " ... Making the TreeProcessor .xml files " << endl;
-    system("python scripts/MakeXMLforTreeProcessor.py");
+//    cout << " ... Making the TreeProcessor .xml files " << endl;
+//    system("python scripts/MakeXMLforTreeProcessor.py");
     Double_t CorrectionForAllChannel = 1.; 
 
     string xmlNom;
@@ -330,7 +330,12 @@ int main(int argc, char *argv[])
     histo1D["h_data_obs"] = new TH1F("h_data_obs","h_data_obs",20,-1,1);
     for(int iSyst = 0; iSyst<WhatSysts.size();iSyst++)
     {
-        MSPlot[("MVA_"+TrainingName+WhatSysts[iSyst]).c_str()] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_"+TrainingName+WhatSysts[iSyst]).c_str(), 50, -1., 1., "BDT output","Events", "");
+        MSPlot[("MVA_MaxTT-ST_"+TrainingName+WhatSysts[iSyst]).c_str()] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_MaxTT-ST_"+TrainingName+WhatSysts[iSyst]).c_str(), 20, -1., 1., "BDT output","Events", "");
+
+        MSPlot[("MVA_ST"+TrainingName+WhatSysts[iSyst]).c_str()] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_ST"+TrainingName+WhatSysts[iSyst]).c_str(), 20, -1., 1., "BDT output","Events", "");
+        MSPlot[("MVA_TT"+TrainingName+WhatSysts[iSyst]).c_str()] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TT"+TrainingName+WhatSysts[iSyst]).c_str(), 20, -1., 1., "BDT output","Events", "");
+
+        if(category == "b2j4") MSPlot[("CategoryRates"+WhatSysts[iSyst]).c_str()] = new MultiSamplePlot(datasets_splittedTTbar, ("CategoryRates"+WhatSysts[iSyst]).c_str(), 20, -1., 1., "BDT output","Events", "");
 
         histo1D[("h_sig"+namingConventionFit[WhatSysts[iSyst]]).c_str()] = new TH1F(("h_sig"+namingConventionFit[WhatSysts[iSyst]]).c_str(),("h_sig"+namingConventionFit[WhatSysts[iSyst]]).c_str(),20,-1,1);
         histo1D[("h_sig_stop"+namingConventionFit[WhatSysts[iSyst]]).c_str()] = new TH1F(("h_sig_stop"+namingConventionFit[WhatSysts[iSyst]]).c_str(),("h_sig_stop"+namingConventionFit[WhatSysts[iSyst]]).c_str(),20,-1,1);
@@ -805,7 +810,7 @@ int main(int argc, char *argv[])
                 EntryStart = (int) nEntries/2+1;
                 Doubling = 2;
             }
-            EntryStart = 0;//Manually overwriting the number of events to run over.
+            EntryStart = 0;//nEntries/2+nEntries/3+1;//Manually overwriting the number of events to run over.
             Doubling = 1;
 
             double nloSF = 1.;
@@ -1263,7 +1268,18 @@ int main(int argc, char *argv[])
                         //-----------------------------------------------------------------------------------------------------------
                         // Fill Plots
                         //-----------------------------------------------------------------------------------------------------------
-                        MSPlot[("MVA_"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVAvalue, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling); //Factor 2 to compensate for the fact we're running over half the number of simulated events
+                        MSPlot[("MVA_MaxTT-ST_"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVAvalue, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling); //Factor 2 to compensate for the fact we're running over half the number of simulated events
+
+                        MSPlot[("MVA_ST"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(reader_ST->EvaluateMVA("BDTG method"), Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling); //Factor 2 to compensate for the fact we're running over half the number of simulated events
+                        MSPlot[("MVA_TT"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(reader_TT->EvaluateMVA("BDTG method"), Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling); //Factor 2 to compensate for the fact we're running over half the number of simulated events
+                        if(category == "b2j4")
+                        {
+                            if(nJets_CSVM == 2 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(0, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
+                            if(nJets_CSVM == 2 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(1, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
+                            if(nJets_CSVM == 3 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(2, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
+                            if(nJets_CSVM == 3 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(3, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
+                            if(nJets_CSVM == 4 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(4, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
+                        }
                         
                         if(Sample->Name().find("NP_") != string::npos) histo1D[("h_sig"+namingConventionFit[WhatSysts_noJECs[iSyst_]]).c_str()]->Fill(MVAvalue,Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling * Sample->NormFactor());
                         if(Sample->Name().find("NP_overlay_ST") != string::npos) histo1D[("h_sig_stop"+namingConventionFit[WhatSysts_noJECs[iSyst_]]).c_str()]->Fill(MVAvalue,Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling * Sample->NormFactor());
@@ -1279,7 +1295,18 @@ int main(int argc, char *argv[])
                }
                if(filepath.find("JESMinus") != string::npos || filepath.find("JESPlus") != string::npos  || filepath.find("JERMinus") != string::npos || filepath.find("JERPlus") != string::npos || isData || WhatSysts[JecCounter] == "")
                {
-                        MSPlot[("MVA_"+TrainingName+WhatSysts[JecCounter]).c_str()]->Fill(MVAvalue, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling); //Factor 2 to compensate for the fact we're running over half the number of simulated events
+                        MSPlot[("MVA_MaxTT-ST_"+TrainingName+WhatSysts[JecCounter]).c_str()]->Fill(MVAvalue, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling); //Factor 2 to compensate for the fact we're running over half the number of simulated events
+
+                        MSPlot[("MVA_ST"+TrainingName+WhatSysts[JecCounter]).c_str()]->Fill(reader_ST->EvaluateMVA("BDTG method"), Sample, ScalePlots, Luminosity * ScaleFactor * Doubling); //Factor 2 to compensate for the fact we're running over half the number of simulated events
+                        MSPlot[("MVA_TT"+TrainingName+WhatSysts[JecCounter]).c_str()]->Fill(reader_TT->EvaluateMVA("BDTG method"), Sample, ScalePlots, Luminosity * ScaleFactor * Doubling); //Factor 2 to compensate for the fact we're running over half the number of simulated events
+                        if(category == "b2j4")
+                        {
+                            if(nJets_CSVM == 2 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(0, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
+                            if(nJets_CSVM == 2 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(1, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
+                            if(nJets_CSVM == 3 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(2, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
+                            if(nJets_CSVM == 3 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(3, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
+                            if(nJets_CSVM == 4 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(4, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
+                        }
 
                         if(Sample->Name().find("NP_") != string::npos) histo1D[("h_sig"+namingConventionFit[WhatSysts[JecCounter]]).c_str()]->Fill(MVAvalue,Luminosity * ScaleFactor * Doubling * Sample->NormFactor());
                         if(Sample->Name().find("NP_overlay_ST") != string::npos) histo1D[("h_sig_stop"+namingConventionFit[WhatSysts[JecCounter]]).c_str()]->Fill(MVAvalue,Luminosity * ScaleFactor * Doubling * Sample->NormFactor());
@@ -1396,6 +1423,7 @@ int main(int argc, char *argv[])
       {
           continue;
       }
+      
 
 
      	MultiSamplePlot *temp = it->second;
@@ -1403,21 +1431,41 @@ int main(int argc, char *argv[])
      	temp->setErrorBandFile(errorbandfile);
 
 
-     	
-      if (debug)
+      if(name.find("CategoryRates") != string::npos)
       {
-          cout << "Saving the MSP" << endl;
-          cout << " and it->first is " << name << endl;
-          cout << " Luminosity is " << Luminosity << endl;
+          vector<string> label;
+          label.push_back("(nj=3,nb=2)");
+          label.push_back("(nj>3,nb=2)");
+          label.push_back("(nj=3,nb=3)");
+          label.push_back("(nj>3,nb=3)");
+          label.push_back("(nj>3,nb=4)");
+          temp->setBins(label);
+
+          temp->showNumberEntries(false);
+          temp->setChannel(true,category);
+          temp->Draw("MyMSP_"+name, 1, true, true, true, 1);
+          bool writePng = false;
+          temp->Write(outfile_errorbands, name, true,pathPNG, "eps");
+
       }
-      cout << "Drawing MSP: " << name << endl;
-      temp->showNumberEntries(false);
-      temp->setChannel(true,category);
-      temp->Draw("MyMSP_"+name, 1, true, true, true, 1);
-      bool writePng = false;
-      temp->Write(outfile_errorbands, name, true,pathPNG, "png");
-      temp->Write(outfile_errorbands, name, true,pathPNG, "eps");
-      temp->Write(outfile_errorbands, name, true,pathPNG, "pdf");
+      else
+      {
+           	
+          if (debug)
+          {
+              cout << "Saving the MSP" << endl;
+              cout << " and it->first is " << name << endl;
+              cout << " Luminosity is " << Luminosity << endl;
+          }
+          cout << "Drawing MSP: " << name << endl;
+          temp->showNumberEntries(false);
+          temp->setChannel(true,category);
+          temp->Draw("MyMSP_"+name, 1, true, true, true, 1);
+          bool writePng = false;
+          temp->Write(outfile_errorbands, name, true,pathPNG, "eps");//You can only call 1 format for saving the plots. The second time you want to draw, the THStacks are empty, because the object has been written to the root-file.
+    //      temp->Write(outfile_errorbands, name, true,pathPNG, "png");
+    //      temp->Write(outfile_errorbands, name, true,pathPNG, "pdf");//.pdf files are corrputed due to the #backslash symbol defined in MultiSamplePlot.cc
+     }
 	}
 	outfile_errorbands->Write("kOverwrite");
 

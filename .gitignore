@@ -1,6 +1,9 @@
 __init__.py
 *.eps
 MVA_drawingTools/NormHistos.root
+localsubmission/FinalMVAPlotting/Terminal_Output/*
+MVA_drawingTools/draw
+MVA_drawingTools/draw.o
 TreeMaker*
 *_bk*
 TopKinFit/README.md

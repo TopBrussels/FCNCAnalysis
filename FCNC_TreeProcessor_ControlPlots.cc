@@ -1925,9 +1925,9 @@ int main(int argc, char *argv[])
       temp->setChannel(true,category);
       temp->Draw("MyMSP_"+name, 1, true, true, true, 1);
       bool writePng = false;
-      temp->Write(outfile_errorbands, name, true,pathPNG, "png");
+//      temp->Write(outfile_errorbands, name, true,pathPNG, "png");
       temp->Write(outfile_errorbands, name, true,pathPNG, "eps");
-      temp->Write(outfile_errorbands, name, true,pathPNG, "pdf");
+//      temp->Write(outfile_errorbands, name, true,pathPNG, "pdf");
 	}
 	outfile_errorbands->Write("kOverwrite");
 

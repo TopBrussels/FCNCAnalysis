@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!-- add="1" means run on the sample -->
+<!-- add="0" means do not run on the sample -->
+<!-- ex with eqlumi <d name="TTJets" add="1" color="4" ls="1" lw="1" normf="0.000437334" EqLumi="1" xsection="414" filenames="/user/echabert/TopTree_Prod229/TopTree_TTJets.root" EqLumi="2287."/> -->
+<!-- ex with NofEvts <d name="TTJets" add="1" color="4" ls="1" lw="1" normf="0.000437334" EqLumi="1" xsection="414" filenames="/user/echabert/TopTree_Prod229/TopTree_TTJets.root" NofEvts="946644"/> -->
+<!-- ex with PreselEff NofPSEvts <d name="TTJets" add="1" color="4" ls="1" lw="1" normf="0.000437334" EqLumi="1" xsection="414" filenames="/user/echabert/TopTree_Prod229/TopTree_TTJets.root" PreselEff="0.2307" NofPSEvts="218404"/> -->
+
+
+<!--NOT SURE HOW I SHOULD USE THE DIFFERENT OPTION -->
+
+<data>
+<datasets>
+
+
+<!--DATA-->
+
+
+<d name="NP_overlay_TTtoTHToBB-1L-Kappa-hct_LepTop-Private"         title="tt-tcH"  add="1"   color="393"  ls="1"  lw="2" normf="1"  EqLumi="56890.8599243" xsection="18.49"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/80X_v4/GenTTXAddition/PrivateSignalTTbarSamples/TT_FCNC-T2HJ_Htobb_Tleptonic_eta_hct-MadGraph5-pythia8/crab_SignalSamples_TT_TopLep_hct/170128_083358/0000/TOPTREE_*.root"/>
+<d name="NP_overlay_TTtoTHToBB-1L-Kappa-hct_LepAntiTop-Private"   title="tt-tcH"  add="1"   color="393"  ls="1"  lw="2" normf="1"  EqLumi="56900.9194159" xsection="18.49"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/80X_v4/GenTTXAddition/PrivateSignalTTbarSamples/TT_FCNC-T2HJ_Htobb_aTleptonic_eta_hct-MadGraph5-pythia8/crab_SignalSamples_TT_aTopLep_hct/170128_082851/0000/TOPTREE_*.root"/>
+<d name="NP_overlay_TTtoTHToBB-1L-Kappa-hut_LepTop-Private"         title="tt-tuH"  add="1"   color="625"  ls="1"  lw="2" normf="1"  EqLumi="56775.8788534" xsection="18.49"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/80X_v4/GenTTXAddition/PrivateSignalTTbarSamples/TT_FCNC-T2HJ_Htobb_Tleptonic_eta_hut-MadGraph5-pythia8/crab_SignalSamples_TT_TopLep_hut/170128_083612/0000/TOPTREE_*.root"/>
+<d name="NP_overlay_TTtoTHToBB-1L-Kappa-hut_LepAntiTop-Private"   title="tt-tuH"  add="1"   color="625"  ls="1"  lw="2" normf="1"  EqLumi="56899.621417" xsection="18.49"   PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/kderoove/FCNC_Run2_Samples/80X_v4/GenTTXAddition/PrivateSignalTTbarSamples/TT_FCNC-T2HJ_Htobb_aTleptonic_eta_hut-MadGraph5-pythia8/crab_SignalSamples_TT_aTopLep_hut/170128_083142/0000/TOPTREE_*.root"/>
+<d name="NP_overlay_ST_tHToBB_1L_Kappa_hct-Private"                       title="ST-tcH"  add="0"  color="401"  ls="1"  lw="2" normf="1"  EqLumi="1051990.52632" xsection="1.90"   PreselEff="0.0"   filenames="*.root"/>
+<d name="NP_overlay_ST_tHToBB_1L_Kappa_hut-Private"                       title="ST-tuH"  add="0"   color="633"  ls="1"  lw="2" normf="1"  EqLumi="143746.026012" xsection="13.84"   PreselEff="0.0"   filenames="*.root"/>
+
+
+</datasets>
+
+<!-- All parameters needed for the selection and the bkg estimation methods -->
+<analysis>
+<!-- JetType: 0=TRootJet - 1=TRootCaloJet - 2=TRootPFJet -->
+<a type="Collections" PVCollection="PrimaryVertex" JetType="2" JetCollection="PFJets_slimmedJets" METType="2" METCollection="PFMET_slimmedMETs" MuonCollection="Muons_slimmedMuons" ElectronCollection="Electrons_slimmedElectrons" loadGenJetCollection="0" GenJetCollection="GenJets_slimmedGenJets" loadNPGenEventCollection="0" NPGenEventCollection="NPGenEvent" loadMCParticles="1" MCParticlesCollection="MCParticles"/>
+<!-- LuminosityError has to be relative [0-1], ex: 0.1 means 10% uncertainty on luminosity -->
+<!-- other errors should be absolute -->
+</analysis>
+</data>
+
