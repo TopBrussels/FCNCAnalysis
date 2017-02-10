@@ -101,6 +101,7 @@ float lum_RunsGH = 15.199167277;// /fb
 
 
 // home made functions
+std::pair <Float_t,Float_t> CosThetaCalculation(TLorentzVector lepton, TLorentzVector Neutrino, TLorentzVector leptonicBJet, bool geninfo);
 int FCNCjetCalculator(std::vector<TRootPFJet*> Jets, TLorentzVector recoZ ,int index, int verb);
 int FCNCjetCalculatorCvsBTagger(std::vector<TRootPFJet*> Jets, int index, int verb);
 int FCNCjetCalculatorCvsLTagger(std::vector<TRootPFJet*> Jets, int index, int verb);
@@ -452,12 +453,20 @@ int main (int argc, char *argv[])
   if(Usettbar && !istZq) histo1D["recoFCNCTopmass"] = new TH1F("recoFCNCTopmass","recoFCNCTopmass",500,0,500);
   histo1D["recoSMTopmass"] = new TH1F("recoSMTopmass","recoSMTopmass",500,0,500);
   
+  histo1D["LP"]= new TH1F("LP", "alt cos theta", 200, -1,1);
+  histo1D["CosThetaWRF"]= new TH1F("CosThetaWRF", "CosTheta* in the W restframe reconstructed", 200, -1,1);
+  histo1D["CosThetaWRFTRF"]=new TH1F("CosThetaWRTRF", "CosTheta* in the W and top RF reconstructed", 200, -1,1);
+  histo2D["CosTheta"]= new TH2F("CosTheta", "CosTheta* in the W RF vs W RF en Top RF", 200, -1,1, 200, -1,1);
+  
   if(matching){
     histo1D["matchedZmass"] = new TH1F("matchedZmass","matchedZmass",500,0,500);
     if(Usettbar && !istZq) histo1D["matchedFCNCTopmass"] = new TH1F("matchedFCNCTopmass","matchedFCNCTopmass",500,0,500);
     histo1D["matchedSMTopmass"] = new TH1F("matchedSMTopmass","matchedSMTopmass",500,0,500);
     
-    
+    histo1D["CosThetaWRF_gen"]= new TH1F("CosThetaWRF_gen", "CosTheta* in the W restframe reconstructed", 200, -1,1);
+    histo1D["CosThetaWRFTRF_gen"]=new TH1F("CosThetaWRTRF_gen", "CosTheta* in the W and top RF reconstructed", 200, -1,1);
+    histo2D["CosTheta_gen"]= new TH2F("CosTheta_gen", "CosTheta* in the W RF vs W RF en Top RF", 200, -1,1, 200, -1,1);
+
     
     histo1D["Topmass_Wb"] = new TH1F("Topmass_Wb","Topmass_Wb",500,0,500);
     histo1D["pt_Wb"] = new TH1F("pt_Wb","pt_Wb",500,0,500);
@@ -486,6 +495,8 @@ int main (int argc, char *argv[])
     histo2D["pt_top_Wb"] = new TH2F("pt_top_Wb","pt:Wb:t",500,0,500,500,0,500);
     histo2D["eta_top_Wb"]= new TH2F("eta_top_Wb","eta:Wb:t",30,-3,3,30,-3,3);
     histo2D["phi_top_Wb"]= new TH2F("phi_top_Wb","phi:Wb:t",32,-3.2,3.2,32,-3.2,3.2);
+    
+    
     
     
     if(Usettbar && !istZq){
@@ -1009,7 +1020,7 @@ int main (int argc, char *argv[])
     Float_t dPhiZc_tagger;
     
     
-    Int_t Wlep_Charge;
+    Float_t Wlep_Charge;
     Float_t Wlep_Pt;
     Float_t Wlep_Phi;
     Float_t Wlep_Eta;
@@ -1026,11 +1037,15 @@ int main (int argc, char *argv[])
     Float_t dPhiZSMtop;
     Float_t dRZSMtop;
     Float_t TotalPt;
+    Float_t TotalHt;
     Float_t TotalInvMass;
     Float_t cdiscCvsB_jet_2;
     Float_t cdiscCvsL_jet_2;
     Float_t bdiscCSVv2_jet_2;
     Float_t bdiscCSVv2_jet_1;
+    Float_t CosTheta;
+    Float_t CosTheta_alt;
+    Float_t LP;
     
     
     
@@ -1314,7 +1329,9 @@ int main (int argc, char *argv[])
     baselineTree->Branch("btagSF",&btagSF,"btagSF/D");
     baselineTree->Branch("nLeptons",&nLeptons, "nLeptons/I");//
     
-    
+    myTree->Branch("CosTheta", &CosTheta,"CosTheta/F");
+    myTree->Branch("CosTheta_alt", &CosTheta_alt,"CosTheta_alt/F");
+    myTree->Branch("LP", &LP, "LP/F");
     myTree->Branch("Wlep_Charge",&Wlep_Charge,"Wlep_Charge/F");
     myTree->Branch("Wlep_Phi", &Wlep_Phi, "Wlep_Phi/F");
     myTree->Branch("Wlep_Eta", &Wlep_Eta, "Wlep_Eta/F");
@@ -1333,11 +1350,15 @@ int main (int argc, char *argv[])
     myTree->Branch("dRZSMtop", &dRZSMtop,"dRZSMtop/F");
     myTree->Branch("TotalInvMass", &TotalInvMass, "TotalInvMass/F");
     myTree->Branch("TotalPt", &TotalPt, "TotalPt/F");
+    myTree->Branch("TotalHt", &TotalHt, "TotalHt/F");
     myTree->Branch("cdiscCvsB_jet_2", &cdiscCvsB_jet_2, "cdiscCvsB_jet_2/F");
     myTree->Branch("cdiscCvsL_jet_2", &cdiscCvsL_jet_2, "cdiscCvsL_jet_2/F");
     myTree->Branch("bdiscCSVv2_jet_1", &bdiscCSVv2_jet_1, "bdiscCSVv2_jet_1/F");
     myTree->Branch("bdiscCSVv2_jet_2", &bdiscCSVv2_jet_2, "bdiscCSVv2_jet_2/F");
-  
+    
+    baselineTree->Branch("LP", &LP, "LP/F");
+    baselineTree->Branch("CosTheta",&CosTheta,"CosTheta/F");
+    baselineTree->Branch("CosTheta_alt",&CosTheta_alt,"CosTheta_alt/F");
     baselineTree->Branch("Wlep_Charge",&Wlep_Charge,"Wlep_Charge/F");
     baselineTree->Branch("Wlep_Phi", &Wlep_Phi, "Wlep_Phi/F");
     baselineTree->Branch("Wlep_Eta", &Wlep_Eta, "Wlep_Eta/F");
@@ -1356,6 +1377,7 @@ int main (int argc, char *argv[])
     baselineTree->Branch("dRZSMtop", &dRZSMtop,"dRZSMtop/F");
     baselineTree->Branch("TotalInvMass", &TotalInvMass, "TotalInvMass/F");
     baselineTree->Branch("TotalPt", &TotalPt, "TotalPt/F");
+    baselineTree->Branch("TotalHt", &TotalHt, "TotalHt/F");
     baselineTree->Branch("cdiscCvsB_jet_2", &cdiscCvsB_jet_2, "cdiscCvsB_jet_2/F");
     baselineTree->Branch("cdiscCvsL_jet_2", &cdiscCvsL_jet_2, "cdiscCvsL_jet_2/F");
     baselineTree->Branch("bdiscCSVv2_jet_1", &bdiscCSVv2_jet_1, "bdiscCSVv2_jet_1/F");
@@ -2035,9 +2057,15 @@ int main (int argc, char *argv[])
     vector <TLorentzVector> selectedobjects_;
     vector <TLorentzVector> selectedjets_;
     TLorentzVector totalOfObjects;
+    Float_t pttotal_x;
+    Float_t pttotal_y;
+    Float_t httemp;
     
     for (unsigned int ievt = event_start; ievt < end_d; ievt++)
     {
+      pttotal_x = 0.;
+      pttotal_y = 0.;
+      httemp = 0.;
       totalOfObjects.Clear();
       eventForCjetmatching_Ctight = false;
       eventForCjetmatching_Cmedium = false;
@@ -3236,6 +3264,7 @@ int main (int argc, char *argv[])
           Wlep_Phi = Wlep.Phi();
           if(WelecIndiceF != -999){ if(selectedElectrons[WelecIndiceF]->charge() > 0){ Wlep_Charge = 1.;}else{Wlep_Charge = -1.; }}
           if(WmuIndiceF != -999){ if(selectedMuons[WmuIndiceF]->charge() > 0){ Wlep_Charge = 1.;}else{Wlep_Charge = -1; }}
+          //cout << "Wlep_charge " << Wlep_Charge << endl;
           Zboson_Pt = Zboson.Pt();
           Zboson_Eta = Zboson.Eta();
           Zboson_Phi = Zboson.Phi();
@@ -3430,6 +3459,7 @@ int main (int argc, char *argv[])
         
         
         if(leptonsAssigned && continueFlow)  {
+          TLorentzVector Wboson = Wlep +metTLV;
           SMtop_M = (Wlep+SMbjet+metTLV).M();
           SMtop.SetPxPyPzE((SMbjet.Px()+Wlep.Px()+metTLV.Px()),(SMbjet.Py()+Wlep.Py()+metTLV.Py()),(SMbjet.Pz()+Wlep.Pz()+metTLV.Pz()),(SMbjet.Energy()+Wlep.Energy()+metTLV.Energy()));
           SMtop_Pt = SMtop.Pt();
@@ -3443,7 +3473,10 @@ int main (int argc, char *argv[])
           dPhiZMET = Zboson.DeltaPhi(metTLV);
           dRZSMtop = Zboson.DeltaR(SMtop);
           dPhiZSMtop = Zboson.DeltaPhi(SMtop);
-          
+          CosTheta = (CosThetaCalculation(Wlep, metTLV, SMbjet, false)).first;
+          CosTheta_alt =  (CosThetaCalculation(Wlep, metTLV, SMbjet,false)).second;
+          LP = (Wlep.Pt() + Wboson.Pt())/fabs(Wboson.Pt()*Wboson.Pt());  // see https://arxiv.org/pdf/1303.3297.pdf
+          histo1D["LP"]->Fill(LP);
           histo1D["recoSMTopmass"]->Fill((Wlep+SMbjet).M());
         }
         else {
@@ -3652,6 +3685,9 @@ int main (int argc, char *argv[])
           tempObject.Clear();
           tempObject.SetPxPyPzE(selectedJets[seljet]->Px(),selectedJets[seljet]->Py(),selectedJets[seljet]->Py(), selectedJets[seljet]->Energy());
           totalOfObjects =  totalOfObjects+tempObject;
+          pttotal_x = pttotal_x + selectedJets[seljet]->Px();
+          pttotal_y = pttotal_y + selectedJets[seljet]->Py();
+          httemp = httemp +selectedJets[seljet]->Pt();
           pt_jet[nJets]=selectedJets[seljet]->Pt();
           px_jet[nJets]=selectedJets[seljet]->Px();
           py_jet[nJets]=selectedJets[seljet]->Py();
@@ -3746,6 +3782,9 @@ int main (int argc, char *argv[])
           tempObject.Clear();
           tempObject.SetPxPyPzE(selectedMuons[selmu]->Px(),selectedMuons[selmu]->Py(),selectedMuons[selmu]->Py(), selectedMuons[selmu]->Energy());
           totalOfObjects =  totalOfObjects+tempObject;
+          pttotal_x = pttotal_x + selectedMuons[selmu]->Px();
+          pttotal_y = pttotal_y + selectedMuos[selmu]->Py();
+          httemp = httemp +selectedMuons[selmu]->Pt();
           pt_muon[nMuons]=selectedMuons[selmu]->Pt();
           phi_muon[nMuons]=selectedMuons[selmu]->Phi();
           eta_muon[nMuons]=selectedMuons[selmu]->Eta();
@@ -3779,6 +3818,9 @@ int main (int argc, char *argv[])
           tempObject.Clear();
           tempObject.SetPxPyPzE(selectedElectrons[selel]->Px(),selectedElectrons[selel]->Py(),selectedElectrons[selel]->Py(), selectedElectrons[selel]->Energy());
           totalOfObjects =  totalOfObjects+tempObject;
+          pttotal_x = pttotal_x + selectedElectrons[selel]->Px();
+          pttotal_y = pttotal_y + selectedElectrons[selel]->Py();
+          httemp = httemp +selectedElectrons[selel]->Pt();
           pt_electron[nElectrons]=selectedElectrons[selel]->Pt();
           phi_electron[nElectrons]=selectedElectrons[selel]->Phi();
           eta_electron[nElectrons]=selectedElectrons[selel]->Eta();
@@ -3799,8 +3841,8 @@ int main (int argc, char *argv[])
         if(selectedElectrons.size()>2) pt_electron_3 = selectedElectrons[2]->Pt();
         
         TotalInvMass = totalOfObjects.M();
-        TotalPt = totalOfObjects.Pt();
-        
+        TotalPt = sqrt(pttotal_x*pttotal_x+pttotal_y*pttotal_y); //totalOfObjects.Pt();
+        TotalHt = httemp;
         nLeptons = nMuons + nElectrons;
         
       }
@@ -5411,6 +5453,29 @@ pair< vector< pair<unsigned int, unsigned int>>, vector <string> >  LeptonMatche
     return returnVectorEr;
   }
   
+  // theta
+  // cos theta check
+  if(SMbfound && (SMmufound || SMelfound) && (SMnuelfound || SMnumufound)){
+    TLorentzVector tempLep;
+    //cout << "SMmu " << SMmu << " SMel " << SMel << " SMnumu " << SMnumu << " SMnuel " << SMnuel << " SMb " << SMb << endl;
+    
+    if(SMmufound ){   tempLep.SetPxPyPzE(mcpartTLV[SMmu].Px(), mcpartTLV[SMmu].Py(), mcpartTLV[SMmu].Pz(), mcpartTLV[SMmu].Energy());}
+    if(SMelfound ){   tempLep.SetPxPyPzE(mcpartTLV[SMel].Px(), mcpartTLV[SMel].Py(), mcpartTLV[SMel].Pz(), mcpartTLV[SMel].Energy());}
+    TLorentzVector tempB;
+    tempB.SetPxPyPzE(mcpartTLV[SMb].Px(), mcpartTLV[SMb].Py(), mcpartTLV[SMb].Pz(), mcpartTLV[SMb].Energy());
+    
+    TLorentzVector tempNu;
+    if(SMnumufound ){  tempNu.SetPxPyPzE(mcpartTLV[SMnumu].Px(), mcpartTLV[SMnumu].Py(), mcpartTLV[SMnumu].Pz(), mcpartTLV[SMnumu].Energy());}
+    if(SMnuelfound ){  tempNu.SetPxPyPzE(mcpartTLV[SMnuel].Px(), mcpartTLV[SMnuel].Py(), mcpartTLV[SMnuel].Pz(), mcpartTLV[SMnuel].Energy());}
+    
+    //cout << "templep " << tempLep.Pt() << " x " << tempLep.Px() << " y " << tempLep.Py() << " z " << tempLep.Pz() << endl;
+    //cout << " tempB " << tempB.Pt() << " x " << tempB.Px() <<" y " << tempB.Py() << " z " << tempB.Pz() << endl;
+    //cout <<  " tempNu " << tempNu.Pt() << " x " << tempNu.Px() << " y " << tempNu.Py() << " z " << tempNu.Pz() << " E " << tempNu.Energy() << " Phi " << tempNu.Phi() << " Eta " << tempNu.Eta()<< endl;
+    pair <float, float> tempcosPair = CosThetaCalculation(tempLep, tempNu, tempB, true);
+    
+  }
+  
+  
   
   //SM TOP
   
@@ -6830,6 +6895,28 @@ pair< vector< pair<unsigned int, unsigned int>>, vector <string> >  LeptonMatche
     return returnVectorEr;
   }
   
+  // cos theta check
+  if(SMbfound && (SMmufound || SMelfound) && (SMnuelfound || SMnumufound)){
+    TLorentzVector tempLep;
+    //cout << "SMmu " << SMmu << " SMel " << SMel << " SMnumu " << SMnumu << " SMnuel " << SMnuel << " SMb " << SMb << endl;
+    
+    if(SMmufound ){   tempLep.SetPxPyPzE(mcpartTLV[SMmu].Px(), mcpartTLV[SMmu].Py(), mcpartTLV[SMmu].Pz(), mcpartTLV[SMmu].Energy());}
+    if(SMelfound ){  tempLep.SetPxPyPzE(mcpartTLV[SMel].Px(), mcpartTLV[SMel].Py(), mcpartTLV[SMel].Pz(), mcpartTLV[SMel].Energy());}
+    TLorentzVector tempB;
+    tempB.SetPxPyPzE(mcpartTLV[SMb].Px(), mcpartTLV[SMb].Py(), mcpartTLV[SMb].Pz(), mcpartTLV[SMb].Energy());
+        TLorentzVector tempNu;
+    if(SMnumufound ){ tempNu.SetPxPyPzE(mcpartTLV[SMnumu].Px(), mcpartTLV[SMnumu].Py(), mcpartTLV[SMnumu].Pz(), mcpartTLV[SMnumu].Energy());}
+    if(SMnuelfound ){tempNu.SetPxPyPzE(mcpartTLV[SMnuel].Px(), mcpartTLV[SMnuel].Py(), mcpartTLV[SMnuel].Pz(), mcpartTLV[SMnuel].Energy());}
+    
+    //cout << "templep " << tempLep.Pt() << " x " << tempLep.Px() << " y " << tempLep.Py() << " z " << tempLep.Pz() << endl;
+    //cout << " tempB " << tempB.Pt() << " x " << tempB.Px() <<" y " << tempB.Py() << " z " << tempB.Pz() << endl;
+    //cout <<  " tempNu " << tempNu.Pt() << " x " << tempNu.Px() << " y " << tempNu.Py() << " z " << tempNu.Pz() << " E " << tempNu.Energy() << " Phi " << tempNu.Phi() << " Eta " << tempNu.Eta()<< endl;
+    pair <float, float> tempcosPair = CosThetaCalculation(tempLep, tempNu, tempB, true);
+    
+  }
+  
+  
+  
   //SM TOP
   
   if( SMbfound && SMWfound){
@@ -7680,6 +7767,30 @@ pair< vector< pair<unsigned int, unsigned int>>, vector <string> >  LeptonMatche
     pair< vector< pair<unsigned int, unsigned int>>, vector <string> >   returnVectorEr;
     return returnVectorEr;
   }
+  // theta calcul
+  // cos theta check
+  if(SMbfound && (SMmufound || SMelfound) && (SMnuelfound || SMnumufound)){
+    TLorentzVector tempLep;
+    //cout << "SMmu " << SMmu << " SMel " << SMel << " SMnumu " << SMnumu << " SMnuel " << SMnuel << " SMb " << SMb << endl;
+    
+    if(SMmufound ){   tempLep.SetPxPyPzE(mcpartTLV[SMmu].Px(), mcpartTLV[SMmu].Py(), mcpartTLV[SMmu].Pz(), mcpartTLV[SMmu].Energy());}
+    if(SMelfound ){ tempLep.SetPxPyPzE(mcpartTLV[SMel].Px(), mcpartTLV[SMel].Py(), mcpartTLV[SMel].Pz(), mcpartTLV[SMel].Energy());}
+    TLorentzVector tempB;
+    tempB.SetPxPyPzE(mcpartTLV[SMb].Px(), mcpartTLV[SMb].Py(), mcpartTLV[SMb].Pz(), mcpartTLV[SMb].Energy());
+    
+    TLorentzVector tempNu;
+    if(SMnumufound ){ tempNu.SetPxPyPzE(mcpartTLV[SMnumu].Px(), mcpartTLV[SMnumu].Py(), mcpartTLV[SMnumu].Pz(), mcpartTLV[SMnumu].Energy());}
+    if(SMnuelfound ){tempNu.SetPxPyPzE(mcpartTLV[SMnuel].Px(), mcpartTLV[SMnuel].Py(), mcpartTLV[SMnuel].Pz(), mcpartTLV[SMnuel].Energy());}
+    
+    //cout << "templep " << tempLep.Pt() << " x " << tempLep.Px() << " y " << tempLep.Py() << " z " << tempLep.Pz() << endl;
+    //cout << " tempB " << tempB.Pt() << " x " << tempB.Px() <<" y " << tempB.Py() << " z " << tempB.Pz() << endl;
+    //cout <<  " tempNu " << tempNu.Pt() << " x " << tempNu.Px() << " y " << tempNu.Py() << " z " << tempNu.Pz() << " E " << tempNu.Energy() << " Phi " << tempNu.Phi() << " Eta " << tempNu.Eta()<< endl;
+     pair <float, float> tempcosPair = CosThetaCalculation(tempLep, tempNu, tempB, true);
+    
+  }
+  
+  
+  
   
   //SM TOP
   
@@ -7975,6 +8086,77 @@ pair< vector< pair<unsigned int, unsigned int>>, vector <string> >  LeptonMatche
   return returnVector;
 };
 
+
+std::pair <Float_t,Float_t> CosThetaCalculation(TLorentzVector lepton, TLorentzVector Neutrino, TLorentzVector leptonicBJet, bool geninfo){
+  // see https://github.com/TopBrussels/TopTreeAnalysis/blob/CMSSW_53X/WHelicities/src/BTagCosThetaCalculation.cc
+  // ttbar http://cms.cern.ch/iCMS/jsp/db_notes/noteInfo.jsp?cmsnoteid=CMS%20AN-2012/157
+  // single top : https://cds.cern.ch/record/1601800
+  
+ 
+  float CosTheta = 999;
+  
+  //----------------------------------------------
+  //  Calculating cos theta value
+  //----------------------------------------------
+  
+  TRootMCParticle WLeptonic = (Neutrino+lepton);
+  TRootMCParticle TopLeptonic = (Neutrino+lepton+leptonicBJet);
+  TLorentzVector TopWRF = (Neutrino+lepton+leptonicBJet);
+  TLorentzVector leptWRF = lepton;
+  TLorentzVector WTRF;
+  WTRF.SetPxPyPzE(WLeptonic.Px(), WLeptonic.Py(), WLeptonic.Pz(), WLeptonic.Energy());
+ // TLorentzVector leptTRF = lepton;
+  
+  //Angle between Top in WRF and lepton in WRF
+  TopWRF.Boost(-WLeptonic.BoostVector());
+  leptWRF.Boost(-WLeptonic.BoostVector());
+  
+  // boost to top RF
+  WTRF.Boost(-TopLeptonic.BoostVector());
+  //leptTRF.Boost(-TopLeptonic.BoostVector());
+  
+  //Calculating cos:
+  float ThetaTevatron = ROOT::Math::VectorUtil::Angle( TopWRF, leptWRF );
+  CosTheta = -(TMath::Cos(ThetaTevatron));
+  //Cos theta is defined as the angle between the lepton and the reversed direction of the top quark, both boosted to the W-boson rest frame.
+  //Still reversed direction doesn't need to be calculated since angle between lepton and top and between lepton and reversed top is proportional to theta and Pi-theta.
+  //For these the angles the following relation holds: cos(theta) = - cos(Pi-theta)
+  // --> Hence the need of the minus sign in the CosTheta definition!!
+  
+  float ThetaSTAR = ROOT::Math::VectorUtil::Angle( WTRF, leptWRF );
+  float CosThetaSTAR= TMath::Cos(ThetaSTAR);
+  
+  
+  
+  if(WLeptonic.E() < 0.){
+    cout << " Event with negative WLept energy!!! (BTagCosThetaCalculation class) Cos theta = " << CosTheta << endl;
+  }
+  
+  //cout << "cos " << CosThetaSTAR << " cos " << CosTheta <<  endl;
+  /*
+  
+  As the W-boson helicity fractions are very sensitive to the Wtb vertex, their measurements can be used to investigate contribution from non-standard models.
+  In this study, the t ̄t signal events are reconstructed where both W-bosons decay leptonically (electron or muon).
+  In this case, the relevant angle θ∗ is defined in top quark rest frame, as the angle between the 3-momentum of the charged lepton in the rest
+  frame of the decaying W-boson and the momentum of the W-boson in the rest frame of the decaying top quark.
+  */
+  
+  if(!geninfo){
+    histo1D["CosThetaWRF"]->Fill(CosTheta);
+    histo1D["CosThetaWRFTRF"]->Fill(CosThetaSTAR);
+    histo2D["CosTheta"]->Fill(CosTheta, CosThetaSTAR);
+  }
+  else if(geninfo){
+    //cout << "filling gen info" << endl;
+    histo1D["CosThetaWRF_gen"]->Fill(CosTheta);
+    histo1D["CosThetaWRFTRF_gen"]->Fill(CosThetaSTAR);
+    histo2D["CosTheta_gen"]->Fill(CosTheta, CosThetaSTAR);
+  }
+  
+  std::pair <Float_t,Float_t> CosThetaPair(CosTheta, CosThetaSTAR);
+  
+  return CosThetaPair;
+}
 
 
 
