@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     mkdir("pics",0777);
     mkdir(outputpics.c_str(),0777);
 
-   TFile f(("../weights/"+TrainingName+".root").c_str());
+   TFile f(("../weights_bk/"+TrainingName+".root").c_str());
 
    TH1D *h_sig_train = (TH1D*)f.Get("Method_BDT/BDT/MVA_BDT_Train_S");
    TH1D *h_bkg_train = (TH1D*)f.Get("Method_BDT/BDT/MVA_BDT_Train_B");
@@ -155,9 +155,10 @@ int main(int argc, char *argv[])
 
 
     MVAvars.push_back("MVA_TOPTOPLEPHAD");
+    MVAvars.push_back("LepCharge");
     MVAvars.push_back("MVA_TOPTOPLEPHBB");
-    MVAvars.push_back("MVA_TOPHLEPBB_hut");
-    MVAvars.push_back("MVA_TOPHLEPBB_hct");
+    MVAvars.push_back("MVA_TOPHLEPBB");
+    MVAvars.push_back("MVA_TOPHLEPBB");
 	  MVAvars.push_back("HiggsMass_TOPHLEPBB");
 	  MVAvars.push_back("HiggsMass_TOPHLEPBB");
 	  MVAvars.push_back("HiggsEta_TOPHLEPBB");

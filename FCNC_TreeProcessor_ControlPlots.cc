@@ -267,9 +267,9 @@ int main(int argc, char *argv[])
             ttbar_bb->SetColor(kAzure+3);
             
             datasets_splittedTTbar.pop_back();
-            datasets_splittedTTbar.push_back(ttbar_ll);
-            datasets_splittedTTbar.push_back(ttbar_cc);
             datasets_splittedTTbar.push_back(ttbar_bb);
+            datasets_splittedTTbar.push_back(ttbar_cc);
+            datasets_splittedTTbar.push_back(ttbar_ll);
 
             cout << " - split TTBar dataset into ..."  << ttbar_ll->Name() << ", " << ttbar_cc->Name() << " and " << ttbar_ll->Name()  << endl;
 

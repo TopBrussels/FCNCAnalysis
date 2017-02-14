@@ -3,16 +3,17 @@ map<string,TH1F*> histo1D;
 
 void DrawNorm_Compare2Samples()
 {
-  TFile *sample1= new TFile("/user/kderoove/FCNC/TopTreeFramework_Run2/CMSSW_8_0_24/src/TopBrussels/FCNCAnalysis/Merged/Ntuples_All/Ntuples_19_1_2017/FCNC_1L3B__Run2_TopTree_Study_NP_overlay_ST_tHToBB_1L_Kappa_hct.root","READ");
-  std::string label_sample1 = "ST-hct Official";
-  TFile *sample2= new TFile("/user/kderoove/FCNC/TopTreeFramework_Run2/CMSSW_8_0_24/src/TopBrussels/FCNCAnalysis/Merged/Ntuples_All/Ntuples_19_1_2017/FCNC_1L3B__Run2_TopTree_Study_NP_overlay_ST_tHToBB_1L_Kappa_hct-Private.root","READ");
-  std::string label_sample2 = "ST-hct Private";
+  TFile *sample1= new TFile("../weights/Training_SThut_All_b2j3.root","READ");
+  std::string label_sample1 = "ST-hct FullSim";
+  TFile *sample2= new TFile("/user/kskovpen/analysis/tHFCNC_OLD/CMSSW_8_0_12/src/tHFCNC/NtupleAnalyzer/test/MVA/TMVA_HutST_all_b2j3.root","READ");
+  std::string label_sample2 = "ST-hct FastSim";
 
-  string treename = "ObjectVarsTree";
-  TTree *tree_sample1 = (TTree*)sample1->Get(treename.c_str());
-  TTree *tree_sample2 = (TTree*)sample2->Get(treename.c_str());
+  string treename = "InputVariables_Id";
+  TDirectory *tree_sample1 = (TDirectory*)sample1->Get(treename.c_str());
+cout << tree_sample1->GetName() << endl;
+  TDirectory *tree_sample2 = (TDirectory*)sample2->Get(treename.c_str());
   
-  string condition = "20<I_nvtx&&I_nvtx<26";
+  string condition = "";
 
   vector<std::string> vars;
   vector<int> nbins;
@@ -22,11 +23,20 @@ void DrawNorm_Compare2Samples()
 
 
   //Defining the variables we want to plot with the nbins, xmin and xmax
-  vars.push_back("I_nvtx");
-  nbins.push_back(51);
-  xmin.push_back(-0.5);
-  xmax.push_back(50.5);
+  vars.push_back("HiggsBJet1CSVv2_TOPHLEPBB__Signal_Id");
+  nbins.push_back(50);
+  xmin.push_back(-1);
+  xmax.push_back(1);
+  vars.push_back("HiggsBJet2CSVv2_TOPHLEPBB__Signal_Id");
+  nbins.push_back(50);
+  xmin.push_back(-1);
+  xmax.push_back(1);
+  vars.push_back("TopLepBJetCSVv2_TOPHLEPBB__Signal_Id");
+  nbins.push_back(50);
+  xmin.push_back(-1);
+  xmax.push_back(1);
 
+/*
   vars.push_back("I_npu");
   nbins.push_back(51);
   xmin.push_back(-0.5);
@@ -121,7 +131,7 @@ void DrawNorm_Compare2Samples()
   nbins.push_back(60);
   xmin.push_back(-30.5);
   xmax.push_back(29.5);
-  
+ */ 
 /*
   vars.push_back("HiggsMass_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("HiggsMass_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, 50., 250, "M(Higgs)","Events", category,"GeV");
   vars.push_back("HiggsMass_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("HiggsMass_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, 50., 250, "M(Higgs)","Events", category,"GeV");
@@ -160,7 +170,7 @@ void DrawNorm_Compare2Samples()
   vars.push_back("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
 */
 
-  TFile *fout = new TFile("NormHistos_Comp2Samples.root","RECREATE");
+  TFile *fout = new TFile("NormHistos_Comp2Samples_FullSimFastSim.root","RECREATE");
 
 /*
   for(int i_vars = 0; i_vars < vars.size(); i_vars++)
@@ -173,11 +183,16 @@ void DrawNorm_Compare2Samples()
 
   for(int i_vars = 0; i_vars < vars.size(); i_vars++)
   {   
-      histo1D[(vars[i_vars]+"_sample1").c_str()] = new TH1F(("h_"+vars[i_vars]+"_sample1").c_str(),vars[i_vars].c_str(),nbins[i_vars],xmin[i_vars],xmax[i_vars]);
-      histo1D[(vars[i_vars]+"_sample2").c_str()] = new TH1F(("h_"+vars[i_vars]+"_sample2").c_str(),vars[i_vars].c_str(),nbins[i_vars],xmin[i_vars],xmax[i_vars]);
+cout << "HERE 1" << endl;
+      tree_sample1->cd();
+cout << "HERE 2: " << vars[i_vars] << endl;
+      histo1D[(vars[i_vars]+"_sample1").c_str()] = (TH1F*) tree_sample1->Get(vars[i_vars].c_str())->Clone();
+cout << "HERE 3" << endl;
+      tree_sample2->cd();
+      histo1D[(vars[i_vars]+"_sample2").c_str()] = (TH1F*) tree_sample2->Get(vars[i_vars].c_str())->Clone();
       gStyle->SetOptStat(kFALSE);
-      tree_sample1->Draw((vars[i_vars]+">>h_"+vars[i_vars]+"_sample1").c_str(),condition.c_str());
-      tree_sample2->Draw((vars[i_vars]+">>h_"+vars[i_vars]+"_sample2").c_str(),condition.c_str());
+//      tree_sample1->Draw((vars[i_vars]+">>h_"+vars[i_vars]+"_sample1").c_str(),condition.c_str());
+//      tree_sample2->Draw((vars[i_vars]+">>h_"+vars[i_vars]+"_sample2").c_str(),condition.c_str());
 
 
       if(!histo1D[(vars[i_vars]+"_sample1").c_str()] || !histo1D[(vars[i_vars]+"_sample2").c_str()])
