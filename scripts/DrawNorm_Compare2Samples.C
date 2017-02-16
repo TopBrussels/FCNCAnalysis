@@ -3,17 +3,17 @@ map<string,TH1F*> histo1D;
 
 void DrawNorm_Compare2Samples()
 {
-  TFile *sample1= new TFile("../weights/Training_SThut_All_b2j3.root","READ");
-  std::string label_sample1 = "ST-hct FullSim";
-  TFile *sample2= new TFile("/user/kskovpen/analysis/tHFCNC_OLD/CMSSW_8_0_12/src/tHFCNC/NtupleAnalyzer/test/MVA/TMVA_HutST_all_b2j3.root","READ");
-  std::string label_sample2 = "ST-hct FastSim";
+  TFile *sample1= new TFile("../NtuplerOutput/Ntuples_El/Ntuples_16_2_2017/FCNC_1L3B__Run2_TopTree_Study_TTJets_powheg_El_1___original.root","READ");
+  std::string label_sample1 = "sqrt";
+  TFile *sample2= new TFile("../NtuplerOutput/Ntuples_El/Ntuples_16_2_2017/FCNC_1L3B__Run2_TopTree_Study_TTJets_powheg_El_1.root","READ");
+  std::string label_sample2 = "TLorentz";
 
-  string treename = "InputVariables_Id";
-  TDirectory *tree_sample1 = (TDirectory*)sample1->Get(treename.c_str());
+  string treename = "ObjectVarsTree";
+  TTree *tree_sample1 = (TTree*)sample1->Get(treename.c_str());
 cout << tree_sample1->GetName() << endl;
-  TDirectory *tree_sample2 = (TDirectory*)sample2->Get(treename.c_str());
+  TTree *tree_sample2 = (TTree*)sample2->Get(treename.c_str());
   
-  string condition = "";
+  string condition = "HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB>0";
 
   vector<std::string> vars;
   vector<int> nbins;
@@ -23,11 +23,11 @@ cout << tree_sample1->GetName() << endl;
 
 
   //Defining the variables we want to plot with the nbins, xmin and xmax
-  vars.push_back("HiggsBJet1CSVv2_TOPHLEPBB__Signal_Id");
+  vars.push_back("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB");
   nbins.push_back(50);
-  xmin.push_back(-1);
-  xmax.push_back(1);
-  vars.push_back("HiggsBJet2CSVv2_TOPHLEPBB__Signal_Id");
+  xmin.push_back(0);
+  xmax.push_back(5);
+/*  vars.push_back("HiggsBJet2CSVv2_TOPHLEPBB__Signal_Id");
   nbins.push_back(50);
   xmin.push_back(-1);
   xmax.push_back(1);
@@ -36,7 +36,7 @@ cout << tree_sample1->GetName() << endl;
   xmin.push_back(-1);
   xmax.push_back(1);
 
-/*
+
   vars.push_back("I_npu");
   nbins.push_back(51);
   xmin.push_back(-0.5);
@@ -183,16 +183,12 @@ cout << tree_sample1->GetName() << endl;
 
   for(int i_vars = 0; i_vars < vars.size(); i_vars++)
   {   
-cout << "HERE 1" << endl;
-      tree_sample1->cd();
-cout << "HERE 2: " << vars[i_vars] << endl;
-      histo1D[(vars[i_vars]+"_sample1").c_str()] = (TH1F*) tree_sample1->Get(vars[i_vars].c_str())->Clone();
-cout << "HERE 3" << endl;
-      tree_sample2->cd();
-      histo1D[(vars[i_vars]+"_sample2").c_str()] = (TH1F*) tree_sample2->Get(vars[i_vars].c_str())->Clone();
+
+      tmp_hist_sample1 = new TH1F(("h_"+vars[i_vars]+"_sample1").c_str(),("h_"+vars[i_vars]+"_sample1").c_str(),nbins[i_vars],xmin[i_vars],xmax[i_vars]);
+      tmp_hist_sample2 = new TH1F(("h_"+vars[i_vars]+"_sample2").c_str(),("h_"+vars[i_vars]+"_sample2").c_str(),nbins[i_vars],xmin[i_vars],xmax[i_vars]);
       gStyle->SetOptStat(kFALSE);
-//      tree_sample1->Draw((vars[i_vars]+">>h_"+vars[i_vars]+"_sample1").c_str(),condition.c_str());
-//      tree_sample2->Draw((vars[i_vars]+">>h_"+vars[i_vars]+"_sample2").c_str(),condition.c_str());
+      tree_sample1->Draw((vars[i_vars]+">>h_"+vars[i_vars]+"_sample1").c_str(),condition.c_str());
+      tree_sample2->Draw((vars[i_vars]+">>h_"+vars[i_vars]+"_sample2").c_str(),condition.c_str());
 
 
       if(!histo1D[(vars[i_vars]+"_sample1").c_str()] || !histo1D[(vars[i_vars]+"_sample2").c_str()])
@@ -201,8 +197,8 @@ cout << "HERE 3" << endl;
           continue;
       }
 
-//      histo1D[(vars[i_vars]+"_sample1").c_str()] = tmp_hist_sample1->Clone();
-//      histo1D[(vars[i_vars]+"_sample2").c_str()] = tmp_hist_sample2->Clone();
+      histo1D[(vars[i_vars]+"_sample1").c_str()] = (TH1F*) tmp_hist_sample1->Clone();
+      histo1D[(vars[i_vars]+"_sample2").c_str()] = (TH1F*) tmp_hist_sample2->Clone();
 
       Double_t norm_sample1 = 1;
       Double_t scale_sample1 = norm_sample1/(histo1D[(vars[i_vars]+"_sample1").c_str()]->Integral());

@@ -17,13 +17,13 @@ LDLIBS  = $(ROOTLIBS) -lTMVA
 
 ADDINC = 
 
-SRC = CompareInputVars.cxx PlotStyle.cxx
+SRC = draw.cxx PlotStyle.cxx
 
 INC = PlotStyle.h
 
-OBJ = CompareInputVars.o PlotStyle.o
+OBJ = draw.o PlotStyle.o
 
-EXE = CompareInputVars
+EXE = draw
 
 all:  	     		$(EXE)
 #			@rm -f *.o

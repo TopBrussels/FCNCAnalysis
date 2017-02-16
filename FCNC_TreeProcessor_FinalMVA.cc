@@ -664,7 +664,7 @@ int main(int argc, char *argv[])
       
             //variable for jets 
             Int_t nJets;
-	          Int_t nJets_CSVM; 
+	          Int_t nJets_CSVL; 
 	          
 	          //JetIndices_correctJetComb
             Double_t MVA_TOPTOPLEPHAD = -999.;
@@ -750,7 +750,7 @@ int main(int argc, char *argv[])
             
             // jets
             ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets",&nJets);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVM",&nJets_CSVM);
+            ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVL",&nJets_CSVL);
            
             // Jet-indices associated to the jet-assignment in the bMVA method
             ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPTOPLEPHAD",&MVA_TOPTOPLEPHAD);
@@ -810,8 +810,8 @@ int main(int argc, char *argv[])
                 EntryStart = (int) nEntries/2+1;
                 Doubling = 2;
             }
-            EntryStart = 0;//nEntries/2+nEntries/3+1;//Manually overwriting the number of events to run over.
-            Doubling = 1;
+//            EntryStart = 0;//nEntries/2+nEntries/3+1;//Manually overwriting the number of events to run over.
+//            Doubling = 1;
 
             double nloSF = 1.;
             int nPos = 0; 
@@ -823,7 +823,7 @@ int main(int argc, char *argv[])
                     ttree[dataSetName.c_str()]->GetEntry(k);
 		                if(!doInclusive)
 		                {
-		                    if(nJets_CSVM != baseline_bjets)  continue;
+		                    if(nJets_CSVL != baseline_bjets)  continue;
 
 		                    if(baseline_jets == 3 && nJets != baseline_jets) continue;
 		                    else if(baseline_jets == 4 && nJets < baseline_jets) continue;
@@ -844,7 +844,7 @@ int main(int argc, char *argv[])
                     ttree[dataSetName.c_str()]->GetEntry(k);
 		                if(!doInclusive)
 		                {
-		                    if(nJets_CSVM != baseline_bjets)  continue;
+		                    if(nJets_CSVL != baseline_bjets)  continue;
 
 		                    if(baseline_jets == 3 && nJets != baseline_jets) continue;
 		                    else if(baseline_jets == 4 && nJets < baseline_jets) continue;
@@ -877,7 +877,7 @@ int main(int argc, char *argv[])
 			          ttree[dataSetName.c_str()]->GetEntry(j);
 		            if(!doInclusive)
 		            {
-		                if(nJets_CSVM != baseline_bjets)  continue;
+		                if(nJets_CSVL != baseline_bjets)  continue;
 
 		                if(baseline_jets == 3 && nJets != baseline_jets) continue;
 		                else if(baseline_jets == 4 && nJets < baseline_jets) continue;
@@ -1276,11 +1276,11 @@ int main(int argc, char *argv[])
                         MSPlot[("MVA_TT"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(reader_TT->EvaluateMVA("BDTG method"), Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling); //Factor 2 to compensate for the fact we're running over half the number of simulated events
                         if(category == "b2j4")
                         {
-                            if(nJets_CSVM == 2 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(0, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
-                            if(nJets_CSVM == 2 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(1, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
-                            if(nJets_CSVM == 3 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(2, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
-                            if(nJets_CSVM == 3 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(3, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
-                            if(nJets_CSVM == 4 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(4, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
+                            if(nJets_CSVL == 2 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(0, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
+                            if(nJets_CSVL == 2 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(1, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
+                            if(nJets_CSVL == 3 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(2, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
+                            if(nJets_CSVL == 3 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(3, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
+                            if(nJets_CSVL == 4 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(4, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
                         }
                         
                         if(Sample->Name().find("NP_") != string::npos && dataSetName.find(SignalSample.c_str()) != string::npos) histo1D[("h_sig"+namingConventionFit[WhatSysts_noJECs[iSyst_]]).c_str()]->Fill(MVAvalue,Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling / EqLumi);
@@ -1303,11 +1303,11 @@ int main(int argc, char *argv[])
                         MSPlot[("MVA_TT"+TrainingName+WhatSysts[JecCounter]).c_str()]->Fill(reader_TT->EvaluateMVA("BDTG method"), Sample, ScalePlots, Luminosity * ScaleFactor * Doubling); //Factor 2 to compensate for the fact we're running over half the number of simulated events
                         if(category == "b2j4")
                         {
-                            if(nJets_CSVM == 2 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(0, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
-                            if(nJets_CSVM == 2 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(1, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
-                            if(nJets_CSVM == 3 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(2, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
-                            if(nJets_CSVM == 3 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(3, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
-                            if(nJets_CSVM == 4 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(4, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
+                            if(nJets_CSVL == 2 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(0, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
+                            if(nJets_CSVL == 2 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(1, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
+                            if(nJets_CSVL == 3 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(2, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
+                            if(nJets_CSVL == 3 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(3, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
+                            if(nJets_CSVL == 4 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(4, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
                         }
 
                         if(Sample->Name().find("NP_") != string::npos && dataSetName.find(SignalSample.c_str()) != string::npos) histo1D[("h_sig"+namingConventionFit[WhatSysts[JecCounter]]).c_str()]->Fill(MVAvalue,Luminosity * ScaleFactor * Doubling / EqLumi);
