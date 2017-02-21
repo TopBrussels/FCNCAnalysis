@@ -197,6 +197,18 @@ Float_t MVA_m3l = -999.;
 
 // Declaration of leaf types
 
+Int_t nMCParticles;
+Int_t mc_status[200];
+Int_t mc_pdgId[200];
+Int_t mc_mother[200];
+Int_t mc_granny[200];
+Double_t mc_pt[200];
+Double_t mc_phi[200];
+Double_t mc_eta[200];
+Double_t mc_E[200];
+Double_t mc_M[200];
+
+
 Int_t nEv;
 Int_t nofNegWeights;
 Int_t nofPosWeights;
@@ -475,6 +487,8 @@ void InitMVAMSPlotsTopPair(string prefix, vector<int> decayChannels);
 void InitMVAMSPlotsWZ(string prefix, vector <int> decayChannels);
 void Init1DPlots();
 void Init2DPlots();
+void InitGenInfoPlots(string dataSetName);
+void FillGenInfoPlots(string dataSetName);
 void InitTree(TTree* tree, bool isData);
 // data from global tree
 void ClearMetaData();
@@ -484,6 +498,8 @@ void ClearObjects();
 void ClearVars();
 void ClearMVAVars();
 void ClearTLVs();
+void ClearMatchingVars();
+void ClearMatchingVarsTLV();
 void FillGeneralPlots(int d, string prefix, vector<int>decayChannels, bool isData);
 void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<int>decayChannels);
 string ConvertIntToString(int nb, bool pad);
@@ -499,7 +515,10 @@ int FCNCjetCalculatorCvsLTagger(vector < TLorentzVector>  Jets, int index, int v
 int FCNCjetCalculatorCwp(vector < TLorentzVector>  Jets, std::vector <int> cjetindex, int index, int verb);
 std::pair <Float_t,Float_t> CosThetaCalculation(TLorentzVector lepton, TLorentzVector Neutrino, TLorentzVector leptonicBJet, bool geninfo);
 void LeptonAssigner(vector<TLorentzVector> electrons, vector<TLorentzVector> muons, std::vector<int> electronsCharge,std::vector<int> muonsCharge);
-
+void MatchingFunction(string dataSetName);
+void LeptonMatcher(vector < TLorentzVector> mcParticles, vector <TLorentzVector> Leptons);
+void EventSearcherSTCNC(vector < TLorentzVector> mcParticles);
+void EventSearcherTTCNC(vector < TLorentzVector> mcParticles);
 vector<TLorentzVector> selectedMuons;
 vector<TLorentzVector> selectedElectrons;
 vector<TLorentzVector> selectedLeptons;
@@ -507,6 +526,34 @@ vector<TLorentzVector> selectedJets;
 vector<int> selectedElectronsCharge;
 vector<int> selectedMuonsCharge;
 bool Assigned = false;
+TLorentzVector mcpart;
+vector <TLorentzVector> mcParticles;
+bool foundTopQ = false;
+bool foundAntitopQ = false;
+bool foundSMb = false;
+bool foundSMmu = false;
+bool foundSMel = false;
+bool foundW = false;
+bool foundZmumin = false;
+bool foundZmuplus = false;
+bool foundZelmin = false;
+bool foundZelplus = false;
+bool foundZ = false;
+bool foundLjet = false;
+int TopQ_Indice = -999;
+int AntiTopQ_Indice = -999;
+int SMb_Indice = -999;
+int SMmu_Indice = -999;
+int SMel_Indice = -999;
+int SMW_Indice = -999;
+int Zmu_min_Indice = -999;
+int Zmu_plus_Indice = -999;
+int Zel_min_Indice = -999;
+int Zel_plus_Indice = -999;
+int Z_Indice = -999;
+int LightJet_Indice = -999;
+bool foundDecay = false;
+
 TLorentzVector temp0;
 TLorentzVector temp1;
 TLorentzVector temp2;
@@ -601,6 +648,7 @@ int total_nbEv_LooseLepVeto_eee= 0;
 int total_nbEv_Trigged_eee= 0;
 int total_nbEv_ZbosonWindow_eee= 0;
 
+bool check_matching = false;
 
 
 Float_t tempPx;
@@ -673,7 +721,11 @@ int main(int argc, char* argv[])
       std::cout << "   MakeMVATree: make trees for the MVA" << endl;
       std::cout << "   MakePlots: make plots" << endl;
       std::cout << "   Ntup placeNtup: set where ntuples are stored. NtupleMakerOutput/MergedTuples/placeNtup " << endl;
+      std::cout << "   Matching: do matching for tZq, FCNC" << endl;
       return 0;
+    }
+    if(string(argv[i]).find("Matching")!=std::string::npos) {
+      check_matching = true;
     }
     if(string(argv[i]).find("Ntup")!=std::string::npos) {
       placeNtup = argv[i+1];
@@ -750,7 +802,11 @@ int main(int argc, char* argv[])
       Luminosity = datasets[d]->EquivalentLumi();
       datafound = true;
     }
-
+    
+    if (dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("tZq")!=std::string::npos)
+    {
+      check_matching = false;
+    }
     
   }
   
@@ -2798,6 +2854,38 @@ void ClearVars(){
   //cout << "WmuIndiceF " << WmuIndiceF <<" WelecIndiceF "<< WelecIndiceF <<" ZmuIndiceF_1 "<< ZmuIndiceF_1 <<" ZmuIndiceF_0 "<< ZmuIndiceF_0 <<" ZelecIndiceF_0 "<< ZelecIndiceF_0 <<" ZelecIndiceF_1 "<< ZelecIndiceF_1 << endl;
   
 }
+void ClearMatchingVarsTLV(){
+  mcpart.Clear();
+  mcParticles.clear();
+}
+void ClearMatchingVars(){
+
+   foundTopQ = false;
+   foundAntitopQ = false;
+   foundSMb = false;
+   foundSMmu = false;
+   foundSMel = false;
+   foundW = false;
+   foundZmumin = false;
+   foundZmuplus = false;
+   foundZelmin = false;
+   foundZelplus = false;
+   foundZ = false;
+   foundLjet = false;
+   TopQ_Indice = -999;
+   AntiTopQ_Indice = -999;
+   SMb_Indice = -999;
+   SMmu_Indice = -999;
+   SMel_Indice = -999;
+   SMW_Indice = -999;
+   Zmu_min_Indice = -999;
+   Zmu_plus_Indice = -999;
+   Zel_min_Indice = -999;
+   Zel_plus_Indice = -999;
+   Z_Indice = -999;
+   LightJet_Indice = -999;
+   foundDecay = false;
+}
 void ClearMetaData()
 {
   nEv = 0;
@@ -3395,3 +3483,417 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
 }
 
 
+void MatchingFunction(string dataSetName, vector <TLorentzVector> Leptons){
+  ClearMatchingVars(); // to do with each new dataset
+  ClearMatchingVarsTLV();
+  for (int iMC = 0; iMC < nMCParticles; iMC++)
+  {
+    mcpart.Clear();
+    mcpart.SetPtEtaPhiE(mc_pt[iMC], mc_eta[iMC],mc_phi[iMC],mc_E[iMC]);
+    mcParticles.push_back(mcpart);
+  }
+  if(mcParticles.size() != nMCParticles){cout << "ERROR mcP not filled correctly" << endl;  }
+  
+
+  // TO FIX LIGHT JET NOT CONSIDERED ATM
+  if(dataSetName.find("TT")!=std::string::npos) EventSearcherTTCNC(mcParticles);
+  if(dataSetName.find("ST")!=std::string::npos) EventSearcherSTCNC(mcParticles);
+  if(dataSetName.find("tZq")!=std::string::npos) EventSearchertSTFCNC(mcParticles);
+  
+  
+  
+  if((foundSMmu || foundSMel) &&
+     ((foundZelmin && foundZelplus) || (foundZmuplus && foundZmumin)) &&
+     foundSMb ){
+    foundDecay = true;
+  }
+
+  if(foundDecay){
+    InitGenInfoPlots(dataSetName);
+    FillGenInfoPlots(dataSetName);
+  }
+  
+}
+
+
+void InitGenInfoPlots(string dataSetName){
+  TH1::SetDefaultSumw2();
+  TH2::SetDefaultSumw2();
+  
+  histo1D[("Topmass_Wb_"+dataSetName).c_str()] = new TH1F("Topmass_Wb","Topmass_Wb",500,0,500);
+  histo1D[("pt_Wb_"+dataSetName).c_str()] = new TH1F("pt_Wb","pt_Wb",500,0,500);
+  histo1D[("eta_Wb_"+dataSetName).c_str()]= new TH1F("eta_Wb","eta_Wb",30,-3,3);
+  histo1D[("phi_Wb_"+dataSetName).c_str()]= new TH1F("phi_Wb","phi_Wb",32,-3.2,3.2);
+  histo1D[("dPhi_Wb_"+dataSetName).c_str()]  = new TH1F("DPhilvb", "dPhi lvb", 140,-7, 7);
+  histo1D[("dR_Wb_"+dataSetName).c_str()] =  new TH1F("DRWb", "dR Wb", 500,0, 5);
+  
+  
+  histo1D[("Topmass_topquark_"+dataSetName).c_str()] = new TH1F("Topmass_topquark","Topmass_topquark",500,0,500);
+  histo1D[("pt_topquark_"+dataSetName).c_str()] = new TH1F("pt_topquark","pt_topquark",500,0,500);
+  histo1D[("eta_topquark_"+dataSetName).c_str()]= new TH1F("eta_topquark","eta_topquark",30,-3,3);
+  histo1D[("phi_topquark_"+dataSetName).c_str()]= new TH1F("phi_topquark","phi_topquark",32,-3.2,3.2);
+  
+  histo1D[("dR_Wbvstopquark_"+dataSetName).c_str()]  = new TH1F("DRWbvstopquark", "dR Wb-top", 500,0, 5);
+  histo1D[("dPhi_Wbvstopquark_"+dataSetName).c_str()]  = new TH1F("DPhiWbvstopquark", "dPhi Wb-top", 140,-7, 7);
+  
+  histo2D[("Topmass_topquarkvsWb_"+dataSetName).c_str()] = new TH2F("Topmass_topquarkvsWb","Topmass:Wb:t",500,0,500,500,0,500);
+  histo2D[("pt_topquarkvsWb_"+dataSetName).c_str()] = new TH2F("pt_topquarkvsWb","pt:Wb:t",500,0,500,500,0,500);
+  histo2D[("eta_topquarkvsWb_"+dataSetName).c_str()]= new TH2F("eta_topquarkvsWb","eta:Wb:t",30,-3,3,30,-3,3);
+  histo2D[("phi_topquarkvsWb_"+dataSetName).c_str()]= new TH2F("phi_topquarkvsWb","phi:Wb:t",32,-3.2,3.2,32,-3.2,3.2);
+
+  histo1D[("dR_Wbtop_"+dataSetName).c_str()]  = new TH1F("DRWbtop", "dR Wb-top", 500,0, 5);
+  histo1D[("dPhi_Wbtop_"+dataSetName).c_str()]  = new TH1F("DPhiWbtop", "dPhi Wb-top", 140,-7, 7);
+  
+  histo1D[("mass_ZlepMin_"+dataSetName).c_str()]                                  = new TH1F("mass_ZlepMin","mass_ZlepMin",250,0,0.5);
+  histo1D[("mass_ZlepPlus_"+dataSetName).c_str()]                                  = new TH1F("mass_ZlepPlus","mass_ZlepPlus",250,0,0.5);
+  histo1D[("Zmass_Zleptons_"+dataSetName).c_str()]                                  = new TH1F("Zmass_Zleptons","Zmass_Zleptons",200,0,200);
+  histo1D[("Zmass_Zboson_"+dataSetName).c_str()]                                  = new TH1F("Zmass_Zboson","Zmass_Zboson",200,0,200);
+  histo2D[("mass_ZlepMinvsZlepPlus_"+dataSetName).c_str()]            = new TH2F("mass_Zleptons", "mass lep;mass lepMin;mass lepPlus", 250,0,0.5,250,0,0.5 );
+  histo2D[("Zmass_ZbosonvsZleptons_"+dataSetName).c_str()]            = new TH2F("Zmass", "Zmass;Zmass_Zleptons;Zmass_Zboson", 200,0,200,200,0,200 );
+  
+  histo1D[("pt_ZlepMin_"+dataSetName).c_str()]          = new TH1F("pt_ZlepMin", "Pt lep +", 200,0,400);
+  histo1D[("pt_ZlepPlus_"+dataSetName).c_str()]          = new TH1F("pt_ZlepPlus", "Pt lep -", 200,0,400);
+  histo1D[("pt_Zboson_"+dataSetName).c_str()]          = new TH1F("pt_Zboson", "Pt Zbosonon", 200,0,400);
+  histo1D[("pt_Zleptons_"+dataSetName).c_str()]          = new TH1F("pt_Zleptons", "Pt Zleptons", 200,0,400);
+  histo2D[("pt_ZlepMinvsZlepPlus_"+dataSetName).c_str()]          = new TH2F("pt_Zleptons", "Pt leptons;Pt lep +;Pt lep -", 200,0,400, 200,0,400);
+  histo2D[("pt_ZbosonvsZleptons_"+dataSetName).c_str()]          = new TH2F("pt_ZbosonvsZleptons", "Pt Z;Pt Zleptons;Pt Zboson", 200,0,400, 200,0,400);
+  
+  histo1D[("phi_ZlepMin_"+dataSetName).c_str()]          = new TH1F("phi_ZlepMin", "phi lep +",32,-3.2,3.2);
+  histo1D[("phi_ZlepPlus_"+dataSetName).c_str()]          = new TH1F("phi_ZlepPlus", "phi lep -",32,-3.2,3.2);
+  histo1D[("phi_Zboson_"+dataSetName).c_str()]          = new TH1F("phi_Zboson", "phi Zboson",32,-3.2,3.2);
+  histo1D[("phi_Zleptons_"+dataSetName).c_str()]          = new TH1F("phi_Zleptons", "phi Zleptons",32,-3.2,3.2);
+  histo2D[("phi_ZlepMinvsZlepPlus_"+dataSetName).c_str()]          = new TH2F("phi_Zleptons", "phi lep;phi lep +;phi lep -",32,-3.2,3.2,32,-3.2,3.2);
+  histo2D[("phi_ZbosonvsZleptons_"+dataSetName).c_str()]          = new TH2F("phiZbosonvsZleptons", "phi Z;phi Zleptons;phi Zboson",32,-3.2,3.2,32,-3.2,3.2);
+  
+  histo1D[("eta_ZlepMin_"+dataSetName).c_str()]          = new TH1F("eta_ZlepMin", "eta lep +", 30,-3,3);
+  histo1D[("eta_ZlepPlus_"+dataSetName).c_str()]          = new TH1F("eta_ZlepPlus", "eta lep -", 30,-3,3);
+  histo1D[("eta_Zboson_"+dataSetName).c_str()]          = new TH1F("eta_Zboson", "eta Zboson", 30,-3,3);
+  histo1D[("eta_Zleptons_"+dataSetName).c_str()]          = new TH1F("etaZleptons", "eta Zleptons", 30,-3,3);
+  histo2D[("eta_ZlepMinvsZlepPlus_"+dataSetName).c_str()]          = new TH2F("eta_Zleptons", "eta lep;eta lep +;eta lep -", 30,-3,3, 30,-3,3);
+  histo2D[("eta_ZbosonvsZleptons_"+dataSetName).c_str()]          = new TH2F("etaZbosonvsZleptons", "eta Z;eta Zleptons;eta Zboson", 30,-3,3, 30,-3,3);
+  
+  histo1D[("dR_Zleptons_"+dataSetName).c_str()]          = new TH1F("dR_Zleptons", "dR Zleptons", 500,0, 5);
+  histo1D[("dPhi_Zleptons_"+dataSetName).c_str()]          = new TH1F("dPhi_Zleptons", "dPhi Zleptons", 140,-7, 7);
+
+
+
+}
+void FillGenInfoPlots(string dataSetName){
+  if( foundSMb && foundW){
+    histo1D[("Topmass_Wb_"+dataSetName).c_str()]->Fill((mcParticles[SMb_Indice] + mcParticles[SMW_Indice]).M());
+    histo1D[("pt_Wb_"+dataSetName).c_str()]->Fill((mcParticles[SMb_Indice] + mcParticles[SMW_Indice]).Pt());
+    histo1D[("eta_Wb_"+dataSetName).c_str()]->Fill((mcParticles[SMb_Indice] + mcParticles[SMW_Indice]).Eta());
+    histo1D[("phi_Wb_"+dataSetName).c_str()]->Fill((mcParticles[SMb_Indice] + mcParticles[SMW_Indice]).Phi());
+    histo1D[("dPhi_Wb_"+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcParticles[SMb_Indice],mcParticles[SMW_Indice]));
+    histo1D[("dR_Wb_"+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(mcParticles[SMb_Indice],mcParticles[SMW_Indice]));
+    
+  }
+ 
+  if( foundSMb && foundW && foundAntitopQ){
+    //cout << "in tbar" << endl;
+    histo1D[("Topmass_topquark_"+dataSetName).c_str()]->Fill(mcParticles[AntiTopQ_Indice].M());
+    histo1D[("pt_topquark_"+dataSetName).c_str()]->Fill(mcParticles[AntiTopQ_Indice].Pt());
+    histo1D[("eta_topquark_"+dataSetName).c_str()]->Fill(mcParticles[AntiTopQ_Indice].Eta());
+    histo1D[("phi_topquark_"+dataSetName).c_str()]->Fill(mcParticles[AntiTopQ_Indice].Phi());
+    
+    histo2D[("Topmass_topquarkvsWb_"+dataSetName).c_str()]->Fill((mcParticles[SMW_Indice] + mcParticles[SMb_Indice]).M(),mcParticles[AntiTopQ_Indice].M() );
+    histo2D[("pt_topquarkvsWb_"+dataSetName).c_str()]->Fill((mcParticles[SMW_Indice] + mcParticles[SMb_Indice]).M(),mcParticles[AntiTopQ_Indice].Pt() );
+    histo2D[("phi_topquarkvsWb_"+dataSetName).c_str()]->Fill((mcParticles[SMW_Indice] + mcParticles[SMb_Indice]).M(),mcParticles[AntiTopQ_Indice].Phi() );
+    histo2D[("eta_topquarkvsWb_"+dataSetName).c_str()]->Fill((mcParticles[SMW_Indice] + mcParticles[SMb_Indice]).M(),mcParticles[AntiTopQ_Indice].Eta() );
+    
+    histo1D[("dPhi_Wbvstopquark_"+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcParticles[SMb_Indice]+mcParticles[SMW_Indice],mcParticles[AntiTopQ_Indice]));
+    histo1D[("dR_Wbvstopquark_"+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(mcParticles[SMb_Indice]+mcParticles[SMW_Indice],mcParticles[AntiTopQ_Indice]));
+    
+  }
+  if( foundSMb && foundW && foundTopQ){
+    //cout << "in top" << endl;
+    histo1D[("Topmass_topquark_"+dataSetName).c_str()]->Fill(mcParticles[TopQ_Indice].M());
+    histo1D[("pt_topquark_"+dataSetName).c_str()]->Fill(mcParticles[TopQ_Indice].Pt());
+    histo1D[("eta_topquark_"+dataSetName).c_str()]->Fill(mcParticles[TopQ_Indice].Eta());
+    histo1D[("phi_topquark_"+dataSetName).c_str()]->Fill(mcParticles[TopQ_Indice].Phi());
+    
+    histo1D[("dPhi_Wbvstopquark_"+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcParticles[SMb_Indice]+mcParticles[SMW_Indice],mcParticles[TopQ_Indice]));
+    histo1D[("dR_Wbvstopquark_"+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(mcParticles[SMb_Indice]+mcParticles[SMW_Indice],mcParticles[TopQ_Indice]));
+    
+    
+    histo2D[("Topmass_topquarkvsWb_"+dataSetName).c_str()]->Fill((mcParticles[SMW_Indice] + mcParticles[SMb_Indice]).M(),mcParticles[TopQ_Indice].M() );
+    histo2D[("pt_topquarkvsWb_"+dataSetName).c_str()]->Fill((mcParticles[SMW_Indice] + mcParticles[SMb_Indice]).M(),mcParticles[TopQ_Indice].Pt() );
+    histo2D[("phi_topquarkvsWb_"+dataSetName).c_str()]->Fill((mcParticles[SMW_Indice] + mcParticles[SMb_Indice]).M(),mcParticles[TopQ_Indice].Phi() );
+    histo2D[("eta_topquarkvsWb_"+dataSetName).c_str()]->Fill((mcParticles[SMW_Indice] + mcParticles[SMb_Indice]).M(),mcParticles[TopQ_Indice].Eta() );
+    
+  }
+  
+  
+  
+  //FCNC TOP
+  if( (foundZmumin && foundZmuplus)){
+    histo1D[("Zmass_Zleptons_"+dataSetName).c_str()]->Fill((mcParticles[Zmu_min_Indice] + mcParticles[Zmu_plus_Indice]).M());
+    histo1D[("pt_Zleptons_"+dataSetName).c_str()]->Fill((mcParticles[Zmu_min_Indice] + mcParticles[Zmu_plus_Indice]).Pt());
+    histo1D[("eta_Zleptons_"+dataSetName).c_str()]->Fill((mcParticles[Zmu_min_Indice] + mcParticles[Zmu_plus_Indice]).Eta());
+    histo1D[("phi_Zleptons_"+dataSetName).c_str()]->Fill((mcParticles[Zmu_min_Indice] + mcParticles[Zmu_plus_Indice]).Phi());
+    histo2D[("pt_ZlepMinvsZlepPlus_"+dataSetName).c_str()]->Fill(mcParticles[Zmu_min_Indice].Pt(), mcParticles[Zmu_plus_Indice].Pt());
+    histo2D[("phi_ZlepMinvsZlepPlus_"+dataSetName).c_str()]->Fill(mcParticles[Zmu_min_Indice].Phi(), mcParticles[Zmu_plus_Indice].Phi());
+    histo2D[("eta_ZlepMinvsZlepPlus_"+dataSetName).c_str()]->Fill(mcParticles[Zmu_min_Indice].Eta(), mcParticles[Zmu_plus_Indice].Eta());
+    histo1D[("dPhi_ZlepMinvsZlepPlus_"+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcParticles[Zmu_min_Indice],mcParticles[Zmu_plus_Indice]));
+    histo1D[("dR_ZlepMinvsZlepPlus_"+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(mcParticles[Zmu_min_Indice],mcParticles[Zmu_plus_Indice]));
+    histo1D[("mass_ZlepMin_"+dataSetName).c_str()]->Fill(mcParticles[Zmu_min_Indice].M());
+    histo1D[("mass_ZlepPlus_"+dataSetName).c_str()]->Fill(mcParticles[Zmu_plus_Indice].M());
+    histo1D[("pt_ZlepMin_"+dataSetName).c_str()]->Fill(mcParticles[Zmu_min_Indice].Pt());
+    histo1D[("pt_ZlepPlus_"+dataSetName).c_str()]->Fill(mcParticles[Zmu_plus_Indice].Pt());
+    histo1D[("eta_ZlepMin_"+dataSetName).c_str()]->Fill(mcParticles[Zmu_min_Indice].Eta());
+    histo1D[("eta_ZlepPlus_"+dataSetName).c_str()]->Fill(mcParticles[Zmu_plus_Indice].Eta());
+    histo1D[("phi_ZlepMin_"+dataSetName).c_str()]->Fill(mcParticles[Zmu_min_Indice].Phi());
+    histo1D[("phi_ZlepPlus_"+dataSetName).c_str()]->Fill(mcParticles[Zmu_plus_Indice].Phi());
+    histo2D[("mass_ZlepMinvsZlepPlus_"+dataSetName).c_str()]->Fill(mcParticles[Zmu_min_Indice].M(), mcParticles[Zmu_plus_Indice].M());
+    
+  }
+  if( (foundZelmin && foundZelplus)){
+    histo1D[("Zmass_Zleptons_"+dataSetName).c_str()]->Fill((mcParticles[Zel_min_Indice] + mcParticles[Zel_plus_Indice]).M());
+    histo1D[("pt_Zleptons_"+dataSetName).c_str()]->Fill((mcParticles[Zel_min_Indice] + mcParticles[Zel_plus_Indice]).Pt());
+    histo1D[("eta_Zleptons_"+dataSetName).c_str()]->Fill((mcParticles[Zel_min_Indice] + mcParticles[Zel_plus_Indice]).Eta());
+    histo1D[("phi_Zleptons_"+dataSetName).c_str()]->Fill((mcParticles[Zel_min_Indice] + mcParticles[Zel_plus_Indice]).Phi());
+    histo2D[("pt_ZlepMinvsZlepPlus_"+dataSetName).c_str()]->Fill(mcParticles[Zel_min_Indice].Pt(), mcParticles[Zel_plus_Indice].Pt());
+    histo2D[("phi_ZlepMinvsZlepPlus_"+dataSetName).c_str()]->Fill(mcParticles[Zel_min_Indice].Phi(), mcParticles[Zel_plus_Indice].Phi());
+    histo2D[("eta_ZlepMinvsZlepPlus_"+dataSetName).c_str()]->Fill(mcParticles[Zel_min_Indice].Eta(), mcParticles[Zel_plus_Indice].Eta());
+    histo1D[("dPhi_ZlepMinvsZlepPlus_"+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(mcParticles[Zel_min_Indice],mcParticles[Zel_plus_Indice]));
+    histo1D[("dR_ZlepMinvsZlepPlus_"+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(mcParticles[Zel_min_Indice],mcParticles[Zel_plus_Indice]));
+    
+    histo1D[("mass_ZlepMin_"+dataSetName).c_str()]->Fill(mcParticles[Zel_min_Indice].M());
+    histo1D[("mass_ZlepPlus_"+dataSetName).c_str()]->Fill(mcParticles[Zel_plus_Indice].M());
+    histo1D[("pt_ZlepMin_"+dataSetName).c_str()]->Fill(mcParticles[Zel_min_Indice].Pt());
+    histo1D[("pt_ZlepPlus_"+dataSetName).c_str()]->Fill(mcParticles[Zel_plus_Indice].Pt());
+    histo1D[("eta_ZlepMin_"+dataSetName).c_str()]->Fill(mcParticles[Zel_min_Indice].Eta());
+    histo1D[("eta_ZlepPlus_"+dataSetName).c_str()]->Fill(mcParticles[Zel_plus_Indice].Eta());
+    histo1D[("phi_ZlepMin_"+dataSetName).c_str()]->Fill(mcParticles[Zel_min_Indice].Phi());
+    histo1D[("phi_ZlepPlus_"+dataSetName).c_str()]->Fill(mcParticles[Zel_plus_Indice].Phi());
+    histo2D[("mass_ZlepMinvsZlepPlus_"+dataSetName).c_str()]->Fill(mcParticles[Zel_min_Indice].M(), mcParticles[Zel_plus_Indice].M());
+    
+  }
+  
+  if( foundZ){
+    histo1D[("Zmass_Zboson_"+dataSetName).c_str()]->Fill(mcParticles[Z_Indice].M());
+    histo1D[("pt_Zboson_"+dataSetName).c_str()]->Fill(mcParticles[Z_Indice].Pt());
+    histo1D[("phi_Zboson_"+dataSetName).c_str()]->Fill(mcParticles[Z_Indice].Phi());
+    histo1D[("eta_Zboson_"+dataSetName).c_str()]->Fill(mcParticles[Z_Indice].Eta());
+
+  }
+  if( foundZ && (foundZmumin && foundZmuplus)){
+    histo2D[("Zmass_ZbosonvsZleptons_"+dataSetName).c_str()]->Fill((mcParticles[Zmu_min_Indice] + mcParticles[Zmu_plus_Indice]).M(),mcParticles[Z_Indice].M() );
+    histo2D[("pt_ZbosonvsZleptons_"+dataSetName).c_str()]->Fill((mcParticles[Zmu_min_Indice] + mcParticles[Zmu_plus_Indice]).Pt(),mcParticles[Z_Indice].Pt() );
+    histo2D[("phi_ZbosonvsZleptons_"+dataSetName).c_str()]->Fill((mcParticles[Zmu_min_Indice] + mcParticles[Zmu_plus_Indice]).Pt(),mcParticles[Z_Indice].Phi() );
+    histo2D[("eta_ZbosonvsZleptons_"+dataSetName).c_str()]->Fill((mcParticles[Zmu_min_Indice] + mcParticles[Zmu_plus_Indice]).Pt(),mcParticles[Z_Indice].Eta() );
+  }
+  
+  if( (foundZelmin && foundZelplus) && foundZ ){
+    histo2D[("Zmass_ZbosonvsZleptons_"+dataSetName).c_str()]->Fill((mcParticles[Zel_min_Indice] + mcParticles[Zel_plus_Indice]).M(),mcParticles[Z_Indice].M() );
+    histo2D[("pt_ZbosonvsZleptons_"+dataSetName).c_str()]->Fill((mcParticles[Zel_min_Indice] + mcParticles[Zel_plus_Indice]).Pt(),mcParticles[Z_Indice].Pt() );
+    histo2D[("phi_ZbosonvsZleptons_"+dataSetName).c_str()]->Fill((mcParticles[Zel_min_Indice] + mcParticles[Zel_plus_Indice]).Pt(),mcParticles[Z_Indice].Phi() );
+    histo2D[("eta_ZbosonvsZleptons_"+dataSetName).c_str()]->Fill((mcParticles[Zel_min_Indice] + mcParticles[Zel_plus_Indice]).Pt(),mcParticles[Z_Indice].Eta() );
+    
+  }
+
+}
+
+
+void EventSearcherSTCNC(vector < TLorentzVector> mcParticles){
+
+  for (unsigned int iMC = 0; iMC < mcParticles.size(); iMC++)
+  {
+    if (false)
+      cout << setw(3) << right << iMC << "  Status: " << setw(2) << mc_status[iMC] << "  pdgId: " << setw(3) << mc_pdgId[iMC]<< "  Mother: " << setw(4) << mc_mother[iMC] << "  Granny: " << setw(4) << mc_granny[iMC] << "  Pt: " << setw(7) << left << mc_pt[iMC] << "  Eta: " << mc_eta[iMC] << endl;
+    
+    
+    if ( (mc_status[iMC] > 1 && mc_status[iMC] <= 20) || mc_status[iMC] >= 30 ) continue;  /// Final state particle or particle from hardest process
+    
+    if( mc_pdgId[iMC]== 6 ){ TopQ_Indice = iMC; foundTopQ = true;  }
+    else if( mc_pdgId[iMC]== -6 ){ AntiTopQ_Indice = iMC; foundAntitopQ = true; }
+    
+    //SM
+    else if( abs( mc_pdgId[iMC]) ==  5 && abs(mc_mother[iMC])  == 6 ){
+      if(mc_status[iMC] == 23) {SMb_Indice = iMC;  }
+      else if( mc_status[iMC] != 23 && SMb_Indice == -999) {SMb_Indice = iMC;}
+      foundSMb = true;
+      
+    } // b from t
+    else if( mc_pdgId[iMC]==  13 && mc_mother[iMC]  == -24 && mc_granny[iMC]  == -6 ){
+      if(mc_status[iMC] == 23) {SMmu_Indice = iMC;  }
+      else if( mc_status[iMC] != 23 && SMmu_Indice == -999) {SMmu_Indice = iMC;}
+      foundSMmu = true;
+      //cout << "found mu from tbar" << endl;
+      
+    } // mu - from W - from tbar
+    else if( mc_pdgId[iMC]==  -13 && mc_mother[iMC]  == 24 && mc_granny[iMC]  == 6 ){
+      if(mc_status[iMC] == 23) {SMmu_Indice = iMC;  }
+      else if( mc_status[iMC] != 23 && SMmu_Indice == -999) {SMmu_Indice = iMC;}
+      foundSMmu = true;
+      
+    } // mu+ from W+ from top
+    else if( mc_pdgId[iMC]==  11 && mc_mother[iMC]  == -24 && mc_granny[iMC]  == -6 ){
+      if(mc_status[iMC] == 23) {SMel_Indice = iMC;  }
+      else if( mc_status[iMC] != 23 && SMel_Indice== -999) {SMel_Indice = iMC;}
+      foundSMel = true;
+      //cout << "found el from tbar" << endl;
+      
+    } // el - from W - from tbar
+    else if( mc_pdgId[iMC]==  -11 && mc_mother[iMC]  == 24 && mc_granny[iMC]  == 6 ){
+      if(mc_status[iMC] == 23) {SMel_Indice = iMC;  }
+      else if( mc_status[iMC] != 23 && SMel_Indice== -999) {SMel_Indice = iMC;}
+      foundSMel = true;
+      
+    } // el+ from W+ from top
+    else if( mc_pdgId[iMC]==  24 && mc_mother[iMC]  == 6   ){
+      if(mc_status[iMC] == 23) {SMW_Indice= iMC; }
+      else if( mc_status[iMC] != 23 && SMW_Indice== -999) {SMW_Indice = iMC; }
+     foundW = true;
+      //cout << "W from t  found " << endl;
+    } //W from top
+    else if( mc_pdgId[iMC]==  -24 && mc_mother[iMC]  == -6  ){
+      if(mc_status[iMC] == 23) {SMW_Indice= iMC; }
+      else if( mc_status[iMC] != 23 && SMW_Indice== -999) {SMW_Indice = iMC;}
+      foundW = true;
+      //cout << "W from tbar found  " << endl;
+    } //W from atop
+    
+    //FCNC
+    else if( mc_pdgId[iMC]==  13 && mc_mother[iMC]  == 23  ){
+      if(mc_status[iMC] == 23) {Zmu_min_Indice = iMC;  }
+      else if( mc_status[iMC] != 23 && Zmu_min_Indice== -999) {Zmu_min_Indice = iMC;}
+      foundZmumin = true;
+      
+      // cout << "mu from Z from tbar found  " << endl;
+    } // mu - from Z  from tbar
+    else if( mc_pdgId[iMC]==  -13 && mc_mother[iMC]  == 23  ){
+      if(mc_status[iMC] == 23) {Zmu_plus_Indice = iMC;  }
+      else if( mc_status[iMC] != 23 && Zmu_plus_Indice== -999) {Zmu_plus_Indice= iMC;}
+      foundZmuplus = true;
+      
+      //cout << "mu from Z from tbar found  " << endl;
+    } // mu + from Z  from tbar
+    
+    
+    else if( mc_pdgId[iMC]==  11 && mc_mother[iMC]  == 23   ){
+      if(mc_status[iMC] == 23) {Zel_min_Indice = iMC;  }
+      else if( mc_status[iMC] != 23 && Zel_min_Indice== -999) {Zel_min_Indice = iMC;}
+      foundZelmin = true;
+      //cout << "el from Z from tbar found  " << endl;
+    } // el - from Z  from tbar
+    else if( mc_pdgId[iMC]==  -11 && mc_mother[iMC]  == 23  ){
+      if(mc_status[iMC] == 23) {Zel_plus_Indice= iMC;  }
+      else if( mc_status[iMC] != 23 && Zel_plus_Indice== -999) {Zel_plus_Indice = iMC;}
+      foundZelplus = true;
+      
+      // cout << "el from Z from tbar found  " << endl;
+    } // el + from Z  from tbar
+    else if( mc_pdgId[iMC]==  23 ){
+      if(mc_status[iMC] == 23) {Z_Indice= iMC;  }
+      else if( mc_status[iMC] != 23 && Z_Indice== -999) {Z_Indice = iMC; }
+      foundZ = true;
+    } //Z from top with mu decay
+   
+    
+  }
+
+
+}
+
+
+void EventSearcherTTCNC(vector < TLorentzVector> mcParticles){
+  
+  for (unsigned int iMC = 0; iMC < mcParticles.size(); iMC++)
+  {
+    if (false)
+      cout << setw(3) << right << iMC << "  Status: " << setw(2) << mc_status[iMC] << "  pdgId: " << setw(3) << mc_pdgId[iMC]<< "  Mother: " << setw(4) << mc_mother[iMC] << "  Granny: " << setw(4) << mc_granny[iMC] << "  Pt: " << setw(7) << left << mc_pt[iMC] << "  Eta: " << mc_eta[iMC] << endl;
+    
+    
+    if ( (mc_status[iMC] > 1 && mc_status[iMC] <= 20) || mc_status[iMC] >= 30 ) continue;  /// Final state particle or particle from hardest process
+    
+    if( mc_pdgId[iMC]== 6 ){ TopQ_Indice = iMC; foundTopQ = true;  }
+    else if( mc_pdgId[iMC]== -6 ){ AntiTopQ_Indice = iMC; foundAntitopQ = true; }
+    
+    //SM
+    else if( abs( mc_pdgId[iMC]) ==  5 && abs(mc_mother[iMC])  == 6 ){
+      if(mc_status[iMC] == 23) {SMb_Indice = iMC;  }
+      else if( mc_status[iMC] != 23 && SMb_Indice == -999) {SMb_Indice = iMC;}
+      foundSMb = true;
+      
+    } // b from t
+    else if( mc_pdgId[iMC]==  13 && mc_mother[iMC]  == -24 && mc_granny[iMC]  == -6 ){
+      if(mc_status[iMC] == 23) {SMmu_Indice = iMC;  }
+      else if( mc_status[iMC] != 23 && SMmu_Indice == -999) {SMmu_Indice = iMC;}
+      foundSMmu = true;
+      //cout << "found mu from tbar" << endl;
+      
+    } // mu - from W - from tbar
+    else if( mc_pdgId[iMC]==  -13 && mc_mother[iMC]  == 24 && mc_granny[iMC]  == 6 ){
+      if(mc_status[iMC] == 23) {SMmu_Indice = iMC;  }
+      else if( mc_status[iMC] != 23 && SMmu_Indice == -999) {SMmu_Indice = iMC;}
+      foundSMmu = true;
+      
+    } // mu+ from W+ from top
+    else if( mc_pdgId[iMC]==  11 && mc_mother[iMC]  == -24 && mc_granny[iMC]  == -6 ){
+      if(mc_status[iMC] == 23) {SMel_Indice = iMC;  }
+      else if( mc_status[iMC] != 23 && SMel_Indice== -999) {SMel_Indice = iMC;}
+      foundSMel = true;
+      //cout << "found el from tbar" << endl;
+      
+    } // el - from W - from tbar
+    else if( mc_pdgId[iMC]==  -11 && mc_mother[iMC]  == 24 && mc_granny[iMC]  == 6 ){
+      if(mc_status[iMC] == 23) {SMel_Indice = iMC;  }
+      else if( mc_status[iMC] != 23 && SMel_Indice== -999) {SMel_Indice = iMC;}
+      foundSMel = true;
+      
+    } // el+ from W+ from top
+    else if( mc_pdgId[iMC]==  24 && mc_mother[iMC]  == 6   ){
+      if(mc_status[iMC] == 23) {SMW_Indice= iMC; }
+      else if( mc_status[iMC] != 23 && SMW_Indice== -999) {SMW_Indice = iMC; }
+      foundW = true;
+      //cout << "W from t  found " << endl;
+    } //W from top
+    else if( mc_pdgId[iMC]==  -24 && mc_mother[iMC]  == -6  ){
+      if(mc_status[iMC] == 23) {SMW_Indice= iMC; }
+      else if( mc_status[iMC] != 23 && SMW_Indice== -999) {SMW_Indice = iMC;}
+      foundW = true;
+      //cout << "W from tbar found  " << endl;
+    } //W from atop
+    
+    //FCNC
+    else if( mc_pdgId[iMC]==  13 && mc_mother[iMC]  == 23 && abs(mc_granny[iMC])  == 6 ){
+      if(mc_status[iMC] == 23) {Zmu_min_Indice = iMC;  }
+      else if( mc_status[iMC] != 23 && Zmu_min_Indice== -999) {Zmu_min_Indice = iMC;}
+      foundZmumin = true;
+      
+      // cout << "mu from Z from tbar found  " << endl;
+    } // mu - from Z  from tbar
+    else if( mc_pdgId[iMC]==  -13 && mc_mother[iMC]  == 23  && abs(mc_granny[iMC])  == 6){
+      if(mc_status[iMC] == 23) {Zmu_plus_Indice = iMC;  }
+      else if( mc_status[iMC] != 23 && Zmu_plus_Indice== -999) {Zmu_plus_Indice= iMC;}
+      foundZmuplus = true;
+      
+      //cout << "mu from Z from tbar found  " << endl;
+    } // mu + from Z  from tbar
+    
+    
+    else if( mc_pdgId[iMC]==  11 && mc_mother[iMC]  == 23  && abs(mc_granny[iMC])  == 6 ){
+      if(mc_status[iMC] == 23) {Zel_min_Indice = iMC;  }
+      else if( mc_status[iMC] != 23 && Zel_min_Indice== -999) {Zel_min_Indice = iMC;}
+      foundZelmin = true;
+      //cout << "el from Z from tbar found  " << endl;
+    } // el - from Z  from tbar
+    else if( mc_pdgId[iMC]==  -11 && mc_mother[iMC]  == 23 && abs(mc_granny[iMC])  == 6 ){
+      if(mc_status[iMC] == 23) {Zel_plus_Indice= iMC;  }
+      else if( mc_status[iMC] != 23 && Zel_plus_Indice== -999) {Zel_plus_Indice = iMC;}
+      foundZelplus = true;
+      
+      // cout << "el from Z from tbar found  " << endl;
+    } // el + from Z  from tbar
+    else if( mc_pdgId[iMC]==  23&& abs(mc_mother[iMC])  == 6 ){
+      if(mc_status[iMC] == 23) {Z_Indice= iMC;  }
+      else if( mc_status[iMC] != 23 && Z_Indice== -999) {Z_Indice = iMC; }
+      foundZ = true;
+    } //Z from top with mu decay
+    
+    
+  }
+  
+  
+}
