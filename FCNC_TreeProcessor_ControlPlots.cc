@@ -128,17 +128,19 @@ int main(int argc, char *argv[])
     WhatSysts.push_back("leptonMinus");
     WhatSysts.push_back("TopPtPlus");
     WhatSysts.push_back("TopPtMinus");
-/*    WhatSysts.push_back("noSF");
-    WhatSysts.push_back("OnlyTopPtSF");
-    WhatSysts.push_back("OnlyBTagSF");
-    WhatSysts.push_back("OnlyPUSF");
-//    WhatSysts.push_back("OnlyLepSF");
-//    WhatSysts.push_back("OnlyNLOSF");
-    WhatSysts.push_back("NoTopPtSF");
-    WhatSysts.push_back("NoBTagSF");
-    WhatSysts.push_back("NoPUSF");
-//    WhatSysts.push_back("NoLepSF");
-//    WhatSysts.push_back("NoNLOSF");
+/*    if(doInclusive)
+    {
+        WhatSysts.push_back("noSF");
+        WhatSysts.push_back("OnlyTopPtSF");
+        WhatSysts.push_back("OnlyBTagSF");
+        WhatSysts.push_back("OnlyPUSF");
+        WhatSysts.push_back("OnlyLepSF");
+        WhatSysts.push_back("OnlyNLOSF");
+        WhatSysts.push_back("NoBTagSF");
+        WhatSysts.push_back("NoPUSF");
+        WhatSysts.push_back("NoLepSF");
+        WhatSysts.push_back("NoNLOSF");
+    }
 */    if(doJESSys) WhatSysts.push_back("JESPlus");
     if(doJESSys) WhatSysts.push_back("JESMinus");
     if(doJERSys) WhatSysts.push_back("JERPlus");
@@ -169,19 +171,20 @@ int main(int argc, char *argv[])
     WhatSysts_noJECs.push_back("leptonMinus");
     WhatSysts_noJECs.push_back("TopPtPlus");
     WhatSysts_noJECs.push_back("TopPtMinus");
-/*    WhatSysts_noJECs.push_back("noSF");
-    WhatSysts_noJECs.push_back("OnlyTopPtSF");
-    WhatSysts_noJECs.push_back("OnlyBTagSF");
-    WhatSysts_noJECs.push_back("OnlyPUSF");
-//    WhatSysts_noJECs.push_back("OnlyLepSF");
-//    WhatSysts_noJECs.push_back("OnlyNLOSF");
-    WhatSysts_noJECs.push_back("NoTopPtSF");
-    WhatSysts_noJECs.push_back("NoBTagSF");
-    WhatSysts_noJECs.push_back("NoPUSF");
-//    WhatSysts_noJECs.push_back("NoLepSF");
-//    WhatSysts_noJECs.push_back("NoNLOSF");
+/*    if(doInclusive)
+    {
+        WhatSysts_noJECs.push_back("noSF");
+        WhatSysts_noJECs.push_back("OnlyTopPtSF");
+        WhatSysts_noJECs.push_back("OnlyBTagSF");
+        WhatSysts_noJECs.push_back("OnlyPUSF");
+        WhatSysts_noJECs.push_back("OnlyLepSF");
+        WhatSysts_noJECs.push_back("OnlyNLOSF");
+        WhatSysts_noJECs.push_back("NoBTagSF");
+        WhatSysts_noJECs.push_back("NoPUSF");
+        WhatSysts_noJECs.push_back("NoLepSF");
+        WhatSysts_noJECs.push_back("NoNLOSF");
+    }
 */
-
     cout << "------------------------------------------------------------------------------------------------" << endl;
     cout << "Begin program" << endl;
     cout << " - Category: " << category << endl;
@@ -566,9 +569,6 @@ int main(int argc, char *argv[])
             Double_t W_fleptonSF;
             Double_t W_fleptonSF_Plus;
             Double_t W_fleptonSF_Minus;
-            Double_t W_btagWeight_CSVv2M_mujets_central;
-            Double_t W_btagWeight_CSVv2M_mujets_up;
-            Double_t W_btagWeight_CSVv2M_mujets_down;
             Double_t W_btagWeight_shape;
             Double_t W_btagWeight_shape_up_lf; 
             Double_t W_btagWeight_shape_down_lf; 
@@ -587,7 +587,18 @@ int main(int argc, char *argv[])
             Double_t W_btagWeight_shape_up_cferr2; 
             Double_t W_btagWeight_shape_down_cferr2; 
             Double_t W_nloWeight;// for amc@nlo samples
-            Double_t W_TopPtReweighing;
+            Double_t W_weight0;
+            Double_t W_weight1;
+            Double_t W_weight2;
+            Double_t W_weight3;
+            Double_t W_weight4;
+            Double_t W_weight5;
+            Double_t W_weight6;
+            Double_t W_weight7;
+            Double_t W_weight8; 
+            Double_t W_hdamp_up; 
+            Double_t W_hdamp_dw; 
+           Double_t W_TopPtReweighing;
           
             Int_t run_num;
             Int_t evt_num;
@@ -608,9 +619,9 @@ int main(int argc, char *argv[])
 	          Int_t nJets_CSVL; 
 	          Int_t nJets_CSVM; 
 	          Int_t nJets_CSVT;
-	          Int_t nJets_cMVAL; 
-	          Int_t nJets_cMVAM; 
-	          Int_t nJets_cMVAT;
+//	          Int_t nJets_cMVAL; 
+//	          Int_t nJets_cMVAM; 
+//	          Int_t nJets_cMVAT;
             Double_t pt_jet[20];
             Double_t phi_jet[20];
             Double_t eta_jet[20];
@@ -624,174 +635,175 @@ int main(int argc, char *argv[])
             Double_t met_Pt; 
 	          Double_t met_Phi; 
 	          Double_t met_Eta;
-	          
-	          Int_t TOPTOPLEPHAD_JetIdx_LepTop;
-	          Int_t TOPTOPLEPHAD_JetIdx_HadTop;
-	          Int_t TOPTOPLEPHAD_JetIdx_W1;
-	          Int_t TOPTOPLEPHAD_JetIdx_W2;
-	          Int_t TOPTOPLEPHBB_JetIdx_LepTop;
-	          Int_t TOPTOPLEPHBB_JetIdx_HadTop;
-	          Int_t TOPTOPLEPHBB_JetIdx_H1;
-	          Int_t TOPTOPLEPHBB_JetIdx_H2;
-	          Int_t TOPHLEPBB_JetIdx_LepTop_hut;
-	          Int_t TOPHLEPBB_JetIdx_H1_hut;
-	          Int_t TOPHLEPBB_JetIdx_H2_hut;
-	          Int_t TOPHLEPBB_JetIdx_LepTop_hct;
-	          Int_t TOPHLEPBB_JetIdx_H1_hct;
-	          Int_t TOPHLEPBB_JetIdx_H2_hct;
-            Double_t MVA_TOPTOPLEPHAD;
-            Double_t MVA_TOPTOPLEPHBB;
-            Double_t MVA_TOPHLEPBB_hut;
-            Double_t MVA_TOPHLEPBB_hct;
 
-            //Variables for signal/background training
-            //Variables from bMVA method
-            Double_t TopHadMass_TOPTOPLEPHAD;
-            Double_t TopHadEta_TOPTOPLEPHAD;
-            Double_t TopHadPhi_TOPTOPLEPHAD;
-            Double_t TopHadPt_TOPTOPLEPHAD;
+	              Int_t TOPTOPLEPHAD_JetIdx_LepTop;
+	              Int_t TOPTOPLEPHAD_JetIdx_HadTop;
+	              Int_t TOPTOPLEPHAD_JetIdx_W1;
+	              Int_t TOPTOPLEPHAD_JetIdx_W2;
+	              Int_t TOPTOPLEPHBB_JetIdx_LepTop;
+	              Int_t TOPTOPLEPHBB_JetIdx_HadTop;
+	              Int_t TOPTOPLEPHBB_JetIdx_H1;
+	              Int_t TOPTOPLEPHBB_JetIdx_H2;
+	              Int_t TOPHLEPBB_JetIdx_LepTop_hut;
+	              Int_t TOPHLEPBB_JetIdx_H1_hut;
+	              Int_t TOPHLEPBB_JetIdx_H2_hut;
+	              Int_t TOPHLEPBB_JetIdx_LepTop_hct;
+	              Int_t TOPHLEPBB_JetIdx_H1_hct;
+	              Int_t TOPHLEPBB_JetIdx_H2_hct;
+                Double_t MVA_TOPTOPLEPHAD;
+                Double_t MVA_TOPTOPLEPHBB;
+                Double_t MVA_TOPHLEPBB_hut;
+                Double_t MVA_TOPHLEPBB_hct;
 
-            Double_t TopLepMass_TOPTOPLEPHAD;
-            Double_t TopLepEta_TOPTOPLEPHAD;
-            Double_t TopLepPhi_TOPTOPLEPHAD;
-            Double_t TopLepPt_TOPTOPLEPHAD;
+                //Variables for signal/background training
+                //Variables from bMVA method
+                Double_t TopHadMass_TOPTOPLEPHAD;
+                Double_t TopHadEta_TOPTOPLEPHAD;
+                Double_t TopHadPhi_TOPTOPLEPHAD;
+                Double_t TopHadPt_TOPTOPLEPHAD;
 
-            Double_t TopHadWMass_TOPTOPLEPHAD;
-            Double_t TopHadWEta_TOPTOPLEPHAD;
-            Double_t TopHadWPhi_TOPTOPLEPHAD;
-            Double_t TopHadWPt_TOPTOPLEPHAD;
+                Double_t TopLepMass_TOPTOPLEPHAD;
+                Double_t TopLepEta_TOPTOPLEPHAD;
+                Double_t TopLepPhi_TOPTOPLEPHAD;
+                Double_t TopLepPt_TOPTOPLEPHAD;
 
-            Double_t TopLepTopHadDr_TOPTOPLEPHAD;
-            Double_t WJet1WJet2Dr_TOPTOPLEPHAD;
+                Double_t TopHadWMass_TOPTOPLEPHAD;
+                Double_t TopHadWEta_TOPTOPLEPHAD;
+                Double_t TopHadWPhi_TOPTOPLEPHAD;
+                Double_t TopHadWPt_TOPTOPLEPHAD;
 
-            Double_t TopLepBJetCSVv2_TOPTOPLEPHAD;
-            Double_t TopLepBJetPt_TOPTOPLEPHAD;
-            Double_t TopLepBJetPhi_TOPTOPLEPHAD;
-            Double_t TopLepBJetEta_TOPTOPLEPHAD;
-            Double_t TopLepBJetE_TOPTOPLEPHAD;
+                Double_t TopLepTopHadDr_TOPTOPLEPHAD;
+                Double_t WJet1WJet2Dr_TOPTOPLEPHAD;
 
-            Double_t TopHadBJetCSVv2_TOPTOPLEPHAD;
-            Double_t TopHadBJetPt_TOPTOPLEPHAD;
-            Double_t TopHadBJetPhi_TOPTOPLEPHAD;
-            Double_t TopHadBJetEta_TOPTOPLEPHAD;
-            Double_t TopHadBJetE_TOPTOPLEPHAD;
+                Double_t TopLepBJetCSVv2_TOPTOPLEPHAD;
+                Double_t TopLepBJetPt_TOPTOPLEPHAD;
+                Double_t TopLepBJetPhi_TOPTOPLEPHAD;
+                Double_t TopLepBJetEta_TOPTOPLEPHAD;
+                Double_t TopLepBJetE_TOPTOPLEPHAD;
 
-            Double_t TopHadWNonBJet1CSVv2_TOPTOPLEPHAD;
-            Double_t TopHadWNonBJet1Pt_TOPTOPLEPHAD;
-            Double_t TopHadWNonBJet1Phi_TOPTOPLEPHAD;
-            Double_t TopHadWNonBJet1Eta_TOPTOPLEPHAD;
-            Double_t TopHadWNonBJet1E_TOPTOPLEPHAD;
+                Double_t TopHadBJetCSVv2_TOPTOPLEPHAD;
+                Double_t TopHadBJetPt_TOPTOPLEPHAD;
+                Double_t TopHadBJetPhi_TOPTOPLEPHAD;
+                Double_t TopHadBJetEta_TOPTOPLEPHAD;
+                Double_t TopHadBJetE_TOPTOPLEPHAD;
 
-            Double_t TopHadWNonBJet2CSVv2_TOPTOPLEPHAD;
-            Double_t TopHadWNonBJet2Pt_TOPTOPLEPHAD;
-            Double_t TopHadWNonBJet2Phi_TOPTOPLEPHAD;
-            Double_t TopHadWNonBJet2Eta_TOPTOPLEPHAD;
-            Double_t TopHadWNonBJet2E_TOPTOPLEPHAD;
+                Double_t TopHadWNonBJet1CSVv2_TOPTOPLEPHAD;
+                Double_t TopHadWNonBJet1Pt_TOPTOPLEPHAD;
+                Double_t TopHadWNonBJet1Phi_TOPTOPLEPHAD;
+                Double_t TopHadWNonBJet1Eta_TOPTOPLEPHAD;
+                Double_t TopHadWNonBJet1E_TOPTOPLEPHAD;
 
-            Double_t TopHadMass_TOPTOPLEPHBB;
-            Double_t TopHadEta_TOPTOPLEPHBB;
-            Double_t TopHadPhi_TOPTOPLEPHBB;
-            Double_t TopHadPt_TOPTOPLEPHBB;
+                Double_t TopHadWNonBJet2CSVv2_TOPTOPLEPHAD;
+                Double_t TopHadWNonBJet2Pt_TOPTOPLEPHAD;
+                Double_t TopHadWNonBJet2Phi_TOPTOPLEPHAD;
+                Double_t TopHadWNonBJet2Eta_TOPTOPLEPHAD;
+                Double_t TopHadWNonBJet2E_TOPTOPLEPHAD;
 
-            Double_t TopLepMass_TOPTOPLEPHBB;
-            Double_t TopLepEta_TOPTOPLEPHBB;
-            Double_t TopLepPhi_TOPTOPLEPHBB;
-            Double_t TopLepPt_TOPTOPLEPHBB;
+                Double_t TopHadMass_TOPTOPLEPHBB;
+                Double_t TopHadEta_TOPTOPLEPHBB;
+                Double_t TopHadPhi_TOPTOPLEPHBB;
+                Double_t TopHadPt_TOPTOPLEPHBB;
 
-            Double_t HiggsMass_TOPTOPLEPHBB;
-            Double_t HiggsEta_TOPTOPLEPHBB;
-            Double_t HiggsPhi_TOPTOPLEPHBB;
-            Double_t HiggsPt_TOPTOPLEPHBB;
+                Double_t TopLepMass_TOPTOPLEPHBB;
+                Double_t TopLepEta_TOPTOPLEPHBB;
+                Double_t TopLepPhi_TOPTOPLEPHBB;
+                Double_t TopLepPt_TOPTOPLEPHBB;
 
-            Double_t TopLepTopHadDr_TOPTOPLEPHBB;
-            Double_t TopLepHiggsDr_TOPTOPLEPHBB;
-            Double_t HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB;
+                Double_t HiggsMass_TOPTOPLEPHBB;
+                Double_t HiggsEta_TOPTOPLEPHBB;
+                Double_t HiggsPhi_TOPTOPLEPHBB;
+                Double_t HiggsPt_TOPTOPLEPHBB;
 
-            Double_t TopLepBJetCSVv2_TOPTOPLEPHBB;
-            Double_t TopLepBJetPt_TOPTOPLEPHBB;
-            Double_t TopLepBJetPhi_TOPTOPLEPHBB;
-            Double_t TopLepBJetEta_TOPTOPLEPHBB;
-            Double_t TopLepBJetE_TOPTOPLEPHBB;
+                Double_t TopLepTopHadDr_TOPTOPLEPHBB;
+                Double_t TopLepHiggsDr_TOPTOPLEPHBB;
+                Double_t HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB;
 
-            Double_t TopHadNonBJetCSVv2_TOPTOPLEPHBB;
-            Double_t TopHadNonBJetPt_TOPTOPLEPHBB;
-            Double_t TopHadNonBJetPhi_TOPTOPLEPHBB;
-            Double_t TopHadNonBJetEta_TOPTOPLEPHBB;
-            Double_t TopHadNonBJetE_TOPTOPLEPHBB;
+                Double_t TopLepBJetCSVv2_TOPTOPLEPHBB;
+                Double_t TopLepBJetPt_TOPTOPLEPHBB;
+                Double_t TopLepBJetPhi_TOPTOPLEPHBB;
+                Double_t TopLepBJetEta_TOPTOPLEPHBB;
+                Double_t TopLepBJetE_TOPTOPLEPHBB;
 
-            Double_t HiggsBJet1CSVv2_TOPTOPLEPHBB;
-            Double_t HiggsBJet1Pt_TOPTOPLEPHBB;
-            Double_t HiggsBJet1Phi_TOPTOPLEPHBB;
-            Double_t HiggsBJet1Eta_TOPTOPLEPHBB;
-            Double_t HiggsBJet1E_TOPTOPLEPHBB;
+                Double_t TopHadNonBJetCSVv2_TOPTOPLEPHBB;
+                Double_t TopHadNonBJetPt_TOPTOPLEPHBB;
+                Double_t TopHadNonBJetPhi_TOPTOPLEPHBB;
+                Double_t TopHadNonBJetEta_TOPTOPLEPHBB;
+                Double_t TopHadNonBJetE_TOPTOPLEPHBB;
 
-            Double_t HiggsBJet2CSVv2_TOPTOPLEPHBB;
-            Double_t HiggsBJet2Pt_TOPTOPLEPHBB;
-            Double_t HiggsBJet2Phi_TOPTOPLEPHBB;
-            Double_t HiggsBJet2Eta_TOPTOPLEPHBB;
-            Double_t HiggsBJet2E_TOPTOPLEPHBB;
+                Double_t HiggsBJet1CSVv2_TOPTOPLEPHBB;
+                Double_t HiggsBJet1Pt_TOPTOPLEPHBB;
+                Double_t HiggsBJet1Phi_TOPTOPLEPHBB;
+                Double_t HiggsBJet1Eta_TOPTOPLEPHBB;
+                Double_t HiggsBJet1E_TOPTOPLEPHBB;
 
-            Double_t TopLepMass_TOPHLEPBB_hut;
-            Double_t TopLepEta_TOPHLEPBB_hut;
-            Double_t TopLepPhi_TOPHLEPBB_hut;
-            Double_t TopLepPt_TOPHLEPBB_hut;
+                Double_t HiggsBJet2CSVv2_TOPTOPLEPHBB;
+                Double_t HiggsBJet2Pt_TOPTOPLEPHBB;
+                Double_t HiggsBJet2Phi_TOPTOPLEPHBB;
+                Double_t HiggsBJet2Eta_TOPTOPLEPHBB;
+                Double_t HiggsBJet2E_TOPTOPLEPHBB;
 
-            Double_t HiggsMass_TOPHLEPBB_hut;
-            Double_t HiggsEta_TOPHLEPBB_hut;
-            Double_t HiggsPhi_TOPHLEPBB_hut;
-            Double_t HiggsPt_TOPHLEPBB_hut;
+                Double_t TopLepMass_TOPHLEPBB_hut;
+                Double_t TopLepEta_TOPHLEPBB_hut;
+                Double_t TopLepPhi_TOPHLEPBB_hut;
+                Double_t TopLepPt_TOPHLEPBB_hut;
 
-            Double_t TopLepHiggsDr_TOPHLEPBB_hut;
-            Double_t HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut;
+                Double_t HiggsMass_TOPHLEPBB_hut;
+                Double_t HiggsEta_TOPHLEPBB_hut;
+                Double_t HiggsPhi_TOPHLEPBB_hut;
+                Double_t HiggsPt_TOPHLEPBB_hut;
 
-            Double_t TopLepBJetCSVv2_TOPHLEPBB_hut;
-            Double_t TopLepBJetPt_TOPHLEPBB_hut;
-            Double_t TopLepBJetPhi_TOPHLEPBB_hut;
-            Double_t TopLepBJetEta_TOPHLEPBB_hut;
-            Double_t TopLepBJetE_TOPHLEPBB_hut;
+                Double_t TopLepHiggsDr_TOPHLEPBB_hut;
+                Double_t HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut;
 
-            Double_t HiggsBJet1CSVv2_TOPHLEPBB_hut;
-            Double_t HiggsBJet1Pt_TOPHLEPBB_hut;
-            Double_t HiggsBJet1Phi_TOPHLEPBB_hut;
-            Double_t HiggsBJet1Eta_TOPHLEPBB_hut;
-            Double_t HiggsBJet1E_TOPHLEPBB_hut;
+                Double_t TopLepBJetCSVv2_TOPHLEPBB_hut;
+                Double_t TopLepBJetPt_TOPHLEPBB_hut;
+                Double_t TopLepBJetPhi_TOPHLEPBB_hut;
+                Double_t TopLepBJetEta_TOPHLEPBB_hut;
+                Double_t TopLepBJetE_TOPHLEPBB_hut;
 
-            Double_t HiggsBJet2CSVv2_TOPHLEPBB_hut;
-            Double_t HiggsBJet2Pt_TOPHLEPBB_hut;
-            Double_t HiggsBJet2Phi_TOPHLEPBB_hut;
-            Double_t HiggsBJet2Eta_TOPHLEPBB_hut;
-            Double_t HiggsBJet2E_TOPHLEPBB_hut;
+                Double_t HiggsBJet1CSVv2_TOPHLEPBB_hut;
+                Double_t HiggsBJet1Pt_TOPHLEPBB_hut;
+                Double_t HiggsBJet1Phi_TOPHLEPBB_hut;
+                Double_t HiggsBJet1Eta_TOPHLEPBB_hut;
+                Double_t HiggsBJet1E_TOPHLEPBB_hut;
 
-            Double_t TopLepMass_TOPHLEPBB_hct;
-            Double_t TopLepEta_TOPHLEPBB_hct;
-            Double_t TopLepPhi_TOPHLEPBB_hct;
-            Double_t TopLepPt_TOPHLEPBB_hct;
+                Double_t HiggsBJet2CSVv2_TOPHLEPBB_hut;
+                Double_t HiggsBJet2Pt_TOPHLEPBB_hut;
+                Double_t HiggsBJet2Phi_TOPHLEPBB_hut;
+                Double_t HiggsBJet2Eta_TOPHLEPBB_hut;
+                Double_t HiggsBJet2E_TOPHLEPBB_hut;
 
-            Double_t HiggsMass_TOPHLEPBB_hct;
-            Double_t HiggsEta_TOPHLEPBB_hct;
-            Double_t HiggsPhi_TOPHLEPBB_hct;
-            Double_t HiggsPt_TOPHLEPBB_hct;
+                Double_t TopLepMass_TOPHLEPBB_hct;
+                Double_t TopLepEta_TOPHLEPBB_hct;
+                Double_t TopLepPhi_TOPHLEPBB_hct;
+                Double_t TopLepPt_TOPHLEPBB_hct;
 
-            Double_t TopLepHiggsDr_TOPHLEPBB_hct;
-            Double_t HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct;
+                Double_t HiggsMass_TOPHLEPBB_hct;
+                Double_t HiggsEta_TOPHLEPBB_hct;
+                Double_t HiggsPhi_TOPHLEPBB_hct;
+                Double_t HiggsPt_TOPHLEPBB_hct;
 
-            Double_t TopLepBJetCSVv2_TOPHLEPBB_hct;
-            Double_t TopLepBJetPt_TOPHLEPBB_hct;
-            Double_t TopLepBJetPhi_TOPHLEPBB_hct;
-            Double_t TopLepBJetEta_TOPHLEPBB_hct;
-            Double_t TopLepBJetE_TOPHLEPBB_hct;
+                Double_t TopLepHiggsDr_TOPHLEPBB_hct;
+                Double_t HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct;
 
-            Double_t HiggsBJet1CSVv2_TOPHLEPBB_hct;
-            Double_t HiggsBJet1Pt_TOPHLEPBB_hct;
-            Double_t HiggsBJet1Phi_TOPHLEPBB_hct;
-            Double_t HiggsBJet1Eta_TOPHLEPBB_hct;
-            Double_t HiggsBJet1E_TOPHLEPBB_hct;
+                Double_t TopLepBJetCSVv2_TOPHLEPBB_hct;
+                Double_t TopLepBJetPt_TOPHLEPBB_hct;
+                Double_t TopLepBJetPhi_TOPHLEPBB_hct;
+                Double_t TopLepBJetEta_TOPHLEPBB_hct;
+                Double_t TopLepBJetE_TOPHLEPBB_hct;
 
-            Double_t HiggsBJet2CSVv2_TOPHLEPBB_hct;
-            Double_t HiggsBJet2Pt_TOPHLEPBB_hct;
-            Double_t HiggsBJet2Phi_TOPHLEPBB_hct;
-            Double_t HiggsBJet2Eta_TOPHLEPBB_hct;
-            Double_t HiggsBJet2E_TOPHLEPBB_hct;
+                Double_t HiggsBJet1CSVv2_TOPHLEPBB_hct;
+                Double_t HiggsBJet1Pt_TOPHLEPBB_hct;
+                Double_t HiggsBJet1Phi_TOPHLEPBB_hct;
+                Double_t HiggsBJet1Eta_TOPHLEPBB_hct;
+                Double_t HiggsBJet1E_TOPHLEPBB_hct;
+
+                Double_t HiggsBJet2CSVv2_TOPHLEPBB_hct;
+                Double_t HiggsBJet2Pt_TOPHLEPBB_hct;
+                Double_t HiggsBJet2Phi_TOPHLEPBB_hct;
+                Double_t HiggsBJet2Eta_TOPHLEPBB_hct;
+                Double_t HiggsBJet2E_TOPHLEPBB_hct;
+
             
             // Weights
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_fleptonSF",&W_fleptonSF); //Contains, if muon, the  isoSF, idSF & trigSF
@@ -818,6 +830,17 @@ int main(int argc, char *argv[])
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_up_cferr2",&W_btagWeight_shape_up_cferr2); 
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_down_cferr2",&W_btagWeight_shape_down_cferr2); 
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_nloWeight",&W_nloWeight); 
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight0",&W_weight0);  
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight1",&W_weight1);  
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight2",&W_weight2);  
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight3",&W_weight3); 
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight4",&W_weight4);  
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight5",&W_weight5); 
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight6",&W_weight6);  
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight7",&W_weight7); 
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight8",&W_weight8);  
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_hdamp_up",&W_hdamp_up);  
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_hdamp_dw",&W_hdamp_dw);  
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_TopPtReweighing",&W_TopPtReweighing);  
 
             ttree[(dataSetName).c_str()]->SetBranchAddress("I_run_num",&run_num);
@@ -842,9 +865,9 @@ int main(int argc, char *argv[])
             ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVL",&nJets_CSVL);
             ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVM",&nJets_CSVM);
             ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVT",&nJets_CSVT);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_cMVAL",&nJets_cMVAL);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_cMVAM",&nJets_cMVAM);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_cMVAT",&nJets_cMVAT);
+//            ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_cMVAL",&nJets_cMVAL);
+//            ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_cMVAM",&nJets_cMVAM);
+//            ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_cMVAT",&nJets_cMVAT);
             ttree[(dataSetName).c_str()]->SetBranchAddress("pt_jet",&pt_jet);
             ttree[(dataSetName).c_str()]->SetBranchAddress("phi_jet",&phi_jet);
             ttree[(dataSetName).c_str()]->SetBranchAddress("eta_jet",&eta_jet);
@@ -860,173 +883,175 @@ int main(int argc, char *argv[])
             ttree[(dataSetName).c_str()]->SetBranchAddress("met_Eta", &met_Eta); 
             ttree[(dataSetName).c_str()]->SetBranchAddress("met_Phi", &met_Phi); 
 
-            // Jet-indices associated to the jet-assignment in the bMVA method
-            ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPTOPLEPHAD",&MVA_TOPTOPLEPHAD);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPTOPLEPHBB",&MVA_TOPTOPLEPHBB);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPHLEPBB_hut",&MVA_TOPHLEPBB_hut);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPHLEPBB_hct",&MVA_TOPHLEPBB_hct);
-           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_LepTop",&TOPTOPLEPHAD_JetIdx_LepTop);
-           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_HadTop",&TOPTOPLEPHAD_JetIdx_HadTop);
-           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_W1",&TOPTOPLEPHAD_JetIdx_W1);
-           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_W2",&TOPTOPLEPHAD_JetIdx_W2);
-           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_LepTop",&TOPTOPLEPHBB_JetIdx_LepTop);
-           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_HadTop",&TOPTOPLEPHBB_JetIdx_HadTop);
-           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_H1",&TOPTOPLEPHBB_JetIdx_H1);
-           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_H2",&TOPTOPLEPHBB_JetIdx_H2);
-           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_LepTop_hut",&TOPHLEPBB_JetIdx_LepTop_hut);
-           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H1_hut",&TOPHLEPBB_JetIdx_H1_hut);
-           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H2_hut",&TOPHLEPBB_JetIdx_H2_hut);
-           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_LepTop_hct",&TOPHLEPBB_JetIdx_LepTop_hct);
-           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H1_hct",&TOPHLEPBB_JetIdx_H1_hct);
-           ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H2_hct",&TOPHLEPBB_JetIdx_H2_hct);
-            //Variables for signal/background training
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadMass_TOPTOPLEPHAD",&TopHadMass_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadEta_TOPTOPLEPHAD",&TopHadEta_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadPhi_TOPTOPLEPHAD",&TopHadPhi_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadPt_TOPTOPLEPHAD",&TopHadPt_TOPTOPLEPHAD);
+            if(!doInclusive)
+            {
+                // Jet-indices associated to the jet-assignment in the bMVA method
+                ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPTOPLEPHAD",&MVA_TOPTOPLEPHAD);
+                ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPTOPLEPHBB",&MVA_TOPTOPLEPHBB);
+                ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPHLEPBB_hut",&MVA_TOPHLEPBB_hut);
+                ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPHLEPBB_hct",&MVA_TOPHLEPBB_hct);
+               ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_LepTop",&TOPTOPLEPHAD_JetIdx_LepTop);
+               ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_HadTop",&TOPTOPLEPHAD_JetIdx_HadTop);
+               ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_W1",&TOPTOPLEPHAD_JetIdx_W1);
+               ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHAD_JetIdx_W2",&TOPTOPLEPHAD_JetIdx_W2);
+               ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_LepTop",&TOPTOPLEPHBB_JetIdx_LepTop);
+               ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_HadTop",&TOPTOPLEPHBB_JetIdx_HadTop);
+               ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_H1",&TOPTOPLEPHBB_JetIdx_H1);
+               ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPTOPLEPHBB_JetIdx_H2",&TOPTOPLEPHBB_JetIdx_H2);
+               ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_LepTop_hut",&TOPHLEPBB_JetIdx_LepTop_hut);
+               ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H1_hut",&TOPHLEPBB_JetIdx_H1_hut);
+               ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H2_hut",&TOPHLEPBB_JetIdx_H2_hut);
+               ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_LepTop_hct",&TOPHLEPBB_JetIdx_LepTop_hct);
+               ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H1_hct",&TOPHLEPBB_JetIdx_H1_hct);
+               ttree[(dataSetName).c_str()]->SetBranchAddress("I_TOPHLEPBB_JetIdx_H2_hct",&TOPHLEPBB_JetIdx_H2_hct);
+                //Variables for signal/background training
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadMass_TOPTOPLEPHAD",&TopHadMass_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadEta_TOPTOPLEPHAD",&TopHadEta_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadPhi_TOPTOPLEPHAD",&TopHadPhi_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadPt_TOPTOPLEPHAD",&TopHadPt_TOPTOPLEPHAD);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepMass_TOPTOPLEPHAD",&TopLepMass_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepEta_TOPTOPLEPHAD",&TopLepEta_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPhi_TOPTOPLEPHAD",&TopLepPhi_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPt_TOPTOPLEPHAD",&TopLepPt_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepMass_TOPTOPLEPHAD",&TopLepMass_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepEta_TOPTOPLEPHAD",&TopLepEta_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPhi_TOPTOPLEPHAD",&TopLepPhi_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPt_TOPTOPLEPHAD",&TopLepPt_TOPTOPLEPHAD);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWMass_TOPTOPLEPHAD",&TopHadWMass_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWEta_TOPTOPLEPHAD",&TopHadWEta_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWPhi_TOPTOPLEPHAD",&TopHadWPhi_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWPt_TOPTOPLEPHAD",&TopHadWPt_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWMass_TOPTOPLEPHAD",&TopHadWMass_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWEta_TOPTOPLEPHAD",&TopHadWEta_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWPhi_TOPTOPLEPHAD",&TopHadWPhi_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWPt_TOPTOPLEPHAD",&TopHadWPt_TOPTOPLEPHAD);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepTopHadDr_TOPTOPLEPHAD",&TopLepTopHadDr_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("WJet1WJet2Dr_TOPTOPLEPHAD",&WJet1WJet2Dr_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepTopHadDr_TOPTOPLEPHAD",&TopLepTopHadDr_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("WJet1WJet2Dr_TOPTOPLEPHAD",&WJet1WJet2Dr_TOPTOPLEPHAD);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetCSVv2_TOPTOPLEPHAD",&TopLepBJetCSVv2_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPt_TOPTOPLEPHAD",&TopLepBJetPt_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPhi_TOPTOPLEPHAD",&TopLepBJetPhi_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetEta_TOPTOPLEPHAD",&TopLepBJetEta_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetE_TOPTOPLEPHAD",&TopLepBJetE_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetCSVv2_TOPTOPLEPHAD",&TopLepBJetCSVv2_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPt_TOPTOPLEPHAD",&TopLepBJetPt_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPhi_TOPTOPLEPHAD",&TopLepBJetPhi_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetEta_TOPTOPLEPHAD",&TopLepBJetEta_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetE_TOPTOPLEPHAD",&TopLepBJetE_TOPTOPLEPHAD);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadBJetCSVv2_TOPTOPLEPHAD",&TopHadBJetCSVv2_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadBJetPt_TOPTOPLEPHAD",&TopHadBJetPt_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadBJetPhi_TOPTOPLEPHAD",&TopHadBJetPhi_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadBJetEta_TOPTOPLEPHAD",&TopHadBJetEta_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadBJetE_TOPTOPLEPHAD",&TopHadBJetE_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadBJetCSVv2_TOPTOPLEPHAD",&TopHadBJetCSVv2_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadBJetPt_TOPTOPLEPHAD",&TopHadBJetPt_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadBJetPhi_TOPTOPLEPHAD",&TopHadBJetPhi_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadBJetEta_TOPTOPLEPHAD",&TopHadBJetEta_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadBJetE_TOPTOPLEPHAD",&TopHadBJetE_TOPTOPLEPHAD);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet1CSVv2_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet1Pt_TOPTOPLEPHAD",&TopHadWNonBJet1Pt_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet1Phi_TOPTOPLEPHAD",&TopHadWNonBJet1Phi_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet1Eta_TOPTOPLEPHAD",&TopHadWNonBJet1Eta_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet1E_TOPTOPLEPHAD",&TopHadWNonBJet1E_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet1CSVv2_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet1Pt_TOPTOPLEPHAD",&TopHadWNonBJet1Pt_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet1Phi_TOPTOPLEPHAD",&TopHadWNonBJet1Phi_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet1Eta_TOPTOPLEPHAD",&TopHadWNonBJet1Eta_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet1E_TOPTOPLEPHAD",&TopHadWNonBJet1E_TOPTOPLEPHAD);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet2CSVv2_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet2Pt_TOPTOPLEPHAD",&TopHadWNonBJet2Pt_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet2Phi_TOPTOPLEPHAD",&TopHadWNonBJet2Phi_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet2Eta_TOPTOPLEPHAD",&TopHadWNonBJet2Eta_TOPTOPLEPHAD);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet2E_TOPTOPLEPHAD",&TopHadWNonBJet2E_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet2CSVv2_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet2Pt_TOPTOPLEPHAD",&TopHadWNonBJet2Pt_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet2Phi_TOPTOPLEPHAD",&TopHadWNonBJet2Phi_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet2Eta_TOPTOPLEPHAD",&TopHadWNonBJet2Eta_TOPTOPLEPHAD);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadWNonBJet2E_TOPTOPLEPHAD",&TopHadWNonBJet2E_TOPTOPLEPHAD);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadMass_TOPTOPLEPHBB",&TopHadMass_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadEta_TOPTOPLEPHBB",&TopHadEta_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadPhi_TOPTOPLEPHBB",&TopHadPhi_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadPt_TOPTOPLEPHBB",&TopHadPt_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadMass_TOPTOPLEPHBB",&TopHadMass_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadEta_TOPTOPLEPHBB",&TopHadEta_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadPhi_TOPTOPLEPHBB",&TopHadPhi_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadPt_TOPTOPLEPHBB",&TopHadPt_TOPTOPLEPHBB);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepMass_TOPTOPLEPHBB",&TopLepMass_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepEta_TOPTOPLEPHBB",&TopLepEta_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPhi_TOPTOPLEPHBB",&TopLepPhi_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPt_TOPTOPLEPHBB",&TopLepPt_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepMass_TOPTOPLEPHBB",&TopLepMass_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepEta_TOPTOPLEPHBB",&TopLepEta_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPhi_TOPTOPLEPHBB",&TopLepPhi_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPt_TOPTOPLEPHBB",&TopLepPt_TOPTOPLEPHBB);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsMass_TOPTOPLEPHBB",&HiggsMass_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsEta_TOPTOPLEPHBB",&HiggsEta_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsPhi_TOPTOPLEPHBB",&HiggsPhi_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsPt_TOPTOPLEPHBB",&HiggsPt_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsMass_TOPTOPLEPHBB",&HiggsMass_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsEta_TOPTOPLEPHBB",&HiggsEta_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsPhi_TOPTOPLEPHBB",&HiggsPhi_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsPt_TOPTOPLEPHBB",&HiggsPt_TOPTOPLEPHBB);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepTopHadDr_TOPTOPLEPHBB",&TopLepTopHadDr_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepHiggsDr_TOPTOPLEPHBB",&TopLepHiggsDr_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB",&HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepTopHadDr_TOPTOPLEPHBB",&TopLepTopHadDr_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepHiggsDr_TOPTOPLEPHBB",&TopLepHiggsDr_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB",&HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetCSVv2_TOPTOPLEPHBB",&TopLepBJetCSVv2_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPt_TOPTOPLEPHBB",&TopLepBJetPt_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPhi_TOPTOPLEPHBB",&TopLepBJetPhi_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetEta_TOPTOPLEPHBB",&TopLepBJetEta_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetE_TOPTOPLEPHBB",&TopLepBJetE_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetCSVv2_TOPTOPLEPHBB",&TopLepBJetCSVv2_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPt_TOPTOPLEPHBB",&TopLepBJetPt_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPhi_TOPTOPLEPHBB",&TopLepBJetPhi_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetEta_TOPTOPLEPHBB",&TopLepBJetEta_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetE_TOPTOPLEPHBB",&TopLepBJetE_TOPTOPLEPHBB);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadNonBJetCSVv2_TOPTOPLEPHBB",&TopHadNonBJetCSVv2_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadNonBJetPt_TOPTOPLEPHBB",&TopHadNonBJetPt_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadNonBJetPhi_TOPTOPLEPHBB",&TopHadNonBJetPhi_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadNonBJetEta_TOPTOPLEPHBB",&TopHadNonBJetEta_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadNonBJetE_TOPTOPLEPHBB",&TopHadNonBJetE_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadNonBJetCSVv2_TOPTOPLEPHBB",&TopHadNonBJetCSVv2_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadNonBJetPt_TOPTOPLEPHBB",&TopHadNonBJetPt_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadNonBJetPhi_TOPTOPLEPHBB",&TopHadNonBJetPhi_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadNonBJetEta_TOPTOPLEPHBB",&TopHadNonBJetEta_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadNonBJetE_TOPTOPLEPHBB",&TopHadNonBJetE_TOPTOPLEPHBB);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1CSVv2_TOPTOPLEPHBB",&HiggsBJet1CSVv2_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Pt_TOPTOPLEPHBB",&HiggsBJet1Pt_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Phi_TOPTOPLEPHBB",&HiggsBJet1Phi_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Eta_TOPTOPLEPHBB",&HiggsBJet1Eta_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1E_TOPTOPLEPHBB",&HiggsBJet1E_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1CSVv2_TOPTOPLEPHBB",&HiggsBJet1CSVv2_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Pt_TOPTOPLEPHBB",&HiggsBJet1Pt_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Phi_TOPTOPLEPHBB",&HiggsBJet1Phi_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Eta_TOPTOPLEPHBB",&HiggsBJet1Eta_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1E_TOPTOPLEPHBB",&HiggsBJet1E_TOPTOPLEPHBB);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2CSVv2_TOPTOPLEPHBB",&HiggsBJet2CSVv2_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Pt_TOPTOPLEPHBB",&HiggsBJet2Pt_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Phi_TOPTOPLEPHBB",&HiggsBJet2Phi_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Eta_TOPTOPLEPHBB",&HiggsBJet2Eta_TOPTOPLEPHBB);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2E_TOPTOPLEPHBB",&HiggsBJet2E_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2CSVv2_TOPTOPLEPHBB",&HiggsBJet2CSVv2_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Pt_TOPTOPLEPHBB",&HiggsBJet2Pt_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Phi_TOPTOPLEPHBB",&HiggsBJet2Phi_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Eta_TOPTOPLEPHBB",&HiggsBJet2Eta_TOPTOPLEPHBB);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2E_TOPTOPLEPHBB",&HiggsBJet2E_TOPTOPLEPHBB);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepMass_TOPHLEPBB_hut",&TopLepMass_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepEta_TOPHLEPBB_hut",&TopLepEta_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPhi_TOPHLEPBB_hut",&TopLepPhi_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPt_TOPHLEPBB_hut",&TopLepPt_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepMass_TOPHLEPBB_hut",&TopLepMass_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepEta_TOPHLEPBB_hut",&TopLepEta_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPhi_TOPHLEPBB_hut",&TopLepPhi_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPt_TOPHLEPBB_hut",&TopLepPt_TOPHLEPBB_hut);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsMass_TOPHLEPBB_hut",&HiggsMass_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsEta_TOPHLEPBB_hut",&HiggsEta_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsPhi_TOPHLEPBB_hut",&HiggsPhi_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsPt_TOPHLEPBB_hut",&HiggsPt_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsMass_TOPHLEPBB_hut",&HiggsMass_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsEta_TOPHLEPBB_hut",&HiggsEta_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsPhi_TOPHLEPBB_hut",&HiggsPhi_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsPt_TOPHLEPBB_hut",&HiggsPt_TOPHLEPBB_hut);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepHiggsDr_TOPHLEPBB_hut",&TopLepHiggsDr_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut",&HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepHiggsDr_TOPHLEPBB_hut",&TopLepHiggsDr_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut",&HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetCSVv2_TOPHLEPBB_hut",&TopLepBJetCSVv2_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPt_TOPHLEPBB_hut",&TopLepBJetPt_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPhi_TOPHLEPBB_hut",&TopLepBJetPhi_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetEta_TOPHLEPBB_hut",&TopLepBJetEta_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetE_TOPHLEPBB_hut",&TopLepBJetE_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetCSVv2_TOPHLEPBB_hut",&TopLepBJetCSVv2_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPt_TOPHLEPBB_hut",&TopLepBJetPt_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPhi_TOPHLEPBB_hut",&TopLepBJetPhi_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetEta_TOPHLEPBB_hut",&TopLepBJetEta_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetE_TOPHLEPBB_hut",&TopLepBJetE_TOPHLEPBB_hut);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1CSVv2_TOPHLEPBB_hut",&HiggsBJet1CSVv2_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Pt_TOPHLEPBB_hut",&HiggsBJet1Pt_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Phi_TOPHLEPBB_hut",&HiggsBJet1Phi_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Eta_TOPHLEPBB_hut",&HiggsBJet1Eta_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1E_TOPHLEPBB_hut",&HiggsBJet1E_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1CSVv2_TOPHLEPBB_hut",&HiggsBJet1CSVv2_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Pt_TOPHLEPBB_hut",&HiggsBJet1Pt_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Phi_TOPHLEPBB_hut",&HiggsBJet1Phi_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Eta_TOPHLEPBB_hut",&HiggsBJet1Eta_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1E_TOPHLEPBB_hut",&HiggsBJet1E_TOPHLEPBB_hut);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2CSVv2_TOPHLEPBB_hut",&HiggsBJet2CSVv2_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Pt_TOPHLEPBB_hut",&HiggsBJet2Pt_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Phi_TOPHLEPBB_hut",&HiggsBJet2Phi_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Eta_TOPHLEPBB_hut",&HiggsBJet2Eta_TOPHLEPBB_hut);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2E_TOPHLEPBB_hut",&HiggsBJet2E_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2CSVv2_TOPHLEPBB_hut",&HiggsBJet2CSVv2_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Pt_TOPHLEPBB_hut",&HiggsBJet2Pt_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Phi_TOPHLEPBB_hut",&HiggsBJet2Phi_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Eta_TOPHLEPBB_hut",&HiggsBJet2Eta_TOPHLEPBB_hut);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2E_TOPHLEPBB_hut",&HiggsBJet2E_TOPHLEPBB_hut);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepMass_TOPHLEPBB_hct",&TopLepMass_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepEta_TOPHLEPBB_hct",&TopLepEta_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPhi_TOPHLEPBB_hct",&TopLepPhi_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPt_TOPHLEPBB_hct",&TopLepPt_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepMass_TOPHLEPBB_hct",&TopLepMass_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepEta_TOPHLEPBB_hct",&TopLepEta_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPhi_TOPHLEPBB_hct",&TopLepPhi_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepPt_TOPHLEPBB_hct",&TopLepPt_TOPHLEPBB_hct);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsMass_TOPHLEPBB_hct",&HiggsMass_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsEta_TOPHLEPBB_hct",&HiggsEta_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsPhi_TOPHLEPBB_hct",&HiggsPhi_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsPt_TOPHLEPBB_hct",&HiggsPt_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsMass_TOPHLEPBB_hct",&HiggsMass_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsEta_TOPHLEPBB_hct",&HiggsEta_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsPhi_TOPHLEPBB_hct",&HiggsPhi_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsPt_TOPHLEPBB_hct",&HiggsPt_TOPHLEPBB_hct);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepHiggsDr_TOPHLEPBB_hct",&TopLepHiggsDr_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct",&HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepHiggsDr_TOPHLEPBB_hct",&TopLepHiggsDr_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct",&HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetCSVv2_TOPHLEPBB_hct",&TopLepBJetCSVv2_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPt_TOPHLEPBB_hct",&TopLepBJetPt_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPhi_TOPHLEPBB_hct",&TopLepBJetPhi_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetEta_TOPHLEPBB_hct",&TopLepBJetEta_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetE_TOPHLEPBB_hct",&TopLepBJetE_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetCSVv2_TOPHLEPBB_hct",&TopLepBJetCSVv2_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPt_TOPHLEPBB_hct",&TopLepBJetPt_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetPhi_TOPHLEPBB_hct",&TopLepBJetPhi_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetEta_TOPHLEPBB_hct",&TopLepBJetEta_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetE_TOPHLEPBB_hct",&TopLepBJetE_TOPHLEPBB_hct);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1CSVv2_TOPHLEPBB_hct",&HiggsBJet1CSVv2_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Pt_TOPHLEPBB_hct",&HiggsBJet1Pt_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Phi_TOPHLEPBB_hct",&HiggsBJet1Phi_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Eta_TOPHLEPBB_hct",&HiggsBJet1Eta_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1E_TOPHLEPBB_hct",&HiggsBJet1E_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1CSVv2_TOPHLEPBB_hct",&HiggsBJet1CSVv2_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Pt_TOPHLEPBB_hct",&HiggsBJet1Pt_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Phi_TOPHLEPBB_hct",&HiggsBJet1Phi_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1Eta_TOPHLEPBB_hct",&HiggsBJet1Eta_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet1E_TOPHLEPBB_hct",&HiggsBJet1E_TOPHLEPBB_hct);
 
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2CSVv2_TOPHLEPBB_hct",&HiggsBJet2CSVv2_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Pt_TOPHLEPBB_hct",&HiggsBJet2Pt_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Phi_TOPHLEPBB_hct",&HiggsBJet2Phi_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Eta_TOPHLEPBB_hct",&HiggsBJet2Eta_TOPHLEPBB_hct);
-			       ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2E_TOPHLEPBB_hct",&HiggsBJet2E_TOPHLEPBB_hct);
-                        
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2CSVv2_TOPHLEPBB_hct",&HiggsBJet2CSVv2_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Pt_TOPHLEPBB_hct",&HiggsBJet2Pt_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Phi_TOPHLEPBB_hct",&HiggsBJet2Phi_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2Eta_TOPHLEPBB_hct",&HiggsBJet2Eta_TOPHLEPBB_hct);
+			           ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2E_TOPHLEPBB_hct",&HiggsBJet2E_TOPHLEPBB_hct);
+            }                        
 
             double nloSF = 1.;
             int nPos = 0; 
@@ -1050,7 +1075,6 @@ int main(int argc, char *argv[])
             }		
 
             Double_t average_TopPtWeight = 0.;
-            Double_t average_TopPtWeight_Up = 0.;
             if(dataSetName.find("TTJets") != string::npos)
             {
                 int nEventsPassed = 0;
@@ -1064,14 +1088,10 @@ int main(int argc, char *argv[])
 		                    if(baseline_jets == 3 && nJets != baseline_jets) continue;
 		                    else if(baseline_jets == 4 && nJets < baseline_jets) continue;
 		                }
-		                double TopPtReweighing_Up = 1+ 2*(1-W_TopPtReweighing);
-
                     average_TopPtWeight = average_TopPtWeight + W_TopPtReweighing;
-                    average_TopPtWeight_Up = average_TopPtWeight_Up + TopPtReweighing_Up;
                     nEventsPassed++;
                 }
                 average_TopPtWeight = average_TopPtWeight/nEventsPassed;
-                average_TopPtWeight_Up = average_TopPtWeight_Up/nEventsPassed;
             }
 		
       	    //***********************************************RUNNING OVER EVENTS**********************************************
@@ -1166,7 +1186,6 @@ int main(int argc, char *argv[])
                     ScaleFactor *= W_fleptonSF;
                     ScaleFactor *= W_btagWeight_shape;
                     ScaleFactor *= nloSF;
-                    if(dataSetName.find("TTJets") != string::npos) ScaleFactor *= W_TopPtReweighing/average_TopPtWeight;
                 }
                 else ScaleFactor = 1.;    
 		          
@@ -1198,7 +1217,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_lf;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfMinus")
                             {
@@ -1206,7 +1224,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_lf;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfPlus")
                             {
@@ -1214,7 +1231,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_hf;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfMinus")
                             {
@@ -1222,7 +1238,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_hf;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats1Plus")
                             {
@@ -1230,7 +1245,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_lfstats1;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats1Minus")
                             {
@@ -1238,7 +1252,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_lfstats1;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats2Plus")
                             {
@@ -1246,7 +1259,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_lfstats2;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats2Minus")
                             {
@@ -1254,7 +1266,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_lfstats2;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats1Plus")
                             {
@@ -1262,7 +1273,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_hfstats1;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats1Minus")
                             {
@@ -1270,7 +1280,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_hfstats1;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats2Plus")
                             {
@@ -1278,7 +1287,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_hfstats2;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats2Minus")
                             {
@@ -1286,7 +1294,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_hfstats2;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr1Plus")
                             {
@@ -1294,7 +1301,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_cferr1;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr1Minus")
                             {
@@ -1302,7 +1308,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_cferr1;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr2Plus")
                             {
@@ -1310,7 +1315,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_cferr2;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr2Minus")
                             {
@@ -1318,7 +1322,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_cferr2;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "pileupPlus")
                             {
@@ -1326,7 +1329,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "pileupMinus")
                             {
@@ -1334,7 +1336,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "leptonPlus")
                             {
@@ -1342,7 +1343,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF_Plus;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "leptonMinus")
                             {
@@ -1350,7 +1350,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF_Minus;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "TopPtPlus")
                             {
@@ -1358,11 +1357,7 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos)
-                                {
-                                    double TopPtReweighing_Up = 1+ 2*(1-W_TopPtReweighing);
-                                    SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= TopPtReweighing_Up/average_TopPtWeight_Up;
-                                }
+                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "TopPtMinus")//Apply no TopPt reweighing
                             {
@@ -1391,40 +1386,29 @@ int main(int argc, char *argv[])
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
                             }
-                            else if(WhatSysts_noJECs[iSyst_] == "NoTopPtSF")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                            }
                             else if(WhatSysts_noJECs[iSyst_] == "NoBTagSF")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "NoPUSF")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "NoLepSF")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "NoNLOSF")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                         }//if(!isData)
                         else SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] = 1.;
@@ -1865,7 +1849,7 @@ int main(int argc, char *argv[])
           */
       cout << "Drawing MSP: " << name << endl;
       temp->showNumberEntries(false);
-//      temp->Draw("MyMSP_"+name, 1, false, false, false, 1);
+//      if(doInclusive) temp->Draw("MyMSP_"+name, 1, false, false, false, 1);
       bool writePng = false;
 
       if(name.find("Minus") == string::npos && name.find("Plus")== string::npos 
@@ -1877,7 +1861,8 @@ int main(int argc, char *argv[])
           NominalVariableNames.push_back(name);
           writePng = true;
       }
-      temp->Write(outfile, name, false,pathPNG, "png");
+//      temp->Write(outfile, name, false,pathPNG, "png");
+      temp->Write(outfile, name, false,pathPNG, "eps");
 	}
 
   outfile->Write("kOverwrite");

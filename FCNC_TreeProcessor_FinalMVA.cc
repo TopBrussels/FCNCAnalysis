@@ -138,7 +138,6 @@ int main(int argc, char *argv[])
     WhatSysts.push_back("OnlyPUSF");
 //    WhatSysts.push_back("OnlyLepSF");
 //    WhatSysts.push_back("OnlyNLOSF");
-    WhatSysts.push_back("NoTopPtSF");
     WhatSysts.push_back("NoBTagSF");
     WhatSysts.push_back("NoPUSF");
 //    WhatSysts.push_back("NoLepSF");
@@ -209,7 +208,6 @@ int main(int argc, char *argv[])
     WhatSysts_noJECs.push_back("OnlyPUSF");
 //    WhatSysts_noJECs.push_back("OnlyLepSF");
 //    WhatSysts_noJECs.push_back("OnlyNLOSF");
-    WhatSysts_noJECs.push_back("NoTopPtSF");
     WhatSysts_noJECs.push_back("NoBTagSF");
     WhatSysts_noJECs.push_back("NoPUSF");
 //    WhatSysts_noJECs.push_back("NoLepSF");
@@ -649,6 +647,17 @@ int main(int argc, char *argv[])
             Double_t W_btagWeight_shape_up_cferr2; 
             Double_t W_btagWeight_shape_down_cferr2; 
             Double_t W_nloWeight;// for amc@nlo samples
+            Double_t W_weight0;
+            Double_t W_weight1;
+            Double_t W_weight2;
+            Double_t W_weight3;
+            Double_t W_weight4;
+            Double_t W_weight5;
+            Double_t W_weight6;
+            Double_t W_weight7;
+            Double_t W_weight8; 
+            Double_t W_hdamp_up; 
+            Double_t W_hdamp_dw; 
             Double_t W_TopPtReweighing;
           
             Int_t run_num;
@@ -664,7 +673,7 @@ int main(int argc, char *argv[])
       
             //variable for jets 
             Int_t nJets;
-	          Int_t nJets_CSVL; 
+	          Int_t nJets_CSVM; 
 	          
 	          //JetIndices_correctJetComb
             Double_t MVA_TOPTOPLEPHAD = -999.;
@@ -734,6 +743,17 @@ int main(int argc, char *argv[])
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_up_cferr2",&W_btagWeight_shape_up_cferr2); 
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape_down_cferr2",&W_btagWeight_shape_down_cferr2); 
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_nloWeight",&W_nloWeight); 
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight0",&W_weight0);  
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight1",&W_weight1);  
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight2",&W_weight2);  
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight3",&W_weight3); 
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight4",&W_weight4);  
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight5",&W_weight5); 
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight6",&W_weight6);  
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight7",&W_weight7); 
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight8",&W_weight8);  
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_hdamp_up",&W_hdamp_up);  
+            ttree[(dataSetName).c_str()]->SetBranchAddress("W_hdamp_dw",&W_hdamp_dw);  
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_TopPtReweighing",&W_TopPtReweighing);  
 
             ttree[(dataSetName).c_str()]->SetBranchAddress("I_run_num",&run_num);
@@ -750,7 +770,7 @@ int main(int argc, char *argv[])
             
             // jets
             ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets",&nJets);
-            ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVL",&nJets_CSVL);
+            ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVM",&nJets_CSVM);
            
             // Jet-indices associated to the jet-assignment in the bMVA method
             ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPTOPLEPHAD",&MVA_TOPTOPLEPHAD);
@@ -823,7 +843,7 @@ int main(int argc, char *argv[])
                     ttree[dataSetName.c_str()]->GetEntry(k);
 		                if(!doInclusive)
 		                {
-		                    if(nJets_CSVL != baseline_bjets)  continue;
+		                    if(nJets_CSVM != baseline_bjets)  continue;
 
 		                    if(baseline_jets == 3 && nJets != baseline_jets) continue;
 		                    else if(baseline_jets == 4 && nJets < baseline_jets) continue;
@@ -835,7 +855,6 @@ int main(int argc, char *argv[])
             }		
 
             Double_t average_TopPtWeight = 0.;
-            Double_t average_TopPtWeight_Up = 0.;
             if(dataSetName.find("TTJets") != string::npos)
             {
                 int nEventsPassed = 0;
@@ -844,21 +863,17 @@ int main(int argc, char *argv[])
                     ttree[dataSetName.c_str()]->GetEntry(k);
 		                if(!doInclusive)
 		                {
-		                    if(nJets_CSVL != baseline_bjets)  continue;
+		                    if(nJets_CSVM != baseline_bjets)  continue;
 
 		                    if(baseline_jets == 3 && nJets != baseline_jets) continue;
 		                    else if(baseline_jets == 4 && nJets < baseline_jets) continue;
 		                }
-		                double TopPtReweighing_Up = 1+ 2*(1-W_TopPtReweighing);
-
                     average_TopPtWeight = average_TopPtWeight + W_TopPtReweighing;
-                    average_TopPtWeight_Up = average_TopPtWeight_Up + TopPtReweighing_Up;
                     nEventsPassed++;
                 }
                 if(nEventsPassed != 0)
                 {
                     average_TopPtWeight = average_TopPtWeight/nEventsPassed;
-                    average_TopPtWeight_Up = average_TopPtWeight_Up/nEventsPassed;
                 }
             }
             
@@ -877,7 +892,7 @@ int main(int argc, char *argv[])
 			          ttree[dataSetName.c_str()]->GetEntry(j);
 		            if(!doInclusive)
 		            {
-		                if(nJets_CSVL != baseline_bjets)  continue;
+		                if(nJets_CSVM != baseline_bjets)  continue;
 
 		                if(baseline_jets == 3 && nJets != baseline_jets) continue;
 		                else if(baseline_jets == 4 && nJets < baseline_jets) continue;
@@ -953,7 +968,6 @@ int main(int argc, char *argv[])
                     ScaleFactor *= W_fleptonSF;
                     ScaleFactor *= W_btagWeight_shape;
                     ScaleFactor *= nloSF;
-                    if(dataSetName.find("TTJets") != string::npos) ScaleFactor *= W_TopPtReweighing/average_TopPtWeight;
                 }
                 else ScaleFactor = 1.;    
 		          
@@ -1034,7 +1048,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_lf;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfMinus")
                             {
@@ -1042,7 +1055,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_lf;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfPlus")
                             {
@@ -1050,7 +1062,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_hf;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfMinus")
                             {
@@ -1058,7 +1069,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_hf;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats1Plus")
                             {
@@ -1066,7 +1076,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_lfstats1;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats1Minus")
                             {
@@ -1074,7 +1083,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_lfstats1;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats2Plus")
                             {
@@ -1082,7 +1090,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_lfstats2;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats2Minus")
                             {
@@ -1090,7 +1097,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_lfstats2;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats1Plus")
                             {
@@ -1098,7 +1104,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_hfstats1;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats1Minus")
                             {
@@ -1106,7 +1111,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_hfstats1;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats2Plus")
                             {
@@ -1114,7 +1118,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_hfstats2;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats2Minus")
                             {
@@ -1122,7 +1125,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_hfstats2;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr1Plus")
                             {
@@ -1130,7 +1132,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_cferr1;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr1Minus")
                             {
@@ -1138,7 +1139,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_cferr1;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr2Plus")
                             {
@@ -1146,7 +1146,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_cferr2;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr2Minus")
                             {
@@ -1154,7 +1153,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_cferr2;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "pileupPlus")
                             {
@@ -1162,7 +1160,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "pileupMinus")
                             {
@@ -1170,7 +1167,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "leptonPlus")
                             {
@@ -1178,7 +1174,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF_Plus;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "leptonMinus")
                             {
@@ -1186,7 +1181,6 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF_Minus;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "TopPtPlus")
                             {
@@ -1194,11 +1188,7 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos)
-                                {
-                                    double TopPtReweighing_Up = 1+ 2*(1-W_TopPtReweighing);
-                                    SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= TopPtReweighing_Up/average_TopPtWeight_Up;
-                                }
+                                if(dataSetName.find("TTJets") != string::npos) ScaleFactor *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "TopPtMinus")//Apply no TopPt reweighing
                             {
@@ -1227,40 +1217,29 @@ int main(int argc, char *argv[])
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
                             }
-                            else if(WhatSysts_noJECs[iSyst_] == "NoTopPtSF")
-                            {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                            }
                             else if(WhatSysts_noJECs[iSyst_] == "NoBTagSF")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "NoPUSF")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "NoLepSF")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "NoNLOSF")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                         }//if(!isData)
                         else SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] = 1.;
@@ -1276,11 +1255,11 @@ int main(int argc, char *argv[])
                         MSPlot[("MVA_TT"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(reader_TT->EvaluateMVA("BDTG method"), Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling); //Factor 2 to compensate for the fact we're running over half the number of simulated events
                         if(category == "b2j4")
                         {
-                            if(nJets_CSVL == 2 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(0, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
-                            if(nJets_CSVL == 2 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(1, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
-                            if(nJets_CSVL == 3 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(2, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
-                            if(nJets_CSVL == 3 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(3, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
-                            if(nJets_CSVL == 4 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(4, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
+                            if(nJets_CSVM == 2 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(0, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
+                            if(nJets_CSVM == 2 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(1, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
+                            if(nJets_CSVM == 3 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(2, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
+                            if(nJets_CSVM == 3 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(3, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
+                            if(nJets_CSVM == 4 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(4, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling);
                         }
                         
                         if(Sample->Name().find("NP_") != string::npos && dataSetName.find(SignalSample.c_str()) != string::npos) histo1D[("h_sig"+namingConventionFit[WhatSysts_noJECs[iSyst_]]).c_str()]->Fill(MVAvalue,Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling / EqLumi);
@@ -1303,11 +1282,11 @@ int main(int argc, char *argv[])
                         MSPlot[("MVA_TT"+TrainingName+WhatSysts[JecCounter]).c_str()]->Fill(reader_TT->EvaluateMVA("BDTG method"), Sample, ScalePlots, Luminosity * ScaleFactor * Doubling); //Factor 2 to compensate for the fact we're running over half the number of simulated events
                         if(category == "b2j4")
                         {
-                            if(nJets_CSVL == 2 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(0, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
-                            if(nJets_CSVL == 2 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(1, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
-                            if(nJets_CSVL == 3 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(2, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
-                            if(nJets_CSVL == 3 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(3, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
-                            if(nJets_CSVL == 4 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(4, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
+                            if(nJets_CSVM == 2 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(0, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
+                            if(nJets_CSVM == 2 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(1, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
+                            if(nJets_CSVM == 3 && nJets == 3) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(2, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
+                            if(nJets_CSVM == 3 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(3, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
+                            if(nJets_CSVM == 4 && nJets >= 4) MSPlot[("CategoryRates"+WhatSysts[JecCounter]).c_str()]->Fill(4, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling);
                         }
 
                         if(Sample->Name().find("NP_") != string::npos && dataSetName.find(SignalSample.c_str()) != string::npos) histo1D[("h_sig"+namingConventionFit[WhatSysts[JecCounter]]).c_str()]->Fill(MVAvalue,Luminosity * ScaleFactor * Doubling / EqLumi);

@@ -8,7 +8,7 @@ import shutil
 
 # getting the appropriate xml file & defining channel and production date of TreeMakerTrees
 channel = "_All"
-date_output = "_22_2_2017_CSVv2L"
+date_output = "_22_2_2017_CSVv2M"
 
 tree = ET.ElementTree(file='../config/FullMcBkgdSamples_Mu.xml')
 
@@ -57,7 +57,10 @@ for n in datasetNames:
        if 'JERMinus' in ff:
           commandString_ntuples = commandString_ntuples + " " + ff
     #print "Merging control plots for " + str(d.attrib['name'])
-    #os.system(commandString_ctrplots)
+    #os.system(commandString_ctrplots)89
+		/ &zp-eéoà)
+		"iàrçu'à$y!$
+		
     print "Merging ntuples for " + str(d.attrib['name'])
     os.system(commandString_ntuples)
 

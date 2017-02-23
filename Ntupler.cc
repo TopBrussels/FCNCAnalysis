@@ -166,6 +166,7 @@ int main (int argc, char *argv[])
     bool bTagReweight_FillMChistos = false; //Needs to be set only once to true in order to produce the BTagEtaPtHistos
     bool applyJES = true;
     bool applyJER = true;
+    string bMethod = "CSVv2M";
     
     int doJESShift = 0; // 0: off 1: minus 2: plus
     cout << "doJESShift: " << doJESShift << endl;
@@ -459,7 +460,7 @@ int main (int argc, char *argv[])
         }
         else if(Electron)
         {
-                electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/egammaEffi.txt_EGM2D_CutBasedMediumID.root","EGamma_SF2D",true,false,false);
+                electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/egammaEffi.txt_EGM2D_CutBasedTightID.root","EGamma_SF2D",true,false,false);
                 electronSFWeightReco = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/egammaEffi.txt_EGM2D_RecoEff.root","EGamma_SF2D",true,false,false);
                 electronSFWeightTrig_BCDEF = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/TriggerSF_Run2016BCDEF_v2.root","Ele32_eta2p1_WPTight_Gsf_swappedAxes",true,false,false);
                 electronSFWeightTrig_GH = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/TriggerSF_Run2016GH_v2.root","Ele32_eta2p1_WPTight_Gsf_swappedAxes",true,false,false);
@@ -617,6 +618,7 @@ int main (int argc, char *argv[])
         Double_t W_btagWeight_shape_up_cferr2; 
         Double_t W_btagWeight_shape_down_cferr2; 
         Double_t W_nloWeight;// for amc@nlo samples
+        Double_t W_weight0;
         Double_t W_weight1;
         Double_t W_weight2;
         Double_t W_weight3;
@@ -625,6 +627,10 @@ int main (int argc, char *argv[])
         Double_t W_weight6;
         Double_t W_weight7;
         Double_t W_weight8; 
+        Double_t W_pdfup; 
+        Double_t W_pdfdown; 
+        Double_t W_hdamp_up; 
+        Double_t W_hdamp_dw; 
         Double_t W_MuonIDSF; //One of the 3 components for the total muon SF
         Double_t W_MuonIsoSF; //One of the 3 components for the total muon SF
         Double_t W_MuonTrigSF;//One of the 3 components for the total muon SF
@@ -931,6 +937,7 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("W_btagWeight_shape_up_cferr2",&W_btagWeight_shape_up_cferr2,"W_btagWeight_shape_up_cferr2/D"); 
         tup_ObjectVars->Branch("W_btagWeight_shape_down_cferr2",&W_btagWeight_shape_down_cferr2,"W_btagWeight_shape_down_cferr2/D"); 
         tup_ObjectVars->Branch("W_nloWeight",&W_nloWeight,"W_nloWeight/D"); 
+        tup_ObjectVars->Branch("W_weight0",&W_weight0,"W_weight0/D");  
         tup_ObjectVars->Branch("W_weight1",&W_weight1,"W_weight1/D");  
         tup_ObjectVars->Branch("W_weight2",&W_weight2,"W_weight2/D");  
         tup_ObjectVars->Branch("W_weight3",&W_weight3,"W_weight3/D"); 
@@ -939,6 +946,10 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("W_weight6",&W_weight6,"W_weight6/D");  
         tup_ObjectVars->Branch("W_weight7",&W_weight7,"W_weight7/D"); 
         tup_ObjectVars->Branch("W_weight8",&W_weight8,"W_weight8/D");  
+        tup_ObjectVars->Branch("W_pdfup",&W_pdfup,"W_pdfup/D");  
+        tup_ObjectVars->Branch("W_pdfdown",&W_pdfdown,"W_pdfdown/D");  
+        tup_ObjectVars->Branch("W_hdamp_up",&W_hdamp_up,"W_hdamp_up/D");  
+        tup_ObjectVars->Branch("W_hdamp_dw",&W_hdamp_dw,"W_hdamp_dw/D");  
         tup_ObjectVars->Branch("W_TopPtReweighing",&W_TopPtReweighing,"W_TopPtReweighing/D");  
 
         tup_ObjectVars->Branch("I_run_num",&run_num,"run_num/I");
@@ -1277,7 +1288,6 @@ int main (int argc, char *argv[])
         
 
         //Initialize variables used in the MVAreader
-        string bMethod = "CSVv2M";
         float MVAFullReco_TopHadRecM_;
         float MVAFullReco_HiggsRecM_;
         float MVAFullReco_TopLepRecM_;
@@ -1491,6 +1501,7 @@ int main (int argc, char *argv[])
             W_btagWeight_shape_up_cferr2 =1; 
             W_btagWeight_shape_down_cferr2 =1; 
             W_nloWeight =1;// for amc@nlo samples
+            W_weight0 =1;
             W_weight1 =1;
             W_weight2 =1;
             W_weight3 =1;
@@ -1499,6 +1510,10 @@ int main (int argc, char *argv[])
             W_weight6 =1;
             W_weight7 =1;
             W_weight8 =1; 
+            W_pdfup =1; 
+            W_pdfdown =1; 
+            W_hdamp_up =1; 
+            W_hdamp_dw =1; 
             W_MuonIDSF =1; //One of the 3 components for the total muon SF
             W_MuonIsoSF =1; //One of the 3 components for the total muon SF
             W_MuonTrigSF =1;//One of the 3 components for the total muon SF
@@ -1816,7 +1831,38 @@ int main (int argc, char *argv[])
           
           	    W_nloWeight = mc_baseweight;
           	    sumWeights += mc_baseweight;
+                
+                if(event->getWeight(1)!= -9999)
+                {
+                    W_weight0 = (event->getWeight(1))/(abs(event->originalXWGTUP()));  
+                    W_weight1 = (event->getWeight(2))/(abs(event->originalXWGTUP()));                
+                    W_weight2 = (event->getWeight(3))/(abs(event->originalXWGTUP()));                
+                    W_weight3 = (event->getWeight(4))/(abs(event->originalXWGTUP()));                
+                    W_weight4 = (event->getWeight(5))/(abs(event->originalXWGTUP()));                
+                    W_weight5 = (event->getWeight(6))/(abs(event->originalXWGTUP()));                
+                    W_weight6 = (event->getWeight(7))/(abs(event->originalXWGTUP()));                
+                    W_weight7 = (event->getWeight(8))/(abs(event->originalXWGTUP()));                
+                    W_weight8 = (event->getWeight(9))/(abs(event->originalXWGTUP()));                    
+              }
+              else if (event->getWeight(1001)!= -9999)
+              {
+                    W_weight0 = (event->getWeight(1001))/(abs(event->originalXWGTUP()));  
+                    W_weight1 = (event->getWeight(1002))/(abs(event->originalXWGTUP()));                
+                    W_weight2 = (event->getWeight(1003))/(abs(event->originalXWGTUP()));                
+                    W_weight3 = (event->getWeight(1004))/(abs(event->originalXWGTUP()));                
+                    W_weight4 = (event->getWeight(1005))/(abs(event->originalXWGTUP()));                
+                    W_weight5 = (event->getWeight(1006))/(abs(event->originalXWGTUP()));                
+                    W_weight6 = (event->getWeight(1007))/(abs(event->originalXWGTUP()));                
+                    W_weight7 = (event->getWeight(1008))/(abs(event->originalXWGTUP()));                
+                    W_weight8 = (event->getWeight(1009))/(abs(event->originalXWGTUP()));                    
+                }
 
+		            // hdamp variation
+		            if (event->getWeight(1001)!= -9999)
+		            {
+			              W_hdamp_up = event->getWeight(5019)/fabs(event->originalXWGTUP());
+			              W_hdamp_dw = event->getWeight(5010)/fabs(event->originalXWGTUP());
+                }
             }
             ///////////////////////////////////////////////////////////
             // Event selection
@@ -1921,8 +1967,8 @@ int main (int argc, char *argv[])
             /////////////////////////////////////////////////
             //                   Lepton SF                 //
             /////////////////////////////////////////////////
-            float lum_RunsBCDEF = 15.658183109;// /fb
-            float lum_RunsGH = 15.199167277;// /fb
+            float lum_RunsBCDEF = 19.506;// /fb
+            float lum_RunsGH = 16.111;// /fb
             if(bLeptonSF && !isData)
             {
                 if(Muon && nMu>0){
@@ -2422,7 +2468,9 @@ int main (int argc, char *argv[])
                 continue;
             }
 
-		  	    if(selectedMBJets.size() < 2) continue;
+//		  	    if(selectedMBJets.size() < 2) continue;
+		  	    if(selectedLBJets.size() < 2) continue;
+//		  	    else if(bMethod == "CSVv2T" && selectedTBJets.size() < 2) continue;
 	          if (debug)	cout <<"Cut on nb b-jets..."<<endl;
             if(debug) cout << "Past cut 7: passed_FinalSelection cut on number of b-jets" << endl;
             cutstep[8]=cutstep[8]+scaleFactor; //Order of appearance of cutstep & nCuts is important here

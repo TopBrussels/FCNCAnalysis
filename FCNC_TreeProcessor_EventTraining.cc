@@ -259,7 +259,7 @@ int main(int argc, char *argv[])
   
         //variable for jets 
 	      Int_t nJets; 
-	      Int_t nJets_CSVL; 
+	      Int_t nJets_CSVM; 
             Double_t incl_charge_jet[20];
 	      
 	      //JetIndices_correctJetComb
@@ -332,7 +332,7 @@ int main(int argc, char *argv[])
         
         // jets
         ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets",&nJets);
-        ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVL",&nJets_CSVL);
+        ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVM",&nJets_CSVM);
             ttree[(dataSetName).c_str()]->SetBranchAddress("incl_charge_jet",&incl_charge_jet);	    
        
         // Jet-indices associated to the jet-assignment in the bMVA method
@@ -428,7 +428,7 @@ int main(int argc, char *argv[])
 			      ttree[dataSetName.c_str()]->GetEntry(j);
 		        if(!doInclusive)
 		        {
-		            if(nJets_CSVL != baseline_bjets)  continue;
+		            if(nJets_CSVM != baseline_bjets)  continue;
 
 		            if(baseline_jets == 3 && nJets != baseline_jets) continue;
 		            else if(baseline_jets == 4 && nJets < baseline_jets) continue;
@@ -499,6 +499,7 @@ int main(int argc, char *argv[])
 	          if( TopLepMass_TOPTOPLEPHAD > 500.) TopLepMass_TOPTOPLEPHAD = 500.;
 	          if( HiggsMass_TOPTOPLEPHBB > 500. ) HiggsMass_TOPTOPLEPHBB = 500.;
 	          if( TopLepMass_TOPTOPLEPHBB > 500. ) TopLepMass_TOPTOPLEPHBB = 500.;
+	          if( TopHadMass_TOPTOPLEPHAD > 1000. ) TopHadMass_TOPTOPLEPHAD = 1000.;
             if( HiggsBJet1CSVv2_TOPHLEPBB_hut < 0.) HiggsBJet1CSVv2_TOPHLEPBB_hut= 0.;
             if( HiggsBJet1CSVv2_TOPHLEPBB_hct < 0.) HiggsBJet1CSVv2_TOPHLEPBB_hct= 0.;
             if( HiggsBJet2CSVv2_TOPHLEPBB_hut < 0.) HiggsBJet2CSVv2_TOPHLEPBB_hut= 0.;
