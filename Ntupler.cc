@@ -2000,14 +2000,14 @@ int main (int argc, char *argv[])
 
                     W_ElectronIDSF_Plus = electronSFWeightID->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->Pt(),1);
                     W_ElectronRecoSF_Plus = electronSFWeightReco->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->Pt(),1);
-                    W_ElectronTrigSF_Plus = (electronSFWeightTrig_BCDEF->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->Pt(),1)*lum_RunsBCDEF + electronSFWeightTrig_GH->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->Pt(),1)*lum_RunsGH)/(lum_RunsBCDEF+lum_RunsGH); 
-                    W_fleptonSF_Plus = W_ElectronIDSF_Plus * W_ElectronRecoSF_Plus * W_ElectronTrigSF_Plus;
+//                    W_ElectronTrigSF_Plus = (electronSFWeightTrig_BCDEF->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->Pt(),1)*lum_RunsBCDEF + electronSFWeightTrig_GH->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->Pt(),1)*lum_RunsGH)/(lum_RunsBCDEF+lum_RunsGH); 
+                    W_fleptonSF_Plus = W_ElectronIDSF_Plus * W_ElectronRecoSF_Plus * (W_ElectronTrigSF*1.015);
                     W_fleptonSF_noTrigSF_Plus = W_ElectronIDSF_Plus * W_ElectronRecoSF_Plus;
 
                     W_ElectronIDSF_Minus = electronSFWeightID->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->Pt(),-1);
                     W_ElectronRecoSF_Minus = electronSFWeightReco->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->Pt(),-1);
-                    W_ElectronTrigSF_Minus = (electronSFWeightTrig_BCDEF->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->Pt(),-1)*lum_RunsBCDEF + electronSFWeightTrig_GH->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->Pt(),-1)*lum_RunsGH)/(lum_RunsBCDEF+lum_RunsGH); 
-                    W_fleptonSF_Minus = W_ElectronIDSF_Minus * W_ElectronRecoSF_Minus * W_ElectronTrigSF_Minus;
+//                    W_ElectronTrigSF_Minus = (electronSFWeightTrig_BCDEF->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->Pt(),-1)*lum_RunsBCDEF + electronSFWeightTrig_GH->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->Pt(),-1)*lum_RunsGH)/(lum_RunsBCDEF+lum_RunsGH); 
+                    W_fleptonSF_Minus = W_ElectronIDSF_Minus * W_ElectronRecoSF_Minus * (W_ElectronTrigSF*0.985);
                     W_fleptonSF_noTrigSF_Minus = W_ElectronIDSF_Minus * W_ElectronRecoSF_Minus;
                 }
             }

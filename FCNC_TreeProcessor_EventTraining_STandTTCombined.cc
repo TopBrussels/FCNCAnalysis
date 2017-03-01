@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
     {
         category = "b"+intToStr(baseline_bjets)+"j"+intToStr(baseline_jets);
     }
-    string TrainingName = "Training_" + SignalSample + channel + "_" +  category;//Example: Training_SThut_El_b3j3
+    string TrainingName = "CombTraining_" + SignalSample + channel + "_" +  category;//Example: Training_SThut_El_b3j3
 
     cout << "------------------------------------------------------------------------------------------------" << endl;
     cout << "Begin program" << endl;
@@ -131,8 +131,8 @@ int main(int argc, char *argv[])
     ///////////////////////////////////////////////////////////////////////////////////
     // **************** Preparing samples ********************//
     ///////////////////////////////////////////////////////////////////////////////////
-    cout << " ... Making the TreeProcessor .xml files " << endl;
-    system("python scripts/MakeXMLforTreeProcessor.py");
+//    cout << " ... Making the TreeProcessor .xml files " << endl;
+//    system("python scripts/MakeXMLforTreeProcessor.py");
 
     string xmlNom;
     if(channel == "_El") xmlNom = "config/FullMcBkgdSamples_El_TreeProcessor.xml";
@@ -244,7 +244,6 @@ int main(int argc, char *argv[])
         Double_t W_fleptonSF;
         Double_t W_btagWeight_shape;
         Double_t W_nloWeight;// for amc@nlo samples
-        Double_t W_TopPtReweighing;
       
         Int_t run_num;
         Int_t evt_num;
@@ -316,7 +315,6 @@ int main(int argc, char *argv[])
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_puSF",&W_puSF);
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape",&W_btagWeight_shape); 
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_nloWeight",&W_nloWeight); 
-        ttree[(dataSetName).c_str()]->SetBranchAddress("W_TopPtReweighing",&W_TopPtReweighing);  
 
         ttree[(dataSetName).c_str()]->SetBranchAddress("I_run_num",&run_num);
         ttree[(dataSetName).c_str()]->SetBranchAddress("I_evt_num",&evt_num);
@@ -382,13 +380,17 @@ int main(int argc, char *argv[])
         ttree[(dataSetName).c_str()]->SetBranchAddress("HiggsBJet2CSVv2_TOPTOPLEPHBB",&HiggsBJet2CSVv2_TOPTOPLEPHBB);
         ttree[(dataSetName).c_str()]->SetBranchAddress("TopLepBJetCSVv2_TOPTOPLEPHBB",&TopLepBJetCSVv2_TOPTOPLEPHBB);
         ttree[(dataSetName).c_str()]->SetBranchAddress("TopHadNonBJetCSVv2_TOPTOPLEPHBB",&TopHadNonBJetCSVv2_TOPTOPLEPHBB);
+
+        int nTrainingEntries = nEntries;
+        nTrainingEntries = int(nEntries/2);
+
                   
         double nloSF = 1.;
         int nPos = 0; 
         int nNeg = 0;
         if(isAMC)
         {
-            for (int k = 0; k<nEntries; k++)
+            for (int k = 0; k<nTrainingEntries; k++)
             {
                 ttree[dataSetName.c_str()]->GetEntry(k);
                 if( W_nloWeight > 0) nPos++;
@@ -397,19 +399,7 @@ int main(int argc, char *argv[])
             nloSF *= ((double) (nPos - nNeg))/((double) (nPos + nNeg));
         }		
 
-        Double_t average_TopPtWeight = 0;
-        if(dataSetName.find("TTJets") != string::npos)
-        {
-            for (int k = 0; k<nEntries; k++)
-            {
-                ttree[dataSetName.c_str()]->GetEntry(k);
-                average_TopPtWeight = average_TopPtWeight + W_TopPtReweighing;
-            }
-            average_TopPtWeight = average_TopPtWeight/nEntries;
-        }
 
-        int nTrainingEntries = nEntries;
-//        nTrainingEntries = int(nEntries/2);
         
         
   	    //***********************************************RUNNING OVER EVENTS**********************************************
@@ -470,7 +460,6 @@ int main(int argc, char *argv[])
                ScaleFactor = ScaleFactor * W_fleptonSF;
   			       ScaleFactor = ScaleFactor * W_btagWeight_shape;
                ScaleFactor = ScaleFactor * nloSF;
-               if(dataSetName.find("TTJets") != string::npos) ScaleFactor = ScaleFactor * W_TopPtReweighing/average_TopPtWeight;
                
                double weight = ScaleFactor * Luminosity * datasets[d]->NormFactor();
 
@@ -496,6 +485,7 @@ int main(int argc, char *argv[])
 	          if( TopLepMass_TOPTOPLEPHAD > 500.) TopLepMass_TOPTOPLEPHAD = 500.;
 	          if( HiggsMass_TOPTOPLEPHBB > 500. ) HiggsMass_TOPTOPLEPHBB = 500.;
 	          if( TopLepMass_TOPTOPLEPHBB > 500. ) TopLepMass_TOPTOPLEPHBB = 500.;
+	          if( TopHadMass_TOPTOPLEPHAD > 1000. ) TopHadMass_TOPTOPLEPHAD = 1000.;
             if( HiggsBJet1CSVv2_TOPHLEPBB_hut < 0.) HiggsBJet1CSVv2_TOPHLEPBB_hut= 0.;
             if( HiggsBJet1CSVv2_TOPHLEPBB_hct < 0.) HiggsBJet1CSVv2_TOPHLEPBB_hct= 0.;
             if( HiggsBJet2CSVv2_TOPHLEPBB_hut < 0.) HiggsBJet2CSVv2_TOPHLEPBB_hut= 0.;
@@ -510,6 +500,7 @@ int main(int argc, char *argv[])
             if( HiggsBJet2CSVv2_TOPTOPLEPHBB < 0.) HiggsBJet2CSVv2_TOPTOPLEPHBB= 0.;
             if( TopLepBJetCSVv2_TOPTOPLEPHBB < 0.) TopLepBJetCSVv2_TOPTOPLEPHBB= 0.;
             if( TopHadNonBJetCSVv2_TOPTOPLEPHBB < 0.) TopHadNonBJetCSVv2_TOPTOPLEPHBB = 0.;
+
 
 
 	         

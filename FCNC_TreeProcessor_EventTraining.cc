@@ -131,8 +131,8 @@ int main(int argc, char *argv[])
     ///////////////////////////////////////////////////////////////////////////////////
     // **************** Preparing samples ********************//
     ///////////////////////////////////////////////////////////////////////////////////
-    cout << " ... Making the TreeProcessor .xml files " << endl;
-    system("python scripts/MakeXMLforTreeProcessor.py");
+//    cout << " ... Making the TreeProcessor .xml files " << endl;
+//    system("python scripts/MakeXMLforTreeProcessor.py");
 
     string xmlNom;
     if(channel == "_El") xmlNom = "config/FullMcBkgdSamples_El_TreeProcessor.xml";
@@ -246,7 +246,6 @@ int main(int argc, char *argv[])
         Double_t W_fleptonSF;
         Double_t W_btagWeight_shape;
         Double_t W_nloWeight;// for amc@nlo samples
-        Double_t W_TopPtReweighing;
       
         Int_t run_num;
         Int_t evt_num;
@@ -318,7 +317,6 @@ int main(int argc, char *argv[])
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_puSF",&W_puSF);
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_btagWeight_shape",&W_btagWeight_shape); 
         ttree[(dataSetName).c_str()]->SetBranchAddress("W_nloWeight",&W_nloWeight); 
-        ttree[(dataSetName).c_str()]->SetBranchAddress("W_TopPtReweighing",&W_TopPtReweighing);  
 
         ttree[(dataSetName).c_str()]->SetBranchAddress("I_run_num",&run_num);
         ttree[(dataSetName).c_str()]->SetBranchAddress("I_evt_num",&evt_num);
@@ -402,16 +400,6 @@ int main(int argc, char *argv[])
             nloSF *= ((double) (nPos - nNeg))/((double) (nPos + nNeg));
         }		
 
-        Double_t average_TopPtWeight = 0;
-        if(dataSetName.find("TTJets") != string::npos)
-        {
-            for (int k = 0; k<nTrainingEntries; k++)
-            {
-                ttree[dataSetName.c_str()]->GetEntry(k);
-                average_TopPtWeight = average_TopPtWeight + W_TopPtReweighing;
-            }
-            average_TopPtWeight = average_TopPtWeight/nEntries;
-        }
 
         
         
@@ -473,7 +461,6 @@ int main(int argc, char *argv[])
                ScaleFactor = ScaleFactor * W_fleptonSF;
   			       ScaleFactor = ScaleFactor * W_btagWeight_shape;
                ScaleFactor = ScaleFactor * nloSF;
-               if(dataSetName.find("TTJets") != string::npos) ScaleFactor = ScaleFactor * W_TopPtReweighing/average_TopPtWeight;
                
                double weight = ScaleFactor * Luminosity * datasets[d]->NormFactor();
 
