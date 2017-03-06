@@ -1,4 +1,4 @@
-#define TreeAnalyzer_cxx
+//#define TreeAnalyzer_cxx
 //#include "TreeAnalyzer.h"
 #include <TH2.h>
 #include <TStyle.h>
@@ -7,7 +7,7 @@
 #include <vector>
 #include "TStyle.h"
 #include "TPaveText.h"
-
+#include "TMath.h"
 #include <cmath>
 #include <iostream>
 #include <iomanip>
@@ -34,8 +34,7 @@
 //#include "../macros/Style.C"
 
 
-struct HighestPt
-{
+struct HighestPt{
   bool operator()(TLorentzVector j1, TLorentzVector j2) const
   {
     return j1.Pt() > j2.Pt();
@@ -44,17 +43,16 @@ struct HighestPt
   
 };
 
-
 using namespace std;
 using namespace TopTree;
 
 
-
+///////////////////////////////////// PLOT MAPPING /////////////////////////////////////////
 // Normal Plots (TH1F* and TH2F*)
 map<string,TH1F*> histo1D;
 map<string,TH2F*> histo2D;
 map<string,MultiSamplePlot*> MSPlot;
-map<string,MultiSamplePlot*> MSPlotCutfl;
+map<string,MultiSamplePlot*> MSPlotCutfl; // TOFIX
 
 
 map<string,TFile*> tFileMap;
@@ -69,12 +67,17 @@ std::vector < int>  decayChannels = {0,1,2,3,-9}; // uuu uue eeu eee all
 //std::vector < int>  decayChannels = {-9};
 bool firstevent = false;
 
+
+
+
+///////////////////////////////////// MVA VARS /////////////////////////////////////////
 // Decleration of MVA variables
 TFile * tupfile = 0;
 TTree* mvatree = 0;
 Float_t MVA_channel = -999.;
 Float_t MVA_weight = 1.;
 Float_t MVA_region = -999.;
+Double_t MVA_EqLumi = -999;
 
 
 Float_t MVA_lepton0_pt = -999.;
@@ -197,16 +200,6 @@ Float_t MVA_m3l = -999.;
 
 // Declaration of leaf types
 
-Int_t nMCParticles;
-Int_t mc_status[200];
-Int_t mc_pdgId[200];
-Int_t mc_mother[200];
-Int_t mc_granny[200];
-Double_t mc_pt[200];
-Double_t mc_phi[200];
-Double_t mc_eta[200];
-Double_t mc_E[200];
-Double_t mc_M[200];
 
 
 Int_t nEv;
@@ -220,7 +213,7 @@ TBranch *b_nofNegWeights;
 TBranch *b_nofPosWeights;
 TBranch *b_sumW;
 int TotalEvents;
-double Luminosity = 32000.;
+Double_t Luminosity = 32000.;
 Double_t WPb_L;
 Double_t WPb_M;
 Double_t WPb_T;
@@ -330,25 +323,28 @@ Int_t           npu;
 Double_t        puSF;
 Double_t        btagSF;
 Int_t           PassedMETFilter;
+Int_t           PassedTrigger;
+Int_t		PassedTriggerNoLogic; 
+Int_t		PassedTriggerNoLogic2;
 Int_t           PassedGoodPV;
 Int_t           nElectrons;
 Double_t        ElectronSF[3];   //[nElectrons]
-Float_t         pt_electron[3];   //[nElectrons]
-Float_t         phi_electron[3];   //[nElectrons]
-Float_t         eta_electron[3];   //[nElectrons]
-Float_t         eta_superCluster_electron[3];   //[nElectrons]
-Float_t         E_electron[3];   //[nElectrons]
-Float_t         chargedHadronIso_electron[3];   //[nElectrons]
-Float_t         neutralHadronIso_electron[3];   //[nElectrons]
-Float_t         photonIso_electron[3];   //[nElectrons]
-Float_t         pfIso_electron[3];   //[nElectrons]
+Double_t        pt_electron[3];   //[nElectrons]
+Double_t        phi_electron[3];   //[nElectrons]
+Double_t        eta_electron[3];   //[nElectrons]
+Double_t        eta_superCluster_electron[3];   //[nElectrons]
+Double_t        E_electron[3];   //[nElectrons]
+Double_t        chargedHadronIso_electron[3];   //[nElectrons]
+Double_t        neutralHadronIso_electron[3];   //[nElectrons]
+Double_t        photonIso_electron[3];   //[nElectrons]
+Double_t        pfIso_electron[3];   //[nElectrons]
 Int_t           charge_electron[3];   //[nElectrons]
-Float_t         d0_electron[3];   //[nElectrons]
-Float_t         d0BeamSpot_electron[3];   //[nElectrons]
-Float_t         sigmaIEtaIEta_electron[3];   //[nElectrons]
-Float_t         deltaEtaIn_electron[3];   //[nElectrons]
-Float_t         deltaPhiIn_electron[3];   //[nElectrons]
-Float_t         hadronicOverEm_electron[3];   //[nElectrons]
+Double_t        d0_electron[3];   //[nElectrons]
+Double_t        d0BeamSpot_electron[3];   //[nElectrons]
+Double_t        sigmaIEtaIEta_electron[3];   //[nElectrons]
+Double_t        deltaEtaIn_electron[3];   //[nElectrons]
+Double_t        deltaPhiIn_electron[3];   //[nElectrons]
+Double_t        hadronicOverEm_electron[3];   //[nElectrons]
 Int_t           missingHits_electron[3];   //[nElectrons]
 Bool_t          passConversion_electron[3];   //[nElectrons]
 Bool_t          isId_electron[3];   //[nElectrons]
@@ -359,42 +355,56 @@ Double_t        MuonIDSF[3];   //[nMuons]
 Double_t        MuonIsoSF[3];   //[nMuons]
 Double_t        MuonTrigSFv2[3];   //[nMuons]
 Double_t        MuonTrigSFv3[3];   //[nMuons]
-Float_t         pt_muon[3];   //[nMuons]
-Float_t         phi_muon[3];   //[nMuons]
-Float_t         eta_muon[3];   //[nMuons]
-Float_t         E_muon[3];   //[nMuons]
-Float_t         chargedHadronIso_muon[3];   //[nMuons]
-Float_t         neutralHadronIso_muon[3];   //[nMuons]
-Float_t         photonIso_muon[3];   //[nMuons]
+Double_t        pt_muon[3];   //[nMuons]
+Double_t        phi_muon[3];   //[nMuons]
+Double_t        eta_muon[3];   //[nMuons]
+Double_t        E_muon[3];   //[nMuons]
+Double_t        chargedHadronIso_muon[3];   //[nMuons]
+Double_t        neutralHadronIso_muon[3];   //[nMuons]
+Double_t        photonIso_muon[3];   //[nMuons]
 Bool_t          isId_muon[3];   //[nMuons]
 Bool_t          isIso_muon[3];   //[nMuons]
-Float_t         pfIso_muon[3];   //[nMuons]
+Double_t        pfIso_muon[3];   //[nMuons]
 Int_t           charge_muon[3];   //[nMuons]
-Float_t         d0_muon[3];   //[nMuons]
-Float_t         d0BeamSpot_muon[3];   //[nMuons]
+Double_t        d0_muon[3];   //[nMuons]
+Double_t        d0BeamSpot_muon[3];   //[nMuons]
 Int_t           nJets;
-Float_t         pt_jet[7];   //[nJets]
-Float_t         px_jet[7];   //[nJets]
-Float_t         py_jet[7];   //[nJets]
-Float_t         pz_jet[7];   //[nJets]
-Float_t         phi_jet[7];   //[nJets]
-Float_t         eta_jet[7];   //[nJets]
-Float_t         E_jet[7];   //[nJets]
-Int_t           charge_jet[7];   //[nJets]
-Float_t         bdisc_jet[7];   //[nJets]
-Float_t         jet_Pt_before_JER[7];   //[nJets]
-Float_t         jet_Pt_before_JES[7];   //[nJets]
-Float_t         jet_Pt_after_JER[7];   //[nJets]
-Float_t         jet_Pt_after_JES[7];   //[nJets]
-Float_t         cdiscCvsL_jet[7];   //[nJets]
-Float_t         cdiscCvsB_jet[7];   //[nJets]
-Float_t         met_Pt;
-Float_t         met_Eta;
-Float_t         met_Phi;
-Float_t         met_Px;
-Float_t         met_Py;
-Float_t         met_before_JES;
-Float_t         met_after_JES;
+Double_t        pt_jet[9];   //[nJets]
+Double_t        px_jet[9];   //[nJets]
+Double_t        py_jet[9];   //[nJets]
+Double_t        pz_jet[9];   //[nJets]
+Double_t        phi_jet[9];   //[nJets]
+Double_t        eta_jet[9];   //[nJets]
+Double_t        E_jet[9];   //[nJets]
+Int_t           charge_jet[9];   //[nJets]
+Double_t        bdisc_jet[9];   //[nJets]
+Double_t        jet_Pt_before_JER[9];   //[nJets]
+Double_t        jet_Pt_before_JES[9];   //[nJets]
+Double_t        jet_Pt_after_JER[9];   //[nJets]
+Double_t        jet_Pt_after_JES[9];   //[nJets]
+Double_t        cdiscCvsL_jet[9];   //[nJets]
+Double_t        cdiscCvsB_jet[9];   //[nJets]
+Int_t           nMCParticles;
+Int_t           mc_status[133];   //[nMCParticles]
+Int_t           mc_pdgId[133];   //[nMCParticles]
+Int_t           mc_mother[133];   //[nMCParticles]
+Int_t           mc_granny[133];   //[nMCParticles]
+Double_t        mc_pt[133];   //[nMCParticles]
+Double_t        mc_phi[133];   //[nMCParticles]
+Double_t        mc_eta[133];   //[nMCParticles]
+Double_t        mc_E[133];   //[nMCParticles]
+Double_t        mc_M[133];   //[nMCParticles]
+Bool_t          mc_isLastCopy[133];   //[nMCParticles]
+Bool_t          mc_isPromptFinalState[133];   //[nMCParticles]
+Bool_t          mc_isHardProcess[133];   //[nMCParticles]
+Bool_t          mc_fromHardProcessFinalState[133];   //[nMCParticles]
+Double_t        met_Pt;
+Double_t        met_Eta;
+Double_t        met_Phi;
+Double_t        met_Px;
+Double_t        met_Py;
+Double_t        met_before_JES;
+Double_t        met_after_JES;
 
 // List of branches
 TBranch        *b_channelInt;   //!
@@ -407,6 +417,9 @@ TBranch        *b_npu;   //!
 TBranch        *b_puSF;   //!
 TBranch        *b_btagSF;   //!
 TBranch        *b_PassedMETFilter;   //!
+TBranch        *b_PassedTrigger;   //!
+TBranch		*b_PassedTriggerNoLogic; 
+TBranch		*b_PassedTriggerNoLogic2; 
 TBranch        *b_PassedGoodPV;   //!
 TBranch        *b_nElectrons;   //!
 TBranch        *b_ElectronSF;   //!
@@ -465,6 +478,20 @@ TBranch        *b_jet_Pt_after_JER;   //!
 TBranch        *b_jet_Pt_after_JES;   //!
 TBranch        *b_cdiscCvsL_jet;   //!
 TBranch        *b_cdiscCvsB_jet;   //!
+TBranch        *b_nMCParticles;   //!
+TBranch        *b_mc_status;   //!
+TBranch        *b_mc_pdgId;   //!
+TBranch        *b_mc_mother;   //!
+TBranch        *b_mc_granny;   //!
+TBranch        *b_mc_pt;   //!
+TBranch        *b_mc_phi;   //!
+TBranch        *b_mc_eta;   //!
+TBranch        *b_mc_E;   //!
+TBranch        *b_mc_M;   //!
+TBranch        *b_mc_isLastCopy;   //!
+TBranch        *b_mc_isPromptFinalState;   //!
+TBranch        *b_mc_isHardProcess;   //!
+TBranch        *b_mc_fromHardProcessFinalState;   //!
 TBranch        *b_met_Pt;   //!
 TBranch        *b_met_Eta;   //!
 TBranch        *b_met_Phi;   //!
@@ -472,9 +499,7 @@ TBranch        *b_met_Px;   //!
 TBranch        *b_met_Py;   //!
 TBranch        *b_met_before_JES;   //!
 TBranch        *b_met_after_JES;   //!
-
-
-
+///////////////////////////////////// HOME MADE FUNCTIONS AND VARS  /////////////////////////////////////////
 
 
 int verbose = 2;
@@ -483,12 +508,15 @@ int verbose = 2;
 string MakeTimeStamp();
 void InitMSPlots(string prefix, vector<int> decayChannels);
 void InitMVAMSPlotsSingletop(string prefix,vector<int> decayChannels);
+void InitMSPlotsBDT(string prefix, vector<int> decayChannels);
 void InitMVAMSPlotsTopPair(string prefix, vector<int> decayChannels);
 void InitMVAMSPlotsWZ(string prefix, vector <int> decayChannels);
 void Init1DPlots();
 void Init2DPlots();
 void InitGenInfoPlots(string dataSetName);
 void FillGenInfoPlots(string dataSetName);
+void InitRecovsGenInfoPlots(string dataSetName);
+void FillRecovsGenInfoPlots(string dataSetName, vector<TLorentzVector> selectedElectrons, vector <TLorentzVector> selectedMuons , vector <TLorentzVector> selectedJets);
 void InitTree(TTree* tree, bool isData);
 // data from global tree
 void ClearMetaData();
@@ -500,11 +528,12 @@ void ClearMVAVars();
 void ClearTLVs();
 void ClearMatchingVars();
 void ClearMatchingVarsTLV();
+void ClearMatchingSampleVars();
 void FillGeneralPlots(int d, string prefix, vector<int>decayChannels, bool isData);
 void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<int>decayChannels);
 string ConvertIntToString(int nb, bool pad);
 void ReconstructObjects(vector<TLorentzVector> Muons,vector<TLorentzVector> selectedElectrons, vector<TLorentzVector> selectedJets,int Region);
-void MakeMVAvars(int Region, double scaleFactor);
+void MakeMVAvars(int Region, Double_t scaleFactor);
 void createMVAtree(string dataSetName);
 void writeMVAtree();
 int SMjetCalculator(vector<TLorentzVector> Jets,int verb);
@@ -513,12 +542,14 @@ int FCNCjetCalculator(vector < TLorentzVector>  Jets, TLorentzVector recoZ ,int 
 int FCNCjetCalculatorCvsBTagger(vector < TLorentzVector>  Jets, int index, int verb);
 int FCNCjetCalculatorCvsLTagger(vector < TLorentzVector>  Jets, int index, int verb);
 int FCNCjetCalculatorCwp(vector < TLorentzVector>  Jets, std::vector <int> cjetindex, int index, int verb);
-std::pair <Float_t,Float_t> CosThetaCalculation(TLorentzVector lepton, TLorentzVector Neutrino, TLorentzVector leptonicBJet, bool geninfo);
+std::pair <Double_t,Double_t> CosThetaCalculation(TLorentzVector lepton, TLorentzVector Neutrino, TLorentzVector leptonicBJet, bool geninfo);
 void LeptonAssigner(vector<TLorentzVector> electrons, vector<TLorentzVector> muons, std::vector<int> electronsCharge,std::vector<int> muonsCharge);
-void MatchingFunction(string dataSetName);
+bool MatchingFunction(string dataSetName, vector <TLorentzVector> selectedleptons, vector <TLorentzVector> selectedMuons,vector <TLorentzVector> selectedElectrons, vector <TLorentzVector> selectedJets, bool makePlots, bool debug);
 void LeptonMatcher(vector < TLorentzVector> mcParticles, vector <TLorentzVector> Leptons);
-void EventSearcherSTCNC(vector < TLorentzVector> mcParticles);
-void EventSearcherTTCNC(vector < TLorentzVector> mcParticles);
+void EventSearcher(vector < TLorentzVector> mcParticles, string dataSetName, bool debug);
+pair< vector< pair<unsigned int, unsigned int>>, vector <string> > LeptonMatching(vector < TLorentzVector> selectedleptons, vector <TLorentzVector> mcParticles, string dataSetName, bool debug);
+pair< vector< pair<unsigned int, unsigned int>>, vector <string> > JetMatching(vector < TLorentzVector> selectedJets, vector <TLorentzVector> mcParticles, string dataSetName, bool debug);
+void MatchingEfficiency();
 vector<TLorentzVector> selectedMuons;
 vector<TLorentzVector> selectedElectrons;
 vector<TLorentzVector> selectedLeptons;
@@ -526,6 +557,46 @@ vector<TLorentzVector> selectedJets;
 vector<int> selectedElectronsCharge;
 vector<int> selectedMuonsCharge;
 bool Assigned = false;
+
+int WmuIndiceM = -999;
+int WelecIndiceM = -999;
+int BjetIndiceM = -999;
+int CjetIndiceM = -999;
+int UjetIndiceM = -999;
+int ZelecIndiceM_0 = -999;
+int ZelecIndiceM_1 = -999;
+int ZmuIndiceM_0 = -999;
+int ZmuIndiceM_1 = -999;
+Double_t WlepMatched= 0.;
+Double_t ZlepMatched = 0.;
+Double_t BjetMatched = 0.;
+Double_t CjetMatched = 0.;
+Double_t CjetMatchedeventCvsLL = 0.;
+Double_t CjetMatchedeventCvsLM = 0.;
+Double_t CjetMatchedeventCvsLT = 0.;
+Double_t CjetMatchedeventCvsBL = 0.;
+Double_t CjetMatchedeventCvsBM = 0.;
+Double_t CjetMatchedeventCvsBT = 0.;
+Double_t CjetMatchedeventL = 0.;
+Double_t CjetMatchedeventM = 0.;
+Double_t CjetMatchedeventT = 0.;
+Double_t CjetMatchedL = 0.;
+Double_t CjetMatchedM = 0.;
+Double_t CjetMatchedT = 0.;
+Double_t CjetMatchedCvsBL = 0.;
+Double_t CjetMatchedCvsBM = 0.;
+Double_t CjetMatchedCvsBT = 0.;
+Double_t CjetMatchedCvsLL = 0.;
+Double_t CjetMatchedCvsLM = 0.;
+Double_t CjetMatchedCvsLT = 0.;
+
+Double_t UjetMatched = 0.;
+Double_t WlepMatchedevent= 0.;
+Double_t ZlepMatchedevent = 0.;
+Double_t BjetMatchedevent = 0.;
+Double_t CjetMatchedevent = 0.;
+Double_t UjetMatchedevent = 0.;
+
 TLorentzVector mcpart;
 vector <TLorentzVector> mcParticles;
 bool foundTopQ = false;
@@ -533,17 +604,22 @@ bool foundAntitopQ = false;
 bool foundSMb = false;
 bool foundSMmu = false;
 bool foundSMel = false;
+bool foundSMnuel = false;
+bool foundSMnumu = false;
 bool foundW = false;
 bool foundZmumin = false;
 bool foundZmuplus = false;
 bool foundZelmin = false;
 bool foundZelplus = false;
 bool foundZ = false;
-bool foundLjet = false;
+bool foundCjet = false;
+bool foundUjet = false;
 int TopQ_Indice = -999;
 int AntiTopQ_Indice = -999;
 int SMb_Indice = -999;
 int SMmu_Indice = -999;
+int SMnuel_Indice = -999;
+int SMnumu_Indice = -999;
 int SMel_Indice = -999;
 int SMW_Indice = -999;
 int Zmu_min_Indice = -999;
@@ -551,7 +627,8 @@ int Zmu_plus_Indice = -999;
 int Zel_min_Indice = -999;
 int Zel_plus_Indice = -999;
 int Z_Indice = -999;
-int LightJet_Indice = -999;
+int Cjet_Indice = -999;
+int Ujet_Indice = -999;
 bool foundDecay = false;
 
 TLorentzVector temp0;
@@ -590,14 +667,14 @@ vector <int> selectedCvsLTJetID;
 vector <int> selectedCharmLJetsindex;
 vector <int> selectedCharmMJetsindex;
 vector <int> selectedCharmTJetsindex;
-double scaleFactor;
-double muonSFtemp;
-double electronSFtemp;
-double EquilumiSF = 1.;
-double nloSF = 1.;
-double Xsect = 1.;
-float mWT;
-Float_t mWT2;
+Double_t scaleFactor;
+Double_t muonSFtemp;
+Double_t electronSFtemp;
+Double_t EquilumiSF = 1.;
+Double_t nloSF = 1.;
+Double_t Xsect = 1.;
+Double_t mWT;
+Double_t mWT2;
 int globalnEntries;
 int nEntries;
 int SMjetIndex;
@@ -649,22 +726,22 @@ int total_nbEv_Trigged_eee= 0;
 int total_nbEv_ZbosonWindow_eee= 0;
 
 bool check_matching = false;
+bool debugmatching = false;
 
-
-Float_t tempPx;
-Float_t tempPy;
-Float_t tempHt;
-Float_t tempPx_jet;
-Float_t tempPy_jet;
-Float_t tempHt_jet;
+Double_t tempPx;
+Double_t tempPy;
+Double_t tempHt;
+Double_t tempPx_jet;
+Double_t tempPy_jet;
+Double_t tempHt_jet;
 
 TLorentzVector tempInvMassObj;
 TLorentzVector tempInvMassObj_jet;
 
 string pathOutputdate = "";
 
-int main(int argc, char* argv[])
-{
+///////////////////////////////////// MAIN CODE /////////////////////////////////////////
+int main(int argc, char* argv[]){
   string dateString = MakeTimeStamp();
   cout << "*********************************************" << endl;
   cout << "***         Beginning of program          ***" << endl;
@@ -674,8 +751,9 @@ int main(int argc, char* argv[])
   cout << "*********************************************" << endl;
   
   clock_t start = clock();
-  setTDRStyle();
-  
+  //setTDRStyle(); // TO FIX
+  //setMyStyle(); // TO FIX stat box title
+
   string xmlFileName = "";
   xmlFileName = "config/Run2TriLepton_samples_analy.xml" ;
   const char* xmlFile = xmlFileName.c_str();
@@ -690,7 +768,7 @@ int main(int argc, char* argv[])
   
   //  load datasets
   datasets.clear();
-
+  
   
   
   TTreeLoader treeLoader;
@@ -698,6 +776,8 @@ int main(int argc, char* argv[])
   treeLoader.LoadDatasets(datasets, xmlFile);
   cout << "datasets loaded" <<endl;
   bool makePlots = false;
+  bool makeMVAPlots = false;
+  bool makeMatchingPlots = false;
   bool makeMVAtree = false;
   bool applyMuonSF = false;
   bool applyElectronSF = false;
@@ -708,7 +788,11 @@ int main(int argc, char* argv[])
   string placeNtup = "singletop/170214";
   int channel = -999;
   datafound = false;
-  
+  bool applytrigger = true;
+  bool checktrigger = false;
+  bool applytriggerNoLogic = false; 
+  bool applytriggerNoLogic2 = false;
+  bool testing = false;
   
   for(int i = 0; i <argc; i++){
     if(string(argv[i]).find("help")!=string::npos) {
@@ -720,12 +804,39 @@ int main(int argc, char* argv[])
       std::cout << "   applySF: applyPUSF, applyElectronSF, applyMuonsSF, applyMET, applyBtagSF, applyAMC. These can also be set seperatly" << endl;
       std::cout << "   MakeMVATree: make trees for the MVA" << endl;
       std::cout << "   MakePlots: make plots" << endl;
+      std::cout << "   MakeMVAPlots: make MVA plots" << endl;
       std::cout << "   Ntup placeNtup: set where ntuples are stored. NtupleMakerOutput/MergedTuples/placeNtup " << endl;
       std::cout << "   Matching: do matching for tZq, FCNC" << endl;
+      std::cout << "   debugMatching: do matching for tZq, FCNC" << endl;
+      std::cout << "   MakeMatchingPlots: make matching plots" << endl;
+      std::cout << "   noTrigger: do not apply trigger " << endl;
+      std::cout << "   checkTrigger: check trigger in data " << endl;
+      std::cout << "   Test: loop over 1000 events" << endl;
       return 0;
+    }
+    if(string(argv[i]).find("Test")!=std::string::npos) {
+      testing = true;
+    }
+    if(string(argv[i]).find("checkTrigger")!=std::string::npos) {
+      checktrigger = true;
+    }
+    if(string(argv[i]).find("noTrigger")!=std::string::npos) {
+      applytrigger = false;
+    }
+    if(string(argv[i]).find("checkTrigNoLogic")!=std::string::npos) {
+      applytriggerNoLogic = true;
+    }
+    if(string(argv[i]).find("checkNoLogic2")!=std::string::npos) {
+      applytriggerNoLogic2 = true;
+    }
+    if(string(argv[i]).find("MakeMatchingPlots")!=std::string::npos) {
+      makeMatchingPlots = true;
     }
     if(string(argv[i]).find("Matching")!=std::string::npos) {
       check_matching = true;
+    }
+    if(string(argv[i]).find("debugMatching")!=std::string::npos) {
+      debugmatching = true;
     }
     if(string(argv[i]).find("Ntup")!=std::string::npos) {
       placeNtup = argv[i+1];
@@ -774,7 +885,9 @@ int main(int argc, char* argv[])
     if(string(argv[i]).find("MakePlots")!=string::npos) {
       makePlots = true;
     }
-    
+    if(string(argv[i]).find("MakeMVAPlots")!=string::npos) {
+      makeMVAPlots = true;
+    }
   }
   
   if(makePlots){
@@ -784,16 +897,18 @@ int main(int argc, char* argv[])
     InitMSPlots("control_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels);
     Init1DPlots();
     Init2DPlots();
-    if(makeMVAtree) {
-      InitMVAMSPlotsSingletop("singletop", decayChannels);
-      //InitMVAMSPlotsTopPair("toppair", decayChannels);
-      //InitMVAMSPlotsWZ("wzcontrol", decayChannels);
-    }
+  }
+
+  if(makeMVAtree && makeMVAPlots) {
+    //InitMVAMSPlotsSingletop("singletop", decayChannels);
+     InitMVAMSPlotsTopPair("wzcontrol", decayChannels);
+  //  InitMVAMSPlotsSingletop("wzcontrol", decayChannels);
+    
   }
   
   
   
-
+  
   for (int d = 0; d < datasets.size(); d++)   //Loop through datasets
   {
     string dataSetName = datasets[d]->Name();
@@ -803,10 +918,7 @@ int main(int argc, char* argv[])
       datafound = true;
     }
     
-    if (dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("tZq")!=std::string::npos)
-    {
-      check_matching = false;
-    }
+    
     
   }
   
@@ -822,12 +934,17 @@ int main(int argc, char* argv[])
   int nSelectedEntriesTT = 0;
   int nSelectedEntriesWZ = 0;
   Double_t nSelectedEntriesSTweighted = 0.;
-  double nSelectedEntriesTTweighted = 0.;
-  double nSelectedEntriesWZweighted = 0.;
+  Double_t nSelectedEntriesTTweighted = 0.;
+  Double_t nSelectedEntriesWZweighted = 0.;
+  Long64_t evtID ;
+  ofstream myfile;
+  ofstream myfiletrigged;
   /// Loop over datasets
   for (int d = 0; d < datasets.size(); d++)   //Loop through datasets
   {
     clock_t startDataSet = clock();
+    Long64_t  mineventnb = 999999999;
+    Long64_t maxeventnb = 0;
     
     firstevent = true;
     ClearMetaData();
@@ -850,7 +967,19 @@ int main(int argc, char* argv[])
       isAMC = true;
       //cout << "amc at nlo sample" <<endl;
     }
+    if (dataSetName.find("FCNC")==std::string::npos && dataSetName.find("tZq")==std::string::npos)
+    {
+      check_matching = false;
+    }
     
+    if(check_matching){
+      ClearMatchingSampleVars();
+      if(makeMatchingPlots){
+        InitGenInfoPlots(dataSetName);
+        InitRecovsGenInfoPlots(dataSetName);
+      }
+    }
+
     
     string ntupleFileName = "NtupleMakerOutput/MergedTuples/"+placeNtup+"/"+dataSetName+".root";
     tFileMap[dataSetName.c_str()] = new TFile((ntupleFileName).c_str(),"READ"); //create TFile for each dataset
@@ -887,7 +1016,17 @@ int main(int argc, char* argv[])
       
     }
     
-    int endEvent = nEntries;
+    if(isData && checktrigger ){
+       myfile.open((dataSetName+"eventID.txt").c_str());
+      myfiletrigged.open((dataSetName+"eventIDtrigged.txt").c_str()); // sort -u eventID.txt | wc -l  (-u ==> unique lines )
+      
+    }
+    
+    
+    int endEvent =nEntries;
+    if(testing){
+      if(endEvent > 100) endEvent = 100;
+    }
     int istartevt = 0;
     nSelectedEntriesST = 0;
     nSelectedEntriesTT = 0;
@@ -896,7 +1035,7 @@ int main(int argc, char* argv[])
     nSelectedEntriesTTweighted = 0.;
     nSelectedEntriesWZweighted = 0.;
     
-
+    
     for (int ievt = 0; ievt < endEvent; ievt++)
     {
       ClearObjects(); // put everything to default values
@@ -911,17 +1050,29 @@ int main(int argc, char* argv[])
       /// Load event
       tTree[(dataSetName).c_str()]->GetEntry(ievt);
       
-      if(applyMETfilter && !PassedMETFilter) continue;
       
-
+      if(isData){
+        if(evt_num < mineventnb)  mineventnb = evt_num;
+        if(evt_num > maxeventnb)  maxeventnb = evt_num ;
+        evtID = evt_num ;
+      }
+      
+      
+      
+      if(applyMETfilter && !PassedMETFilter) continue;
+      if(applytrigger && !PassedTrigger) continue;
+      if(applytriggerNoLogic && !PassedTriggerNoLogic) continue; 
+      if(applytriggerNoLogic2 && !PassedTriggerNoLogic2) continue;
+      
       // fill objects,
       clock_t startFill = clock();
-      muon.Clear();
+      
       tempPx = 0.;
       tempPy = 0.;
       tempHt = 0.;
       tempInvMassObj.SetPtEtaPhiE(0.,0., 0.,0.);
       for(unsigned int iMu = 0; iMu < nMuons ; iMu++){
+        muon.Clear();
         muon.SetPtEtaPhiE(pt_muon[iMu], eta_muon[iMu], phi_muon[iMu], E_muon[iMu]);
         selectedMuons.push_back(muon);
         selectedMuonsCharge.push_back(charge_muon[iMu]);
@@ -931,8 +1082,9 @@ int main(int argc, char* argv[])
         tempHt = tempHt + muon.Pt();
         tempInvMassObj = tempInvMassObj + muon;
       }
-      electron.Clear();
+      
       for(unsigned int iEl = 0; iEl < nElectrons ; iEl++){
+        electron.Clear();
         electron.SetPtEtaPhiE(pt_electron[iEl], eta_electron[iEl], phi_electron[iEl], E_electron[iEl]);
         selectedElectrons.push_back(electron);
         selectedElectronsCharge.push_back(charge_electron[iEl]);
@@ -942,16 +1094,17 @@ int main(int argc, char* argv[])
         tempHt = tempHt + electron.Pt();
         tempInvMassObj = tempInvMassObj + electron;
       }
-      sort(selectedLeptons.begin(), selectedLeptons.end(), HighestPt());
+      if(!check_matching) sort(selectedLeptons.begin(), selectedLeptons.end(), HighestPt());
       MVA_TotalHt_lep = tempHt,
       MVA_TotalPt_lep = sqrt(tempPx*tempPx + tempPy*tempPx);
       MVA_TotalInvMass_lep = tempInvMassObj.M();
-      jet.Clear();
+      
       tempHt_jet = 0.;
       tempPy_jet = 0.;
       tempPx_jet = 0.;
       tempInvMassObj_jet.Clear();
       for(unsigned int iJet = 0; iJet < nJets ; iJet++){
+        jet.Clear();
         jet.SetPtEtaPhiE(pt_jet[iJet], eta_jet[iJet], phi_jet[iJet], E_jet[iJet]);
         selectedJets.push_back(jet);
         tempPx = tempPx + jet.Px();
@@ -1076,6 +1229,8 @@ int main(int argc, char* argv[])
       else if(isData) scaleFactor = 1.;
       if(ievt == 2) cout << "                ==> scaleFactor " << scaleFactor << endl;
       
+      
+      
       if (makePlots)
       {
         //cout << "ievt " << ievt << endl;
@@ -1084,18 +1239,21 @@ int main(int argc, char* argv[])
       }
       //cout << "zmass" << endl;
       if(Zboson.M() < 76 || Zboson.M() > 106) continue;
-
+      
       if (makePlots)
       {
         FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow", decayChannels,isData);
-
+        
       }
       
       if(selectednonCSVLJetID.size()>0 && makePlots){
         FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels,isData);
       }
-    
-     
+      
+      bool matcher = false;
+      if(check_matching) matcher = MatchingFunction(dataSetName, selectedLeptons, selectedMuons, selectedElectrons, selectedJets,makeMatchingPlots, debugmatching);
+      if(matcher && debugmatching) cout << " done with matching " << endl;
+      
       
       if(selectedJets.size() == 1 && selectedCSVLJetID.size() > 0){ Region = 0; nSelectedEntriesST++; } // ST region
       else if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0){ Region = 1; nSelectedEntriesTT++;} // ttbar region
@@ -1103,28 +1261,40 @@ int main(int argc, char* argv[])
       else {continue; }
       
       
-
+      
       
       
       if(Region == 0 ) nSelectedEntriesSTweighted += scaleFactor*Luminosity/EquilumiSF;
       if(Region == 1 ) nSelectedEntriesTTweighted += scaleFactor*Luminosity/EquilumiSF;
       if(Region == 2 ) nSelectedEntriesWZweighted += scaleFactor*Luminosity/EquilumiSF;
       
-      if(makeMVAtree){
+      if(isData && checktrigger  ){
+        myfile << evt_num << endl;
+        if(PassedTrigger)  myfiletrigged << evt_num << endl;
+        
+      }
+      MVA_EqLumi = EquilumiSF; 
+      if(makeMVAtree ){
         //cout << "ievt " << ievt << endl;
         MakeMVAvars(Region, scaleFactor);
+        
       }
-      
+     // cout << "region "<< Region << endl;
       /// Make plots
-      if (makePlots )
+      if (makeMVAPlots )
       {
-        if(makeMVAtree && Region == 0) FillMVAPlots(d,dataSetName, Region, "singletop", decayChannels);
-        //if(makeMVAtree && Region == 1) FillMVAPlots(d,dataSetName, Region, "toppair", decayChannels);
-       // if(makeMVAtree && Region == 2) FillMVAPlots(d,dataSetName, Region, "wzcontrol", decayChannels);
+        //if(Region == 0) FillMVAPlots(d,dataSetName, Region, "singletop", decayChannels);
+        //if(Region == 1) FillMVAPlots(d,dataSetName, Region, "toppair", decayChannels);
+        if(Region == 2) FillMVAPlots(d,dataSetName, Region, "wzcontrol", decayChannels);
       }
       
     } // events
     
+    
+    if(isData && checktrigger){
+      myfile.close();
+      myfiletrigged.close();
+    }
     if(makeMVAtree){
       firstevent = true;
       writeMVAtree();
@@ -1138,7 +1308,7 @@ int main(int argc, char* argv[])
     cout << "                nSelectedEntries TT region: " << nSelectedEntriesTT << " weighted " << nSelectedEntriesTTweighted << endl;
     cout << "                nSelectedEntries WZ region: " << nSelectedEntriesWZ  << " weighted " << nSelectedEntriesWZweighted << endl;
     cout << endl;
-    
+    if(check_matching) MatchingEfficiency();
   } // data
   
   
@@ -1151,9 +1321,13 @@ int main(int argc, char* argv[])
   ///*****************///
   
   string rootFileName ="NtuplePlots.root";
-  string place =pathOutputdate+"MSPlot/";
+  string place =pathOutputdate+"/MSPlot/";
+  string placeTH1F = pathOutputdate+"/TH1F/";
+  string placeTH2F = pathOutputdate+"/TH2F/";
   vector <string> vlabel_chan = {"uuu", "uue", "eeu", "eee"};
   mkdir(place.c_str(),0777);
+  mkdir(placeTH1F.c_str(),0777);
+  mkdir(placeTH2F.c_str(),0777);
   
   cout << " - Recreate output file ..." << endl;
   TFile *fout = new TFile ((pathOutputdate+rootFileName).c_str(), "RECREATE");
@@ -1164,7 +1338,7 @@ int main(int argc, char* argv[])
   
   for (map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
   {
-    //cout << "MSPlot: " << it->first << endl;
+    cout << "MSPlot: " << it->first << endl;
     MultiSamplePlot *temp = it->second;
     string name = it->first;
     if(!datafound) temp->setDataLumi(Luminosity);
@@ -1174,14 +1348,17 @@ int main(int argc, char* argv[])
     if(name.find("uue")!=std::string::npos) temp->setChannel(true, "uue");
     if(name.find("uuu")!=std::string::npos) temp->setChannel(true, "uuu");
     if(name.find("Decay")!=std::string::npos) temp->setBins(vlabel_chan);
-    temp->Draw(name, 1, false, false, false, 5);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
-    temp->Write(fout, name, true, pathOutputdate+"MSPlot", "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
+    temp->Draw(name, 1, false, false, false, 2);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
+    cout << "writing to " << pathOutputdate+"MSPlot" << endl;
+    cout << "plot " << name << endl;
+    cout << "temp " << temp << endl;
+    temp->Write(fout, name, true, (pathOutputdate+"/MSPlot").c_str(), "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
   }
   
-  // 1D
+
   TDirectory* th1dir = fout->mkdir("1D_histograms");
   th1dir->cd();
-  gStyle->SetOptStat(1111);
+  gStyle->SetOptStat(1110);
   for (std::map<std::string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
   {
     TH1F *temp = it->second;
@@ -1191,7 +1368,7 @@ int main(int argc, char* argv[])
     temp->SetEntries(temp->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
     temp->Write();
     TCanvas* tempCanvas = TCanvasCreator(temp, it->first);
-    tempCanvas->SaveAs( (pathOutputdate+it->first+".png").c_str() );
+    tempCanvas->SaveAs( (placeTH1F+it->first+".png").c_str() );
   }
   
   // 2D
@@ -1203,7 +1380,7 @@ int main(int argc, char* argv[])
     TH2F *temp = it->second;
     temp->Write();
     TCanvas* tempCanvas = TCanvasCreator(temp, it->first, "colz");
-    tempCanvas->SaveAs( (pathOutputdate+it->first+".png").c_str() );
+    tempCanvas->SaveAs( (placeTH2F+it->first+".png").c_str() );
   }
   
   fout->Close();
@@ -1238,371 +1415,142 @@ int main(int argc, char* argv[])
   
 }  // end main
 
-
-
-void LeptonAssigner(vector<TLorentzVector> electrons, vector<TLorentzVector> muons, std::vector<int> electronsCharge,std::vector<int> muonsCharge){
-  clock_t start_sub =  clock();
-  
-  //  cout << " in assigner " << endl;
- 
-  Assigned = false;
-  if(electronsCharge.size() != electrons.size() || muons.size() != muonsCharge.size()) cout << "ERROR vectors not filled properly" << endl;
-  if(electronsCharge.size() + muonsCharge.size() != 3){
-    cout << " WARNING: not 3 leptons " << endl;
-    cout << "muons " << muonsCharge.size() << " electrons " << electronsCharge.size() << endl;
-  }
-
-  ZelecIndiceF_0 = -999;
-  ZelecIndiceF_1 = -999;
-  ZmuIndiceF_0 = -999;
-  ZmuIndiceF_1 = -999;
-  WelecIndiceF = -999;
-  WmuIndiceF = -999;
-  //cout << " in 3 lep " << endl;
-  
-  
-  bool can01 = false;
-  bool can02= false;
-  bool can12 = false;
-  
-  double mass01 = 9999.;
-  double mass02 = 9999.;
-  double mass12 = 9999.;
-  
-  if(electronsCharge.size() == 2){
-    //cout << "2 electr " << electronsCharge[0] << " " << electronsCharge[1] << endl;
-    if(electronsCharge[0] != electronsCharge[1]){
-      Assigned = true;
-      ZelecIndiceF_0 = 0;
-      ZelecIndiceF_1 = 1;
-      WmuIndiceF = 0;
-    }
-    else Assigned = false;
-  }
-  else if(muonsCharge.size() == 2){
-   // cout << "2 muonsCharge" << endl;
-    if(muonsCharge[0] != muonsCharge[1]){
-      Assigned = true;
-      
-      ZmuIndiceF_0 = 0;
-      ZmuIndiceF_1 = 1;
-      WelecIndiceF = 0;
-    }
-    else Assigned = false;
-  }
-  else if(electronsCharge.size() ==3){
-   // cout << " 3 electronsCharge " << endl;
-    can01 = false;
-    can02= false;
-    can12 = false;
-    if(electronsCharge[0] != electronsCharge[1]) can01 = true;
-    if(electronsCharge[0] != electronsCharge[2]) can02 = true;
-    if(electronsCharge[2] != electronsCharge[1]) can12 = true;
-    
-    mass01 = 9999.;
-    mass02 = 9999.;
-    mass12 = 9999.;
-    
-    
-    temp0.SetPxPyPzE(electrons[0].Px(), electrons[0].Py(),electrons[0].Pz(),electrons[0].Energy());
-    temp1.SetPxPyPzE(electrons[1].Px(), electrons[1].Py(),electrons[1].Pz(),electrons[1].Energy());
-    temp2.SetPxPyPzE(electrons[2].Px(), electrons[2].Py(),electrons[2].Pz(),electrons[2].Energy());
-    
-    if(can01) mass01 = fabs(91.1-(temp1+temp0).M());
-    if(can02) mass02 = fabs(91.1-(temp2+temp0).M());
-    if(can12) mass12 = fabs(91.1-(temp1+temp2).M());
-    
-    if(mass01 <= mass02 && mass01 <= mass12 && can01){
-       Assigned = true;
-      ZelecIndiceF_0 = 0;ZelecIndiceF_1 = 1;WelecIndiceF = 2;
-    }
-    
-    else if(mass02 <= mass12 && mass02 < mass01 && can02){
-        Assigned = true;
-      ZelecIndiceF_0 = 0; ZelecIndiceF_1=2;WelecIndiceF = 1;
-    }
-    else if(mass12 < mass01 && mass12 < mass02 && can12){
-      Assigned = true;
-      ZelecIndiceF_0 = 1; ZelecIndiceF_1=2;WelecIndiceF = 0;
-    }
-    else Assigned = false;
-  }
-  else if(muonsCharge.size() == 3){
-    can01 = false;
-    can02= false;
-    can12 = false;
-    
-    if(muonsCharge[0] != muonsCharge[1]) can01 = true;
-    if(muonsCharge[0] != muonsCharge[2]) can02 = true;
-    if(muonsCharge[2] != muonsCharge[1]) can12 = true;
-    
-    mass01 = 9999.;
-    mass02 = 9999.;
-    mass12 = 9999.;
-
-    temp0.SetPxPyPzE(muons[0].Px(), muons[0].Py(),muons[0].Pz(),muons[0].Energy());
-    temp1.SetPxPyPzE(muons[1].Px(), muons[1].Py(),muons[1].Pz(),muons[1].Energy());
-    temp2.SetPxPyPzE(muons[2].Px(), muons[2].Py(),muons[2].Pz(),muons[2].Energy());
-    
-    if(can01) mass01 = fabs(91.1-(temp1+temp0).M());
-    if(can02) mass02 = fabs(91.1-(temp2+temp0).M());
-    if(can12) mass12 = fabs(91.1-(temp1+temp2).M());
-    
-    if(mass01 <= mass02 && mass01 <= mass12 && can01){
-       Assigned = true;
-      ZmuIndiceF_0 = 0; ZmuIndiceF_1=1; WmuIndiceF = 2;
-    }
-    else if(mass02 <= mass12 && mass02 < mass01 && can02){
-       Assigned = true;
-      ZmuIndiceF_0 = 0; ZmuIndiceF_1=2;WmuIndiceF = 1;
-    }
-    else if(mass12 < mass01 && mass12 < mass02 && can12){
-       Assigned = true;
-      ZmuIndiceF_0 = 1; ZmuIndiceF_1=2;WmuIndiceF = 0;
-    }
-    else Assigned = false;
-  }
-
-  
-  
-  double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
-  if(firstevent && verbose > 3){
-    cout << "It took us " << time_sub << " s to run the reconstruction" << endl;
-    if ( time_sub >= 60 )
-    {
-      int mins = time_sub/60;
-      float secs = time_sub - mins*60;
-      
-      if (mins >= 60 )
-      {
-        int hours = mins/60;
-        mins = mins - hours*60;
-        cout << "(This corresponds to " << hours << " hours, " << mins << " min and " << secs << " s)" << endl;
-      }
-      else
-        cout << "(This corresponds to " << mins << " min and " << secs << " s)" << endl;
-    }
-  }
-
-  
-};
-
-
-
-
-
-void ReconstructObjects(vector<TLorentzVector> Muons,vector<TLorentzVector> selectedElectrons, vector<TLorentzVector> selectedJets,int Region){
-  clock_t start_sub =  clock();
-  
-  
-  
-  
-  //cout << "SMjetIndex "<< SMjetIndex << " selectedJets.size() " << selectedJets.size() << endl;
-  SMjetIndex = SMjetCalculator(selectedJets,verbose);
-  if(SMjetIndex > selectedJets.size())  cout << "WARNING SMjetIndex "<< SMjetIndex << endl;
-  //SMbjet.SetPtEtaPhiE(selectedJets[SMjetIndex].Pt(),selectedJets[SMjetIndex].Eta(), selectedJets[SMjetIndex].Phi(), selectedJets[SMjetIndex].Energy());
-  SMbjet.SetPxPyPzE(selectedJets[SMjetIndex].Px(),selectedJets[SMjetIndex].Py(), selectedJets[SMjetIndex].Pz(), selectedJets[SMjetIndex].Energy());
- // cout << "SMjetIndex new"<< SMjetIndex << endl;
-  
-  
-  
-  if(WmuIndiceF != -999 && WelecIndiceF != -999) cout << "ERROR: 2 W leptons found" << endl;
-  else if(WmuIndiceF!=-999) Wlep.SetPtEtaPhiE(selectedMuons[WmuIndiceF].Pt(),selectedMuons[WmuIndiceF].Eta(), selectedMuons[WmuIndiceF].Phi(), selectedMuons[WmuIndiceF].Energy());
-  else if(WelecIndiceF!=-999)Wlep.SetPtEtaPhiE(selectedElectrons[WelecIndiceF].Pt(), selectedElectrons[WelecIndiceF].Eta(), selectedElectrons[WelecIndiceF].Phi(), selectedElectrons[WelecIndiceF].Energy());
-  else cout << " ERROR: Wlep not found" << endl;
-  
-  metTLVbf.SetPtEtaPhiE(met_Pt, met_Eta, met_Phi, TMath::Sqrt(met_Px*met_Px+met_Py*met_Py));
-  metTLV = MetzCalculator(Wlep, metTLVbf);
-  
-  //cout << "met" << endl;
-  Wboson = metTLV + Wlep;
-  SMtop = metTLV + Wlep  + SMbjet;
-  
-  //cout << "Wboson mass " << Wboson.M() << " SMtop " << SMtop.M() << " mlb " << (Wlep+SMbjet).M() << endl;
-  mWT = TMath::Sqrt((Wlep.Pt() + met_Pt)*(Wlep.Pt() +met_Pt)-(Wlep.Px() + met_Px)*(Wlep.Px() + met_Px) - (Wlep.Py() + met_Py)* (Wlep.Py() +met_Py));
-  double phis = Wlep.Phi() - met_Phi;
-  double cosphis = TMath::Cos(phis);
-  mWT2 = TMath::Sqrt(2*Wlep.Pt() * met_Pt*(1-cosphis));
-
-
-  if(ZmuIndiceF_0 != -999 && ZmuIndiceF_1 != -999 && ZelecIndiceF_0 != -999 && ZelecIndiceF_1 != -999 ) cout << "ERROR: 2 Zbosons found " << endl;
-  else if(ZmuIndiceF_0 != -999 && ZmuIndiceF_1 != -999 ) Zboson = selectedMuons[ZmuIndiceF_0] + selectedMuons[ZmuIndiceF_1];
-  else if(ZelecIndiceF_0 != -999 && ZelecIndiceF_1 != -999 ) Zboson = selectedElectrons[ZelecIndiceF_0] + selectedElectrons[ZelecIndiceF_1];
-  else cout << "ERROR: Zboson not found " << endl;
-  
-  if(selectedJets.size()>1 )
-  {
-    //cout << "cjet" << endl;
-    cjetindex = FCNCjetCalculator(selectedJets,Zboson ,SMjetIndex, 3);
-    cjetindex_CvsLtagger = FCNCjetCalculatorCvsLTagger(selectedJets,SMjetIndex, 3); //TO FIX
-    cjetindex_CvsBtagger = FCNCjetCalculatorCvsBTagger(selectedJets,SMjetIndex, 3); //TO FIX
-    cjetindex_Cloose = FCNCjetCalculatorCwp(selectedJets, selectedCharmLJetsindex,  SMjetIndex, 3);
-    cjetindex_Cmedium = FCNCjetCalculatorCwp(selectedJets, selectedCharmMJetsindex,  SMjetIndex, 3);
-    cjetindex_Ctight = FCNCjetCalculatorCwp(selectedJets, selectedCharmTJetsindex,  SMjetIndex, 3);
-    
-    if(cjetindex > selectedJets.size() || cjetindex == SMjetIndex) cout << "Warning wrong cjet index " << endl;
-    LightJet.SetPxPyPzE(selectedJets[cjetindex].Px(),selectedJets[cjetindex].Py(),selectedJets[cjetindex].Pz(),selectedJets[cjetindex].Energy());
-    
-    //cout << "fcnctop" << endl;
-    FCNCtop = LightJet + Zboson;
-    
-  }
-  //cout << "end reco" << endl;
-  double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
-  if(firstevent && verbose > 3){
-    cout << "It took us " << time_sub << " s to run the reconstruction" << endl;
-    if ( time_sub >= 60 )
-    {
-      int mins = time_sub/60;
-      float secs = time_sub - mins*60;
-      
-      if (mins >= 60 )
-      {
-        int hours = mins/60;
-        mins = mins - hours*60;
-        cout << "(This corresponds to " << hours << " hours, " << mins << " min and " << secs << " s)" << endl;
-      }
-      else
-        cout << "(This corresponds to " << mins << " min and " << secs << " s)" << endl;
-    }
-  }
-  
-};
-
-void MakeMVAvars(int Region, double scaleFactor){
+///////////////////////////////////// MVA INPUT /////////////////////////////////////////
+void MakeMVAvars(int Region, Double_t scaleFactor){
   clock_t start_sub = clock();
-  if(true){
-    MVA_channel = (float) channelInt;
-    MVA_weight = (float) scaleFactor;
-    MVA_region = (float) Region;
+
+    MVA_channel = static_cast<float>( channelInt);
+    MVA_weight = static_cast<float>( scaleFactor * Luminosity /EquilumiSF );
+    MVA_region = static_cast<float>( Region);
     
-    MVA_lepton0_pt = (float) selectedLeptons[0].Pt();
-    MVA_lepton1_pt= (float) selectedLeptons[1].Pt();
-    MVA_lepton2_pt= (float) selectedLeptons[2].Pt();
+    MVA_lepton0_pt = static_cast<float>( selectedLeptons[0].Pt());
+ // cout << "reconstructing " << MVA_lepton0_pt << endl;
+    MVA_lepton1_pt= static_cast<float>( selectedLeptons[1].Pt());
+    MVA_lepton2_pt= static_cast<float>( selectedLeptons[2].Pt());
     
-    MVA_lepton0_eta= (float) selectedLeptons[0].Eta();
-    MVA_lepton1_eta= (float) selectedLeptons[1].Eta();
-    MVA_lepton2_eta = (float) selectedLeptons[2].Eta();
-    MVA_lepton0_phi = (float) selectedLeptons[0].Phi();
-    MVA_lepton1_phi = (float) selectedLeptons[1].Phi();
-    MVA_lepton2_phi = (float) selectedLeptons[2].Phi();
+    MVA_lepton0_eta= static_cast<float>( selectedLeptons[0].Eta());
+    MVA_lepton1_eta= static_cast<float>( selectedLeptons[1].Eta());
+    MVA_lepton2_eta = static_cast<float>( selectedLeptons[2].Eta());
+    MVA_lepton0_phi = static_cast<float>( selectedLeptons[0].Phi());
+    MVA_lepton1_phi = static_cast<float>( selectedLeptons[1].Phi());
+    MVA_lepton2_phi = static_cast<float>( selectedLeptons[2].Phi());
     
-    MVA_nMuons = (float) selectedMuons.size();
-    MVA_nElectrons = (float) selectedElectrons.size();
-    // cout << "leptons done" << endl;
+    MVA_nMuons = static_cast<float>( selectedMuons.size());
+    MVA_nElectrons = static_cast<float>( selectedElectrons.size());
+    // cout << "leptons done" << endl);
     if(selectedJets.size()>0){
-      MVA_jet0_pt = (float) selectedJets[0].Pt();
-      MVA_jet0_eta = (float) selectedJets[0].Eta();
-      MVA_jet0_phi = (float) selectedJets[0].Phi();
+      MVA_jet0_pt = static_cast<float>( selectedJets[0].Pt());
+      MVA_jet0_eta = static_cast<float>( selectedJets[0].Eta());
+      MVA_jet0_phi = static_cast<float>( selectedJets[0].Phi());
     }
     if(selectedJets.size()>1){
-      MVA_jet1_pt = (float) selectedJets[1].Pt();
-      MVA_jet1_eta = (float) selectedJets[1].Eta();
-      MVA_jet1_phi = (float) selectedJets[1].Phi();
+      MVA_jet1_pt = static_cast<float>( selectedJets[1].Pt());
+      MVA_jet1_eta = static_cast<float>( selectedJets[1].Eta());
+      MVA_jet1_phi = static_cast<float>( selectedJets[1].Phi());
     }
     
-    MVA_nJets = (float) selectedJets.size();
-    MVA_NJets_CSVv2L = (float) selectedCSVLJetID.size();
-    MVA_NJets_CSVv2M= (float) selectedCSVMJetID.size();
-    MVA_NJets_CSVv2T= (float) selectedCSVTJetID.size();
-    //cout << "jets done" << endl;
+    MVA_nJets = static_cast<float>( selectedJets.size());
+    MVA_NJets_CSVv2L = static_cast<float>( selectedCSVLJetID.size());
+    MVA_NJets_CSVv2M= static_cast<float>( selectedCSVMJetID.size());
+    MVA_NJets_CSVv2T= static_cast<float>( selectedCSVTJetID.size());
+    //cout << "jets done" << endl);
     
     // SM side
-    MVA_Wlep_pt = (float) Wlep.Pt();
-    MVA_Wlep_eta = (float) Wlep.Eta();
-    MVA_Wlep_phi = (float) Wlep.Phi();
-    MVA_SMbjet_pt = (float) selectedJets[SMjetIndex].Pt();
-    MVA_SMbjet_eta = (float) selectedJets[SMjetIndex].Eta();
-    MVA_SMbjet_phi = (float) selectedJets[SMjetIndex].Phi();
+    MVA_Wlep_pt = static_cast<float>( Wlep.Pt());
+    MVA_Wlep_eta = static_cast<float>( Wlep.Eta());
+    MVA_Wlep_phi = static_cast<float>( Wlep.Phi());
+    MVA_SMbjet_pt = static_cast<float>( selectedJets[SMjetIndex].Pt());
+    MVA_SMbjet_eta = static_cast<float>( selectedJets[SMjetIndex].Eta());
+    MVA_SMbjet_phi = static_cast<float>( selectedJets[SMjetIndex].Phi());
     
-    MVA_Wboson_pt = (float) Wboson.Pt();
-    MVA_Wboson_eta = (float) Wboson.Eta();
-    MVA_Wboson_phi = (float) Wboson.Phi();
-    MVA_met = (float) met_Pt;
-    MVA_SMtop_pt = (float) SMtop.Pt();
-    MVA_SMtop_eta = (float) SMtop.Eta();
-    MVA_SMtop_phi = (float) SMtop.Phi();
+    MVA_Wboson_pt = static_cast<float>( Wboson.Pt());
+    MVA_Wboson_eta = static_cast<float>( Wboson.Eta());
+    MVA_Wboson_phi = static_cast<float>( Wboson.Phi());
+    MVA_met = static_cast<float>( met_Pt);
+    MVA_SMtop_pt = static_cast<float>( SMtop.Pt());
+    MVA_SMtop_eta = static_cast<float>( SMtop.Eta());
+    MVA_SMtop_phi = static_cast<float>( SMtop.Phi());
     
-    //cout << "SM side done" << endl;
+    //cout << "SM side done" << endl);
     
     // FCNC side
-    MVA_Zboson_pt = (float) Zboson.Pt();
-    MVA_Zboson_eta = (float) Zboson.Eta();
-    MVA_Zboson_phi = (float) Zboson.Phi();
+    MVA_Zboson_pt = static_cast<float>( Zboson.Pt());
+    MVA_Zboson_eta = static_cast<float>( Zboson.Eta());
+    MVA_Zboson_phi = static_cast<float>( Zboson.Phi());
     
     if(Region == 1) // ttbar region
     {
-      MVA_LightJet_pt = (float) LightJet.Pt();
-      MVA_LightJet_eta = (float) LightJet.Eta();
-      MVA_LightJet_phi = (float) LightJet.Phi();
+      MVA_LightJet_pt = static_cast<float>( LightJet.Pt());
+      MVA_LightJet_eta = static_cast<float>( LightJet.Eta());
+      MVA_LightJet_phi = static_cast<float>( LightJet.Phi());
       
-      MVA_FCNCtop_pt = (float) FCNCtop.Pt();
-      MVA_FCNCtop_eta = (float) FCNCtop.Eta();
-      MVA_FCNCtop_phi =(float) FCNCtop.Phi();
+      MVA_FCNCtop_pt = static_cast<float>( FCNCtop.Pt());
+      MVA_FCNCtop_eta = static_cast<float>( FCNCtop.Eta());
+      MVA_FCNCtop_phi =static_cast<float>( FCNCtop.Phi());
       
-      MVA_nJets_CharmL = (float) selectedCharmLJetsindex.size();
-      MVA_nJets_CharmM = (float) selectedCharmMJetsindex.size();
-      MVA_nJets_CharmT = (float) selectedCharmTJetsindex.size();
+      MVA_nJets_CharmL = static_cast<float>( selectedCharmLJetsindex.size());
+      MVA_nJets_CharmM = static_cast<float>( selectedCharmMJetsindex.size());
+      MVA_nJets_CharmT = static_cast<float>( selectedCharmTJetsindex.size());
     }
     
-    // cout << "FCNC side " << endl;
+    // cout << "FCNC side " << endl);
     
     //SM kinematics
     
-    MVA_SMtop_M = SMtop.M();
-    MVA_mlb =(SMbjet+Wlep).M();
-    MVA_Wboson_M = Wboson.M();
+    MVA_SMtop_M = static_cast<float>(SMtop.M());
+    MVA_mlb = static_cast<float>((SMbjet+Wlep).M());
+    MVA_Wboson_M = static_cast<float>(Wboson.M());
     
-    MVA_dRWlepb =Wlep.DeltaR(SMbjet);
+    MVA_dRWlepb = static_cast<float>(Wlep.DeltaR(SMbjet));
     
-    MVA_dPhiWlepb =Wlep.DeltaPhi(SMbjet);
+    MVA_dPhiWlepb = static_cast<float>(Wlep.DeltaPhi(SMbjet));
     
-    if(WmuIndiceF != -999) MVA_Wlep_Charge = selectedMuonsCharge[WmuIndiceF];
-    else if(WelecIndiceF != -999) MVA_Wlep_Charge = selectedElectronsCharge[WelecIndiceF];
-    MVA_charge_asym = MVA_Wlep_Charge*fabs(Wlep.Eta());
-    if(selectedJets.size()>1) MVA_bdiscCSVv2_jet_1 = bdisc_jet[1];
-    if(selectedJets.size()>0) MVA_bdiscCSVv2_jet_0 =bdisc_jet[0];
-    MVA_CosTheta = (CosThetaCalculation(Wlep, metTLV, SMbjet, false)).first;;
-    MVA_CosTheta_alt = (CosThetaCalculation(Wlep, metTLV, SMbjet,false)).second;
+    if(WmuIndiceF != -999) MVA_Wlep_Charge = static_cast<float>( selectedMuonsCharge[WmuIndiceF]);
+    else if(WelecIndiceF != -999) MVA_Wlep_Charge = static_cast<float>( selectedElectronsCharge[WelecIndiceF]);
+    MVA_charge_asym = static_cast<float>( MVA_Wlep_Charge*fabs(Wlep.Eta()));
+    if(selectedJets.size()>1) MVA_bdiscCSVv2_jet_1 = static_cast<float>( bdisc_jet[1]);
+    if(selectedJets.size()>0) MVA_bdiscCSVv2_jet_0 = static_cast<float>(bdisc_jet[0]);
+    MVA_CosTheta = static_cast<float>( (CosThetaCalculation(Wlep, metTLV, SMbjet, false)).first);
+    MVA_CosTheta_alt = static_cast<float>( (CosThetaCalculation(Wlep, metTLV, SMbjet,false)).second);
     
-    //cout << "sm kin" << endl;
+    //cout << "sm kin" << endl);
     
     // FCNC kinematics
-    if(Region == 1)   MVA_FCNCtop_M = FCNCtop.M();
-    MVA_Zboson_M = Zboson.M(); // TO FIX
-    //cout << "Zboson mass " << Zboson_M << endl;
+    if(Region == 1)   MVA_FCNCtop_M = static_cast<float>( FCNCtop.M());
+    MVA_Zboson_M = static_cast<float>( Zboson.M());
+    //cout << "Zboson mass " << Zboson_M << endl);
     
-    if(Region == 1) MVA_dRZc = Zboson.DeltaR(LightJet);
-    if(Region == 1) MVA_dPhiZc = Zboson.DeltaPhi(LightJet);
+    if(Region == 1) MVA_dRZc = static_cast<float>( Zboson.DeltaR(LightJet));
+    if(Region == 1) MVA_dPhiZc = static_cast<float>( Zboson.DeltaPhi(LightJet));
     
-    if(selectedJets.size()>0) MVA_cdiscCvsB_jet_0 = cdiscCvsB_jet[0];
-    if(selectedJets.size()>0) MVA_cdiscCvsL_jet_0 = cdiscCvsL_jet[0];
-    if(selectedJets.size()>1) MVA_cdiscCvsB_jet_1 = cdiscCvsB_jet[1];
-    if(selectedJets.size()>1)  MVA_cdiscCvsL_jet_1 = cdiscCvsL_jet[1];
+    if(selectedJets.size()>0) MVA_cdiscCvsB_jet_0 = static_cast<float>( cdiscCvsB_jet[0]);
+    if(selectedJets.size()>0) MVA_cdiscCvsL_jet_0 = static_cast<float>( cdiscCvsL_jet[0]);
+    if(selectedJets.size()>1) MVA_cdiscCvsB_jet_1 = static_cast<float>( cdiscCvsB_jet[1]);
+    if(selectedJets.size()>1)  MVA_cdiscCvsL_jet_1 = static_cast<float>( cdiscCvsL_jet[1]);
     
-    //cout << "fcnc kin " << endl;
+    //cout << "fcnc kin " << endl);
     
     // interplay
-    if(Region == 1) MVA_dRSMFCNCtop = SMtop.DeltaR(FCNCtop);
-    MVA_dRZb = Zboson.DeltaR(SMbjet);
-    if(Region == 1) MVA_dRWlepc = Wlep.DeltaR(LightJet);
-    MVA_dRZWlep = Zboson.DeltaR(Wlep);
-    MVA_dRZSMtop = Zboson.DeltaR(SMtop);
-    MVA_dPhiZMET = Zboson.DeltaPhi(metTLV);
+    if(Region == 1) MVA_dRSMFCNCtop = static_cast<float>( SMtop.DeltaR(FCNCtop));
+    MVA_dRZb = static_cast<float>( Zboson.DeltaR(SMbjet));
+    if(Region == 1) MVA_dRWlepc = static_cast<float>( Wlep.DeltaR(LightJet));
+    MVA_dRZWlep = static_cast<float>( Zboson.DeltaR(Wlep));
+    MVA_dRZSMtop = static_cast<float>( Zboson.DeltaR(SMtop));
+    MVA_dPhiZMET = static_cast<float>( Zboson.DeltaPhi(metTLV));
     
-    if(Region == 1) MVA_dPhiSMFCNCtop = SMtop.DeltaPhi(FCNCtop);
-    MVA_dPhiZb = Zboson.DeltaPhi(SMbjet);
-    if(Region == 1) MVA_dPhiWlepc = Wlep.DeltaPhi(LightJet);
-    MVA_dPhiZWlep = Zboson.DeltaPhi(Wlep);
-    MVA_dPhiZSMtop = Zboson.DeltaPhi(SMtop);
-    MVA_m3l = (selectedLeptons[0]+selectedLeptons[1]+selectedLeptons[2]).M();
-
-    
+    if(Region == 1) MVA_dPhiSMFCNCtop = static_cast<float>( SMtop.DeltaPhi(FCNCtop));
+    MVA_dPhiZb = static_cast<float>( Zboson.DeltaPhi(SMbjet));
+    if(Region == 1) MVA_dPhiWlepc = static_cast<float>( Wlep.DeltaPhi(LightJet));
+    MVA_dPhiZWlep = static_cast<float>( Zboson.DeltaPhi(Wlep));
+    MVA_dPhiZSMtop = static_cast<float>( Zboson.DeltaPhi(SMtop));
+    MVA_m3l = static_cast<float>( (selectedLeptons[0]+selectedLeptons[1]+selectedLeptons[2]).M());
     
     
-  //cout << "interplay done " << endl;
-  }
-  MVA_mWt = mWT2;
+    
+    
+    //cout << "interplay done " << endl);
+  
+  MVA_mWt = static_cast<float>(mWT2);
   
   mvatree->Fill();
   
@@ -1625,10 +1573,7 @@ void MakeMVAvars(int Region, double scaleFactor){
     }
   }
 }
-
-
-void createMVAtree(string dataSetName)
-{
+void createMVAtree(string dataSetName){
   clock_t start_sub = clock();
   tupfile->cd();
   //cout << "does tree exist? " << !tupfile->GetListOfKeys()->Contains("mvatree") <<endl;
@@ -1639,7 +1584,7 @@ void createMVAtree(string dataSetName)
   mvatree->Branch("MVA_channel", &MVA_channel , "MVA_channel/F");
   mvatree->Branch("MVA_weight", &MVA_weight, "MVA_weight/F");
   mvatree->Branch("MVA_region", &MVA_region, "MVA_region/F");
-  
+  mvatree->Branch("MVA_EqLumi",&MVA_EqLumi,"MVA_EqLumi/D");
   
   // pt
   mvatree->Branch("MVA_lepton0_pt", &MVA_lepton0_pt,"MVA_lepton0_pt/F");
@@ -1785,8 +1730,7 @@ void createMVAtree(string dataSetName)
   }
   
 }
-void writeMVAtree()
-{
+void writeMVAtree(){
   clock_t start_sub = clock();
   tupfile->cd();
   mvatree->Write();
@@ -1812,7 +1756,466 @@ void writeMVAtree()
   }
 }
 
-std::pair <Float_t,Float_t> CosThetaCalculation(TLorentzVector lepton, TLorentzVector Neutrino, TLorentzVector leptonicBJet, bool geninfo){
+///////////////////////////////////// EventReco /////////////////////////////////////////
+void LeptonAssigner(vector<TLorentzVector> electrons, vector<TLorentzVector> muons, std::vector<int> electronsCharge,std::vector<int> muonsCharge){
+  clock_t start_sub =  clock();
+  
+  //  cout << " in assigner " << endl;
+  
+  Assigned = false;
+  if(electronsCharge.size() != electrons.size() || muons.size() != muonsCharge.size()) cout << "ERROR vectors not filled properly" << endl;
+  if(electronsCharge.size() + muonsCharge.size() != 3){
+    cout << " WARNING: not 3 leptons " << endl;
+    cout << "muons " << muonsCharge.size() << " electrons " << electronsCharge.size() << endl;
+  }
+  
+  ZelecIndiceF_0 = -999;
+  ZelecIndiceF_1 = -999;
+  ZmuIndiceF_0 = -999;
+  ZmuIndiceF_1 = -999;
+  WelecIndiceF = -999;
+  WmuIndiceF = -999;
+  //cout << " in 3 lep " << endl;
+  
+  
+  bool can01 = false;
+  bool can02= false;
+  bool can12 = false;
+  
+  Double_t mass01 = 9999.;
+  Double_t mass02 = 9999.;
+  Double_t mass12 = 9999.;
+  
+  if(electronsCharge.size() == 2){
+    //cout << "2 electr " << electronsCharge[0] << " " << electronsCharge[1] << endl;
+    if(electronsCharge[0] != electronsCharge[1]){
+      Assigned = true;
+      ZelecIndiceF_0 = 0;
+      ZelecIndiceF_1 = 1;
+      WmuIndiceF = 0;
+    }
+    else Assigned = false;
+  }
+  else if(muonsCharge.size() == 2){
+    // cout << "2 muonsCharge" << endl;
+    if(muonsCharge[0] != muonsCharge[1]){
+      Assigned = true;
+      
+      ZmuIndiceF_0 = 0;
+      ZmuIndiceF_1 = 1;
+      WelecIndiceF = 0;
+    }
+    else Assigned = false;
+  }
+  else if(electronsCharge.size() ==3){
+    // cout << " 3 electronsCharge " << endl;
+    can01 = false;
+    can02= false;
+    can12 = false;
+    if(electronsCharge[0] != electronsCharge[1]) can01 = true;
+    if(electronsCharge[0] != electronsCharge[2]) can02 = true;
+    if(electronsCharge[2] != electronsCharge[1]) can12 = true;
+    
+    mass01 = 9999.;
+    mass02 = 9999.;
+    mass12 = 9999.;
+    
+    
+    temp0.SetPxPyPzE(electrons[0].Px(), electrons[0].Py(),electrons[0].Pz(),electrons[0].Energy());
+    temp1.SetPxPyPzE(electrons[1].Px(), electrons[1].Py(),electrons[1].Pz(),electrons[1].Energy());
+    temp2.SetPxPyPzE(electrons[2].Px(), electrons[2].Py(),electrons[2].Pz(),electrons[2].Energy());
+    
+    if(can01) mass01 = fabs(91.1-(temp1+temp0).M());
+    if(can02) mass02 = fabs(91.1-(temp2+temp0).M());
+    if(can12) mass12 = fabs(91.1-(temp1+temp2).M());
+    
+    if(mass01 <= mass02 && mass01 <= mass12 && can01){
+      Assigned = true;
+      ZelecIndiceF_0 = 0;ZelecIndiceF_1 = 1;WelecIndiceF = 2;
+    }
+    
+    else if(mass02 <= mass12 && mass02 < mass01 && can02){
+      Assigned = true;
+      ZelecIndiceF_0 = 0; ZelecIndiceF_1=2;WelecIndiceF = 1;
+    }
+    else if(mass12 <= mass01 && mass12 <= mass02 && can12){
+      Assigned = true;
+      ZelecIndiceF_0 = 1; ZelecIndiceF_1=2;WelecIndiceF = 0;
+    }
+    else Assigned = false;
+  }
+  else if(muonsCharge.size() == 3){
+    can01 = false;
+    can02= false;
+    can12 = false;
+    
+    if(muonsCharge[0] != muonsCharge[1]) can01 = true;
+    if(muonsCharge[0] != muonsCharge[2]) can02 = true;
+    if(muonsCharge[2] != muonsCharge[1]) can12 = true;
+    
+    mass01 = 9999.;
+    mass02 = 9999.;
+    mass12 = 9999.;
+    
+    temp0.SetPxPyPzE(muons[0].Px(), muons[0].Py(),muons[0].Pz(),muons[0].Energy());
+    temp1.SetPxPyPzE(muons[1].Px(), muons[1].Py(),muons[1].Pz(),muons[1].Energy());
+    temp2.SetPxPyPzE(muons[2].Px(), muons[2].Py(),muons[2].Pz(),muons[2].Energy());
+    
+    if(can01) mass01 = fabs(91.1-(temp1+temp0).M());
+    if(can02) mass02 = fabs(91.1-(temp2+temp0).M());
+    if(can12) mass12 = fabs(91.1-(temp1+temp2).M());
+    
+    if(mass01 <= mass02 && mass01 <= mass12 && can01){
+      Assigned = true;
+      ZmuIndiceF_0 = 0; ZmuIndiceF_1=1; WmuIndiceF = 2;
+    }
+    else if(mass02 <= mass12 && mass02 <= mass01 && can02){
+      Assigned = true;
+      ZmuIndiceF_0 = 0; ZmuIndiceF_1=2;WmuIndiceF = 1;
+    }
+    else if(mass12 <= mass01 && mass12 <= mass02 && can12){
+      Assigned = true;
+      ZmuIndiceF_0 = 1; ZmuIndiceF_1=2;WmuIndiceF = 0;
+    }
+    else Assigned = false;
+  }
+  
+  
+  
+  double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
+  if(firstevent && verbose > 3){
+    cout << "It took us " << time_sub << " s to run the reconstruction" << endl;
+    if ( time_sub >= 60 )
+    {
+      int mins = time_sub/60;
+      float secs = time_sub - mins*60;
+      
+      if (mins >= 60 )
+      {
+        int hours = mins/60;
+        mins = mins - hours*60;
+        cout << "(This corresponds to " << hours << " hours, " << mins << " min and " << secs << " s)" << endl;
+      }
+      else
+        cout << "(This corresponds to " << mins << " min and " << secs << " s)" << endl;
+    }
+  }
+  
+  
+};
+void ReconstructObjects(vector<TLorentzVector> Muons,vector<TLorentzVector> selectedElectrons, vector<TLorentzVector> selectedJets,int Region){
+  clock_t start_sub =  clock();
+  
+  
+  
+  
+  //cout << "SMjetIndex "<< SMjetIndex << " selectedJets.size() " << selectedJets.size() << endl;
+  SMjetIndex = -999;
+  SMjetIndex = SMjetCalculator(selectedJets,verbose);
+  if(SMjetIndex > selectedJets.size())  cout << "WARNING SMjetIndex "<< SMjetIndex << endl;
+  //SMbjet.SetPtEtaPhiE(selectedJets[SMjetIndex].Pt(),selectedJets[SMjetIndex].Eta(), selectedJets[SMjetIndex].Phi(), selectedJets[SMjetIndex].Energy());
+  SMbjet.SetPxPyPzE(selectedJets[SMjetIndex].Px(),selectedJets[SMjetIndex].Py(), selectedJets[SMjetIndex].Pz(), selectedJets[SMjetIndex].Energy());
+  // cout << "SMjetIndex new"<< SMjetIndex << endl;
+  
+  
+  
+  if(WmuIndiceF != -999 && WelecIndiceF != -999) cout << "ERROR: 2 W leptons found" << endl;
+  else if(WmuIndiceF!=-999) Wlep.SetPtEtaPhiE(selectedMuons[WmuIndiceF].Pt(),selectedMuons[WmuIndiceF].Eta(), selectedMuons[WmuIndiceF].Phi(), selectedMuons[WmuIndiceF].Energy());
+  else if(WelecIndiceF!=-999)Wlep.SetPtEtaPhiE(selectedElectrons[WelecIndiceF].Pt(), selectedElectrons[WelecIndiceF].Eta(), selectedElectrons[WelecIndiceF].Phi(), selectedElectrons[WelecIndiceF].Energy());
+  else cout << " ERROR: Wlep not found" << endl;
+  
+  metTLVbf.SetPtEtaPhiE(met_Pt, met_Eta, met_Phi, TMath::Sqrt(met_Px*met_Px+met_Py*met_Py));
+  metTLV = MetzCalculator(Wlep, metTLVbf);
+  
+  //cout << "met" << endl;
+  Wboson = metTLV + Wlep;
+  SMtop = metTLV + Wlep  + SMbjet;
+  
+  //cout << "Wboson mass " << Wboson.M() << " SMtop " << SMtop.M() << " mlb " << (Wlep+SMbjet).M() << endl;
+  mWT = TMath::Sqrt((Wlep.Pt() + met_Pt)*(Wlep.Pt() +met_Pt)-(Wlep.Px() + met_Px)*(Wlep.Px() + met_Px) - (Wlep.Py() + met_Py)* (Wlep.Py() +met_Py));
+  Double_t phis = Wlep.Phi() - met_Phi;
+  Double_t cosphis = TMath::Cos(phis);
+  mWT2 = TMath::Sqrt(2*Wlep.Pt() * met_Pt*(1-cosphis));
+  
+  
+  if(ZmuIndiceF_0 != -999 && ZmuIndiceF_1 != -999 && ZelecIndiceF_0 != -999 && ZelecIndiceF_1 != -999 ) cout << "ERROR: 2 Zbosons found " << endl;
+  else if(ZmuIndiceF_0 != -999 && ZmuIndiceF_1 != -999 ) Zboson = selectedMuons[ZmuIndiceF_0] + selectedMuons[ZmuIndiceF_1];
+  else if(ZelecIndiceF_0 != -999 && ZelecIndiceF_1 != -999 ) Zboson = selectedElectrons[ZelecIndiceF_0] + selectedElectrons[ZelecIndiceF_1];
+  else cout << "ERROR: Zboson not found " << endl;
+  
+  if(selectedJets.size()>1 )
+  {
+    //cout << "cjet" << endl;
+    cjetindex = FCNCjetCalculator(selectedJets,Zboson ,SMjetIndex, 3);
+    cjetindex_CvsLtagger = FCNCjetCalculatorCvsLTagger(selectedJets,SMjetIndex, 3);
+    cjetindex_CvsBtagger = FCNCjetCalculatorCvsBTagger(selectedJets,SMjetIndex, 3);
+    cjetindex_Cloose = FCNCjetCalculatorCwp(selectedJets, selectedCharmLJetsindex,  SMjetIndex, 3);
+    cjetindex_Cmedium = FCNCjetCalculatorCwp(selectedJets, selectedCharmMJetsindex,  SMjetIndex, 3);
+    cjetindex_Ctight = FCNCjetCalculatorCwp(selectedJets, selectedCharmTJetsindex,  SMjetIndex, 3);
+    
+    if(cjetindex > selectedJets.size() || cjetindex == SMjetIndex) cout << "Warning wrong cjet index " << endl;
+    LightJet.SetPxPyPzE(selectedJets[cjetindex].Px(),selectedJets[cjetindex].Py(),selectedJets[cjetindex].Pz(),selectedJets[cjetindex].Energy());
+    
+    //cout << "fcnctop" << endl;
+    FCNCtop = LightJet + Zboson;
+    
+  }
+  //cout << "end reco" << endl;
+  double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
+  if(firstevent && verbose > 3){
+    cout << "It took us " << time_sub << " s to run the reconstruction" << endl;
+    if ( time_sub >= 60 )
+    {
+      int mins = time_sub/60;
+      float secs = time_sub - mins*60;
+      
+      if (mins >= 60 )
+      {
+        int hours = mins/60;
+        mins = mins - hours*60;
+        cout << "(This corresponds to " << hours << " hours, " << mins << " min and " << secs << " s)" << endl;
+      }
+      else
+        cout << "(This corresponds to " << mins << " min and " << secs << " s)" << endl;
+    }
+  }
+  
+};
+int SMjetCalculator(vector<TLorentzVector> Jets,int verb){
+  clock_t start_sub = clock();
+  // cout << "calculating bjet" << endl;
+  int index_ = -999 ;
+  Double_t tempbdis = -999.;
+  
+  for(int iJ = 0; iJ < Jets.size() ; iJ++){
+    
+    if(bdisc_jet[iJ] > tempbdis)
+    {
+      index_ = iJ;
+      tempbdis = bdisc_jet[iJ];
+      //cout << "index is " << iJ << endl ;
+    }
+  }
+  
+  
+  
+  
+  double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
+  if(firstevent && verbose > 3){
+    cout << "It took us " << time_sub << " s to run the SM bjet reconstruction" << endl;
+    if ( time_sub >= 60 )
+    {
+      int mins = time_sub/60;
+      float secs = time_sub - mins*60;
+      
+      if (mins >= 60 )
+      {
+        int hours = mins/60;
+        mins = mins - hours*60;
+        cout << "(This corresponds to " << hours << " hours, " << mins << " min and " << secs << " s)" << endl;
+      }
+      else
+        cout << "(This corresponds to " << mins << " min and " << secs << " s)" << endl;
+    }
+  }
+  // cout << "end calculating bjet" << endl;
+  //cout << "SMjetIndex "<< SMjetIndex << endl;
+  return index_;
+};
+void GetMetaData(TTree* tree, bool isData,int Entries, bool isAMC){
+  clock_t start_sub = clock();
+  // Set branch addresses and branch pointers
+  if (!tree) return;
+  tree->SetMakeClass(1);
+  tree->SetBranchAddress("nEv", &nEv, &b_nEv);
+  
+  tree->SetBranchAddress("WPb_L", &WPb_L, &b_WPb_L);
+  tree->SetBranchAddress("WPb_M", &WPb_M, &b_WPb_M);
+  tree->SetBranchAddress("WPb_T", &WPb_T, &b_WPb_T);
+  tree->SetBranchAddress("WPc_CvsB_Loose",&WPc_CvsB_Loose,&b_WPc_CvsB_Loose);
+  tree->SetBranchAddress("WPc_CvsB_Medium",&WPc_CvsB_Medium,&b_WPc_CvsB_Medium);
+  tree->SetBranchAddress("WPc_CvsB_Tight",&WPc_CvsB_Tight,&b_WPc_CvsB_Tight);
+  tree->SetBranchAddress("WPc_CvsL_Loose",&WPc_CvsL_Loose,&b_WPc_CvsL_Loose);
+  tree->SetBranchAddress("WPc_CvsL_Medium",&WPc_CvsL_Medium,&b_WPc_CvsL_Medium);
+  tree->SetBranchAddress("WPc_CvsL_Tight",&WPc_CvsL_Tight,&b_WPc_CvsL_Tight);
+  tree->SetBranchAddress("nofPosWeights",&nofPosWeights, &b_nofPosWeights);
+  tree->SetBranchAddress("nofNegWeights",&nofNegWeights, &b_nofNegWeights);
+  tree->SetBranchAddress("sumW",&sumW, &b_sumW);
+  
+  /* TO FIX
+   tree->SetBranchAddress("nbEv_Initial_all",&nbEv_Initial_all,&b_nbEv_Initial_all);
+   tree->SetBranchAddress("nbEv_Trigged_all",&nbEv_Trigged_all,&b_nbEv_Trigged_all);
+   tree->SetBranchAddress("nbEv_3lep_all",&nbEv_3lep_all,&b_nbEv_3lep_all);
+   tree->SetBranchAddress("nbEv_LooseLepVeto_all",&nbEv_LooseLepVeto_all,&b_nbEv_LooseLepVeto_all);
+   tree->SetBranchAddress("nbEv_ZbosonWindow_all",&nbEv_ZbosonWindow_all,&b_nbEv_ZbosonWindow_all);
+   tree->SetBranchAddress("nbEv_AtLeast1jet_all",&nbEv_AtLeast1jet_all,&b_nbEv_AtLeast1jet_all);
+   
+   tree->SetBranchAddress("nbEv_Initial_uuu",&nbEv_Initial_uuu,&b_nbEv_Initial_uuu);
+   tree->SetBranchAddress("nbEv_Trigged_uuu",&nbEv_Trigged_uuu,&b_nbEv_Trigged_uuu);
+   tree->SetBranchAddress("nbEv_3lep_uuu",&nbEv_3lep_uuu,&b_nbEv_3lep_uuu);
+   tree->SetBranchAddress("nbEv_LooseLepVeto_uuu",&nbEv_LooseLepVeto_uuu,&b_nbEv_LooseLepVeto_uuu);
+   tree->SetBranchAddress("nbEv_ZbosonWindow_uuu",&nbEv_ZbosonWindow_uuu,&b_nbEv_ZbosonWindow_uuu);
+   tree->SetBranchAddress("nbEv_AtLeast1jet_uuu",&nbEv_AtLeast1jet_uuu,&b_nbEv_AtLeast1jet_uuu);
+   
+   tree->SetBranchAddress("nbEv_Initial_uue",&nbEv_Initial_uue,&b_nbEv_Initial_uue);
+   tree->SetBranchAddress("nbEv_Trigged_uue",&nbEv_Trigged_uue,&b_nbEv_Trigged_uue);
+   tree->SetBranchAddress("nbEv_3lep_uue",&nbEv_3lep_uue,&b_nbEv_3lep_uue);
+   tree->SetBranchAddress("nbEv_LooseLepVeto_uue",&nbEv_LooseLepVeto_uue,&b_nbEv_LooseLepVeto_uue);
+   tree->SetBranchAddress("nbEv_ZbosonWindow_uue",&nbEv_ZbosonWindow_uue,&b_nbEv_ZbosonWindow_uue);
+   tree->SetBranchAddress("nbEv_AtLeast1jet_uue",&nbEv_AtLeast1jet_uue,&b_nbEv_AtLeast1jet_uue);
+   
+   tree->SetBranchAddress("nbEv_Initial_eeu",&nbEv_Initial_eeu,&b_nbEv_Initial_eeu);
+   tree->SetBranchAddress("nbEv_Trigged_eeu",&nbEv_Trigged_eeu,&b_nbEv_Trigged_eeu);
+   tree->SetBranchAddress("nbEv_3lep_eeu",&nbEv_3lep_eeu,&b_nbEv_3lep_eeu);
+   tree->SetBranchAddress("nbEv_LooseLepVeto_eeu",&nbEv_LooseLepVeto_eeu,&b_nbEv_LooseLepVeto_eeu);
+   tree->SetBranchAddress("nbEv_ZbosonWindow_eeu",&nbEv_ZbosonWindow_eeu,&b_nbEv_ZbosonWindow_eeu);
+   tree->SetBranchAddress("nbEv_AtLeast1jet_eeu",&nbEv_AtLeast1jet_eeu,&b_nbEv_AtLeast1jet_eeu);
+   
+   tree->SetBranchAddress("nbEv_Initial_eee",&nbEv_Initial_eee,&b_nbEv_Initial_eee);
+   tree->SetBranchAddress("nbEv_Trigged_eee",&nbEv_Trigged_eee,&b_nbEv_Trigged_eee);
+   tree->SetBranchAddress("nbEv_3lep_eee",&nbEv_3lep_eee,&b_nbEv_3lep_eee);
+   tree->SetBranchAddress("nbEv_LooseLepVeto_eee",&nbEv_LooseLepVeto_eee,&b_nbEv_LooseLepVeto_eee);
+   tree->SetBranchAddress("nbEv_ZbosonWindow_eee",&nbEv_ZbosonWindow_eee,&b_nbEv_ZbosonWindow_eee);
+   tree->SetBranchAddress("nbEv_AtLeast1jet_eee",&nbEv_AtLeast1jet_eee,&b_nbEv_AtLeast1jet_eee);
+   
+   */
+  
+  
+  
+  
+  TotalEvents = 0;
+  
+  int nPos = 0;
+  int nNeg = 0;
+  int Weights = 0;
+  
+  
+  for (int k = 0; k< Entries; k++)
+  {
+    tree->GetEntry(k);
+    TotalEvents += nEv;
+    /* TO FIX
+     total_nbEv_3lep_all += nbEv_3lep_all;
+     total_nbEv_AtLeast1jet_all += nbEv_AtLeast1jet_all;
+     total_nbEv_Initial_all += nbEv_Initial_all;
+     total_nbEv_LooseLepVeto_all += nbEv_LooseLepVeto_all;
+     total_nbEv_Trigged_all += nbEv_Trigged_all;
+     total_nbEv_ZbosonWindow_all += nbEv_ZbosonWindow_all;
+     
+     total_nbEv_3lep_uuu += nbEv_3lep_uuu;
+     total_nbEv_AtLeast1jet_uuu += nbEv_AtLeast1jet_uuu;
+     total_nbEv_Initial_uuu += nbEv_Initial_uuu;
+     total_nbEv_LooseLepVeto_uuu += nbEv_LooseLepVeto_uuu;
+     total_nbEv_Trigged_uuu += nbEv_Trigged_uuu;
+     total_nbEv_ZbosonWindow_uuu += nbEv_ZbosonWindow_uuu;
+     
+     total_nbEv_3lep_uue += nbEv_3lep_uue;
+     total_nbEv_AtLeast1jet_uue += nbEv_AtLeast1jet_uue;
+     total_nbEv_Initial_uue += nbEv_Initial_uue;
+     total_nbEv_LooseLepVeto_uue += nbEv_LooseLepVeto_uue;
+     total_nbEv_Trigged_uue += nbEv_Trigged_uue;
+     total_nbEv_ZbosonWindow_uue += nbEv_ZbosonWindow_uue;
+     
+     total_nbEv_3lep_eeu += nbEv_3lep_eeu;
+     total_nbEv_AtLeast1jet_eeu += nbEv_AtLeast1jet_eeu;
+     total_nbEv_Initial_eeu += nbEv_Initial_eeu;
+     total_nbEv_LooseLepVeto_eeu += nbEv_LooseLepVeto_eeu;
+     total_nbEv_Trigged_eeu += nbEv_Trigged_eeu;
+     total_nbEv_ZbosonWindow_eeu += nbEv_ZbosonWindow_eeu;
+     
+     total_nbEv_3lep_eee += nbEv_3lep_eee;
+     total_nbEv_AtLeast1jet_eee += nbEv_AtLeast1jet_eee;
+     total_nbEv_Initial_eee += nbEv_Initial_eee;
+     total_nbEv_LooseLepVeto_eee += nbEv_LooseLepVeto_eee;
+     total_nbEv_Trigged_eee += nbEv_Trigged_eee;
+     total_nbEv_ZbosonWindow_eee += nbEv_ZbosonWindow_eee;
+     */
+    if( isAMC && !isData) nPos += nofPosWeights;
+    if(isAMC && !isData) nNeg += nofNegWeights;
+    if(isAMC && !isData) Weights += sumW;
+    
+  }
+  
+  if(!isData){
+    EquilumiSF = TotalEvents / Xsect;
+    cout << "                equilumi = " <<  TotalEvents <<" / " << Xsect <<" = " << EquilumiSF << endl;
+  }
+  else EquilumiSF = 1.;
+  if(isAMC && !isData) nloSF *= ((double) (nPos + nNeg))/((double) (nPos - nNeg));
+  if(isAMC && !isData) cout << "                 nloSF: " << nloSF << endl;
+  
+  
+  double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
+  if(firstevent && verbose > 3){
+    cout << "It took us " << time_sub << " s to run the GetMetaData" << endl;
+    if ( time_sub >= 60 )
+    {
+      int mins = time_sub/60;
+      float secs = time_sub - mins*60;
+      
+      if (mins >= 60 )
+      {
+        int hours = mins/60;
+        mins = mins - hours*60;
+        cout << "(This corresponds to " << hours << " hours, " << mins << " min and " << secs << " s)" << endl;
+      }
+      else
+        cout << "(This corresponds to " << mins << " min and " << secs << " s)" << endl;
+    }
+  }
+  
+  
+  
+}
+TLorentzVector MetzCalculator(TLorentzVector leptW, TLorentzVector v_met){
+  
+  clock_t start_sub = clock();
+  // cout << "calculating metz" << endl;
+  
+  Double_t term1 = leptW.Pz() * ( leptW.Px()* v_met.Px() + leptW.Py()*v_met.Py() + pow(80.399, 2)/2.);
+  
+  Double_t det = pow(leptW.Px() * v_met.Px() + leptW.Py() * v_met.Py() + pow(80.399, 2)/2., 2) - v_met.Pt()*v_met.Pt() * (leptW.E()*leptW.E() - leptW.Pz()*leptW.Pz() );
+  
+  if(det<0) det=0;
+  
+  Double_t term2 = leptW.E() * pow(det, 0.5);
+  Double_t denom = leptW.E()*leptW.E() - leptW.Pz()*leptW.Pz();
+  Double_t sol1 = (term1 - term2) / denom;
+  //double sol2 = (term1 + term2) / denom;
+  Double_t nu_E = 0;
+  
+  TLorentzVector neutrino;
+  
+  nu_E = pow( pow(v_met.Px(),2) + pow(v_met.Py(),2) + pow(sol1,2), 0.5);//neglecting neutrino mass
+  neutrino.SetPxPyPzE( v_met.Px(), v_met.Py(), sol1, nu_E);
+  
+  double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
+  if(firstevent && verbose > 3){
+    cout << "It took us " << time_sub << " s to run the metz reconstruction" << endl;
+    if ( time_sub >= 60 )
+    {
+      int mins = time_sub/60;
+      float secs = time_sub - mins*60;
+      
+      if (mins >= 60 )
+      {
+        int hours = mins/60;
+        mins = mins - hours*60;
+        cout << "(This corresponds to " << hours << " hours, " << mins << " min and " << secs << " s)" << endl;
+      }
+      else
+        cout << "(This corresponds to " << mins << " min and " << secs << " s)" << endl;
+    }
+  }
+  
+  
+  // cout << "end calculating metz" << endl;
+  
+  return neutrino;
+  
+  
+};
+std::pair <Double_t,Double_t> CosThetaCalculation(TLorentzVector lepton, TLorentzVector Neutrino, TLorentzVector leptonicBJet, bool geninfo){
   
   clock_t start_sub = clock();
   // see https://github.com/TopBrussels/TopTreeAnalysis/blob/CMSSW_53X/WHelicities/src/BTagCosThetaCalculation.cc
@@ -1820,7 +2223,7 @@ std::pair <Float_t,Float_t> CosThetaCalculation(TLorentzVector lepton, TLorentzV
   // single top : https://cds.cern.ch/record/1601800
   
   
-  float CosTheta = -999.;
+  Double_t CosTheta = -999.;
   
   //----------------------------------------------
   //  Calculating cos theta value
@@ -1843,15 +2246,15 @@ std::pair <Float_t,Float_t> CosThetaCalculation(TLorentzVector lepton, TLorentzV
   //leptTRF.Boost(-TopLeptonic.BoostVector());
   
   //Calculating cos:
-  float ThetaTevatron = ROOT::Math::VectorUtil::Angle( TopWRF, leptWRF );
+  Double_t ThetaTevatron = ROOT::Math::VectorUtil::Angle( TopWRF, leptWRF );
   CosTheta = -(TMath::Cos(ThetaTevatron));
   //Cos theta is defined as the angle between the lepton and the reversed direction of the top quark, both boosted to the W-boson rest frame.
   //Still reversed direction doesn't need to be calculated since angle between lepton and top and between lepton and reversed top is proportional to theta and Pi-theta.
   //For these the angles the following relation holds: cos(theta) = - cos(Pi-theta)
   // --> Hence the need of the minus sign in the CosTheta definition!!
   
-  float ThetaSTAR = ROOT::Math::VectorUtil::Angle( WTRF, leptWRF );
-  float CosThetaSTAR= TMath::Cos(ThetaSTAR);
+  Double_t ThetaSTAR = ROOT::Math::VectorUtil::Angle( WTRF, leptWRF );
+  Double_t CosThetaSTAR= TMath::Cos(ThetaSTAR);
   
   
   
@@ -1869,7 +2272,7 @@ std::pair <Float_t,Float_t> CosThetaCalculation(TLorentzVector lepton, TLorentzV
    */
   
   
-  std::pair <Float_t,Float_t> CosThetaPair(CosTheta, CosThetaSTAR);
+  std::pair <Double_t,Double_t> CosThetaPair(CosTheta, CosThetaSTAR);
   
   
   double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
@@ -1894,14 +2297,11 @@ std::pair <Float_t,Float_t> CosThetaCalculation(TLorentzVector lepton, TLorentzV
   
   return CosThetaPair;
 }
-
-
-
 int FCNCjetCalculator(vector < TLorentzVector>  Jets, TLorentzVector recoZ ,int index, int verb){
   clock_t start_sub = clock();
   // cout << "calculating fcnc jet" << endl;
-  double TempMinMass = 100000.00;
-  double TopMass = 172.9;
+  Double_t TempMinMass = 100000.00;
+  Double_t TopMass = 172.9;
   TLorentzVector Jetcandidate;
   int NbInColl = -5;
   TLorentzVector Jet;
@@ -1946,15 +2346,14 @@ int FCNCjetCalculator(vector < TLorentzVector>  Jets, TLorentzVector recoZ ,int 
     }
   }
   
- // cout << "end finding light jet" <<endl;
+  // cout << "end finding light jet" <<endl;
   return NbInColl;
 };
-
 int FCNCjetCalculatorCvsBTagger(vector < TLorentzVector>  Jets,int index, int verb){
   
-  double tempcdis = -9999.;
+  Double_t tempcdis = -9999.;
   int NbInColl = -999;
-
+  
   if(Jets.size() > 2){
     // cout << " jets: " << Jets.size() << " possibilities " <<endl;  ;
     for( int iJ = 0; iJ < Jets.size()-1; iJ++)
@@ -1979,7 +2378,7 @@ int FCNCjetCalculatorCvsBTagger(vector < TLorentzVector>  Jets,int index, int ve
   return NbInColl;
 };
 int FCNCjetCalculatorCvsLTagger(vector < TLorentzVector>  Jets,int index, int verb){
-  double tempcdis = -9999.;
+  Double_t tempcdis = -9999.;
   int NbInColl = -999;
   
   if(Jets.size() > 2){
@@ -2007,8 +2406,8 @@ int FCNCjetCalculatorCvsLTagger(vector < TLorentzVector>  Jets,int index, int ve
 };
 int FCNCjetCalculatorCwp(vector < TLorentzVector>  Jets, std::vector <int> cjetindex, int index, int verb){
   clock_t start_sub = clock();
-  double TempMinMass = 100000.00;
-  double TopMass = 172.9;
+  Double_t TempMinMass = 100000.00;
+  Double_t TopMass = 172.9;
   TLorentzVector Jetcandidate;
   int NbInColl = -5;
   bool isCjet = false;
@@ -2063,555 +2462,8 @@ int FCNCjetCalculatorCwp(vector < TLorentzVector>  Jets, std::vector <int> cjeti
   return NbInColl;
 };
 
-
-TLorentzVector MetzCalculator(TLorentzVector leptW, TLorentzVector v_met){
-  
-  clock_t start_sub = clock();
- // cout << "calculating metz" << endl;
-  
-  double term1 = leptW.Pz() * ( leptW.Px()* v_met.Px() + leptW.Py()*v_met.Py() + pow(80.399, 2)/2.);
-  
-  double det = pow(leptW.Px() * v_met.Px() + leptW.Py() * v_met.Py() + pow(80.399, 2)/2., 2) - v_met.Pt()*v_met.Pt() * (leptW.E()*leptW.E() - leptW.Pz()*leptW.Pz() );
-  
-  if(det<0) det=0;
-  
-  double term2 = leptW.E() * pow(det, 0.5);
-  double denom = leptW.E()*leptW.E() - leptW.Pz()*leptW.Pz();
-  double sol1 = (term1 - term2) / denom;
-  //double sol2 = (term1 + term2) / denom;
-  double nu_E = 0;
-  
-  TLorentzVector neutrino;
-  
-  nu_E = pow( pow(v_met.Px(),2) + pow(v_met.Py(),2) + pow(sol1,2), 0.5);//neglecting neutrino mass
-  neutrino.SetPxPyPzE( v_met.Px(), v_met.Py(), sol1, nu_E);
-  
-  double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
-  if(firstevent && verbose > 3){
-    cout << "It took us " << time_sub << " s to run the metz reconstruction" << endl;
-    if ( time_sub >= 60 )
-    {
-      int mins = time_sub/60;
-      float secs = time_sub - mins*60;
-      
-      if (mins >= 60 )
-      {
-        int hours = mins/60;
-        mins = mins - hours*60;
-        cout << "(This corresponds to " << hours << " hours, " << mins << " min and " << secs << " s)" << endl;
-      }
-      else
-        cout << "(This corresponds to " << mins << " min and " << secs << " s)" << endl;
-    }
-  }
-  
-  
-  // cout << "end calculating metz" << endl;
-  
-  return neutrino;
-  
-  
-};
-
-
-
-void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<int> decayChannels )
-{
-  clock_t start_sub = clock();
-  
-  string sregion;
-  sregion = prefix+"_";
-  string decaystring = "";
-  //cout <<  "region " << sregion << endl;
-  for(int iChan = 0;iChan < decayChannels.size() ;iChan++){
-    if(decayChannels[iChan]== -9) continue;
-    if((decayChannels[iChan]) != MVA_channel) continue;
-    decaystring= "";
-    if(decayChannels[iChan] == 0) decaystring = "uuu";
-    if(decayChannels[iChan] == 1) decaystring = "uue";
-    if(decayChannels[iChan] == 2) decaystring = "eeu";
-    if(decayChannels[iChan] == 3) decaystring = "eee";
-   
-    if(Region != 2){
-      MSPlot[(sregion+"MVA_channel_"+decaystring).c_str()]->Fill(MVA_channel, datasets[d], true, 1);
-      MSPlot[(sregion+"MVA_weight_"+decaystring).c_str()]->Fill(MVA_weight, datasets[d], true, 1);
-      
-      MSPlot[(sregion+"MVA_lepton0_pt_"+decaystring).c_str()]->Fill(MVA_lepton0_pt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_lepton1_pt_"+decaystring).c_str()]->Fill(MVA_lepton1_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_lepton2_pt_"+decaystring).c_str()]->Fill(MVA_lepton2_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_lepton0_eta_"+decaystring).c_str()]->Fill(MVA_lepton0_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_lepton1_eta_"+decaystring).c_str()]->Fill(MVA_lepton1_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_lepton2_eta_"+decaystring).c_str()]->Fill(MVA_lepton2_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_lepton0_phi_"+decaystring).c_str()]->Fill(MVA_lepton0_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_lepton1_phi_"+decaystring).c_str()]->Fill(MVA_lepton1_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_lepton2_phi_"+decaystring).c_str()]->Fill(MVA_lepton2_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_jet0_pt_"+decaystring).c_str()]->Fill(MVA_jet0_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_jet0_eta_"+decaystring).c_str()]->Fill(MVA_jet0_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_jet0_phi_"+decaystring).c_str()]->Fill(MVA_jet0_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      if(selectedJets.size()>1) MSPlot[(sregion+"MVA_jet1_pt_"+decaystring).c_str()]->Fill(MVA_jet1_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      if(selectedJets.size()>1) MSPlot[(sregion+"MVA_jet1_eta_"+decaystring).c_str()]->Fill(MVA_jet1_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      if(selectedJets.size()>1) MSPlot[(sregion+"MVA_jet1_phi_"+decaystring).c_str()]->Fill(MVA_jet1_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      // SM side
-      MSPlot[(sregion+"MVA_Wlep_pt_"+decaystring).c_str()]->Fill(MVA_Wlep_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_Wlep_eta_"+decaystring).c_str()]->Fill(MVA_Wlep_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_Wlep_phi_"+decaystring).c_str()]->Fill(MVA_Wlep_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_SMbjet_pt_"+decaystring).c_str()]->Fill(MVA_SMbjet_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_SMbjet_eta_"+decaystring).c_str()]->Fill(MVA_SMbjet_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_SMbjet_phi_"+decaystring).c_str()]->Fill(MVA_SMbjet_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_Wboson_pt_"+decaystring).c_str()]->Fill(MVA_Wboson_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_Wboson_eta_"+decaystring).c_str()]->Fill(MVA_Wboson_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_Wboson_phi_"+decaystring).c_str()]->Fill(MVA_Wboson_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_met_"+decaystring).c_str()]->Fill(MVA_met, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_SMtop_pt_"+decaystring).c_str()]->Fill(MVA_SMtop_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_SMtop_eta_"+decaystring).c_str()]->Fill(MVA_SMtop_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_SMtop_phi_"+decaystring).c_str()]->Fill(MVA_SMtop_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      
-      // FCNC side
-      MSPlot[(sregion+"MVA_Zboson_pt_"+decaystring).c_str()]->Fill(MVA_Zboson_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_Zboson_eta_"+decaystring).c_str()]->Fill(MVA_Zboson_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_Zboson_phi_"+decaystring).c_str()]->Fill(MVA_Zboson_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      
-      // nbrs
-      MSPlot[(sregion+"MVA_nMuons_"+decaystring).c_str()]->Fill(MVA_nMuons, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_NJets_CSVv2T_"+decaystring).c_str()]->Fill(MVA_NJets_CSVv2T, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_NJets_CSVv2M_"+decaystring).c_str()]->Fill(MVA_NJets_CSVv2M, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_NJets_CSVv2L_"+decaystring).c_str()]->Fill(MVA_NJets_CSVv2L, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_nJets_"+decaystring).c_str()]->Fill(MVA_nJets, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_nElectrons_"+decaystring).c_str()]->Fill(MVA_nElectrons, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      
-      
-      //SM kinematics
-      MSPlot[(sregion+"MVA_SMtop_M_"+decaystring).c_str()]->Fill(MVA_SMtop_M , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_mlb_"+decaystring).c_str()]->Fill(MVA_mlb , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_Wboson_M_"+decaystring).c_str()]->Fill(MVA_Wboson_M , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_dRWlepb_"+decaystring).c_str()]->Fill(MVA_dRWlepb , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_dPhiWlepb_"+decaystring).c_str()]->Fill(MVA_dPhiWlepb , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_Wlep_Charge_"+decaystring).c_str()]->Fill(MVA_Wlep_Charge , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_charge_asym_"+decaystring).c_str()]->Fill(MVA_charge_asym , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_TotalPt_"+decaystring).c_str()]->Fill(MVA_TotalPt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_TotalHt_"+decaystring).c_str()]->Fill(MVA_TotalHt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_TotalInvMass_"+decaystring).c_str()]->Fill( MVA_TotalInvMass, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_TotalPt_jet_"+decaystring).c_str()]->Fill(MVA_TotalPt_jet , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_TotalHt_jet_"+decaystring).c_str()]->Fill(MVA_TotalHt_jet , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_TotalInvMass_jet_"+decaystring).c_str()]->Fill( MVA_TotalInvMass_jet, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_TotalPt_lep_"+decaystring).c_str()]->Fill(MVA_TotalPt_lep , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_TotalHt_lep_"+decaystring).c_str()]->Fill(MVA_TotalHt_lep , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_TotalInvMass_lep_"+decaystring).c_str()]->Fill( MVA_TotalInvMass_lep, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_bdiscCSVv2_jet_0_"+decaystring).c_str()]->Fill(MVA_bdiscCSVv2_jet_0 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_CosTheta_"+decaystring).c_str()]->Fill(MVA_CosTheta , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_CosTheta_alt_"+decaystring).c_str()]->Fill(MVA_CosTheta_alt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      
-      // FCNC kinematics
-      
-      MSPlot[(sregion+"MVA_dRZb_"+decaystring).c_str()]->Fill(MVA_dRZb , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_dRZWlep_"+decaystring).c_str()]->Fill(MVA_dRZWlep , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_dRZSMtop_"+decaystring).c_str()]->Fill(MVA_dRZSMtop , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      
-      MSPlot[(sregion+"MVA_dPhiZb_"+decaystring).c_str()]->Fill(MVA_dPhiZb , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_dPhiZWlep_"+decaystring).c_str()]->Fill(MVA_dPhiZWlep , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_dPhiZMET_"+decaystring).c_str()]->Fill(MVA_dPhiZMET , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_dPhiZSMtop_"+decaystring).c_str()]->Fill(MVA_dPhiZSMtop , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_m3l_"+decaystring).c_str()]->Fill(MVA_m3l , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-    }
-    
-    MSPlot[(sregion+"MVA_mWt_"+decaystring).c_str()]->Fill(MVA_mWt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-    
-    
-    if(Region == 1){
-      MSPlot[(sregion+"MVA_LightJet_pt_"+decaystring).c_str()]->Fill(MVA_LightJet_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_LightJet_eta_"+decaystring).c_str()]->Fill(MVA_LightJet_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_LightJet_phi_"+decaystring).c_str()]->Fill(MVA_LightJet_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_FCNCtop_pt_"+decaystring).c_str()]->Fill(MVA_FCNCtop_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_FCNCtop_eta_"+decaystring).c_str()]->Fill(MVA_FCNCtop_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_FCNCtop_phi_"+decaystring).c_str()]->Fill(MVA_FCNCtop_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_nJets_CharmL_"+decaystring).c_str()]->Fill(MVA_nJets_CharmL, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_nJets_CharmM_"+decaystring).c_str()]->Fill(MVA_nJets_CharmM, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_nJets_CharmT_"+decaystring).c_str()]->Fill(MVA_nJets_CharmT, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_FCNCtop_M_"+decaystring).c_str()]->Fill(MVA_FCNCtop_M , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_Zboson_M_"+decaystring).c_str()]->Fill(MVA_Zboson_M , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_dRZc_"+decaystring).c_str()]->Fill(MVA_dRZc , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_dPhiZc_"+decaystring).c_str()]->Fill(MVA_dPhiZc , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_cdiscCvsB_jet_1_"+decaystring).c_str()]->Fill(MVA_cdiscCvsB_jet_1 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_cdiscCvsL_jet_1_"+decaystring).c_str()]->Fill(MVA_cdiscCvsL_jet_1 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      // interplay
-      MSPlot[(sregion+"MVA_dRSMFCNCtop_"+decaystring).c_str()]->Fill(MVA_dRSMFCNCtop , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_dRWlepc_"+decaystring).c_str()]->Fill(MVA_dRWlepc , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_dPhiSMFCNCtop_"+decaystring).c_str()]->Fill(MVA_dPhiSMFCNCtop , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_dPhiWlepc_"+decaystring).c_str()]->Fill(MVA_dRWlepc , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_bdiscCSVv2_jet_1_"+decaystring).c_str()]->Fill(MVA_bdiscCSVv2_jet_1 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-    }
-    
-  }
-  
-  for(int iChan = 0;iChan < decayChannels.size() ;iChan++){
-    if(decayChannels[iChan]!= -9) continue;
-    if((decayChannels[iChan]) != MVA_channel) continue;
-    decaystring= "all";
-
-    
-    if(Region != 2){
-      MSPlot[(sregion+"MVA_channel_"+decaystring).c_str()]->Fill(MVA_channel, datasets[d], true, 1);
-      MSPlot[(sregion+"MVA_weight_"+decaystring).c_str()]->Fill(MVA_weight, datasets[d], true, 1);
-      
-      MSPlot[(sregion+"MVA_lepton0_pt_"+decaystring).c_str()]->Fill(MVA_lepton0_pt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_lepton1_pt_"+decaystring).c_str()]->Fill(MVA_lepton1_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_lepton2_pt_"+decaystring).c_str()]->Fill(MVA_lepton2_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_lepton0_eta_"+decaystring).c_str()]->Fill(MVA_lepton0_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_lepton1_eta_"+decaystring).c_str()]->Fill(MVA_lepton1_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_lepton2_eta_"+decaystring).c_str()]->Fill(MVA_lepton2_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_lepton0_phi_"+decaystring).c_str()]->Fill(MVA_lepton0_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_lepton1_phi_"+decaystring).c_str()]->Fill(MVA_lepton1_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_lepton2_phi_"+decaystring).c_str()]->Fill(MVA_lepton2_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_jet0_pt_"+decaystring).c_str()]->Fill(MVA_jet0_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_jet0_eta_"+decaystring).c_str()]->Fill(MVA_jet0_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_jet0_phi_"+decaystring).c_str()]->Fill(MVA_jet0_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      if(selectedJets.size()>1) MSPlot[(sregion+"MVA_jet1_pt_"+decaystring).c_str()]->Fill(MVA_jet1_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      if(selectedJets.size()>1) MSPlot[(sregion+"MVA_jet1_eta_"+decaystring).c_str()]->Fill(MVA_jet1_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      if(selectedJets.size()>1) MSPlot[(sregion+"MVA_jet1_phi_"+decaystring).c_str()]->Fill(MVA_jet1_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      // SM side
-      MSPlot[(sregion+"MVA_Wlep_pt_"+decaystring).c_str()]->Fill(MVA_Wlep_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_Wlep_eta_"+decaystring).c_str()]->Fill(MVA_Wlep_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_Wlep_phi_"+decaystring).c_str()]->Fill(MVA_Wlep_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_SMbjet_pt_"+decaystring).c_str()]->Fill(MVA_SMbjet_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_SMbjet_eta_"+decaystring).c_str()]->Fill(MVA_SMbjet_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_SMbjet_phi_"+decaystring).c_str()]->Fill(MVA_SMbjet_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_Wboson_pt_"+decaystring).c_str()]->Fill(MVA_Wboson_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_Wboson_eta_"+decaystring).c_str()]->Fill(MVA_Wboson_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_Wboson_phi_"+decaystring).c_str()]->Fill(MVA_Wboson_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_met_"+decaystring).c_str()]->Fill(MVA_met, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_SMtop_pt_"+decaystring).c_str()]->Fill(MVA_SMtop_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_SMtop_eta_"+decaystring).c_str()]->Fill(MVA_SMtop_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_SMtop_phi_"+decaystring).c_str()]->Fill(MVA_SMtop_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      
-      // FCNC side
-      MSPlot[(sregion+"MVA_Zboson_pt_"+decaystring).c_str()]->Fill(MVA_Zboson_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_Zboson_eta_"+decaystring).c_str()]->Fill(MVA_Zboson_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_Zboson_phi_"+decaystring).c_str()]->Fill(MVA_Zboson_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      
-      // nbrs
-      MSPlot[(sregion+"MVA_nMuons_"+decaystring).c_str()]->Fill(MVA_nMuons, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_NJets_CSVv2T_"+decaystring).c_str()]->Fill(MVA_NJets_CSVv2T, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_NJets_CSVv2M_"+decaystring).c_str()]->Fill(MVA_NJets_CSVv2M, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_NJets_CSVv2L_"+decaystring).c_str()]->Fill(MVA_NJets_CSVv2L, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_nJets_"+decaystring).c_str()]->Fill(MVA_nJets, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_nElectrons_"+decaystring).c_str()]->Fill(MVA_nElectrons, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      
-      
-      //SM kinematics
-      MSPlot[(sregion+"MVA_SMtop_M_"+decaystring).c_str()]->Fill(MVA_SMtop_M , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_mlb_"+decaystring).c_str()]->Fill(MVA_mlb , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_Wboson_M_"+decaystring).c_str()]->Fill(MVA_Wboson_M , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_dRWlepb_"+decaystring).c_str()]->Fill(MVA_dRWlepb , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_dPhiWlepb_"+decaystring).c_str()]->Fill(MVA_dPhiWlepb , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_Wlep_Charge_"+decaystring).c_str()]->Fill(MVA_Wlep_Charge , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_charge_asym_"+decaystring).c_str()]->Fill(MVA_charge_asym , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_TotalPt_"+decaystring).c_str()]->Fill(MVA_TotalPt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_TotalHt_"+decaystring).c_str()]->Fill(MVA_TotalHt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_TotalInvMass_"+decaystring).c_str()]->Fill( MVA_TotalInvMass, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_bdiscCSVv2_jet_0_"+decaystring).c_str()]->Fill(MVA_bdiscCSVv2_jet_0 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_CosTheta_"+decaystring).c_str()]->Fill(MVA_CosTheta , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_CosTheta_alt_"+decaystring).c_str()]->Fill(MVA_CosTheta_alt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      
-      // FCNC kinematics
-      
-      MSPlot[(sregion+"MVA_dRZb_"+decaystring).c_str()]->Fill(MVA_dRZb , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_dRZWlep_"+decaystring).c_str()]->Fill(MVA_dRZWlep , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_dRZSMtop_"+decaystring).c_str()]->Fill(MVA_dRZSMtop , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      
-      MSPlot[(sregion+"MVA_dPhiZb_"+decaystring).c_str()]->Fill(MVA_dPhiZb , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_dPhiZWlep_"+decaystring).c_str()]->Fill(MVA_dPhiZWlep , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_dPhiZMET_"+decaystring).c_str()]->Fill(MVA_dPhiZMET , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_dPhiZSMtop_"+decaystring).c_str()]->Fill(MVA_dPhiZSMtop , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_m3l_"+decaystring).c_str()]->Fill(MVA_m3l , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-    }
-    
-    MSPlot[(sregion+"MVA_mWt_"+decaystring).c_str()]->Fill(MVA_mWt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-    
-    
-    if(Region == 1){
-      MSPlot[(sregion+"MVA_LightJet_pt_"+decaystring).c_str()]->Fill(MVA_LightJet_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_LightJet_eta_"+decaystring).c_str()]->Fill(MVA_LightJet_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_LightJet_phi_"+decaystring).c_str()]->Fill(MVA_LightJet_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_FCNCtop_pt_"+decaystring).c_str()]->Fill(MVA_FCNCtop_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_FCNCtop_eta_"+decaystring).c_str()]->Fill(MVA_FCNCtop_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_FCNCtop_phi_"+decaystring).c_str()]->Fill(MVA_FCNCtop_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_nJets_CharmL_"+decaystring).c_str()]->Fill(MVA_nJets_CharmL, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_nJets_CharmM_"+decaystring).c_str()]->Fill(MVA_nJets_CharmM, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_nJets_CharmT_"+decaystring).c_str()]->Fill(MVA_nJets_CharmT, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_FCNCtop_M_"+decaystring).c_str()]->Fill(MVA_FCNCtop_M , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_Zboson_M_"+decaystring).c_str()]->Fill(MVA_Zboson_M , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_dRZc_"+decaystring).c_str()]->Fill(MVA_dRZc , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_dPhiZc_"+decaystring).c_str()]->Fill(MVA_dPhiZc , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_cdiscCvsB_jet_1_"+decaystring).c_str()]->Fill(MVA_cdiscCvsB_jet_1 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_cdiscCvsL_jet_1_"+decaystring).c_str()]->Fill(MVA_cdiscCvsL_jet_1 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      // interplay
-      MSPlot[(sregion+"MVA_dRSMFCNCtop_"+decaystring).c_str()]->Fill(MVA_dRSMFCNCtop , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_dRWlepc_"+decaystring).c_str()]->Fill(MVA_dRWlepc , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_dPhiSMFCNCtop_"+decaystring).c_str()]->Fill(MVA_dPhiSMFCNCtop , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      MSPlot[(sregion+"MVA_dPhiWlepc_"+decaystring).c_str()]->Fill(MVA_dRWlepc , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-      
-      MSPlot[(sregion+"MVA_bdiscCSVv2_jet_1_"+decaystring).c_str()]->Fill(MVA_bdiscCSVv2_jet_1 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-    }
-    
-  }
-  
-  double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
-  if(firstevent && verbose > 3){
-    cout << "It took us " << time_sub << " s to run the fill mva plots" << endl;
-    if ( time_sub >= 60 )
-    {
-      int mins = time_sub/60;
-      float secs = time_sub - mins*60;
-      
-      if (mins >= 60 )
-      {
-        int hours = mins/60;
-        mins = mins - hours*60;
-        cout << "(This corresponds to " << hours << " hours, " << mins << " min and " << secs << " s)" << endl;
-      }
-      else
-        cout << "(This corresponds to " << mins << " min and " << secs << " s)" << endl;
-    }
-  }
-}
-
-
-
-
-
-/////////////////SM B
-int SMjetCalculator(vector<TLorentzVector> Jets,int verb){
-  clock_t start_sub = clock();
-  // cout << "calculating bjet" << endl;
-  int index_ = -999 ;
-  double tempbdis = -999.;
-  
-  for(int iJ = 0; iJ < Jets.size() ; iJ++){
-    
-    if(bdisc_jet[iJ] > tempbdis)
-    {
-      index_ = iJ;
-      tempbdis = bdisc_jet[iJ];
-      //cout << "index is " << iJ << endl ;
-    }
-  }
-  
-  
-  
-  
-  double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
-  if(firstevent && verbose > 3){
-    cout << "It took us " << time_sub << " s to run the SM bjet reconstruction" << endl;
-    if ( time_sub >= 60 )
-    {
-      int mins = time_sub/60;
-      float secs = time_sub - mins*60;
-      
-      if (mins >= 60 )
-      {
-        int hours = mins/60;
-        mins = mins - hours*60;
-        cout << "(This corresponds to " << hours << " hours, " << mins << " min and " << secs << " s)" << endl;
-      }
-      else
-        cout << "(This corresponds to " << mins << " min and " << secs << " s)" << endl;
-    }
-  }
-  // cout << "end calculating bjet" << endl;
-  //cout << "SMjetIndex "<< SMjetIndex << endl;
-  return index_;
-};
-
-
-
-
-void GetMetaData(TTree* tree, bool isData,int Entries, bool isAMC)
-{
-  clock_t start_sub = clock();
-  // Set branch addresses and branch pointers
-  if (!tree) return;
-  tree->SetMakeClass(1);
-  tree->SetBranchAddress("nEv", &nEv, &b_nEv);
-  
-  tree->SetBranchAddress("WPb_L", &WPb_L, &b_WPb_L);
-  tree->SetBranchAddress("WPb_M", &WPb_M, &b_WPb_M);
-  tree->SetBranchAddress("WPb_T", &WPb_T, &b_WPb_T);
-  tree->SetBranchAddress("WPc_CvsB_Loose",&WPc_CvsB_Loose,&b_WPc_CvsB_Loose);
-   tree->SetBranchAddress("WPc_CvsB_Medium",&WPc_CvsB_Medium,&b_WPc_CvsB_Medium);
-   tree->SetBranchAddress("WPc_CvsB_Tight",&WPc_CvsB_Tight,&b_WPc_CvsB_Tight);
-   tree->SetBranchAddress("WPc_CvsL_Loose",&WPc_CvsL_Loose,&b_WPc_CvsL_Loose);
-   tree->SetBranchAddress("WPc_CvsL_Medium",&WPc_CvsL_Medium,&b_WPc_CvsL_Medium);
-   tree->SetBranchAddress("WPc_CvsL_Tight",&WPc_CvsL_Tight,&b_WPc_CvsL_Tight);
-  tree->SetBranchAddress("nofPosWeights",&nofPosWeights, &b_nofPosWeights);
-  tree->SetBranchAddress("nofNegWeights",&nofNegWeights, &b_nofNegWeights);
-  tree->SetBranchAddress("sumW",&sumW, &b_sumW);
-  
-  /* TO FIX
-  tree->SetBranchAddress("nbEv_Initial_all",&nbEv_Initial_all,&b_nbEv_Initial_all);
-  tree->SetBranchAddress("nbEv_Trigged_all",&nbEv_Trigged_all,&b_nbEv_Trigged_all);
-  tree->SetBranchAddress("nbEv_3lep_all",&nbEv_3lep_all,&b_nbEv_3lep_all);
-  tree->SetBranchAddress("nbEv_LooseLepVeto_all",&nbEv_LooseLepVeto_all,&b_nbEv_LooseLepVeto_all);
-  tree->SetBranchAddress("nbEv_ZbosonWindow_all",&nbEv_ZbosonWindow_all,&b_nbEv_ZbosonWindow_all);
-  tree->SetBranchAddress("nbEv_AtLeast1jet_all",&nbEv_AtLeast1jet_all,&b_nbEv_AtLeast1jet_all);
-  
-  tree->SetBranchAddress("nbEv_Initial_uuu",&nbEv_Initial_uuu,&b_nbEv_Initial_uuu);
-  tree->SetBranchAddress("nbEv_Trigged_uuu",&nbEv_Trigged_uuu,&b_nbEv_Trigged_uuu);
-  tree->SetBranchAddress("nbEv_3lep_uuu",&nbEv_3lep_uuu,&b_nbEv_3lep_uuu);
-  tree->SetBranchAddress("nbEv_LooseLepVeto_uuu",&nbEv_LooseLepVeto_uuu,&b_nbEv_LooseLepVeto_uuu);
-  tree->SetBranchAddress("nbEv_ZbosonWindow_uuu",&nbEv_ZbosonWindow_uuu,&b_nbEv_ZbosonWindow_uuu);
-  tree->SetBranchAddress("nbEv_AtLeast1jet_uuu",&nbEv_AtLeast1jet_uuu,&b_nbEv_AtLeast1jet_uuu);
-  
-  tree->SetBranchAddress("nbEv_Initial_uue",&nbEv_Initial_uue,&b_nbEv_Initial_uue);
-  tree->SetBranchAddress("nbEv_Trigged_uue",&nbEv_Trigged_uue,&b_nbEv_Trigged_uue);
-  tree->SetBranchAddress("nbEv_3lep_uue",&nbEv_3lep_uue,&b_nbEv_3lep_uue);
-  tree->SetBranchAddress("nbEv_LooseLepVeto_uue",&nbEv_LooseLepVeto_uue,&b_nbEv_LooseLepVeto_uue);
-  tree->SetBranchAddress("nbEv_ZbosonWindow_uue",&nbEv_ZbosonWindow_uue,&b_nbEv_ZbosonWindow_uue);
-  tree->SetBranchAddress("nbEv_AtLeast1jet_uue",&nbEv_AtLeast1jet_uue,&b_nbEv_AtLeast1jet_uue);
-  
-  tree->SetBranchAddress("nbEv_Initial_eeu",&nbEv_Initial_eeu,&b_nbEv_Initial_eeu);
-  tree->SetBranchAddress("nbEv_Trigged_eeu",&nbEv_Trigged_eeu,&b_nbEv_Trigged_eeu);
-  tree->SetBranchAddress("nbEv_3lep_eeu",&nbEv_3lep_eeu,&b_nbEv_3lep_eeu);
-  tree->SetBranchAddress("nbEv_LooseLepVeto_eeu",&nbEv_LooseLepVeto_eeu,&b_nbEv_LooseLepVeto_eeu);
-  tree->SetBranchAddress("nbEv_ZbosonWindow_eeu",&nbEv_ZbosonWindow_eeu,&b_nbEv_ZbosonWindow_eeu);
-  tree->SetBranchAddress("nbEv_AtLeast1jet_eeu",&nbEv_AtLeast1jet_eeu,&b_nbEv_AtLeast1jet_eeu);
-  
-  tree->SetBranchAddress("nbEv_Initial_eee",&nbEv_Initial_eee,&b_nbEv_Initial_eee);
-  tree->SetBranchAddress("nbEv_Trigged_eee",&nbEv_Trigged_eee,&b_nbEv_Trigged_eee);
-  tree->SetBranchAddress("nbEv_3lep_eee",&nbEv_3lep_eee,&b_nbEv_3lep_eee);
-  tree->SetBranchAddress("nbEv_LooseLepVeto_eee",&nbEv_LooseLepVeto_eee,&b_nbEv_LooseLepVeto_eee);
-  tree->SetBranchAddress("nbEv_ZbosonWindow_eee",&nbEv_ZbosonWindow_eee,&b_nbEv_ZbosonWindow_eee);
-  tree->SetBranchAddress("nbEv_AtLeast1jet_eee",&nbEv_AtLeast1jet_eee,&b_nbEv_AtLeast1jet_eee);
-  
-  */
-  
-  
-  
-  
-  TotalEvents = 0;
-  
-  int nPos = 0;
-  int nNeg = 0;
-  int Weights = 0;
-  
-  
-  for (int k = 0; k< Entries; k++)
-  {
-    tree->GetEntry(k);
-    TotalEvents += nEv;
-    /* TO FIX
-    total_nbEv_3lep_all += nbEv_3lep_all;
-    total_nbEv_AtLeast1jet_all += nbEv_AtLeast1jet_all;
-    total_nbEv_Initial_all += nbEv_Initial_all;
-    total_nbEv_LooseLepVeto_all += nbEv_LooseLepVeto_all;
-    total_nbEv_Trigged_all += nbEv_Trigged_all;
-    total_nbEv_ZbosonWindow_all += nbEv_ZbosonWindow_all;
-    
-    total_nbEv_3lep_uuu += nbEv_3lep_uuu;
-    total_nbEv_AtLeast1jet_uuu += nbEv_AtLeast1jet_uuu;
-    total_nbEv_Initial_uuu += nbEv_Initial_uuu;
-    total_nbEv_LooseLepVeto_uuu += nbEv_LooseLepVeto_uuu;
-    total_nbEv_Trigged_uuu += nbEv_Trigged_uuu;
-    total_nbEv_ZbosonWindow_uuu += nbEv_ZbosonWindow_uuu;
-    
-    total_nbEv_3lep_uue += nbEv_3lep_uue;
-    total_nbEv_AtLeast1jet_uue += nbEv_AtLeast1jet_uue;
-    total_nbEv_Initial_uue += nbEv_Initial_uue;
-    total_nbEv_LooseLepVeto_uue += nbEv_LooseLepVeto_uue;
-    total_nbEv_Trigged_uue += nbEv_Trigged_uue;
-    total_nbEv_ZbosonWindow_uue += nbEv_ZbosonWindow_uue;
-    
-    total_nbEv_3lep_eeu += nbEv_3lep_eeu;
-    total_nbEv_AtLeast1jet_eeu += nbEv_AtLeast1jet_eeu;
-    total_nbEv_Initial_eeu += nbEv_Initial_eeu;
-    total_nbEv_LooseLepVeto_eeu += nbEv_LooseLepVeto_eeu;
-    total_nbEv_Trigged_eeu += nbEv_Trigged_eeu;
-    total_nbEv_ZbosonWindow_eeu += nbEv_ZbosonWindow_eeu;
-    
-    total_nbEv_3lep_eee += nbEv_3lep_eee;
-    total_nbEv_AtLeast1jet_eee += nbEv_AtLeast1jet_eee;
-    total_nbEv_Initial_eee += nbEv_Initial_eee;
-    total_nbEv_LooseLepVeto_eee += nbEv_LooseLepVeto_eee;
-    total_nbEv_Trigged_eee += nbEv_Trigged_eee;
-    total_nbEv_ZbosonWindow_eee += nbEv_ZbosonWindow_eee;
-    */
-    if( isAMC && !isData) nPos += nofPosWeights;
-    if(isAMC && !isData) nNeg += nofNegWeights;
-    if(isAMC && !isData) Weights += sumW;
-    
-  }
-  
-  if(!isData){
-    EquilumiSF = TotalEvents / Xsect;
-    cout << "                equilumi = " <<  TotalEvents <<" / " << Xsect <<" = " << EquilumiSF << endl;
-  }
-  else EquilumiSF = 1.;
-  if(isAMC && !isData) nloSF *= ((double) (nPos + nNeg))/((double) (nPos - nNeg));
-  if(isAMC && !isData) cout << "                 nloSF: " << nloSF << endl;
-  
-  
-  double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
-  if(firstevent && verbose > 3){
-    cout << "It took us " << time_sub << " s to run the GetMetaData" << endl;
-    if ( time_sub >= 60 )
-    {
-      int mins = time_sub/60;
-      float secs = time_sub - mins*60;
-      
-      if (mins >= 60 )
-      {
-        int hours = mins/60;
-        mins = mins - hours*60;
-        cout << "(This corresponds to " << hours << " hours, " << mins << " min and " << secs << " s)" << endl;
-      }
-      else
-        cout << "(This corresponds to " << mins << " min and " << secs << " s)" << endl;
-    }
-  }
-  
-  
-  
-}
-
-string ConvertIntToString(int Number, int pad)
-{
+///////////////////////////////////// BOOKKEEPING /////////////////////////////////////////
+string ConvertIntToString(int Number, int pad){
   ostringstream convert;
   convert.clear();  // clear bits
   convert.str(std::string());  // clear content
@@ -2619,10 +2471,7 @@ string ConvertIntToString(int Number, int pad)
   convert << Number;
   return convert.str();
 }
-
-
-string MakeTimeStamp()
-{
+string MakeTimeStamp(){
   time_t t = time(0);   // get time now
   struct tm * now = localtime( & t );
   
@@ -2643,15 +2492,15 @@ string MakeTimeStamp()
   string date_str = year_str + month_str + day_str + "_" + hour_str + min_str;
   return date_str;
 }
-void ClearObjects()
-{
-  //  ClearLeaves();
+
+///////////////////////////////////// CLEARING /////////////////////////////////////////
+void ClearObjects(){
+  //  ClearLeaves(); TO FIX
   ClearTLVs();
   ClearVars();
   
 }
-void ClearMVAVars()
-{
+void ClearMVAVars(){
   MVA_channel = -999.;
   MVA_weight = 1.;
   MVA_region = -999.;
@@ -2797,7 +2646,7 @@ void ClearTLVs(){
   temp0.Clear();
   temp1.Clear();
   temp2.Clear();
-
+  
   
   
 }
@@ -2857,37 +2706,53 @@ void ClearVars(){
 void ClearMatchingVarsTLV(){
   mcpart.Clear();
   mcParticles.clear();
+
 }
 void ClearMatchingVars(){
-
-   foundTopQ = false;
-   foundAntitopQ = false;
-   foundSMb = false;
-   foundSMmu = false;
-   foundSMel = false;
-   foundW = false;
-   foundZmumin = false;
-   foundZmuplus = false;
-   foundZelmin = false;
-   foundZelplus = false;
-   foundZ = false;
-   foundLjet = false;
-   TopQ_Indice = -999;
-   AntiTopQ_Indice = -999;
-   SMb_Indice = -999;
-   SMmu_Indice = -999;
-   SMel_Indice = -999;
-   SMW_Indice = -999;
-   Zmu_min_Indice = -999;
-   Zmu_plus_Indice = -999;
-   Zel_min_Indice = -999;
-   Zel_plus_Indice = -999;
-   Z_Indice = -999;
-   LightJet_Indice = -999;
-   foundDecay = false;
+  
+  foundTopQ = false;
+  foundAntitopQ = false;
+  foundSMb = false;
+  foundSMmu = false;
+  foundSMel = false;
+  foundSMnumu = false;
+  foundSMnuel = false;
+  foundW = false;
+  foundZmumin = false;
+  foundZmuplus = false;
+  foundZelmin = false;
+  foundZelplus = false;
+  foundZ = false;
+  foundCjet = false;
+  foundUjet = false;
+  TopQ_Indice = -999;
+  AntiTopQ_Indice = -999;
+  SMb_Indice = -999;
+  SMmu_Indice = -999;
+  SMel_Indice = -999;
+  SMW_Indice = -999;
+  SMnumu_Indice = -999;
+  SMnuel_Indice = -999;
+  Zmu_min_Indice = -999;
+  Zmu_plus_Indice = -999;
+  Zel_min_Indice = -999;
+  Zel_plus_Indice = -999;
+  Z_Indice = -999;
+  Cjet_Indice = -999;
+  Ujet_Indice = -999;
+  foundDecay = false;
+  
+  WmuIndiceM = -999;
+  WelecIndiceM = -999;
+  ZelecIndiceM_0 = -999;
+  ZelecIndiceM_1 = -999;
+  ZmuIndiceM_0 = -999;
+  ZmuIndiceM_1 = -999;
+  BjetIndiceM = -999;
+  CjetIndiceM = -999;
+  UjetIndiceM = -999;
 }
-void ClearMetaData()
-{
+void ClearMetaData(){
   nEv = 0;
   nloSF = 1.;
   nofPosWeights = 0;
@@ -2906,7 +2771,7 @@ void ClearMetaData()
   WPc_CvsB_Tight= 0.;
   WPc_CvsL_Loose= 0.;
   WPc_CvsL_Medium= 0.;
-  Double_t WPc_CvsL_Tight= 0.;
+  WPc_CvsL_Tight= 0.;
   
   // TO FIX
   total_nbEv_3lep_all= 0;
@@ -2941,22 +2806,89 @@ void ClearMetaData()
   total_nbEv_Trigged_eee= 0;
   total_nbEv_ZbosonWindow_eee= 0;
 }
-
-
-void Init1DPlots()
-{
+void ClearMatchingSampleVars(){
+  WlepMatched= 0.;
+  ZlepMatched = 0.;
+  WlepMatchedevent= 0.;
+  ZlepMatchedevent = 0.;
+  BjetMatched = 0.;
+  BjetMatchedevent = 0.;
+  CjetMatched = 0.;
+  CjetMatchedevent = 0. ;
+  UjetMatched = 0.;
+  UjetMatchedevent = 0.;
+  
+  CjetMatchedeventCvsLL = 0.;
+  CjetMatchedeventCvsLM = 0.;
+  CjetMatchedeventCvsLT = 0.;
+  CjetMatchedeventCvsBL = 0.;
+  CjetMatchedeventCvsBM = 0.;
+  CjetMatchedeventCvsBT = 0.;
+  CjetMatchedeventL = 0.;
+  CjetMatchedeventM = 0.;
+  CjetMatchedeventT = 0.;
+  CjetMatchedL = 0.;
+  CjetMatchedM = 0.;
+  CjetMatchedT = 0.;
+  CjetMatchedCvsBL = 0.;
+  CjetMatchedCvsBM = 0.;
+  CjetMatchedCvsBT = 0.;
+  CjetMatchedCvsLL = 0.;
+  CjetMatchedCvsLM = 0.;
+  CjetMatchedCvsLT = 0.;
+}
+///////////////////////////////////// INIT PLOTS /////////////////////////////////////////
+void Init1DPlots(){
   TH1::SetDefaultSumw2();
+  
+  //histo1D["eventID"] = new TH1F("eventID","eventID",5802564204,207137,5802564203);
   
 }
 
-
-
-
-
-void InitMSPlots(string prefix, vector <int> decayChannels)
-{
+void InitMSPlotsBDT(string prefix, vector <int> decayChannels){
   clock_t start_sub = clock();
-      string decaystring = "";
+  string decaystring = "";
+  // control plots
+  for(int iChan =0; iChan < decayChannels.size() ; iChan++){
+    
+    decaystring = "";
+    if(decayChannels[iChan] == 0) decaystring = "uuu";
+    if(decayChannels[iChan] == 1) decaystring = "uue";
+    if(decayChannels[iChan] == 2) decaystring = "eeu";
+    if(decayChannels[iChan] == 3) decaystring = "eee";
+    if(decayChannels[iChan] == -9) decaystring = "all";
+    //MSPlot[plotname.c_str()]->setChannel(true, decayChan);
+    
+    
+    MSPlot[(prefix+"_BDT_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_BDT_"+decaystring).c_str(), 60, 0, 60, "BDT");
+    
+  }
+  
+ 
+  
+  double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
+  if(firstevent && verbose > 3){
+    cout << "It took us " << time_sub << " s to run the InitMSPlots" << endl;
+    if ( time_sub >= 60 )
+    {
+      int mins = time_sub/60;
+      float secs = time_sub - mins*60;
+      
+      if (mins >= 60 )
+      {
+        int hours = mins/60;
+        mins = mins - hours*60;
+        cout << "(This corresponds to " << hours << " hours, " << mins << " min and " << secs << " s)" << endl;
+      }
+      else
+        cout << "(This corresponds to " << mins << " min and " << secs << " s)" << endl;
+    }
+  }
+}
+
+void InitMSPlots(string prefix, vector <int> decayChannels){
+  clock_t start_sub = clock();
+  string decaystring = "";
   // control plots
   for(int iChan =0; iChan < decayChannels.size() ; iChan++){
     
@@ -2970,7 +2902,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels)
     
     
     MSPlot[(prefix+"_NbOfVertices_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_NbOfVertices_"+decaystring).c_str(), 60, 0, 60, "Nb Of vertices");
-    //MSPlot[(prefix+"_NbOfVertices_bfPU_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_NbOfVertices_bfPU_"+decaystring).c_str(), 60, 0, 60, "Nb Of vertices before PU reweighing"); TO FIX
+    MSPlot[(prefix+"_NbOfVertices_bfPU_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_NbOfVertices_bfPU_"+decaystring).c_str(), 60, 0, 60, "Nb Of vertices before PU reweighing");
     MSPlot[(prefix+"_puSF_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_puSF_"+decaystring).c_str(), 200, 0, 2, "Pile up SF");
     
     //cout << "init " << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
@@ -2987,12 +2919,12 @@ void InitMSPlots(string prefix, vector <int> decayChannels)
     MSPlot[(prefix+"_nEl_bfElSF_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefix+"_nEl_bfElSF_"+decaystring).c_str(), 10, -0.5, 9.5, "Nb of Electrons before Electron SF");
     MSPlot[(prefix+"_elSF_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_elSF_"+decaystring).c_str(), 60, 0.8, 1.05, "Electron SF");
     
-     MSPlot[(prefix+"_JetPt_bfJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_bfJER_"+decaystring).c_str(), 100, 0, 1, "Jet Pt before JER");
-     MSPlot[(prefix+"_JetPt_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_bfJES_"+decaystring).c_str(), 100, 0, 1, "Jet Pt before JES, after JER");
-     MSPlot[(prefix+"_JetPt_afJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_afJER_"+decaystring).c_str(), 100, 0, 1, "Jet Pt after JER");
-     MSPlot[(prefix+"_JetPt_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_afJES_"+decaystring).c_str(), 100, 0, 1, "Jet Pt after JES, after JER");
-     MSPlot[(prefix+"_met_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_met_bfJES_"+decaystring).c_str(), 100, 0, 1, "MET before JES");
-     MSPlot[(prefix+"_met_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_met_afJES_"+decaystring).c_str(), 100, 0, 1, "MET after JES");
+    MSPlot[(prefix+"_JetPt_bfJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_bfJER_"+decaystring).c_str(), 100, 0, 1, "Jet Pt before JER");
+    MSPlot[(prefix+"_JetPt_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_bfJES_"+decaystring).c_str(), 100, 0, 1, "Jet Pt before JES, after JER");
+    MSPlot[(prefix+"_JetPt_afJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_afJER_"+decaystring).c_str(), 100, 0, 1, "Jet Pt after JER");
+    MSPlot[(prefix+"_JetPt_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_afJES_"+decaystring).c_str(), 100, 0, 1, "Jet Pt after JES, after JER");
+    MSPlot[(prefix+"_met_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_met_bfJES_"+decaystring).c_str(), 100, 0, 1, "MET before JES");
+    MSPlot[(prefix+"_met_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_met_afJES_"+decaystring).c_str(), 100, 0, 1, "MET after JES");
     
     
     
@@ -3020,7 +2952,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels)
   
   
   
-   MSPlot[(prefix+"_Decay").c_str()]= new MultiSamplePlot(datasets, (prefix+"_Decay").c_str(), 10, -0.5, 9.5, "Nb. Events with decay");
+  MSPlot[(prefix+"_Decay").c_str()]= new MultiSamplePlot(datasets, (prefix+"_Decay").c_str(), 10, -0.5, 9.5, "Nb. Events with decay");
   
   double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
   if(firstevent && verbose > 3){
@@ -3041,7 +2973,6 @@ void InitMSPlots(string prefix, vector <int> decayChannels)
     }
   }
 }
-
 void InitMVAMSPlotsWZ(string prefix, vector <int> decayChannels){
   
   clock_t start_sub = clock();
@@ -3053,15 +2984,13 @@ void InitMVAMSPlotsWZ(string prefix, vector <int> decayChannels){
     if(decayChannels[iChan] == 2) decaystring = "eeu";
     if(decayChannels[iChan] == 3) decaystring = "eee";
     if(decayChannels[iChan] == -9) decaystring = "all";
-
+    
     MSPlot[(prefix+"_MVA_mWt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_mWt_"+decaystring).c_str(),100, 0, 100, "M_{T}(W)");
     
   }
   
 }
-
-void InitMVAMSPlotsSingletop(string prefix, vector <int> decayChannels)
-{
+void InitMVAMSPlotsSingletop(string prefix, vector <int> decayChannels){
   clock_t start_sub = clock();
   
   InitMVAMSPlotsWZ(prefix, decayChannels);
@@ -3075,23 +3004,40 @@ void InitMVAMSPlotsSingletop(string prefix, vector <int> decayChannels)
     if(decayChannels[iChan] == 3) decaystring = "eee";
     if(decayChannels[iChan] == -9) decaystring = "all";
     
-    MSPlot[ (prefix+"_MVA_channel_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_channel_"+decaystring).c_str(), 4,-0.5, 4.5, "decay");
+    MSPlot[ (prefix+"_MVA_channel_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_channel_"+decaystring).c_str(), 5,-0.5, 4.5, "decay");
     MSPlot[ (prefix+"_MVA_weight_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_weight_"+decaystring).c_str(), 100,-0.5, 9.5, "eventweight");
+ //   cout << "defining " <<  (prefix+"_MVA_lepton0_pt_"+decaystring).c_str() << endl;
+   MSPlot[(prefix+"_MVA_lepton0_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_lepton0_pt_"+decaystring).c_str(), 100,0, 500, "p_{T}(lep0) [GeV]");
+    MSPlot[(prefix+"_MVA_Zboson_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Zboson_pt_"+decaystring).c_str(), 50,0, 500, "p_{T} (Z)[GeV]");
+    MSPlot[(prefix+"_MVA_Zboson_eta_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Zboson_eta_"+decaystring).c_str(),60,-6, 6, "#eta (Z)");
+    MSPlot[(prefix+"_MVA_dRWlepb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRWlepb_"+decaystring).c_str(),60,0, 6, "dR(l_{W}b)");
+    MSPlot[(prefix+"_MVA_dPhiWlepb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dPhiWlepb_"+decaystring).c_str(),40,-4, 4, "dphi(l_{W}b)");
+    MSPlot[(prefix+"_MVA_TotalHt_jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalHt_jet_"+decaystring).c_str(),500, 0, 5000, "total jet and met H_{T}");
+    MSPlot[(prefix+"_MVA_dRZb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRZb_"+decaystring).c_str(),60,0, 6, "dR(Z,Bjet)");
+    MSPlot[(prefix+"_MVA_dRZWlep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRZWlep_"+decaystring).c_str(),60,0, 6, "dR(Z,l_{W})");
+    MSPlot[(prefix+"_MVA_dRZSMtop_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRZSMtop_"+decaystring).c_str(),60,0, 6, "dR(Z,SMtop)");
     
-    MSPlot[ (prefix+"_MVA_lepton0_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_lepton0_pt_"+decaystring).c_str(), 500,0, 500, "p_{T}(lep0) [GeV]");
-    MSPlot[ (prefix+"_MVA_lepton1_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_lepton1_pt_"+decaystring).c_str(), 500,0, 500, "p_{T}(lep1) [GeV]");
-    MSPlot[ (prefix+"_MVA_lepton2_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_lepton2_pt_"+decaystring).c_str(), 500,0, 500, "p_{T}(lep2) [GeV]");
-    MSPlot[ (prefix+"_MVA_lepton0_eta_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_lepton0_eta_"+decaystring).c_str(),60,-6, 6, "#eta (lep0)");
+    MSPlot[(prefix+"_MVA_dPhiZb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dPhiZb_"+decaystring).c_str(),40,-4, 4, "dphi (Z,Bjet)");
+    MSPlot[(prefix+"_MVA_dPhiZWlep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dPhiZWlep_"+decaystring).c_str(),40,-4, 4, "dphi (Z, l_{W})");
+    MSPlot[(prefix+"_MVA_dPhiZMET_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dPhiZMET_"+decaystring).c_str(),40,-4, 4, "dphi (Z,met)");
+    MSPlot[(prefix+"_MVA_dPhiZSMtop_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dPhiZSMtop_"+decaystring).c_str(),40,-4, 4, "dphi (Z,SMtop)");
+    MSPlot[(prefix+"_MVA_SMtop_eta_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_SMtop_eta_"+decaystring).c_str(),60,-6, 6, "#eta (SMtop)");
+    
+    
+  
+  MSPlot[(prefix+"_MVA_lepton1_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_lepton1_pt_"+decaystring).c_str(), 100,0, 500, "p_{T}(lep1) [GeV]");
+  MSPlot[ (prefix+"_MVA_lepton2_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_lepton2_pt_"+decaystring).c_str(), 100,0, 500, "p_{T}(lep2) [GeV]");
+   MSPlot[ (prefix+"_MVA_lepton0_eta_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_lepton0_eta_"+decaystring).c_str(),60,-6, 6, "#eta (lep0)");
     MSPlot[ (prefix+"_MVA_lepton1_eta_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_lepton1_eta_"+decaystring).c_str(),60,-6, 6, "#eta (lep1)");
     MSPlot[ (prefix+"_MVA_lepton2_eta_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_lepton2_eta_"+decaystring).c_str(),60,-6, 6, "#eta (lep2)");
     MSPlot[ (prefix+"_MVA_lepton0_phi_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_lepton0_phi_"+decaystring).c_str(),40,-4, 4, "#phi (lep0)");
     MSPlot[ (prefix+"_MVA_lepton1_phi_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_lepton1_phi_"+decaystring).c_str(),40,-4, 4, "#phi (lep1)");
     MSPlot[ (prefix+"_MVA_lepton2_phi_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_lepton2_phi_"+decaystring).c_str(),40,-4, 4, "#phi (lep2)");
     
-    MSPlot[ (prefix+"_MVA_jet0_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_jet0_pt_"+decaystring).c_str(), 500,0, 500, "p_{T} (jet0) [GeV]");
+    MSPlot[ (prefix+"_MVA_jet0_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_jet0_pt_"+decaystring).c_str(), 100,0, 500, "p_{T} (jet0) [GeV]");
     MSPlot[ (prefix+"_MVA_jet0_eta_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_jet0_eta_"+decaystring).c_str(),60,-6, 6, "#eta (jet0)");
     MSPlot[ (prefix+"_MVA_jet0_phi_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_jet0_phi_"+decaystring).c_str(),40,-4, 4, "#phi (jet0)");
-
+   
     // SM side
     MSPlot[ (prefix+"_MVA_Wlep_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Wlep_pt_"+decaystring).c_str(), 500,0, 500, "p_{T}(l_{W})[GeV]");
     MSPlot[ (prefix+"_MVA_Wlep_eta_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Wlep_eta_"+decaystring).c_str(),60,-6, 6, "#eta (l_{W})");
@@ -3099,18 +3045,15 @@ void InitMVAMSPlotsSingletop(string prefix, vector <int> decayChannels)
     MSPlot[ (prefix+"_MVA_SMbjet_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_SMbjet_pt_"+decaystring).c_str(), 500,0, 500, "p_{T} (Bjet) [GeV]");
     MSPlot[ (prefix+"_MVA_SMbjet_eta_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_SMbjet_eta_"+decaystring).c_str(),60,-6, 6, "#eta (Bjet)");
     MSPlot[ (prefix+"_MVA_SMbjet_phi_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_SMbjet_phi_"+decaystring).c_str(),40,-4, 4, "#phi (Bjet)");
-    MSPlot[ (prefix+"_MVA_Wboson_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Wboson_pt_"+decaystring).c_str(), 500,0, 500, "p_{T}(W) [GeV]");
+    MSPlot[ (prefix+"_MVA_Wboson_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Wboson_pt_"+decaystring).c_str(), 100,0, 500, "p_{T}(W) [GeV]");
     MSPlot[ (prefix+"_MVA_Wboson_eta_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Wboson_eta_"+decaystring).c_str(),60,-6, 6, "#eta (W)");
     MSPlot[ (prefix+"_MVA_Wboson_phi_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Wboson_phi_"+decaystring).c_str(),40,-4, 4, "#phi (W)");
-    MSPlot[ (prefix+"_MVA_met_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_met_"+decaystring).c_str(), 500,0, 500, "met");
-    MSPlot[ (prefix+"_MVA_SMtop_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_SMtop_pt_"+decaystring).c_str(), 500,0, 500, "p_{T}(SMtop) [GeV]");
-    MSPlot[ (prefix+"_MVA_SMtop_eta_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_SMtop_eta_"+decaystring).c_str(),60,-6, 6, "#eta (SMtop)");
-    MSPlot[ (prefix+"_MVA_SMtop_phi_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_SMtop_phi_"+decaystring).c_str(),40,-4, 4, "#phi (SMtop)");
+    MSPlot[ (prefix+"_MVA_met_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_met_"+decaystring).c_str(), 100,0, 500, "met");
+    MSPlot[ (prefix+"_MVA_SMtop_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_SMtop_pt_"+decaystring).c_str(), 100,0, 500, "p_{T}(SMtop) [GeV]");
+      MSPlot[ (prefix+"_MVA_SMtop_phi_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_SMtop_phi_"+decaystring).c_str(),40,-4, 4, "#phi (SMtop)");
     
     // FCNC side
-    MSPlot[ (prefix+"_MVA_Zboson_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Zboson_pt_"+decaystring).c_str(), 500,0, 500, "p_{T} (Z)[GeV]");
-    MSPlot[ (prefix+"_MVA_Zboson_eta_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Zboson_eta_"+decaystring).c_str(),60,-6, 6, "#eta (Z)");
-    MSPlot[ (prefix+"_MVA_Zboson_phi_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Zboson_phi_"+decaystring).c_str(),40,-4, 4, "#phi (Z)");
+     MSPlot[ (prefix+"_MVA_Zboson_phi_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Zboson_phi_"+decaystring).c_str(),40,-4, 4, "#phi (Z)");
     
     // nbrs
     MSPlot[ (prefix+"_MVA_nMuons_"+decaystring).c_str()]=new MultiSamplePlot(datasets, (prefix+"_MVA_nMuons_"+decaystring).c_str(), 10,-0.5, 9.5, "nb Muons");
@@ -3122,43 +3065,31 @@ void InitMVAMSPlotsSingletop(string prefix, vector <int> decayChannels)
     
     //SM kinematics
     MSPlot[(prefix+"_MVA_SMtop_M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_SMtop_M_"+decaystring).c_str(),300, 0,300, "M(SMtop)");
-    MSPlot[(prefix+"_MVA_mlb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_mlb_"+decaystring).c_str(),100, 0, 100, "M(l_{W}b)");
+    MSPlot[(prefix+"_MVA_mlb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_mlb_"+decaystring).c_str(),100, 0, 500, "M(l_{W}b)");
     MSPlot[(prefix+"_MVA_Wboson_M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_Wboson_M_"+decaystring).c_str(),100, 0, 100, "M(W)");
     
-    MSPlot[(prefix+"_MVA_dRWlepb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRWlepb_"+decaystring).c_str(),100,-10, 10, "dR(l_{W}b)");
-    
-    MSPlot[(prefix+"_MVA_dPhiWlepb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dPhiWlepb_"+decaystring).c_str(),40,-4, 4, "d#phi(l_{W}b)");
-    
+   
     MSPlot[(prefix+"_MVA_Wlep_Charge_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_Wlep_Charge_"+decaystring).c_str(),4, -2, 2, "Q(l_{W})");
-    MSPlot[(prefix+"_MVA_charge_asym_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_charge_asym_"+decaystring).c_str(),100, -10, 10, "Q(l_{W})|#eta(W)|");
+    MSPlot[(prefix+"_MVA_charge_asym_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_charge_asym_"+decaystring).c_str(),40, -4, 4, "Q(l_{W})|#eta(W)|");
     MSPlot[(prefix+"_MVA_TotalPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalPt_"+decaystring).c_str(), 500, 0, 5000, "total P_{T}");
     MSPlot[(prefix+"_MVA_TotalHt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalHt_"+decaystring).c_str(),500, 0, 5000, "total H_{T}");
     MSPlot[(prefix+"_MVA_TotalInvMass_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalInvMass_"+decaystring).c_str(),500, 0, 5000, "total Inv Mass");
     MSPlot[(prefix+"_MVA_TotalPt_jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalPt_jet_"+decaystring).c_str(), 500, 0, 5000, "total jet and met P_{T}");
-    MSPlot[(prefix+"_MVA_TotalHt_jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalHt_jet_"+decaystring).c_str(),500, 0, 5000, "total jet and met H_{T}");
     MSPlot[(prefix+"_MVA_TotalInvMass_jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalInvMass_jet_"+decaystring).c_str(),500, 0, 5000, "total jet and met Inv Mass");
     MSPlot[(prefix+"_MVA_TotalPt_lep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalPt_lep_"+decaystring).c_str(), 500, 0, 5000, "total lepton P_{T}");
     MSPlot[(prefix+"_MVA_TotalHt_lep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalHt_lep_"+decaystring).c_str(),500, 0, 5000, "total lepton H_{T}");
     MSPlot[(prefix+"_MVA_TotalInvMass_lep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalInvMass_lep_"+decaystring).c_str(),500, 0, 5000, "total lepton Inv Mass");
     
     
-    MSPlot[(prefix+"_MVA_bdiscCSVv2_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_bdiscCSVv2_jet_0_"+decaystring).c_str(),100, 0, 1, "CSVv2 Highest pt jet");
-    MSPlot[(prefix+"_MVA_CosTheta_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_CosTheta_"+decaystring).c_str(),25, -1, 1, "Cos(#theta *)");
-    MSPlot[(prefix+"_MVA_CosTheta_alt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_CosTheta_alt_"+decaystring).c_str(),25, -1, 1, "Cos(#theta *)");
+    MSPlot[(prefix+"_MVA_bdiscCSVv2_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_bdiscCSVv2_jet_0_"+decaystring).c_str(),50, 0, 1, "CSVv2 Highest pt jet");
+   // MSPlot[(prefix+"_MVA_CosTheta_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_CosTheta_"+decaystring).c_str(),25, -1, 1, "Cos(#theta *)");
+   // MSPlot[(prefix+"_MVA_CosTheta_alt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_CosTheta_alt_"+decaystring).c_str(),25, -1, 1, "Cos(#theta *)");
     
     // FCNC kinematics
     MSPlot[(prefix+"_MVA_Zboson_M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_Zboson_M_"+decaystring).c_str(),300, 0,300, "M(Z)");
     
     // interplay
-    MSPlot[(prefix+"_MVA_dRZb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRZb_"+decaystring).c_str(),100,-10, 10, "dR(Z,Bjet)");
-    MSPlot[(prefix+"_MVA_dRZWlep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRZWlep_"+decaystring).c_str(),100,-10, 10, "dR(Z,l_{W})");
-    MSPlot[(prefix+"_MVA_dRZSMtop_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRZSMtop_"+decaystring).c_str(),100,-10, 10, "dR(Z,SMtop)");
-    
-    MSPlot[(prefix+"_MVA_dPhiZb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dPhiZb_"+decaystring).c_str(),40,-4, 4, "d#phi (Z,Bjet)");
-    MSPlot[(prefix+"_MVA_dPhiZWlep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dPhiZWlep_"+decaystring).c_str(),40,-4, 4, "d#phi (Z, l_{W})");
-    MSPlot[(prefix+"_MVA_dPhiZMET_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dPhiZMET_"+decaystring).c_str(),40,-4, 4, "d#phi (Z,met)");
-    MSPlot[(prefix+"_MVA_dPhiZSMtop_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dPhiZSMtop_"+decaystring).c_str(),40,-4, 4, "d#phi (Z,SMtop)");
-    
+   
     MSPlot[(prefix+"_MVA_m3l_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_m3l_"+decaystring).c_str(),200,0, 200, "Inv Mass Leptons");
   }
   
@@ -3181,9 +3112,7 @@ void InitMVAMSPlotsSingletop(string prefix, vector <int> decayChannels)
     }
   }
 }
-
-void InitMVAMSPlotsTopPair(string prefix, vector <int> decayChannels)
-{
+void InitMVAMSPlotsTopPair(string prefix, vector <int> decayChannels){
   clock_t start_sub = clock();
   
   InitMVAMSPlotsSingletop(prefix, decayChannels);
@@ -3202,7 +3131,7 @@ void InitMVAMSPlotsTopPair(string prefix, vector <int> decayChannels)
     MSPlot[(prefix+"_MVA_cdiscCvsL_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_cdiscCvsL_jet_0_"+decaystring).c_str(),100, 0, 1, "CvsL Highest pt jet");
     
     
-    MSPlot[(prefix+"_MVA_jet1_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_jet1_pt_"+decaystring).c_str(), 500,0, 500, "p_{T} (jet1) [GeV]");
+    MSPlot[(prefix+"_MVA_jet1_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_jet1_pt_"+decaystring).c_str(), 100,0, 500, "p_{T} (jet1) [GeV]");
     MSPlot[(prefix+"_MVA_jet1_eta_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_jet1_eta_"+decaystring).c_str(),60,-6, 6, "#eta (jet1)");
     MSPlot[(prefix+"_MVA_jet1_phi_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_jet1_phi_"+decaystring).c_str(),40,-4, 4, "#phi (jet1)");
     
@@ -3257,15 +3186,95 @@ void InitMVAMSPlotsTopPair(string prefix, vector <int> decayChannels)
   
   
 }
-
-void Init2DPlots()
-{
+void Init2DPlots(){
   TH2::SetDefaultSumw2();
   //histo2D["CosTheta"]= new TH2F("CosTheta", "CosTheta* in the W RF vs W RF en Top RF", 200, -1,1, 200, -1,1);
 }
+void InitGenInfoPlots(string dataSetName){
+  TH1::SetDefaultSumw2();
+  TH2::SetDefaultSumw2();
+  
+  histo1D[("Topmass_Wb_"+dataSetName).c_str()] = new TH1F(("Topmass_Wb_"+dataSetName).c_str(),"Inv Mass(Wb)",500,0,500);
+  histo1D[("pt_Wb_"+dataSetName).c_str()] = new TH1F(("pt_Wb_"+dataSetName).c_str(),"P_{t}(Wb)",500,0,500);
+  histo1D[("eta_Wb_"+dataSetName).c_str()]= new TH1F(("eta_Wb_"+dataSetName).c_str(),"#eta(Wb)",30,-3,3);
+  histo1D[("phi_Wb_"+dataSetName).c_str()]= new TH1F(("phi_Wb_"+dataSetName).c_str(),"#phi(Wb)",32,-3.2,3.2);
+  histo1D[("dPhi_Wb_"+dataSetName).c_str()]  = new TH1F(("DPhiWb_"+dataSetName).c_str(),"#delta #Phi (Wb)", 140,-7, 7);
+  histo1D[("dR_Wb_"+dataSetName).c_str()] =  new TH1F(("DRWb_"+dataSetName).c_str(),"#delta R(Wb)", 500,0, 5);
+  
+  
+  histo1D[("Topmass_topquark_"+dataSetName).c_str()] = new TH1F(("Topmass_topquark_"+dataSetName).c_str(),"Topmass_topquark",500,0,500);
+  histo1D[("pt_topquark_"+dataSetName).c_str()] = new TH1F(("pt_topquark_"+dataSetName).c_str(),"pt_topquark",500,0,500);
+  histo1D[("eta_topquark_"+dataSetName).c_str()]= new TH1F(("eta_topquark_"+dataSetName).c_str(),"eta_topquark",30,-3,3);
+  histo1D[("phi_topquark_"+dataSetName).c_str()]= new TH1F(("phi_topquark_"+dataSetName).c_str(),"phi_topquark",32,-3.2,3.2);
+  
+  histo1D[("dR_Wbvstopquark_"+dataSetName).c_str()]  = new TH1F(("DRWbvstopquark_"+dataSetName).c_str(),"dR Wb-top", 500,0, 5);
+  histo1D[("dPhi_Wbvstopquark_"+dataSetName).c_str()]  = new TH1F(("DPhiWbvstopquark_"+dataSetName).c_str(),"dPhi Wb-top", 140,-7, 7);
+  
+  histo2D[("Topmass_topquarkvsWb_"+dataSetName).c_str()] = new TH2F(("Topmass_topquarkvsWb_"+dataSetName).c_str(),"Topmass:Wb:t",500,0,500,500,0,500);
+  histo2D[("pt_topquarkvsWb_"+dataSetName).c_str()] = new TH2F(("pt_topquarkvsWb_"+dataSetName).c_str(),"pt:Wb:t",500,0,500,500,0,500);
+  histo2D[("eta_topquarkvsWb_"+dataSetName).c_str()]= new TH2F(("eta_topquarkvsWb_"+dataSetName).c_str(),"eta:Wb:t",30,-3,3,30,-3,3);
+  histo2D[("phi_topquarkvsWb_"+dataSetName).c_str()]= new TH2F(("phi_topquarkvsWb_"+dataSetName).c_str(),"phi:Wb:t",32,-3.2,3.2,32,-3.2,3.2);
+  
+  histo1D[("dR_Wbtop_"+dataSetName).c_str()]  = new TH1F(("DRWbtop_"+dataSetName).c_str(),"dR Wb-top", 500,0, 5);
+  histo1D[("dPhi_Wbtop_"+dataSetName).c_str()]  = new TH1F(("DPhiWbtop_"+dataSetName).c_str(),"dPhi Wb-top", 140,-7, 7);
+  
+  histo1D[("mass_ZlepMin_"+dataSetName).c_str()]                                  = new TH1F(("mass_ZlepMin_"+dataSetName).c_str(),"mass_ZlepMin",250,0,0.5);
+  histo1D[("mass_ZlepPlus_"+dataSetName).c_str()]                                  = new TH1F(("mass_ZlepPlus_"+dataSetName).c_str(),"mass_ZlepPlus",250,0,0.5);
+  histo1D[("Zmass_Zleptons_"+dataSetName).c_str()]                                  = new TH1F(("Zmass_Zleptons_"+dataSetName).c_str(),"Zmass_Zleptons",200,0,200);
+  histo1D[("Zmass_Zboson_"+dataSetName).c_str()]                                  = new TH1F(("Zmass_Zboson_"+dataSetName).c_str(),"Zmass_Zboson",200,0,200);
+  histo2D[("mass_ZlepMinvsZlepPlus_"+dataSetName).c_str()]            = new TH2F(("mass_ZlepMinvsZlepPlus_"+dataSetName).c_str(),"mass lep;mass lepMin;mass lepPlus", 250,0,0.5,250,0,0.5 );
+  histo2D[("Zmass_ZbosonvsZleptons_"+dataSetName).c_str()]            = new TH2F(("Zmass_ZbosonbsZleptons_"+dataSetName).c_str(),"Zmass;Zmass_Zleptons;Zmass_Zboson", 200,0,200,200,0,200 );
+  
+  histo1D[("pt_ZlepMin_"+dataSetName).c_str()]          = new TH1F(("pt_ZlepMin_"+dataSetName).c_str(),"Pt lep +", 200,0,400);
+  histo1D[("pt_ZlepPlus_"+dataSetName).c_str()]          = new TH1F(("pt_ZlepPlus_"+dataSetName).c_str(),"Pt lep -", 200,0,400);
+  histo1D[("pt_Zboson_"+dataSetName).c_str()]          = new TH1F(("pt_Zboson_"+dataSetName).c_str(),"Pt Zbosonon", 200,0,400);
+  histo1D[("pt_Zleptons_"+dataSetName).c_str()]          = new TH1F(("pt_Zleptons_"+dataSetName).c_str(),"Pt Zleptons", 200,0,400);
+  histo2D[("pt_ZlepMinvsZlepPlus_"+dataSetName).c_str()]          = new TH2F(("pt_ZlepMinvsZlepPlus_"+dataSetName).c_str(),"Pt leptons;Pt lep +;Pt lep -", 200,0,400, 200,0,400);
+  histo2D[("pt_ZbosonvsZleptons_"+dataSetName).c_str()]          = new TH2F(("pt_ZbosonvsZleptons_"+dataSetName).c_str(),"Pt Z;Pt Zleptons;Pt Zboson", 200,0,400, 200,0,400);
+  
+  histo1D[("phi_ZlepMin_"+dataSetName).c_str()]          = new TH1F(("phi_ZlepMin_"+dataSetName).c_str(),"phi lep +",32,-3.2,3.2);
+  histo1D[("phi_ZlepPlus_"+dataSetName).c_str()]          = new TH1F(("phi_ZlepPlus_"+dataSetName).c_str(),"phi lep -",32,-3.2,3.2);
+  histo1D[("phi_Zboson_"+dataSetName).c_str()]          = new TH1F(("phi_Zboson_"+dataSetName).c_str(),"phi Zboson",32,-3.2,3.2);
+  histo1D[("phi_Zleptons_"+dataSetName).c_str()]          = new TH1F(("phi_Zleptons_"+dataSetName).c_str(),"phi Zleptons",32,-3.2,3.2);
+  histo2D[("phi_ZlepMinvsZlepPlus_"+dataSetName).c_str()]          = new TH2F(("phi_ZlepMinvsZlepPlus_"+dataSetName).c_str(),"phi lep;phi lep +;phi lep -",32,-3.2,3.2,32,-3.2,3.2);
+  histo2D[("phi_ZbosonvsZleptons_"+dataSetName).c_str()]          = new TH2F(("phiZbosonvsZleptons_"+dataSetName).c_str(),"phi Z;phi Zleptons;phi Zboson",32,-3.2,3.2,32,-3.2,3.2);
+  
+  histo1D[("eta_ZlepMin_"+dataSetName).c_str()]          = new TH1F(("eta_ZlepMin_"+dataSetName).c_str(),"eta lep +", 30,-3,3);
+  histo1D[("eta_ZlepPlus_"+dataSetName).c_str()]          = new TH1F(("eta_ZlepPlus_"+dataSetName).c_str(),"eta lep -", 30,-3,3);
+  histo1D[("eta_Zboson_"+dataSetName).c_str()]          = new TH1F(("eta_Zboson_"+dataSetName).c_str(),"eta Zboson", 30,-3,3);
+  histo1D[("eta_Zleptons_"+dataSetName).c_str()]          = new TH1F(("etaZleptons_"+dataSetName).c_str(),"eta Zleptons", 30,-3,3);
+  histo2D[("eta_ZlepMinvsZlepPlus_"+dataSetName).c_str()]          = new TH2F(("eta_ZlepMinvsZlepPlus_"+dataSetName).c_str(),"eta lep;eta lep +;eta lep -", 30,-3,3, 30,-3,3);
+  histo2D[("eta_ZbosonvsZleptons_"+dataSetName).c_str()]          = new TH2F(("etaZbosonvsZleptons_"+dataSetName).c_str(),"eta Z;eta Zleptons;eta Zboson", 30,-3,3, 30,-3,3);
+  
+  histo1D[("dR_ZlepMinvsZlepPlus_"+dataSetName).c_str()]          = new TH1F(("dR_ZlepMinvsZlepPlus_"+dataSetName).c_str(),"Distance between the Z boson leptons; #Delta R(l^{+}_{Z}l^{-}_{Z}); Nb. Events", 100,0, 5);
+  histo1D[("dPhi_ZlepMinvsZlepPlus_"+dataSetName).c_str()]          = new TH1F(("dPhi_ZlepMinvsZlepPlus_"+dataSetName).c_str(),"dPhi Zleptons", 140,-7, 7);
+  
+  
+  histo1D[("GenInfo_mWT_"+dataSetName).c_str()] = new TH1F(("GenInfo_mWT_"+dataSetName).c_str(),"GenInfo Transv. Mass Wboson", 100, 0, 400 );
+  histo1D[("GenInfo_mWT2_"+dataSetName).c_str()] = new TH1F(("GenInfo_mWT2_"+dataSetName).c_str(),"GenInfo Transv. Mass Wboson", 50, 0, 300 );
+  histo2D[("GenInfo_mWTmWT2_"+dataSetName).c_str()] = new TH2F(("GenInfo_mWTmWT2_"+dataSetName).c_str(),"GenInfo Transv. Mass Wboson", 50, 0, 300, 50,0,300);
+  
+  histo1D[("GenInfo_CosTheta_"+dataSetName).c_str()] = new TH1F(("GenInfo_CosTheta_"+dataSetName).c_str(),"GenInfo Cos(#theta *)",25, -1, 1);
+  histo1D[("GenInfo_CosTheta_alt_"+dataSetName).c_str()] = new TH1F(("GenInfo_CosTheta_alt_"+dataSetName).c_str(), " GenInfo Cos(#theta *)",25, -1, 1);
+  histo2D[("GenInfo_CosTheta2_"+dataSetName).c_str()] = new TH2F(("GenInfo_CosTheta2_"+dataSetName).c_str(),"GenInfo Cos(#theta *)",25, -1, 1,25,-1,1);
 
-void InitTree(TTree* tree, bool isData)
-{
+  
+  
+}
+void InitRecovsGenInfoPlots(string dataSetName){
+  TH1::SetDefaultSumw2();
+  TH2::SetDefaultSumw2();
+  
+  //cout << ("Matched_mlb_"+dataSetName).c_str() << endl;
+  histo1D[("Matched_mlb_"+dataSetName).c_str()] = new TH1F(("Matched_mlb_"+dataSetName).c_str(),"Matched_mlb",500,0,500);
+  histo1D[("Matched_Zmass_"+dataSetName).c_str()] = new TH1F(("Matched_Zmass_"+dataSetName).c_str(),"Matched_mlb",200,0,200);
+  
+  
+  
+}
+
+///////////////////////////////////// INIT TREES /////////////////////////////////////////
+void InitTree(TTree* tree, bool isData){
   // Set branch addresses and branch pointers
   if (!tree) return;
   tree->SetMakeClass(1);
@@ -3279,6 +3288,9 @@ void InitTree(TTree* tree, bool isData)
   tree->SetBranchAddress("puSF", &puSF, &b_puSF);
   tree->SetBranchAddress("btagSF", &btagSF, &b_btagSF);
   tree->SetBranchAddress("PassedMETFilter", &PassedMETFilter, &b_PassedMETFilter);
+  tree->SetBranchAddress("PassedTrigger", &PassedTrigger, &b_PassedTrigger);
+  tree->SetBranchAddress("PassedTriggerNoLogic", &PassedTriggerNoLogic, &b_PassedTriggerNoLogic);
+  tree->SetBranchAddress("PassedTriggerNoLogic2", &PassedTriggerNoLogic2, &b_PassedTriggerNoLogic2);
   tree->SetBranchAddress("PassedGoodPV", &PassedGoodPV, &b_PassedGoodPV);
   tree->SetBranchAddress("nElectrons", &nElectrons, &b_nElectrons);
   tree->SetBranchAddress("ElectronSF", ElectronSF, &b_ElectronSF);
@@ -3337,31 +3349,49 @@ void InitTree(TTree* tree, bool isData)
   tree->SetBranchAddress("jet_Pt_after_JES", jet_Pt_after_JES, &b_jet_Pt_after_JES);
   tree->SetBranchAddress("cdiscCvsL_jet", cdiscCvsL_jet, &b_cdiscCvsL_jet);
   tree->SetBranchAddress("cdiscCvsB_jet", cdiscCvsB_jet, &b_cdiscCvsB_jet);
+  if(!isData){
+    tree->SetBranchAddress("nMCParticles", &nMCParticles, &b_nMCParticles);
+    tree->SetBranchAddress("mc_status", mc_status, &b_mc_status);
+    tree->SetBranchAddress("mc_pdgId", mc_pdgId, &b_mc_pdgId);
+    tree->SetBranchAddress("mc_mother", mc_mother, &b_mc_mother);
+    tree->SetBranchAddress("mc_granny", mc_granny, &b_mc_granny);
+    tree->SetBranchAddress("mc_pt", mc_pt, &b_mc_pt);
+    tree->SetBranchAddress("mc_phi", mc_phi, &b_mc_phi);
+    tree->SetBranchAddress("mc_eta", mc_eta, &b_mc_eta);
+    tree->SetBranchAddress("mc_E", mc_E, &b_mc_E);
+    tree->SetBranchAddress("mc_M", mc_M, &b_mc_M);
+    tree->SetBranchAddress("mc_isLastCopy", mc_isLastCopy, &b_mc_isLastCopy);
+    tree->SetBranchAddress("mc_isPromptFinalState", mc_isPromptFinalState, &b_mc_isPromptFinalState);
+    tree->SetBranchAddress("mc_isHardProcess", mc_isHardProcess, &b_mc_isHardProcess);
+    tree->SetBranchAddress("mc_fromHardProcessFinalState", mc_fromHardProcessFinalState, &b_mc_fromHardProcessFinalState);
+  }
   tree->SetBranchAddress("met_Pt", &met_Pt, &b_met_Pt);
   tree->SetBranchAddress("met_Eta", &met_Eta, &b_met_Eta);
   tree->SetBranchAddress("met_Phi", &met_Phi, &b_met_Phi);
   tree->SetBranchAddress("met_Px", &met_Px, &b_met_Px);
   tree->SetBranchAddress("met_Py", &met_Py, &b_met_Py);
   tree->SetBranchAddress("met_before_JES", &met_before_JES, &b_met_before_JES);
-  tree->SetBranchAddress("met_after_JES", &met_after_JES, &b_met_after_JES);
+  tree->SetBranchAddress("met_after_JES", &met_after_JES, &b_met_after_JES)  ;
+  
 }
 
 
-void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isData)
-{
+
+
+void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isData){
   //cout << "fill plots" << endl;
-      string decaystring = "";
-  double eventW = 1.;
-  if(!isData) eventW = Luminosity*scaleFactor/EquilumiSF;
-  else eventW = Luminosity*scaleFactor/EquilumiSF;
+  string decaystring = "";
+  Double_t eventW = 1.;
+  if(isData) scaleFactor = 1.;
+  eventW = Luminosity*scaleFactor/EquilumiSF;
   
   for(int iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
-   // cout << decayChannels[iChan] << " " << channelInt << " " << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
+    // cout << decayChannels[iChan] << " " << channelInt << " " << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
     if(decayChannels[iChan] == -9) continue;;
-   // cout << decayChannels[iChan] << " " << channelInt << " " << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
+    // cout << decayChannels[iChan] << " " << channelInt << " " << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
     if(decayChannels[iChan] != channelInt) continue;
-   // cout << decayChannels[iChan] << " " << channelInt << " " << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
+    // cout << decayChannels[iChan] << " " << channelInt << " " << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
     if(decayChannels[iChan] == 0) decaystring = "uuu";
     if(decayChannels[iChan] == 1) decaystring = "uue";
     if(decayChannels[iChan] == 2) decaystring = "eeu";
@@ -3370,7 +3400,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
     
     //cout << "nvtx "  << nvtx << endl;
     MSPlot[(prefix+"_NbOfVertices_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true,eventW);
-    // MSPlot[(prefix+"_NbOfVertices_bfPU_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true, Luminosity*(scaleFactor/puSF)/(EquilumiSF)); TO FIX
+    MSPlot[(prefix+"_NbOfVertices_bfPU_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true, Luminosity*(scaleFactor/puSF)/(EquilumiSF));
     MSPlot[(prefix+"_puSF_"+decaystring).c_str()]->Fill(puSF , datasets[d], true, 1);
     
     //cout << decayChannels[iChan] << " " << channelInt << " " << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
@@ -3399,18 +3429,18 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
     
     // vars
     
-    MSPlot[(prefix+"_ZbosonMass_"+decaystring).c_str()]->Fill((float) Zboson.M() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_WbosonMass_"+decaystring).c_str()] ->Fill((float) Wboson.M() , datasets[d], true,eventW);
+    MSPlot[(prefix+"_ZbosonMass_"+decaystring).c_str()]->Fill(Zboson.M() , datasets[d], true,eventW);
+    MSPlot[(prefix+"_WbosonMass_"+decaystring).c_str()] ->Fill(Wboson.M() , datasets[d], true,eventW);
     MSPlot[(prefix+"_mWT_"+decaystring).c_str()]->Fill(mWT, datasets[d], true,eventW);
     MSPlot[(prefix+"_mWT2_"+decaystring).c_str()]->Fill(mWT2, datasets[d], true,eventW);
-    MSPlot[(prefix+"_SMTopMass_"+decaystring).c_str()]->Fill((float) SMtop.M() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_mlb_"+decaystring).c_str()]->Fill((float) (SMbjet+Wlep).M() , datasets[d], true,eventW);
+    MSPlot[(prefix+"_SMTopMass_"+decaystring).c_str()]->Fill( SMtop.M() , datasets[d], true,eventW);
+    MSPlot[(prefix+"_mlb_"+decaystring).c_str()]->Fill((SMbjet+Wlep).M() , datasets[d], true,eventW);
     
     
-    if(selectedJets.size()>0) MSPlot[(prefix+"_LeadingJetPt_"+decaystring).c_str()]->Fill((float) selectedJets[0].Pt() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_LeadingLepPt_"+decaystring).c_str()]->Fill((float) selectedLeptons[0].Pt() , datasets[d], true,eventW);
-    if(selectedJets.size()>1) MSPlot[(prefix+"_2ndLeadingJetPt_"+decaystring).c_str()]->Fill((float) selectedJets[1].Pt() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_2ndLeadingLepPt_"+decaystring).c_str()]->Fill((float) selectedLeptons[1].Pt() , datasets[d], true,eventW);
+    if(selectedJets.size()>0) MSPlot[(prefix+"_LeadingJetPt_"+decaystring).c_str()]->Fill( selectedJets[0].Pt() , datasets[d], true,eventW);
+    MSPlot[(prefix+"_LeadingLepPt_"+decaystring).c_str()]->Fill(selectedLeptons[0].Pt() , datasets[d], true,eventW);
+    if(selectedJets.size()>1) MSPlot[(prefix+"_2ndLeadingJetPt_"+decaystring).c_str()]->Fill(selectedJets[1].Pt() , datasets[d], true,eventW);
+    MSPlot[(prefix+"_2ndLeadingLepPt_"+decaystring).c_str()]->Fill(selectedLeptons[1].Pt() , datasets[d], true,eventW);
     
     MSPlot[(prefix+"_nJets_"+decaystring).c_str()]->Fill(selectedJets.size() , datasets[d], true,eventW);
     MSPlot[(prefix+"_nJetsCSVL_"+decaystring).c_str()]->Fill(selectedCSVLJetID.size() , datasets[d], true,eventW);
@@ -3419,15 +3449,15 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
   }
   
   for(int iChan =0; iChan < decayChannels.size() ; iChan++){
-   // cout << decayChannels[iChan] << endl;
+    // cout << decayChannels[iChan] << endl;
     if(decayChannels[iChan] != -9) continue;
     //cout << "fill all" << endl;
     decaystring = "all";
-  
+    
     
     //cout << "nvtx "  << nvtx << endl;
     MSPlot[(prefix+"_NbOfVertices_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true,eventW);
-    // MSPlot[(prefix+"_NbOfVertices_bfPU_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true, Luminosity*(scaleFactor/puSF)/(EquilumiSF)); TO FIX
+    MSPlot[(prefix+"_NbOfVertices_bfPU_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true, Luminosity*(scaleFactor/puSF)/(EquilumiSF));
     MSPlot[(prefix+"_puSF_"+decaystring).c_str()]->Fill(puSF , datasets[d], true, 1);
     
     //cout << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
@@ -3456,127 +3486,30 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
     
     // vars
     
-    MSPlot[(prefix+"_ZbosonMass_"+decaystring).c_str()]->Fill((float) Zboson.M() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_WbosonMass_"+decaystring).c_str()] ->Fill((float) Wboson.M() , datasets[d], true,eventW);
+    MSPlot[(prefix+"_ZbosonMass_"+decaystring).c_str()]->Fill( Zboson.M() , datasets[d], true,eventW);
+    MSPlot[(prefix+"_WbosonMass_"+decaystring).c_str()] ->Fill(Wboson.M() , datasets[d], true,eventW);
     MSPlot[(prefix+"_mWT_"+decaystring).c_str()]->Fill(mWT, datasets[d], true,eventW);
     MSPlot[(prefix+"_mWT2_"+decaystring).c_str()]->Fill(mWT2, datasets[d], true,eventW);
-    MSPlot[(prefix+"_SMTopMass_"+decaystring).c_str()]->Fill((float) SMtop.M() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_mlb_"+decaystring).c_str()]->Fill((float) (SMbjet+Wlep).M() , datasets[d], true,eventW);
+    MSPlot[(prefix+"_SMTopMass_"+decaystring).c_str()]->Fill( SMtop.M() , datasets[d], true,eventW);
+    MSPlot[(prefix+"_mlb_"+decaystring).c_str()]->Fill((SMbjet+Wlep).M() , datasets[d], true,eventW);
     
     
-    if(selectedJets.size()>0) MSPlot[(prefix+"_LeadingJetPt_"+decaystring).c_str()]->Fill((float) selectedJets[0].Pt() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_LeadingLepPt_"+decaystring).c_str()]->Fill((float) selectedLeptons[0].Pt() , datasets[d], true,eventW);
-    if(selectedJets.size()>1) MSPlot[(prefix+"_2ndLeadingJetPt_"+decaystring).c_str()]->Fill((float) selectedJets[1].Pt() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_2ndLeadingLepPt_"+decaystring).c_str()]->Fill((float) selectedLeptons[1].Pt() , datasets[d], true,eventW);
+    if(selectedJets.size()>0) MSPlot[(prefix+"_LeadingJetPt_"+decaystring).c_str()]->Fill( selectedJets[0].Pt() , datasets[d], true,eventW);
+    MSPlot[(prefix+"_LeadingLepPt_"+decaystring).c_str()]->Fill( selectedLeptons[0].Pt() , datasets[d], true,eventW);
+    if(selectedJets.size()>1) MSPlot[(prefix+"_2ndLeadingJetPt_"+decaystring).c_str()]->Fill(selectedJets[1].Pt() , datasets[d], true,eventW);
+    MSPlot[(prefix+"_2ndLeadingLepPt_"+decaystring).c_str()]->Fill(selectedLeptons[1].Pt() , datasets[d], true,eventW);
     
     MSPlot[(prefix+"_nJets_"+decaystring).c_str()]->Fill(selectedJets.size() , datasets[d], true,eventW);
     MSPlot[(prefix+"_nJetsCSVL_"+decaystring).c_str()]->Fill(selectedCSVLJetID.size() , datasets[d], true,eventW);
     MSPlot[(prefix+"_nJetsCSVM_"+decaystring).c_str()]->Fill(selectedCSVMJetID.size() , datasets[d], true,eventW);
     MSPlot[(prefix+"_nJetsCSVT_"+decaystring).c_str()]->Fill(selectedCSVTJetID.size() , datasets[d], true,eventW);
-  
+    
   }
   
-    MSPlot[(prefix+"_Decay").c_str()]->Fill(channelInt , datasets[d], true,eventW);
+  MSPlot[(prefix+"_Decay").c_str()]->Fill(channelInt , datasets[d], true,eventW);
   
   
   //cout << "end plot filling" << endl;
-}
-
-
-void MatchingFunction(string dataSetName, vector <TLorentzVector> Leptons){
-  ClearMatchingVars(); // to do with each new dataset
-  ClearMatchingVarsTLV();
-  for (int iMC = 0; iMC < nMCParticles; iMC++)
-  {
-    mcpart.Clear();
-    mcpart.SetPtEtaPhiE(mc_pt[iMC], mc_eta[iMC],mc_phi[iMC],mc_E[iMC]);
-    mcParticles.push_back(mcpart);
-  }
-  if(mcParticles.size() != nMCParticles){cout << "ERROR mcP not filled correctly" << endl;  }
-  
-
-  // TO FIX LIGHT JET NOT CONSIDERED ATM
-  if(dataSetName.find("TT")!=std::string::npos) EventSearcherTTCNC(mcParticles);
-  if(dataSetName.find("ST")!=std::string::npos) EventSearcherSTCNC(mcParticles);
-  if(dataSetName.find("tZq")!=std::string::npos) EventSearchertSTFCNC(mcParticles);
-  
-  
-  
-  if((foundSMmu || foundSMel) &&
-     ((foundZelmin && foundZelplus) || (foundZmuplus && foundZmumin)) &&
-     foundSMb ){
-    foundDecay = true;
-  }
-
-  if(foundDecay){
-    InitGenInfoPlots(dataSetName);
-    FillGenInfoPlots(dataSetName);
-  }
-  
-}
-
-
-void InitGenInfoPlots(string dataSetName){
-  TH1::SetDefaultSumw2();
-  TH2::SetDefaultSumw2();
-  
-  histo1D[("Topmass_Wb_"+dataSetName).c_str()] = new TH1F("Topmass_Wb","Topmass_Wb",500,0,500);
-  histo1D[("pt_Wb_"+dataSetName).c_str()] = new TH1F("pt_Wb","pt_Wb",500,0,500);
-  histo1D[("eta_Wb_"+dataSetName).c_str()]= new TH1F("eta_Wb","eta_Wb",30,-3,3);
-  histo1D[("phi_Wb_"+dataSetName).c_str()]= new TH1F("phi_Wb","phi_Wb",32,-3.2,3.2);
-  histo1D[("dPhi_Wb_"+dataSetName).c_str()]  = new TH1F("DPhilvb", "dPhi lvb", 140,-7, 7);
-  histo1D[("dR_Wb_"+dataSetName).c_str()] =  new TH1F("DRWb", "dR Wb", 500,0, 5);
-  
-  
-  histo1D[("Topmass_topquark_"+dataSetName).c_str()] = new TH1F("Topmass_topquark","Topmass_topquark",500,0,500);
-  histo1D[("pt_topquark_"+dataSetName).c_str()] = new TH1F("pt_topquark","pt_topquark",500,0,500);
-  histo1D[("eta_topquark_"+dataSetName).c_str()]= new TH1F("eta_topquark","eta_topquark",30,-3,3);
-  histo1D[("phi_topquark_"+dataSetName).c_str()]= new TH1F("phi_topquark","phi_topquark",32,-3.2,3.2);
-  
-  histo1D[("dR_Wbvstopquark_"+dataSetName).c_str()]  = new TH1F("DRWbvstopquark", "dR Wb-top", 500,0, 5);
-  histo1D[("dPhi_Wbvstopquark_"+dataSetName).c_str()]  = new TH1F("DPhiWbvstopquark", "dPhi Wb-top", 140,-7, 7);
-  
-  histo2D[("Topmass_topquarkvsWb_"+dataSetName).c_str()] = new TH2F("Topmass_topquarkvsWb","Topmass:Wb:t",500,0,500,500,0,500);
-  histo2D[("pt_topquarkvsWb_"+dataSetName).c_str()] = new TH2F("pt_topquarkvsWb","pt:Wb:t",500,0,500,500,0,500);
-  histo2D[("eta_topquarkvsWb_"+dataSetName).c_str()]= new TH2F("eta_topquarkvsWb","eta:Wb:t",30,-3,3,30,-3,3);
-  histo2D[("phi_topquarkvsWb_"+dataSetName).c_str()]= new TH2F("phi_topquarkvsWb","phi:Wb:t",32,-3.2,3.2,32,-3.2,3.2);
-
-  histo1D[("dR_Wbtop_"+dataSetName).c_str()]  = new TH1F("DRWbtop", "dR Wb-top", 500,0, 5);
-  histo1D[("dPhi_Wbtop_"+dataSetName).c_str()]  = new TH1F("DPhiWbtop", "dPhi Wb-top", 140,-7, 7);
-  
-  histo1D[("mass_ZlepMin_"+dataSetName).c_str()]                                  = new TH1F("mass_ZlepMin","mass_ZlepMin",250,0,0.5);
-  histo1D[("mass_ZlepPlus_"+dataSetName).c_str()]                                  = new TH1F("mass_ZlepPlus","mass_ZlepPlus",250,0,0.5);
-  histo1D[("Zmass_Zleptons_"+dataSetName).c_str()]                                  = new TH1F("Zmass_Zleptons","Zmass_Zleptons",200,0,200);
-  histo1D[("Zmass_Zboson_"+dataSetName).c_str()]                                  = new TH1F("Zmass_Zboson","Zmass_Zboson",200,0,200);
-  histo2D[("mass_ZlepMinvsZlepPlus_"+dataSetName).c_str()]            = new TH2F("mass_Zleptons", "mass lep;mass lepMin;mass lepPlus", 250,0,0.5,250,0,0.5 );
-  histo2D[("Zmass_ZbosonvsZleptons_"+dataSetName).c_str()]            = new TH2F("Zmass", "Zmass;Zmass_Zleptons;Zmass_Zboson", 200,0,200,200,0,200 );
-  
-  histo1D[("pt_ZlepMin_"+dataSetName).c_str()]          = new TH1F("pt_ZlepMin", "Pt lep +", 200,0,400);
-  histo1D[("pt_ZlepPlus_"+dataSetName).c_str()]          = new TH1F("pt_ZlepPlus", "Pt lep -", 200,0,400);
-  histo1D[("pt_Zboson_"+dataSetName).c_str()]          = new TH1F("pt_Zboson", "Pt Zbosonon", 200,0,400);
-  histo1D[("pt_Zleptons_"+dataSetName).c_str()]          = new TH1F("pt_Zleptons", "Pt Zleptons", 200,0,400);
-  histo2D[("pt_ZlepMinvsZlepPlus_"+dataSetName).c_str()]          = new TH2F("pt_Zleptons", "Pt leptons;Pt lep +;Pt lep -", 200,0,400, 200,0,400);
-  histo2D[("pt_ZbosonvsZleptons_"+dataSetName).c_str()]          = new TH2F("pt_ZbosonvsZleptons", "Pt Z;Pt Zleptons;Pt Zboson", 200,0,400, 200,0,400);
-  
-  histo1D[("phi_ZlepMin_"+dataSetName).c_str()]          = new TH1F("phi_ZlepMin", "phi lep +",32,-3.2,3.2);
-  histo1D[("phi_ZlepPlus_"+dataSetName).c_str()]          = new TH1F("phi_ZlepPlus", "phi lep -",32,-3.2,3.2);
-  histo1D[("phi_Zboson_"+dataSetName).c_str()]          = new TH1F("phi_Zboson", "phi Zboson",32,-3.2,3.2);
-  histo1D[("phi_Zleptons_"+dataSetName).c_str()]          = new TH1F("phi_Zleptons", "phi Zleptons",32,-3.2,3.2);
-  histo2D[("phi_ZlepMinvsZlepPlus_"+dataSetName).c_str()]          = new TH2F("phi_Zleptons", "phi lep;phi lep +;phi lep -",32,-3.2,3.2,32,-3.2,3.2);
-  histo2D[("phi_ZbosonvsZleptons_"+dataSetName).c_str()]          = new TH2F("phiZbosonvsZleptons", "phi Z;phi Zleptons;phi Zboson",32,-3.2,3.2,32,-3.2,3.2);
-  
-  histo1D[("eta_ZlepMin_"+dataSetName).c_str()]          = new TH1F("eta_ZlepMin", "eta lep +", 30,-3,3);
-  histo1D[("eta_ZlepPlus_"+dataSetName).c_str()]          = new TH1F("eta_ZlepPlus", "eta lep -", 30,-3,3);
-  histo1D[("eta_Zboson_"+dataSetName).c_str()]          = new TH1F("eta_Zboson", "eta Zboson", 30,-3,3);
-  histo1D[("eta_Zleptons_"+dataSetName).c_str()]          = new TH1F("etaZleptons", "eta Zleptons", 30,-3,3);
-  histo2D[("eta_ZlepMinvsZlepPlus_"+dataSetName).c_str()]          = new TH2F("eta_Zleptons", "eta lep;eta lep +;eta lep -", 30,-3,3, 30,-3,3);
-  histo2D[("eta_ZbosonvsZleptons_"+dataSetName).c_str()]          = new TH2F("etaZbosonvsZleptons", "eta Z;eta Zleptons;eta Zboson", 30,-3,3, 30,-3,3);
-  
-  histo1D[("dR_Zleptons_"+dataSetName).c_str()]          = new TH1F("dR_Zleptons", "dR Zleptons", 500,0, 5);
-  histo1D[("dPhi_Zleptons_"+dataSetName).c_str()]          = new TH1F("dPhi_Zleptons", "dPhi Zleptons", 140,-7, 7);
-
-
-
 }
 void FillGenInfoPlots(string dataSetName){
   if( foundSMb && foundW){
@@ -3588,7 +3521,7 @@ void FillGenInfoPlots(string dataSetName){
     histo1D[("dR_Wb_"+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(mcParticles[SMb_Indice],mcParticles[SMW_Indice]));
     
   }
- 
+  
   if( foundSMb && foundW && foundAntitopQ){
     //cout << "in tbar" << endl;
     histo1D[("Topmass_topquark_"+dataSetName).c_str()]->Fill(mcParticles[AntiTopQ_Indice].M());
@@ -3675,7 +3608,7 @@ void FillGenInfoPlots(string dataSetName){
     histo1D[("pt_Zboson_"+dataSetName).c_str()]->Fill(mcParticles[Z_Indice].Pt());
     histo1D[("phi_Zboson_"+dataSetName).c_str()]->Fill(mcParticles[Z_Indice].Phi());
     histo1D[("eta_Zboson_"+dataSetName).c_str()]->Fill(mcParticles[Z_Indice].Eta());
-
+    
   }
   if( foundZ && (foundZmumin && foundZmuplus)){
     histo2D[("Zmass_ZbosonvsZleptons_"+dataSetName).c_str()]->Fill((mcParticles[Zmu_min_Indice] + mcParticles[Zmu_plus_Indice]).M(),mcParticles[Z_Indice].M() );
@@ -3691,21 +3624,615 @@ void FillGenInfoPlots(string dataSetName){
     histo2D[("eta_ZbosonvsZleptons_"+dataSetName).c_str()]->Fill((mcParticles[Zel_min_Indice] + mcParticles[Zel_plus_Indice]).Pt(),mcParticles[Z_Indice].Eta() );
     
   }
+  
+  Double_t genmWT;
+  Double_t genphis ;
+  Double_t gencosphis;
+  Double_t genmWT2 ;
+  Double_t genCosTheta ;
+  Double_t genCosTheta_alt ;
+  
+  
+  if(SMmu_Indice != -999 && SMnumu_Indice != -999) {
+    genmWT= TMath::Sqrt((mcParticles[SMmu_Indice].Pt() + mcParticles[SMnumu_Indice].Pt())*(mcParticles[SMmu_Indice].Pt() +mcParticles[SMnumu_Indice].Pt())-(mcParticles[SMmu_Indice].Px() + mcParticles[SMnumu_Indice].Px())*(mcParticles[SMmu_Indice].Px() + mcParticles[SMnumu_Indice].Px()) - (mcParticles[SMmu_Indice].Py() + mcParticles[SMnumu_Indice].Py())* (mcParticles[SMmu_Indice].Py() +mcParticles[SMnumu_Indice].Py()));
+    genphis = mcParticles[SMmu_Indice].Phi() - met_Phi;
+    gencosphis = TMath::Cos(genphis);
+    genmWT2 = TMath::Sqrt(2*mcParticles[SMmu_Indice].Pt() * mcParticles[SMnumu_Indice].Pt()*(1-gencosphis));
+    
+    if(SMb_Indice!=-999) genCosTheta =  CosThetaCalculation(mcParticles[SMmu_Indice], mcParticles[SMnumu_Indice], mcParticles[SMb_Indice], false).first;
+    if(SMb_Indice!=-999) genCosTheta_alt =  CosThetaCalculation(mcParticles[SMmu_Indice], mcParticles[SMnumu_Indice], mcParticles[SMb_Indice], false).second;
+    
+  }
+  if(SMel_Indice != -999 && SMnuel_Indice != -999) {
+    genmWT= TMath::Sqrt((mcParticles[SMel_Indice].Pt() + mcParticles[SMnuel_Indice].Pt())*(mcParticles[SMel_Indice].Pt() +mcParticles[SMnuel_Indice].Pt())-(mcParticles[SMel_Indice].Px() + mcParticles[SMnuel_Indice].Px())*(mcParticles[SMel_Indice].Px() + mcParticles[SMnuel_Indice].Px()) - (mcParticles[SMel_Indice].Py() + mcParticles[SMnuel_Indice].Py())* (mcParticles[SMel_Indice].Py() +mcParticles[SMnuel_Indice].Py()));
+    genphis = mcParticles[SMel_Indice].Phi() - met_Phi;
+    gencosphis = TMath::Cos(genphis);
+    genmWT2 = TMath::Sqrt(2*mcParticles[SMel_Indice].Pt() * mcParticles[SMnuel_Indice].Pt()*(1-gencosphis));
+    
+    if(SMb_Indice!=-999) genCosTheta =  CosThetaCalculation(mcParticles[SMel_Indice], mcParticles[SMnuel_Indice], mcParticles[SMb_Indice], false).first;
+    if(SMb_Indice!=-999) genCosTheta_alt =  CosThetaCalculation(mcParticles[SMel_Indice], mcParticles[SMnuel_Indice], mcParticles[SMb_Indice], false).second;
+  }
+  
+  
+  histo1D[("GenInfo_mWT_"+dataSetName).c_str()]->Fill(genmWT);
+  histo1D[("GenInfo_mWT2_"+dataSetName).c_str()] ->Fill(genmWT2);
+  histo2D[("GenInfo_mWTmWT2_"+dataSetName).c_str()]->Fill(genmWT,genmWT2);
+  
+  histo1D[("GenInfo_CosTheta_"+dataSetName).c_str()] ->Fill(genCosTheta);
+  histo1D[("GenInfo_CosTheta_alt_"+dataSetName).c_str()] ->Fill(genCosTheta_alt);
+  histo2D[("GenInfo_CosTheta2_"+dataSetName).c_str()] ->Fill(genCosTheta, genCosTheta_alt);
 
+  
+}
+void FillRecovsGenInfoPlots(string dataSetName, vector<TLorentzVector> selectedElectrons, vector <TLorentzVector> selectedMuons , vector <TLorentzVector> selectedJets){
+  
+  //cout << ("Matched_mlb_"+dataSetName).c_str() << endl;
+  cout << "WmuIndiceM "<< WmuIndiceM <<" BjetIndiceM "<< BjetIndiceM <<" selectedJets "<< selectedJets.size() <<" selectedMuons "<< selectedMuons.size() << endl;
+  if(WmuIndiceM != -999 && BjetIndiceM != -999)  histo1D[("Matched_mlb_"+dataSetName).c_str()]->Fill((selectedJets[BjetIndiceM] + selectedMuons[WmuIndiceM]).M());
+  if(WelecIndiceM != -999 && BjetIndiceM != -999)  histo1D[("Matched_mlb_"+dataSetName).c_str()]->Fill((selectedJets[BjetIndiceM] + selectedElectrons[WelecIndiceM]).M());
+  
+  if(ZmuIndiceM_1 != -999 && ZmuIndiceM_0 != -999) histo1D[("Matched_Zmass_"+dataSetName).c_str()]->Fill((selectedMuons[ZmuIndiceM_0] + selectedMuons[ZmuIndiceF_1]).M());
+  if(ZelecIndiceM_1 != -999 && ZelecIndiceM_0 != -999) histo1D[("Matched_Zmass_"+dataSetName).c_str()]->Fill((selectedElectrons[ZelecIndiceM_0] + selectedElectrons[ZelecIndiceF_1]).M());
+  
+  
+}
+void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<int> decayChannels ){
+  clock_t start_sub = clock();
+  //cout << "in MVA plots" << endl;
+  string sregion;
+  sregion = prefix;
+  string decaystring = "";
+  //cout <<  "region " << sregion << endl;
+  for(int iChan = 0;iChan < decayChannels.size() ;iChan++){
+   // cout << "chan " << decayChannels[iChan] << " chan in evt " << MVA_channel << endl;
+    if(decayChannels[iChan]!= -9 && decayChannels[iChan] != MVA_channel){
+      
+     // cout << "continuing " <<decayChannels[iChan] << " is not " << MVA_channel << endl;
+      continue;
+    }
+      decaystring= "";
+       if(decayChannels[iChan] == 0) decaystring = "uuu";
+       if(decayChannels[iChan] == 1) decaystring = "uue";
+       if(decayChannels[iChan] == 2) decaystring = "eeu";
+       if(decayChannels[iChan] == 3) decaystring = "eee";
+       if(decayChannels[iChan] == -9) decaystring = "all";
+    //cout << decaystring << endl;
+     MSPlot[(sregion+"_MVA_Zboson_eta_"+decaystring).c_str()]->Fill(MVA_Zboson_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+    MSPlot[(sregion+"_MVA_channel_"+decaystring).c_str()]->Fill(MVA_channel, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+    MSPlot[(sregion+"_MVA_weight_"+decaystring).c_str()]->Fill(MVA_weight, datasets[d], true, 1);
+    MSPlot[(sregion+"_MVA_Zboson_pt_"+decaystring).c_str()]->Fill(MVA_Zboson_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+     //  cout << "filling " << (sregion+"_MVA_lepton0_pt_"+decaystring).c_str() << endl;
+       MSPlot[(sregion+"_MVA_lepton0_pt_"+decaystring).c_str()]->Fill(MVA_lepton0_pt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_lepton1_pt_"+decaystring).c_str()]->Fill(MVA_lepton1_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+     MSPlot[(sregion+"_MVA_SMtop_eta_"+decaystring).c_str()]->Fill(2., datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+       //MSPlot[(sregion+"_MVA_lepton2_pt_"+decaystring).c_str()]->Fill(MVA_lepton2_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_lepton0_eta_"+decaystring).c_str()]->Fill(MVA_lepton0_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_lepton1_eta_"+decaystring).c_str()]->Fill(MVA_lepton1_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_lepton2_eta_"+decaystring).c_str()]->Fill(MVA_lepton2_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_lepton0_phi_"+decaystring).c_str()]->Fill(MVA_lepton0_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_lepton1_phi_"+decaystring).c_str()]->Fill(MVA_lepton1_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_lepton2_phi_"+decaystring).c_str()]->Fill(MVA_lepton2_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      MSPlot[(sregion+"_MVA_jet0_pt_"+decaystring).c_str()]->Fill(MVA_jet0_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_jet0_eta_"+decaystring).c_str()]->Fill(MVA_jet0_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_jet0_phi_"+decaystring).c_str()]->Fill(MVA_jet0_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      if(selectedJets.size()>1) MSPlot[(sregion+"_MVA_jet1_pt_"+decaystring).c_str()]->Fill(MVA_jet1_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      if(selectedJets.size()>1) MSPlot[(sregion+"_MVA_jet1_eta_"+decaystring).c_str()]->Fill(MVA_jet1_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      if(selectedJets.size()>1) MSPlot[(sregion+"_MVA_jet1_phi_"+decaystring).c_str()]->Fill(MVA_jet1_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      // SM side
+      MSPlot[(sregion+"_MVA_Wlep_pt_"+decaystring).c_str()]->Fill(MVA_Wlep_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_Wlep_eta_"+decaystring).c_str()]->Fill(MVA_Wlep_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_Wlep_phi_"+decaystring).c_str()]->Fill(MVA_Wlep_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_SMbjet_pt_"+decaystring).c_str()]->Fill(MVA_SMbjet_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_SMbjet_eta_"+decaystring).c_str()]->Fill(MVA_SMbjet_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_SMbjet_phi_"+decaystring).c_str()]->Fill(MVA_SMbjet_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_Wboson_pt_"+decaystring).c_str()]->Fill(MVA_Wboson_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_Wboson_eta_"+decaystring).c_str()]->Fill(MVA_Wboson_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_Wboson_phi_"+decaystring).c_str()]->Fill(MVA_Wboson_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_met_"+decaystring).c_str()]->Fill(MVA_met, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_SMtop_pt_"+decaystring).c_str()]->Fill(MVA_SMtop_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+     
+      MSPlot[(sregion+"_MVA_SMtop_phi_"+decaystring).c_str()]->Fill(MVA_SMtop_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      
+      // FCNC side
+     // MSPlot[(sregion+"_MVA_Zboson_pt_"+decaystring).c_str()]->Fill(MVA_Zboson_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_Zboson_eta_"+decaystring).c_str()]->Fill(MVA_Zboson_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_Zboson_phi_"+decaystring).c_str()]->Fill(MVA_Zboson_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      
+      // nbrs
+      MSPlot[(sregion+"_MVA_nMuons_"+decaystring).c_str()]->Fill(MVA_nMuons, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_NJets_CSVv2T_"+decaystring).c_str()]->Fill(MVA_NJets_CSVv2T, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_NJets_CSVv2M_"+decaystring).c_str()]->Fill(MVA_NJets_CSVv2M, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_NJets_CSVv2L_"+decaystring).c_str()]->Fill(MVA_NJets_CSVv2L, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_nJets_"+decaystring).c_str()]->Fill(MVA_nJets, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_nElectrons_"+decaystring).c_str()]->Fill(MVA_nElectrons, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      
+      
+      //SM kinematics
+      MSPlot[(sregion+"_MVA_SMtop_M_"+decaystring).c_str()]->Fill(MVA_SMtop_M , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_mlb_"+decaystring).c_str()]->Fill(MVA_mlb , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_Wboson_M_"+decaystring).c_str()]->Fill(MVA_Wboson_M , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      MSPlot[(sregion+"_MVA_dRWlepb_"+decaystring).c_str()]->Fill(MVA_dRWlepb , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      MSPlot[(sregion+"_MVA_dPhiWlepb_"+decaystring).c_str()]->Fill(MVA_dPhiWlepb , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      MSPlot[(sregion+"_MVA_Wlep_Charge_"+decaystring).c_str()]->Fill(MVA_Wlep_Charge , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_charge_asym_"+decaystring).c_str()]->Fill(MVA_charge_asym , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_TotalPt_"+decaystring).c_str()]->Fill(MVA_TotalPt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_TotalHt_"+decaystring).c_str()]->Fill(MVA_TotalHt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_TotalInvMass_"+decaystring).c_str()]->Fill( MVA_TotalInvMass, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      MSPlot[(sregion+"_MVA_TotalPt_jet_"+decaystring).c_str()]->Fill(MVA_TotalPt_jet , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_TotalHt_jet_"+decaystring).c_str()]->Fill(MVA_TotalHt_jet , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_TotalInvMass_jet_"+decaystring).c_str()]->Fill( MVA_TotalInvMass_jet, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      MSPlot[(sregion+"_MVA_TotalPt_lep_"+decaystring).c_str()]->Fill(MVA_TotalPt_lep , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_TotalHt_lep_"+decaystring).c_str()]->Fill(MVA_TotalHt_lep , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_TotalInvMass_lep_"+decaystring).c_str()]->Fill( MVA_TotalInvMass_lep, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      MSPlot[(sregion+"_MVA_bdiscCSVv2_jet_0_"+decaystring).c_str()]->Fill(MVA_bdiscCSVv2_jet_0 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+     // MSPlot[(sregion+"_MVA_CosTheta_"+decaystring).c_str()]->Fill(MVA_CosTheta , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+    //  MSPlot[(sregion+"_MVA_CosTheta_alt_"+decaystring).c_str()]->Fill(MVA_CosTheta_alt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      
+      // FCNC kinematics
+      
+      MSPlot[(sregion+"_MVA_dRZb_"+decaystring).c_str()]->Fill(MVA_dRZb , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_dRZWlep_"+decaystring).c_str()]->Fill(MVA_dRZWlep , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_dRZSMtop_"+decaystring).c_str()]->Fill(MVA_dRZSMtop , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      
+      MSPlot[(sregion+"_MVA_dPhiZb_"+decaystring).c_str()]->Fill(MVA_dPhiZb , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_dPhiZWlep_"+decaystring).c_str()]->Fill(MVA_dPhiZWlep , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_dPhiZMET_"+decaystring).c_str()]->Fill(MVA_dPhiZMET , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_dPhiZSMtop_"+decaystring).c_str()]->Fill(MVA_dPhiZSMtop , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      MSPlot[(sregion+"_MVA_m3l_"+decaystring).c_str()]->Fill(MVA_m3l , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+    
+    
+    MSPlot[(sregion+"_MVA_mWt_"+decaystring).c_str()]->Fill(MVA_mWt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+    
+    
+    if(Region == 1){
+      MSPlot[(sregion+"_MVA_LightJet_pt_"+decaystring).c_str()]->Fill(MVA_LightJet_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_LightJet_eta_"+decaystring).c_str()]->Fill(MVA_LightJet_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_LightJet_phi_"+decaystring).c_str()]->Fill(MVA_LightJet_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      MSPlot[(sregion+"_MVA_FCNCtop_pt_"+decaystring).c_str()]->Fill(MVA_FCNCtop_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_FCNCtop_eta_"+decaystring).c_str()]->Fill(MVA_FCNCtop_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_FCNCtop_phi_"+decaystring).c_str()]->Fill(MVA_FCNCtop_phi, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      MSPlot[(sregion+"_MVA_nJets_CharmL_"+decaystring).c_str()]->Fill(MVA_nJets_CharmL, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_nJets_CharmM_"+decaystring).c_str()]->Fill(MVA_nJets_CharmM, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_nJets_CharmT_"+decaystring).c_str()]->Fill(MVA_nJets_CharmT, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      MSPlot[(sregion+"_MVA_FCNCtop_M_"+decaystring).c_str()]->Fill(MVA_FCNCtop_M , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_Zboson_M_"+decaystring).c_str()]->Fill(MVA_Zboson_M , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      MSPlot[(sregion+"_MVA_dRZc_"+decaystring).c_str()]->Fill(MVA_dRZc , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_dPhiZc_"+decaystring).c_str()]->Fill(MVA_dPhiZc , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      MSPlot[(sregion+"_MVA_cdiscCvsB_jet_1_"+decaystring).c_str()]->Fill(MVA_cdiscCvsB_jet_1 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_cdiscCvsL_jet_1_"+decaystring).c_str()]->Fill(MVA_cdiscCvsL_jet_1 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      // interplay
+      MSPlot[(sregion+"_MVA_dRSMFCNCtop_"+decaystring).c_str()]->Fill(MVA_dRSMFCNCtop , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_dRWlepc_"+decaystring).c_str()]->Fill(MVA_dRWlepc , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_dPhiSMFCNCtop_"+decaystring).c_str()]->Fill(MVA_dPhiSMFCNCtop , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      MSPlot[(sregion+"_MVA_dPhiWlepc_"+decaystring).c_str()]->Fill(MVA_dRWlepc , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+      
+      MSPlot[(sregion+"_MVA_bdiscCSVv2_jet_1_"+decaystring).c_str()]->Fill(MVA_bdiscCSVv2_jet_1 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+    }
+    
+  }
+  
+  
+  
+  double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
+  if(firstevent && verbose > 3){
+    cout << "It took us " << time_sub << " s to run the fill mva plots" << endl;
+    if ( time_sub >= 60 )
+    {
+      int mins = time_sub/60;
+      float secs = time_sub - mins*60;
+      
+      if (mins >= 60 )
+      {
+        int hours = mins/60;
+        mins = mins - hours*60;
+        cout << "(This corresponds to " << hours << " hours, " << mins << " min and " << secs << " s)" << endl;
+      }
+      else
+        cout << "(This corresponds to " << mins << " min and " << secs << " s)" << endl;
+    }
+  }
 }
 
+///////////////////////////////////// MATCHING /////////////////////////////////////////
+bool MatchingFunction(string dataSetName, vector <TLorentzVector> Leptons, vector <TLorentzVector> selectedMuons, vector<TLorentzVector> selectedElectrons , vector <TLorentzVector> selectedJets, bool makePlots, bool debug){
+  ClearMatchingVars(); // to do with each new dataset
+  ClearMatchingVarsTLV();
+  int MuonSize = selectedMuons.size();
+  for (int iMC = 0; iMC < nMCParticles; iMC++)
+  {
+    mcpart.Clear();
+    mcpart.SetPtEtaPhiE(mc_pt[iMC], mc_eta[iMC],mc_phi[iMC],mc_E[iMC]);
+    mcParticles.push_back(mcpart);
+  }
+  if(mcParticles.size() != nMCParticles){cout << "ERROR mcP not filled correctly" << endl;  }
+  
+  if(debug) cout << "looking at " << mcParticles.size() << " mcParticles" << endl;
+  
+  EventSearcher(mcParticles, dataSetName, debug);
+  
+  if(debug) cout << "found decay " << foundDecay << endl;
+  
+  if((foundSMmu || foundSMel) &&
+     ((foundZelmin && foundZelplus) || (foundZmuplus && foundZmumin)) &&
+     foundSMb ){
+    foundDecay = true;
+  }
+  if(debug) cout << "found decay " << foundDecay << endl;
+  
+  if(!foundDecay){ return false;  }
+  
+  if(makePlots){
+    // InitGenInfoPlots(dataSetName);
+    FillGenInfoPlots(dataSetName);
+  }
+  
+  bool matchedEvent = true;
+  
+  pair< vector< pair<unsigned int, unsigned int>>, vector <string> > OutputLeptonMatching;
+  OutputLeptonMatching =  LeptonMatching(Leptons, mcParticles, dataSetName, debug);
+  //cout << "WmuIndiceM "<< WmuIndiceM << endl;
+  for(unsigned int iPart = 0 ; iPart < (OutputLeptonMatching.second).size(); iPart++){
+    //cout << "(OutputLeptonMatching.second)[iPart] " << (OutputLeptonMatching.second)[iPart] << endl;
+    if((OutputLeptonMatching.second)[iPart].find("SMmu")!=string::npos){ WmuIndiceM = (OutputLeptonMatching.first)[iPart].first ; if(debug){ cout << "found SM mu" << endl; }
+      cout << "OutputLeptonMatching.first)[iPart].first " << (OutputLeptonMatching.first)[iPart].first << endl;
+    }
+    if((OutputLeptonMatching.second)[iPart].find("SMel")!=string::npos){ WelecIndiceM = (OutputLeptonMatching.first)[iPart].first - MuonSize;  if(debug){ cout << "found SM el" << endl; }}
+    if((OutputLeptonMatching.second)[iPart].find("Zmumin")!=string::npos){ ZmuIndiceM_0 = ((OutputLeptonMatching.first)[iPart].first);  if(debug){ cout << "found FCNC mu" << endl; } }
+    if((OutputLeptonMatching.second)[iPart].find("Zelmin")!=string::npos){ ZelecIndiceM_0 = (OutputLeptonMatching.first)[iPart].first - MuonSize; if(debug){ cout << "found FCNC el" << endl; }}
+    if((OutputLeptonMatching.second)[iPart].find("Zmuplus")!=string::npos){ ZmuIndiceM_1 = ((OutputLeptonMatching.first)[iPart].first  ); if(debug){ cout << "found FCNC mu" << endl; }}
+    if((OutputLeptonMatching.second)[iPart].find("Zelplus")!=string::npos){ZelecIndiceM_1 = (OutputLeptonMatching.first)[iPart].first - MuonSize; if(debug){ cout << "found FCNC el" << endl; }}
+  }
+  
+  
+  if(WmuIndiceF == WmuIndiceM && WmuIndiceM != -999 ) WlepMatched++;
+  else if(WelecIndiceF == WelecIndiceM && WelecIndiceM != -999 ) WlepMatched++;
+  else matchedEvent = false;
+  if(ZmuIndiceF_0 == ZmuIndiceF_0 && ZmuIndiceF_1 == ZmuIndiceM_1 && ZmuIndiceM_1!= -999 && ZmuIndiceM_0 != -999  ) ZlepMatched++;
+  else if(ZmuIndiceF_1== ZmuIndiceF_0 && ZmuIndiceF_0 == ZmuIndiceM_1 && ZmuIndiceM_1!= -999 && ZmuIndiceM_0 != -999 ) ZlepMatched++;
+  else matchedEvent = false;
+  if(ZelecIndiceF_0== ZelecIndiceF_0 && ZelecIndiceF_1 == ZelecIndiceM_1 && ZelecIndiceM_1!= -999 && ZelecIndiceM_0 != -999) ZlepMatched++;
+  else if(ZelecIndiceF_1== ZelecIndiceF_0 && ZelecIndiceF_0 == ZelecIndiceM_1 && ZelecIndiceM_1!= -999 && ZelecIndiceM_0 != -999 ) ZlepMatched++;
+  else matchedEvent = false;
+  
+  if(WmuIndiceM != -999 || WelecIndiceM != -999 ) WlepMatchedevent++;;
+  if( (ZmuIndiceM_0 != -999 && ZmuIndiceM_1 != -999) || (ZelecIndiceM_0 != -999 && ZelecIndiceM_1 != -999)) ZlepMatchedevent++;
+  
+  if(debug){
+    cout << "******* numbers for matching *********" << endl;
+    cout << "WmuIndiceM "<< WmuIndiceM <<" WmuIndiceF "<< WmuIndiceF << endl;
+    cout << "WelecIndiceM "<< WelecIndiceM <<" WelecIndiceF "<< WelecIndiceF << endl;
+    cout << "ZelecIndiceM_1 "<< ZelecIndiceM_1 <<" ZelecIndiceM_0 "<< ZelecIndiceM_0 << endl;
+    cout << "ZelecIndiceF_0 "<< ZelecIndiceF_0 <<" ZelecIndiceF_1 "<< ZelecIndiceF_1 << endl;
+    cout << "ZmuIndiceM_0 "<< ZmuIndiceM_0 <<" ZmuIndiceM_1 "<< ZmuIndiceM_1 << endl;
+    cout << "ZmuIndiceF_0 "<< ZmuIndiceF_0 <<" ZmuIndiceF_1 "<< ZmuIndiceF_1 << endl;
+    cout << "WlepMatched "<< WlepMatched <<" WlepMatchedevent "<< WlepMatchedevent << endl;
+    cout << "ZlepMatched "<< ZlepMatched <<" ZlepMatchedevent "<< ZlepMatchedevent << endl;
+    
+  }
+  
+  if(debug)cout << "**** OutputJetMatching begin ****" << endl;
+  pair< vector< pair<unsigned int, unsigned int>>, vector <string> > OutputJetMatching;
+  OutputJetMatching =  JetMatching(selectedJets, mcParticles, dataSetName, true);
+  if(debug) cout << "**** OutputJetMatching end ****" << endl;
+  
+  for(unsigned int iPart = 0 ; iPart < (OutputJetMatching.second).size(); iPart++){
+    if((OutputJetMatching.second)[iPart].find("SMb")!=string::npos){ BjetIndiceM = (OutputJetMatching.first)[iPart].first  ; }
+    if((OutputJetMatching.second)[iPart].find("FCNCc")!=string::npos){ CjetIndiceM = (OutputJetMatching.first)[iPart].first  ;}
+    if((OutputJetMatching.second)[iPart].find("FCNCu")!=string::npos){ UjetIndiceM = (OutputJetMatching.first)[iPart].first  ;}
+  }
+  
+  if(cjetindex == CjetIndiceM && CjetIndiceM != -999) CjetMatched++;
+  if(cjetindex_Cloose == CjetIndiceM && CjetIndiceM != -999) CjetMatchedL++;
+  if(cjetindex_Cmedium == CjetIndiceM && CjetIndiceM != -999) CjetMatchedM++;
+  if(cjetindex_Ctight == CjetIndiceM && CjetIndiceM != -999) CjetMatchedT++;
+  if(cjetindex_CvsBtagger == CjetIndiceM && CjetIndiceM != -999) CjetMatchedCvsBL++;
+  if(cjetindex_CvsLtagger == CjetIndiceM && CjetIndiceM != -999) CjetMatchedCvsLL++;
+  
+  if(SMjetIndex == BjetIndiceM && BjetIndiceM != -999) BjetMatched++;
+  else matchedEvent = false;
+  if(cjetindex == UjetIndiceM && UjetIndiceM != -999) UjetMatched++;
+  
+  if(CjetIndiceM != -999 && cjetindex != -999) CjetMatchedevent++;
+  if(CjetIndiceM != -999 && cjetindex_Cloose != -999) CjetMatchedeventL++;
+  if(CjetIndiceM != -999 && cjetindex_Cmedium != -999) CjetMatchedeventM++;
+  if(CjetIndiceM != -999 && cjetindex_Ctight != -999) CjetMatchedeventT++;
+  if(CjetIndiceM != -999 && cjetindex_CvsBtagger != -999) CjetMatchedeventCvsBL++;
+  if(CjetIndiceM != -999 && cjetindex_CvsLtagger != -999) CjetMatchedeventCvsLL++;
+  
+  
+  if(BjetIndiceM != -999 && SMjetIndex != -999) BjetMatchedevent++;
+  if(UjetIndiceM != -999 && cjetindex != -999) UjetMatchedevent++;
+ 
+ //if(makePlots) FillRecovsGenInfoPlots(dataSetName, selectedElectrons, selectedMuons , selectedJets); // TO FIX
+  
+  return true;
+}
+void MatchingEfficiency(){
+  
+  cout << "                LEPTON MATCHING" << endl;
+  cout << "                  - W lepton matching: " << WlepMatched << " out of " << WlepMatchedevent << " or " << (WlepMatched/WlepMatchedevent)*100. << " % " << endl;
+  cout << "                  - Z lepton matching: " << ZlepMatched << " out of " << ZlepMatchedevent << " or " << (ZlepMatched/ZlepMatchedevent)*100. << " % " << endl;
+  cout << "                  - Lepton matched : " << ZlepMatched + WlepMatched << " out of " << WlepMatchedevent + ZlepMatchedevent << " or " << ((WlepMatched+ZlepMatched)/(WlepMatchedevent+ZlepMatchedevent))*100. << " % " << endl;
+  
+  cout << "                JET MATCHTING" << endl;
+  cout << "                  - B jet matching: " << BjetMatched << " out of " << BjetMatchedevent << " or " << (BjetMatched/BjetMatchedevent)*100. << " % " << endl;
+  cout << "                  - C jet matching based on mass req: " << CjetMatched << " out of " << CjetMatchedevent << " or " << (CjetMatched/CjetMatchedevent)*100. << " % " << endl;
+  cout << "                  - C jet matching based on CvsL tagger req: " << CjetMatchedCvsLL << " out of " << CjetMatchedeventCvsLL << " or " << (CjetMatchedCvsLL/CjetMatchedeventCvsLL)*100. << " % " << endl;
+  cout << "                  - C jet matching based on CvsB tagger req: " << CjetMatchedCvsBL << " out of " << CjetMatchedeventCvsBL << " or " << (CjetMatchedCvsBL/CjetMatchedeventCvsBL)*100. << " % " << endl;
+  cout << "                  - C jet matching based on WP L, Pt req: " << CjetMatchedL << " out of " << CjetMatchedeventL << " or " << (CjetMatchedL/CjetMatchedeventL)*100. << " % " << endl;
+  cout << "                  - C jet matching based on WP M, Pt req: " << CjetMatchedM << " out of " << CjetMatchedeventM << " or " << (CjetMatchedM/CjetMatchedeventM)*100. << " % " << endl;
+  cout << "                  - C jet matching based on WP T, Pt req: " << CjetMatchedT << " out of " << CjetMatchedeventT << " or " << (CjetMatchedT/CjetMatchedeventT)*100. << " % " << endl;
+  cout << "                  - U jet matching based in mass req: " << UjetMatched << " out of " << UjetMatchedevent << " or " << (UjetMatched/UjetMatchedevent)*100. << " % " << endl;
+};
 
-void EventSearcherSTCNC(vector < TLorentzVector> mcParticles){
 
+
+
+
+pair< vector< pair<unsigned int, unsigned int>>, vector <string> > LeptonMatching(vector < TLorentzVector> selectedleptons, vector <TLorentzVector> mcParticles, string dataSetName, bool debug){
+  vector <TLorentzVector> partons;
+  partons.clear();
+  vector <int> partonID;
+  partonID.clear();
+  
+  for (unsigned int iMC = 0; iMC < mcParticles.size(); iMC++)
+  {
+    if ( (mc_status[iMC] > 1 && mc_status[iMC] <= 20) || mc_status[iMC] >= 30 ) continue;  /// Final state particle or particle from hardest process
+    if( abs(mc_pdgId[iMC]) ==  13 || abs(mc_pdgId[iMC]) ==  11 ){
+      partons.push_back(mcParticles[iMC]);
+      partonID.push_back(iMC);
+    } // leptons
+  }
+  
+  if(debug) cout << "nb of partons to be matched " << partons.size() << endl;
+  vector< pair<unsigned int, unsigned int> > PPair; // First one is jet number, second one is mcParticle number
+  PPair.clear();
+  vector<string > NPair; //
+  NPair.clear();
+  
+  
+  JetPartonMatching matchingTool = JetPartonMatching(partons, selectedleptons,2,true,true,0.1 );
+  
+  if (matchingTool.getNumberOfAvailableCombinations() != 1)
+    cerr << "matching.getNumberOfAvailableCombinations() = " << matchingTool.getNumberOfAvailableCombinations() << " .  This should be equal to 1 !!!" << endl;
+  
+  
+  /// Fill match in JetPartonPair;
+  vector< pair<unsigned int, unsigned int> > JetPartonPair; // First one is jet number, second one is mcParticle number
+  JetPartonPair.clear();
+  
+  
+  for (unsigned int i = 0; i < partons.size(); i++)
+  {
+    int matchedJetNumber = matchingTool.getMatchForParton(i, 0);
+    if (matchedJetNumber > -1)
+      JetPartonPair.push_back( pair<unsigned int, unsigned int> (matchedJetNumber, i) );
+    // matched jet number is nb in selectedleptons collection
+    // i is nb in partons
+    // partonID contains place in mcParticles vector
+  }
+  
+
+  
+  for (unsigned int i = 0; i < JetPartonPair.size(); i++)
+  {
+    unsigned int partonIDnb = JetPartonPair[i].second; // place in mcParticles vector
+    unsigned int particlenb = JetPartonPair[i].first;  // place in selectedLeptons vector
+    
+   // cout << "mc_pdgId[partonID[partonIDnb]] " << mc_pdgId[partonID[partonIDnb]] << " mc_mother[partonID[partonIDnb]] " << mc_mother[partonID[partonIDnb]] << " mc_granny[partonID[partonIDnb]] " << endl;
+    
+    //SM
+    if( abs(mc_pdgId[partonID[partonIDnb]]) ==  13 && abs(mc_mother[partonID[partonIDnb]])  == 24 && abs(mc_granny[partonID[partonIDnb]])  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,partonID[partonIDnb]));
+      NPair.push_back("SMmu");
+      cout << "i " << i << " SM mu = JetPartonPair[i].first " << JetPartonPair[i].first << endl;
+ 
+    } // mu from W from t
+    if( abs(mc_pdgId[partonID[partonIDnb]]) ==  11 && abs(mc_mother[partonID[partonIDnb]])  == 24 && abs(mc_granny[partonID[partonIDnb]])  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,partonID[partonIDnb]));
+      NPair.push_back("SMel");
+    } // el from W from t
+    
+    if(dataSetName.find("TT_FCNC") ==std::string::npos ){
+      //FCNC
+      if( mc_pdgId[partonID[partonIDnb]] ==  13 && abs(mc_mother[partonID[partonIDnb]])  == 23 ){
+        PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,partonID[partonIDnb]));
+        NPair.push_back("Zmumin");
+      } // mu- from Z from t
+      if( mc_pdgId[partonID[partonIDnb]] ==  11 && abs(mc_mother[partonID[partonIDnb]])  == 23  ){
+        PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,partonID[partonIDnb]));
+        NPair.push_back("Zelmin");
+      } // el- from Z from t
+      if( mc_pdgId[partonID[partonIDnb]] ==  -13 && abs(mc_mother[partonID[partonIDnb]])  == 23  ){
+        PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,partonID[partonIDnb]));
+        NPair.push_back("Zmuplus");
+      } // mu+ from Z from t
+      if( mc_pdgId[partonID[partonIDnb]] ==  -11 && abs(mc_mother[partonID[partonIDnb]])  == 23  ){
+        PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,partonID[partonIDnb]));
+        NPair.push_back("Zelplus");
+      } // el+ from Z from t
+    }
+    if(dataSetName.find("TT_FCNC")!=std::string::npos ){
+      if( mc_pdgId[partonID[partonIDnb]] ==  13 && abs(mc_mother[partonID[partonIDnb]])  == 23&& abs(mc_granny[partonID[partonIDnb]])  == 6  ){
+        PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,partonID[partonIDnb]));
+        NPair.push_back("Zmumin");
+      } // mu- from Z from t
+      if( mc_pdgId[partonID[partonIDnb]] ==  11 && abs(mc_mother[partonID[partonIDnb]])  == 23 && abs(mc_granny[partonID[partonIDnb]])  == 6  ){
+        PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,partonID[partonIDnb]));
+        NPair.push_back("Zelmin");
+      } // el- from Z from t
+      if( mc_pdgId[partonID[partonIDnb]] ==  -13 && abs(mc_mother[partonID[partonIDnb]])  == 23 && abs(mc_granny[partonID[partonIDnb]])  == 6  ){
+        PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,partonID[partonIDnb]));
+        NPair.push_back("Zmuplus");
+      } // mu+ from Z from t
+      if( mc_pdgId[partonID[partonIDnb]] ==  -11 && abs(mc_mother[partonID[partonIDnb]])  == 23  && abs(mc_granny[partonID[partonIDnb]])  == 6 ){
+        PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,partonID[partonIDnb]));
+        NPair.push_back("Zelplus");
+      } // el+ from Z from t
+      
+    }
+    
+  }
+  
+  
+  pair< vector< pair<unsigned int, unsigned int>>, vector <string> >   returnVector;
+  returnVector = pair< vector< pair<unsigned int, unsigned int>>, vector <string> >( PPair , NPair ) ;
+  ////  cout << " (returnVector.second).size() " << (returnVector.second).size() << endl;
+  //  cout << " (returnVector.first).size() " << (returnVector.first).size() << endl;
+  //  cout << "Matcher PPair.size() " << PPair.size() << endl;
+  //  cout << "Matcher NPair.size() "  << NPair.size() << endl;
+  return returnVector;
+  
+}
+pair< vector< pair<unsigned int, unsigned int>>, vector <string> > JetMatching(vector < TLorentzVector> selectedJets, vector <TLorentzVector> mcParticles, string dataSetName, bool debug){
+  vector <TLorentzVector> partons;
+  partons.clear();
+  vector <int> partonID;
+  partonID.clear();
+  debug = false;
+  if(debug) cout << "begin jet matching" << endl;
   for (unsigned int iMC = 0; iMC < mcParticles.size(); iMC++)
   {
     if (false)
+      cout << setw(3) << right << iMC << "  Status: " << setw(2) << mc_status[iMC] << "  pdgId: " << setw(3) << mc_pdgId[iMC] << "  Mother: " << setw(4) << mc_mother[iMC] << "  Granny: " << setw(4) << mc_granny[iMC] << endl;
+    
+    //cout << "iMC " << iMC << endl;
+    if ( (mc_status[iMC] > 1 && mc_status[iMC] <= 20) || mc_status[iMC] >= 30 ) continue;  /// Final state particle or particle from hardest process
+    //cout << "iMC through " << iMC << endl;
+    
+    if( abs(mc_pdgId[iMC]) <=  5 || abs(mc_pdgId[iMC]) ==  21 ){
+      //cout << "pushing back" << endl;
+      partons.push_back(mcParticles[iMC]);
+      partonID.push_back(iMC);
+    } //jets and gluons
+    
+    // cout << "iMC done " << iMC << endl;
+    
+  }
+  
+  if(debug) cout << "partons to be matched: " << partons.size() <<endl;
+  
+  JetPartonMatching matchingTool = JetPartonMatching(partons, selectedJets,2,true,true,0.3 );
+  
+  if(debug)  cout << "jet parton matching done " << endl;
+  
+  if (matchingTool.getNumberOfAvailableCombinations() != 1)
+    cerr << "matching.getNumberOfAvailableCombinations() = " << matchingTool.getNumberOfAvailableCombinations() << " .  This should be equal to 1 !!!" << endl;
+  
+  
+  /// Fill match in JetPartonPair;
+  vector< pair<unsigned int, unsigned int> > JetPartonPair; // First one is jet number, second one is mcParticle number
+  JetPartonPair.clear();
+  
+  
+  for (unsigned int i = 0; i < partons.size(); i++)
+  {
+    int matchedJetNumber = matchingTool.getMatchForParton(i, 0);
+    if (matchedJetNumber > -1)
+      JetPartonPair.push_back( pair<unsigned int, unsigned int> (matchedJetNumber, i) );
+    // matched jet number is nb in selectedJets collection
+    // i is nb in partons
+    // partonID contains place in mcParticles vector
+  }
+  if(debug) cout << "pushing back" << endl;
+  
+  /*
+   if(JetPartonPair.size() < 1 && dataSetName.find("TT")==std::string::npos){
+   pair< vector< pair<unsigned int, unsigned int>>, vector <string> >   returnVectorEr;
+   return returnVectorEr;
+   }
+   else if(JetPartonPair.size() < 2 && dataSetName.find("TT")!=std::string::npos){
+   pair< vector< pair<unsigned int, unsigned int>>, vector <string> >   returnVectorEr;
+   return returnVectorEr;
+   }
+   */
+  
+  vector< pair<unsigned int, unsigned int> > PPair; // First one is jet number, second one is mcParticle number
+  PPair.clear();
+  vector<string > NPair; //
+  NPair.clear();
+  
+  if(debug) cout << "get pairs" << endl;
+  for (unsigned int i = 0; i < JetPartonPair.size(); i++)
+  {
+    unsigned int partonIDnb = JetPartonPair[i].second; // place in mcParticles vector
+    unsigned int particlenb = JetPartonPair[i].first;  // place in selectedLeptons vector
+    
+    //SM
+    
+    if( abs(mc_pdgId[partonID[partonIDnb]]) ==  5 && abs(mc_mother[partonID[partonIDnb]])  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,partonID[partonIDnb]));
+      NPair.push_back("SMb");
+    } // b from t
+    
+    //FCNC
+    if(dataSetName.find("TT")!=std::string::npos){
+    if( abs(mc_pdgId[partonID[partonIDnb]]) ==  2  && abs(mc_mother[partonID[partonIDnb]])  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,partonID[partonIDnb]));
+      NPair.push_back("FCNCu");
+    } // q from t
+    if( abs(mc_pdgId[partonID[partonIDnb]]) ==  4 && abs(mc_mother[partonID[partonIDnb]])  == 6 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,partonID[partonIDnb]));
+      NPair.push_back("FCNCc");
+    } // q from t
+    }
+    else {
+      
+    if( abs(mc_pdgId[partonID[partonIDnb]]) ==  2  ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,partonID[partonIDnb]));
+      NPair.push_back("FCNCu");
+    } // q from t
+    if( abs(mc_pdgId[partonID[partonIDnb]]) ==  4 ){
+      PPair.push_back(pair<unsigned int,unsigned int> (JetPartonPair[i].first,partonID[partonIDnb]));
+      NPair.push_back("FCNCc");
+    } // q from t
+    }
+  }
+  
+  if(debug) cout << "return pairs" << endl;
+  pair< vector< pair<unsigned int, unsigned int>>, vector <string> >   returnVector;
+  returnVector = pair< vector< pair<unsigned int, unsigned int>>, vector <string> >( PPair , NPair ) ;
+  ////  cout << " (returnVector.second).size() " << (returnVector.second).size() << endl;
+  //  cout << " (returnVector.first).size() " << (returnVector.first).size() << endl;
+  //  cout << "Matcher PPair.size() " << PPair.size() << endl;
+  //  cout << "Matcher NPair.size() "  << NPair.size() << endl;
+  return returnVector;
+  
+  
+}
+void EventSearcher(vector < TLorentzVector> mcParticles, string dataSetName, bool debug){
+  
+  for (unsigned int iMC = 0; iMC < mcParticles.size(); iMC++)
+  {
+    if (debug)
       cout << setw(3) << right << iMC << "  Status: " << setw(2) << mc_status[iMC] << "  pdgId: " << setw(3) << mc_pdgId[iMC]<< "  Mother: " << setw(4) << mc_mother[iMC] << "  Granny: " << setw(4) << mc_granny[iMC] << "  Pt: " << setw(7) << left << mc_pt[iMC] << "  Eta: " << mc_eta[iMC] << endl;
     
     
     if ( (mc_status[iMC] > 1 && mc_status[iMC] <= 20) || mc_status[iMC] >= 30 ) continue;  /// Final state particle or particle from hardest process
     
-    if( mc_pdgId[iMC]== 6 ){ TopQ_Indice = iMC; foundTopQ = true;  }
+    if( mc_pdgId[iMC]== 6 ){
+      TopQ_Indice = iMC; foundTopQ = true;
+    }
     else if( mc_pdgId[iMC]== -6 ){ AntiTopQ_Indice = iMC; foundAntitopQ = true; }
     
     //SM
@@ -3721,7 +4248,18 @@ void EventSearcherSTCNC(vector < TLorentzVector> mcParticles){
       foundSMmu = true;
       //cout << "found mu from tbar" << endl;
       
-    } // mu - from W - from tbar
+    }
+    else if( abs(mc_pdgId[iMC])==  14 && mc_mother[iMC]  == -24 && mc_granny[iMC]  == -6 ){
+      if(mc_status[iMC] == 23) {SMnumu_Indice = iMC;  }
+      else if( mc_status[iMC] != 23 && SMnumu_Indice == -999) {SMnumu_Indice = iMC;}
+      foundSMnumu = true;
+      
+    }
+    else if( abs(mc_pdgId[iMC])==  12 && mc_mother[iMC]  == -24 && mc_granny[iMC]  == -6 ){
+      if(mc_status[iMC] == 23) {SMnuel_Indice = iMC;  }
+      else if( mc_status[iMC] != 23 && SMnuel_Indice== -999) {SMnuel_Indice = iMC;}
+      foundSMnuel = true;
+    }
     else if( mc_pdgId[iMC]==  -13 && mc_mother[iMC]  == 24 && mc_granny[iMC]  == 6 ){
       if(mc_status[iMC] == 23) {SMmu_Indice = iMC;  }
       else if( mc_status[iMC] != 23 && SMmu_Indice == -999) {SMmu_Indice = iMC;}
@@ -3744,108 +4282,6 @@ void EventSearcherSTCNC(vector < TLorentzVector> mcParticles){
     else if( mc_pdgId[iMC]==  24 && mc_mother[iMC]  == 6   ){
       if(mc_status[iMC] == 23) {SMW_Indice= iMC; }
       else if( mc_status[iMC] != 23 && SMW_Indice== -999) {SMW_Indice = iMC; }
-     foundW = true;
-      //cout << "W from t  found " << endl;
-    } //W from top
-    else if( mc_pdgId[iMC]==  -24 && mc_mother[iMC]  == -6  ){
-      if(mc_status[iMC] == 23) {SMW_Indice= iMC; }
-      else if( mc_status[iMC] != 23 && SMW_Indice== -999) {SMW_Indice = iMC;}
-      foundW = true;
-      //cout << "W from tbar found  " << endl;
-    } //W from atop
-    
-    //FCNC
-    else if( mc_pdgId[iMC]==  13 && mc_mother[iMC]  == 23  ){
-      if(mc_status[iMC] == 23) {Zmu_min_Indice = iMC;  }
-      else if( mc_status[iMC] != 23 && Zmu_min_Indice== -999) {Zmu_min_Indice = iMC;}
-      foundZmumin = true;
-      
-      // cout << "mu from Z from tbar found  " << endl;
-    } // mu - from Z  from tbar
-    else if( mc_pdgId[iMC]==  -13 && mc_mother[iMC]  == 23  ){
-      if(mc_status[iMC] == 23) {Zmu_plus_Indice = iMC;  }
-      else if( mc_status[iMC] != 23 && Zmu_plus_Indice== -999) {Zmu_plus_Indice= iMC;}
-      foundZmuplus = true;
-      
-      //cout << "mu from Z from tbar found  " << endl;
-    } // mu + from Z  from tbar
-    
-    
-    else if( mc_pdgId[iMC]==  11 && mc_mother[iMC]  == 23   ){
-      if(mc_status[iMC] == 23) {Zel_min_Indice = iMC;  }
-      else if( mc_status[iMC] != 23 && Zel_min_Indice== -999) {Zel_min_Indice = iMC;}
-      foundZelmin = true;
-      //cout << "el from Z from tbar found  " << endl;
-    } // el - from Z  from tbar
-    else if( mc_pdgId[iMC]==  -11 && mc_mother[iMC]  == 23  ){
-      if(mc_status[iMC] == 23) {Zel_plus_Indice= iMC;  }
-      else if( mc_status[iMC] != 23 && Zel_plus_Indice== -999) {Zel_plus_Indice = iMC;}
-      foundZelplus = true;
-      
-      // cout << "el from Z from tbar found  " << endl;
-    } // el + from Z  from tbar
-    else if( mc_pdgId[iMC]==  23 ){
-      if(mc_status[iMC] == 23) {Z_Indice= iMC;  }
-      else if( mc_status[iMC] != 23 && Z_Indice== -999) {Z_Indice = iMC; }
-      foundZ = true;
-    } //Z from top with mu decay
-   
-    
-  }
-
-
-}
-
-
-void EventSearcherTTCNC(vector < TLorentzVector> mcParticles){
-  
-  for (unsigned int iMC = 0; iMC < mcParticles.size(); iMC++)
-  {
-    if (false)
-      cout << setw(3) << right << iMC << "  Status: " << setw(2) << mc_status[iMC] << "  pdgId: " << setw(3) << mc_pdgId[iMC]<< "  Mother: " << setw(4) << mc_mother[iMC] << "  Granny: " << setw(4) << mc_granny[iMC] << "  Pt: " << setw(7) << left << mc_pt[iMC] << "  Eta: " << mc_eta[iMC] << endl;
-    
-    
-    if ( (mc_status[iMC] > 1 && mc_status[iMC] <= 20) || mc_status[iMC] >= 30 ) continue;  /// Final state particle or particle from hardest process
-    
-    if( mc_pdgId[iMC]== 6 ){ TopQ_Indice = iMC; foundTopQ = true;  }
-    else if( mc_pdgId[iMC]== -6 ){ AntiTopQ_Indice = iMC; foundAntitopQ = true; }
-    
-    //SM
-    else if( abs( mc_pdgId[iMC]) ==  5 && abs(mc_mother[iMC])  == 6 ){
-      if(mc_status[iMC] == 23) {SMb_Indice = iMC;  }
-      else if( mc_status[iMC] != 23 && SMb_Indice == -999) {SMb_Indice = iMC;}
-      foundSMb = true;
-      
-    } // b from t
-    else if( mc_pdgId[iMC]==  13 && mc_mother[iMC]  == -24 && mc_granny[iMC]  == -6 ){
-      if(mc_status[iMC] == 23) {SMmu_Indice = iMC;  }
-      else if( mc_status[iMC] != 23 && SMmu_Indice == -999) {SMmu_Indice = iMC;}
-      foundSMmu = true;
-      //cout << "found mu from tbar" << endl;
-      
-    } // mu - from W - from tbar
-    else if( mc_pdgId[iMC]==  -13 && mc_mother[iMC]  == 24 && mc_granny[iMC]  == 6 ){
-      if(mc_status[iMC] == 23) {SMmu_Indice = iMC;  }
-      else if( mc_status[iMC] != 23 && SMmu_Indice == -999) {SMmu_Indice = iMC;}
-      foundSMmu = true;
-      
-    } // mu+ from W+ from top
-    else if( mc_pdgId[iMC]==  11 && mc_mother[iMC]  == -24 && mc_granny[iMC]  == -6 ){
-      if(mc_status[iMC] == 23) {SMel_Indice = iMC;  }
-      else if( mc_status[iMC] != 23 && SMel_Indice== -999) {SMel_Indice = iMC;}
-      foundSMel = true;
-      //cout << "found el from tbar" << endl;
-      
-    } // el - from W - from tbar
-    else if( mc_pdgId[iMC]==  -11 && mc_mother[iMC]  == 24 && mc_granny[iMC]  == 6 ){
-      if(mc_status[iMC] == 23) {SMel_Indice = iMC;  }
-      else if( mc_status[iMC] != 23 && SMel_Indice== -999) {SMel_Indice = iMC;}
-      foundSMel = true;
-      
-    } // el+ from W+ from top
-    else if( mc_pdgId[iMC]==  24 && mc_mother[iMC]  == 6   ){
-      if(mc_status[iMC] == 23) {SMW_Indice= iMC; }
-      else if( mc_status[iMC] != 23 && SMW_Indice== -999) {SMW_Indice = iMC; }
       foundW = true;
       //cout << "W from t  found " << endl;
     } //W from top
@@ -3855,45 +4291,119 @@ void EventSearcherTTCNC(vector < TLorentzVector> mcParticles){
       foundW = true;
       //cout << "W from tbar found  " << endl;
     } //W from atop
-    
-    //FCNC
-    else if( mc_pdgId[iMC]==  13 && mc_mother[iMC]  == 23 && abs(mc_granny[iMC])  == 6 ){
-      if(mc_status[iMC] == 23) {Zmu_min_Indice = iMC;  }
-      else if( mc_status[iMC] != 23 && Zmu_min_Indice== -999) {Zmu_min_Indice = iMC;}
-      foundZmumin = true;
+     // u jet
+    if(dataSetName.find("TT")==std::string::npos){
+      //FCNC
+      if( mc_pdgId[iMC]==  13 && mc_mother[iMC]  == 23  ){
+        if(mc_status[iMC] == 23) {Zmu_min_Indice = iMC;  }
+        else if( mc_status[iMC] != 23 && Zmu_min_Indice== -999) {Zmu_min_Indice = iMC;}
+        foundZmumin = true;
+        
+        // cout << "mu from Z from tbar found  " << endl;
+      } // mu - from Z  from tbar
+      else if( mc_pdgId[iMC]==  -13 && mc_mother[iMC]  == 23  ){
+        if(mc_status[iMC] == 23) {Zmu_plus_Indice = iMC;  }
+        else if( mc_status[iMC] != 23 && Zmu_plus_Indice== -999) {Zmu_plus_Indice= iMC;}
+        foundZmuplus = true;
+        
+        //cout << "mu from Z from tbar found  " << endl;
+      } // mu + from Z  from tbar
       
-      // cout << "mu from Z from tbar found  " << endl;
-    } // mu - from Z  from tbar
-    else if( mc_pdgId[iMC]==  -13 && mc_mother[iMC]  == 23  && abs(mc_granny[iMC])  == 6){
-      if(mc_status[iMC] == 23) {Zmu_plus_Indice = iMC;  }
-      else if( mc_status[iMC] != 23 && Zmu_plus_Indice== -999) {Zmu_plus_Indice= iMC;}
-      foundZmuplus = true;
+      else if( abs( mc_pdgId[iMC]) ==  4  ){
+        if(mc_status[iMC] == 23) {Cjet_Indice = iMC;  }
+        else if( mc_status[iMC] != 23 && Cjet_Indice == -999) {Cjet_Indice = iMC;}
+        foundCjet = true;
+        
+      } // c jet
+      else if( abs( mc_pdgId[iMC]) ==  2  ){
+        if(mc_status[iMC] == 23) {Ujet_Indice = iMC;  }
+        else if( mc_status[iMC] != 23 && Ujet_Indice == -999) {Ujet_Indice = iMC;}
+        foundUjet = true;
+        
+      }
+      else if( mc_pdgId[iMC]==  11 && mc_mother[iMC]  == 23   ){
+        if(mc_status[iMC] == 23) {Zel_min_Indice = iMC;  }
+        else if( mc_status[iMC] != 23 && Zel_min_Indice== -999) {Zel_min_Indice = iMC;}
+        foundZelmin = true;
+        //cout << "el from Z from tbar found  " << endl;
+      } // el - from Z  from tbar
+      else if( mc_pdgId[iMC]==  -11 && mc_mother[iMC]  == 23  ){
+        if(mc_status[iMC] == 23) {Zel_plus_Indice= iMC;  }
+        else if( mc_status[iMC] != 23 && Zel_plus_Indice== -999) {Zel_plus_Indice = iMC;}
+        foundZelplus = true;
+        
+        // cout << "el from Z from tbar found  " << endl;
+      } // el + from Z  from tbar
+      else if( mc_pdgId[iMC]==  23 ){
+        if(mc_status[iMC] == 23) {Z_Indice= iMC;  }
+        else if( mc_status[iMC] != 23 && Z_Indice== -999) {Z_Indice = iMC; }
+        foundZ = true;
+      } //Z from top with mu decay
       
-      //cout << "mu from Z from tbar found  " << endl;
-    } // mu + from Z  from tbar
+    }
     
-    
-    else if( mc_pdgId[iMC]==  11 && mc_mother[iMC]  == 23  && abs(mc_granny[iMC])  == 6 ){
-      if(mc_status[iMC] == 23) {Zel_min_Indice = iMC;  }
-      else if( mc_status[iMC] != 23 && Zel_min_Indice== -999) {Zel_min_Indice = iMC;}
-      foundZelmin = true;
-      //cout << "el from Z from tbar found  " << endl;
-    } // el - from Z  from tbar
-    else if( mc_pdgId[iMC]==  -11 && mc_mother[iMC]  == 23 && abs(mc_granny[iMC])  == 6 ){
-      if(mc_status[iMC] == 23) {Zel_plus_Indice= iMC;  }
-      else if( mc_status[iMC] != 23 && Zel_plus_Indice== -999) {Zel_plus_Indice = iMC;}
-      foundZelplus = true;
+    else if(dataSetName.find("TT")!=std::string::npos){
       
-      // cout << "el from Z from tbar found  " << endl;
-    } // el + from Z  from tbar
-    else if( mc_pdgId[iMC]==  23&& abs(mc_mother[iMC])  == 6 ){
-      if(mc_status[iMC] == 23) {Z_Indice= iMC;  }
-      else if( mc_status[iMC] != 23 && Z_Indice== -999) {Z_Indice = iMC; }
-      foundZ = true;
-    } //Z from top with mu decay
+      //FCNC
+      if( mc_pdgId[iMC]==  13 && mc_mother[iMC]  == 23 && abs(mc_granny[iMC])  == 6 ){
+        if(mc_status[iMC] == 23) {Zmu_min_Indice = iMC;  }
+        else if( mc_status[iMC] != 23 && Zmu_min_Indice== -999) {Zmu_min_Indice = iMC;}
+        foundZmumin = true;
+        
+        // cout << "mu from Z from tbar found  " << endl;
+      } // mu - from Z  from tbar
+      else if( mc_pdgId[iMC]==  -13 && mc_mother[iMC]  == 23  && abs(mc_granny[iMC])  == 6){
+        if(mc_status[iMC] == 23) {Zmu_plus_Indice = iMC;  }
+        else if( mc_status[iMC] != 23 && Zmu_plus_Indice== -999) {Zmu_plus_Indice= iMC;}
+        foundZmuplus = true;
+        
+        //cout << "mu from Z from tbar found  " << endl;
+      } // mu + from Z  from tbar
+      else if( abs( mc_pdgId[iMC]) ==  4 && abs(mc_mother[iMC])  == 6 ){
+        if(mc_status[iMC] == 23) {Cjet_Indice = iMC;  }
+        else if( mc_status[iMC] != 23 && Cjet_Indice == -999) {Cjet_Indice = iMC;}
+        foundCjet = true;
+        
+      } // c jet
+      else if( abs( mc_pdgId[iMC]) ==  2  && abs(mc_mother[iMC])  == 6){
+        if(mc_status[iMC] == 23) {Ujet_Indice = iMC;  }
+        else if( mc_status[iMC] != 23 && Ujet_Indice == -999) {Ujet_Indice = iMC;}
+        foundUjet = true;
+        
+      }
+      
+      else if( mc_pdgId[iMC]==  11 && mc_mother[iMC]  == 23  && abs(mc_granny[iMC])  == 6 ){
+        if(mc_status[iMC] == 23) {Zel_min_Indice = iMC;  }
+        else if( mc_status[iMC] != 23 && Zel_min_Indice== -999) {Zel_min_Indice = iMC;}
+        foundZelmin = true;
+        //cout << "el from Z from tbar found  " << endl;
+      } // el - from Z  from tbar
+      else if( mc_pdgId[iMC]==  -11 && mc_mother[iMC]  == 23 && abs(mc_granny[iMC])  == 6 ){
+        if(mc_status[iMC] == 23) {Zel_plus_Indice= iMC;  }
+        else if( mc_status[iMC] != 23 && Zel_plus_Indice== -999) {Zel_plus_Indice = iMC;}
+        foundZelplus = true;
+        
+        // cout << "el from Z from tbar found  " << endl;
+      } // el + from Z  from tbar
+      else if( mc_pdgId[iMC]==  23&& abs(mc_mother[iMC])  == 6 ){
+        if(mc_status[iMC] == 23) {Z_Indice= iMC;  }
+        else if( mc_status[iMC] != 23 && Z_Indice== -999) {Z_Indice = iMC; }
+        foundZ = true;
+      } //Z from top
+      
+      
+    }
     
+  }
+  if(debug){
+    cout << " ****** event searcher ******" << endl;
+    cout << " foundZelmin " << foundZelmin <<" foundZelplus "<< foundZelplus <<" foundZmumin "<< foundZmumin <<" foundZmuplus "<< foundZmuplus <<endl;
+    cout << "foundSMb "<< foundSMb <<" foundSMel "<< foundSMel <<" foundSMmu "<< foundSMmu << endl;
     
   }
   
-  
 }
+
+
+
+

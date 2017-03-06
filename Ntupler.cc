@@ -95,13 +95,13 @@ std::pair <Double_t, Double_t> c_workingpointvalue_Tight(0.69, -0.45); // reduce
 bool synchex = false;
 
 
-float lum_RunsBCDEF = 15.658183109;// /fb
-float lum_RunsGH = 15.199167277;// /fb
+double lum_RunsBCDEF = 15.658183109;// /fb
+double lum_RunsGH = 15.199167277;// /fb
 
 
 
 // home made functions
-std::pair <Float_t,Float_t> CosThetaCalculation(TLorentzVector lepton, TLorentzVector Neutrino, TLorentzVector leptonicBJet, bool geninfo);
+std::pair <Double_t,Double_t> CosThetaCalculation(TLorentzVector lepton, TLorentzVector Neutrino, TLorentzVector leptonicBJet, bool geninfo);
 int FCNCjetCalculator(std::vector<TRootPFJet*> Jets, TLorentzVector recoZ ,int index, int verb);
 int FCNCjetCalculatorCvsBTagger(std::vector<TRootPFJet*> Jets, int index, int verb);
 int FCNCjetCalculatorCvsLTagger(std::vector<TRootPFJet*> Jets, int index, int verb);
@@ -177,7 +177,7 @@ int main (int argc, char *argv[])
   bool applyJES = false;
   bool fillBtagHisto = false;
   
-  
+  bool doFakeLepton  =true;
   
   
   //////////////////////////////////////////////
@@ -398,12 +398,12 @@ int main (int argc, char *argv[])
   /// Object ID              ///
   /////////////////////////////
   // electron
-  float el_pt_cut =35.; // 42
+  float el_pt_cut =40.; // 42
   float el_eta_cut = 2.1;
   float el_iso_cone  = 0.3;
   // reliso cut fabs(eta supercluster) <= 1.479 --> 0.107587 // (fabs(eta supercluster) > 1.479 && fabs(eta supercluster) < 2.5) --> 0.113254
   // muon
-  float mu_pt_cut = 25.; // 40
+  float mu_pt_cut = 30.; // 40
   float mu_eta_cut = 2.1;
   float mu_iso_cut = 0.15;
   float mu_iso_cut_loose = 0.25;
@@ -619,7 +619,7 @@ int main (int argc, char *argv[])
     nlo = false;
     /////////
     string daName = datasets[d]->Name();
-    float normfactor = datasets[d]->NormFactor();
+    double normfactor = datasets[d]->NormFactor();
     cout <<"found sample " << daName.c_str() << " with equivalent lumi "<<  theDataset->EquivalentLumi() <<endl;
     if(daName.find("Data")!=string::npos || daName.find("data")!=string::npos || daName.find("DATA")!=string::npos){
       isData = true;
@@ -794,14 +794,17 @@ int main (int argc, char *argv[])
     ///////////////////////////
     // event related variables
     Int_t run_num;
-    float i_channel;
+    double i_channel;
     Long64_t evt_num;
     Int_t lumi_num;
     Int_t nvtx;
     Int_t npu;
     Int_t PassedMETFilter;
-    Int_T PassedTrigger;
+    Int_t PassedTrigger;
+    Int_t PassedTriggerNoLogic;
+    Int_t PassedTriggerNoLogic2; 
     Int_t PassedGoodPV;
+    Int_t withfakes;
     Double_t puSF;
     Double_t btagSF;
     Double_t MuonIDSF[10];
@@ -831,22 +834,22 @@ int main (int argc, char *argv[])
     
       // variables for electrons
     Int_t nElectrons;
-    Float_t pt_electron[10];
-    Float_t phi_electron[10];
-    Float_t eta_electron[10];
-    Float_t eta_superCluster_electron[10];
-    Float_t E_electron[10];
-    Float_t d0_electron[10];
-    Float_t d0BeamSpot_electron[10];
-    Float_t chargedHadronIso_electron[10];
-    Float_t neutralHadronIso_electron[10];
-    Float_t photonIso_electron[10];
-    Float_t pfIso_electron[10];
+    Double_t pt_electron[10];
+    Double_t phi_electron[10];
+    Double_t eta_electron[10];
+    Double_t eta_superCluster_electron[10];
+    Double_t E_electron[10];
+    Double_t d0_electron[10];
+    Double_t d0BeamSpot_electron[10];
+    Double_t chargedHadronIso_electron[10];
+    Double_t neutralHadronIso_electron[10];
+    Double_t photonIso_electron[10];
+    Double_t pfIso_electron[10];
     Int_t charge_electron[10];
-    Float_t sigmaIEtaIEta_electron[10];
-    Float_t deltaEtaIn_electron[10];
-    Float_t deltaPhiIn_electron[10];
-    Float_t hadronicOverEm_electron[10];
+    Double_t sigmaIEtaIEta_electron[10];
+    Double_t deltaEtaIn_electron[10];
+    Double_t deltaPhiIn_electron[10];
+    Double_t hadronicOverEm_electron[10];
     Int_t missingHits_electron[10];
     Bool_t passConversion_electron[10];
     Bool_t isId_electron[10];
@@ -855,70 +858,50 @@ int main (int argc, char *argv[])
     
     //variable for muons
     Int_t nMuons;
-    Float_t pt_muon[10];
-    Float_t phi_muon[10];
-    Float_t eta_muon[10];
-    Float_t E_muon[10];
-    Float_t d0_muon[10];
-    Float_t d0BeamSpot_muon[10];
-    Float_t chargedHadronIso_muon[10];
-    Float_t neutralHadronIso_muon[10];
-    Float_t photonIso_muon[10];
-    Float_t relIso_muon[10];
+    Double_t pt_muon[10];
+    Double_t phi_muon[10];
+    Double_t eta_muon[10];
+    Double_t E_muon[10];
+    Double_t d0_muon[10];
+    Double_t d0BeamSpot_muon[10];
+    Double_t chargedHadronIso_muon[10];
+    Double_t neutralHadronIso_muon[10];
+    Double_t photonIso_muon[10];
+    Double_t relIso_muon[10];
     Bool_t isId_muon[10];
     Bool_t isIso_muon[10];
-    Float_t pfIso_muon[10];
+    Double_t pfIso_muon[10];
     Int_t charge_muon[10];
     
     //variable for jets
     Int_t nJets;
-    Float_t pt_jet[20];
-    Float_t px_jet[20];
-    Float_t py_jet[20];
-    Float_t pz_jet[20];
-    Float_t phi_jet[20];
-    Float_t eta_jet[20];
-    Float_t E_jet[20];
+    Double_t pt_jet[20];
+    Double_t px_jet[20];
+    Double_t py_jet[20];
+    Double_t pz_jet[20];
+    Double_t phi_jet[20];
+    Double_t eta_jet[20];
+    Double_t E_jet[20];
     Int_t charge_jet[20];
-    Float_t bdisc_jet[20];
-    Float_t cdiscCvsL_jet[20];
-    Float_t cdiscCvsB_jet[20];
-    Float_t jet_Pt_before_JER[20];
-    Float_t jet_Pt_after_JER[20];
-    Float_t jet_Pt_before_JES[20];
-    Float_t jet_Pt_after_JES[20];
+    Double_t bdisc_jet[20];
+    Double_t cdiscCvsL_jet[20];
+    Double_t cdiscCvsB_jet[20];
+    Double_t jet_Pt_before_JER[20];
+    Double_t jet_Pt_after_JER[20];
+    Double_t jet_Pt_before_JES[20];
+    Double_t jet_Pt_after_JES[20];
     
-    // variables for Zboson
- /*   Float_t Zboson_M;
-    Float_t Zboson_Px;
-    Float_t Zboson_Py;
-    Float_t Zboson_Pz;
-    Float_t Zboson_Pt;
-    Float_t Zboson_Energy;
-    Float_t Zboson_Eta;
-    Float_t Zboson_Phi;
-    
-    
-    Float_t Wlep_M;
-    Float_t Wlep_Px;
-    Float_t Wlep_Py;
-    Float_t Wlep_Pz;
-    Float_t Wlep_Pt;
-    Float_t Wlep_Energy;
-    Float_t Wlep_Eta;
-    Float_t Wlep_Phi;
-    Float_t Wlep_Charge;
-   */
+
     
     // met
-    Float_t met_Pt;
-    Float_t met_Px;
-    Float_t met_Py;
-   // Float_t met_Pz;
-    Float_t met_Phi;
-    Float_t met_Eta;
-    Float_t met_before_JES;
-    Float_t met_after_JES;
+    Double_t met_Pt;
+    Double_t met_Px;
+    Double_t met_Py;
+   // Double_t met_Pz;
+    Double_t met_Phi;
+    Double_t met_Eta;
+    Double_t met_before_JES;
+    Double_t met_after_JES;
     
     
     /*int ZmuIndiceF_0 = -999;
@@ -940,19 +923,24 @@ int main (int argc, char *argv[])
     Double_t mc_eta[200];
     Double_t mc_E[200];
     Double_t mc_M[200];
+    Bool_t mc_isLastCopy[200];
+    Bool_t mc_isPromptFinalState[200];
+    Bool_t mc_isHardProcess[200];
+    Bool_t mc_fromHardProcessFinalState[200];
+    
 
     int nIniRecoLeptons;
     int nIniRecoElectrons;
     int nIniRecoMuons;
     
-    globalTree->Branch("el_pt_cut", &el_pt_cut, "el_pt_cut/F");
-    globalTree->Branch("el_eta_cut", &el_eta_cut, "el_eta_cut/F");
-    globalTree->Branch("el_iso_cone", &el_iso_cone, "el_iso_cone/F");
-    globalTree->Branch("mu_pt_cut", &mu_pt_cut , "mu_pt_cut/F");
-    globalTree->Branch("mu_eta_cut", &mu_eta_cut, "mu_eta_cut/F");
-    globalTree->Branch("mu_iso_cut", &mu_iso_cut, "mu_iso_cut/F");
-    globalTree->Branch("jet_eta_cut", &jet_eta_cut, "jet_eta_cut/F");
-    globalTree->Branch("jet_pt_cut", &jet_pt_cut,"jet_pt_cut/F");
+    globalTree->Branch("el_pt_cut", &el_pt_cut, "el_pt_cut/D");
+    globalTree->Branch("el_eta_cut", &el_eta_cut, "el_eta_cut/D");
+    globalTree->Branch("el_iso_cone", &el_iso_cone, "el_iso_cone/D");
+    globalTree->Branch("mu_pt_cut", &mu_pt_cut , "mu_pt_cut/D");
+    globalTree->Branch("mu_eta_cut", &mu_eta_cut, "mu_eta_cut/D");
+    globalTree->Branch("mu_iso_cut", &mu_iso_cut, "mu_iso_cut/D");
+    globalTree->Branch("jet_eta_cut", &jet_eta_cut, "jet_eta_cut/D");
+    globalTree->Branch("jet_pt_cut", &jet_pt_cut,"jet_pt_cut/D");
     
     globalTree->Branch("nofPosWeights",&nofPosWeights,"nofPosWeights/I");
     globalTree->Branch("nofNegWeights",&nofNegWeights,"nofNegWeights/I");
@@ -985,7 +973,10 @@ int main (int argc, char *argv[])
     myTree->Branch("btagSF",&btagSF,"btagSF/D");
     myTree->Branch("PassedMETFilter", &PassedMETFilter,"PassedMETFilter/I");
     myTree->Branch("PassedTrigger", &PassedTrigger, "PassedTrigger/I");
+    myTree->Branch("PassedTriggerNoLogic", &PassedTriggerNoLogic, "PassedTriggerNoLogic/I");
+    myTree->Branch("PassedTriggerNoLogic2", &PassedTriggerNoLogic2, "PassedTriggerNoLogic2/I");
     myTree->Branch("PassedGoodPV", &PassedGoodPV,"PassedGoodPV/I");
+    myTree->Branch("withfakes",&withfakes,"withfakes/I");
    /* myTree->Branch("WmuIndiceF", &WmuIndiceF, "WmuIndiceF/I");
     myTree->Branch("WelecIndiceF", &WelecIndiceF, "WelecIndiceF/I");
     myTree->Branch("ZelecIndiceF_0", &ZelecIndiceF_0, "ZelecIndiceF_0/I");
@@ -997,22 +988,22 @@ int main (int argc, char *argv[])
      // electrons
     myTree->Branch("nElectrons",&nElectrons, "nElectrons/I");//
     myTree->Branch("ElectronSF",&ElectronSF,"ElectronSF[nElectrons]/D");
-    myTree->Branch("pt_electron",pt_electron,"pt_electron[nElectrons]/F");
-    myTree->Branch("phi_electron",phi_electron,"phi_electron[nElectrons]/F");
-    myTree->Branch("eta_electron",eta_electron,"eta_electron[nElectrons]/F");
-    myTree->Branch("eta_superCluster_electron",eta_superCluster_electron,"eta_superCluster_electron[nElectrons]/F");
-    myTree->Branch("E_electron",E_electron,"E_electron[nElectrons]/F");
-    myTree->Branch("chargedHadronIso_electron",chargedHadronIso_electron,"chargedHadronIso_electron[nElectrons]/F");
-    myTree->Branch("neutralHadronIso_electron",neutralHadronIso_electron,"neutralHadronIso_electron[nElectrons]/F");
-    myTree->Branch("photonIso_electron",photonIso_electron,"photonIso_electron[nElectrons]/F");
-    myTree->Branch("pfIso_electron",pfIso_electron,"pfIso_electron[nElectrons]/F");
+    myTree->Branch("pt_electron",pt_electron,"pt_electron[nElectrons]/D");
+    myTree->Branch("phi_electron",phi_electron,"phi_electron[nElectrons]/D");
+    myTree->Branch("eta_electron",eta_electron,"eta_electron[nElectrons]/D");
+    myTree->Branch("eta_superCluster_electron",eta_superCluster_electron,"eta_superCluster_electron[nElectrons]/D");
+    myTree->Branch("E_electron",E_electron,"E_electron[nElectrons]/D");
+    myTree->Branch("chargedHadronIso_electron",chargedHadronIso_electron,"chargedHadronIso_electron[nElectrons]/D");
+    myTree->Branch("neutralHadronIso_electron",neutralHadronIso_electron,"neutralHadronIso_electron[nElectrons]/D");
+    myTree->Branch("photonIso_electron",photonIso_electron,"photonIso_electron[nElectrons]/D");
+    myTree->Branch("pfIso_electron",pfIso_electron,"pfIso_electron[nElectrons]/D");
     myTree->Branch("charge_electron",charge_electron,"charge_electron[nElectrons]/I");
-    myTree->Branch("d0_electron",d0_electron,"d0_electron[nElectrons]/F");
-    myTree->Branch("d0BeamSpot_electron",d0BeamSpot_electron,"d0BeamSpot_electron[nElectrons]/F");
-    myTree->Branch("sigmaIEtaIEta_electron",sigmaIEtaIEta_electron,"sigmaIEtaIEta_electron[nElectrons]/F");
-    myTree->Branch("deltaEtaIn_electron",deltaEtaIn_electron,"deltaEtaIn_electron[nElectrons]/F");
-    myTree->Branch("deltaPhiIn_electron",deltaPhiIn_electron,"deltaPhiIn_electron[nElectrons]/F");
-    myTree->Branch("hadronicOverEm_electron",hadronicOverEm_electron,"hadronicOverEm_electron[nElectrons]/F");
+    myTree->Branch("d0_electron",d0_electron,"d0_electron[nElectrons]/D");
+    myTree->Branch("d0BeamSpot_electron",d0BeamSpot_electron,"d0BeamSpot_electron[nElectrons]/D");
+    myTree->Branch("sigmaIEtaIEta_electron",sigmaIEtaIEta_electron,"sigmaIEtaIEta_electron[nElectrons]/D");
+    myTree->Branch("deltaEtaIn_electron",deltaEtaIn_electron,"deltaEtaIn_electron[nElectrons]/D");
+    myTree->Branch("deltaPhiIn_electron",deltaPhiIn_electron,"deltaPhiIn_electron[nElectrons]/D");
+    myTree->Branch("hadronicOverEm_electron",hadronicOverEm_electron,"hadronicOverEm_electron[nElectrons]/D");
     myTree->Branch("missingHits_electron",missingHits_electron,"missingHits_electron[nElectrons]/I");
     myTree->Branch("passConversion_electron",passConversion_electron,"passConversion_electron[nElectrons]/O)");
     myTree->Branch("isId_electron",isId_electron,"isId_electron[nElectrons]/O)");
@@ -1025,70 +1016,67 @@ int main (int argc, char *argv[])
     myTree->Branch("MuonIsoSF",&MuonIsoSF, "MuonIsoSF[nMuons]/D");
     myTree->Branch("MuonTrigSFv2",&MuonTrigSFv2,"MuonTrigSFv2[nMuons]/D");
     myTree->Branch("MuonTrigSFv3",&MuonTrigSFv3,"MuonTrigSFv3[nMuons]/D");
-    myTree->Branch("pt_muon",pt_muon,"pt_muon[nMuons]/F");
-    myTree->Branch("phi_muon",phi_muon,"phi_muon[nMuons]/F");
-    myTree->Branch("eta_muon",eta_muon,"eta_muon[nMuons]/F");
-    myTree->Branch("E_muon",E_muon,"E_muon[nMuons]/F");
-    myTree->Branch("chargedHadronIso_muon",chargedHadronIso_muon,"chargedHadronIso_muon[nMuons]/F");
-    myTree->Branch("neutralHadronIso_muon",neutralHadronIso_muon,"neutralHadronIso_muon[nMuons]/F");
-    myTree->Branch("photonIso_muon",photonIso_muon,"photonIso_muon[nMuons]/F");
+    myTree->Branch("pt_muon",pt_muon,"pt_muon[nMuons]/D");
+    myTree->Branch("phi_muon",phi_muon,"phi_muon[nMuons]/D");
+    myTree->Branch("eta_muon",eta_muon,"eta_muon[nMuons]/D");
+    myTree->Branch("E_muon",E_muon,"E_muon[nMuons]/D");
+    myTree->Branch("chargedHadronIso_muon",chargedHadronIso_muon,"chargedHadronIso_muon[nMuons]/D");
+    myTree->Branch("neutralHadronIso_muon",neutralHadronIso_muon,"neutralHadronIso_muon[nMuons]/D");
+    myTree->Branch("photonIso_muon",photonIso_muon,"photonIso_muon[nMuons]/D");
     myTree->Branch("isId_muon",isId_muon,"isId_muon[nMuons]/O");
     myTree->Branch("isIso_muon",isIso_muon,"isIso_muon[nMuons]/O");
-    myTree->Branch("pfIso_muon",pfIso_muon,"pfIso_muon[nMuons]/F");
+    myTree->Branch("pfIso_muon",pfIso_muon,"pfIso_muon[nMuons]/D");
     myTree->Branch("charge_muon",charge_muon,"charge_muon[nMuons]/I");
-    myTree->Branch("d0_muon",d0_muon,"d0_muon[nMuons]/F");
-    myTree->Branch("d0BeamSpot_muon",d0BeamSpot_muon,"d0BeamSpot_muon[nMuons]/F");
+    myTree->Branch("d0_muon",d0_muon,"d0_muon[nMuons]/D");
+    myTree->Branch("d0BeamSpot_muon",d0BeamSpot_muon,"d0BeamSpot_muon[nMuons]/D");
 
     
     
     // jets
     myTree->Branch("nJets",&nJets,"nJets/I");
-      myTree->Branch("pt_jet",pt_jet,"pt_jet[nJets]/F");
-    myTree->Branch("px_jet",px_jet,"px_jet[nJets]/F");
-    myTree->Branch("py_jet",py_jet,"py_jet[nJets]/F");
-    myTree->Branch("pz_jet",pz_jet,"pz_jet[nJets]/F");
-    myTree->Branch("phi_jet",phi_jet,"phi_jet[nJets]/F");
-    myTree->Branch("eta_jet",eta_jet,"eta_jet[nJets]/F");
-    myTree->Branch("E_jet",E_jet,"E_jet[nJets]/F");
+      myTree->Branch("pt_jet",pt_jet,"pt_jet[nJets]/D");
+    myTree->Branch("px_jet",px_jet,"px_jet[nJets]/D");
+    myTree->Branch("py_jet",py_jet,"py_jet[nJets]/D");
+    myTree->Branch("pz_jet",pz_jet,"pz_jet[nJets]/D");
+    myTree->Branch("phi_jet",phi_jet,"phi_jet[nJets]/D");
+    myTree->Branch("eta_jet",eta_jet,"eta_jet[nJets]/D");
+    myTree->Branch("E_jet",E_jet,"E_jet[nJets]/D");
     myTree->Branch("charge_jet",charge_jet,"charge_jet[nJets]/I");
-    myTree->Branch("bdisc_jet",bdisc_jet,"bdisc_jet[nJets]/F");
-myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F");
-    myTree->Branch("jet_Pt_before_JES",jet_Pt_before_JES,"jet_Pt_before_JES[nJets]/F");
-    myTree->Branch("jet_Pt_after_JER",jet_Pt_after_JER,"jet_Pt_after_JER[nJets]/F");
-    myTree->Branch("jet_Pt_after_JES",jet_Pt_after_JES,"jet_Pt_after_JES[nJets]/F");
-      myTree->Branch("cdiscCvsL_jet",cdiscCvsL_jet,"cdiscCvsL_jet[nJets]/F");
-      myTree->Branch("cdiscCvsB_jet",cdiscCvsB_jet,"cdiscCvsB_jet[nJets]/F");
+    myTree->Branch("bdisc_jet",bdisc_jet,"bdisc_jet[nJets]/D");
+myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D");
+    myTree->Branch("jet_Pt_before_JES",jet_Pt_before_JES,"jet_Pt_before_JES[nJets]/D");
+    myTree->Branch("jet_Pt_after_JER",jet_Pt_after_JER,"jet_Pt_after_JER[nJets]/D");
+    myTree->Branch("jet_Pt_after_JES",jet_Pt_after_JES,"jet_Pt_after_JES[nJets]/D");
+      myTree->Branch("cdiscCvsL_jet",cdiscCvsL_jet,"cdiscCvsL_jet[nJets]/D");
+      myTree->Branch("cdiscCvsB_jet",cdiscCvsB_jet,"cdiscCvsB_jet[nJets]/D");
     
-    // Wlep
- /*   myTree->Branch("Wlep_M",&Wlep_M,"Wlep_M/F");
-    myTree->Branch("Wlep_Px",&Wlep_Px,"Wlep_Px/F");
-    myTree->Branch("Wlep_Py",&Wlep_Py,"Wlep_Py/F");
-    myTree->Branch("Wlep_Pz",&Wlep_Pz,"Wlep_Pz/F");
-    myTree->Branch("Wlep_Pt",&Wlep_Pt,"Wlep_Pt/F");
-    myTree->Branch("Wlep_Energy",&Wlep_Energy,"Wlep_Energy/F");
-    myTree->Branch("Wlep_Eta",&Wlep_Eta,"Wlep_Eta/F");
-    myTree->Branch("Wlep_Phi",&Wlep_Phi,"Wlep_Phi/F");
-    myTree->Branch("Wlep_Charge",&Wlep_Charge,"Wlep_Charge/F");
+    if(!isData){
+      myTree->Branch("nMCParticles",&nMCParticles,"nMCParticles/I");
+      myTree->Branch("mc_status",&mc_status,"mc_status[nMCParticles]/I");
+      myTree->Branch("mc_pdgId",&mc_pdgId,"mc_pdgId[nMCParticles]/I");
+      myTree->Branch("mc_mother",&mc_mother,"mc_mother[nMCParticles]/I");
+      myTree->Branch("mc_granny",&mc_granny,"mc_granny[nMCParticles]/I");
+      myTree->Branch("mc_pt",&mc_pt,"mc_pt[nMCParticles]/D");
+      myTree->Branch("mc_phi",&mc_phi,"mc_phi[nMCParticles]/D");
+      myTree->Branch("mc_eta",&mc_eta,"mc_eta[nMCParticles]/D");
+      myTree->Branch("mc_E",&mc_E,"mc_E[nMCParticles]/D");
+      myTree->Branch("mc_M",&mc_M,"mc_M[nMCParticles]/D");
+      myTree->Branch("mc_isLastCopy", &mc_isLastCopy, "mc_isLastCopy[nMCParticles]/O");
+      myTree->Branch("mc_isPromptFinalState", &mc_isPromptFinalState, "mc_isPromptFinalState[nMCParticles]/O");
+      myTree->Branch("mc_isHardProcess", &mc_isHardProcess, "mc_isHardProcess[nMCParticles]/O");
+      myTree->Branch("mc_fromHardProcessFinalState", &mc_fromHardProcessFinalState, "mc_fromHardProcessFinalState[nMCParticles]/O");
+    }
     
-    myTree->Branch("Zboson_M",&Zboson_M,"Zboson_M/F");
-        myTree->Branch("Zboson_Px",&Zboson_Px,"Zboson_Px/F");
-    myTree->Branch("Zboson_Py",&Zboson_Py,"Zboson_Py/F");
-    myTree->Branch("Zboson_Pz",&Zboson_Pz,"Zboson_Pz/F");
-    myTree->Branch("Zboson_Pt",&Zboson_Pt,"Zboson_Pt/F");
-    myTree->Branch("Zboson_Energy",&Zboson_Energy,"Zboson_Energy/F");
-    myTree->Branch("Zboson_Phi",&Zboson_Phi,"Zboson_Phi/F");
-    myTree->Branch("Zboson_Eta",&Zboson_Eta,"Zboson_Eta/F");
-   */
-
+    
     // met
-    myTree->Branch("met_Pt", &met_Pt, "met_Pt/F");
-    myTree->Branch("met_Eta", &met_Eta,"met_Eta/F");
-    myTree->Branch("met_Phi", &met_Phi, "met_Phi/F");
-    myTree->Branch("met_Px", &met_Px, "met_Px/F");
-    myTree->Branch("met_Py", &met_Py, "met_Py/F");
-    //myTree->Branch("met_Pz", &met_Pz, "met_Pz/F");
-    myTree->Branch("met_before_JES", &met_before_JES, "met_before_JES/F");
-    myTree->Branch("met_after_JES", &met_after_JES, "met_after_JES/F");
+    myTree->Branch("met_Pt", &met_Pt, "met_Pt/D");
+    myTree->Branch("met_Eta", &met_Eta,"met_Eta/D");
+    myTree->Branch("met_Phi", &met_Phi, "met_Phi/D");
+    myTree->Branch("met_Px", &met_Px, "met_Px/D");
+    myTree->Branch("met_Py", &met_Py, "met_Py/D");
+    //myTree->Branch("met_Pz", &met_Pz, "met_Pz/D");
+    myTree->Branch("met_before_JES", &met_before_JES, "met_before_JES/D");
+    myTree->Branch("met_after_JES", &met_after_JES, "met_after_JES/D");
     
     if(verbose>1) cout << "trees created " << endl;
     
@@ -1158,6 +1146,8 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
     vector<TRootPFJet*>       PreselectedJets;
     vector<TRootMuon*>        selectedMuons;
     vector<TRootMuon*>        selectedLooseMuons;
+    vector<TRootMuon*>        selectedFakeMuons;
+    vector<TRootElectron*>    selectedFakeElectrons;
 
     
     
@@ -1174,7 +1164,7 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
     nbEvents = 0;
     nofPosWeights = 0;
     nofNegWeights = 0;
-    float eventweight = 1.;
+    double eventweight = 1.;
     bool continueFlow ;
     nbSelectedEvents = 0;
     
@@ -1195,7 +1185,7 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
     TLorentzVector metTLV;
     TLorentzVector metTLVbf;
     string TriggBits;
-       float met;
+       double met;
     bool leptonsAssigned ;
     
     nbSelectedEvents = 0;
@@ -1203,13 +1193,7 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
     
     for (unsigned int ievt = event_start; ievt < end_d; ievt++)
     {
-         leptonsAssigned = false;
-       ZmuIndiceF_0 = -999;
-      ZmuIndiceF_1 = -999;
-      ZelecIndiceF_0 = -999;
-      ZelecIndiceF_1= -999;
-      WmuIndiceF= -999;
-      WelecIndiceF = -999;
+
       eventSelected = false;
       continueFlow = true;
       lep3 = false;
@@ -1263,7 +1247,7 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
         << " ("<<100*(ievt-start)/(ending-start)<<"%)"<<flush<<"\r"<<endl;
       }
       
-      float scaleFactor = 1.;  // scale factor for the event
+      double scaleFactor = 1.;  // scale factor for the event
       
       
       event = treeLoader.LoadEvent (ievt, vertex, init_muons, init_electrons, init_jets, mets, debug);  //load event
@@ -1386,7 +1370,8 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
       ///////////////////////////////////////////
       //  Trigger
       ///////////////////////////////////////////
-      
+      PassedTriggerNoLogic = false;
+      PassedTriggerNoLogic2 = false; 
       bool trigged = false;
       bool trigged_mumu = false;
       bool trigged_ee = false;
@@ -1399,7 +1384,7 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
       bool filechanged = false;
       bool runchanged = false;
       
-      if(runHLT && dTitle.find("noTrig")==string::npos )  // FIXME old samples (not withHLT not reHLT) don't contain trigger info
+      if(runHLT )  // FIXME old samples (not withHLT not reHLT) don't contain trigger info
       {
         trigger_mumu->checkAvail(currentRun, datasets, d, &treeLoader, event, printTrigger);
         trigged_mumu =  trigger_mumu->checkIfFired();
@@ -1431,15 +1416,29 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
         bool E = false;
         bool M = false;
         int result_trigger = 0;
-        
-        
+        bool EM2 = false; 
+	bool MM2 = false; 
+	bool EE2 = false; 
+
+	EM2 = trigged_emu; 
+	MM2 = trigged_mumu; 
+ 	EE2 = trigged_ee;         
         EM = (trigged_emumu_mumue|| trigged_emu);
         MM = (trigged_mumu || trigged_mumumu ) ;
         EE = (trigged_ee || trigged_eee );
+
         M  = ( trigged_mu );
         E  = (trigged_e);
-        
-        //for data
+        // testing TO FIX
+        if ( EM2 &&                               (emdataset) ) PassedTriggerNoLogic2 = 1;
+        if ( MM2 &&                         (mmdataset) ) PassedTriggerNoLogic2 = 1;
+        if ( EE2 &&                 (eedataset) ) PassedTriggerNoLogic2 = 1;
+	if ( EM &&                               (emdataset) ) PassedTriggerNoLogic = 1;
+        if ( MM &&                         (mmdataset) ) PassedTriggerNoLogic = 1;
+        if ( EE &&                 (eedataset) ) PassedTriggerNoLogic = 1;
+        if ( M  &&         (mdataset ) ) PassedTriggerNoLogic = 1;
+        if ( E  &&                (edataset ) ) PassedTriggerNoLogic = 1;
+         //for data
         if ( EM &&                               (emdataset) ) result_trigger = 1;
         if ( MM && !EM &&                        (mmdataset) ) result_trigger = 1;
         if ( EE && !EM && !MM &&                 (eedataset) ) result_trigger = 1;
@@ -1453,14 +1452,11 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
         if ( E  && !EM && !MM && !EE && !M &&    !isData ) result_trigger = 1;
         
         trigged = result_trigger;
-        if(dName.find("NP")!=string::npos) trigged = true; // needs to be fixed with the new MC
+       // if(dName.find("NP")!=string::npos) trigged = true; // needs to be fixed with the new MC
         
         
       }
-      else if(runHLT && dTitle.find("noTrig")!=string::npos ){
-        trigged = true;
-      }
-      else if(!runHLT && previousFilename != currentFilename)
+       else if(!runHLT && previousFilename != currentFilename)
       {
         filechanged = true;
         previousFilename = currentFilename;
@@ -1527,17 +1523,22 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
       PreselectedJets  = selection.GetSelectedJets(jet_pt_cut,jet_eta_cut, true, "Loose");
       selectedMuons.clear();
       selectedLooseMuons.clear();
+      selectedFakeMuons.clear();
       
 
 
       selectedMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut, "Tight", "Spring15");   // spring 15 still counts for 2016
       selectedLooseMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut_loose, "Loose", "Spring15"); // spring 15 still counts for 2016
+      selectedFakeMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut_loose, "Fake", "Spring15");
       
       // pt, eta, iso // run normally
       selectedElectrons.clear();
       selectedVetoElectrons.clear();
+      selectedFakeElectrons.clear();
       selectedElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Tight","Spring16_80X",true,true);// pt, eta, WP point, campaign, cutbased, VID EA
       selectedVetoElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Veto","Spring16_80X",true,true);// pt, eta
+      selectedFakeElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Fake","Spring16_80X",true,false);
+      
       /// For MC Information
       mcParticles.clear();
       if(!isData) treeLoader.LoadMCEvent(ievt, 0,  mcParticles, false);
@@ -1601,8 +1602,8 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
       ////////////////////////////////////
       //   Event Weights               ///
       ///////////////////////////////////
-      float btagWeight  =  1.;
-      float bTagEff = 1.;
+      double btagWeight  =  1.;
+      double bTagEff = 1.;
       if( fillBtagHisto && !isData && !btagShape)
       {
         btwt->FillMCEfficiencyHistos(selectedJets);
@@ -1617,10 +1618,10 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
       {
         for(int intJet = 0; intJet < selectedJets.size(); intJet++)
         {
-          float jetpt = selectedJets[intJet]->Pt();
+          double jetpt = selectedJets[intJet]->Pt();
           if(jetpt > 1000.) jetpt = 999.;
-          float jeteta = selectedJets[intJet]->Eta();
-          float jetdisc = selectedJets[intJet]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
+          double jeteta = selectedJets[intJet]->Eta();
+          double jetdisc = selectedJets[intJet]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
           BTagEntry::JetFlavor jflav;
           int jetpartonflav = std::abs(selectedJets[intJet]->partonFlavour());
           if(debug) cout<<"parton flavour: "<<jetpartonflav<<"  jet eta: "<<jeteta<<" jet pt: "<<jetpt<<"  jet disc: "<<jetdisc<<endl;
@@ -1639,7 +1640,7 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
         }
         
       }
-      float PUweight = 1;
+      double PUweight = 1;
       if(!isData)
       {
         PUweight = LumiWeights.ITweight((int)event->nTruePU());
@@ -1664,47 +1665,54 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
       continueFlow = true;
       nbEvents++;
       eventweight = 1.;
-      if(trigged){
-        selections.push_back(1);
+     
+      
+      if(!doFakeLepton){
+        if(((selectedMuons.size() + selectedElectrons.size()) != 3)){
+          selections.push_back(0);
+          continueFlow = false;
+        }
+        else if((selectedMuons.size() + selectedElectrons.size()) == 3){
+          selections.push_back(1);
+          
+          lep3 = true;
+          if(selectedMuons.size() == 3) {channelInt = 0; i_channel = 0;}
+          else if(selectedElectrons.size() == 3) {channelInt = 3; i_channel = 3;}
+          else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {channelInt = 2; i_channel = 2; }
+          else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){channelInt = 1; i_channel = 1; }
+          else {cout << "ERROR no channel selected" << endl; break; }
+        }
         
-      }
-      else{
-        selections.push_back(0);
-        continueFlow = false;
-      }
-      
-      // to be ok with trig
-      if(dName.find("DoubleEG")!=string::npos && selectedElectrons.size() < 2) { continueFlow = false; }
-     
-      if(dName.find("DoubleMu")!=string::npos && selectedMuons.size() < 2) { continueFlow = false; }
-      
-      if(dName.find("MuonEG")!=string::npos && (selectedElectrons.size() < 1 || selectedMuons.size() < 1)) { continueFlow = false; }
-      
-      if((dName.find("SingleMu") != string::npos) && selectedMuons.size() < 1) {continueFlow= false; }
-     
-      if((dName.find("SingleEl") != string::npos) && selectedElectrons.size() < 1) {continueFlow= false; }
-   
-      /*if(trigged && (selectedElectrons.size()!=0 || selectedMuons.size() !=0)){
-       cout << "Name, Trigged, Flow" << dName << " " << trigged << " " << continueFlow << endl;
-       }*/
-      
-      
-      if(((selectedMuons.size() + selectedElectrons.size()) != 3)){
-        selections.push_back(0);
-                continueFlow = false;
-      }
-      else if((selectedMuons.size() + selectedElectrons.size()) == 3){
-        selections.push_back(1);
+        
+        
 
-        lep3 = true;
-        if(selectedMuons.size() == 3) {channelInt = 0; i_channel = 0;}
-        else if(selectedElectrons.size() == 3) {channelInt = 3; i_channel = 3;}
-        else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {channelInt = 2; i_channel = 2; }
-        else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){channelInt = 1; i_channel = 1; }
-        else cout << "ERROR no channel selected" << endl;
+      }
+      else  if(doFakeLepton){
+        //cout << "mu " <<  selectedMuons.size() << " " << selectedFakeMuons.size() << endl;
+         //cout << "el " << selectedElectrons.size() << " " <<  selectedFakeElectrons.size() << endl;
+        if((selectedMuons.size() + selectedElectrons.size()) == 2 && (selectedFakeMuons.size() + selectedFakeElectrons.size()) == 1 ){
+          selections.push_back(1);
+          
+          lep3 = true;
+          if(selectedMuons.size() == 2 && selectedFakeMuons.size() == 1) {channelInt = 0; i_channel = 0;}
+          else if(selectedElectrons.size() == 2 && selectedFakeElectrons.size() == 1) {channelInt = 3; i_channel = 3;}
+          else if(selectedElectrons.size() == 1 && selectedMuons.size() == 1 && selectedFakeElectrons.size() == 1 ) {channelInt = 2; i_channel = 2; }
+          else if(selectedElectrons.size() == 2 && selectedFakeMuons.size() == 1  ) {channelInt = 2; i_channel = 2; }
+          else if(selectedMuons.size() == 2 && selectedFakeElectrons.size() == 1){channelInt = 1; i_channel = 1; }
+          else if(selectedMuons.size() == 1 && selectedElectrons.size() == 1  && selectedFakeMuons.size() == 1){channelInt = 1; i_channel = 1; }
+          else {cout << "ERROR no channel selected" << endl; break; }
+
+
+	  cout << "mu " <<  selectedMuons.size() << " " << selectedFakeMuons.size() << endl; 
+	  cout << "el " << selectedElectrons.size() << " " <<  selectedFakeElectrons.size() << endl; 
+        }
+        else{
+          selections.push_back(0);
+          continueFlow = false;
+        }
+
       }
       
-  
       
       if((selectedMuons.size() != selectedLooseMuons.size()) || (selectedVetoElectrons.size() != selectedElectrons.size())){
         selections.push_back(0);
@@ -1714,7 +1722,7 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
         selections.push_back(1);
         if(continueFlow) {
           lepsel = true;
-         
+          
         }
       }
       
@@ -1729,109 +1737,12 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
       if(!isData) btagSF = btagWeight;
       else if(isData) btagSF = 1.;
       
-  /*    Zlep0.Clear();
-      Zlep1.Clear();
-      Wlep.Clear();
-      Wlep.SetPxPyPzE(0,0,0,0);
-      
-      if(lep3){
-        //cout << "assigning leptons " << endl;
-        
-        AssignedLeptons = LeptonAssigner(selectedElectrons, selectedMuons);
-        
-        
-        //vector < TLorentzVector > FoundLeptons;
-        //FoundLeptons = AssignedLeptons.first;
-        //vector< pair < string, int > > FoundLeptonsIndices;
-        //FoundLeptonsIndices = AssignedLeptons.second;
-        
-        for(unsigned int iF = 0; iF < (AssignedLeptons.second).size(); iF++){
-          if((((AssignedLeptons.second)[iF]).first).find("Wmu")!=string::npos){ WmuIndiceF = ((AssignedLeptons.second)[iF]).second;  }
-          if((((AssignedLeptons.second)[iF]).first).find("Wel")!=string::npos){ WelecIndiceF = ((AssignedLeptons.second)[iF]).second; }
-          if((((AssignedLeptons.second)[iF]).first).find("Zmu_0")!=string::npos) ZmuIndiceF_0 = ((AssignedLeptons.second)[iF]).second;
-          if((((AssignedLeptons.second)[iF]).first).find("Zmu_1")!=string::npos) ZmuIndiceF_1 = ((AssignedLeptons.second)[iF]).second;
-          if((((AssignedLeptons.second)[iF]).first).find("Zel_0")!=string::npos) ZelecIndiceF_0 = ((AssignedLeptons.second)[iF]).second;
-          if((((AssignedLeptons.second)[iF]).first).find("Zel_1")!=string::npos) ZelecIndiceF_1 = ((AssignedLeptons.second)[iF]).second;
-        }
-        
-        int WlepIndice = -999;
-        int ZlepIndice_0 = -999;
-        int ZlepIndice_1 = -999;
-        
-        if(WelecIndiceF != -999){ WlepIndice = WelecIndiceF; }
-        if(WmuIndiceF != -999){ WlepIndice = WmuIndiceF; }
-        if(ZmuIndiceF_0 != -999) ZlepIndice_0 = ZmuIndiceF_0;
-        if(ZelecIndiceF_0 != -999) ZlepIndice_0 = ZelecIndiceF_0;
-        if(ZmuIndiceF_1 != -999) ZlepIndice_1 = ZmuIndiceF_1;
-        if(ZelecIndiceF_1 != -999) ZlepIndice_1 = ZelecIndiceF_1;
-        if(WlepIndice != -999 && ZlepIndice_0 != -999 && ZlepIndice_1 != -999){ leptonsAssigned = true; }
-        //cout << "evt " << evt_num << " assigned " << leptonsAssigned <<  " found all objects " << foundAllLeptons <<  endl;
-        //cout << "WmuIndice " << WmuIndiceF << " WelecIndice "<< WelecIndiceF << " ZmuIndice_0 "<< ZmuIndiceF_0 << " ZmuIndice_1 "<< ZmuIndiceF_1 <<" ZelecIndice_0 "<< ZelecIndiceF_0 <<" ZelecIndice_1 "<< ZelecIndiceF_1 << endl;
-        // cout << "WlepIndice " << WlepIndice << " ZlepIndice_0 "<< ZlepIndice_0 << " ZlepIndice_1 "<< ZlepIndice_1 << endl;
-        
-        
-        if(leptonsAssigned){
-          if(ZmuIndiceF_0 != -999) Zlep0.SetPxPyPzE(selectedMuons[ZmuIndiceF_0]->Px(), selectedMuons[ZmuIndiceF_0]->Py(), selectedMuons[ZmuIndiceF_0]->Pz(), selectedMuons[ZmuIndiceF_0]->Energy());
-          if(ZmuIndiceF_1 != -999) Zlep1.SetPxPyPzE(selectedMuons[ZmuIndiceF_1]->Px(), selectedMuons[ZmuIndiceF_1]->Py(), selectedMuons[ZmuIndiceF_1]->Pz(), selectedMuons[ZmuIndiceF_1]->Energy());
-          if(WmuIndiceF != -999 ) Wlep.SetPxPyPzE(selectedMuons[WmuIndiceF]->Px(), selectedMuons[WmuIndiceF]->Py(), selectedMuons[WmuIndiceF]->Pz(),selectedMuons[WmuIndiceF]->Energy());
-          
-          if(ZelecIndiceF_0 != -999) Zlep0.SetPxPyPzE(selectedElectrons[ZelecIndiceF_0]->Px(), selectedElectrons[ZelecIndiceF_0]->Py(), selectedElectrons[ZelecIndiceF_0]->Pz(), selectedElectrons[ZelecIndiceF_0]->Energy());
-          if(ZelecIndiceF_1 != -999) Zlep1.SetPxPyPzE(selectedElectrons[ZelecIndiceF_1]->Px(), selectedElectrons[ZelecIndiceF_1]->Py(), selectedElectrons[ZelecIndiceF_1]->Pz(), selectedElectrons[ZelecIndiceF_1]->Energy());
-          if(WelecIndiceF != -999 ) Wlep.SetPxPyPzE(selectedElectrons[WelecIndiceF]->Px(), selectedElectrons[WelecIndiceF]->Py(), selectedElectrons[WelecIndiceF]->Pz(),selectedElectrons[WelecIndiceF]->Energy());
-          
-                  Zboson.Clear();
-          
-          Zboson.SetPxPyPzE(( Zlep0 + Zlep1).Px() ,( Zlep0 + Zlep1).Py(),( Zlep0 + Zlep1).Pz(),( Zlep0 + Zlep1).Energy()) ;
-          Zboson_M = (Zlep0+Zlep1).M();
-          Zboson_Px = ( Zlep0 + Zlep1).Px();
-          Zboson_Py = ( Zlep0 + Zlep1).Py();
-          Zboson_Pz = ( Zlep0 + Zlep1).Pz();
-          Zboson_Energy = ( Zlep0 + Zlep1).Energy();
-          Wlep_Pt = Wlep.Pt();
-          Wlep_Eta = Wlep.Eta();
-          Wlep_Phi = Wlep.Phi();
-          if(WelecIndiceF != -999){ if(selectedElectrons[WelecIndiceF]->charge() > 0){ Wlep_Charge = 1.;}else{Wlep_Charge = -1.; }}
-          if(WmuIndiceF != -999){ if(selectedMuons[WmuIndiceF]->charge() > 0){ Wlep_Charge = 1.;}else{Wlep_Charge = -1; }}
-          //cout << "Wlep_charge " << Wlep_Charge << endl;
-          Zboson_Pt = Zboson.Pt();
-          Zboson_Eta = Zboson.Eta();
-          Zboson_Phi = Zboson.Phi();
-        
-        }
-        else{
-          continueFlow = false;
-          Zboson_M = -5;
-          Zboson_Px = -5;
-          Zboson_Py = -5;
-          Zboson_Pz = -5;
-          Zboson_Energy = -5;
-         
-        }
-      }
-      else{
-        continueFlow = false;
-        Zboson_M = -5;
-        Zboson_Px = -5;
-        Zboson_Py = -5;
-        Zboson_Pz = -5;
-        Zboson_Energy = -5;
-       
-      }
-      */
-      
-      
-      /*if(Zboson_M < 76 || Zboson_M > 106)
-      {
-       
-        continueFlow = false;
-      }*/
-
       
       if( selectedJets.size() >0){
         if(continueFlow){ eventSelected = true;}
       }
       
-      
+      withfakes = doFakeLepton;
       
       
             //////////////////////////////////////
@@ -1839,6 +1750,28 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
       //////////////////////////////////////
       // fill the tree
       if(eventSelected ){
+        
+        if (! isData)
+        {
+          nMCParticles = mcParticles.size();
+          if (nMCParticles > maxMCParticles) maxMCParticles = nMCParticles;
+          for (Int_t iMC = 0; iMC < nMCParticles; iMC++)
+          {
+            mc_status[iMC] = mcParticles[iMC]->status();
+            mc_pdgId[iMC] = mcParticles[iMC]->type();
+            mc_mother[iMC] = mcParticles[iMC]->motherType();
+            mc_granny[iMC] = mcParticles[iMC]->grannyType();
+            mc_pt[iMC] = mcParticles[iMC]->Pt();
+            mc_phi[iMC] = mcParticles[iMC]->Phi();
+            mc_eta[iMC] = mcParticles[iMC]->Eta();
+            mc_E[iMC] = mcParticles[iMC]->E();
+            mc_M[iMC] = mcParticles[iMC]->M();
+            mc_isLastCopy[iMC] = mcParticles[iMC]->isLastCopy();
+            mc_isPromptFinalState[iMC] = mcParticles[iMC]->isPromptFinalState();
+            mc_isHardProcess[iMC] = mcParticles[iMC]->isHardProcess();
+            mc_fromHardProcessFinalState[iMC] = mcParticles[iMC]->fromHardProcessFinalState();
+          }
+        }
         
         nJets = 0;
         TLorentzVector tempObject;
@@ -1889,7 +1822,37 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
           charge_muon[nMuons]=selectedMuons[selmu]->charge();
           nMuons++;
         }
-        
+        if(doFakeLepton){
+          for (Int_t selmu =0; selmu < selectedFakeMuons.size() ; selmu++ )
+          {
+            pt_muon[nMuons]=selectedFakeMuons[selmu]->Pt();
+            phi_muon[nMuons]=selectedFakeMuons[selmu]->Phi();
+            eta_muon[nMuons]=selectedFakeMuons[selmu]->Eta();
+            E_muon[nMuons]=selectedFakeMuons[selmu]->E();
+            
+            pfIso_muon[nMuons]=selectedFakeMuons[selmu]->relPfIso(4,0);
+            if(!isData)
+            {
+              
+              
+              MuonIDSF[nMuons]  = (muonSFWeightID_BCDEF->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 0)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 0)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+              MuonIsoSF[nMuons] = (muonSFWeightIso_BCDEF->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 0)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 0)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+              
+              
+              
+            }
+            else
+            {
+              MuonIDSF[nMuons] = 1.;
+              MuonIsoSF[nMuons] = 1.;
+            }
+            if(MuonIDSF[nMuons]*MuonIsoSF[nMuons] == 0 ) cout << "  MuonIDSF[nMuons] " <<  MuonIDSF[nMuons] << " MuonIsoSF[nMuons] " << MuonIsoSF[nMuons] << "  MuonIDSF[nMuons]*MuonIsoSF[nMuons] " <<    MuonIDSF[nMuons]*MuonIsoSF[nMuons]     << endl;
+            if(muonSFtemp == 0) cout << " muon SF " << muonSFtemp * MuonIDSF[nMuons]*MuonIsoSF[nMuons] << endl;
+            charge_muon[nMuons]=selectedFakeMuons[selmu]->charge();
+            nMuons++;
+          }
+        }
+      
           nElectrons=0;
         for (Int_t selel =0; selel < selectedElectrons.size() ; selel++ )
         {
@@ -1907,6 +1870,26 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/F
           else ElectronSF[nElectrons] = 1.;
           
           nElectrons++;
+        }
+        if(doFakeLepton){
+          for (Int_t selel =0; selel < selectedFakeElectrons.size() ; selel++ )
+          {
+            pt_electron[nElectrons]=selectedFakeElectrons[selel]->Pt();
+            phi_electron[nElectrons]=selectedFakeElectrons[selel]->Phi();
+            eta_electron[nElectrons]=selectedFakeElectrons[selel]->Eta();
+            eta_superCluster_electron[nElectrons]=selectedFakeElectrons[selel]->superClusterEta();
+            E_electron[nElectrons]=selectedFakeElectrons[selel]->E();
+            pfIso_electron[nElectrons]=selectedFakeElectrons[selel]->relPfIso(3,0);
+            charge_electron[nElectrons]=selectedFakeElectrons[selel]->charge();
+            if(!isData){
+              ElectronSF[nElectrons] = electronSFWeightID->at(selectedFakeElectrons[selel]->Eta(),selectedFakeElectrons[selel]->Pt(),0)*electronSFWeightReco->at(selectedFakeElectrons[selel]->Eta(),selectedFakeElectrons[selel]->Pt(),0);
+              
+            }
+            else ElectronSF[nElectrons] = 1.;
+            
+            nElectrons++;
+          }
+
         }
         
       }
@@ -2047,177 +2030,6 @@ string MakeTimeStamp(){
 
 
 
-
-//////////////////// Z leptons
-/*pair< vector <TLorentzVector> , vector < pair < string , int > > > LeptonAssigner(std::vector<TRootElectron*> electrons,std::vector<TRootMuon*> muons){
-  //  cout << " in assigner " << endl;
-  pair< vector <TLorentzVector> , vector < pair < string , int > > >  Returner;
-  vector < pair < string , int > > Indices;
-  Indices.clear();
-  vector<TLorentzVector> ReturnColl;
-  ReturnColl.clear();
-  bool Assigned = false;
-  
-  if(electrons.size() + muons.size() != 3){
-    cout << " WARNING: not 3 leptons " << endl;
-    cout << "muons " << muons.size() << " electrons " << electrons.size() << endl;
-    return Returner;
-  }
-  //elecbool = false;
-  //mubool = false;
-  int ZelecIndice_0 = -999;
-  int ZelecIndice_1 = -999;
-  int ZmuIndice_0 = -999;
-  int ZmuIndice_1 = -999;
-  int WelecIndice = -999;
-  int WmuIndice = -999;
-  //cout << " in 3 lep " << endl;
-  
-  TLorentzVector Zlepcan0;
-  Zlepcan0.SetPxPyPzE(0.,0.,0.,0.);
-  TLorentzVector Zlepcan1;
-  Zlepcan1.SetPxPyPzE(0.,0.,0.,0.);
-  TLorentzVector Wlepcan;
-  Wlepcan.SetPxPyPzE(0.,0.,0.,0.);
-  
-  if(electrons.size() == 2){
-    //cout << "2 electr " << electrons[0]->charge() << " " << electrons[1]->charge() << endl;
-    if(electrons[0]->charge() != electrons[1]->charge()){
-      Zlepcan0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
-      Zlepcan1.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
-      Wlepcan.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
-      Assigned = true;
-      ZelecIndice_0 = 0;
-      ZelecIndice_1 = 1;
-      WmuIndice = 0;
-    }
-    else Assigned = false;
-  }
-  else if(muons.size() == 2){
-    //    cout << "2 muons" << endl;
-    if(muons[0]->charge() != muons[1]->charge()){
-      Zlepcan0.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
-      Zlepcan1.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
-      Wlepcan.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
-      Assigned = true;
-      
-      ZmuIndice_0 = 0;
-      ZmuIndice_1 = 1;
-      WelecIndice = 0;
-    }
-    else Assigned = false;
-  }
-  else if(electrons.size() ==3){
-    //cout << " 3 electrons " << endl;
-    bool can01 = false;
-    bool can02= false;
-    bool can12 = false;
-    if(electrons[0]->charge() != electrons[1]->charge()) can01 = true;
-    if(electrons[0]->charge() != electrons[2]->charge()) can02 = true;
-    if(electrons[2]->charge() != electrons[1]->charge()) can12 = true;
-    
-    double mass01 = 9999.;
-    double mass02 = 9999.;
-    double mass12 = 9999.;
-    
-    TLorentzVector temp0;
-    temp0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
-    TLorentzVector temp1;
-    temp1.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
-    TLorentzVector temp2;
-    temp2.SetPxPyPzE(electrons[2]->Px(), electrons[2]->Py(),electrons[2]->Pz(),electrons[2]->Energy());
-    
-    if(can01) mass01 = fabs(91.1-(temp1+temp0).M());
-    if(can02) mass02 = fabs(91.1-(temp2+temp0).M());
-    if(can12) mass12 = fabs(91.1-(temp1+temp2).M());
-    
-    if(mass01 <= mass02 && mass01 <= mass12){
-      Zlepcan0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
-      Zlepcan1.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
-      Wlepcan.SetPxPyPzE(electrons[2]->Px(), electrons[2]->Py(),electrons[2]->Pz(),electrons[2]->Energy());
-      Assigned = true;
-      ZelecIndice_0 = 0;ZelecIndice_1 = 1;WelecIndice = 2;
-    }
-    
-    else if(mass02 <= mass12 && mass02 < mass01){
-      Zlepcan0.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
-      Zlepcan1.SetPxPyPzE(electrons[2]->Px(), electrons[2]->Py(),electrons[2]->Pz(),electrons[2]->Energy());
-      Wlepcan.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
-      Assigned = true;
-      ZelecIndice_0 = 0; ZelecIndice_1=2;WelecIndice = 1;
-    }
-    else if(mass12 < mass01 && mass12 < mass02){
-      Zlepcan0.SetPxPyPzE(electrons[1]->Px(), electrons[1]->Py(),electrons[1]->Pz(),electrons[1]->Energy());
-      Zlepcan1.SetPxPyPzE(electrons[2]->Px(), electrons[2]->Py(),electrons[2]->Pz(),electrons[2]->Energy());
-      Wlepcan.SetPxPyPzE(electrons[0]->Px(), electrons[0]->Py(),electrons[0]->Pz(),electrons[0]->Energy());
-      Assigned = true;
-      ZelecIndice_0 = 1; ZelecIndice_1=2;WelecIndice = 0;
-    }
-    else Assigned = false;
-  }
-  else if(muons.size() == 3){
-    bool can01 = false;
-    bool can02= false;
-    bool can12 = false;
-    
-    if(muons[0]->charge() != muons[1]->charge()) can01 = true;
-    if(muons[0]->charge() != muons[2]->charge()) can02 = true;
-    if(muons[2]->charge() != muons[1]->charge()) can12 = true;
-    
-    double mass01 = 9999.;
-    double mass02 = 9999.;
-    double mass12 = 9999.;
-    TLorentzVector temp0;
-    temp0.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
-    TLorentzVector temp1;
-    temp1.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
-    TLorentzVector temp2;
-    temp2.SetPxPyPzE(muons[2]->Px(), muons[2]->Py(),muons[2]->Pz(),muons[2]->Energy());
-    if(can01) mass01 = fabs(91.1-(temp1+temp0).M());
-    if(can02) mass02 = fabs(91.1-(temp2+temp0).M());
-    if(can12) mass12 = fabs(91.1-(temp1+temp2).M());
-    if(mass01 <= mass02 && mass01 <= mass12){
-      Zlepcan0.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
-      Zlepcan1.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
-      Wlepcan.SetPxPyPzE(muons[2]->Px(), muons[2]->Py(),muons[2]->Pz(),muons[2]->Energy());
-      Assigned = true;
-      ZmuIndice_0 = 0; ZmuIndice_1=1; WmuIndice = 2;
-    }
-    else if(mass02 <= mass12 && mass02 < mass01){
-      Zlepcan0.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
-      Zlepcan1.SetPxPyPzE(muons[2]->Px(), muons[2]->Py(),muons[2]->Pz(),muons[2]->Energy());
-      Wlepcan.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
-      Assigned = true;
-      ZmuIndice_0 = 0; ZmuIndice_1=2;WmuIndice = 1;
-    }
-    else if(mass12 < mass01 && mass12 < mass02){
-      Zlepcan0.SetPxPyPzE(muons[1]->Px(), muons[1]->Py(),muons[1]->Pz(),muons[1]->Energy());
-      Zlepcan1.SetPxPyPzE(muons[2]->Px(), muons[2]->Py(),muons[2]->Pz(),muons[2]->Energy());
-      Wlepcan.SetPxPyPzE(muons[0]->Px(), muons[0]->Py(),muons[0]->Pz(),muons[0]->Energy());
-      Assigned = true;
-      ZmuIndice_0 = 1; ZmuIndice_1=2;WmuIndice = 0;
-    }
-    else Assigned = false;
-  }
-  if(Assigned){
-    ReturnColl.push_back(Zlepcan0);
-    ReturnColl.push_back(Zlepcan1);
-    ReturnColl.push_back(Wlepcan);
-    
-    Indices.push_back( pair< string, int > ("Wmu", WmuIndice));
-    Indices.push_back( pair< string, int > ("Wel", WelecIndice));
-    Indices.push_back( pair< string, int > ("Zel_1", ZelecIndice_1));
-    Indices.push_back( pair< string, int > ("Zel_0", ZelecIndice_0));
-    Indices.push_back( pair< string, int > ("Zmu_1", ZmuIndice_1));
-    Indices.push_back( pair< string, int > ("Zmu_0", ZmuIndice_0));
-    
-  }
-  
-  Returner = pair < vector < TLorentzVector > , vector < pair < string, int > > > (ReturnColl, Indices);
-  return Returner;
-};
-
-*/
 
 
 
