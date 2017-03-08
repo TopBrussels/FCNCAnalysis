@@ -17,13 +17,13 @@ LDLIBS  = $(ROOTLIBS) -lTMVA
 
 ADDINC = 
 
-SRC = drawROCcurves.cxx PlotStyle.cxx
+SRC = draw.cxx PlotStyle.cxx
 
 INC = PlotStyle.h
 
-OBJ = drawROCcurves.o PlotStyle.o
+OBJ = draw.o PlotStyle.o
 
-EXE = drawROCcurves
+EXE = draw
 
 all:  	     		$(EXE)
 #			@rm -f *.o

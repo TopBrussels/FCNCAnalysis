@@ -23,6 +23,7 @@
 #include <sys/stat.h>
 
 std::string intToStr (int number);
+std::string floatToStr (float number);
 
 using namespace std;
 int main(int argc, char *argv[])
@@ -48,12 +49,12 @@ int main(int argc, char *argv[])
     SetPlotStyle();
    
     std::string category = "b"+intToStr(baseline_bjets)+"j"+intToStr(baseline_jets);
-    std::string TrainingName = "Training_" + SignalSample + channel + "_" +  category;//Example: Training_SThut_El_b3j3
+    std::string TrainingName = "CombTraining_" + SignalSample + channel + "_" +  category;//Example: Training_SThut_El_b3j3
     std::string outputpics = "pics/"+TrainingName+"/";
     mkdir("pics",0777);
     mkdir(outputpics.c_str(),0777);
 
-   TFile f(("../weights_bk/"+TrainingName+".root").c_str());
+   TFile f(("../weights/"+TrainingName+".root").c_str());
 
    TH1D *h_sig_train = (TH1D*)f.Get("Method_BDT/BDT/MVA_BDT_Train_S");
    TH1D *h_bkg_train = (TH1D*)f.Get("Method_BDT/BDT/MVA_BDT_Train_B");
@@ -117,6 +118,7 @@ int main(int argc, char *argv[])
    TH1D *h_S = (TH1D*)h_bkg_test->Clone("h_S");
    h_S->Clear();
    float maxSign = -1.;
+   float xmaxSign = -1.;
    int nBins = h_S->GetXaxis()->GetNbins();
    for(int i=1;i<=nBins;i++)
      {
@@ -127,10 +129,16 @@ int main(int argc, char *argv[])
 	float sign = intSig/sqrt(intBkg+intSig);
 	h_S->SetBinContent(i,sign);
 	h_S->SetBinError(i,0.);
-	if( sign > maxSign ) maxSign = sign;
+	if( sign > maxSign )
+	{
+	    float binWidth = (h_S->GetXaxis()->GetXmax()-h_S->GetXaxis()->GetXmin())/nBins;
+	    maxSign = sign;
+	    xmaxSign = h_S->GetXaxis()->GetXmin()+i*binWidth;
+	}
      }
    
    h_S->GetYaxis()->SetTitle("S/#sqrt{S+B}");
+   h_S->GetXaxis()->SetTitle(("MVA disc. (max sign:"+floatToStr(xmaxSign)+")").c_str());
    h_S->Draw("hist e1");
    h_S->SetMaximum(maxSign*1.2);
    h_S->SetMinimum(0.0);
@@ -270,6 +278,14 @@ int main(int argc, char *argv[])
 std::string intToStr (int number)
 {
   	std::ostringstream buff;
+  	buff<<number;
+  	return buff.str();
+}
+
+// function that converts an int into a string
+string floatToStr (float number)
+{
+  	ostringstream buff;
   	buff<<number;
   	return buff.str();
 }

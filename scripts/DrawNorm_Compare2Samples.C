@@ -1,19 +1,20 @@
 map<string,TH1F*> histo1D;
 
-
 void DrawNorm_Compare2Samples()
 {
-  TFile *sample1= new TFile("../NtuplerOutput/Ntuples_El/Ntuples_16_2_2017/FCNC_1L3B__Run2_TopTree_Study_TTJets_powheg_El_1___original.root","READ");
-  std::string label_sample1 = "sqrt";
-  TFile *sample2= new TFile("../NtuplerOutput/Ntuples_El/Ntuples_16_2_2017/FCNC_1L3B__Run2_TopTree_Study_TTJets_powheg_El_1.root","READ");
-  std::string label_sample2 = "TLorentz";
+cout << "Here 1" << endl;
+  TFile *sample1= new TFile("../Merged/Ntuples_All/Ntuples_2_3_2017_CSVv2L/FCNC_1L3B__Run2_TopTree_Study_TTJets_powheg.root","READ");
+  std::string label_sample1 = "nominal";
+  TFile *sample2= new TFile("../Merged/Ntuples_All/Ntuples_2_3_2017_CSVv2L/FCNC_1L3B__Run2_TopTree_Study_TTJets_powheg_UEdown.root","READ");
+  std::string label_sample2 = "UEdown";
+cout << "Here 1" << endl;
 
   string treename = "ObjectVarsTree";
   TTree *tree_sample1 = (TTree*)sample1->Get(treename.c_str());
 cout << tree_sample1->GetName() << endl;
   TTree *tree_sample2 = (TTree*)sample2->Get(treename.c_str());
   
-  string condition = "HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB>0";
+  string condition = "";
 
   vector<std::string> vars;
   vector<int> nbins;
@@ -23,21 +24,23 @@ cout << tree_sample1->GetName() << endl;
 
 
   //Defining the variables we want to plot with the nbins, xmin and xmax
-  vars.push_back("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB");
-  nbins.push_back(50);
-  xmin.push_back(0);
-  xmax.push_back(5);
-/*  vars.push_back("HiggsBJet2CSVv2_TOPHLEPBB__Signal_Id");
-  nbins.push_back(50);
-  xmin.push_back(-1);
-  xmax.push_back(1);
-  vars.push_back("TopLepBJetCSVv2_TOPHLEPBB__Signal_Id");
-  nbins.push_back(50);
-  xmin.push_back(-1);
-  xmax.push_back(1);
+  vars.push_back("W_btagWeight_shape");
+  nbins.push_back(60);
+  xmin.push_back(0.);
+  xmax.push_back(1.8);
+/*
+  vars.push_back("I_nJets_CSVM");
+  nbins.push_back(60);
+  xmin.push_back(0.);
+  xmax.push_back(1.8);
 
 
   vars.push_back("I_npu");
+  nbins.push_back(51);
+  xmin.push_back(-0.5);
+  xmax.push_back(50.5);
+
+  vars.push_back("I_nvtx");
   nbins.push_back(51);
   xmin.push_back(-0.5);
   xmax.push_back(50.5);
@@ -132,68 +135,28 @@ cout << tree_sample1->GetName() << endl;
   xmin.push_back(-30.5);
   xmax.push_back(29.5);
  */ 
-/*
-  vars.push_back("HiggsMass_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("HiggsMass_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, 50., 250, "M(Higgs)","Events", category,"GeV");
-  vars.push_back("HiggsMass_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("HiggsMass_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, 50., 250, "M(Higgs)","Events", category,"GeV");
-  vars.push_back("HiggsEta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("HiggsEta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, -5.0, 5.0, "eta (Higgs)","Events", category);
-  vars.push_back("HiggsEta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("HiggsEta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, -5.0, 5.0, "eta (Higgs)","Events", category);
-  vars.push_back("TopLepMass_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopLepMass_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, 80., 300., "M(LepTop)","Events", category,"GeV");
-  vars.push_back("TopLepMass_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopLepMass_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, 80., 300., "M(LepTop)","Events", category,"GeV");
-  vars.push_back("TopLepPt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopLepPt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, 80., 300., "Pt(LepTop)","Events", category,"GeV");
-  vars.push_back("TopLepPt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopLepPt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, 80., 300., "Pt(LepTop)","Events", category,"GeV");
-  vars.push_back("TopLepEta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopLepEta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, -5.0, 5.0, "eta (LepTop)","Events", category);
-  vars.push_back("TopLepEta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopLepEta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, -5.0, 5.0, "eta (LepTop)","Events", category);
-  vars.push_back("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, 0., 5.0, "DR(Hb1,Hb2)","Events", category);
-  vars.push_back("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, 0., 5.0, "DR(Hb1,Hb2)","Events", category);
-  vars.push_back("TopLepHiggsDr_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopLepHiggsDr_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, 0., 5.0, "#Delta R(H,LepTop)","Events", category);
-  vars.push_back("TopLepHiggsDr_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopLepHiggsDr_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, 0., 5.0, "#Delta R(H,LepTop)","Events", category);
-  vars.push_back("HiggsBJet1CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("HiggsBJet1CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-  vars.push_back("HiggsBJet1CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("HiggsBJet1CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-  vars.push_back("HiggsBJet2CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("HiggsBJet2CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-  vars.push_back("HiggsBJet2CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("HiggsBJet2CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-  vars.push_back("TopLepBJetCSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopLepBJetCSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-  vars.push_back("TopLepBJetCSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopLepBJetCSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-  vars.push_back("TopHadMass_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopHadMass_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 50, 80., 300., "M(HadTop)","Events", category,"GeV");
-  vars.push_back("TopLepMass_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopLepMass_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 50, 80., 300., "M(LepTop)","Events", category,"GeV");
-  vars.push_back("TopLepTopHadDr_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopLepTopHadDr_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 50, 0., 5.0, "DR(HadTop,LepTop)","Events", category);
-  vars.push_back("TopLepBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopLepBJetCSVv2_TOPTOPLEPHAF"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-  vars.push_back("TopHadBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopHadBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-  vars.push_back("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-  vars.push_back("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-  vars.push_back("HiggsMass_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("HiggsMass_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 50., 250, "M(Higgs)","Events", category,"GeV");
-  vars.push_back("TopLepMass_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopLepMass_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 80., 300., "M(LepTop)","Events", category,"GeV");
-  vars.push_back("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 0., 5.0, "DR(Hb1,Hb2)","Events", category);
-  vars.push_back("TopLepHiggsDr_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopLepHiggsDr_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 0., 5.0, "DR(H,LepTop)","Events", category);
-  vars.push_back("HiggsBJet1CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("HiggsBJet1CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-  vars.push_back("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-  vars.push_back("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-  vars.push_back("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets, ("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 50, 0., 1., "CSVv2 disc.","Events", category);
-*/
 
   TFile *fout = new TFile("NormHistos_Comp2Samples_FullSimFastSim.root","RECREATE");
-
-/*
-  for(int i_vars = 0; i_vars < vars.size(); i_vars++)
-  {   
-      histo1D[(vars[i_vars]+"_sample1").c_str()] = new TH1F();
-      histo1D[(vars[i_vars]+"_sample2").c_str()] = new TH1F();
-  }
-*/
 //  gSystem->Load("$ROOTSYS/test/libEvent");
 
   for(int i_vars = 0; i_vars < vars.size(); i_vars++)
   {   
-
-      tmp_hist_sample1 = new TH1F(("h_"+vars[i_vars]+"_sample1").c_str(),("h_"+vars[i_vars]+"_sample1").c_str(),nbins[i_vars],xmin[i_vars],xmax[i_vars]);
-      tmp_hist_sample2 = new TH1F(("h_"+vars[i_vars]+"_sample2").c_str(),("h_"+vars[i_vars]+"_sample2").c_str(),nbins[i_vars],xmin[i_vars],xmax[i_vars]);
+  
+      TH1F *tmp_hist_sample1 = new TH1F(("h_"+vars[i_vars]+"_sample1").c_str(),("h_"+vars[i_vars]+"_sample1").c_str(),nbins[i_vars],xmin[i_vars],xmax[i_vars]);
+      TH1F *tmp_hist_sample2 = new TH1F(("h_"+vars[i_vars]+"_sample2").c_str(),("h_"+vars[i_vars]+"_sample2").c_str(),nbins[i_vars],xmin[i_vars],xmax[i_vars]);
       gStyle->SetOptStat(kFALSE);
       tree_sample1->Draw((vars[i_vars]+">>h_"+vars[i_vars]+"_sample1").c_str(),condition.c_str());
       tree_sample2->Draw((vars[i_vars]+">>h_"+vars[i_vars]+"_sample2").c_str(),condition.c_str());
 
 
-      if(!histo1D[(vars[i_vars]+"_sample1").c_str()] || !histo1D[(vars[i_vars]+"_sample2").c_str()])
+      if(!tmp_hist_sample1)
       {
-          cout << "Input histo doesn't exist" << endl;
+          cout << "Input histo 1 doesn't exist" << endl;
+          continue;
+      }
+      if(!tmp_hist_sample2)
+      {
+          cout << "Input histo 2 doesn't exist" << endl;
           continue;
       }
 

@@ -60,6 +60,7 @@
 #include "TMVA/Tools.h"
 #include "TMVA/Reader.h"
 #include "TopTreeAnalysisBase/Tools/interface/JetTools.h"
+//#include "/user/kderoove/Software/LHAPDF/LHAPDF-6.1.6/include/LHAPDF/LHAPDF.h"
 
 //includes for Kinematic fitting
 #include "FCNCAnalysis/TopKinFit/kinfit.h"
@@ -158,6 +159,8 @@ int main (int argc, char *argv[])
     cout << "*************************************************************" << endl;
 
 
+    TFile *muontrackfile = new TFile("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/Tracking_EfficienciesAndSF_BCDEFGH.root","read");
+    TGraph* h_muonSFWeightTrack = (TGraph*) muontrackfile->Get("ratio_eff_eta3_dr030e030_corr")->Clone();//Tracking efficiency as function of eta
 
     ///////////////////////////////////////////////////////////////
     // Initialize scale&reweight-handlings
@@ -441,6 +444,7 @@ int main (int argc, char *argv[])
     MuonSFWeight* muonSFWeightIso_GH;
     MuonSFWeight* muonSFWeightTrig_BCDEF;
     MuonSFWeight* muonSFWeightTrig_GH;
+    
 
 
     ElectronSFWeight* electronSFWeightID; 
@@ -627,8 +631,6 @@ int main (int argc, char *argv[])
         Double_t W_weight6;
         Double_t W_weight7;
         Double_t W_weight8; 
-        Double_t W_pdfup; 
-        Double_t W_pdfdown; 
         Double_t W_hdamp_up; 
         Double_t W_hdamp_dw; 
         Double_t W_MuonIDSF; //One of the 3 components for the total muon SF
@@ -689,6 +691,11 @@ int main (int argc, char *argv[])
         Double_t MC_TopPt;
         Double_t MC_AntiTopPt;
 
+        Float_t x1;
+        Float_t x2;
+        Int_t id1;
+        Int_t id2;
+        Float_t q;
 
         //variable for jets 
         Int_t nJets;
@@ -916,10 +923,10 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("W_puSF",&W_puSF,"W_puSF/D");
         tup_ObjectVars->Branch("W_puSF_Minus",&W_puSF_Minus,"W_puSF_Minus/D");
         tup_ObjectVars->Branch("W_puSF_Plus",&W_puSF_Plus,"W_puSF_Plus/D");
-        tup_ObjectVars->Branch("W_btagWeight_CSVv2M_mujets_central",&W_btagWeight_CSVv2M_mujets_central,"W_btagWeight_CSVv2M_mujets_central/D"); 
+/*        tup_ObjectVars->Branch("W_btagWeight_CSVv2M_mujets_central",&W_btagWeight_CSVv2M_mujets_central,"W_btagWeight_CSVv2M_mujets_central/D"); 
         tup_ObjectVars->Branch("W_btagWeight_CSVv2M_mujets_up",&W_btagWeight_CSVv2M_mujets_up,"W_btagWeight_CSVv2M_mujets_up/D");  
         tup_ObjectVars->Branch("W_btagWeight_CSVv2M_mujets_down",&W_btagWeight_CSVv2M_mujets_down,"W_btagWeight_CSVv2M_mujets_down/D"); 
-        tup_ObjectVars->Branch("W_btagWeight_shape",&W_btagWeight_shape,"W_btagWeight_shape/D"); 
+*/        tup_ObjectVars->Branch("W_btagWeight_shape",&W_btagWeight_shape,"W_btagWeight_shape/D"); 
         tup_ObjectVars->Branch("W_btagWeight_shape_up_lf",&W_btagWeight_shape_up_lf,"W_btagWeight_shape_up_lf/D"); 
         tup_ObjectVars->Branch("W_btagWeight_shape_down_lf",&W_btagWeight_shape_down_lf,"W_btagWeight_shape_down_lf/D"); 
         tup_ObjectVars->Branch("W_btagWeight_shape_up_hf",&W_btagWeight_shape_up_hf,"W_btagWeight_shape_up_hf/D"); 
@@ -946,8 +953,8 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("W_weight6",&W_weight6,"W_weight6/D");  
         tup_ObjectVars->Branch("W_weight7",&W_weight7,"W_weight7/D"); 
         tup_ObjectVars->Branch("W_weight8",&W_weight8,"W_weight8/D");  
-        tup_ObjectVars->Branch("W_pdfup",&W_pdfup,"W_pdfup/D");  
-        tup_ObjectVars->Branch("W_pdfdown",&W_pdfdown,"W_pdfdown/D");  
+//        tup_ObjectVars->Branch("W_pdfup",&W_pdfup,"W_pdfup/D");  
+//        tup_ObjectVars->Branch("W_pdfdown",&W_pdfdown,"W_pdfdown/D");  
         tup_ObjectVars->Branch("W_hdamp_up",&W_hdamp_up,"W_hdamp_up/D");  
         tup_ObjectVars->Branch("W_hdamp_dw",&W_hdamp_dw,"W_hdamp_dw/D");  
         tup_ObjectVars->Branch("W_TopPtReweighing",&W_TopPtReweighing,"W_TopPtReweighing/D");  
@@ -960,7 +967,7 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("I_npu",&npu,"npu/I");
 
 
-        // electrons
+/*        // electrons
         tup_ObjectVars->Branch("eta_superCluster_electron",&eta_superCluster_electron,"eta_superCluster_electron/D");
         tup_ObjectVars->Branch("chargedHadronIso_electron",&chargedHadronIso_electron,"chargedHadronIso_electron/D");
         tup_ObjectVars->Branch("neutralHadronIso_electron",&neutralHadronIso_electron,"neutralHadronIso_electron/D");
@@ -976,17 +983,17 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("I_missingHits_electron",&missingHits_electron,"missingHits_electron/I");
         tup_ObjectVars->Branch("I_passConversion_electron",&passConversion_electron,"passConversion_electron/O)");
         tup_ObjectVars->Branch("I_isEBEEGap",&isEBEEGap,"isEBEEGap/O)");
-      
+*/      
 
         // muons
-        tup_ObjectVars->Branch("chargedHadronIso_muon",&chargedHadronIso_muon,"chargedHadronIso_muon/D");
+/*        tup_ObjectVars->Branch("chargedHadronIso_muon",&chargedHadronIso_muon,"chargedHadronIso_muon/D");
         tup_ObjectVars->Branch("neutralHadronIso_muon",&neutralHadronIso_muon,"neutralHadronIso_muon/D");
         tup_ObjectVars->Branch("photonIso_muon",&photonIso_muon,"photonIso_muon/D");
         tup_ObjectVars->Branch("pfIso_muon",&pfIso_muon,"pfIso_muon/D");
         tup_ObjectVars->Branch("charge_muon",&charge_muon,"charge_muon/D");
         tup_ObjectVars->Branch("d0_muon",&d0_muon,"d0_muon/D");
         tup_ObjectVars->Branch("d0BeamSpot_muon",&d0BeamSpot_muon,"d0BeamSpot_muon/D");
-
+*/
         //SelectedLepton
         tup_ObjectVars->Branch("pt_lepton",&pt_lepton,"pt_lepton/D");
         tup_ObjectVars->Branch("phi_lepton",&phi_lepton,"phi_lepton/D");
@@ -1020,6 +1027,12 @@ int main (int argc, char *argv[])
         //MC variables (affected by TopPtReweighing
         tup_ObjectVars->Branch("MC_TopPt",&MC_TopPt,"MC_TopPt/D");
         tup_ObjectVars->Branch("MC_AntiTopPt",&MC_AntiTopPt,"MC_AntiTopPt/D");
+
+        tup_ObjectVars->Branch("x1",&x1,"x1/F");
+        tup_ObjectVars->Branch("x2",&x2,"x2/F");
+        tup_ObjectVars->Branch("I_id1",&id1,"id1/I");
+        tup_ObjectVars->Branch("I_id2",&id2,"id2/I");
+        tup_ObjectVars->Branch("q",&q,"q/F");
 
        
         // met 
@@ -1510,8 +1523,6 @@ int main (int argc, char *argv[])
             W_weight6 =1;
             W_weight7 =1;
             W_weight8 =1; 
-            W_pdfup =1; 
-            W_pdfdown =1; 
             W_hdamp_up =1; 
             W_hdamp_dw =1; 
             W_MuonIDSF =1; //One of the 3 components for the total muon SF
@@ -1863,6 +1874,34 @@ int main (int argc, char *argv[])
 			              W_hdamp_up = event->getWeight(5019)/fabs(event->originalXWGTUP());
 			              W_hdamp_dw = event->getWeight(5010)/fabs(event->originalXWGTUP());
                 }
+
+                x1 = event->xParton1();
+                x2 = event->xParton2();
+                id1 = event->idParton1();
+                id2 = event->idParton2();
+                q = event->factorizationScale();
+
+/*
+                //PDF weights calculation
+                LHAPDF::initPDFSet(1, "PDF4LHC15_nlo_100");
+                const float xpdf1 = LHAPDF::xfx(260000, x1, q, id1);
+                const float xpdf2 = LHAPDF::xfx(260000, x2, q, id2);
+                const float w0 = xpdf1*xpdf2;
+
+                const float xpdf1_new = LHAPDF::xfx(1, x1, q, id1);
+                const float xpdf2_new = LHAPDF::xfx(1, x2, q, id2);
+                const float w_new = xpdf1_new*xpdf2_new;
+//                out_genWeights->push_back(w_new/w0);
+
+                for ( unsigned int i=1, n=LHAPDF::numberPDF(1); i<=n; ++i )
+                {
+                    LHAPDF::usePDFMember(1, i);
+                    const float xpdf1_syst = LHAPDF::xfx(1, x1, q, id1);
+                    const float xpdf2_syst = LHAPDF::xfx(1, x2, q, id2);
+//                    out_genWeights->push_back(xpdf1_syst*xpdf2_syst/w0);
+
+               }
+*/
             }
             ///////////////////////////////////////////////////////////
             // Event selection
@@ -1983,6 +2022,8 @@ int main (int argc, char *argv[])
                     W_MuonIDSF_Minus = (muonSFWeightID_BCDEF->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
                     W_MuonIsoSF_Minus = (muonSFWeightIso_BCDEF->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
                     W_MuonTrigSF_Minus = (muonSFWeightTrig_BCDEF->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightTrig_GH->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+
+                    double MuonTrackSF = h_muonSFWeightTrack->Eval(selectedMuons[0]->Eta());
                     
                     W_fleptonSF_Plus = W_MuonIDSF_Plus * W_MuonIsoSF_Plus * W_MuonTrigSF_Plus;
                     W_fleptonSF_Minus = W_MuonIDSF_Minus * W_MuonIsoSF_Minus * W_MuonTrigSF_Minus;
@@ -2144,7 +2185,7 @@ int main (int argc, char *argv[])
 	            eta_lepton=selectedElectrons[0]->Eta();
 	            E_lepton=selectedElectrons[0]->E();
 	            LepCharge=selectedElectrons[0]->charge();
-	            eta_superCluster_electron=selectedElectrons[0]->superClusterEta();
+/*	            eta_superCluster_electron=selectedElectrons[0]->superClusterEta();
 	            d0_electron=selectedElectrons[0]->d0();
 	            d0BeamSpot_electron=selectedElectrons[0]->d0BeamSpot();
 	            chargedHadronIso_electron=selectedElectrons[0]->chargedHadronIso(3);
@@ -2159,7 +2200,7 @@ int main (int argc, char *argv[])
 	            missingHits_electron=selectedElectrons[0]->missingHits();
 	            passConversion_electron=selectedElectrons[0]->passConversion();
 	            isEBEEGap=selectedElectrons[0]->isEBEEGap();
-	          }
+*/	          }
 	          else if (Muon)
 	          {
                 pt_lepton=selectedMuons[0]->Pt();
@@ -2167,14 +2208,14 @@ int main (int argc, char *argv[])
 	              eta_lepton=selectedMuons[0]->Eta();
 	              E_lepton=selectedMuons[0]->E();
                 LepCharge=selectedMuons[0]->charge();
-	              d0_muon=selectedMuons[0]->d0();
+/*	              d0_muon=selectedMuons[0]->d0();
 	              d0BeamSpot_muon=selectedMuons[0]->d0BeamSpot();
 	              chargedHadronIso_muon=selectedMuons[0]->chargedHadronIso(4);
 	              neutralHadronIso_muon=selectedMuons[0]->neutralHadronIso(4);
 	              photonIso_muon=selectedMuons[0]->photonIso(4);
                 pfIso_muon=selectedMuons[0]->relPfIso(4,0);
 	              charge_muon=selectedMuons[0]->charge();
-	          }
+*/	          }
 
             /////////////////////////////////////////////////
             //            Jet lepton cleaning          //

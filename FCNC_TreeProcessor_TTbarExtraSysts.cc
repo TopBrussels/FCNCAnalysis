@@ -26,12 +26,16 @@
 #include "TMVA/Tools.h"
 #include "TMVA/Reader.h"
 
+#include "/user/kderoove/Software/LHAPDF/LHAPDF-6.1.6/include/LHAPDF/LHAPDF.h"
+#include "/user/kderoove/Software/LHAPDF/LHAPDF-6.1.6/include/LHAPDF/Reweighting.h"
+
 //includes for Kinematic fitting
 #include "FCNCAnalysis/TopKinFit/kinfit.h"
 
 
 using namespace std;
 using namespace TopTree;
+//using namespace LHAPDF;
 //using namespace KINFIT;
 
 
@@ -44,12 +48,15 @@ map<string,MultiSamplePlot*> MSPlot;
 map<string,MultiSamplePlot*> MSPlot_nPV;
 
 void GetEnvelopeScale();
+void GetEnvelopePDF();
 double maximumValue(vector<double> array);
 double minimumValue(vector<double> array);
+double OptimalCut_CombTraining(string category, string coupling);
 
 // functions prototype
 string intToStr (int number);
 void MakeNPV_Distributions(int baseline_jets, int baseline_bjets, string channel, string date, bool debug);
+bool applyPDFs = true;
 
 inline bool FileExists (const string& name) {
   struct stat buffer;   
@@ -111,8 +118,8 @@ int main(int argc, char *argv[])
     WhatSysts.push_back("weight6");   
 //    WhatSysts.push_back("weight7");   
     WhatSysts.push_back("weight8");   
-    WhatSysts.push_back("hdampup");   
-    WhatSysts.push_back("hdampdown");   
+//    WhatSysts.push_back("hdampup");   
+//    WhatSysts.push_back("hdampdown");   
     WhatSysts.push_back("_isrup");
     WhatSysts.push_back("_isrdown");   
     WhatSysts.push_back("_fsrup");   
@@ -240,12 +247,6 @@ int main(int argc, char *argv[])
     
     for(int iSyst = 0; iSyst<WhatSysts.size();iSyst++)
     {
-/*        MSPlot[("MVA_MaxTT-ST_"+TrainingName+WhatSysts[iSyst]).c_str()] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_MaxTT-ST_"+TrainingName+WhatSysts[iSyst]).c_str(), 20, -1., 1., ("max BDT disc."+xaxislabelcoupling),"Events", "");
-        MSPlot[("MVA_CombTT-ST_"+TrainingName+WhatSysts[iSyst]).c_str()] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_CombTT-ST_"+TrainingName+WhatSysts[iSyst]).c_str(), 20, -1., 1., ("comb BDT disc."+xaxislabelcoupling),"Events", "");
-
-        MSPlot[("MVA_ST"+TrainingName+WhatSysts[iSyst]).c_str()] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_ST"+TrainingName+WhatSysts[iSyst]).c_str(), 20, -1., 1., ("ST BDT disc."+xaxislabelcoupling),"Events", "");
-        MSPlot[("MVA_TT"+TrainingName+WhatSysts[iSyst]).c_str()] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TT"+TrainingName+WhatSysts[iSyst]).c_str(), 20, -1., 1., ("TT BDT disc."+xaxislabelcoupling),"Events", "");
-*/
         histo1D[("maxSTandTT_ttbb"+namingConventionFit[WhatSysts[iSyst]]).c_str()] = new TH1F(("maxSTandTT_ttbb"+namingConventionFit[WhatSysts[iSyst]]).c_str(),("maxSTandTT_ttbb"+namingConventionFit[WhatSysts[iSyst]]).c_str(),20,-1,1);
         histo1D[("maxSTandTT_ttcc"+namingConventionFit[WhatSysts[iSyst]]).c_str()] = new TH1F(("maxSTandTT_ttcc"+namingConventionFit[WhatSysts[iSyst]]).c_str(),("maxSTandTT_ttcc"+namingConventionFit[WhatSysts[iSyst]]).c_str(),20,-1,1);
         histo1D[("maxSTandTT_ttlf"+namingConventionFit[WhatSysts[iSyst]]).c_str()] = new TH1F(("maxSTandTT_ttlf"+namingConventionFit[WhatSysts[iSyst]]).c_str(),("maxSTandTT_ttlf"+namingConventionFit[WhatSysts[iSyst]]).c_str(),20,-1,1);
@@ -261,8 +262,35 @@ int main(int argc, char *argv[])
         histo1D[("combSTandTT_ttbb"+namingConventionFit[WhatSysts[iSyst]]).c_str()] = new TH1F(("combSTandTT_ttbb"+namingConventionFit[WhatSysts[iSyst]]).c_str(),("combSTandTT_ttbb"+namingConventionFit[WhatSysts[iSyst]]).c_str(),20,-1,1);
         histo1D[("combSTandTT_ttcc"+namingConventionFit[WhatSysts[iSyst]]).c_str()] = new TH1F(("combSTandTT_ttcc"+namingConventionFit[WhatSysts[iSyst]]).c_str(),("combSTandTT_ttcc"+namingConventionFit[WhatSysts[iSyst]]).c_str(),20,-1,1);
         histo1D[("combSTandTT_ttlf"+namingConventionFit[WhatSysts[iSyst]]).c_str()] = new TH1F(("combSTandTT_ttlf"+namingConventionFit[WhatSysts[iSyst]]).c_str(),("combSTandTT_ttlf"+namingConventionFit[WhatSysts[iSyst]]).c_str(),20,-1,1);
+
+        histo1D[("combSTandTT_cutCount_ttbb"+namingConventionFit[WhatSysts[iSyst]]).c_str()] = new TH1F(("combSTandTT_cutCount_ttbb"+namingConventionFit[WhatSysts[iSyst]]).c_str(),("combSTandTT_cutCount_ttbb"+namingConventionFit[WhatSysts[iSyst]]).c_str(),1,-1,1);
+        histo1D[("combSTandTT_cutCount_ttcc"+namingConventionFit[WhatSysts[iSyst]]).c_str()] = new TH1F(("combSTandTT_cutCount_ttcc"+namingConventionFit[WhatSysts[iSyst]]).c_str(),("combSTandTT_cutCount_ttcc"+namingConventionFit[WhatSysts[iSyst]]).c_str(),1,-1,1);
+        histo1D[("combSTandTT_cutCount_ttlf"+namingConventionFit[WhatSysts[iSyst]]).c_str()] = new TH1F(("combSTandTT_cutCount_ttlf"+namingConventionFit[WhatSysts[iSyst]]).c_str(),("combSTandTT_cutCount_ttlf"+namingConventionFit[WhatSysts[iSyst]]).c_str(),1,-1,1);
+
     }
-  
+    for(int iCount = 0; iCount < 101; iCount++)
+    {
+        histo1D[("maxSTandTT_ttbb_pdfweight"+intToStr(iCount)).c_str()] = new TH1F(("maxSTandTT_ttbb_pdfweight"+intToStr(iCount)).c_str(),("maxSTandTT_ttbb_pdfweight"+intToStr(iCount)).c_str(),20,-1,1);
+        histo1D[("maxSTandTT_ttcc_pdfweight"+intToStr(iCount)).c_str()] = new TH1F(("maxSTandTT_ttcc_pdfweight"+intToStr(iCount)).c_str(),("maxSTandTT_ttcc_pdfweight"+intToStr(iCount)).c_str(),20,-1,1);
+        histo1D[("maxSTandTT_ttlf_pdfweight"+intToStr(iCount)).c_str()] = new TH1F(("maxSTandTT_ttlf_pdfweight"+intToStr(iCount)).c_str(),("maxSTandTT_ttlf_pdfweight"+intToStr(iCount)).c_str(),20,-1,1);
+
+        histo1D[("ST_ttbb_pdfweight"+intToStr(iCount)).c_str()] = new TH1F(("ST_ttbb_pdfweight"+intToStr(iCount)).c_str(),("ST_ttbb_pdfweight"+intToStr(iCount)).c_str(),20,-1,1);
+        histo1D[("ST_ttcc_pdfweight"+intToStr(iCount)).c_str()] = new TH1F(("ST_ttcc_pdfweight"+intToStr(iCount)).c_str(),("ST_ttcc_pdfweight"+intToStr(iCount)).c_str(),20,-1,1);
+        histo1D[("ST_ttlf_pdfweight"+intToStr(iCount)).c_str()] = new TH1F(("ST_ttlf_pdfweight"+intToStr(iCount)).c_str(),("ST_ttlf_pdfweight"+intToStr(iCount)).c_str(),20,-1,1);
+
+        histo1D[("TT_ttbb_pdfweight"+intToStr(iCount)).c_str()] = new TH1F(("TT_ttbb_pdfweight"+intToStr(iCount)).c_str(),("TT_ttbb_pdfweight"+intToStr(iCount)).c_str(),20,-1,1);
+        histo1D[("TT_ttcc_pdfweight"+intToStr(iCount)).c_str()] = new TH1F(("TT_ttcc_pdfweight"+intToStr(iCount)).c_str(),("TT_ttcc_pdfweight"+intToStr(iCount)).c_str(),20,-1,1);
+        histo1D[("TT_ttlf_pdfweight"+intToStr(iCount)).c_str()] = new TH1F(("TT_ttlf_pdfweight"+intToStr(iCount)).c_str(),("TT_ttlf_pdfweight"+intToStr(iCount)).c_str(),20,-1,1);
+
+        histo1D[("combSTandTT_ttbb_pdfweight"+intToStr(iCount)).c_str()] = new TH1F(("combSTandTT_ttbb_pdfweight"+intToStr(iCount)).c_str(),("combSTandTT_ttbb_pdfweight"+intToStr(iCount)).c_str(),20,-1,1);
+        histo1D[("combSTandTT_ttcc_pdfweight"+intToStr(iCount)).c_str()] = new TH1F(("combSTandTT_ttcc_pdfweight"+intToStr(iCount)).c_str(),("combSTandTT_ttcc_pdfweight"+intToStr(iCount)).c_str(),20,-1,1);
+        histo1D[("combSTandTT_ttlf_pdfweight"+intToStr(iCount)).c_str()] = new TH1F(("combSTandTT_ttlf_pdfweight"+intToStr(iCount)).c_str(),("combSTandTT_ttlf_pdfweight"+intToStr(iCount)).c_str(),20,-1,1);
+
+        histo1D[("combSTandTT_cutCount_ttbb_pdfweight"+intToStr(iCount)).c_str()] = new TH1F(("combSTandTT_cutCount_ttbb_pdfweight"+intToStr(iCount)).c_str(),("combSTandTT_cutCount_ttbb_pdfweight"+intToStr(iCount)).c_str(),1,-1,1);
+        histo1D[("combSTandTT_cutCount_ttcc_pdfweight"+intToStr(iCount)).c_str()] = new TH1F(("combSTandTT_cutCount_ttcc_pdfweight"+intToStr(iCount)).c_str(),("combSTandTT_cutCount_ttcc_pdfweight"+intToStr(iCount)).c_str(),1,-1,1);
+        histo1D[("combSTandTT_cutCount_ttlf_pdfweight"+intToStr(iCount)).c_str()] = new TH1F(("combSTandTT_cutCount_ttlf_pdfweight"+intToStr(iCount)).c_str(),("combSTandTT_cutCount_ttlf_pdfweight"+intToStr(iCount)).c_str(),1,-1,1);
+        
+    }  
  
 
 
@@ -277,6 +305,7 @@ int main(int argc, char *argv[])
 		    {
 		        if(debug) cout << "Data found" << endl;
 		        isData =true;
+		        continue;
 	      }
 	      
         for(int Counter = 0; Counter < WhatSysts.size(); Counter++)
@@ -647,6 +676,13 @@ int main(int argc, char *argv[])
             //variable for jets 
             Int_t nJets;
 	          Int_t nJets_CSVM; 
+
+            //Info for PDF calculation
+            Int_t id1;
+            Int_t id2;
+            Float_t x1;
+            Float_t x2;
+            Float_t q;
 	          
 	          //JetIndices_correctJetComb
             Double_t MVA_TOPTOPLEPHAD = -999.;
@@ -722,6 +758,12 @@ int main(int argc, char *argv[])
             // jets
             ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets",&nJets);
             ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVM",&nJets_CSVM);
+
+            ttree[(dataSetName).c_str()]->SetBranchAddress("I_id1",&id1);
+            ttree[(dataSetName).c_str()]->SetBranchAddress("I_id2",&id2);
+            ttree[(dataSetName).c_str()]->SetBranchAddress("x1",&x1);
+            ttree[(dataSetName).c_str()]->SetBranchAddress("x2",&x2);
+            ttree[(dataSetName).c_str()]->SetBranchAddress("q",&q);
            
             // Jet-indices associated to the jet-assignment in the bMVA method
             ttree[(dataSetName).c_str()]->SetBranchAddress("MVA_TOPTOPLEPHAD",&MVA_TOPTOPLEPHAD);
@@ -769,15 +811,36 @@ int main(int argc, char *argv[])
 
             
             double EqLumi = datasets[d]->EquivalentLumi();
+            int EntryStart = 0;
+
             if(WhatSysts[Counter] == "_isrup") EqLumi = 70973.6883236;
             else if(WhatSysts[Counter] == "_isrdown") EqLumi = 34966.5576609;
             else if(WhatSysts[Counter] == "_fsrdown") EqLumi = 35450.3101856;
             else if(WhatSysts[Counter] == "_fsrup") EqLumi = 35800.2801289;
             else if(WhatSysts[Counter] == "_UEup") EqLumi = 35238.9138694;
             else if(WhatSysts[Counter] == "_UEdown") EqLumi = 34089.0918053;
-		
+            else 
+            {
+                if(category=="b2j4" || category=="b2j3")
+                {
+                    EntryStart = (int) 19*nEntries/20;
+                    EqLumi = EqLumi/20;
+                }
+                else if(category=="b3j4")
+                {
+                    EntryStart = (int) 7*nEntries/8;
+                    EqLumi = EqLumi/8;
+                }
+                else if(category=="b3j3" || category=="b4j4")
+                {
+                    EntryStart = (int) nEntries/2;
+                    EqLumi = EqLumi/2;
+                }
+            }
+//            EntryStart = nEntries/2+nEntries/3+1;//Manually overwriting the number of events to run over.
+
       	    //***********************************************RUNNING OVER EVENTS**********************************************
-		        for (int j = 0; j<nEntries; j++)
+		        for (int j = EntryStart; j<nEntries; j++)
 		        {
 		                  
                 if(debug)
@@ -857,24 +920,6 @@ int main(int argc, char *argv[])
                         }
                     }                
 
-
-                    //Nominal scale factor -- scale factors for systematic shifts are calculated below
-                    ScaleFactor *= W_puSF_applied;
-                    ScaleFactor *= W_fleptonSF;
-                    ScaleFactor *= W_btagWeight_shape;
-
-                    if(WhatSysts[Counter]=="weight1") ScaleFactor *= W_weight1;   
-                    else if(WhatSysts[Counter]=="weight2") ScaleFactor *= W_weight2;   
-                    else if(WhatSysts[Counter]=="weight3") ScaleFactor *= W_weight3;    
-                    else if(WhatSysts[Counter]=="weight4") ScaleFactor *= W_weight4;    
-                    else if(WhatSysts[Counter]=="weight6") ScaleFactor *= W_weight6;   
-                    else if(WhatSysts[Counter]=="weight8") ScaleFactor *= W_weight8;  
-                    else if(WhatSysts[Counter]=="hdampup") ScaleFactor  *= W_hdamp_up;
-                    else if(WhatSysts[Counter]=="hdampdown")ScaleFactor  *= W_hdamp_dw;
-
-            if(isData) ScaleFactor =1.;
-		          
-      	        //***********************************************FILLING PLOTS**********************************************
 	          if( HiggsMass_TOPHLEPBB_hut > 500. ) HiggsMass_TOPHLEPBB_hut = 500.;
 	          if( TopLepMass_TOPHLEPBB_hut > 500. ) TopLepMass_TOPHLEPBB_hut = 500.;
 	          if( TopLepPt_TOPHLEPBB_hut > 1000. ) TopLepPt_TOPHLEPBB_hut = 1000.;
@@ -947,18 +992,74 @@ int main(int argc, char *argv[])
                 double MVAvalue_TT = reader_TT->EvaluateMVA("BDTG method");
                 double MVAvalue_maxSTandTT = max(MVAvalue_ST,MVAvalue_TT);
                 double MVAvalue_combSTandTT = reader_combSTandTT->EvaluateMVA("BDTG method");
+
+                    //Nominal scale factor -- scale factors for systematic shifts are calculated below
+                    ScaleFactor *= W_puSF_applied;
+                    ScaleFactor *= W_fleptonSF;
+                    ScaleFactor *= W_btagWeight_shape;
+                    std::vector<double> pdfweights;
+
+                    if(WhatSysts[Counter]=="weight1") ScaleFactor *= W_weight1;   
+                    else if(WhatSysts[Counter]=="weight2") ScaleFactor *= W_weight2;   
+                    else if(WhatSysts[Counter]=="weight3") ScaleFactor *= W_weight3;    
+                    else if(WhatSysts[Counter]=="weight4") ScaleFactor *= W_weight4;    
+                    else if(WhatSysts[Counter]=="weight6") ScaleFactor *= W_weight6;   
+                    else if(WhatSysts[Counter]=="weight8") ScaleFactor *= W_weight8;  
+                    else if(WhatSysts[Counter]=="hdampup") ScaleFactor  *= W_hdamp_up;
+                    else if(WhatSysts[Counter]=="hdampdown")ScaleFactor  *= W_hdamp_dw;
+                    else if(WhatSysts[Counter]=="" && applyPDFs)
+                    {
+                        //PDF weights calculation
+                        LHAPDF::setVerbosity(0);
+                        LHAPDF::PDFSet basepdfSet("NNPDF30_nlo_as_0118");
+                        LHAPDF::PDFSet newpdfSet("PDF4LHC15_nlo_100"); // give the correct name
+
+                        const LHAPDF::PDF* basepdf = basepdfSet.mkPDF(0);
+                        for ( size_t i=0; i<newpdfSet.size(); ++i )
+                        {
+                          const LHAPDF::PDF* newpdf = newpdfSet.mkPDF(i);
+                          const double weight = LHAPDF::weightxxQ(id1, id2, x1, x2, q, *basepdf, *newpdf);
+                          pdfweights.push_back(weight);
+                          delete newpdf;
+
+                                
+                                if(Sample->Name().find("TTJets_bb") != string::npos) histo1D[("maxSTandTT_ttbb_pdfweight"+intToStr(i)).c_str()]->Fill(MVAvalue_maxSTandTT,Luminosity * ScaleFactor  / EqLumi * weight);
+                                else if(Sample->Name().find("TTJets_cc") != string::npos) histo1D[("maxSTandTT_ttcc_pdfweight"+intToStr(i)).c_str()]->Fill(MVAvalue_maxSTandTT,Luminosity * ScaleFactor  / EqLumi * weight);
+                                else if(Sample->Name().find("TTJets_ll") != string::npos) histo1D[("maxSTandTT_ttlf_pdfweight"+intToStr(i)).c_str()]->Fill(MVAvalue_maxSTandTT,Luminosity * ScaleFactor  / EqLumi * weight);
+                                
+                                if(Sample->Name().find("TTJets_bb") != string::npos) histo1D[("ST_ttbb_pdfweight"+intToStr(i)).c_str()]->Fill(MVAvalue_ST,Luminosity * ScaleFactor  / EqLumi * weight);
+                                else if(Sample->Name().find("TTJets_cc") != string::npos) histo1D[("ST_ttcc_pdfweight"+intToStr(i)).c_str()]->Fill(MVAvalue_ST,Luminosity * ScaleFactor  / EqLumi * weight);
+                                else if(Sample->Name().find("TTJets_ll") != string::npos) histo1D[("ST_ttlf_pdfweight"+intToStr(i)).c_str()]->Fill(MVAvalue_ST,Luminosity * ScaleFactor  / EqLumi * weight);
+                                
+                                if(Sample->Name().find("TTJets_bb") != string::npos) histo1D[("TT_ttbb_pdfweight"+intToStr(i)).c_str()]->Fill(MVAvalue_TT,Luminosity * ScaleFactor  / EqLumi * weight);
+                                else if(Sample->Name().find("TTJets_cc") != string::npos) histo1D[("TT_ttcc_pdfweight"+intToStr(i)).c_str()]->Fill(MVAvalue_TT,Luminosity * ScaleFactor  / EqLumi * weight);
+                                else if(Sample->Name().find("TTJets_ll") != string::npos) histo1D[("TT_ttlf_pdfweight"+intToStr(i)).c_str()]->Fill(MVAvalue_TT,Luminosity * ScaleFactor  / EqLumi * weight);
+                                
+                                if(Sample->Name().find("TTJets_bb") != string::npos) histo1D[("combSTandTT_ttbb_pdfweight"+intToStr(i)).c_str()]->Fill(MVAvalue_combSTandTT,Luminosity * ScaleFactor  / EqLumi * weight);
+                                else if(Sample->Name().find("TTJets_cc") != string::npos) histo1D[("combSTandTT_ttcc_pdfweight"+intToStr(i)).c_str()]->Fill(MVAvalue_combSTandTT,Luminosity * ScaleFactor  / EqLumi * weight);
+                                else if(Sample->Name().find("TTJets_ll") != string::npos) histo1D[("combSTandTT_ttlf_pdfweight"+intToStr(i)).c_str()]->Fill(MVAvalue_combSTandTT,Luminosity * ScaleFactor  / EqLumi * weight);			                
+
+                                //Cut-and-Count
+                                if(MVAvalue_combSTandTT > OptimalCut_CombTraining(category, SignalSample))
+                                {
+                                    if(Sample->Name().find("TTJets_bb") != string::npos) histo1D[("combSTandTT_cutCount_ttbb_pdfweight"+intToStr(i)).c_str()]->Fill(0.,Luminosity * ScaleFactor  / EqLumi * weight);
+                                    else if(Sample->Name().find("TTJets_cc") != string::npos) histo1D[("combSTandTT_cutCount_ttcc_pdfweight"+intToStr(i)).c_str()]->Fill(0.,Luminosity * ScaleFactor  / EqLumi * weight);
+                                    else if(Sample->Name().find("TTJets_ll") != string::npos) histo1D[("combSTandTT_cutCount_ttlf_pdfweight"+intToStr(i)).c_str()]->Fill(0.,Luminosity * ScaleFactor  / EqLumi * weight);			                
+                                }
+                        }
+                        delete basepdf;
+                    }
+
+
+            if(isData) ScaleFactor =1.;
+		          
+      	        //***********************************************FILLING PLOTS**********************************************
                 
                 bool ScalePlots = (!isData);
 
                         //-----------------------------------------------------------------------------------------------------------
                         // Fill Plots
                         //-----------------------------------------------------------------------------------------------------------
-/*                        MSPlot[("MVA_MaxTT-ST_"+TrainingName+WhatSysts[Counter]).c_str()]->Fill(MVAvalue_maxSTandTT, Sample, ScalePlots, Luminosity * ScaleFactor); //Factor 2 to compensate for the fact we're running over half the number of simulated events
-                        MSPlot[("MVA_CombTT-ST_"+TrainingName+WhatSysts[Counter]).c_str()]->Fill(MVAvalue_combSTandTT, Sample, ScalePlots, Luminosity * ScaleFactor ); //Factor 2 to compensate for the fact we're running over half the number of simulated events
-
-                        MSPlot[("MVA_ST"+TrainingName+WhatSysts[Counter]).c_str()]->Fill(MVAvalue_ST, Sample, ScalePlots, Luminosity * ScaleFactor ); //Factor 2 to compensate for the fact we're running over half the number of simulated events
-                        MSPlot[("MVA_TT"+TrainingName+WhatSysts[Counter]).c_str()]->Fill(MVAvalue_TT, Sample, ScalePlots, Luminosity * ScaleFactor ); //Factor 2 to compensate for the fact we're running over half the number of simulated events
- */                       
                         if(Sample->Name().find("TTJets_bb") != string::npos) histo1D[("maxSTandTT_ttbb"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_maxSTandTT,Luminosity * ScaleFactor  / EqLumi);
                         else if(Sample->Name().find("TTJets_cc") != string::npos) histo1D[("maxSTandTT_ttcc"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_maxSTandTT,Luminosity * ScaleFactor  / EqLumi);
                         else if(Sample->Name().find("TTJets_ll") != string::npos) histo1D[("maxSTandTT_ttlf"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_maxSTandTT,Luminosity * ScaleFactor  / EqLumi);
@@ -974,6 +1075,15 @@ int main(int argc, char *argv[])
                         if(Sample->Name().find("TTJets_bb") != string::npos) histo1D[("combSTandTT_ttbb"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_combSTandTT,Luminosity * ScaleFactor  / EqLumi);
                         else if(Sample->Name().find("TTJets_cc") != string::npos) histo1D[("combSTandTT_ttcc"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_combSTandTT,Luminosity * ScaleFactor  / EqLumi);
                         else if(Sample->Name().find("TTJets_ll") != string::npos) histo1D[("combSTandTT_ttlf"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_combSTandTT,Luminosity * ScaleFactor  / EqLumi);			                
+                                
+                        //Cut-and-Count
+                        if(MVAvalue_combSTandTT > OptimalCut_CombTraining(category, SignalSample))
+                        {
+                            if(Sample->Name().find("TTJets_bb") != string::npos) histo1D[("combSTandTT_cutCount_ttbb"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(0.,Luminosity * ScaleFactor  / EqLumi);
+                            else if(Sample->Name().find("TTJets_cc") != string::npos) histo1D[("combSTandTT_cutCount_ttcc"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(0.,Luminosity * ScaleFactor  / EqLumi);
+                            else if(Sample->Name().find("TTJets_ll") != string::npos) histo1D[("combSTandTT_cutCount_ttlf"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(0.,Luminosity * ScaleFactor  / EqLumi);			                
+                        }
+
 		        }//for-loop events
 		    }//for-loop systematics            
     }//for-loop datasets
@@ -991,43 +1101,10 @@ int main(int argc, char *argv[])
   pathPNG += category;
   mkdir(pathPNG.c_str(),0777);
   cout <<"Making directory :"<< pathPNG  <<endl;		//make directory
-/*
-  string outfilename = pathPNG+"/OutputExtraTTSysts_"+SignalSample+".root";
-
-  TFile *outfile = new TFile(outfilename.c_str(),"recreate");
-  outfile->cd();
-
-  vector<string> NominalVariableNames;
-  // Loop over all the MSPlots
-  for(map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
-  {
-     	string name = it->first;
-     	MultiSamplePlot *temp = it->second;
-      if (debug)
-      {
-          cout << "Saving the MSP" << endl;
-          cout << " and it->first is " << name << endl;
-          cout << " Luminosity is " << Luminosity << endl;
-      }
-
-      cout << "Drawing MSP: " << name << endl;
-      temp->showNumberEntries(false);
-      temp->Write(outfile, name, false,pathPNG, "eps");
-	}
-
-  outfile->Write("kOverwrite");
-  outfile->Close();
-  
 
 
-
-    cout << "It took us " << ((double)clock() - start) / CLOCKS_PER_SEC << " to run the program" << endl;
-    cout << "********************************************" << endl;
-    cout << "           End of the program !!            " << endl;
-    cout << "********************************************" << endl;
-*/
-
-    GetEnvelopeScale();    
+    GetEnvelopeScale();
+    if(applyPDFs) GetEnvelopePDF();
 
     //Now store histo's to be used for limit setting
     string outname_limitsetting_maxSTandTT = pathPNG+"/inputExtra_MVA";
@@ -1040,7 +1117,7 @@ int main(int argc, char *argv[])
     for(map<string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
     {
        	string name = it->first;
-
+/*
         if(name.find("weight") != string::npos || name.find("isrup")!= string::npos 
           || name.find("isrdown") != string::npos || name.find("fsrup") != string::npos || name.find("fsrdown") != string::npos
           )
@@ -1049,7 +1126,7 @@ int main(int argc, char *argv[])
         }
         if(name.find("maxSTandTT") == string::npos) continue;
         if(name.find("Up") == string::npos && name.find("Down") == string::npos) continue;
-
+*/
 
        	TH1F *temp = it->second;
 
@@ -1135,6 +1212,12 @@ int main(int argc, char *argv[])
         temp->Write();
 	  }
 	  outfile_limitsetting_combSTandTT->Write("kOverwrite");
+
+
+    cout << "It took us " << ((double)clock() - start) / CLOCKS_PER_SEC << " to run the program" << endl;
+    cout << "********************************************" << endl;
+    cout << "           End of the program !!            " << endl;
+    cout << "********************************************" << endl;
     
     return 0;
 
@@ -1272,22 +1355,22 @@ void GetEnvelopeScale()
   {  
       for(int i = 0; i < VariablesToEnvelope.size(); i++)
       {
-          string histname_ttbb = VariablesToEnvelope[i]+"_"+SamplesToEnvelope[iSample];
+          string histname_ = VariablesToEnvelope[i]+"_"+SamplesToEnvelope[iSample];
 
-          TH1F * nominal_ = (TH1F*) histo1D[(histname_ttbb).c_str()]->Clone();
-          TH1F * weight1_ = (TH1F*) histo1D[(histname_ttbb+"_weight1").c_str()]->Clone();
-          TH1F * weight2_ = (TH1F*) histo1D[(histname_ttbb+"_weight2").c_str()]->Clone();
-          TH1F * weight3_ = (TH1F*) histo1D[(histname_ttbb+"_weight3").c_str()]->Clone();
-          TH1F * weight4_ = (TH1F*) histo1D[(histname_ttbb+"_weight4").c_str()]->Clone();
-          TH1F * weight6_ = (TH1F*) histo1D[(histname_ttbb+"_weight6").c_str()]->Clone();
-          TH1F * weight8_ = (TH1F*) histo1D[(histname_ttbb+"_weight8").c_str()]->Clone();
-          TH1F * isrup_ = (TH1F*) histo1D[(histname_ttbb+"_isrup").c_str()]->Clone();
-          TH1F * isrdown_ = (TH1F*) histo1D[(histname_ttbb+"_isrdown").c_str()]->Clone();
-          TH1F * fsrup_ = (TH1F*) histo1D[(histname_ttbb+"_fsrup").c_str()]->Clone();
-          TH1F * fsrdown_ = (TH1F*) histo1D[(histname_ttbb+"_fsrdown").c_str()]->Clone();
+          TH1F * nominal_ = (TH1F*) histo1D[(histname_).c_str()]->Clone();
+          TH1F * weight1_ = (TH1F*) histo1D[(histname_+"_weight1").c_str()]->Clone();
+          TH1F * weight2_ = (TH1F*) histo1D[(histname_+"_weight2").c_str()]->Clone();
+          TH1F * weight3_ = (TH1F*) histo1D[(histname_+"_weight3").c_str()]->Clone();
+          TH1F * weight4_ = (TH1F*) histo1D[(histname_+"_weight4").c_str()]->Clone();
+          TH1F * weight6_ = (TH1F*) histo1D[(histname_+"_weight6").c_str()]->Clone();
+          TH1F * weight8_ = (TH1F*) histo1D[(histname_+"_weight8").c_str()]->Clone();
+          TH1F * isrup_ = (TH1F*) histo1D[(histname_+"_isrup").c_str()]->Clone();
+          TH1F * isrdown_ = (TH1F*) histo1D[(histname_+"_isrdown").c_str()]->Clone();
+          TH1F * fsrup_ = (TH1F*) histo1D[(histname_+"_fsrup").c_str()]->Clone();
+          TH1F * fsrdown_ = (TH1F*) histo1D[(histname_+"_fsrdown").c_str()]->Clone();
 
-          histo1D[(histname_ttbb+"_scaleEnvelopeUp").c_str()] = new TH1F((histname_ttbb+"_scaleEnvelopeUp").c_str(),(histname_ttbb+"_scaleEnvelopeUp").c_str(),nominal_->GetNbinsX(),-1,1);
-          histo1D[(histname_ttbb+"_scaleEnvelopeDown").c_str()] = new TH1F((histname_ttbb+"_scaleEnvelopeDown").c_str(),(histname_ttbb+"_scaleEnvelopeDown").c_str(),nominal_->GetNbinsX(),-1,1);
+          histo1D[(histname_+"_scaleEnvelopeUp").c_str()] = new TH1F((histname_+"_scaleEnvelopeUp").c_str(),(histname_+"_scaleEnvelopeUp").c_str(),nominal_->GetNbinsX(),-1,1);
+          histo1D[(histname_+"_scaleEnvelopeDown").c_str()] = new TH1F((histname_+"_scaleEnvelopeDown").c_str(),(histname_+"_scaleEnvelopeDown").c_str(),nominal_->GetNbinsX(),-1,1);
 
 
           for(int binN = 1; binN < nominal_->GetNbinsX(); ++binN)
@@ -1312,17 +1395,65 @@ void GetEnvelopeScale()
                   if(binContentMax < maximumValue(bincontents)) binContentMax = maximumValue(bincontents);
                   else cout << "ERROR: no maximal bincontent found" << endl;
               
-              histo1D[(histname_ttbb+"_scaleEnvelopeUp").c_str()]->SetBinContent(binN, binContentMax);
-              histo1D[(histname_ttbb+"_scaleEnvelopeDown").c_str()]->SetBinContent(binN, binContentMin);
+              histo1D[(histname_+"_scaleEnvelopeUp").c_str()]->SetBinContent(binN, binContentMax);
+              histo1D[(histname_+"_scaleEnvelopeDown").c_str()]->SetBinContent(binN, binContentMin);
           }
       }
       
   }
 
+}
 
 
+void GetEnvelopePDF()
+{
+
+  vector <string> VariablesToEnvelope;
+  VariablesToEnvelope.push_back("maxSTandTT");
+  VariablesToEnvelope.push_back("ST");
+  VariablesToEnvelope.push_back("TT");
+  VariablesToEnvelope.push_back("combSTandTT");
+
+  vector <string> SamplesToEnvelope;
+  SamplesToEnvelope.push_back("ttbb");
+  SamplesToEnvelope.push_back("ttcc");
+  SamplesToEnvelope.push_back("ttlf");
+  
+  for(int iSample = 0; iSample < SamplesToEnvelope.size(); iSample++)
+  {  
+      for(int i = 0; i < VariablesToEnvelope.size(); i++)
+      {
+          string histname_ = VariablesToEnvelope[i]+"_"+SamplesToEnvelope[iSample];
+
+          TH1F * nominal_ = (TH1F*) histo1D[(histname_).c_str()]->Clone();
+
+          histo1D[(histname_+"_PDFEnvelopeUp").c_str()] = new TH1F((histname_+"_PDFEnvelopeUp").c_str(),(histname_+"_PDFEnvelopeUp").c_str(),nominal_->GetNbinsX(),-1,1);
+          histo1D[(histname_+"_PDFEnvelopeDown").c_str()] = new TH1F((histname_+"_PDFEnvelopeDown").c_str(),(histname_+"_PDFEnvelopeDown").c_str(),nominal_->GetNbinsX(),-1,1);
+
+          for(int binN = 1; binN < nominal_->GetNbinsX(); ++binN)
+          {
+              float binContentMax = -1, binContentMin = 1000000000000000;
+              vector<double> bincontents;
+
+
+              for(int iCount = 0; iCount < 101; iCount++)
+              {
+                  bincontents.push_back(histo1D[(histname_+"_pdfweight"+intToStr(iCount)).c_str()]->GetBinContent(binN));             
+              }
+
+              if(binContentMin > minimumValue(bincontents)) binContentMin = minimumValue(bincontents);
+              else binContentMin = nominal_->GetBinContent(binN);
+              if(binContentMax < maximumValue(bincontents)) binContentMax = maximumValue(bincontents);
+              else binContentMax = nominal_->GetBinContent(binN);
+
+              histo1D[(histname_+"_PDFEnvelopeUp").c_str()]->SetBinContent(binN, binContentMax);
+              histo1D[(histname_+"_PDFEnvelopeDown").c_str()]->SetBinContent(binN, binContentMin);
+          }//Bins
+      }//Variables
+  }//Samples
 
 }
+
 
 
 double maximumValue(vector<double> array)
@@ -1349,4 +1480,27 @@ double minimumValue(vector<double> array)
                 max = array[i];
      }
      return max;                // return highest value in array
+}
+
+double OptimalCut_CombTraining(string category, string coupling)
+{
+    double MVA_cutvalue = -1.;
+    if(coupling == "hut")
+    {
+        if(category == "b2j3") MVA_cutvalue = -0.334589;
+        else if(category == "b2j4") MVA_cutvalue = -0.445078;
+        else if(category == "b3j3") MVA_cutvalue = -0.258389;
+        else if(category == "b3j4") MVA_cutvalue = -0.270175;
+        else if(category == "b4j4") MVA_cutvalue = -0.46595;
+    }
+    else if(coupling == "hct")
+    {
+        if(category == "b2j3") MVA_cutvalue = -0.380768;
+        else if(category == "b2j4") MVA_cutvalue = -0.322955;
+        else if(category == "b3j3") MVA_cutvalue = -0.333675;
+        else if(category == "b3j4") MVA_cutvalue = -0.277198;
+        else if(category == "b4j4") MVA_cutvalue = -0.296879;
+    }
+    
+    return MVA_cutvalue;
 }
