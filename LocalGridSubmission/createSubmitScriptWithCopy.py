@@ -19,18 +19,28 @@ mn= str(now.minute)
 
 # make a data string. Pick one of the two above                                                      
 #date = dd+"_"+mm+"_"+yyyy+"_"+hh+"h"+mn+"min"
-date = dd+"_"+mm+"_"+yyyy
+date = yyyy+mm+dd
 #date = dd+"_"+mm+"_"+yyyy+"noTrig"
 
 #channels = ["MuMu","ElEl"] 
 #channels = ["mumumu","eee","all"] 
 channels = ["all"]
+jesjers = [0,1,2,3,4]
 fillBhisto = 1; 
 JES = 1; 
 JER = 1; 
+doJESJER = 0; 
+
+#if(doJESJERshift == 1) postfix = "_JESdown" ;
+#    if(doJESJERshift == 2) postfix = "_JESup" ;
+#    if(doJESJERshift == 3) postfix = "_JERdown" ;
+#    if(doJESJERshift == 4) postfix = "_JERup" ;
+
 
 # loop over channels
-for chan in channels:
+for JESJER in jesjers:
+  doJESJER = JESJER
+  for chan in channels:
     print "\nSearching list of sample used for ", chan, " channel!"
     # getting the appropriate xml file
     if "mumumu" in chan:
@@ -83,15 +93,15 @@ for chan in channels:
     for d in datasets:
         if d.attrib['add'] == '1':
             print "found dataset to be added..." + str(d.attrib['name'])
-            commandString = "./FinalAn "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff'])
+            commandString = "./Ntupler "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff'])
             topTrees = glob.glob(d.attrib['filenames'])
 
             # setting the number of file per job depending whether it is data sample or not
             # this ca be tweaked
             if "data" in str(d.attrib['name']):
-                FilePerJob=15
+                FilePerJob=50
             else:
-                FilePerJob=4
+                FilePerJob=20
 
             # create a test job for each dataset
             # create a file for this job                                                                                                                                        
@@ -99,8 +109,8 @@ for chan in channels:
             # copy a skeleton file that set up the code environment, the wall time and the queue                                                                                
             shutil.copyfile("submitTestSkeleton.sh", filenameTest)
             # append to the file the actual command                                                                                                                             
-            outfileTest = open (filenameTest, 'a')
-	    print >> outfileTest, commandString, topTrees[0], " ", JES , " " , JER , " ", fillBhisto, " ", "1" , "0" , " 10000"
+           # outfileTest = open (filenameTest, 'a')
+	    #print >> outfileTest, commandString, topTrees[0], " ", JES , " " , JER , " ", fillBhisto, " ", "1" , "0" , " 10000"
                 
             N_job = 0
             N_file = 1
@@ -128,7 +138,10 @@ for chan in channels:
                     # create a file for this job
                     filename="SubmitScripts/"+date+"/"+chan+"/submit_"+str(d.attrib['name'])+"_"+str(N_job*FilePerJob+1)+"to"+str(N_job*FilePerJob+len(listOfFiles))+".sh"
                     # copy a skeleton file that set up the code environment, the wall time and the queue
-                    shutil.copyfile("submitSkeleton.sh", filename)
+                    if "data" in str(d.attrib['name']):
+	                shutil.copyfile("submitSkeletondata.sh", filename)
+		    else: 
+			shutil.copyfile("submitSkeleton.sh", filename)
                     # append to the file the actual command
                     outfile = open (filename, 'a')
 
@@ -145,11 +158,11 @@ for chan in channels:
                         tmpdirFiles_str=tmpdirFiles_str+ " " + listOfTmpDirFiles [fpj]
                         N_processed=N_processed+1
                         # copy all the file
-                        print >> outfile , CopyCmdlistOfFiles[fpj]
+                        # print >> outfile , CopyCmdlistOfFiles[fpj]
 
 
 
-                    print >> outfile, commandString, files_str, " ", JES, " " , JER, " " , fillBhisto, " ", str(N_job+1) , " 0" , " 2000000" 
+                    print >> outfile, commandString, files_str, " ", JES, " " , JER, " " , fillBhisto, " ", doJESJER , " " , str(N_job+1) , " 0" , " 200000000" 
 
                     # cleaning
                     listOfFiles=[]
