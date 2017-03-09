@@ -158,14 +158,21 @@ int main (int argc, char *argv[])
   int nbTrig = 0;
   int nbBaseline = 0;
   int nbGPV = 0;
-  int nbSelectedEvents = 0;
+  Int_t nbSelectedEvents = 0;
+  Int_t nbSelectedEvents_3L = 0;
+  Int_t nbSelectedEvents_3Lveto = 0;
+   Int_t nbSelectedEvents_3Lveto1J = 0;
+  Int_t wnbSelectedEvents = 0;
+  Int_t wnbSelectedEvents_3L = 0;
+  Int_t wnbSelectedEvents_3Lveto = 0;
+  Int_t wnbSelectedEvents_3Lveto1J = 0;
   int nbEvents = 0;
   double dataLumi = 0; //pb
   
   // to put  on here
   bool runHLT = true;
   bool applyJetLeptonCleaning = true;
-  bool btagShape = false;
+  
   bool printTrigger = false;
   bool printLeptonSF = false;
   bool applyPU = true;
@@ -177,7 +184,7 @@ int main (int argc, char *argv[])
   bool applyJES = false;
   bool fillBtagHisto = false;
   
-  bool doFakeLepton  =true;
+  bool doFakeLepton  =false;
   
   
   //////////////////////////////////////////////
@@ -218,7 +225,7 @@ int main (int argc, char *argv[])
   const int JES                 =  strtol(argv[argc-7], NULL,10);
   const int JER                 =  strtol(argv[argc-6], NULL,10);
   const int FillBtagHisto	 =  strtol(argv[argc-5], NULL,10);
-  const int Usettbar = strtol(argv[argc-4], NULL,10);
+  const int doJESJERshiftarg = strtol(argv[argc-4], NULL,10);
   const int JobNum		  = strtol(argv[argc-3], NULL, 10);
   const int startEvent  	  = strtol(argv[argc-2], NULL, 10);
   const int endEvent		  = strtol(argv[argc-1], NULL, 10);
@@ -226,6 +233,8 @@ int main (int argc, char *argv[])
   applyJES = JES;
   applyJER = JER;
   fillBtagHisto = FillBtagHisto;
+  int doJESJERshift = doJESJERshiftarg;
+  const int Usettbar = 1;
   
   string btag_dir = "BTagHistosPtEta";
   if(fillBtagHisto)
@@ -255,8 +264,8 @@ int main (int argc, char *argv[])
   /// define decays
   //
   
-
-   string xmlFileName = "config/Run2TriLepton_samples.xml" ;
+  
+  string xmlFileName = "config/Run2TriLepton_samples.xml" ;
   dataLumi = 36000; //pb
   
   
@@ -353,6 +362,24 @@ int main (int argc, char *argv[])
   BTagCalibrationReader *btagreader;
   BTagWeightTools *btwt = 0;
   BTagCalibrationReader * reader_csvv2;
+  BTagCalibrationReader * reader_csvv2_JESdown;
+  BTagCalibrationReader * reader_csvv2_JESup;
+  BTagCalibrationReader * reader_csvv2_LFUp;
+  BTagCalibrationReader * reader_csvv2_LFDown;
+  BTagCalibrationReader * reader_csvv2_HFUp;
+  BTagCalibrationReader * reader_csvv2_HFDown;
+  BTagCalibrationReader * reader_csvv2_HFStats1Up;
+  BTagCalibrationReader * reader_csvv2_HFStats1Down;
+  BTagCalibrationReader * reader_csvv2_HFStats2Up;
+  BTagCalibrationReader * reader_csvv2_HFStats2Down;
+  BTagCalibrationReader * reader_csvv2_LFStats1Up;
+  BTagCalibrationReader * reader_csvv2_LFStats1Down;
+  BTagCalibrationReader * reader_csvv2_LFStats2Up;
+  BTagCalibrationReader * reader_csvv2_LFStats2Down;
+  BTagCalibrationReader * reader_csvv2_CFErr1Up;
+  BTagCalibrationReader * reader_csvv2_CFErr1Down;
+  BTagCalibrationReader * reader_csvv2_CFErr2Up;
+  BTagCalibrationReader * reader_csvv2_CFErr2Down;
   
   BTagCalibration *btagcalib_c;
   BTagCalibrationReader *btagreader_c;
@@ -360,7 +387,7 @@ int main (int argc, char *argv[])
   BTagCalibrationReader * reader_charm;
   //TFile *histoFileHandle = 0;
   // for pu
-  LumiReWeighting LumiWeights;
+  LumiReWeighting LumiWeights, LumiWeights_up, LumiWeights_down;
   
   // JER / JEC
   vector<JetCorrectorParameters> vCorrParam;
@@ -398,7 +425,7 @@ int main (int argc, char *argv[])
   /// Object ID              ///
   /////////////////////////////
   // electron
-  float el_pt_cut =40.; // 42
+  float el_pt_cut =30.; // 42
   float el_eta_cut = 2.1;
   float el_iso_cone  = 0.3;
   // reliso cut fabs(eta supercluster) <= 1.479 --> 0.107587 // (fabs(eta supercluster) > 1.479 && fabs(eta supercluster) < 2.5) --> 0.113254
@@ -602,6 +629,8 @@ int main (int argc, char *argv[])
   //LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_MC_RunIISpring16MiniAODv2-Asympt.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting//pileup_2016Data80X_Run273158-276811Cert.root", "pileup", "pileup");
   
   LumiWeights = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/MCPileup_Summer16.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2016Data80X_Run271036-284044Cert__Full2016DataSet.root", "pileup", "pileup");
+  LumiWeights_up = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/MCPileup_Summer16.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2016Data80X_Run271036-284044Cert__Full2016DataSet_sysPlus.root", "pileup", "pileup");
+  LumiWeights_down = LumiReWeighting("../TopTreeAnalysisBase/Calibrations/PileUpReweighting/MCPileup_Summer16.root", "../TopTreeAnalysisBase/Calibrations/PileUpReweighting/pileup_2016Data80X_Run271036-284044Cert__Full2016DataSet_sysMinus.root", "pileup", "pileup");
   
   /////////////////////////////////
   //       Loop on datasets      //
@@ -630,7 +659,7 @@ int main (int argc, char *argv[])
     ////////////////////////////////////////
     string histfile = "BTagHistosPtEta/HistosPtEta_"+daName+ "_" + strJobNum +"_comb_central.root";
     string histreadfile = "BTagHistosPtEta/BTagFile/Btag.root";
-    if(!isData && !btagShape)
+    if(!isData )
     {
       // documentation at http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
       //	   btagcalib = new BTagCalibration("CSVv2", "../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_13TeV_25ns_com@
@@ -656,16 +685,108 @@ int main (int argc, char *argv[])
         //btwt = new BTagWeightTools(btagreader,"BTagHistosPtEta/HistosPtEta_TTJets_mujets_central.root",false,30,999,2.4);
       }
       
-      
-    }
-    else if(!isData) // NEEDS TO BE CHECKED FOR 80X
-    {
-      cout << " WARNING: btag shape is used" << endl;
       BTagCalibration calib_csvv2("csvv2", "../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2Moriond17_2017_1_26_BtoH.csv");
       reader_csvv2 = new BTagCalibrationReader(&calib_csvv2, // calibration instance
                                                BTagEntry::OP_RESHAPING, // operating point
                                                "iterativefit", // measurement type
                                                "central"); // systematics type  --> depending on JES up/Down andother reader is needed
+      reader_csvv2_JESup = new BTagCalibrationReader(&calib_csvv2, // calibration instance
+                                                     BTagEntry::OP_RESHAPING, // operating point
+                                                     "iterativefit", // measurement type
+                                                     "up_jes"); // systematics type  --> depending on JES up/Down andother reader is needed
+      reader_csvv2_JESdown = new BTagCalibrationReader(&calib_csvv2, // calibration instance
+                                                       BTagEntry::OP_RESHAPING, // operating point
+                                                       "iterativefit", // measurement type
+                                                       "down_jes"); // systematics type  --> depending on JES up/Down andother reader is needed
+      
+      
+      // LFUp
+      reader_csvv2_LFUp = new BTagCalibrationReader(&calib_csvv2, // calibration instance
+                                                    BTagEntry::OP_RESHAPING, // operating point
+                                                    "iterativefit", // measurement type
+                                                    "up_lf"); // systematics type
+      // LFDown
+      reader_csvv2_LFDown = new BTagCalibrationReader(&calib_csvv2, // calibration instance
+                                                      BTagEntry::OP_RESHAPING, // operating point
+                                                      "iterativefit", // measurement type
+                                                      "down_lf"); // systematics type
+      
+      // HFUp
+      reader_csvv2_HFUp = new BTagCalibrationReader(&calib_csvv2, // calibration instance
+                                                    BTagEntry::OP_RESHAPING, // operating point
+                                                    "iterativefit", // measurement type
+                                                    "up_hf"); // systematics type
+      // HFDown
+      reader_csvv2_HFDown = new BTagCalibrationReader(&calib_csvv2, // calibration instance
+                                                      BTagEntry::OP_RESHAPING, // operating point
+                                                      "iterativefit", // measurement type
+                                                      "down_hf"); // systematics type
+      
+      // HFStats1Up
+      reader_csvv2_HFStats1Up = new BTagCalibrationReader(&calib_csvv2, // calibration instance
+                                                          BTagEntry::OP_RESHAPING, // operating point
+                                                          "iterativefit", // measurement type
+                                                          "up_hfstats1"); // systematics type
+      // HFStats1Down
+      reader_csvv2_HFStats1Down = new BTagCalibrationReader(&calib_csvv2, // calibration instance
+                                                            BTagEntry::OP_RESHAPING, // operating point
+                                                            "iterativefit", // measurement type
+                                                            "down_hfstats1"); // systematics type
+      
+      // HFStats2Up
+      reader_csvv2_HFStats2Up = new BTagCalibrationReader(&calib_csvv2, // calibration instance
+                                                          BTagEntry::OP_RESHAPING, // operating point
+                                                          "iterativefit", // measurement type
+                                                          "up_hfstats2"); // systematics type
+      // HFStats2Down
+      reader_csvv2_HFStats2Down = new BTagCalibrationReader(&calib_csvv2, // calibration instance
+                                                            BTagEntry::OP_RESHAPING, // operating point
+                                                            "iterativefit", // measurement type
+                                                            "down_hfstats2"); // systematics type
+      
+      // LFStats1Up
+      reader_csvv2_LFStats1Up = new BTagCalibrationReader(&calib_csvv2, // calibration instance
+                                                          BTagEntry::OP_RESHAPING, // operating point
+                                                          "iterativefit", // measurement type
+                                                          "up_lfstats1"); // systematics type
+      // LFStats1Down
+      reader_csvv2_LFStats1Down = new BTagCalibrationReader(&calib_csvv2, // calibration instance
+                                                            BTagEntry::OP_RESHAPING, // operating point
+                                                            "iterativefit", // measurement type
+                                                            "down_lfstats1"); // systematics type
+      
+      // LFStats2Up
+      reader_csvv2_LFStats2Up = new BTagCalibrationReader(&calib_csvv2, // calibration instance
+                                                          BTagEntry::OP_RESHAPING, // operating point
+                                                          "iterativefit", // measurement type
+                                                          "up_lfstats2"); // systematics type
+      // LFStats2Down
+      reader_csvv2_LFStats2Down = new BTagCalibrationReader(&calib_csvv2, // calibration instance
+                                                            BTagEntry::OP_RESHAPING, // operating point
+                                                            "iterativefit", // measurement type
+                                                            "down_lfstats2"); // systematics type
+      
+      // CFErr1Up
+      reader_csvv2_CFErr1Up = new BTagCalibrationReader(&calib_csvv2, // calibration instance
+                                                        BTagEntry::OP_RESHAPING, // operating point
+                                                        "iterativefit", // measurement type
+                                                        "up_cferr1"); // systematics type
+      // CFErr1Down
+      reader_csvv2_CFErr1Down = new BTagCalibrationReader(&calib_csvv2, // calibration instance
+                                                          BTagEntry::OP_RESHAPING, // operating point
+                                                          "iterativefit", // measurement type
+                                                          "down_cferr1"); // systematics type
+      
+      // CFErr2Up
+      reader_csvv2_CFErr2Up = new BTagCalibrationReader(&calib_csvv2, // calibration instance
+                                                        BTagEntry::OP_RESHAPING, // operating point
+                                                        "iterativefit", // measurement type
+                                                        "up_cferr2"); // systematics type
+      // CFErr2Down
+      reader_csvv2_CFErr2Down = new BTagCalibrationReader(&calib_csvv2, // calibration instance
+                                                          BTagEntry::OP_RESHAPING, // operating point
+                                                          "iterativefit", // measurement type
+                                                          "down_cferr2"); // systematics type
       
       
     }
@@ -780,21 +901,31 @@ int main (int argc, char *argv[])
     mkdir(channel_dir.c_str(),0777);
     mkdir(date_dir.c_str(),0777);
     
-    
-    string Ntupname = date_dir +"FCNC_3L_" + dName + "_"+  strJobNum + ".root";
+    string postfix = "";
+    if(doJESJERshift == 1) postfix = "_JESdown" ;
+    if(doJESJERshift == 2) postfix = "_JESup" ;
+    if(doJESJERshift == 3) postfix = "_JERdown" ;
+    if(doJESJERshift == 4) postfix = "_JERup" ;
+    string Ntupname = date_dir +"FCNC_3L_" + dName + "_"+  strJobNum + postfix + ".root";
     cout << "Ntuple " << Ntupname << " created " << endl;
     
     TFile * tupfile = new TFile(Ntupname.c_str(),"RECREATE");
     tupfile->cd();
     cout << "outputfile " << Ntupname.c_str()<< " made and accessed " <<endl ;
-    TTree* myTree = new TTree("tree","tree");
-    TTree* globalTree = new TTree("globaltree","globaltree");
+    
+    TTree* myTree = new TTree(("tree"+postfix).c_str(),("tree"+postfix).c_str());
+    TTree* globalTree = new TTree(("globaltree"+postfix).c_str(),("globaltree"+postfix).c_str());
     ///////////////////////////
     /// output tree
     ///////////////////////////
     // event related variables
     Int_t run_num;
     double i_channel;
+    Double_t x1;
+    Double_t x2;
+    Int_t id1;
+    Int_t id2;
+    Double_t q;
     Long64_t evt_num;
     Int_t lumi_num;
     Int_t nvtx;
@@ -802,16 +933,46 @@ int main (int argc, char *argv[])
     Int_t PassedMETFilter;
     Int_t PassedTrigger;
     Int_t PassedTriggerNoLogic;
-    Int_t PassedTriggerNoLogic2; 
+    Int_t PassedTriggerNoLogic2;
     Int_t PassedGoodPV;
     Int_t withfakes;
+    Double_t hdamp_up;
+    Double_t hdamp_down;
     Double_t puSF;
+    Double_t puSF_up;
+    Double_t puSF_down;
     Double_t btagSF;
+    Double_t btagSFshape = 1.;
+    Double_t btagSFshape_down_cferr1 = 1.;
+    Double_t btagSFshape_down_cferr2 = 1.;
+    Double_t btagSFshape_down_hf= 1.;
+    Double_t btagSFshape_down_hfstats1 = 1.;
+    Double_t btagSFshape_down_hfstats2 = 1.;
+    Double_t btagSFshape_down_lf = 1.;
+    Double_t btagSFshape_down_lfstats1 = 1.;
+    Double_t btagSFshape_down_lfstats2 = 1.;
+    
+    Double_t btagSFshape_up_cferr1 = 1.;
+    Double_t btagSFshape_up_cferr2 = 1.;
+    Double_t btagSFshape_up_hf= 1.;
+    Double_t btagSFshape_up_hfstats1 = 1.;
+    Double_t btagSFshape_up_hfstats2 = 1.;
+    Double_t btagSFshape_up_lf = 1.;
+    Double_t btagSFshape_up_lfstats1 = 1.;
+    Double_t btagSFshape_up_lfstats2 = 1.;
+    
+    
     Double_t MuonIDSF[10];
     Double_t MuonIsoSF[10];
+    Double_t MuonIDSF_up[10];
+    Double_t MuonIsoSF_up[10];
+    Double_t MuonIDSF_down[10];
+    Double_t MuonIsoSF_down[10];
     Double_t MuonTrigSFv2[10];
     Double_t MuonTrigSFv3[10];
     Double_t ElectronSF[10];
+    Double_t ElectronSF_up[10];
+    Double_t ElectronSF_down[10];
     Int_t nofPosWeights;
     Int_t nofNegWeights;
     Int_t sumW;
@@ -832,7 +993,7 @@ int main (int argc, char *argv[])
     Int_t PassedMET;
     Int_t channelInt;
     
-      // variables for electrons
+    // variables for electrons
     Int_t nElectrons;
     Double_t pt_electron[10];
     Double_t phi_electron[10];
@@ -891,13 +1052,13 @@ int main (int argc, char *argv[])
     Double_t jet_Pt_before_JES[20];
     Double_t jet_Pt_after_JES[20];
     
-
+    
     
     // met
     Double_t met_Pt;
     Double_t met_Px;
     Double_t met_Py;
-   // Double_t met_Pz;
+    // Double_t met_Pz;
     Double_t met_Phi;
     Double_t met_Eta;
     Double_t met_before_JES;
@@ -905,12 +1066,12 @@ int main (int argc, char *argv[])
     
     
     /*int ZmuIndiceF_0 = -999;
-    int ZmuIndiceF_1 = -999;
-    int ZelecIndiceF_0 = -999;
-    int ZelecIndiceF_1= -999;
-    int WmuIndiceF = -999;
-    int WelecIndiceF = -999;
-    */
+     int ZmuIndiceF_1 = -999;
+     int ZelecIndiceF_0 = -999;
+     int ZelecIndiceF_1= -999;
+     int WmuIndiceF = -999;
+     int WelecIndiceF = -999;
+     */
     
     // mcparicles
     Int_t nMCParticles;
@@ -928,7 +1089,7 @@ int main (int argc, char *argv[])
     Bool_t mc_isHardProcess[200];
     Bool_t mc_fromHardProcessFinalState[200];
     
-
+    
     int nIniRecoLeptons;
     int nIniRecoElectrons;
     int nIniRecoMuons;
@@ -942,10 +1103,18 @@ int main (int argc, char *argv[])
     globalTree->Branch("jet_eta_cut", &jet_eta_cut, "jet_eta_cut/D");
     globalTree->Branch("jet_pt_cut", &jet_pt_cut,"jet_pt_cut/D");
     
+    
     globalTree->Branch("nofPosWeights",&nofPosWeights,"nofPosWeights/I");
     globalTree->Branch("nofNegWeights",&nofNegWeights,"nofNegWeights/I");
     globalTree->Branch("nEv" , &nEv, "nEv/I");
     globalTree->Branch("nbSelectedEvents" , &nbSelectedEvents, "nbSelectedEvents/I");
+    globalTree->Branch("nbSelectedEvents_3L" , &nbSelectedEvents_3L, "nbSelectedEvents_3L/I");
+    globalTree->Branch("nbSelectedEvents_3Lveto" , &nbSelectedEvents_3Lveto, "nbSelectedEvents_3Lveto/I");
+    globalTree->Branch("nbSelectedEvents_3Lveto1J" , &nbSelectedEvents_3Lveto1J, "nbSelectedEvents_3Lveto1J/I");
+    globalTree->Branch("wnbSelectedEvents" , &wnbSelectedEvents, "wnbSelectedEvents/I");
+    globalTree->Branch("wnbSelectedEvents_3L" , &wnbSelectedEvents_3L, "wnbSelectedEvents_3L/I");
+    globalTree->Branch("wnbSelectedEvents_3Lveto" , &wnbSelectedEvents_3Lveto, "wnbSelectedEvents_3Lveto/I");
+    globalTree->Branch("wnbSelectedEvents_3Lveto1J" , &wnbSelectedEvents_3Lveto1J, "wnbSelectedEvents_3Lveto1J/I");
     globalTree->Branch("sumW", &sumW, "sumW/I");
     globalTree->Branch("JERon",&JERon,"JERon/I");
     globalTree->Branch("JESon", &JESon, "JESon/I");
@@ -961,7 +1130,16 @@ int main (int argc, char *argv[])
     globalTree->Branch("WPc_CvsL_Tight", &WPc_CvsL_Tight, "WPc_CvsL_Tight/D");
     
     // event related variables
-   
+    
+    myTree->Branch("x1",&x1,"x1/D");
+    myTree->Branch("x2",&x2,"x2/D");
+    myTree->Branch("id1",&id1,"id1/I");
+    myTree->Branch("id2",&id2,"id2/I");
+    myTree->Branch("q",&q,"q/D");
+    myTree->Branch("hdamp_up",&hdamp_up,"hdamp_up/D");
+    myTree->Branch("hdamp_down",&hdamp_down,"hdamp_down/D");
+    
+    
     myTree->Branch("channelInt", &channelInt, "channelInt/I");
     myTree->Branch("nloWeight",&nloWeight,"nloWeight/D");
     myTree->Branch("run_num",&run_num,"run_num/I");
@@ -970,24 +1148,48 @@ int main (int argc, char *argv[])
     myTree->Branch("nvtx",&nvtx,"nvtx/I");
     myTree->Branch("npu",&npu,"npu/I");
     myTree->Branch("puSF",&puSF,"puSF/D");
+    myTree->Branch("puSF_up",&puSF_up,"puSF_up/D");
+    myTree->Branch("puSF_down",&puSF_down,"puSF_down/D");
     myTree->Branch("btagSF",&btagSF,"btagSF/D");
+    myTree->Branch("btagSFshape",&btagSFshape,"btagSFshape/D");
+    myTree->Branch("btagSFshape_down_cferr1",&btagSFshape_down_cferr1,"btagSFshape_down_cferr1/D");
+    myTree->Branch("btagSFshape_down_cferr2",&btagSFshape_down_cferr2,"btagSFshape_down_cferr2/D");
+    myTree->Branch("btagSFshape_down_hf",&btagSFshape_down_hf,"btagSFshape_down_hf/D");
+    myTree->Branch("btagSFshape_down_hfstats1",&btagSFshape_down_hfstats1,"btagSFshape_down_hfstats1/D");
+    myTree->Branch("btagSFshape_down_hfstats2",&btagSFshape_down_hfstats2,"btagSFshape_down_hfstats2/D");
+    myTree->Branch("btagSFshape_down_lf",&btagSFshape_down_lf,"btagSFshape_down_lf/D");
+    myTree->Branch("btagSFshape_down_lfstats1",&btagSFshape_down_lfstats1,"btagSFshape_down_lfstats1/D");
+    myTree->Branch("btagSFshape_down_lfstats2",&btagSFshape_down_lfstats2,"btagSFshape_down_lfstats2/D");
+    
+    myTree->Branch("btagSFshape_up_cferr1",&btagSFshape_up_cferr1,"btagSFshape_up_cferr1/D");
+    myTree->Branch("btagSFshape_up_cferr2",&btagSFshape_up_cferr2,"btagSFshape_up_cferr2/D");
+    myTree->Branch("btagSFshape_up_hf",&btagSFshape_up_hf,"btagSFshape_up_hf/D");
+    myTree->Branch("btagSFshape_up_hfstats1",&btagSFshape_up_hfstats1,"btagSFshape_up_hfstats1/D");
+    myTree->Branch("btagSFshape_up_hfstats2",&btagSFshape_up_hfstats2,"btagSFshape_up_hfstats2/D");
+    myTree->Branch("btagSFshape_up_lf",&btagSFshape_up_lf,"btagSFshape_up_lf/D");
+    myTree->Branch("btagSFshape_up_lfstats1",&btagSFshape_up_lfstats1,"btagSFshape_up_lfstats1/D");
+    myTree->Branch("btagSFshape_up_lfstats2",&btagSFshape_up_lfstats2,"btagSFshape_up_lfstats2/D");
+    
+    
     myTree->Branch("PassedMETFilter", &PassedMETFilter,"PassedMETFilter/I");
     myTree->Branch("PassedTrigger", &PassedTrigger, "PassedTrigger/I");
     myTree->Branch("PassedTriggerNoLogic", &PassedTriggerNoLogic, "PassedTriggerNoLogic/I");
     myTree->Branch("PassedTriggerNoLogic2", &PassedTriggerNoLogic2, "PassedTriggerNoLogic2/I");
     myTree->Branch("PassedGoodPV", &PassedGoodPV,"PassedGoodPV/I");
     myTree->Branch("withfakes",&withfakes,"withfakes/I");
-   /* myTree->Branch("WmuIndiceF", &WmuIndiceF, "WmuIndiceF/I");
-    myTree->Branch("WelecIndiceF", &WelecIndiceF, "WelecIndiceF/I");
-    myTree->Branch("ZelecIndiceF_0", &ZelecIndiceF_0, "ZelecIndiceF_0/I");
-    myTree->Branch("ZelecIndiceF_1", &ZelecIndiceF_1, "ZelecIndiceF_1/I");
-    myTree->Branch("ZmuIndiceF_0", &ZmuIndiceF_0, "ZmuIndiceF_0/I");
-    myTree->Branch("ZmuIndiceF_1", &ZmuIndiceF_1, "ZmuIndiceF_1/I");
-    
-    */
-     // electrons
+    /* myTree->Branch("WmuIndiceF", &WmuIndiceF, "WmuIndiceF/I");
+     myTree->Branch("WelecIndiceF", &WelecIndiceF, "WelecIndiceF/I");
+     myTree->Branch("ZelecIndiceF_0", &ZelecIndiceF_0, "ZelecIndiceF_0/I");
+     myTree->Branch("ZelecIndiceF_1", &ZelecIndiceF_1, "ZelecIndiceF_1/I");
+     myTree->Branch("ZmuIndiceF_0", &ZmuIndiceF_0, "ZmuIndiceF_0/I");
+     myTree->Branch("ZmuIndiceF_1", &ZmuIndiceF_1, "ZmuIndiceF_1/I");
+     
+     */
+    // electrons
     myTree->Branch("nElectrons",&nElectrons, "nElectrons/I");//
     myTree->Branch("ElectronSF",&ElectronSF,"ElectronSF[nElectrons]/D");
+    myTree->Branch("ElectronSF_up",&ElectronSF_up,"ElectronSF_up[nElectrons]/D");
+    myTree->Branch("ElectronSF_down",&ElectronSF_down,"ElectronSF_down[nElectrons]/D");
     myTree->Branch("pt_electron",pt_electron,"pt_electron[nElectrons]/D");
     myTree->Branch("phi_electron",phi_electron,"phi_electron[nElectrons]/D");
     myTree->Branch("eta_electron",eta_electron,"eta_electron[nElectrons]/D");
@@ -1014,6 +1216,10 @@ int main (int argc, char *argv[])
     myTree->Branch("nMuons",&nMuons, "nMuons/I");
     myTree->Branch("MuonIDSF",&MuonIDSF,"MuonIDSF[nMuons]/D");
     myTree->Branch("MuonIsoSF",&MuonIsoSF, "MuonIsoSF[nMuons]/D");
+    myTree->Branch("MuonIDSF_up",&MuonIDSF_up,"MuonIDSF_up[nMuons]/D");
+    myTree->Branch("MuonIsoSF_up",&MuonIsoSF_up, "MuonIsoSF_up[nMuons]/D");
+    myTree->Branch("MuonIDSF_down",&MuonIDSF_down,"MuonIDSF_down[nMuons]/D");
+    myTree->Branch("MuonIsoSF_down",&MuonIsoSF_down, "MuonIsoSF_down[nMuons]/D");
     myTree->Branch("MuonTrigSFv2",&MuonTrigSFv2,"MuonTrigSFv2[nMuons]/D");
     myTree->Branch("MuonTrigSFv3",&MuonTrigSFv3,"MuonTrigSFv3[nMuons]/D");
     myTree->Branch("pt_muon",pt_muon,"pt_muon[nMuons]/D");
@@ -1029,12 +1235,12 @@ int main (int argc, char *argv[])
     myTree->Branch("charge_muon",charge_muon,"charge_muon[nMuons]/I");
     myTree->Branch("d0_muon",d0_muon,"d0_muon[nMuons]/D");
     myTree->Branch("d0BeamSpot_muon",d0BeamSpot_muon,"d0BeamSpot_muon[nMuons]/D");
-
+    
     
     
     // jets
     myTree->Branch("nJets",&nJets,"nJets/I");
-      myTree->Branch("pt_jet",pt_jet,"pt_jet[nJets]/D");
+    myTree->Branch("pt_jet",pt_jet,"pt_jet[nJets]/D");
     myTree->Branch("px_jet",px_jet,"px_jet[nJets]/D");
     myTree->Branch("py_jet",py_jet,"py_jet[nJets]/D");
     myTree->Branch("pz_jet",pz_jet,"pz_jet[nJets]/D");
@@ -1043,12 +1249,12 @@ int main (int argc, char *argv[])
     myTree->Branch("E_jet",E_jet,"E_jet[nJets]/D");
     myTree->Branch("charge_jet",charge_jet,"charge_jet[nJets]/I");
     myTree->Branch("bdisc_jet",bdisc_jet,"bdisc_jet[nJets]/D");
-myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D");
+    myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D");
     myTree->Branch("jet_Pt_before_JES",jet_Pt_before_JES,"jet_Pt_before_JES[nJets]/D");
     myTree->Branch("jet_Pt_after_JER",jet_Pt_after_JER,"jet_Pt_after_JER[nJets]/D");
     myTree->Branch("jet_Pt_after_JES",jet_Pt_after_JES,"jet_Pt_after_JES[nJets]/D");
-      myTree->Branch("cdiscCvsL_jet",cdiscCvsL_jet,"cdiscCvsL_jet[nJets]/D");
-      myTree->Branch("cdiscCvsB_jet",cdiscCvsB_jet,"cdiscCvsB_jet[nJets]/D");
+    myTree->Branch("cdiscCvsL_jet",cdiscCvsL_jet,"cdiscCvsL_jet[nJets]/D");
+    myTree->Branch("cdiscCvsB_jet",cdiscCvsB_jet,"cdiscCvsB_jet[nJets]/D");
     
     if(!isData){
       myTree->Branch("nMCParticles",&nMCParticles,"nMCParticles/I");
@@ -1148,16 +1354,12 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
     vector<TRootMuon*>        selectedLooseMuons;
     vector<TRootMuon*>        selectedFakeMuons;
     vector<TRootElectron*>    selectedFakeElectrons;
-
+    
     
     
     vector<TRootMCParticle*> mcParticles;
     
- /*   TLorentzVector Zboson;
-    TLorentzVector Zlep0;
-    TLorentzVector Zlep1;
-    TLorentzVector Wlep;
-    pair< vector <TLorentzVector> , vector < pair < string , int > > >  AssignedLeptons; */
+
     //////////////////////////////////////
     // Begin Event Loop
     //////////////////////////////////////
@@ -1167,7 +1369,13 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
     double eventweight = 1.;
     bool continueFlow ;
     nbSelectedEvents = 0;
-    
+    nbSelectedEvents_3L = 0;
+    nbSelectedEvents_3Lveto = 0;
+    nbSelectedEvents_3Lveto1J = 0;
+    wnbSelectedEvents = 0;
+    wnbSelectedEvents_3L = 0;
+    wnbSelectedEvents_3Lveto = 0;
+    wnbSelectedEvents_3Lveto1J = 0;
     
     bool debug = false;
     vector <int> selections;
@@ -1181,48 +1389,51 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
     bool   EcalDead = false;
     //bool    eeBad = false; not recommended
     bool   lep3 = false;
+    bool lep3veto = false;
+    bool lep3veto1J = false;
     bool lep2 = false;
     TLorentzVector metTLV;
     TLorentzVector metTLVbf;
     string TriggBits;
-       double met;
+    double met;
     bool leptonsAssigned ;
     
-    nbSelectedEvents = 0;
-
+    
     
     for (unsigned int ievt = event_start; ievt < end_d; ievt++)
     {
-
+      
       eventSelected = false;
       continueFlow = true;
       lep3 = false;
       lep2 = false;
+      lep3veto = false;
+      lep3veto1J = false;
       met = 0.;
-
+      
       TriggBits = "";
-
+      
       metTLV.Clear();
       metTLVbf.Clear();
       metTLV.SetPxPyPzE(0,0,0,0);
       selections.clear();
       bool lepsel = false;
-        mcParticles.clear();
+      mcParticles.clear();
       /// mcparticles
       nMCParticles = -1;
-       for (Int_t i = 0; i < 200; i++)
-       {
-       mc_status[i] = -1;
-       mc_pdgId[i] = 0;
-       mc_mother[i] = 0;
-       mc_granny[i] = 0;
-       mc_pt[i] = 0.;
-       mc_phi[i] = 0.;
-       mc_eta[i] = 0.;
-       mc_E[i] = 0.;
-       mc_M[i] = 0.;
-       
-       }
+      for (Int_t i = 0; i < 200; i++)
+      {
+        mc_status[i] = -1;
+        mc_pdgId[i] = 0;
+        mc_mother[i] = 0;
+        mc_granny[i] = 0;
+        mc_pt[i] = 0.;
+        mc_phi[i] = 0.;
+        mc_eta[i] = 0.;
+        mc_E[i] = 0.;
+        mc_M[i] = 0.;
+        
+      }
       
       passedMET = false;
       PassedGoodPV = false;
@@ -1233,7 +1444,7 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
       badmu = false;
       EcalDead = false;
       //eeBad = false;
-      eventweight = 1.;
+
       if(verbose > 0 ) cout << "new event " << ievt << endl;
       double ievt_d = ievt;
       debug = false;
@@ -1346,7 +1557,7 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
         
         
       }
-      if((!isData && dName.find("FCNC")==string::npos))
+      if(!isData )
       {
         if ( event->getWeight(1001) == -9999. && event->getWeight(1) == -9999. )
         {
@@ -1367,11 +1578,60 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
         
         
       }
+      
+      //save variables for pdf uncertainties and factorisation scale calculation
+      hdamp_down = 1.;
+      hdamp_up = 1.;
+      Double_t weight0, weight1, weight2, weight3, weight4, weight5, weight6, weight7, weight8;
+      weight0 = weight1 = weight2 = weight3 = weight4 = weight5 = weight6 = weight7 = weight8 = 1.;
+      if(!isData){
+        if(event->getWeight(1)!= -9999)
+        {
+          weight0 = (event->getWeight(1))/(abs(event->originalXWGTUP()));
+          weight1 = (event->getWeight(2))/(abs(event->originalXWGTUP()));
+          weight2 = (event->getWeight(3))/(abs(event->originalXWGTUP()));
+          weight3 = (event->getWeight(4))/(abs(event->originalXWGTUP()));
+          weight4 = (event->getWeight(5))/(abs(event->originalXWGTUP()));
+          weight5 = (event->getWeight(6))/(abs(event->originalXWGTUP()));
+          weight6 = (event->getWeight(7))/(abs(event->originalXWGTUP()));
+          weight7 = (event->getWeight(8))/(abs(event->originalXWGTUP()));
+          weight8 = (event->getWeight(9))/(abs(event->originalXWGTUP()));
+        }
+        else if (event->getWeight(1001)!= -9999)
+        {
+          weight0 = (event->getWeight(1001))/(abs(event->originalXWGTUP()));
+          weight1 = (event->getWeight(1002))/(abs(event->originalXWGTUP()));
+          weight2 = (event->getWeight(1003))/(abs(event->originalXWGTUP()));
+          weight3 = (event->getWeight(1004))/(abs(event->originalXWGTUP()));
+          weight4 = (event->getWeight(1005))/(abs(event->originalXWGTUP()));
+          weight5 = (event->getWeight(1006))/(abs(event->originalXWGTUP()));
+          weight6 = (event->getWeight(1007))/(abs(event->originalXWGTUP()));
+          weight7 = (event->getWeight(1008))/(abs(event->originalXWGTUP()));
+          weight8 = (event->getWeight(1009))/(abs(event->originalXWGTUP()));
+        }
+        
+        // hdamp variation
+        if (event->getWeight(1001)!= -9999)
+        {
+          hdamp_up = event->getWeight(5019)/fabs(event->originalXWGTUP());
+          hdamp_down = event->getWeight(5010)/fabs(event->originalXWGTUP());
+        }
+        
+        x1 = event->xParton1();
+        x2 = event->xParton2();
+        id1 = event->idParton1();
+        id2 = event->idParton2();
+        q = event->factorizationScale();
+        
+      }
+    
+    
+    
       ///////////////////////////////////////////
       //  Trigger
       ///////////////////////////////////////////
       PassedTriggerNoLogic = false;
-      PassedTriggerNoLogic2 = false; 
+      PassedTriggerNoLogic2 = false;
       bool trigged = false;
       bool trigged_mumu = false;
       bool trigged_ee = false;
@@ -1416,29 +1676,29 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
         bool E = false;
         bool M = false;
         int result_trigger = 0;
-        bool EM2 = false; 
-	bool MM2 = false; 
-	bool EE2 = false; 
-
-	EM2 = trigged_emu; 
-	MM2 = trigged_mumu; 
- 	EE2 = trigged_ee;         
+        bool EM2 = false;
+        bool MM2 = false;
+        bool EE2 = false;
+        
+        EM2 = trigged_emu;
+        MM2 = trigged_mumu;
+        EE2 = trigged_ee;
         EM = (trigged_emumu_mumue|| trigged_emu);
         MM = (trigged_mumu || trigged_mumumu ) ;
         EE = (trigged_ee || trigged_eee );
-
+        
         M  = ( trigged_mu );
         E  = (trigged_e);
         // testing TO FIX
         if ( EM2 &&                               (emdataset) ) PassedTriggerNoLogic2 = 1;
         if ( MM2 &&                         (mmdataset) ) PassedTriggerNoLogic2 = 1;
         if ( EE2 &&                 (eedataset) ) PassedTriggerNoLogic2 = 1;
-	if ( EM &&                               (emdataset) ) PassedTriggerNoLogic = 1;
+        if ( EM &&                               (emdataset) ) PassedTriggerNoLogic = 1;
         if ( MM &&                         (mmdataset) ) PassedTriggerNoLogic = 1;
         if ( EE &&                 (eedataset) ) PassedTriggerNoLogic = 1;
         if ( M  &&         (mdataset ) ) PassedTriggerNoLogic = 1;
         if ( E  &&                (edataset ) ) PassedTriggerNoLogic = 1;
-         //for data
+        //for data
         if ( EM &&                               (emdataset) ) result_trigger = 1;
         if ( MM && !EM &&                        (mmdataset) ) result_trigger = 1;
         if ( EE && !EM && !MM &&                 (eedataset) ) result_trigger = 1;
@@ -1452,11 +1712,11 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
         if ( E  && !EM && !MM && !EE && !M &&    !isData ) result_trigger = 1;
         
         trigged = result_trigger;
-       // if(dName.find("NP")!=string::npos) trigged = true; // needs to be fixed with the new MC
+        // if(dName.find("NP")!=string::npos) trigged = true; // needs to be fixed with the new MC
         
         
       }
-       else if(!runHLT && previousFilename != currentFilename)
+      else if(!runHLT && previousFilename != currentFilename)
       {
         filechanged = true;
         previousFilename = currentFilename;
@@ -1484,6 +1744,9 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
       if(applyJER && !isData)
       {
         // cout << "applying JER" << endl;
+        if(doJESJERshift == 3) jetTools->correctJetJER(init_jets_corrected, genjets, mets[0], "minus", false);
+        if(doJESJERshift == 4) jetTools->correctJetJER(init_jets_corrected, genjets, mets[0], "plus", false);
+        
         jetTools->correctJetJER(init_jets_corrected, genjets, mets[0], "nominal", false);
         JERon = 1;
       }
@@ -1495,6 +1758,9 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
       if(applyJES && !isData)
       {
         // cout << "applying JES" << endl;
+        if(doJESJERshift == 1)  jetTools->correctJetJESUnc(init_jets_corrected, mets[0], "minus");
+        if(doJESJERshift == 2)  jetTools->correctJetJESUnc(init_jets_corrected, mets[0], "plus");
+        
         jetTools->correctJets(init_jets_corrected,event->fixedGridRhoFastjetAll() ,false);
         JESon = 1;
       }
@@ -1503,7 +1769,7 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
         
       }
       met_before_JES = mets[0]->Pt();
-       if(applyJES ) // jer doesn't need to be applied ||  applyJER)) --> smeared type-1 corrected MET,  NOW only yes --> Type 1 corrected MET
+      if(applyJES ) // jer doesn't need to be applied ||  applyJER)) --> smeared type-1 corrected MET,  NOW only yes --> Type 1 corrected MET
       {
         jetTools->correctMETTypeOne(init_jets_corrected, mets[0], isData);
         METon = 1;
@@ -1525,8 +1791,8 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
       selectedLooseMuons.clear();
       selectedFakeMuons.clear();
       
-
-
+      
+      
       selectedMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut, "Tight", "Spring15");   // spring 15 still counts for 2016
       selectedLooseMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut_loose, "Loose", "Spring15"); // spring 15 still counts for 2016
       selectedFakeMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut_loose, "Fake", "Spring15");
@@ -1547,7 +1813,7 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
       
       
       if (verbose>1) cout <<"Number of Muons, Electrons, Jets  ===>  " << endl << selectedMuons.size() <<" "  << selectedElectrons.size()<<" "<< PreselectedJets.size()   << endl;
-
+      
       selectedJets.clear();
       if(applyJetLeptonCleaning){
         bool PushBack = true;
@@ -1590,61 +1856,154 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
       WPb_L =  workingpointvalue_Loose;
       WPb_M =  workingpointvalue_Medium;
       WPb_T =  workingpointvalue_Tight;
-
-        WPc_CvsL_Loose = c_workingpointvalue_Loose.first;
-        WPc_CvsB_Loose = c_workingpointvalue_Loose.second;
-        WPc_CvsL_Medium = c_workingpointvalue_Medium.first;
-        WPc_CvsB_Medium = c_workingpointvalue_Medium.second;
-        WPc_CvsL_Tight = c_workingpointvalue_Tight.first;
-        WPc_CvsB_Tight = c_workingpointvalue_Tight.second;
+      
+      WPc_CvsL_Loose = c_workingpointvalue_Loose.first;
+      WPc_CvsB_Loose = c_workingpointvalue_Loose.second;
+      WPc_CvsL_Medium = c_workingpointvalue_Medium.first;
+      WPc_CvsB_Medium = c_workingpointvalue_Medium.second;
+      WPc_CvsL_Tight = c_workingpointvalue_Tight.first;
+      WPc_CvsB_Tight = c_workingpointvalue_Tight.second;
       
       
       ////////////////////////////////////
       //   Event Weights               ///
       ///////////////////////////////////
       double btagWeight  =  1.;
-      double bTagEff = 1.;
-      if( fillBtagHisto && !isData && !btagShape)
+      double btagWeightShape = 1.;
+      Double_t btagWeight_shape_up_lf= 1.;
+      Double_t btagWeight_shape_down_lf= 1.;
+      Double_t btagWeight_shape_up_hf= 1.;
+      Double_t btagWeight_shape_down_hf= 1.;
+      Double_t btagWeight_shape_up_hfstats1= 1.;
+      Double_t btagWeight_shape_down_hfstats1= 1.;
+      Double_t btagWeight_shape_up_hfstats2= 1.;
+      Double_t btagWeight_shape_down_hfstats2= 1.;
+      Double_t btagWeight_shape_up_lfstats1= 1.;
+      Double_t btagWeight_shape_down_lfstats1= 1.;
+      Double_t btagWeight_shape_up_lfstats2= 1.;
+      Double_t btagWeight_shape_down_lfstats2= 1.;
+      Double_t btagWeight_shape_up_cferr1= 1.;
+      Double_t btagWeight_shape_down_cferr1= 1.;
+      Double_t btagWeight_shape_up_cferr2= 1.;
+      Double_t btagWeight_shape_down_cferr2= 1.;
+      double bTagEff = 1. , bTagEff_LFUp = 1., bTagEff_LFDown = 1., bTagEff_HFUp = 1., bTagEff_HFDown = 1., bTagEff_HFStats1Up = 1.,
+      bTagEff_HFStats1Down = 1., bTagEff_HFStats2Up = 1., bTagEff_HFStats2Down = 1., bTagEff_LFStats1Up = 1., bTagEff_LFStats1Down = 1.,
+      bTagEff_LFStats2Up = 1., bTagEff_LFStats2Down = 1., bTagEff_CFErr1Up = 1., bTagEff_CFErr1Down = 1., bTagEff_CFErr2Up = 1., bTagEff_CFErr2Down = 1.;
+      
+      if( fillBtagHisto && !isData )
       {
         btwt->FillMCEfficiencyHistos(selectedJets);
         
       }
-      else if( !fillBtagHisto && !isData && !btagShape)
+      else if( !fillBtagHisto && !isData)
       {
         btagWeight =  btwt->getMCEventWeight(selectedJets,false);  // use parton flavour = true or hadron flavour = false
         
       }
-      else if( !isData && btagShape)
+      if( !isData )
       {
+        bool isBFlav = false;
+        bool isLFlav = false;
+        bool isCFlav = false;
+        double jetpt ;
+        double jeteta;
+        double jetdisc ;
+        int jetpartonflav ;
         for(int intJet = 0; intJet < selectedJets.size(); intJet++)
         {
-          double jetpt = selectedJets[intJet]->Pt();
+          jetpt = selectedJets[intJet]->Pt();
           if(jetpt > 1000.) jetpt = 999.;
-          double jeteta = selectedJets[intJet]->Eta();
-          double jetdisc = selectedJets[intJet]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
+          jeteta = selectedJets[intJet]->Eta();
+          jetdisc = selectedJets[intJet]->btag_combinedInclusiveSecondaryVertexV2BJetTags();
+          if(jetdisc<0.0) jetdisc = -0.05;
+          if(jetdisc>1.0) jetdisc = 1.0;
+          
+          isBFlav = false;
+          isCFlav = false;
+          isLFlav = false;
           BTagEntry::JetFlavor jflav;
-          int jetpartonflav = std::abs(selectedJets[intJet]->partonFlavour());
+          jetpartonflav = std::abs(selectedJets[intJet]->partonFlavour());
           if(debug) cout<<"parton flavour: "<<jetpartonflav<<"  jet eta: "<<jeteta<<" jet pt: "<<jetpt<<"  jet disc: "<<jetdisc<<endl;
+          
           if(jetpartonflav == 5){
             jflav = BTagEntry::FLAV_B;
+            isBFlav = true;
           }
           else if(jetpartonflav == 4){
             jflav = BTagEntry::FLAV_C;
+            isCFlav = true;
           }
           else{
             jflav = BTagEntry::FLAV_UDSG;
+            isLFlav = true;
           }
-          bTagEff = reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);
-          btagWeight *= bTagEff;
           
+          
+          if(doJESJERshift == 1 && !isCFlav) bTagEff = reader_csvv2_JESdown->eval(jflav, jeteta, jetpt, jetdisc);
+          else if(doJESJERshift == 2 && !isCFlav) bTagEff = reader_csvv2_JESup->eval(jflav, jeteta, jetpt, jetdisc);
+          else bTagEff = reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);
+          
+          
+          
+          // other systematics
+          if( isBFlav ) bTagEff_LFUp = reader_csvv2_LFUp->eval(jflav, jeteta, jetpt, jetdisc);
+          if( isBFlav ) bTagEff_LFDown = reader_csvv2_LFDown->eval(jflav, jeteta, jetpt, jetdisc);
+          if( isLFlav ) bTagEff_HFUp = reader_csvv2_HFUp->eval(jflav, jeteta, jetpt, jetdisc);
+          if( isLFlav ) bTagEff_HFDown = reader_csvv2_HFDown->eval(jflav, jeteta, jetpt, jetdisc);
+          if( isBFlav ) bTagEff_HFStats1Up = reader_csvv2_HFStats1Up->eval(jflav, jeteta, jetpt, jetdisc);
+          if( isBFlav ) bTagEff_HFStats1Down = reader_csvv2_HFStats1Down->eval(jflav, jeteta, jetpt, jetdisc);
+          if( isBFlav ) bTagEff_HFStats2Up = reader_csvv2_HFStats2Up->eval(jflav, jeteta, jetpt, jetdisc);
+          if( isBFlav ) bTagEff_HFStats2Down = reader_csvv2_HFStats2Down->eval(jflav, jeteta, jetpt, jetdisc);
+          if( isLFlav ) bTagEff_LFStats1Up = reader_csvv2_LFStats1Up->eval(jflav, jeteta, jetpt, jetdisc);
+          if( isLFlav ) bTagEff_LFStats1Down = reader_csvv2_LFStats1Down->eval(jflav, jeteta, jetpt, jetdisc);
+          if( isLFlav ) bTagEff_LFStats2Up = reader_csvv2_LFStats2Up->eval(jflav, jeteta, jetpt, jetdisc);
+          if( isLFlav ) bTagEff_LFStats2Down = reader_csvv2_LFStats2Down->eval(jflav, jeteta, jetpt, jetdisc);
+          if( isCFlav ) bTagEff_CFErr1Up = reader_csvv2_CFErr1Up->eval(jflav, jeteta, jetpt, jetdisc);
+          if( isCFlav ) bTagEff_CFErr1Down = reader_csvv2_CFErr1Down->eval(jflav, jeteta, jetpt, jetdisc);
+          if( isCFlav ) bTagEff_CFErr2Up = reader_csvv2_CFErr2Up->eval(jflav, jeteta, jetpt, jetdisc);
+          if( isCFlav ) bTagEff_CFErr2Down = reader_csvv2_CFErr2Down->eval(jflav, jeteta, jetpt, jetdisc);
+          
+          //If jet is not the appropriate flavor for that systematic, use the nominal reader so that all weights will be on the same
+          //jet multiplicity footing. see code Kevin
+          if( !isBFlav ) bTagEff_LFUp = reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);
+          if( !isBFlav ) bTagEff_LFDown = reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);
+          if( !isLFlav ) bTagEff_HFUp = reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);
+          if( !isLFlav ) bTagEff_HFDown = reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);
+          if( !isBFlav ) bTagEff_HFStats1Up = reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);
+          if( !isBFlav ) bTagEff_HFStats1Down = reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);
+          if( !isBFlav ) bTagEff_HFStats2Up = reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);
+          if( !isBFlav ) bTagEff_HFStats2Down = reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);
+          if( !isLFlav ) bTagEff_LFStats1Up = reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);
+          if( !isLFlav ) bTagEff_LFStats1Down = reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);
+          if( !isLFlav ) bTagEff_LFStats2Up = reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);
+          if( !isLFlav ) bTagEff_LFStats2Down = reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);
+          if( !isCFlav ) bTagEff_CFErr1Up = reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);
+          if( !isCFlav ) bTagEff_CFErr1Down = reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);
+          if( !isCFlav ) bTagEff_CFErr2Up = reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);
+          if( !isCFlav ) bTagEff_CFErr2Down = reader_csvv2->eval(jflav, jeteta, jetpt, jetdisc);
+          
+          
+          
+          // fill btagweights
+          btagWeightShape *= bTagEff;
+          
+          btagWeight_shape_up_lf *= bTagEff_LFUp;
+          btagWeight_shape_down_lf *= bTagEff_LFDown;
+          btagWeight_shape_up_hf *= bTagEff_HFUp;
+          btagWeight_shape_down_hf *= bTagEff_HFDown;
+          btagWeight_shape_up_hfstats1 *= bTagEff_HFStats1Up;
+          btagWeight_shape_down_hfstats1 *= bTagEff_HFStats1Down;
+          btagWeight_shape_up_hfstats2 *= bTagEff_HFStats2Up;
+          btagWeight_shape_down_hfstats2 *= bTagEff_HFStats2Down;
+          btagWeight_shape_up_lfstats1 *= bTagEff_LFStats1Up;
+          btagWeight_shape_down_lfstats1 *= bTagEff_LFStats1Down;
+          btagWeight_shape_up_lfstats2 *= bTagEff_LFStats2Up;
+          btagWeight_shape_down_lfstats2 *= bTagEff_LFStats2Down;
+          btagWeight_shape_up_cferr1 *= bTagEff_CFErr1Up;
+          btagWeight_shape_down_cferr1 *= bTagEff_CFErr1Down;
+          btagWeight_shape_up_cferr2 *= bTagEff_CFErr2Up;
+          btagWeight_shape_down_cferr2 *= bTagEff_CFErr2Down;
         }
-        
-      }
-      double PUweight = 1;
-      if(!isData)
-      {
-        PUweight = LumiWeights.ITweight((int)event->nTruePU());
-        
         
       }
       
@@ -1655,17 +2014,12 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
       //   Determine eventweight        ///
       /////////////////////////////////
       
-      histo1D["init_nPVs_before"]->Fill(vertex.size(), eventweight);
-      if(applyPU && !isData)  eventweight *= PUweight;
-      histo1D["init_nPVs_after"]->Fill(vertex.size(), eventweight);
-      
-      //////////////////////////////////////////////////////
+         //////////////////////////////////////////////////////
       // Applying baseline selection
       //////////////////////////////////////////////////////
       continueFlow = true;
       nbEvents++;
-      eventweight = 1.;
-     
+
       
       if(!doFakeLepton){
         if(((selectedMuons.size() + selectedElectrons.size()) != 3)){
@@ -1674,7 +2028,7 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
         }
         else if((selectedMuons.size() + selectedElectrons.size()) == 3){
           selections.push_back(1);
-          
+          nbSelectedEvents_3L++;
           lep3 = true;
           if(selectedMuons.size() == 3) {channelInt = 0; i_channel = 0;}
           else if(selectedElectrons.size() == 3) {channelInt = 3; i_channel = 3;}
@@ -1685,14 +2039,12 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
         
         
         
-
+        
       }
       else  if(doFakeLepton){
-        //cout << "mu " <<  selectedMuons.size() << " " << selectedFakeMuons.size() << endl;
-         //cout << "el " << selectedElectrons.size() << " " <<  selectedFakeElectrons.size() << endl;
         if((selectedMuons.size() + selectedElectrons.size()) == 2 && (selectedFakeMuons.size() + selectedFakeElectrons.size()) == 1 ){
           selections.push_back(1);
-          
+          nbSelectedEvents_3L++;
           lep3 = true;
           if(selectedMuons.size() == 2 && selectedFakeMuons.size() == 1) {channelInt = 0; i_channel = 0;}
           else if(selectedElectrons.size() == 2 && selectedFakeElectrons.size() == 1) {channelInt = 3; i_channel = 3;}
@@ -1701,16 +2053,12 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
           else if(selectedMuons.size() == 2 && selectedFakeElectrons.size() == 1){channelInt = 1; i_channel = 1; }
           else if(selectedMuons.size() == 1 && selectedElectrons.size() == 1  && selectedFakeMuons.size() == 1){channelInt = 1; i_channel = 1; }
           else {cout << "ERROR no channel selected" << endl; break; }
-
-
-	  cout << "mu " <<  selectedMuons.size() << " " << selectedFakeMuons.size() << endl; 
-	  cout << "el " << selectedElectrons.size() << " " <<  selectedFakeElectrons.size() << endl; 
         }
         else{
           selections.push_back(0);
           continueFlow = false;
         }
-
+        
       }
       
       
@@ -1720,9 +2068,11 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
       }
       else {
         selections.push_back(1);
+        
         if(continueFlow) {
           lepsel = true;
-          
+          lep3veto = true;
+          nbSelectedEvents_3Lveto++;
         }
       }
       
@@ -1733,63 +2083,75 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
       met_Phi = mets[0]->Phi();
       met_Eta = mets[0]->Eta();
       
-      puSF = PUweight;
-      if(!isData) btagSF = btagWeight;
-      else if(isData) btagSF = 1.;
+      if(!isData)puSF =  LumiWeights.ITweight((int)event->nTruePU());
+      if(!isData)puSF_up =  LumiWeights_up.ITweight((int)event->nTruePU());
+      if(!isData)puSF_down =  LumiWeights_down.ITweight((int)event->nTruePU());
+      
+      
+      btagSF= 1.;
+      btagSFshape = 1.;
+      btagSFshape_down_cferr1 = 1.;
+      btagSFshape_down_cferr2 = 1.;
+      btagSFshape_down_hf= 1.;
+      btagSFshape_down_hfstats1 = 1.;
+      btagSFshape_down_hfstats2 = 1.;
+      btagSFshape_down_lf = 1.;
+      btagSFshape_down_lfstats1 = 1.;
+      btagSFshape_down_lfstats2 = 1.;
+      
+      btagSFshape_up_cferr1 = 1.;
+      btagSFshape_up_cferr2 = 1.;
+      btagSFshape_up_hf= 1.;
+      btagSFshape_up_hfstats1 = 1.;
+      btagSFshape_up_hfstats2 = 1.;
+      btagSFshape_up_lf = 1.;
+      btagSFshape_up_lfstats1 = 1.;
+      btagSFshape_up_lfstats2 = 1.;
+      
+      
+      
+      
+      if(!isData){
+        btagSF = btagWeight;
+        btagSFshape = btagWeightShape;
+        btagSFshape_up_lf = btagWeight_shape_up_lf;
+        btagSFshape_down_lf = btagWeight_shape_down_lf;
+        btagSFshape_up_hf = btagWeight_shape_up_hf;
+        btagSFshape_down_hf = btagWeight_shape_down_hf;
+        btagSFshape_up_hfstats1 = btagWeight_shape_up_hfstats1;
+        btagSFshape_down_hfstats1 = btagWeight_shape_down_hfstats1;
+        btagSFshape_up_hfstats2 = btagWeight_shape_up_hfstats2;
+        btagSFshape_down_hfstats2 = btagWeight_shape_down_hfstats2;
+        btagSFshape_up_lfstats1 = btagWeight_shape_up_lfstats1;
+        btagSFshape_down_lfstats1 = btagWeight_shape_down_lfstats1;
+        btagSFshape_up_lfstats2 = btagWeight_shape_up_lfstats2;
+        btagSFshape_down_lfstats2 = btagWeight_shape_down_lfstats2;
+        btagSFshape_up_cferr1 = btagWeight_shape_up_cferr1;
+        btagSFshape_down_cferr1 = btagWeight_shape_down_cferr1;
+        btagSFshape_up_cferr2 = btagWeight_shape_up_cferr2;
+        btagSFshape_down_cferr2 = btagWeight_shape_down_cferr2;
+      }
+      else if(isData) {btagSFshape = 1.;  btagSF = 1.; puSF_down = 1.; puSF_up = 1.; puSF = 1.;
+        
+      }
       
       
       if( selectedJets.size() >0){
-        if(continueFlow){ eventSelected = true;}
+        if(continueFlow){ eventSelected = true; nbSelectedEvents_3Lveto1J++; lep3veto1J = true; }
       }
       
       withfakes = doFakeLepton;
       
       
-            //////////////////////////////////////
+      //////////////////////////////////////
       //  DO STUFF WITH SELECTED EVENTS ////
       //////////////////////////////////////
       // fill the tree
-      if(eventSelected ){
-        
-        if (! isData)
-        {
-          nMCParticles = mcParticles.size();
-          if (nMCParticles > maxMCParticles) maxMCParticles = nMCParticles;
-          for (Int_t iMC = 0; iMC < nMCParticles; iMC++)
-          {
-            mc_status[iMC] = mcParticles[iMC]->status();
-            mc_pdgId[iMC] = mcParticles[iMC]->type();
-            mc_mother[iMC] = mcParticles[iMC]->motherType();
-            mc_granny[iMC] = mcParticles[iMC]->grannyType();
-            mc_pt[iMC] = mcParticles[iMC]->Pt();
-            mc_phi[iMC] = mcParticles[iMC]->Phi();
-            mc_eta[iMC] = mcParticles[iMC]->Eta();
-            mc_E[iMC] = mcParticles[iMC]->E();
-            mc_M[iMC] = mcParticles[iMC]->M();
-            mc_isLastCopy[iMC] = mcParticles[iMC]->isLastCopy();
-            mc_isPromptFinalState[iMC] = mcParticles[iMC]->isPromptFinalState();
-            mc_isHardProcess[iMC] = mcParticles[iMC]->isHardProcess();
-            mc_fromHardProcessFinalState[iMC] = mcParticles[iMC]->fromHardProcessFinalState();
-          }
-        }
-        
-        nJets = 0;
-        TLorentzVector tempObject;
-        for(Int_t seljet = 0; seljet < selectedJets.size(); seljet++)
-        {
-          pt_jet[nJets]=selectedJets[seljet]->Pt();
-          px_jet[nJets]=selectedJets[seljet]->Px();
-          py_jet[nJets]=selectedJets[seljet]->Py();
-          pz_jet[nJets]=selectedJets[seljet]->Pz();
-          phi_jet[nJets]=selectedJets[seljet]->Phi();
-          eta_jet[nJets]=selectedJets[seljet]->Eta();
-          E_jet[nJets]=selectedJets[seljet]->E();
-          charge_jet[nJets]=selectedJets[seljet]->charge();
-          bdisc_jet[nJets]=selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags() ;
-          cdiscCvsB_jet[nJets]=selectedJets[seljet]->ctag_pfCombinedCvsBJetTags() ;
-          cdiscCvsL_jet[nJets]=selectedJets[seljet]->ctag_pfCombinedCvsLJetTags() ;
-          nJets++;
-        }
+      
+      if((lep3 && !isData) || (eventSelected && isData)){
+        eventweight = 1.;
+        eventweight *= puSF;
+        eventweight *= btagWeightShape;
         
         
         nMuons = 0;
@@ -1809,13 +2171,23 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
             MuonIDSF[nMuons]  = (muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
             MuonIsoSF[nMuons] = (muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
             
+            MuonIDSF_up[nMuons]  = (muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+            MuonIsoSF_up[nMuons] = (muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
             
+            MuonIDSF_down[nMuons]  = (muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+            MuonIsoSF_down[nMuons] = (muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
             
+            eventweight *= MuonIDSF[nMuons] * MuonIsoSF[nMuons];
           }
           else
           {
             MuonIDSF[nMuons] = 1.;
             MuonIsoSF[nMuons] = 1.;
+            MuonIDSF_up[nMuons] = 1.;
+            MuonIsoSF_up[nMuons] = 1.;
+            MuonIDSF_down[nMuons] = 1.;
+            MuonIsoSF_down[nMuons] = 1.;
+            
           }
           if(MuonIDSF[nMuons]*MuonIsoSF[nMuons] == 0 ) cout << "  MuonIDSF[nMuons] " <<  MuonIDSF[nMuons] << " MuonIsoSF[nMuons] " << MuonIsoSF[nMuons] << "  MuonIDSF[nMuons]*MuonIsoSF[nMuons] " <<    MuonIDSF[nMuons]*MuonIsoSF[nMuons]     << endl;
           if(muonSFtemp == 0) cout << " muon SF " << muonSFtemp * MuonIDSF[nMuons]*MuonIsoSF[nMuons] << endl;
@@ -1838,13 +2210,23 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
               MuonIDSF[nMuons]  = (muonSFWeightID_BCDEF->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 0)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 0)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
               MuonIsoSF[nMuons] = (muonSFWeightIso_BCDEF->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 0)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 0)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
               
+              MuonIDSF_up[nMuons]  = (muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+              MuonIsoSF_up[nMuons] = (muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
               
+              MuonIDSF_down[nMuons]  = (muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+              MuonIsoSF_down[nMuons] = (muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
               
+              eventweight *= MuonIDSF[nMuons] * MuonIsoSF[nMuons];
             }
             else
             {
               MuonIDSF[nMuons] = 1.;
               MuonIsoSF[nMuons] = 1.;
+              MuonIDSF_up[nMuons] = 1.;
+              MuonIsoSF_up[nMuons] = 1.;
+              MuonIDSF_down[nMuons] = 1.;
+              MuonIsoSF_down[nMuons] = 1.;
+              
             }
             if(MuonIDSF[nMuons]*MuonIsoSF[nMuons] == 0 ) cout << "  MuonIDSF[nMuons] " <<  MuonIDSF[nMuons] << " MuonIsoSF[nMuons] " << MuonIsoSF[nMuons] << "  MuonIDSF[nMuons]*MuonIsoSF[nMuons] " <<    MuonIDSF[nMuons]*MuonIsoSF[nMuons]     << endl;
             if(muonSFtemp == 0) cout << " muon SF " << muonSFtemp * MuonIDSF[nMuons]*MuonIsoSF[nMuons] << endl;
@@ -1852,8 +2234,8 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
             nMuons++;
           }
         }
-      
-          nElectrons=0;
+        
+        nElectrons=0;
         for (Int_t selel =0; selel < selectedElectrons.size() ; selel++ )
         {
           pt_electron[nElectrons]=selectedElectrons[selel]->Pt();
@@ -1865,10 +2247,13 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
           charge_electron[nElectrons]=selectedElectrons[selel]->charge();
           if(!isData){
             ElectronSF[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0)*electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0);
+            ElectronSF_up[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),1)*electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),1);
+            ElectronSF_down[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),-1)*electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),-1);
             
           }
-          else ElectronSF[nElectrons] = 1.;
+          else {ElectronSF[nElectrons] = 1.; ElectronSF_up[nElectrons] = 1.; ElectronSF_down[nElectrons] = 1.;}
           
+          eventweight *= ElectronSF[nElectrons];
           nElectrons++;
         }
         if(doFakeLepton){
@@ -1883,13 +2268,59 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
             charge_electron[nElectrons]=selectedFakeElectrons[selel]->charge();
             if(!isData){
               ElectronSF[nElectrons] = electronSFWeightID->at(selectedFakeElectrons[selel]->Eta(),selectedFakeElectrons[selel]->Pt(),0)*electronSFWeightReco->at(selectedFakeElectrons[selel]->Eta(),selectedFakeElectrons[selel]->Pt(),0);
+              ElectronSF_up[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),1)*electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),1);
+              ElectronSF_down[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),-1)*electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),-1);
               
             }
-            else ElectronSF[nElectrons] = 1.;
+            else {ElectronSF[nElectrons] = 1.; ElectronSF_up[nElectrons] = 1.; ElectronSF_down[nElectrons] = 1.;}
             
+            eventweight *= ElectronSF[nElectrons];
             nElectrons++;
           }
-
+          
+        }
+        if(lep3veto && !isData) wnbSelectedEvents_3Lveto += eventweight;
+        if(lep3veto1J && !isData) wnbSelectedEvents_3Lveto1J *= eventweight;
+          
+          
+          if (! isData)
+          {
+            nMCParticles = mcParticles.size();
+            if (nMCParticles > maxMCParticles) maxMCParticles = nMCParticles;
+            for (Int_t iMC = 0; iMC < nMCParticles; iMC++)
+            {
+              mc_status[iMC] = mcParticles[iMC]->status();
+              mc_pdgId[iMC] = mcParticles[iMC]->type();
+              mc_mother[iMC] = mcParticles[iMC]->motherType();
+              mc_granny[iMC] = mcParticles[iMC]->grannyType();
+              mc_pt[iMC] = mcParticles[iMC]->Pt();
+              mc_phi[iMC] = mcParticles[iMC]->Phi();
+              mc_eta[iMC] = mcParticles[iMC]->Eta();
+              mc_E[iMC] = mcParticles[iMC]->E();
+              mc_M[iMC] = mcParticles[iMC]->M();
+              mc_isLastCopy[iMC] = mcParticles[iMC]->isLastCopy();
+              mc_isPromptFinalState[iMC] = mcParticles[iMC]->isPromptFinalState();
+              mc_isHardProcess[iMC] = mcParticles[iMC]->isHardProcess();
+              mc_fromHardProcessFinalState[iMC] = mcParticles[iMC]->fromHardProcessFinalState();
+            }
+          }
+      }
+      if(eventSelected){
+        nJets = 0;
+        for(Int_t seljet = 0; seljet < selectedJets.size(); seljet++)
+        {
+          pt_jet[nJets]=selectedJets[seljet]->Pt();
+          px_jet[nJets]=selectedJets[seljet]->Px();
+          py_jet[nJets]=selectedJets[seljet]->Py();
+          pz_jet[nJets]=selectedJets[seljet]->Pz();
+          phi_jet[nJets]=selectedJets[seljet]->Phi();
+          eta_jet[nJets]=selectedJets[seljet]->Eta();
+          E_jet[nJets]=selectedJets[seljet]->E();
+          charge_jet[nJets]=selectedJets[seljet]->charge();
+          bdisc_jet[nJets]=selectedJets[seljet]->btag_combinedInclusiveSecondaryVertexV2BJetTags() ;
+          cdiscCvsB_jet[nJets]=selectedJets[seljet]->ctag_pfCombinedCvsBJetTags() ;
+          cdiscCvsL_jet[nJets]=selectedJets[seljet]->ctag_pfCombinedCvsLJetTags() ;
+          nJets++;
         }
         
       }
@@ -1898,7 +2329,7 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
       
       if(eventSelected){
         nbSelectedEvents++;
-        
+        if(!isData) wnbSelectedEvents += eventweight;
         myTree->Fill();
       }
       
@@ -1915,7 +2346,7 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
     //	for(int j_eeu = 0; j < 9; j++){       cout << cutstep[j] << endl; }
     sumW = (int) sumWeights;
     nEv = (int) nEvents;
-   int  nEvPassed  = (int) nbSelectedEvents;
+    int  nEvPassed  = (int) nbSelectedEvents;
     globalTree->Fill();
     if(verbose > 0) cout << "end eventloop" << endl;
     
@@ -1935,14 +2366,14 @@ myTree->Branch("jet_Pt_before_JER",jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D
       
       
     }
-       tupfile->cd();
+    tupfile->cd();
     myTree->Write();
     globalTree->Write();
-
+    
     tupfile->Close();
     
     delete tupfile;
-    if(!isData && !btagShape){
+    if(!isData ){
       delete btwt;
       //histoFileHandle->Close();
       //delete histoFileHandle;
