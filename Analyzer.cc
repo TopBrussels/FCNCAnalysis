@@ -50,6 +50,17 @@ using namespace TopTree;
 ///////////////////////////////////// PLOT MAPPING /////////////////////////////////////////
 // Normal Plots (TH1F* and TH2F*)
 map<string,TH1F*> histo1D;
+map<string,TH1F*> histo1D_PUSystematics;
+map<string,TH1F*> histo1D_ElSystematics;
+map<string,TH1F*> histo1D_MuSystematics;
+map<string,TH1F*> histo1D_Bcferr1Systematics;
+map<string,TH1F*> histo1D_Bcferr2Systematics;
+map<string,TH1F*> histo1D_Bhfstats1Systematics;
+map<string,TH1F*> histo1D_Bhfstats2Systematics;
+map<string,TH1F*> histo1D_Blfstats1Systematics;
+map<string,TH1F*> histo1D_Blfstats2Systematics;
+map<string,TH1F*> histo1D_BhfSystematics;
+map<string,TH1F*> histo1D_BlfSystematics;
 map<string,TH2F*> histo2D;
 map<string,MultiSamplePlot*> MSPlot;
 map<string,MultiSamplePlot*> MSPlotCutfl; // TOFIX
@@ -242,7 +253,7 @@ TBranch *b_nofNegWeights;
 TBranch *b_nofPosWeights;
 TBranch *b_sumW;
 int TotalEvents;
-Double_t Luminosity = 32000.;
+Double_t Luminosity = 36000.;
 Double_t WPb_L;
 Double_t WPb_M;
 Double_t WPb_T;
@@ -609,12 +620,13 @@ void InitMVAMSPlotsSingletop(string prefix,vector<int> decayChannels);
 void InitMSPlotsBDT(string prefix, vector<int> decayChannels);
 void InitMVAMSPlotsTopPair(string prefix, vector<int> decayChannels);
 void InitMVAMSPlotsWZ(string prefix, vector <int> decayChannels);
-void Init1DPlots();
+void Init1DPlots(string dataSetName);
 void Init2DPlots();
 void InitGenInfoPlots(string dataSetName);
 void FillGenInfoPlots(string dataSetName);
 void InitRecovsGenInfoPlots(string dataSetName);
 void FillRecovsGenInfoPlots(string dataSetName, vector<TLorentzVector> selectedElectrons, vector <TLorentzVector> selectedMuons , vector <TLorentzVector> selectedJets);
+void Fill1DPlots(string dataSetName);
 void InitTree(TTree* tree, bool isData);
 // data from global tree
 void ClearMetaData();
@@ -766,6 +778,10 @@ vector <int> selectedCharmLJetsindex;
 vector <int> selectedCharmMJetsindex;
 vector <int> selectedCharmTJetsindex;
 Double_t scaleFactor;
+Double_t scaleFactor_bfBT;
+Double_t scaleFactor_bfELSF;
+Double_t scaleFactor_bfMuSF;
+Double_t scaleFactor_bfPU;
 Double_t scaleFactor_puSF_down;
 Double_t scaleFactor_puSF_up;
 Double_t scaleFactor_electronSF_down;
@@ -937,8 +953,8 @@ int main(int argc, char* argv[]){
       std::cout << "   - applyElectronSF UP/DOWN/NOM "<< endl;
       std::cout << "   - applyMuonSF UP/DOWN/NOM "<< endl;
       std::cout << "   - applyPUSF UP/DOWN/NOM "<< endl;
-      std::cout << "   applyJER UP/DOWN" << endl;
-      std::cout << "   applyJEC UP/DOWN" << endl;
+      std::cout << "   - applyJER UP/DOWN" << endl;
+      std::cout << "   - applyJEC UP/DOWN" << endl;
       std::cout << "   MakeMVATree: make trees for the MVA" << endl;
       std::cout << "   MakePlots: make plots" << endl;
       std::cout << "   MakeMVAPlots: make MVA plots" << endl;
@@ -1064,7 +1080,7 @@ int main(int argc, char* argv[]){
     InitMSPlots("control_afterAtLeast1Jet", decayChannels);
     InitMSPlots("control_afterAtLeast1Jet_afterZWindow", decayChannels);
     InitMSPlots("control_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels);
-    Init1DPlots();
+   // Init1DPlots();
     Init2DPlots();
   }
   
@@ -1147,6 +1163,11 @@ int main(int argc, char* argv[]){
         InitGenInfoPlots(dataSetName);
         InitRecovsGenInfoPlots(dataSetName);
       }
+    }
+    
+    if(dataSetName.find("TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut")!=std::string::npos){
+      //cout << "init 1D plots" << endl;
+      Init1DPlots(dataSetName);
     }
     
     
@@ -1369,6 +1390,10 @@ int main(int argc, char* argv[]){
       
       // apply SF
       scaleFactor = 1.;
+      scaleFactor_bfBT = 1.;
+      scaleFactor_bfELSF = 1.;
+      scaleFactor_bfMuSF = 1.;
+      scaleFactor_bfPU = 1.;
        scaleFactor_puSF_down=1.; 
        scaleFactor_puSF_up=1.; 
        scaleFactor_electronSF_down=1.; 
@@ -1482,6 +1507,17 @@ int main(int argc, char* argv[]){
           if(ievt == 2) cout << "                - applying nlo factors " << endl;
         }  // additional SF due to number of events with neg weight!!
         
+        scaleFactor_bfBT = scaleFactor/btagSFshape;
+        scaleFactor_bfELSF = scaleFactor / electronSFtemp;
+        scaleFactor_bfMuSF = scaleFactor / muonSFtemp;
+        scaleFactor_bfPU = scaleFactor / puSF;
+        
+        //check for nan
+        if(scaleFactor_bfBT != scaleFactor_bfBT) scaleFactor_bfBT = 0.;
+        if(scaleFactor_bfMuSF != scaleFactor_bfMuSF) scaleFactor_bfMuSF = 0.;
+        if(scaleFactor_bfELSF != scaleFactor_bfELSF) scaleFactor_bfELSF= 0.;
+        if(scaleFactor_bfPU != scaleFactor_bfPU) scaleFactor_bfPU= 0.;
+        
       }
       else if(isData) scaleFactor = 1.;
       if(ievt == 2) cout << "                ==> scaleFactor " << scaleFactor << endl;
@@ -1492,6 +1528,7 @@ int main(int argc, char* argv[]){
       {
         //cout << "ievt " << ievt << endl;
         FillGeneralPlots(d, "control_afterAtLeast1Jet", decayChannels, isData);
+        if(dataSetName.find("TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut")!=std::string::npos) Fill1DPlots(dataSetName);
         
       }
       //cout << "zmass" << endl;
@@ -1540,8 +1577,8 @@ int main(int argc, char* argv[]){
       /// Make plots
       if (makeMVAPlots )
       {
-        //if(Region == 0) FillMVAPlots(d,dataSetName, Region, "singletop", decayChannels);
-        //if(Region == 1) FillMVAPlots(d,dataSetName, Region, "toppair", decayChannels);
+        if(Region == 0) FillMVAPlots(d,dataSetName, Region, "singletop", decayChannels);
+        if(Region == 1) FillMVAPlots(d,dataSetName, Region, "toppair", decayChannels);
         if(Region == 2) FillMVAPlots(d,dataSetName, Region, "wzcontrol", decayChannels);
       }
       
@@ -1581,7 +1618,7 @@ int main(int argc, char* argv[]){
   string place =pathOutputdate+"/MSPlot/";
   string placeTH1F = pathOutputdate+"/TH1F/";
   string placeTH2F = pathOutputdate+"/TH2F/";
-  vector <string> vlabel_chan = {"uuu", "uue", "eeu", "eee"};
+  vector <string> vlabel_chan = {"3#mu", "2#mu 1e", "2e 1#u", "3e"};
   mkdir(place.c_str(),0777);
   mkdir(placeTH1F.c_str(),0777);
   mkdir(placeTH2F.c_str(),0777);
@@ -1600,10 +1637,10 @@ int main(int argc, char* argv[]){
     string name = it->first;
     if(!datafound) temp->setDataLumi(Luminosity);
     if(name.find("all")!=std::string::npos) temp->setChannel(true, "all");
-    if(name.find("eee")!=std::string::npos) temp->setChannel(true, "eee");
-    if(name.find("eeu")!=std::string::npos) temp->setChannel(true, "eeu");
-    if(name.find("uue")!=std::string::npos) temp->setChannel(true, "uue");
-    if(name.find("uuu")!=std::string::npos) temp->setChannel(true, "uuu");
+    if(name.find("eee")!=std::string::npos) temp->setChannel(true, "3e");
+    if(name.find("eeu")!=std::string::npos) temp->setChannel(true, "2e 1#mu");
+    if(name.find("uue")!=std::string::npos) temp->setChannel(true, "2#mu 1e");
+    if(name.find("uuu")!=std::string::npos) temp->setChannel(true, "3#mu");
     if(name.find("Decay")!=std::string::npos) temp->setBins(vlabel_chan);
     temp->Draw(name, 1, false, false, false, 10);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
     cout << "writing to " << pathOutputdate+"MSPlot" << endl;
@@ -1627,6 +1664,434 @@ int main(int argc, char* argv[]){
     TCanvas* tempCanvas = TCanvasCreator(temp, it->first);
     tempCanvas->SaveAs( (placeTH1F+it->first+".png").c_str() );
   }
+  
+ 
+  TDirectory* th1dirsys = fout->mkdir("1D_histograms_sys");
+  th1dirsys->cd();
+  gStyle->SetOptStat(1110);
+  TH1F *tempnom =0;
+  TH1F *tempup = 0;
+  TH1F *tempdown = 0;
+  int Nnom = 0;
+  int Nup = 0;
+  int Ndown = 0;
+  TCanvas* Canvas = 0;
+  
+  std::map<std::string,TH1F*>::const_iterator nom = histo1D_PUSystematics.begin(), up=histo1D_PUSystematics.begin(), down=histo1D_PUSystematics.begin();
+  
+  
+  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_PUSystematics.begin(); it != histo1D_PUSystematics.end(); it++)
+  {
+    string name = it->first;
+    if(name.find("nom")!=std::string::npos) nom = it;
+    if(name.find("up")!=std::string::npos) up = it;
+    if(name.find("down")!=std::string::npos) down = it;
+  }
+  tempnom = nom->second;
+  tempup = up->second;
+  tempdown = down->second;
+  Nnom= tempnom->GetNbinsX();
+  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+  tempnom->SetBinContent(Nnom+1,0);
+  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempnom->Write();
+  Nup = tempup->GetNbinsX();
+  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+  tempup->SetBinContent(Nup+1,0);
+  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempup->Write();
+  Ndown= tempdown->GetNbinsX();
+  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+  tempdown->SetBinContent(Ndown+1,0);
+  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempdown->Write();
+  tempnom->SetLineColor(kRed);
+  tempup->SetLineColor(kBlue);
+  tempdown->SetLineColor(kViolet);
+  
+  Canvas =  TCanvasCreator(tempnom, "Nb Of vertices: PU SF" );//new TCanvas("Canvas_PU","Canvas_PU");
+  Canvas->cd();
+  tempnom->Draw("L");
+  tempup->Draw("SAME,L");
+  tempdown->Draw("SAME,L");
+  Canvas->SaveAs( (placeTH1F+"PUSF_nvtx.png").c_str() );
+
+  
+  // electron SF
+  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_ElSystematics.begin(); it != histo1D_ElSystematics.end(); it++)
+  {
+    string name = it->first;
+    if(name.find("nom")!=std::string::npos) nom = it;
+    if(name.find("up")!=std::string::npos) up = it;
+    if(name.find("down")!=std::string::npos) down = it;
+  }
+  tempnom = nom->second;
+  tempup = up->second;
+  tempdown = down->second;
+  
+  Nnom= tempnom->GetNbinsX();
+  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+  tempnom->SetBinContent(Nnom+1,0);
+  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempnom->Write();
+  Nup = tempup->GetNbinsX();
+  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+  tempup->SetBinContent(Nup+1,0);
+  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempup->Write();
+  Ndown= tempdown->GetNbinsX();
+  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+  tempdown->SetBinContent(Ndown+1,0);
+  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempdown->Write();
+  tempnom->SetLineColor(kRed);
+  tempup->SetLineColor(kBlue);
+  tempdown->SetLineColor(kViolet);
+  
+  Canvas =  TCanvasCreator(tempnom, "Pt electrons: El SF" );//new TCanvas("Canvas_PU","Canvas_PU");
+  Canvas->cd();
+  tempnom->Draw("L");
+  tempup->Draw("SAME,L");
+  tempdown->Draw("SAME,L");
+  Canvas->SaveAs( (placeTH1F+"ELSF_ptelectron.png").c_str() );
+
+  
+  // muon SF
+  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_MuSystematics.begin(); it != histo1D_MuSystematics.end(); it++)
+  {
+    string name = it->first;
+    if(name.find("nom")!=std::string::npos) nom = it;
+    if(name.find("up")!=std::string::npos) up = it;
+    if(name.find("down")!=std::string::npos) down = it;
+  }
+  tempnom = nom->second;
+  tempup = up->second;
+  tempdown = down->second;
+  Nnom= tempnom->GetNbinsX();
+  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+  tempnom->SetBinContent(Nnom+1,0);
+  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempnom->Write();
+  Nup = tempup->GetNbinsX();
+  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+  tempup->SetBinContent(Nup+1,0);
+  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempup->Write();
+  Ndown= tempdown->GetNbinsX();
+  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+  tempdown->SetBinContent(Ndown+1,0);
+  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempdown->Write();
+  tempnom->SetLineColor(kRed);
+  tempup->SetLineColor(kBlue);
+  tempdown->SetLineColor(kViolet);
+  
+  Canvas =  TCanvasCreator(tempnom, "Pt muons: Mu SF" );//new TCanvas("Canvas_PU","Canvas_PU");
+  Canvas->cd();
+  tempnom->Draw("L");
+  tempup->Draw("SAME,L");
+  tempdown->Draw("SAME,L");
+  Canvas->SaveAs( (placeTH1F+"MUSF_ptmuon.png").c_str() );
+  
+  // btag SF cferr1
+  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bcferr1Systematics.begin(); it != histo1D_Bcferr1Systematics.end(); it++)
+  {
+    string name = it->first;
+    if(name.find("nom")!=std::string::npos) nom = it;
+    if(name.find("up")!=std::string::npos) up = it;
+    if(name.find("down")!=std::string::npos) down = it;
+  }
+  tempnom = nom->second;
+  tempup = up->second;
+  tempdown = down->second;
+  Nnom= tempnom->GetNbinsX();
+  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+  tempnom->SetBinContent(Nnom+1,0);
+  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempnom->Write();
+  Nup = tempup->GetNbinsX();
+  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+  tempup->SetBinContent(Nup+1,0);
+  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempup->Write();
+  Ndown= tempdown->GetNbinsX();
+  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+  tempdown->SetBinContent(Ndown+1,0);
+  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempdown->Write();
+  tempnom->SetLineColor(kRed);
+  tempup->SetLineColor(kBlue);
+  tempdown->SetLineColor(kViolet);
+  
+  Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF cferr1" );//new TCanvas("Canvas_PU","Canvas_PU");
+  Canvas->cd();
+  tempnom->Draw("L");
+  tempup->Draw("SAME,L");
+  tempdown->Draw("SAME,L");
+  Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr1.png").c_str() );
+  
+  // btag SF cferr2
+  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bcferr2Systematics.begin(); it != histo1D_Bcferr2Systematics.end(); it++)
+  {
+    string name = it->first;
+    if(name.find("nom")!=std::string::npos) nom = it;
+    if(name.find("up")!=std::string::npos) up = it;
+    if(name.find("down")!=std::string::npos) down = it;
+  }
+  tempnom = nom->second;
+  tempup = up->second;
+  tempdown = down->second;
+  Nnom= tempnom->GetNbinsX();
+  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+  tempnom->SetBinContent(Nnom+1,0);
+  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempnom->Write();
+  Nup = tempup->GetNbinsX();
+  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+  tempup->SetBinContent(Nup+1,0);
+  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempup->Write();
+  Ndown= tempdown->GetNbinsX();
+  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+  tempdown->SetBinContent(Ndown+1,0);
+  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempdown->Write();
+  tempnom->SetLineColor(kRed);
+  tempup->SetLineColor(kBlue);
+  tempdown->SetLineColor(kViolet);
+  
+  Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF cferr2" );//new TCanvas("Canvas_PU","Canvas_PU");
+  Canvas->cd();
+  tempnom->Draw("L");
+  tempup->Draw("SAME,L");
+  tempdown->Draw("SAME,L");
+  Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr2.png").c_str() );
+  
+  // btag SF hfstats1
+  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bhfstats1Systematics.begin(); it != histo1D_Bhfstats1Systematics.end(); it++)
+  {
+    string name = it->first;
+    if(name.find("nom")!=std::string::npos) nom = it;
+    if(name.find("up")!=std::string::npos) up = it;
+    if(name.find("down")!=std::string::npos) down = it;
+  }
+  tempnom = nom->second;
+  tempup = up->second;
+  tempdown = down->second;
+  Nnom= tempnom->GetNbinsX();
+  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+  tempnom->SetBinContent(Nnom+1,0);
+  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempnom->Write();
+  Nup = tempup->GetNbinsX();
+  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+  tempup->SetBinContent(Nup+1,0);
+  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempup->Write();
+  Ndown= tempdown->GetNbinsX();
+  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+  tempdown->SetBinContent(Ndown+1,0);
+  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempdown->Write();
+  tempnom->SetLineColor(kRed);
+  tempup->SetLineColor(kBlue);
+  tempdown->SetLineColor(kViolet);
+  
+  Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF hfstats1" );//new TCanvas("Canvas_PU","Canvas_PU");
+  Canvas->cd();
+  tempnom->Draw("L");
+  tempup->Draw("SAME,L");
+  tempdown->Draw("SAME,L");
+  Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats1.png").c_str() );
+  
+  // btag SF hfstats2
+  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bhfstats2Systematics.begin(); it != histo1D_Bhfstats2Systematics.end(); it++)
+  {
+    string name = it->first;
+    if(name.find("nom")!=std::string::npos) nom = it;
+    if(name.find("up")!=std::string::npos) up = it;
+    if(name.find("down")!=std::string::npos) down = it;
+  }
+  tempnom = nom->second;
+  tempup = up->second;
+  tempdown = down->second;
+  Nnom= tempnom->GetNbinsX();
+  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+  tempnom->SetBinContent(Nnom+1,0);
+  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempnom->Write();
+  Nup = tempup->GetNbinsX();
+  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+  tempup->SetBinContent(Nup+1,0);
+  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempup->Write();
+  Ndown= tempdown->GetNbinsX();
+  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+  tempdown->SetBinContent(Ndown+1,0);
+  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempdown->Write();
+  tempnom->SetLineColor(kRed);
+  tempup->SetLineColor(kBlue);
+  tempdown->SetLineColor(kViolet);
+  
+  Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF hfstats2" );//new TCanvas("Canvas_PU","Canvas_PU");
+  Canvas->cd();
+  tempnom->Draw("L");
+  tempup->Draw("SAME,L");
+  tempdown->Draw("SAME,L");
+  Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats2.png").c_str() );
+  
+  
+  // btag SF lfstats1
+  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Blfstats1Systematics.begin(); it != histo1D_Blfstats1Systematics.end(); it++)
+  {
+    string name = it->first;
+    if(name.find("nom")!=std::string::npos) nom = it;
+    if(name.find("up")!=std::string::npos) up = it;
+    if(name.find("down")!=std::string::npos) down = it;
+  }
+  tempnom = nom->second;
+  tempup = up->second;
+  tempdown = down->second;
+  Nnom= tempnom->GetNbinsX();
+  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+  tempnom->SetBinContent(Nnom+1,0);
+  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempnom->Write();
+  Nup = tempup->GetNbinsX();
+  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+  tempup->SetBinContent(Nup+1,0);
+  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempup->Write();
+  Ndown= tempdown->GetNbinsX();
+  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+  tempdown->SetBinContent(Ndown+1,0);
+  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempdown->Write();
+  tempnom->SetLineColor(kRed);
+  tempup->SetLineColor(kBlue);
+  tempdown->SetLineColor(kViolet);
+  
+  Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF lfstats1" );//new TCanvas("Canvas_PU","Canvas_PU");
+  Canvas->cd();
+  tempnom->Draw("L");
+  tempup->Draw("SAME,L");
+  tempdown->Draw("SAME,L");
+  Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats1.png").c_str() );
+  
+  // btag SF lfstats2
+  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Blfstats2Systematics.begin(); it != histo1D_Blfstats2Systematics.end(); it++)
+  {
+    string name = it->first;
+    if(name.find("nom")!=std::string::npos) nom = it;
+    if(name.find("up")!=std::string::npos) up = it;
+    if(name.find("down")!=std::string::npos) down = it;
+  }
+  tempnom = nom->second;
+  tempup = up->second;
+  tempdown = down->second;
+  Nnom= tempnom->GetNbinsX();
+  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+  tempnom->SetBinContent(Nnom+1,0);
+  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempnom->Write();
+  Nup = tempup->GetNbinsX();
+  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+  tempup->SetBinContent(Nup+1,0);
+  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempup->Write();
+  Ndown= tempdown->GetNbinsX();
+  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+  tempdown->SetBinContent(Ndown+1,0);
+  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempdown->Write();
+  tempnom->SetLineColor(kRed);
+  tempup->SetLineColor(kBlue);
+  tempdown->SetLineColor(kViolet);
+  
+  Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF lfstats2" );//new TCanvas("Canvas_PU","Canvas_PU");
+  Canvas->cd();
+  tempnom->Draw("L");
+  tempup->Draw("SAME,L");
+  tempdown->Draw("SAME,L");
+  Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats2.png").c_str() );
+  
+  
+  // btag SF hf
+  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_BhfSystematics.begin(); it != histo1D_BhfSystematics.end(); it++)
+  {
+    string name = it->first;
+    if(name.find("nom")!=std::string::npos) nom = it;
+    if(name.find("up")!=std::string::npos) up = it;
+    if(name.find("down")!=std::string::npos) down = it;
+  }
+  tempnom = nom->second;
+  tempup = up->second;
+  tempdown = down->second;
+  Nnom= tempnom->GetNbinsX();
+  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+  tempnom->SetBinContent(Nnom+1,0);
+  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempnom->Write();
+  Nup = tempup->GetNbinsX();
+  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+  tempup->SetBinContent(Nup+1,0);
+  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempup->Write();
+  Ndown= tempdown->GetNbinsX();
+  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+  tempdown->SetBinContent(Ndown+1,0);
+  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempdown->Write();
+  tempnom->SetLineColor(kRed);
+  tempup->SetLineColor(kBlue);
+  tempdown->SetLineColor(kViolet);
+  
+  Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF hf" );//new TCanvas("Canvas_PU","Canvas_PU");
+  Canvas->cd();
+  tempnom->Draw("L");
+  tempup->Draw("SAME,L");
+  tempdown->Draw("SAME,L");
+  Canvas->SaveAs( (placeTH1F+"BSF_bdishf.png").c_str() );
+  
+  // btag SF lf
+  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_BlfSystematics.begin(); it != histo1D_BlfSystematics.end(); it++)
+  {
+    string name = it->first;
+    if(name.find("nom")!=std::string::npos) nom = it;
+    if(name.find("up")!=std::string::npos) up = it;
+    if(name.find("down")!=std::string::npos) down = it;
+  }
+  tempnom = nom->second;
+  tempup = up->second;
+  tempdown = down->second;
+  Nnom= tempnom->GetNbinsX();
+  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+  tempnom->SetBinContent(Nnom+1,0);
+  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempnom->Write();
+  Nup = tempup->GetNbinsX();
+  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+  tempup->SetBinContent(Nup+1,0);
+  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempup->Write();
+  Ndown= tempdown->GetNbinsX();
+  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+  tempdown->SetBinContent(Ndown+1,0);
+  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+  tempdown->Write();
+  tempnom->SetLineColor(kRed);
+  tempup->SetLineColor(kBlue);
+  tempdown->SetLineColor(kViolet);
+  
+  Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF lf" );//new TCanvas("Canvas_PU","Canvas_PU");
+  Canvas->cd();
+  tempnom->Draw("L");
+  tempup->Draw("SAME,L");
+  tempdown->Draw("SAME,L");
+  Canvas->SaveAs( (placeTH1F+"BSF_bdislf.png").c_str() );
+  
+  
   
   // 2D
   TDirectory* th2dir = fout->mkdir("2D_histograms");
@@ -1758,7 +2223,7 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
   MVA_Zboson_eta = static_cast<float>( Zboson.Eta());
   MVA_Zboson_phi = static_cast<float>( Zboson.Phi());
   
-  if(Region == 1) // ttbar region
+  if(selectedJets.size()>1 )
   {
     MVA_LightJet_pt = static_cast<float>( LightJet.Pt());
     MVA_LightJet_eta = static_cast<float>( LightJet.Eta());
@@ -1796,12 +2261,12 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
   //cout << "sm kin" << endl);
   
   // FCNC kinematics
-  if(Region == 1)   MVA_FCNCtop_M = static_cast<float>( FCNCtop.M());
+  if(selectedJets.size()>1 ) MVA_FCNCtop_M = static_cast<float>( FCNCtop.M());
   MVA_Zboson_M = static_cast<float>( Zboson.M());
   //cout << "Zboson mass " << Zboson_M << endl);
   
-  if(Region == 1) MVA_dRZc = static_cast<float>( Zboson.DeltaR(LightJet));
-  if(Region == 1) MVA_dPhiZc = static_cast<float>( Zboson.DeltaPhi(LightJet));
+  if(selectedJets.size()>1 ) MVA_dRZc = static_cast<float>( Zboson.DeltaR(LightJet));
+  if(selectedJets.size()>1 ) MVA_dPhiZc = static_cast<float>( Zboson.DeltaPhi(LightJet));
   
   if(selectedJets.size()>0) MVA_cdiscCvsB_jet_0 = static_cast<float>( cdiscCvsB_jet[0]);
   if(selectedJets.size()>0) MVA_cdiscCvsL_jet_0 = static_cast<float>( cdiscCvsL_jet[0]);
@@ -1811,16 +2276,16 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
   //cout << "fcnc kin " << endl);
   
   // interplay
-  if(Region == 1) MVA_dRSMFCNCtop = static_cast<float>( SMtop.DeltaR(FCNCtop));
+  if(selectedJets.size()>1 ) MVA_dRSMFCNCtop = static_cast<float>( SMtop.DeltaR(FCNCtop));
   MVA_dRZb = static_cast<float>( Zboson.DeltaR(SMbjet));
-  if(Region == 1) MVA_dRWlepc = static_cast<float>( Wlep.DeltaR(LightJet));
+  if(selectedJets.size()>1 ) MVA_dRWlepc = static_cast<float>( Wlep.DeltaR(LightJet));
   MVA_dRZWlep = static_cast<float>( Zboson.DeltaR(Wlep));
   MVA_dRZSMtop = static_cast<float>( Zboson.DeltaR(SMtop));
   MVA_dPhiZMET = static_cast<float>( Zboson.DeltaPhi(metTLV));
   
-  if(Region == 1) MVA_dPhiSMFCNCtop = static_cast<float>( SMtop.DeltaPhi(FCNCtop));
+  if(selectedJets.size()>1 ) MVA_dPhiSMFCNCtop = static_cast<float>( SMtop.DeltaPhi(FCNCtop));
   MVA_dPhiZb = static_cast<float>( Zboson.DeltaPhi(SMbjet));
-  if(Region == 1) MVA_dPhiWlepc = static_cast<float>( Wlep.DeltaPhi(LightJet));
+  if(selectedJets.size()>1 ) MVA_dPhiWlepc = static_cast<float>( Wlep.DeltaPhi(LightJet));
   MVA_dPhiZWlep = static_cast<float>( Zboson.DeltaPhi(Wlep));
   MVA_dPhiZSMtop = static_cast<float>( Zboson.DeltaPhi(SMtop));
   MVA_m3l = static_cast<float>( (selectedLeptons[0]+selectedLeptons[1]+selectedLeptons[2]).M());
@@ -3168,11 +3633,53 @@ void ClearMatchingSampleVars(){
   CjetMatchedCvsLT = 0.;
 }
 ///////////////////////////////////// INIT PLOTS /////////////////////////////////////////
-void Init1DPlots(){
+void Init1DPlots(string dataSetName){
   TH1::SetDefaultSumw2();
   
-  //histo1D["eventID"] = new TH1F("eventID","eventID",5802564204,207137,5802564203);
+  //cout << ("NbVertices_nom_"+dataSetName).c_str() << endl;
+  histo1D_PUSystematics[("NbVertices_nom_"+dataSetName).c_str()] = new TH1F(("NbVertices_nom_"+dataSetName).c_str(),"Nb Of Vertices",60,-0.5,59);
+  histo1D_ElSystematics[("Pt_electron_nom_"+dataSetName).c_str()] = new TH1F(("Pt_electron_nom_"+dataSetName).c_str(),"Pt leading electron",100,0,600);
+  histo1D_MuSystematics[("Pt_muon_nom_"+dataSetName).c_str()] = new TH1F(("Pt_muon_nom_"+dataSetName).c_str(),"Pt leading muon",100,0,600);
   
+  histo1D_PUSystematics[("NbVertices_up_"+dataSetName).c_str()] = new TH1F(("NbVertices_up_"+dataSetName).c_str(),"Nb Of Vertices",60,-0.5,59);
+  histo1D_ElSystematics[("Pt_electron_up_"+dataSetName).c_str()] = new TH1F(("Pt_electron_up_"+dataSetName).c_str(),"Pt leading electron",100,0,600);
+  histo1D_MuSystematics[("Pt_muon_up_"+dataSetName).c_str()] = new TH1F(("Pt_muon_up_"+dataSetName).c_str(),"Pt leading muon",100,0,600);
+ 
+  histo1D_PUSystematics[("NbVertices_down_"+dataSetName).c_str()] = new TH1F(("NbVertices_down_"+dataSetName).c_str(),"Nb Of Vertices",60,-0.5,59);
+  histo1D_ElSystematics[("Pt_electron_down_"+dataSetName).c_str()] = new TH1F(("Pt_electron_down_"+dataSetName).c_str(),"Pt leading electron",100,0,600);
+  histo1D_MuSystematics[("Pt_muon_down_"+dataSetName).c_str()] = new TH1F(("Pt_muon_down_"+dataSetName).c_str(),"Pt leading muon",100,0,600);
+  
+  histo1D_Bcferr1Systematics[("Bdis_cferr1_nom_"+dataSetName).c_str()] = new TH1F(("Bdis_cferr1_nom_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_Bcferr1Systematics[("Bdis_cferr1_up_"+dataSetName).c_str()] = new TH1F(("Bdis_cferr1_up_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_Bcferr1Systematics[("Bdis_cferr1_down_"+dataSetName).c_str()] = new TH1F(("Bdis_cferr1_down_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_Bcferr2Systematics[("Bdis_cferr2_nom_"+dataSetName).c_str()] = new TH1F(("Bdis_cferr2_nom_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_Bcferr2Systematics[("Bdis_cferr2_up_"+dataSetName).c_str()] = new TH1F(("Bdis_cferr2_up_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_Bcferr2Systematics[("Bdis_cferr2_down_"+dataSetName).c_str()] = new TH1F(("Bdis_cferr2_down_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  
+  histo1D_Bhfstats1Systematics[("Bdis_hfstats1_nom_"+dataSetName).c_str()] = new TH1F(("Bdis_hfstats1_nom_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_Bhfstats1Systematics[("Bdis_hfstats1_up_"+dataSetName).c_str()] = new TH1F(("Bdis_hfstats1_up_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_Bhfstats1Systematics[("Bdis_hfstats1_down_"+dataSetName).c_str()] = new TH1F(("Bdis_hfstats1_down_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_Bhfstats2Systematics[("Bdis_hfstats2_nom_"+dataSetName).c_str()] = new TH1F(("Bdis_hfstats2_nom_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_Bhfstats2Systematics[("Bdis_hfstats2_up_"+dataSetName).c_str()] = new TH1F(("Bdis_hfstats2_up_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_Bhfstats2Systematics[("Bdis_hfstats2_down_"+dataSetName).c_str()] = new TH1F(("Bdis_hfstats2_down_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  
+  histo1D_Blfstats1Systematics[("Bdis_lfstats1_nom_"+dataSetName).c_str()] = new TH1F(("Bdis_lfstats1_nom_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_Blfstats1Systematics[("Bdis_lfstats1_up_"+dataSetName).c_str()] = new TH1F(("Bdis_lfstats1_up_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_Blfstats1Systematics[("Bdis_lfstats1_down_"+dataSetName).c_str()] = new TH1F(("Bdis_lfstats1_down_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_Blfstats2Systematics[("Bdis_lfstats2_nom_"+dataSetName).c_str()] = new TH1F(("Bdis_lfstats2_nom_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_Blfstats2Systematics[("Bdis_lfstats2_up_"+dataSetName).c_str()] = new TH1F(("Bdis_lfstats2_up_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_Blfstats2Systematics[("Bdis_lfstats2_down_"+dataSetName).c_str()] = new TH1F(("Bdis_lfstats2_down_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  
+  histo1D_BhfSystematics[("Bdis_hf_nom_"+dataSetName).c_str()] = new TH1F(("Bdis_hf_nom_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_BhfSystematics[("Bdis_hf_up_"+dataSetName).c_str()] = new TH1F(("Bdis_hf_up_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_BhfSystematics[("Bdis_hf_down_"+dataSetName).c_str()] = new TH1F(("Bdis_hf_down_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_BlfSystematics[("Bdis_lf_nom_"+dataSetName).c_str()] = new TH1F(("Bdis_lf_nom_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_BlfSystematics[("Bdis_lf_up_"+dataSetName).c_str()] = new TH1F(("Bdis_lf_up_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  histo1D_BlfSystematics[("Bdis_lf_down_"+dataSetName).c_str()] = new TH1F(("Bdis_lf_down_"+dataSetName).c_str(),"CSVv2",25,0,1);
+  
+  
+  
+
 }
 
 void InitMSPlotsBDT(string prefix, vector <int> decayChannels){
@@ -3249,12 +3756,12 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
     MSPlot[(prefix+"_nEl_bfElSF_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefix+"_nEl_bfElSF_"+decaystring).c_str(), 10, -0.5, 9.5, "Nb of Electrons before Electron SF");
     MSPlot[(prefix+"_elSF_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_elSF_"+decaystring).c_str(), 60, 0.8, 1.05, "Electron SF");
     
-    MSPlot[(prefix+"_JetPt_bfJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_bfJER_"+decaystring).c_str(), 100, 0, 1, "Jet Pt before JER");
-    MSPlot[(prefix+"_JetPt_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_bfJES_"+decaystring).c_str(), 100, 0, 1, "Jet Pt before JES, after JER");
-    MSPlot[(prefix+"_JetPt_afJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_afJER_"+decaystring).c_str(), 100, 0, 1, "Jet Pt after JER");
-    MSPlot[(prefix+"_JetPt_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_afJES_"+decaystring).c_str(), 100, 0, 1, "Jet Pt after JES, after JER");
-    MSPlot[(prefix+"_met_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_met_bfJES_"+decaystring).c_str(), 100, 0, 1, "MET before JES");
-    MSPlot[(prefix+"_met_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_met_afJES_"+decaystring).c_str(), 100, 0, 1, "MET after JES");
+    MSPlot[(prefix+"_JetPt_bfJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_bfJER_"+decaystring).c_str(), 100, 0, 500, "Jet Pt before JER");
+    MSPlot[(prefix+"_JetPt_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_bfJES_"+decaystring).c_str(), 100, 0, 500, "Jet Pt before JES, after JER");
+    MSPlot[(prefix+"_JetPt_afJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_afJER_"+decaystring).c_str(), 100, 0, 500, "Jet Pt after JER");
+    MSPlot[(prefix+"_JetPt_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_afJES_"+decaystring).c_str(), 100, 0, 500, "Jet Pt after JES, after JER");
+    MSPlot[(prefix+"_met_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_met_bfJES_"+decaystring).c_str(), 100, 0, 500, "MET before JES");
+    MSPlot[(prefix+"_met_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_met_afJES_"+decaystring).c_str(), 100, 0, 500, "MET after JES");
     
     
     
@@ -3268,8 +3775,8 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
     
     MSPlot[(prefix+"_LeadingJetPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_LeadingJetPt_"+decaystring).c_str(), 125, 0, 500, "Leading Jet Pt [GeV]");
     MSPlot[(prefix+"_LeadingLepPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_LeadingLepPt_"+decaystring).c_str(), 125, 0, 500, "Leading Lepton Pt [GeV]");
-    MSPlot[(prefix+"_2ndLeadingJetPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_2ndLeadingJetPt_"+decaystring).c_str(), 50, 30, 250, "2ndLeading Jet Pt [GeV]");
-    MSPlot[(prefix+"_2ndLeadingLepPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_2ndLeadingLepPt_"+decaystring).c_str(), 40, 20, 250, "2nd Leading Lepton Pt [GeV]");
+    MSPlot[(prefix+"_2ndLeadingJetPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_2ndLeadingJetPt_"+decaystring).c_str(), 50, 30, 500, "2ndLeading Jet Pt [GeV]");
+    MSPlot[(prefix+"_2ndLeadingLepPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_2ndLeadingLepPt_"+decaystring).c_str(), 50, 20, 500, "2nd Leading Lepton Pt [GeV]");
     
     MSPlot[(prefix+"_nJets_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefix+"_nJets_"+decaystring).c_str(), 10, -0.5, 9.5, "Nb of Jets");
     MSPlot[(prefix+"_nJetsCSVL_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefix+"_nJetsCSVL_"+decaystring).c_str(), 10, -0.5, 9.5, "Nb of CSVL");
@@ -3282,7 +3789,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
   
   
   
-  MSPlot[(prefix+"_Decay").c_str()]= new MultiSamplePlot(datasets, (prefix+"_Decay").c_str(), 10, -0.5, 9.5, "Nb. Events with decay");
+  MSPlot[(prefix+"_Decay").c_str()]= new MultiSamplePlot(datasets, (prefix+"_Decay").c_str(), 10, -0.5, 9.5, "Decay channel");
   
   double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
   if(firstevent && verbose > 3){
@@ -3641,7 +4148,7 @@ void InitTree(TTree* tree, bool isData){
   tree->SetBranchAddress("npu", &npu, &b_npu);
   tree->SetBranchAddress("puSF", &puSF, &b_puSF);
   tree->SetBranchAddress("puSF_up", &puSF_up, &b_puSF_up);
-  tree->SetBranchAddress("puSF_up", &puSF_down, &b_puSF_down);
+  tree->SetBranchAddress("puSF_down", &puSF_down, &b_puSF_down);
   tree->SetBranchAddress("btagSF", &btagSF, &b_btagSF);
   tree->SetBranchAddress("PassedMETFilter", &PassedMETFilter, &b_PassedMETFilter);
   tree->SetBranchAddress("PassedTrigger", &PassedTrigger, &b_PassedTrigger);
@@ -3745,7 +4252,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
   string decaystring = "";
   Double_t eventW = 1.;
   if(isData) scaleFactor = 1.;
-  eventW = Luminosity*scaleFactor/EquilumiSF;
+  eventW = Luminosity/EquilumiSF;
   
   for(int iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
@@ -3761,53 +4268,53 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
     
     
     //cout << "nvtx "  << nvtx << endl;
-    MSPlot[(prefix+"_NbOfVertices_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true,eventW);
-    MSPlot[(prefix+"_NbOfVertices_bfPU_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true, Luminosity*(scaleFactor/puSF)/(EquilumiSF));
+    MSPlot[(prefix+"_NbOfVertices_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_NbOfVertices_bfPU_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true, eventW*scaleFactor_bfPU);
     MSPlot[(prefix+"_puSF_"+decaystring).c_str()]->Fill(puSF , datasets[d], true, 1);
     
     //cout << decayChannels[iChan] << " " << channelInt << " " << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
-    MSPlot[(prefix+"_bdisc_"+decaystring).c_str()]->Fill(bdisc_jet[0] , datasets[d], true,eventW);
-    MSPlot[(prefix+"_bdisc_bfBT_"+decaystring).c_str()]->Fill(bdisc_jet[0] , datasets[d], true, Luminosity*(scaleFactor/btagSFshape)/(EquilumiSF));
+    MSPlot[(prefix+"_bdisc_"+decaystring).c_str()]->Fill(bdisc_jet[0] , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_bdisc_bfBT_"+decaystring).c_str()]->Fill(bdisc_jet[0] , datasets[d], true,eventW*scaleFactor_bfBT);
     MSPlot[(prefix+"_btagSF_"+decaystring).c_str()]->Fill(btagSFshape , datasets[d], true, 1);
     
-    MSPlot[(prefix+"_nMu_"+decaystring).c_str()]->Fill(selectedMuons.size() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_nMu_bfMuSF_"+decaystring).c_str()]->Fill(selectedMuons.size() , datasets[d], true, Luminosity*scaleFactor/(EquilumiSF*muonSFtemp));
+    MSPlot[(prefix+"_nMu_"+decaystring).c_str()]->Fill(selectedMuons.size() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_nMu_bfMuSF_"+decaystring).c_str()]->Fill(selectedMuons.size() , datasets[d], true, eventW*scaleFactor_bfMuSF);
     MSPlot[(prefix+"_muSF_"+decaystring).c_str()]->Fill(muonSFtemp , datasets[d], true, 1);
     
-    MSPlot[(prefix+"_nEl_"+decaystring).c_str()]->Fill(selectedElectrons.size() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_nEl_bfElSF_"+decaystring).c_str()]->Fill(selectedElectrons.size() , datasets[d], true, Luminosity*scaleFactor/(EquilumiSF*electronSFtemp));
+    MSPlot[(prefix+"_nEl_"+decaystring).c_str()]->Fill(selectedElectrons.size() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_nEl_bfElSF_"+decaystring).c_str()]->Fill(selectedElectrons.size() , datasets[d], true, eventW*scaleFactor_bfELSF);
     MSPlot[(prefix+"_elSF_"+decaystring).c_str()]->Fill(electronSFtemp , datasets[d], true, 1);
     
     if(selectedJets.size() >0){
       // cout << (prefix+"_JetPt_bfJER_"+decaystring).c_str() << endl;
-      MSPlot[(prefix+"_JetPt_bfJER_"+decaystring).c_str()]->Fill(jet_Pt_before_JER[0] , datasets[d], true,eventW);
-      MSPlot[(prefix+"_JetPt_bfJES_"+decaystring).c_str()]->Fill(jet_Pt_before_JES[0] , datasets[d], true,eventW);
-      MSPlot[(prefix+"_JetPt_afJER_"+decaystring).c_str()]->Fill(jet_Pt_after_JER[0] , datasets[d], true,eventW);
-      MSPlot[(prefix+"_JetPt_afJES_"+decaystring).c_str()]->Fill(jet_Pt_after_JES[0] , datasets[d], true,eventW);
+      MSPlot[(prefix+"_JetPt_bfJER_"+decaystring).c_str()]->Fill(jet_Pt_before_JER[0] , datasets[d], true,eventW*scaleFactor);
+      MSPlot[(prefix+"_JetPt_bfJES_"+decaystring).c_str()]->Fill(jet_Pt_before_JES[0] , datasets[d], true,eventW*scaleFactor);
+      MSPlot[(prefix+"_JetPt_afJER_"+decaystring).c_str()]->Fill(jet_Pt_after_JER[0] , datasets[d], true,eventW*scaleFactor);
+      MSPlot[(prefix+"_JetPt_afJES_"+decaystring).c_str()]->Fill(jet_Pt_after_JES[0] , datasets[d], true,eventW*scaleFactor);
     }
-    MSPlot[(prefix+"_met_bfJES_"+decaystring).c_str()]->Fill(met_before_JES , datasets[d], true,eventW);
-    MSPlot[(prefix+"_met_afJES_"+decaystring).c_str()]->Fill(met_after_JES , datasets[d], true,eventW);
+    MSPlot[(prefix+"_met_bfJES_"+decaystring).c_str()]->Fill(met_before_JES , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_met_afJES_"+decaystring).c_str()]->Fill(met_after_JES , datasets[d], true,eventW*scaleFactor);
     
     
     // vars
     
-    MSPlot[(prefix+"_ZbosonMass_"+decaystring).c_str()]->Fill(Zboson.M() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_WbosonMass_"+decaystring).c_str()] ->Fill(Wboson.M() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_mWT_"+decaystring).c_str()]->Fill(mWT, datasets[d], true,eventW);
-    MSPlot[(prefix+"_mWT2_"+decaystring).c_str()]->Fill(mWT2, datasets[d], true,eventW);
-    MSPlot[(prefix+"_SMTopMass_"+decaystring).c_str()]->Fill( SMtop.M() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_mlb_"+decaystring).c_str()]->Fill((SMbjet+Wlep).M() , datasets[d], true,eventW);
+    MSPlot[(prefix+"_ZbosonMass_"+decaystring).c_str()]->Fill(Zboson.M() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_WbosonMass_"+decaystring).c_str()] ->Fill(Wboson.M() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_mWT_"+decaystring).c_str()]->Fill(mWT, datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_mWT2_"+decaystring).c_str()]->Fill(mWT2, datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_SMTopMass_"+decaystring).c_str()]->Fill( SMtop.M() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_mlb_"+decaystring).c_str()]->Fill((SMbjet+Wlep).M() , datasets[d], true,eventW*scaleFactor);
     
     
-    if(selectedJets.size()>0) MSPlot[(prefix+"_LeadingJetPt_"+decaystring).c_str()]->Fill( selectedJets[0].Pt() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_LeadingLepPt_"+decaystring).c_str()]->Fill(selectedLeptons[0].Pt() , datasets[d], true,eventW);
-    if(selectedJets.size()>1) MSPlot[(prefix+"_2ndLeadingJetPt_"+decaystring).c_str()]->Fill(selectedJets[1].Pt() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_2ndLeadingLepPt_"+decaystring).c_str()]->Fill(selectedLeptons[1].Pt() , datasets[d], true,eventW);
+    if(selectedJets.size()>0) MSPlot[(prefix+"_LeadingJetPt_"+decaystring).c_str()]->Fill( selectedJets[0].Pt() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_LeadingLepPt_"+decaystring).c_str()]->Fill(selectedLeptons[0].Pt() , datasets[d], true,eventW*scaleFactor);
+    if(selectedJets.size()>1) MSPlot[(prefix+"_2ndLeadingJetPt_"+decaystring).c_str()]->Fill(selectedJets[1].Pt() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_2ndLeadingLepPt_"+decaystring).c_str()]->Fill(selectedLeptons[1].Pt() , datasets[d], true,eventW*scaleFactor);
     
-    MSPlot[(prefix+"_nJets_"+decaystring).c_str()]->Fill(selectedJets.size() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_nJetsCSVL_"+decaystring).c_str()]->Fill(selectedCSVLJetID.size() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_nJetsCSVM_"+decaystring).c_str()]->Fill(selectedCSVMJetID.size() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_nJetsCSVT_"+decaystring).c_str()]->Fill(selectedCSVTJetID.size() , datasets[d], true,eventW);
+    MSPlot[(prefix+"_nJets_"+decaystring).c_str()]->Fill(selectedJets.size() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_nJetsCSVL_"+decaystring).c_str()]->Fill(selectedCSVLJetID.size() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_nJetsCSVM_"+decaystring).c_str()]->Fill(selectedCSVMJetID.size() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_nJetsCSVT_"+decaystring).c_str()]->Fill(selectedCSVTJetID.size() , datasets[d], true,eventW*scaleFactor);
   }
   
   for(int iChan =0; iChan < decayChannels.size() ; iChan++){
@@ -3818,61 +4325,110 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
     
     
     //cout << "nvtx "  << nvtx << endl;
-    MSPlot[(prefix+"_NbOfVertices_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true,eventW);
-    MSPlot[(prefix+"_NbOfVertices_bfPU_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true, Luminosity*(scaleFactor/puSF)/(EquilumiSF));
+    MSPlot[(prefix+"_NbOfVertices_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_NbOfVertices_bfPU_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true, eventW*scaleFactor_bfPU);
     MSPlot[(prefix+"_puSF_"+decaystring).c_str()]->Fill(puSF , datasets[d], true, 1);
     
     //cout << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
-    MSPlot[(prefix+"_bdisc_"+decaystring).c_str()]->Fill(bdisc_jet[0] , datasets[d], true,eventW);
-    MSPlot[(prefix+"_bdisc_bfBT_"+decaystring).c_str()]->Fill(bdisc_jet[0] , datasets[d], true, Luminosity*(scaleFactor/btagSFshape)/(EquilumiSF));
+    MSPlot[(prefix+"_bdisc_"+decaystring).c_str()]->Fill(bdisc_jet[0] , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_bdisc_bfBT_"+decaystring).c_str()]->Fill(bdisc_jet[0] , datasets[d], true, eventW*scaleFactor_bfBT);
     MSPlot[(prefix+"_btagSF_"+decaystring).c_str()]->Fill(btagSFshape , datasets[d], true, 1);
     
-    MSPlot[(prefix+"_nMu_"+decaystring).c_str()]->Fill(selectedMuons.size() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_nMu_bfMuSF_"+decaystring).c_str()]->Fill(selectedMuons.size() , datasets[d], true, Luminosity*scaleFactor/(EquilumiSF*muonSFtemp));
+    MSPlot[(prefix+"_nMu_"+decaystring).c_str()]->Fill(selectedMuons.size() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_nMu_bfMuSF_"+decaystring).c_str()]->Fill(selectedMuons.size() , datasets[d], true,eventW*scaleFactor_bfMuSF);
     MSPlot[(prefix+"_muSF_"+decaystring).c_str()]->Fill(muonSFtemp , datasets[d], true, 1);
     
-    MSPlot[(prefix+"_nEl_"+decaystring).c_str()]->Fill(selectedElectrons.size() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_nEl_bfElSF_"+decaystring).c_str()]->Fill(selectedElectrons.size() , datasets[d], true, Luminosity*scaleFactor/(EquilumiSF*electronSFtemp));
+    MSPlot[(prefix+"_nEl_"+decaystring).c_str()]->Fill(selectedElectrons.size() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_nEl_bfElSF_"+decaystring).c_str()]->Fill(selectedElectrons.size() , datasets[d], true, eventW*scaleFactor_bfELSF);
     MSPlot[(prefix+"_elSF_"+decaystring).c_str()]->Fill(electronSFtemp , datasets[d], true, 1);
     
     if(selectedJets.size() >0){
       // cout << (prefix+"_JetPt_bfJER_"+decaystring).c_str() << endl;
-      MSPlot[(prefix+"_JetPt_bfJER_"+decaystring).c_str()]->Fill(jet_Pt_before_JER[0] , datasets[d], true,eventW);
-      MSPlot[(prefix+"_JetPt_bfJES_"+decaystring).c_str()]->Fill(jet_Pt_before_JES[0] , datasets[d], true,eventW);
-      MSPlot[(prefix+"_JetPt_afJER_"+decaystring).c_str()]->Fill(jet_Pt_after_JER[0] , datasets[d], true,eventW);
-      MSPlot[(prefix+"_JetPt_afJES_"+decaystring).c_str()]->Fill(jet_Pt_after_JES[0] , datasets[d], true,eventW);
+      MSPlot[(prefix+"_JetPt_bfJER_"+decaystring).c_str()]->Fill(jet_Pt_before_JER[0] , datasets[d], true,eventW*scaleFactor);
+      MSPlot[(prefix+"_JetPt_bfJES_"+decaystring).c_str()]->Fill(jet_Pt_before_JES[0] , datasets[d], true,eventW*scaleFactor);
+      MSPlot[(prefix+"_JetPt_afJER_"+decaystring).c_str()]->Fill(jet_Pt_after_JER[0] , datasets[d], true,eventW*scaleFactor);
+      MSPlot[(prefix+"_JetPt_afJES_"+decaystring).c_str()]->Fill(jet_Pt_after_JES[0] , datasets[d], true,eventW*scaleFactor);
     }
-    MSPlot[(prefix+"_met_bfJES_"+decaystring).c_str()]->Fill(met_before_JES , datasets[d], true,eventW);
-    MSPlot[(prefix+"_met_afJES_"+decaystring).c_str()]->Fill(met_after_JES , datasets[d], true,eventW);
+    MSPlot[(prefix+"_met_bfJES_"+decaystring).c_str()]->Fill(met_before_JES , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_met_afJES_"+decaystring).c_str()]->Fill(met_after_JES , datasets[d], true,eventW*scaleFactor);
     
     
     // vars
     
-    MSPlot[(prefix+"_ZbosonMass_"+decaystring).c_str()]->Fill( Zboson.M() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_WbosonMass_"+decaystring).c_str()] ->Fill(Wboson.M() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_mWT_"+decaystring).c_str()]->Fill(mWT, datasets[d], true,eventW);
-    MSPlot[(prefix+"_mWT2_"+decaystring).c_str()]->Fill(mWT2, datasets[d], true,eventW);
-    MSPlot[(prefix+"_SMTopMass_"+decaystring).c_str()]->Fill( SMtop.M() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_mlb_"+decaystring).c_str()]->Fill((SMbjet+Wlep).M() , datasets[d], true,eventW);
+    MSPlot[(prefix+"_ZbosonMass_"+decaystring).c_str()]->Fill( Zboson.M() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_WbosonMass_"+decaystring).c_str()] ->Fill(Wboson.M() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_mWT_"+decaystring).c_str()]->Fill(mWT, datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_mWT2_"+decaystring).c_str()]->Fill(mWT2, datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_SMTopMass_"+decaystring).c_str()]->Fill( SMtop.M() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_mlb_"+decaystring).c_str()]->Fill((SMbjet+Wlep).M() , datasets[d], true,eventW*scaleFactor);
     
     
-    if(selectedJets.size()>0) MSPlot[(prefix+"_LeadingJetPt_"+decaystring).c_str()]->Fill( selectedJets[0].Pt() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_LeadingLepPt_"+decaystring).c_str()]->Fill( selectedLeptons[0].Pt() , datasets[d], true,eventW);
-    if(selectedJets.size()>1) MSPlot[(prefix+"_2ndLeadingJetPt_"+decaystring).c_str()]->Fill(selectedJets[1].Pt() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_2ndLeadingLepPt_"+decaystring).c_str()]->Fill(selectedLeptons[1].Pt() , datasets[d], true,eventW);
+    if(selectedJets.size()>0) MSPlot[(prefix+"_LeadingJetPt_"+decaystring).c_str()]->Fill( selectedJets[0].Pt() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_LeadingLepPt_"+decaystring).c_str()]->Fill( selectedLeptons[0].Pt() , datasets[d], true,eventW*scaleFactor);
+    if(selectedJets.size()>1) MSPlot[(prefix+"_2ndLeadingJetPt_"+decaystring).c_str()]->Fill(selectedJets[1].Pt() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_2ndLeadingLepPt_"+decaystring).c_str()]->Fill(selectedLeptons[1].Pt() , datasets[d], true,eventW*scaleFactor);
     
-    MSPlot[(prefix+"_nJets_"+decaystring).c_str()]->Fill(selectedJets.size() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_nJetsCSVL_"+decaystring).c_str()]->Fill(selectedCSVLJetID.size() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_nJetsCSVM_"+decaystring).c_str()]->Fill(selectedCSVMJetID.size() , datasets[d], true,eventW);
-    MSPlot[(prefix+"_nJetsCSVT_"+decaystring).c_str()]->Fill(selectedCSVTJetID.size() , datasets[d], true,eventW);
+    MSPlot[(prefix+"_nJets_"+decaystring).c_str()]->Fill(selectedJets.size() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_nJetsCSVL_"+decaystring).c_str()]->Fill(selectedCSVLJetID.size() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_nJetsCSVM_"+decaystring).c_str()]->Fill(selectedCSVMJetID.size() , datasets[d], true,eventW*scaleFactor);
+    MSPlot[(prefix+"_nJetsCSVT_"+decaystring).c_str()]->Fill(selectedCSVTJetID.size() , datasets[d], true,eventW*scaleFactor);
     
   }
   
-  MSPlot[(prefix+"_Decay").c_str()]->Fill(channelInt , datasets[d], true,eventW);
+  MSPlot[(prefix+"_Decay").c_str()]->Fill(channelInt , datasets[d], true,eventW*scaleFactor);
   
   
   //cout << "end plot filling" << endl;
 }
+void Fill1DPlots(string dataSetName){
+  Double_t eventW = 1.;
+  eventW = Luminosity/EquilumiSF;
+  
+  //cout << " nvtx " << nvtx << " eventw " << eventW << endl;
+  //cout << "puSF_up" << puSF_up << endl;
+  //cout << eventW << " " << (eventW/puSF)*puSF_up<< " " << (eventW/puSF)*puSF_down << endl;
+  histo1D_PUSystematics[("NbVertices_nom_"+dataSetName).c_str()]->Fill(nvtx, eventW*scaleFactor);
+  histo1D_ElSystematics[("Pt_electron_nom_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt(), eventW*scaleFactor);
+  histo1D_MuSystematics[("Pt_muon_nom_"+dataSetName).c_str()] ->Fill(selectedMuons[0].Pt(), eventW*scaleFactor);
+  histo1D_Bcferr1Systematics[("Bdis_cferr1_nom_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor);
+  histo1D_Bcferr2Systematics[("Bdis_cferr2_nom_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor);
+  histo1D_Bhfstats1Systematics[("Bdis_hfstats1_nom_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor);
+  histo1D_Bhfstats2Systematics[("Bdis_hfstats2_nom_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor);
+  histo1D_Blfstats1Systematics[("Bdis_lfstats1_nom_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor);
+  histo1D_Blfstats2Systematics[("Bdis_lfstats2_nom_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor);
+  histo1D_BhfSystematics[("Bdis_hf_nom_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor);
+  histo1D_BlfSystematics[("Bdis_lf_nom_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor);
+  
+
+  
+  
+  histo1D_PUSystematics[("NbVertices_up_"+dataSetName).c_str()]->Fill(nvtx, eventW*scaleFactor_puSF_up);
+  histo1D_ElSystematics[("Pt_electron_up_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt(), eventW*scaleFactor_electronSF_up);
+  histo1D_MuSystematics[("Pt_muon_up_"+dataSetName).c_str()]->Fill(selectedMuons[0].Pt(), eventW*scaleFactor_muonSF_up);
+  histo1D_Bcferr1Systematics[("Bdis_cferr1_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_cferr1_up);
+  histo1D_Bcferr2Systematics[("Bdis_cferr2_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_cferr2_up);
+  histo1D_Bhfstats1Systematics[("Bdis_hfstats1_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_hfstats1_up);
+  histo1D_Bhfstats2Systematics[("Bdis_hfstats2_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_hfstats2_up);
+  histo1D_Blfstats1Systematics[("Bdis_lfstats1_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_lfstats1_up);
+  histo1D_Blfstats2Systematics[("Bdis_lfstats2_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_lfstats2_up);
+  histo1D_BhfSystematics[("Bdis_hf_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_hf_up);
+  histo1D_BlfSystematics[("Bdis_lf_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_lf_up);
+  
+  
+  histo1D_PUSystematics[("NbVertices_down_"+dataSetName).c_str()]->Fill(nvtx, eventW*scaleFactor_puSF_down);
+  histo1D_ElSystematics[("Pt_electron_down_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt(), eventW*scaleFactor_electronSF_down);
+  histo1D_MuSystematics[("Pt_muon_down_"+dataSetName).c_str()]->Fill(selectedMuons[0].Pt(), eventW*scaleFactor_muonSF_down);
+  histo1D_Bcferr1Systematics[("Bdis_cferr1_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_cferr1_down);
+  histo1D_Bcferr2Systematics[("Bdis_cferr2_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_cferr2_down);
+  histo1D_Bhfstats1Systematics[("Bdis_hfstats1_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_hfstats1_down);
+  histo1D_Bhfstats2Systematics[("Bdis_hfstats2_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_hfstats2_down);
+  histo1D_Blfstats1Systematics[("Bdis_lfstats1_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_lfstats1_down);
+  histo1D_Blfstats2Systematics[("Bdis_lfstats2_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_lfstats2_down);
+  histo1D_BhfSystematics[("Bdis_hf_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_hf_down);
+  histo1D_BlfSystematics[("Bdis_lf_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_lf_down);
+}
+
+
 void FillGenInfoPlots(string dataSetName){
   if( foundSMb && foundW){
     histo1D[("Topmass_Wb_"+dataSetName).c_str()]->Fill((mcParticles[SMb_Indice] + mcParticles[SMW_Indice]).M());
