@@ -896,7 +896,7 @@ int main (int argc, char *argv[])
     // Setup Date string and nTuple for output
     ///////////////////////////////////////////////////////////
     
-    string channel_dir = "NtupleMakerOutput/Ntuples/" ;
+    string channel_dir = "NtupleMakerOutput/Ntuplesnew/" ;
     string date_dir = channel_dir+ "/Ntuples_" + dateString +"/";
     mkdir(channel_dir.c_str(),0777);
     mkdir(date_dir.c_str(),0777);
