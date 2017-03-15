@@ -823,8 +823,8 @@ int main(int argc, char *argv[])
             {
                 if(category=="b2j4" || category=="b2j3")
                 {
-                    EntryStart = (int) 19*nEntries/20;
-                    EqLumi = EqLumi/20;
+                    EntryStart = (int) 99*nEntries/100;
+                    EqLumi = EqLumi/100;
                 }
                 else if(category=="b3j4")
                 {

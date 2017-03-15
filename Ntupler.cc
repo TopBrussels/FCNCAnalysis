@@ -263,7 +263,7 @@ int main (int argc, char *argv[])
     anaEnv.FatJetCollection = "FatJets_slimmedJetsAK8";
     anaEnv.METCollection = "PFMET_slimmedMETs";
     anaEnv.MuonCollection = "Muons_slimmedMuons";
-    anaEnv.ElectronCollection = "Electrons_calibratedPatElectrons";
+    anaEnv.ElectronCollection = "Electrons_selectedElectrons";
     anaEnv.NPGenEventCollection = "NPGenEvent";
     anaEnv.MCParticlesCollection = "MCParticles";
     anaEnv.loadFatJetCollection = false;
