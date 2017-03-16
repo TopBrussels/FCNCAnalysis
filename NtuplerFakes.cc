@@ -184,7 +184,7 @@ int main (int argc, char *argv[])
   bool applyJES = false;
   bool fillBtagHisto = false;
   
-  bool doFakeLepton  =false;
+  bool doFakeLepton  =true;
   
   
   //////////////////////////////////////////////
@@ -907,6 +907,7 @@ int main (int argc, char *argv[])
     if(doJESJERshift == 3) postfix = "_JERdown" ;
     if(doJESJERshift == 4) postfix = "_JERup" ;
     string Ntupname = date_dir +"FCNC_3L_" + dName + "_"+  strJobNum + postfix + ".root";
+    if(doFakeLepton)  Ntupname = date_dir +"FCNC_3L_fakes_" + dName + "_"+  strJobNum + postfix + ".root";
     cout << "Ntuple " << Ntupname << " created " << endl;
     
     TFile * tupfile = new TFile(Ntupname.c_str(),"RECREATE");

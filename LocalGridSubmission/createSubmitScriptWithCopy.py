@@ -25,11 +25,11 @@ date = yyyy+mm+dd
 #channels = ["MuMu","ElEl"] 
 #channels = ["mumumu","eee","all"] 
 channels = ["all"]
-jesjers = [0,1,2,3,4]
-fillBhisto = 1; 
+jesjers = [0]
+fillBhisto = 0; 
 JES = 1; 
 JER = 1; 
-doJESJER = 0; 
+doJESJER = 4; 
 
 #if(doJESJERshift == 1) postfix = "_JESdown" ;
 #    if(doJESJERshift == 2) postfix = "_JESup" ;
@@ -91,7 +91,7 @@ for JESJER in jesjers:
     
     # loop over all the dataset with add="1"
     for d in datasets:
-        if d.attrib['add'] == '1':
+        if d.attrib['add'] == '1' and "80X" in str(d.attrib['name']):
             print "found dataset to be added..." + str(d.attrib['name'])
             commandString = "./Ntupler "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff'])
             topTrees = glob.glob(d.attrib['filenames'])
@@ -99,19 +99,10 @@ for JESJER in jesjers:
             # setting the number of file per job depending whether it is data sample or not
             # this ca be tweaked
             if "data" in str(d.attrib['name']):
-                FilePerJob=50
+                FilePerJob=80
             else:
-                FilePerJob=20
-
-            # create a test job for each dataset
-            # create a file for this job                                                                                                                                        
-            filenameTest="SubmitScripts/"+date+"/"+chan+"/test"+"/submit_"+str(d.attrib['name'])+"_"+"Test"+".sh"
-            # copy a skeleton file that set up the code environment, the wall time and the queue                                                                                
-            shutil.copyfile("submitTestSkeleton.sh", filenameTest)
-            # append to the file the actual command                                                                                                                             
-           # outfileTest = open (filenameTest, 'a')
-	    #print >> outfileTest, commandString, topTrees[0], " ", JES , " " , JER , " ", fillBhisto, " ", "1" , "0" , " 10000"
-                
+                FilePerJob=50
+            
             N_job = 0
             N_file = 1
             remainder= len(topTrees)%FilePerJob

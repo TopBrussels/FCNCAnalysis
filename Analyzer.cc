@@ -171,15 +171,15 @@ Float_t MVA_FCNCtop_phi= -999.;
 
 
 // nbrs
-Float_t MVA_nMuons = -999.;
-Float_t MVA_NJets_CSVv2T = -999.;
-Float_t MVA_NJets_CSVv2M = -999.;
-Float_t MVA_NJets_CSVv2L = -999.;
-Float_t MVA_nJets = -999.;
-Float_t MVA_nElectrons = -999.;
-Float_t MVA_nJets_CharmL = -999.;
-Float_t MVA_nJets_CharmM = -999.;
-Float_t MVA_nJets_CharmT = -999.;
+Int_t MVA_nMuons = -999;
+Int_t MVA_NJets_CSVv2T = -999;
+Int_t MVA_NJets_CSVv2M = -999;
+Int_t MVA_NJets_CSVv2L = -999;
+Int_t MVA_nJets = -999;
+Int_t MVA_nElectrons = -999;
+Int_t MVA_nJets_CharmL = -999;
+Int_t MVA_nJets_CharmM = -999;
+Int_t MVA_nJets_CharmT = -999;
 
 
 //SM kinematics
@@ -192,7 +192,7 @@ Float_t MVA_dRWlepb = -999.;
 
 Float_t MVA_dPhiWlepb = -999.;
 
-Float_t MVA_Wlep_Charge = -999.;
+Int_t MVA_Wlep_Charge = -999;
 Float_t MVA_charge_asym = -999.;
 Float_t MVA_TotalPt = -999.;
 Float_t MVA_TotalHt = -999.;
@@ -1085,9 +1085,9 @@ int main(int argc, char* argv[]){
   }
   
   if(makeMVAtree && makeMVAPlots) {
-    //InitMVAMSPlotsSingletop("singletop", decayChannels);
+    InitMVAMSPlotsSingletop("singletop", decayChannels);
     InitMVAMSPlotsTopPair("wzcontrol", decayChannels);
-    //  InitMVAMSPlotsSingletop("wzcontrol", decayChannels);
+    InitMVAMSPlotsTopPair("toppair", decayChannels);
     
   }
   
@@ -1142,7 +1142,7 @@ int main(int argc, char* argv[]){
     }
     
     isData = false;
-    if ( dataSetName.find("Data") != std::string::npos || dataSetName.find("data")!= std::string::npos || dataSetName.find("DATA")!= std::string::npos )
+    if ( dataSetName.find("Data") != std::string::npos || dataSetName.find("data")!= std::string::npos || dataSetName.find("DATA")!= std::string::npos || dataSetName.find("fake")!= std::string::npos)
     {
       isData = true;
     }
@@ -1165,8 +1165,9 @@ int main(int argc, char* argv[]){
       }
     }
     
-    if(dataSetName.find("TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut")!=std::string::npos){
-      //cout << "init 1D plots" << endl;
+//    if(dataSetName.find("TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut")!=std::string::npos){
+    if(dataSetName.find("WZTo3LNu_3Jets_MLL50")!=std::string::npos){
+      cout << "init 1D plots" << endl;
       Init1DPlots(dataSetName);
     }
     
@@ -1528,7 +1529,7 @@ int main(int argc, char* argv[]){
       {
         //cout << "ievt " << ievt << endl;
         FillGeneralPlots(d, "control_afterAtLeast1Jet", decayChannels, isData);
-        if(dataSetName.find("TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut")!=std::string::npos) Fill1DPlots(dataSetName);
+        if(dataSetName.find("WZTo3LNu_3Jets_MLL50")!=std::string::npos) Fill1DPlots(dataSetName);
         
       }
       //cout << "zmass" << endl;
@@ -1618,7 +1619,7 @@ int main(int argc, char* argv[]){
   string place =pathOutputdate+"/MSPlot/";
   string placeTH1F = pathOutputdate+"/TH1F/";
   string placeTH2F = pathOutputdate+"/TH2F/";
-  vector <string> vlabel_chan = {"3#mu", "2#mu 1e", "2e 1#u", "3e"};
+  vector <string> vlabel_chan = {"3#mu", "1e2#mu", "2e1#mu", "3e"};
   mkdir(place.c_str(),0777);
   mkdir(placeTH1F.c_str(),0777);
   mkdir(placeTH2F.c_str(),0777);
@@ -1638,8 +1639,8 @@ int main(int argc, char* argv[]){
     if(!datafound) temp->setDataLumi(Luminosity);
     if(name.find("all")!=std::string::npos) temp->setChannel(true, "all");
     if(name.find("eee")!=std::string::npos) temp->setChannel(true, "3e");
-    if(name.find("eeu")!=std::string::npos) temp->setChannel(true, "2e 1#mu");
-    if(name.find("uue")!=std::string::npos) temp->setChannel(true, "2#mu 1e");
+    if(name.find("eeu")!=std::string::npos) temp->setChannel(true, "2e1#mu");
+    if(name.find("uue")!=std::string::npos) temp->setChannel(true, "1e2#mu");
     if(name.find("uuu")!=std::string::npos) temp->setChannel(true, "3#mu");
     if(name.find("Decay")!=std::string::npos) temp->setBins(vlabel_chan);
     temp->Draw(name, 1, false, false, false, 10);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
@@ -2180,8 +2181,8 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
   MVA_lepton1_phi = static_cast<float>( selectedLeptons[1].Phi());
   MVA_lepton2_phi = static_cast<float>( selectedLeptons[2].Phi());
   
-  MVA_nMuons = static_cast<float>( selectedMuons.size());
-  MVA_nElectrons = static_cast<float>( selectedElectrons.size());
+  MVA_nMuons = ( selectedMuons.size());
+  MVA_nElectrons = ( selectedElectrons.size());
   // cout << "leptons done" << endl);
   if(selectedJets.size()>0){
     MVA_jet0_pt = static_cast<float>( selectedJets[0].Pt());
@@ -2194,10 +2195,10 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
     MVA_jet1_phi = static_cast<float>( selectedJets[1].Phi());
   }
   
-  MVA_nJets = static_cast<float>( selectedJets.size());
-  MVA_NJets_CSVv2L = static_cast<float>( selectedCSVLJetID.size());
-  MVA_NJets_CSVv2M= static_cast<float>( selectedCSVMJetID.size());
-  MVA_NJets_CSVv2T= static_cast<float>( selectedCSVTJetID.size());
+  MVA_nJets = ( selectedJets.size());
+  MVA_NJets_CSVv2L = ( selectedCSVLJetID.size());
+  MVA_NJets_CSVv2M= ( selectedCSVMJetID.size());
+  MVA_NJets_CSVv2T= ( selectedCSVTJetID.size());
   //cout << "jets done" << endl);
   
   // SM side
@@ -2233,9 +2234,9 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
     MVA_FCNCtop_eta = static_cast<float>( FCNCtop.Eta());
     MVA_FCNCtop_phi =static_cast<float>( FCNCtop.Phi());
     
-    MVA_nJets_CharmL = static_cast<float>( selectedCharmLJetsindex.size());
-    MVA_nJets_CharmM = static_cast<float>( selectedCharmMJetsindex.size());
-    MVA_nJets_CharmT = static_cast<float>( selectedCharmTJetsindex.size());
+    MVA_nJets_CharmL = ( selectedCharmLJetsindex.size());
+    MVA_nJets_CharmM = ( selectedCharmMJetsindex.size());
+    MVA_nJets_CharmT = ( selectedCharmTJetsindex.size());
   }
   
   // cout << "FCNC side " << endl);
@@ -2250,8 +2251,8 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
   
   MVA_dPhiWlepb = static_cast<float>(Wlep.DeltaPhi(SMbjet));
   
-  if(WmuIndiceF != -999) MVA_Wlep_Charge = static_cast<float>( selectedMuonsCharge[WmuIndiceF]);
-  else if(WelecIndiceF != -999) MVA_Wlep_Charge = static_cast<float>( selectedElectronsCharge[WelecIndiceF]);
+  if(WmuIndiceF != -999) MVA_Wlep_Charge = ( selectedMuonsCharge[WmuIndiceF]);
+  else if(WelecIndiceF != -999) MVA_Wlep_Charge = ( selectedElectronsCharge[WelecIndiceF]);
   MVA_charge_asym = static_cast<float>( MVA_Wlep_Charge*fabs(Wlep.Eta()));
   if(selectedJets.size()>1) MVA_bdiscCSVv2_jet_1 = static_cast<float>( bdisc_jet[1]);
   if(selectedJets.size()>0) MVA_bdiscCSVv2_jet_0 = static_cast<float>(bdisc_jet[0]);
@@ -2399,12 +2400,12 @@ void createMVAtree(string dataSetName){
   
   
   //nbrs
-  mvatree->Branch("MVA_nElectrons", &MVA_nElectrons, "MVA_nElectrons/F");
-  mvatree->Branch("MVA_nJets", &MVA_nJets, "MVA_nJets/F");
-  mvatree->Branch("MVA_NJets_CSVv2L", &MVA_NJets_CSVv2L, "MVA_NJets_CSVv2L/F");
-  mvatree->Branch("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, "MVA_NJets_CSVv2M/F");
-  mvatree->Branch("MVA_NJets_CSVv2T", &MVA_NJets_CSVv2T, "MVA_NJets_CSVv2T/F");
-  mvatree->Branch("MVA_nMuons", &MVA_nMuons, "MVA_nMuons/F");
+  mvatree->Branch("MVA_nElectrons", &MVA_nElectrons, "MVA_nElectrons/I");
+  mvatree->Branch("MVA_nJets", &MVA_nJets, "MVA_nJets/I");
+  mvatree->Branch("MVA_NJets_CSVv2L", &MVA_NJets_CSVv2L, "MVA_NJets_CSVv2L/I");
+  mvatree->Branch("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, "MVA_NJets_CSVv2M/I");
+  mvatree->Branch("MVA_NJets_CSVv2T", &MVA_NJets_CSVv2T, "MVA_NJets_CSVv2T/I");
+  mvatree->Branch("MVA_nMuons", &MVA_nMuons, "MVA_nMuons/I");
   
   
   mvatree->Branch("MVA_met", &MVA_met, "MVA_met/F");
@@ -2420,7 +2421,7 @@ void createMVAtree(string dataSetName){
   
   mvatree->Branch("MVA_dPhiWlepb", &MVA_dPhiWlepb, "MVA_dPhiWlepb/F");
   
-  mvatree->Branch("MVA_Wlep_Charge", &MVA_Wlep_Charge,"MVA_Wlep_Charge/F");
+  mvatree->Branch("MVA_Wlep_Charge", &MVA_Wlep_Charge,"MVA_Wlep_Charge/I");
   mvatree->Branch("MVA_charge_asym", &MVA_charge_asym, "MVA_charge_asym/F");
   mvatree->Branch("MVA_TotalPt", &MVA_TotalPt, "MVA_TotalPt/F");
   mvatree->Branch("MVA_TotalHt", &MVA_TotalHt,"MVA_TotalHt/F");
@@ -2435,7 +2436,7 @@ void createMVAtree(string dataSetName){
   mvatree->Branch("MVA_TotalInvMass_lep", &MVA_TotalInvMass_lep,"MVA_TotalInvMass_lep/F");
   
   mvatree->Branch("MVA_bdiscCSVv2_jet_0", &MVA_bdiscCSVv2_jet_0,"MVA_bdiscCSVv2_jet_0/F");
-  mvatree->Branch("MVA_bdiscCSVv2_jet_1", &MVA_bdiscCSVv2_jet_0,"MVA_bdiscCSVv2_jet_1/F");
+  mvatree->Branch("MVA_bdiscCSVv2_jet_1", &MVA_bdiscCSVv2_jet_1,"MVA_bdiscCSVv2_jet_1/F");
   mvatree->Branch("MVA_CosTheta", &MVA_CosTheta,"MVA_CosTheta/F");
   mvatree->Branch("MVA_CosTheta_alt", &MVA_CosTheta_alt,"MVA_CosTheta_alt/F");
   
@@ -2455,9 +2456,9 @@ void createMVAtree(string dataSetName){
   mvatree->Branch("MVA_cdiscCvsB_jet_0", &MVA_cdiscCvsB_jet_0,"MVA_cdiscCvsB_jet_0/F");
   mvatree->Branch("MVA_cdiscCvsL_jet_0", &MVA_cdiscCvsL_jet_0,"MVA_cdiscCvsL_jet_0/F");
   
-  mvatree->Branch("MVA_nJets_CharmL", &MVA_nJets_CharmL, "MVA_nJets_CharmL/F");
-  mvatree->Branch("MVA_nJets_CharmM", &MVA_nJets_CharmM, "MVA_nJets_CharmM/F");
-  mvatree->Branch("MVA_nJets_CharmT", &MVA_nJets_CharmT, "MVA_nJets_CharmT/F");
+  mvatree->Branch("MVA_nJets_CharmL", &MVA_nJets_CharmL, "MVA_nJets_CharmL/I");
+  mvatree->Branch("MVA_nJets_CharmM", &MVA_nJets_CharmM, "MVA_nJets_CharmM/I");
+  mvatree->Branch("MVA_nJets_CharmT", &MVA_nJets_CharmT, "MVA_nJets_CharmT/I");
   
   // interplay
   mvatree->Branch("MVA_dRSMFCNCtop", &MVA_dRSMFCNCtop,"MVA_dRSMFCNCtop/F");
@@ -3351,15 +3352,15 @@ void ClearMVAVars(){
   
   
   //nbrs
-  MVA_nMuons = -999.;
-  MVA_NJets_CSVv2T = -999.;
-  MVA_NJets_CSVv2M = -999.;
-  MVA_NJets_CSVv2L = -999.;
-  MVA_nJets = -999.;
-  MVA_nJets_CharmL = -999.;
-  MVA_nJets_CharmM = -999.;
-  MVA_nJets_CharmT = -999.;
-  MVA_nElectrons = -999.;
+  MVA_nMuons = -999;
+  MVA_NJets_CSVv2T = -999;
+  MVA_NJets_CSVv2M = -999;
+  MVA_NJets_CSVv2L = -999;
+  MVA_nJets = -999;
+  MVA_nJets_CharmL = -999;
+  MVA_nJets_CharmM = -999;
+  MVA_nJets_CharmT = -999;
+  MVA_nElectrons = -999;
   
   //SM kinematics
   MVA_mWt = -999.;
@@ -3371,7 +3372,7 @@ void ClearMVAVars(){
   
   MVA_dPhiWlepb = -999.;
   
-  MVA_Wlep_Charge = -999.;
+  MVA_Wlep_Charge = -999;
   MVA_charge_asym = -999.;
   MVA_TotalPt = -999.;
   MVA_TotalHt = -999.;
@@ -4253,6 +4254,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
   Double_t eventW = 1.;
   if(isData) scaleFactor = 1.;
   eventW = Luminosity/EquilumiSF;
+  if(datasets[d]->Name().find("fake")!=std::string::npos) eventW *= 0.25;
   
   for(int iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";

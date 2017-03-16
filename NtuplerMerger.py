@@ -12,7 +12,7 @@ dd = str(now.day)
 mm = str(now.month)
 yyyy = str(now.year)
 # pick one of the two above
-date = "161214"
+date = "170313"
 #date = "17_1_2016"
 
 #channels = ["_MuMu","_ElEl"]
@@ -23,12 +23,13 @@ for chan in channels:
     
     #Define path where ntuples are stored
     pathNonMerged = "NtupleMakerOutput/Ntuples/Ntuples_"+date+"/"
+    #pathNonMerged = "NtupleMakerOutput/Ntuplesfakes/Ntuples_"+date+"/";
     if "MuMuMu" in chan:
         pathMerged = "NtupleMakerOutput/MergedTuples/mumumu/"+"160530"+"/"
     if "ElElEl" in chan:
         pathMerged = "NtupleMakerOutput/MergedTuples/eee/"+"160530"+"/"
     if "All" in chan:
-        pathMerged = "NtupleMakerOutput/MergedTuples/all/"+date+"/"
+        pathMerged = "NtupleMakerOutput/MergedTuples/"+date+"/"
     
     if not os.path.exists(pathMerged):
         os.makedirs(pathMerged)
@@ -63,7 +64,7 @@ for chan in channels:
             print "found dataset to be added..." + str(d.attrib['name'])
 
             # select a subset of the existing root file
-            if not "over" in str(d.attrib['name']) :
+            if not "80X" in str(d.attrib['name']) :
                 datasetNames.append(str(d.attrib['name']))
                 print str(d.attrib['name'])
     
@@ -105,10 +106,12 @@ for chan in channels:
     
     if (mergeData):
     # combining all the Data in one
-        dataList=glob.glob(pathMerged+"*Data*.root")
+        cmd1 = "rm data.root"; 
+        dataList=glob.glob(pathMerged+"*data*.root")
     
-	cmd = "hadd " + pathMerged + "/"+ "Data.root"
+	cmd = "hadd " + pathMerged + "/"+ "data_fake.root"
         for data in dataList:
             cmd = cmd + " " + data
+	os.system(cmd1)
         os.system(cmd)
             
