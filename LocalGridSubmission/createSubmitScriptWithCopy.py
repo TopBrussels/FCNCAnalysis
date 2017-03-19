@@ -25,8 +25,7 @@ date = yyyy+mm+dd
 #channels = ["MuMu","ElEl"] 
 #channels = ["mumumu","eee","all"] 
 channels = ["all"]
-jesjers = [0]
-fillBhisto = 0; 
+doFakes = 0; 
 JES = 1; 
 JER = 1; 
 doJESJER = 0; 
@@ -89,7 +88,7 @@ for chan in channels:
     
     # loop over all the dataset with add="1"
     for d in datasets:
-        if d.attrib['add'] == '1' and "80X" in str(d.attrib['name']):
+        if d.attrib['add'] == '1' and not "80X" in str(d.attrib['name']):
             print "found dataset to be added..." + str(d.attrib['name'])
             commandString = "./Ntupler "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff'])
             topTrees = glob.glob(d.attrib['filenames'])
@@ -151,7 +150,7 @@ for chan in channels:
 
 
 
-                    print >> outfile, commandString, files_str, " ", JES, " " , JER, " " , fillBhisto, " ", doJESJER , " " , str(N_job+1) , " 0" , " 200000000" 
+                    print >> outfile, commandString, files_str, " ", JES, " " , JER, " " , doFakes, " ", doJESJER , " " , str(N_job+1) , " 0" , " 200000000" 
 
                     # cleaning
                     listOfFiles=[]
