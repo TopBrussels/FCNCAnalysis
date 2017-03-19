@@ -29,7 +29,7 @@ jesjers = [0]
 fillBhisto = 0; 
 JES = 1; 
 JER = 1; 
-doJESJER = 4; 
+doJESJER = 0; 
 
 #if(doJESJERshift == 1) postfix = "_JESdown" ;
 #    if(doJESJERshift == 2) postfix = "_JESup" ;
@@ -38,9 +38,7 @@ doJESJER = 4;
 
 
 # loop over channels
-for JESJER in jesjers:
-  doJESJER = JESJER
-  for chan in channels:
+for chan in channels:
     print "\nSearching list of sample used for ", chan, " channel!"
     # getting the appropriate xml file
     if "mumumu" in chan:

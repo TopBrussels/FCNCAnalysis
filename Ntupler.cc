@@ -793,6 +793,10 @@ int main (int argc, char *argv[])
     
     if(verbose>1) cout << "btag done" << endl;
     
+    TFile *muontrackfile = new TFile("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/Tracking_EfficienciesAndSF_BCDEFGH.root","read");
+    TGraph* h_muonSFWeightTrack = (TGraph*) muontrackfile->Get("ratio_eff_eta3_dr030e030_corr")->Clone();//Tracking efficiency as function of eta
+
+    
     
     MuonSFWeight* muonSFWeightID_BCDEF;
     MuonSFWeight* muonSFWeightID_GH;
@@ -964,6 +968,7 @@ int main (int argc, char *argv[])
     
     Double_t MuonIDSF[10];
     Double_t MuonIsoSF[10];
+    Double_t MuonTrackSF[10];
     Double_t MuonIDSF_up[10];
     Double_t MuonIsoSF_up[10];
     Double_t MuonIDSF_down[10];
@@ -1216,6 +1221,7 @@ int main (int argc, char *argv[])
     myTree->Branch("nMuons",&nMuons, "nMuons/I");
     myTree->Branch("MuonIDSF",&MuonIDSF,"MuonIDSF[nMuons]/D");
     myTree->Branch("MuonIsoSF",&MuonIsoSF, "MuonIsoSF[nMuons]/D");
+     myTree->Branch("MuonTrackSF",&MuonTrackSF, "MuonTrackSF[nMuons]/D");
     myTree->Branch("MuonIDSF_up",&MuonIDSF_up,"MuonIDSF_up[nMuons]/D");
     myTree->Branch("MuonIsoSF_up",&MuonIsoSF_up, "MuonIsoSF_up[nMuons]/D");
     myTree->Branch("MuonIDSF_down",&MuonIDSF_down,"MuonIDSF_down[nMuons]/D");
@@ -2176,8 +2182,9 @@ int main (int argc, char *argv[])
             
             MuonIDSF_down[nMuons]  = (muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
             MuonIsoSF_down[nMuons] = (muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+            MuonTrackSF[nMuons] = h_muonSFWeightTrack->Eval(selectedMuons[selmu]->Eta());
             
-            eventweight *= MuonIDSF[nMuons] * MuonIsoSF[nMuons];
+            eventweight *= MuonIDSF[nMuons] * MuonIsoSF[nMuons] * MuonTrackSF[nMuons];
           }
           else
           {
@@ -2187,6 +2194,7 @@ int main (int argc, char *argv[])
             MuonIsoSF_up[nMuons] = 1.;
             MuonIDSF_down[nMuons] = 1.;
             MuonIsoSF_down[nMuons] = 1.;
+            MuonTrackSF[nMuons] = 1.;
             
           }
           if(MuonIDSF[nMuons]*MuonIsoSF[nMuons] == 0 ) cout << "  MuonIDSF[nMuons] " <<  MuonIDSF[nMuons] << " MuonIsoSF[nMuons] " << MuonIsoSF[nMuons] << "  MuonIDSF[nMuons]*MuonIsoSF[nMuons] " <<    MuonIDSF[nMuons]*MuonIsoSF[nMuons]     << endl;
@@ -2215,8 +2223,8 @@ int main (int argc, char *argv[])
               
               MuonIDSF_down[nMuons]  = (muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
               MuonIsoSF_down[nMuons] = (muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
-              
-              eventweight *= MuonIDSF[nMuons] * MuonIsoSF[nMuons];
+              MuonTrackSF[nMuons] = h_muonSFWeightTrack->Eval(selectedMuons[selmu]->Eta());
+              eventweight *= MuonIDSF[nMuons] * MuonIsoSF[nMuons] *MuonTrackSF[nMuons];
             }
             else
             {
@@ -2226,7 +2234,8 @@ int main (int argc, char *argv[])
               MuonIsoSF_up[nMuons] = 1.;
               MuonIDSF_down[nMuons] = 1.;
               MuonIsoSF_down[nMuons] = 1.;
-              
+              MuonTrackSF[nMuons] = 1.;
+
             }
             if(MuonIDSF[nMuons]*MuonIsoSF[nMuons] == 0 ) cout << "  MuonIDSF[nMuons] " <<  MuonIDSF[nMuons] << " MuonIsoSF[nMuons] " << MuonIsoSF[nMuons] << "  MuonIDSF[nMuons]*MuonIsoSF[nMuons] " <<    MuonIDSF[nMuons]*MuonIsoSF[nMuons]     << endl;
             if(muonSFtemp == 0) cout << " muon SF " << muonSFtemp * MuonIDSF[nMuons]*MuonIsoSF[nMuons] << endl;

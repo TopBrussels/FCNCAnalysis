@@ -90,7 +90,7 @@ void ClearMatchingVarsTLV();
 void ClearMatchingSampleVars();
 void FillGeneralPlots(int d, string prefix, vector<int>decayChannels, bool isData, bool istoppair);
 string ConvertIntToString(int nb, bool pad);
-
+vector<double> BDTCUT(string region, string coupling);
 int nEntries;
 double Xsect;
 string pathOutputdate = "";
@@ -176,7 +176,8 @@ TBranch        *b_MVA_weight_btagSF_lfstats1_down;   //!
 TBranch        *b_MVA_weight_btagSF_lfstats2_up;   //!
 TBranch        *b_MVA_weight_btagSF_lfstats2_down;   //!
 
-
+string placeOutputReading ="";
+string template_name = "";
 int nbin = 10;
 double weight = 1.;
 double Luminosity = 32000.;
@@ -210,7 +211,7 @@ int main(int argc, char* argv[]){
   //  load datasets
   datasets.clear();
   
- 
+  
   
   
   TTreeLoader treeLoader;
@@ -228,6 +229,7 @@ int main(int argc, char* argv[]){
   bool doZut = false;
   bool toppair = false;
   bool addData = false;
+  bool DetermineCut = false;
   
   for(int i = 0; i <argc; i++){
     if(string(argv[i]).find("help")!=string::npos) {
@@ -275,13 +277,20 @@ int main(int argc, char* argv[]){
     if(string(argv[i]).find("MakePlots")!=string::npos) {
       makePlots = true;
     }
+    if(string(argv[i]).find("DetermineCut")!=string::npos) {
+      DetermineCut= true;
+    }
     
   }
+  
+  
+  
   
   vector <string> thesystlist;
   thesystlist.clear();
   thesystlist.push_back(""); // nominal
   if(doSystematics){
+    cout << "pushing back systematics" << endl;
     thesystlist.push_back("puSF_down");
     thesystlist.push_back("electronSF_down");
     thesystlist.push_back("muonSF_down");
@@ -305,16 +314,22 @@ int main(int argc, char* argv[]){
     thesystlist.push_back("btagSF_lf_up");
     thesystlist.push_back("btagSF_lfstats1_up");
     thesystlist.push_back("btagSF_lfstats2_up");
+    
+    thesystlist.push_back("JER_up");
+    thesystlist.push_back("JER_down");
+    thesystlist.push_back("JES_up");
+    thesystlist.push_back("JES_down");
   }
   if(makePlots){
     string tempstring = "singletop_Zut";
+    TString systematics = "";
     for(int isys = 0; isys < thesystlist.size() ; isys++){
-      TString systematics = thesystlist[isys];
+      systematics = thesystlist[isys];
       if( doZut && !toppair) tempstring = "singletop_Zut";
       if( doZct && !toppair) tempstring = "singletop_Zct";;
-      if(doZut && toppair) tempstring = "toppair_Zut";
-      if( doZct && toppair)tempstring = "toppair_Zut";
-      if(isys != 0) tempstring += "_"+ systematics;
+      if(doZut && toppair)  tempstring = "toppair_Zut";
+      if( doZct && toppair) tempstring = "toppair_Zut";
+      if(isys != 0 ) tempstring += "_"+ systematics;
       InitMSPlots(tempstring, decayChannels, toppair);
     }
     Init1DPlots();
@@ -323,19 +338,39 @@ int main(int argc, char* argv[]){
   
   string coupling = "Zut";
   if(!doZut && doZct) coupling = "Zct";
-  string placeOutputReading = "MVAoutput/outputtemplates";
+  placeOutputReading = "MVAoutput/outputtemplates";
   mkdir(placeOutputReading.c_str(), 0777);
   placeOutputReading += "/" + coupling + "_";
   if(toppair) placeOutputReading += "toppair";
   else placeOutputReading += "singletop";
   mkdir(placeOutputReading.c_str(), 0777);
-  string template_name = coupling + "_" ;
+  template_name = coupling + "_" ;
   if(toppair) template_name += "toppair";
   else template_name += "singletop";
   
+  
+  if(DetermineCut){
+    double cut = -999.;
+    string region = "";
+    if(toppair) region = "toppair";
+    else region = "singletop";
+    string coupling = "";
+    if(doZut) coupling = "Zut";
+    else coupling = "Zct";
+    vector<double> v_cut = BDTCUT(region, coupling);
+    /* if(MVA_channel == 0) cut = v_cut[0];
+     if(MVA_channel == 1) cut = v_cut[1];
+     if(MVA_channel == 2) cut = v_cut[2];
+     if(MVA_channel == 3) cut = v_cut[3];*/
+    return 0;
+  }
+  
+  
+  
+  
   string combinetemplate_filename = placeOutputReading+"/Reader_" + template_name + ".root";
   TFile* combinetemplate_file = TFile::Open( combinetemplate_filename.c_str(), "RECREATE" );
-
+  
   
   TH1::SetDefaultSumw2();
   TH1F *hist_BDT(0), *hist_BDTG(0);
@@ -364,57 +399,70 @@ int main(int argc, char* argv[]){
   double timePerDataSet[datasets.size()];
   bool isData = false;
   string systematic = "";
-  
+  string tTreeName = "";
+  string postfix = "";
+  string ntupleFileName = "MVAoutput/";
+  string output_histo_name = "";
+  string sample_name = "";
   /// Loop over datasets
-  for (int d = 0; d < datasets.size(); d++)   //Loop through datasets
-  {
-    clock_t startDataSet = clock();
-    
-    // ClearMetaData();
-    //cout << "meta data cleared" << endl;
-    dataSetName = datasets[d]->Name();
-    Xsect = datasets[d]->Xsection();
-    if (verbose > 1)
+  for(int isys = 0; isys < thesystlist.size() ; isys++){
+    systematic = thesystlist[isys];
+    //cout << "systematic " << systematic << endl;
+    for (int d = 0; d < datasets.size(); d++)   //Loop through datasets
     {
-      cout << "   Dataset " << d << ": " << datasets[d]->Name() << " / title : " << datasets[d]->Title() << endl;
-    }
-    
-    isData = false;
-    if ( dataSetName.find("Data") != std::string::npos || dataSetName.find("data")!= std::string::npos || dataSetName.find("DATA")!= std::string::npos || dataSetName.find("fake")!=std::string::npos)
-    {
-      isData = true;
-    }
-    
-    string ntupleFileName = "MVAoutput/";
-    ntupleFileName = ntupleFileName + "/" + placeNtup ;
-    tFileMap[dataSetName.c_str()] = new TFile((ntupleFileName).c_str(),"READ"); //create TFile for each dataset
-    
-    string tTreeName = "Control_"+dataSetName;
-    
-    /// Get data
-    cout << "   treename " << tTreeName << " from " << ntupleFileName <<  endl;
-    tTree[dataSetName.c_str()] = (TTree*)tFileMap[dataSetName.c_str()]->Get(tTreeName.c_str()); //get ttree for each dataset
-    nEntries = (int)tTree[dataSetName.c_str()]->GetEntries();
-    cout << "                nEntries: " << nEntries << endl;
-    
-    
-    // Set branch addresses and branch pointers
-    InitTree(tTree[dataSetName.c_str()], isData, toppair);
-    
-    
-    
-    
-    std::cout << "--- Select "<<datasets[d]->Name()<<" sample" << std::endl;
-    // prepare outpout histograms
-    hist_uuu     = new TH1F( (template_name+"_uuu").c_str(),           (template_name+"_uuu").c_str(),           nbin, -1, 1 );
-    hist_uue     = new TH1F( (template_name+"_uue").c_str(),           (template_name+"_uue").c_str(),           nbin, -1, 1 );
-    hist_eeu     = new TH1F( (template_name+"_eeu").c_str(),           (template_name+"_eeu").c_str(),           nbin, -1, 1 );
-    hist_eee     = new TH1F( (template_name+"_eee").c_str(),           (template_name+"_eee").c_str(),           nbin, -1, 1 );
-    
-    for(int isys = 0; isys < thesystlist.size() ; isys++){
-      systematic = thesystlist[isys];
+      clock_t startDataSet = clock();
+      
+      // ClearMetaData();
+      //cout << "meta data cleared" << endl;
+      dataSetName = datasets[d]->Name();
+      Xsect = datasets[d]->Xsection();
+      // if(dataSetName.find("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut")==std::string::npos) continue;
+      
+      if (verbose > 1)
+      {
+        cout << "   Dataset " << d << ": " << datasets[d]->Name() << " / title : " << datasets[d]->Title() << endl;
+      }
+      
+      isData = false;
+      if ( dataSetName.find("Data") != std::string::npos || dataSetName.find("data")!= std::string::npos || dataSetName.find("DATA")!= std::string::npos || dataSetName.find("fake")!=std::string::npos)
+      {
+        isData = true;
+      }
+      
+      ntupleFileName = "MVAoutput/";
+      ntupleFileName = ntupleFileName + "/" + placeNtup ;
+      tFileMap[dataSetName.c_str()] = new TFile((ntupleFileName).c_str(),"READ"); //create TFile for each dataset
+      
+      
+      postfix = "";
+      if(systematic.find("JES_down")!=std::string::npos) postfix = "_JESdown";
+      else if(systematic.find("JES_up")!=std::string::npos) postfix = "_JESup";
+      else if(systematic.find("JER_down")!=std::string::npos) postfix = "_JERdown";
+      else if(systematic.find("JER_up")!=std::string::npos) postfix = "_JERup";
+      else postfix = "";
+      //cout << "postfix " << postfix << endl;
+      tTreeName = "Control_"+dataSetName + postfix;
+      
+      /// Get data
+      cout << "   treename " << tTreeName << " from " << ntupleFileName <<  endl;
+      tTree[dataSetName.c_str()] = (TTree*)tFileMap[dataSetName.c_str()]->Get(tTreeName.c_str()); //get ttree for each dataset
+      nEntries = (int)tTree[dataSetName.c_str()]->GetEntries();
+      cout << "                nEntries: " << nEntries << endl;
+      
+      
+      // Set branch addresses and branch pointers
+      InitTree(tTree[dataSetName.c_str()], isData, toppair);
+      
+      std::cout << "--- Select "<<datasets[d]->Name()<<" sample" << std::endl;
+      // prepare outpout histograms
+      hist_uuu     = new TH1F( (template_name+"_uuu").c_str(),           (template_name+"_uuu").c_str(),           nbin, -1, 1 );
+      hist_uue     = new TH1F( (template_name+"_uue").c_str(),           (template_name+"_uue").c_str(),           nbin, -1, 1 );
+      hist_eeu     = new TH1F( (template_name+"_eeu").c_str(),           (template_name+"_eeu").c_str(),           nbin, -1, 1 );
+      hist_eee     = new TH1F( (template_name+"_eee").c_str(),           (template_name+"_eee").c_str(),           nbin, -1, 1 );
+      
+      
       if(isData && isys != 0) continue;
-      if(!doSystematics && sys != 0) continue;
+      if(!doSystematics && isys != 0) continue;
       int endEvent =nEntries;
       if(testing){
         if(endEvent > 100) endEvent = 100;
@@ -468,14 +516,24 @@ int main(int argc, char* argv[]){
         
         
         //if(dataSetName.find("NP_overlay")!=std::string::npos) MVA_weight = MVA_weight /10.;
-        double cut = -999.;
-        if(addData){
-          if( doZut && !toppair) cut = 0.4;
-          if( doZct && !toppair) cut = 0.6;
-          if(doZut && toppair) cut = 0.6;
-          if(doZct && toppair) cut = 0.4;
-        }
-        if(addData && BDT < cut) continue;
+        
+        /*  if(addData){
+         string region = "";
+         if(toppair) region = "toppair";
+         else region = "singletop";
+         string coupling = "";
+         if(doZut) coupling = "Zut";
+         else coupling = "Zct";
+         v_cut = BDTCUT(region, coupling);
+         if(MVA_channel == 0) cut = v_cut[0];
+         if(MVA_channel == 1) cut = v_cut[1];
+         if(MVA_channel == 2) cut = v_cut[2];
+         if(MVA_channel == 3) cut = v_cut[3];
+         
+         }
+         */
+        
+        // if(addData && BDT < cut) continue;
         if (makePlots)
         {
           //cout << "ievt " << ievt << endl;
@@ -494,8 +552,8 @@ int main(int argc, char* argv[]){
       combinetemplate_file->cd();
       
       //NB : theta name convention = <observable>__<process>[__<uncertainty>__(plus,minus)] FIX ME
-      string output_histo_name = "";
-      string sample_name = datasets[d]->Name();
+      output_histo_name = "";
+      sample_name = datasets[d]->Name();
       if (sample_name.find("fake")!=std::string::npos ) //Last fake MC sample or data-driven fakes -> write fake histo w/ special name (for THETA)
       {
         if(isys!=0) output_histo_name = template_name+"_uuu_FakeMu_"  + systematic ;
@@ -508,7 +566,7 @@ int main(int argc, char* argv[]){
         hist_uue->Write(output_histo_name.c_str());
         if(isys!=0) output_histo_name = template_name+"_eeu_FakeMu_"  + systematic ;
         else output_histo_name = template_name+"_eeu_FakeMu"  ;
-         hist_eeu->SetTitle(output_histo_name.c_str());
+        hist_eeu->SetTitle(output_histo_name.c_str());
         hist_eeu->Write(output_histo_name.c_str());
         if(isys!=0) output_histo_name = template_name+"_eee_FakeEl_"  + systematic ;
         else output_histo_name = template_name+"_eee_FakeEl"  ;
@@ -534,24 +592,24 @@ int main(int argc, char* argv[]){
         hist_eee->SetTitle(output_histo_name.c_str());
         hist_eee->Write(output_histo_name.c_str());
       }
-
       
+      cout<<"Done with "<<datasets[d]->Name()<<" sample"<<endl;
       
-    } // syst lists
+    } // data
     
     //don't delete if processing MC fake templates (unless all the loops have reached their ends)
-    if(d == (datasets.size() - 1))
+    if(isys == (thesystlist.size() - 1))
     {
       //cout<<"deleting dynamic histograms"<<endl;
       delete hist_uuu; delete hist_uue; delete hist_eeu; delete hist_eee;
     }
     
-    cout<<"Done with "<<datasets[d]->Name()<<" sample"<<endl;
+    if(isys != 0) cout<<"Done with "<< systematic <<" systematic"<<endl;
+    else cout<<"Done with nominal sample"<<endl;
     
     
     
-    
-  } // data
+  } // systlist
   
   
   combinetemplate_file->Close();
@@ -566,72 +624,72 @@ int main(int argc, char* argv[]){
   ///   Write plots   ///
   ///*****************///
   if(makePlots){
-  string rootFileName ="NtupleMVAPlots.root";
-  string place =pathOutputdate+"/MSPlotMVA/";
-  string placeTH1F = pathOutputdate+"/TH1F/";
-  string placeTH2F = pathOutputdate+"/TH2F/";
-  vector <string> vlabel_chan = {"uuu", "uue", "eeu", "eee"};
-  mkdir(place.c_str(),0777);
-  mkdir(placeTH1F.c_str(),0777);
-  mkdir(placeTH2F.c_str(),0777);
-  
-  cout << " - Recreate output file ..." << endl;
-  TFile *fout = new TFile ((pathOutputdate+rootFileName).c_str(), "RECREATE");
-  cout << "   Output file is " << pathOutputdate+rootFileName << endl;
-  
-  ///Write histograms
-  fout->cd();
-  
-  for (map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
-  {
-    cout << "MSPlot: " << it->first << endl;
-    MultiSamplePlot *temp = it->second;
-    string name = it->first;
-    if(!datafound) temp->setDataLumi(Luminosity);
+    string rootFileName ="NtupleMVAPlots.root";
+    string place =pathOutputdate+"/MSPlotMVA/";
+    string placeTH1F = pathOutputdate+"/TH1F/";
+    string placeTH2F = pathOutputdate+"/TH2F/";
+    vector <string> vlabel_chan = {"uuu", "uue", "eeu", "eee"};
+    mkdir(place.c_str(),0777);
+    mkdir(placeTH1F.c_str(),0777);
+    mkdir(placeTH2F.c_str(),0777);
     
-    if(name.find("all")!=std::string::npos) temp->setChannel(true, "all");
-    if(name.find("eee")!=std::string::npos) temp->setChannel(true, "3e");
-    if(name.find("eeu")!=std::string::npos) temp->setChannel(true, "2e1#mu");
-    if(name.find("uue")!=std::string::npos) temp->setChannel(true, "1e2#mu");
-    if(name.find("uuu")!=std::string::npos) temp->setChannel(true, "3#mu");
-    temp->Draw(name, 1, false, false, false, 50);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
-    cout << "writing to " << pathOutputdate+"MSPlot" << endl;
-    cout << "plot " << name << endl;
-    cout << "temp " << temp << endl;
-    temp->Write(fout, name, true, (pathOutputdate+"/MSPlotMVA").c_str(), "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
-  }
-  
-  
-  TDirectory* th1dir = fout->mkdir("1D_histograms");
-  th1dir->cd();
-  gStyle->SetOptStat(1110);
-  for (std::map<std::string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
-  {
-    TH1F *temp = it->second;
-    int N = temp->GetNbinsX();
-    temp->SetBinContent(N,temp->GetBinContent(N)+temp->GetBinContent(N+1));
-    temp->SetBinContent(N+1,0);
-    temp->SetEntries(temp->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-    temp->Write();
-    TCanvas* tempCanvas = TCanvasCreator(temp, it->first);
-    tempCanvas->SaveAs( (placeTH1F+it->first+".png").c_str() );
-  }
-  
-  // 2D
-  TDirectory* th2dir = fout->mkdir("2D_histograms");
-  th2dir->cd();
-  gStyle->SetPalette(55);
-  for(std::map<std::string,TH2F*>::const_iterator it = histo2D.begin(); it != histo2D.end(); it++)
-  {
-    TH2F *temp = it->second;
-    temp->Write();
-    TCanvas* tempCanvas = TCanvasCreator(temp, it->first, "colz");
-    tempCanvas->SaveAs( (placeTH2F+it->first+".png").c_str() );
-  }
-  
-  fout->Close();
-  
-  delete fout;
+    cout << " - Recreate output file ..." << endl;
+    TFile *fout = new TFile ((pathOutputdate+rootFileName).c_str(), "RECREATE");
+    cout << "   Output file is " << pathOutputdate+rootFileName << endl;
+    
+    ///Write histograms
+    fout->cd();
+    
+    for (map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
+    {
+      cout << "MSPlot: " << it->first << endl;
+      MultiSamplePlot *temp = it->second;
+      string name = it->first;
+      if(!datafound) temp->setDataLumi(Luminosity);
+      
+      if(name.find("all")!=std::string::npos) temp->setChannel(true, "all");
+      if(name.find("eee")!=std::string::npos) temp->setChannel(true, "3e");
+      if(name.find("eeu")!=std::string::npos) temp->setChannel(true, "2e1#mu");
+      if(name.find("uue")!=std::string::npos) temp->setChannel(true, "1e2#mu");
+      if(name.find("uuu")!=std::string::npos) temp->setChannel(true, "3#mu");
+      temp->Draw(name, 1, false, false, false, 50);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
+      cout << "writing to " << pathOutputdate+"MSPlot" << endl;
+      cout << "plot " << name << endl;
+      cout << "temp " << temp << endl;
+      temp->Write(fout, name, true, (pathOutputdate+"/MSPlotMVA").c_str(), "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
+    }
+    
+    
+    TDirectory* th1dir = fout->mkdir("1D_histograms");
+    th1dir->cd();
+    gStyle->SetOptStat(1110);
+    for (std::map<std::string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
+    {
+      TH1F *temp = it->second;
+      int N = temp->GetNbinsX();
+      temp->SetBinContent(N,temp->GetBinContent(N)+temp->GetBinContent(N+1));
+      temp->SetBinContent(N+1,0);
+      temp->SetEntries(temp->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      temp->Write();
+      TCanvas* tempCanvas = TCanvasCreator(temp, it->first);
+      tempCanvas->SaveAs( (placeTH1F+it->first+".png").c_str() );
+    }
+    
+    // 2D
+    TDirectory* th2dir = fout->mkdir("2D_histograms");
+    th2dir->cd();
+    gStyle->SetPalette(55);
+    for(std::map<std::string,TH2F*>::const_iterator it = histo2D.begin(); it != histo2D.end(); it++)
+    {
+      TH2F *temp = it->second;
+      temp->Write();
+      TCanvas* tempCanvas = TCanvasCreator(temp, it->first, "colz");
+      tempCanvas->SaveAs( (placeTH2F+it->first+".png").c_str() );
+    }
+    
+    fout->Close();
+    
+    delete fout;
   }
   
   if(doPseudoData && !addData){
@@ -640,10 +698,10 @@ int main(int argc, char* argv[]){
     
     string pseudodata_input_name = placeOutputReading+"/Reader_" + template_name + ".root";
     TFile* pseudodata_file = TFile::Open( pseudodata_input_name.c_str(), "UPDATE" );
-
+    
     cout << pseudodata_input_name << endl;
     
-
+    
     
     TH1F *h_sum = 0, *h_tmp = 0;
     string histo_name = "";
@@ -668,15 +726,15 @@ int main(int argc, char* argv[]){
       for(int isample = 0; isample < datasets.size(); isample++)
       {
         string dataSetName = datasets[isample]->Name();
-       // cout << dataSetName << endl;
+        // cout << dataSetName << endl;
         if(datasets[isample]->Name().find("FCNC")!=std::string::npos) {continue; } // no signal in data
         if(datasets[isample]->Name().find("data")!=std::string::npos) {continue; } // no signal in data
-        if(!datasets[isample]->Name().find("fake")==std::string::npos) {
-         // cout << "  -- sample " << datasets[isample]->Name() << endl;
+        if(datasets[isample]->Name().find("fake")==std::string::npos) {
+          // cout << "  -- sample " << datasets[isample]->Name() << endl;
           h_tmp = 0;
           histo_name = template_name + "_" + channel_list[ichan] + "_" + datasets[isample]->Name();
           //histo_name = template_name + "_" + channel_list[ichan] + "_" + datasets[isample]->Name() + "_"  + systematic ;
-        //  cout << "  --- histo " << histo_name << endl;
+          //  cout << "  --- histo " << histo_name << endl;
           if(!pseudodata_file->GetListOfKeys()->Contains(histo_name.c_str())) {cout<<endl<<"--- Empty histogram (Reader empty ?) ! Exit !"<<endl<<endl; break;}
           h_tmp = (TH1F*) pseudodata_file->Get(histo_name.c_str());
           if(h_sum == 0) {h_sum = (TH1F*) h_tmp->Clone();}
@@ -685,7 +743,7 @@ int main(int argc, char* argv[]){
         else{
           
           histo_name = template_name + "_" + channel_list[ichan] + "_" + template_fake_name;
-        //  cout << "  --- histo " << histo_name << endl;
+          cout << "  --- histo " << histo_name << endl;
           if(!pseudodata_file->GetListOfKeys()->Contains(histo_name.c_str())) {cout<<histo_name<<" : not found"<<endl;}
           else
           {
@@ -712,7 +770,7 @@ int main(int argc, char* argv[]){
       string output_histo_name = template_name + "_" + channel_list[ichan] + "_data_obs"; // TO FIX
       h_sum->Write(output_histo_name.c_str(), TObject::kOverwrite);
       
-    }
+    } // chan
     
     pseudodata_file->Close();
     
@@ -778,7 +836,175 @@ string MakeTimeStamp(){
   return date_str;
 }
 
-///////////////////////////////////// CLEARING /////////////////////////////////////////
+///////////////////////////////////// BDT cyt /////////////////////////////////////////
+vector<double> BDTCUT(string region, string coupling){
+  cout << "Determine BDT cut " << endl;
+  
+  
+  string bdtinput_name = placeOutputReading+"/Reader_" + template_name + ".root";
+  TFile* bdt_file = TFile::Open( bdtinput_name.c_str(), "READ" );
+  
+  cout << bdtinput_name << endl;
+  
+  
+  
+  
+  string histo_name = "";
+  string template_fake_name = "";
+  
+  std::vector<string> channel_list;
+  channel_list.push_back("eee");
+  channel_list.push_back("uue");
+  channel_list.push_back("eeu");
+  channel_list.push_back("uuu");
+  
+  double cut_eee, cut_eeu, cut_uuu, cut_uue;
+  cut_eee = cut_uue = cut_eeu = cut_uuu = -1.;
+  for(int ichan=0; ichan<channel_list.size(); ichan++)
+  {
+    string channel = channel_list[ichan];
+    TH1F *h_sum_bkg(0), *h_sum_sig(0), *h_tmp(0);
+    histo_name = "";
+    if(channel.find("uuu") != std::string::npos || channel.find("eeu") != std::string::npos) {template_fake_name = "FakeMu";}
+    else {template_fake_name = "FakeEl";}
+    
+    
+    for(int isample = 0; isample < datasets.size(); isample++)
+    {
+      string dataSetName = datasets[isample]->Name();
+      //cout << dataSetName << endl;
+      if(datasets[isample]->Name().find("data")!=std::string::npos) {continue; } // no signal in data
+      if(datasets[isample]->Name().find("fake")==std::string::npos && datasets[isample]->Name().find("FCNC")==std::string::npos) {
+        //cout << "  -- sample " << datasets[isample]->Name() << endl;
+        h_tmp = 0;
+        histo_name = template_name + "_" + channel_list[ichan] + "_" + datasets[isample]->Name();
+        //histo_name = template_name + "_" + channel_list[ichan] + "_" + datasets[isample]->Name() + "_"  + systematic ;
+        //cout << "  --- histo " << histo_name << endl;
+        if(!bdt_file->GetListOfKeys()->Contains(histo_name.c_str())) {cout<<endl<<"--- Empty histogram (Reader empty ?) ! Exit !"<<endl<<endl; break;}
+        h_tmp = (TH1F*) bdt_file->Get(histo_name.c_str());
+        //cout << "h_tmp->GetEntries() " << h_tmp->GetEntries()  << endl;
+        if(h_tmp->GetEntries() != 0){
+          if(h_sum_bkg == 0) {h_sum_bkg = (TH1F*) h_tmp->Clone();}
+          else {h_sum_bkg->Add(h_tmp);}}
+      }
+      else if(datasets[isample]->Name().find("FCNC")!=std::string::npos) {
+        //cout << "  -- sample " << datasets[isample]->Name() << " is signal "<< endl;
+        h_tmp = 0;
+        histo_name = template_name + "_" + channel_list[ichan] + "_" + datasets[isample]->Name();
+        //histo_name = template_name + "_" + channel_list[ichan] + "_" + datasets[isample]->Name() + "_"  + systematic ;
+        //cout << "  --- histo " << histo_name << endl;
+        if(!bdt_file->GetListOfKeys()->Contains(histo_name.c_str())) {cout<<endl<<"--- Empty histogram (Reader empty ?) ! Exit !"<<endl<<endl; break;}
+        h_tmp = (TH1F*) bdt_file->Get(histo_name.c_str());
+        if(h_tmp->GetEntries() != 0){
+          if(h_sum_sig == 0) {h_sum_sig = (TH1F*) h_tmp->Clone();}
+          else {h_sum_sig->Add(h_tmp);}
+        }
+      }
+      else{
+        h_tmp = 0;
+        histo_name = template_name + "_" + channel_list[ichan] + "_" + template_fake_name;
+        //cout << "  --- histo " << histo_name << endl;
+        if(!bdt_file->GetListOfKeys()->Contains(histo_name.c_str())) {cout<<histo_name<<" : not found"<<endl;}
+        else
+        {
+          h_tmp = (TH1F*) bdt_file->Get(histo_name.c_str());
+          //cout << "h_tmp->GetEntries() " << h_tmp->GetEntries()  << endl;
+          if(h_tmp->GetEntries() != 0){
+            if(h_sum_bkg == 0) {h_sum_bkg = (TH1F*) h_tmp->Clone();}
+            else {h_sum_bkg->Add(h_tmp);}
+          }
+        }
+        
+      }
+    }
+    //cout << "h_sum_bkg " << h_sum_bkg << " h_sum_sig "<< h_sum_sig << endl;
+    if(h_sum_bkg == 0 || h_sum_sig == 0) {cout<<endl<<"--- Empty histogram (Reader empty ?) ! Exit !"<<endl<<endl; }
+    //S+B histogram
+    TH1F* h_total = (TH1F*) h_sum_bkg->Clone();
+    h_total->Add(h_sum_sig);
+    
+    //Normalization
+  h_total->Scale(1/h_total->Integral()); //Integral() : Return integral of bin contents in range [binx1,binx2] (inclusive !)
+    h_sum_bkg->Scale(1/h_sum_bkg->Integral());
+    h_sum_sig->Scale(1/h_sum_sig->Integral());
+    
+    double sig_over_total = 100; //initialize to unreasonable value
+    int bin_cut = -1; //initialize to false value
+    int nofbins = h_total->GetNbinsX();
+    
+    for(int ibin=nofbins; ibin>0; ibin--)
+    {
+      //Search the bin w/ lowest sig/total, while keeping enough bkg events (criterion needs to be optimized/tuned)
+      if( (h_sum_sig->Integral(1, ibin) / h_total->Integral(1, ibin)) < sig_over_total && (h_sum_bkg->Integral(1, ibin) / h_sum_bkg->Integral()) >= 0.6 )
+      {
+        bin_cut = ibin;
+        sig_over_total = h_sum_sig->Integral(1, bin_cut) / h_total->Integral(1,bin_cut);
+      }
+    }
+    
+    double cut = h_total->GetBinLowEdge(bin_cut+1); //Get the BDT cut value to apply to create a BDT CR control tree
+    double min = TMath::Min(h_sum_bkg->GetMinimum(), h_sum_sig->GetMinimum());
+    double max = TMath::Max(h_sum_bkg->GetMaximum(), h_sum_sig->GetMaximum());
+    //Create plot to represent the cut on BDT
+    TCanvas* c = new TCanvas("c", "Signal vs Background");
+    gStyle->SetOptStat(0);
+    h_sum_bkg->GetYaxis()->SetRange(min,1.049*max);
+    h_sum_bkg->GetXaxis()->SetTitle("BDT Discriminant");
+    h_sum_bkg->SetTitle("Signal vs Background");
+    h_sum_bkg->SetLineColor(kBlue);
+    h_sum_sig->SetLineColor(kRed-3);
+    h_sum_bkg->SetLineWidth(3);
+    h_sum_sig->SetLineWidth(3);
+    //h_sum_sig->Scale(100);
+    h_sum_bkg->Draw("HIST");
+    h_sum_sig->Draw("HIST SAME");
+    TLegend* leg = new TLegend(0.7,0.75,0.88,0.85);
+    leg->SetHeader("");
+    leg->AddEntry(h_sum_sig,"Signal","L");
+    leg->AddEntry(h_sum_bkg,"Background","L");
+    leg->Draw();
+    //Draw vertical line at cut value
+    
+    TLine* l = new TLine(cut,min, cut, 1.049*max);
+    l->SetLineWidth(3);
+    l->SetLineColor(921);
+    l->Draw("");
+    TString outputsaving = "CutPlots";
+    mkdir(outputsaving,0777);
+    outputsaving += "/"+region + "_" + coupling + "_";
+    outputsaving += "Signal_Background_BDT_"+channel+".png";
+    c->SaveAs(outputsaving.Data());
+    
+    //Cout some results
+    cout<<"---------------------------------------"<<endl;
+    cout<<"* Cut Value = "<<cut<<endl;
+    cout<<"-> BDT_CR defined w/ all events inside bins [1 ; "<<bin_cut<<"] of the BDT distribution!"<<endl<<endl;
+    cout<<"* Signal integral = "<<h_sum_sig->Integral(1, bin_cut)<<" / Total integral "<<h_total->Integral(1, bin_cut)<<endl;
+    cout<<"Signal contamination in CR --> Sig/Total = "<<sig_over_total<<endl;
+    cout<<"Bkg(CR) / Bkg(Total) = "<<h_sum_bkg->Integral(1,bin_cut) / h_sum_bkg->Integral()<<endl;
+    cout<<"---------------------------------------"<<endl<<endl;
+    
+    //for(int i=0; i<h_sig->GetNbinsX(); i++) {cout<<"bin content "<<i+1<<" = "<<h_sig->GetBinContent(i+1)<<endl;} //If want to verify that the signal is computed correctly
+     delete c; delete leg; delete l;
+    if(channel.find("uuu") != std::string::npos) cut_uuu = cut;
+    else if(channel.find("eeu") != std::string::npos) cut_eeu = cut;
+    else if(channel.find("eee") != std::string::npos) cut_eee = cut;
+    else if(channel.find("uue") != std::string::npos) cut_uue = cut;
+    
+    delete h_sum_sig;
+    delete h_sum_bkg;
+    delete h_tmp;
+  }
+  bdt_file->Close();
+  vector<double> v_return;
+  v_return.push_back(cut_uuu);
+  v_return.push_back(cut_uue);
+  v_return.push_back(cut_eeu);
+  v_return.push_back(cut_eee);
+  return v_return;
+  
+  
+}
 
 
 
@@ -786,7 +1012,7 @@ string MakeTimeStamp(){
 void Init1DPlots(){
   TH1::SetDefaultSumw2();
   
-  //histo1D["eventID"] = new TH1F("eventID","eventID",5802564204,207137,5802564203);
+  // histo1D["eventID"] = new TH1F("eventID","eventID",5802564204,207137,5802564203);
   
 }
 
@@ -853,7 +1079,7 @@ void InitTree(TTree* tree, bool isData, bool istoppair){
     tree->SetBranchAddress("MVA_dRWlepb", &MVA_dRWlepb, &b_MVA_dRWlepb);
     tree->SetBranchAddress("MVA_mlb", &MVA_mlb, &b_MVA_mlb);
     tree->SetBranchAddress("MVA_charge_asym", &MVA_charge_asym, &b_MVA_charge_asym);
-
+    
   }
   else if(!istoppair){
     tree->SetBranchAddress("MVA_Zboson_pt", &MVA_Zboson_pt, &b_MVA_Zboson_pt);
@@ -874,29 +1100,29 @@ void InitTree(TTree* tree, bool isData, bool istoppair){
   tree->SetBranchAddress("MVA_EqLumi", &MVA_EqLumi, &b_MVA_EqLumi);
   tree->SetBranchAddress("MVA_weight", &MVA_weight, &b_MVA_weight);
   if(!isData){
-  tree->SetBranchAddress("MVA_weight_puSF_up", &MVA_weight_puSF_up, &b_MVA_weight_puSF_up);
-  tree->SetBranchAddress("MVA_weight_puSF_down", &MVA_weight_puSF_down, &b_MVA_weight_puSF_down);
-  tree->SetBranchAddress("MVA_weight_electronSF_up", &MVA_weight_electronSF_up, &b_MVA_weight_electronSF_up);
-  tree->SetBranchAddress("MVA_weight_electronSF_down", &MVA_weight_electronSF_down, &b_MVA_weight_electronSF_down);
-  tree->SetBranchAddress("MVA_weight_muonSF_up", &MVA_weight_muonSF_up, &b_MVA_weight_muonSF_up);
-  tree->SetBranchAddress("MVA_weight_muonSF_down", &MVA_weight_muonSF_down, &b_MVA_weight_muonSF_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_cferr1_up", &MVA_weight_btagSF_cferr1_up, &b_MVA_weight_btagSF_cferr1_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_cferr1_down", &MVA_weight_btagSF_cferr1_down, &b_MVA_weight_btagSF_cferr1_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_cferr2_up", &MVA_weight_btagSF_cferr2_up, &b_MVA_weight_btagSF_cferr2_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_cferr2_down", &MVA_weight_btagSF_cferr2_down, &b_MVA_weight_btagSF_cferr2_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_hf_up", &MVA_weight_btagSF_hf_up, &b_MVA_weight_btagSF_hf_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_hf_down", &MVA_weight_btagSF_hf_down, &b_MVA_weight_btagSF_hf_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_hfstats1_up", &MVA_weight_btagSF_hfstats1_up, &b_MVA_weight_btagSF_hfstats1_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_hfstats1_down", &MVA_weight_btagSF_hfstats1_down, &b_MVA_weight_btagSF_hfstats1_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_hfstats2_up", &MVA_weight_btagSF_hfstats2_up, &b_MVA_weight_btagSF_hfstats2_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_hfstats2_down", &MVA_weight_btagSF_hfstats2_down, &b_MVA_weight_btagSF_hfstats2_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_lf_up", &MVA_weight_btagSF_lf_up, &b_MVA_weight_btagSF_lf_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_lf_down", &MVA_weight_btagSF_lf_down, &b_MVA_weight_btagSF_lf_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_lfstats1_up", &MVA_weight_btagSF_lfstats1_up, &b_MVA_weight_btagSF_lfstats1_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_lfstats1_down", &MVA_weight_btagSF_lfstats1_down, &b_MVA_weight_btagSF_lfstats1_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_lfstats2_up", &MVA_weight_btagSF_lfstats2_up, &b_MVA_weight_btagSF_lfstats2_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_lfstats2_down", &MVA_weight_btagSF_lfstats2_down, &b_MVA_weight_btagSF_lfstats2_down);
-
+    tree->SetBranchAddress("MVA_weight_puSF_up", &MVA_weight_puSF_up, &b_MVA_weight_puSF_up);
+    tree->SetBranchAddress("MVA_weight_puSF_down", &MVA_weight_puSF_down, &b_MVA_weight_puSF_down);
+    tree->SetBranchAddress("MVA_weight_electronSF_up", &MVA_weight_electronSF_up, &b_MVA_weight_electronSF_up);
+    tree->SetBranchAddress("MVA_weight_electronSF_down", &MVA_weight_electronSF_down, &b_MVA_weight_electronSF_down);
+    tree->SetBranchAddress("MVA_weight_muonSF_up", &MVA_weight_muonSF_up, &b_MVA_weight_muonSF_up);
+    tree->SetBranchAddress("MVA_weight_muonSF_down", &MVA_weight_muonSF_down, &b_MVA_weight_muonSF_down);
+    tree->SetBranchAddress("MVA_weight_btagSF_cferr1_up", &MVA_weight_btagSF_cferr1_up, &b_MVA_weight_btagSF_cferr1_up);
+    tree->SetBranchAddress("MVA_weight_btagSF_cferr1_down", &MVA_weight_btagSF_cferr1_down, &b_MVA_weight_btagSF_cferr1_down);
+    tree->SetBranchAddress("MVA_weight_btagSF_cferr2_up", &MVA_weight_btagSF_cferr2_up, &b_MVA_weight_btagSF_cferr2_up);
+    tree->SetBranchAddress("MVA_weight_btagSF_cferr2_down", &MVA_weight_btagSF_cferr2_down, &b_MVA_weight_btagSF_cferr2_down);
+    tree->SetBranchAddress("MVA_weight_btagSF_hf_up", &MVA_weight_btagSF_hf_up, &b_MVA_weight_btagSF_hf_up);
+    tree->SetBranchAddress("MVA_weight_btagSF_hf_down", &MVA_weight_btagSF_hf_down, &b_MVA_weight_btagSF_hf_down);
+    tree->SetBranchAddress("MVA_weight_btagSF_hfstats1_up", &MVA_weight_btagSF_hfstats1_up, &b_MVA_weight_btagSF_hfstats1_up);
+    tree->SetBranchAddress("MVA_weight_btagSF_hfstats1_down", &MVA_weight_btagSF_hfstats1_down, &b_MVA_weight_btagSF_hfstats1_down);
+    tree->SetBranchAddress("MVA_weight_btagSF_hfstats2_up", &MVA_weight_btagSF_hfstats2_up, &b_MVA_weight_btagSF_hfstats2_up);
+    tree->SetBranchAddress("MVA_weight_btagSF_hfstats2_down", &MVA_weight_btagSF_hfstats2_down, &b_MVA_weight_btagSF_hfstats2_down);
+    tree->SetBranchAddress("MVA_weight_btagSF_lf_up", &MVA_weight_btagSF_lf_up, &b_MVA_weight_btagSF_lf_up);
+    tree->SetBranchAddress("MVA_weight_btagSF_lf_down", &MVA_weight_btagSF_lf_down, &b_MVA_weight_btagSF_lf_down);
+    tree->SetBranchAddress("MVA_weight_btagSF_lfstats1_up", &MVA_weight_btagSF_lfstats1_up, &b_MVA_weight_btagSF_lfstats1_up);
+    tree->SetBranchAddress("MVA_weight_btagSF_lfstats1_down", &MVA_weight_btagSF_lfstats1_down, &b_MVA_weight_btagSF_lfstats1_down);
+    tree->SetBranchAddress("MVA_weight_btagSF_lfstats2_up", &MVA_weight_btagSF_lfstats2_up, &b_MVA_weight_btagSF_lfstats2_up);
+    tree->SetBranchAddress("MVA_weight_btagSF_lfstats2_down", &MVA_weight_btagSF_lfstats2_down, &b_MVA_weight_btagSF_lfstats2_down);
+    
   }
 }
 

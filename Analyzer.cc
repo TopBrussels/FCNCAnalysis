@@ -33,6 +33,8 @@
 #include "TopTreeAnalysisBase/Tools/interface/TTreeLoader.h"
 //#include "../macros/Style.C"
 
+#include "/user/ivanpari/Software/LHAPDF-6.1.6/include/LHAPDF/LHAPDF.h"
+#include "/user/ivanpari/Software/LHAPDF-6.1.6/include/LHAPDF/Reweighting.h"
 
 struct HighestPt{
   bool operator()(TLorentzVector j1, TLorentzVector j2) const
@@ -423,6 +425,7 @@ Bool_t          isIso_electron[3];   //[nElectrons]
 Bool_t          isEBEEGap[3];   //[nElectrons]
 Int_t           nMuons;
 Double_t        MuonIDSF[3];   //[nMuons]
+Double_t        MuonTrackSF[3];   //[nMuons]
 Double_t        MuonIDSF_up[3];   //[nMuons]
 Double_t        MuonIsoSF_up[3];   //[nMuons]
 Double_t        MuonIDSF_down[3];   //[nMuons]
@@ -551,6 +554,7 @@ TBranch        *b_isIso_electron;   //!
 TBranch        *b_isEBEEGap;   //!
 TBranch        *b_nMuons;   //!
 TBranch        *b_MuonIDSF;   //!
+TBranch        *b_MuonTrackSF;
 TBranch        *b_MuonIsoSF;   //!
 TBranch        *b_MuonIDSF_up;   //!
 TBranch        *b_MuonIsoSF_up;   //!
@@ -613,7 +617,7 @@ TBranch        *b_met_after_JES;   //!
 
 int verbose = 2;
 
-
+void CalculatePDF();
 string MakeTimeStamp();
 void InitMSPlots(string prefix, vector<int> decayChannels);
 void InitMVAMSPlotsSingletop(string prefix,vector<int> decayChannels);
@@ -933,6 +937,7 @@ int main(int argc, char* argv[]){
   bool applyPUSF_up = false;
   bool applyNloSF = false;
   bool applyMETfilter = false;
+  bool doPDFunc  = false;
   string placeNtup = "singletop/170214";
   int channel = -999;
   datafound = false;
@@ -965,7 +970,11 @@ int main(int argc, char* argv[]){
       std::cout << "   noTrigger: do not apply trigger " << endl;
       std::cout << "   checkTrigger: check trigger in data " << endl;
       std::cout << "   Test: loop over 1000 events" << endl;
+      std::cout << "   PDF: calculate PDF unc" << endl;
       return 0;
+    }
+    f(string(argv[i]).find("doPDFunc")!=std::string::npos){
+      doPDFunc = true;
     }
     if(string(argv[i]).find("applyJEC")!=std::string::npos) {
       
@@ -1136,6 +1145,7 @@ int main(int argc, char* argv[]){
     //cout << "meta data cleared" << endl;
     dataSetName = datasets[d]->Name();
     Xsect = datasets[d]->Xsection();
+    if(dataSetName.find("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80X")==std::string::npos) continue; // TO FIX
     if (verbose > 1)
     {
       cout << "   Dataset " << d << ": " << datasets[d]->Name() << " / title : " << datasets[d]->Title() << endl;
@@ -1185,7 +1195,7 @@ int main(int argc, char* argv[]){
     
     tTreeName += postfix;
     tStatsTreeName +=  postfix;
-    
+    cout << "looking at " << tStatsTreeName << " and " << tTreeName << endl;
     /// Get meta data
     tStatsTree[dataSetName.c_str()] = (TTree*)tFileMap[dataSetName.c_str()]->Get(tStatsTreeName.c_str());
     globalnEntries = (int) tStatsTree[dataSetName.c_str()]->GetEntries();
@@ -1433,7 +1443,9 @@ int main(int argc, char* argv[]){
             }
             else {
               scaleFactor *= MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+              // scaleFactor *= MuonIDSF[iMu] * MuonIsoSF[iMu] * MuonTrackSF[iMu] TO FIX
               muonSFtemp *= MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+             // muonSFtemp *= MuonIDSF[iMu] * MuonIsoSF[iMu] * MuonTrackSF[iMu]; TO FIX
             }
             
             scaleFactor_muonSF_down *= MuonIDSF_up[iMu] * MuonIsoSF_up[iMu] ;
@@ -1583,6 +1595,10 @@ int main(int argc, char* argv[]){
         if(Region == 2) FillMVAPlots(d,dataSetName, Region, "wzcontrol", decayChannels);
       }
       
+      if(doPDFunc){
+        if(dataSetName.find("WZTo3LNu_3Jets_MLL50")!=std::string::npos) CalculatePDF();
+      }
+      
     } // events
     
     
@@ -1614,7 +1630,7 @@ int main(int argc, char* argv[]){
   ///*****************///
   ///   Write plots   ///
   ///*****************///
-  
+  if(makePlots){
   string rootFileName ="NtuplePlots.root";
   string place =pathOutputdate+"/MSPlot/";
   string placeTH1F = pathOutputdate+"/TH1F/";
@@ -2110,7 +2126,7 @@ int main(int argc, char* argv[]){
   
   delete fout;
   
-  
+  }
   
   double time = ((double)clock() - start) / CLOCKS_PER_SEC;
   cout << "It took us " << time << " s to run the program" << endl;
@@ -2148,7 +2164,7 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
   MVA_weight_puSF_down = static_cast<float>( scaleFactor_puSF_down * Luminosity /EquilumiSF );
   MVA_weight_electronSF_up = static_cast<float>( scaleFactor_electronSF_up * Luminosity /EquilumiSF );
   MVA_weight_electronSF_down = static_cast<float>( scaleFactor_electronSF_down * Luminosity /EquilumiSF );
-  MVA_weight_muonSF_up = static_cast<float>( scaleFactor_muonSF_up * Luminosity /EquilumiSF );
+  MVA_weight_muonSF_up = static_cast<float>( scaleFactor_muonSF_up * Luminosity /JEC );
   MVA_weight_muonSF_down = static_cast<float>( scaleFactor_muonSF_down * Luminosity /EquilumiSF );
   MVA_weight_btagSF_cferr1_up = static_cast<float>( scaleFactor_btagSF_cferr1_up * Luminosity /EquilumiSF );
   MVA_weight_btagSF_cferr1_down = static_cast<float>( scaleFactor_btagSF_cferr1_down * Luminosity /EquilumiSF );
@@ -4183,6 +4199,7 @@ void InitTree(TTree* tree, bool isData){
   tree->SetBranchAddress("isEBEEGap", isEBEEGap, &b_isEBEEGap);
   tree->SetBranchAddress("nMuons", &nMuons, &b_nMuons);
   tree->SetBranchAddress("MuonIDSF", MuonIDSF, &b_MuonIDSF);
+  //tree->SetBranchAddress("MuonTrackSF", MuonTrackSF, &b_MuonTrackSF); TO FIX
   tree->SetBranchAddress("MuonIsoSF", MuonIsoSF, &b_MuonIsoSF);
   tree->SetBranchAddress("MuonIDSF_up", MuonIDSF_up, &b_MuonIDSF_up);
   tree->SetBranchAddress("MuonIsoSF_up", MuonIsoSF_up, &b_MuonIsoSF_up);
@@ -5324,6 +5341,12 @@ void EventSearcher(vector < TLorentzVector> mcParticles, string dataSetName, boo
   
 }
 
+void CalculatePDF(){
+  //PDF weights calculation
+  LHAPDF::setVerbosity(0);
+  LHAPDF::PDFSet basepdfSet("NNPDF30_nlo_as_0118"); // base from main MC
+  LHAPDF::PDFSet newpdfSet("PDF4LHC15_nlo_100"); // give the correct name see https://twiki.cern.ch/twiki/bin/view/CMS/TopSystematics#PDF_uncertainties
 
+}
 
 
