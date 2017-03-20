@@ -1,5 +1,6 @@
 #define TreeAnalyzer_cxx
 //#include "TreeAnalyzer.h"
+#include <TH1.h>
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
@@ -20,7 +21,7 @@
 #include <TFile.h>
 #include <TLeaf.h>
 #include <utility>
-#include "Style.C"
+//#include "Style.C"
 
 // used TopTreeAnalysis classes
 #include "TopTreeProducer/interface/TRootRun.h"
@@ -32,6 +33,8 @@
 #include "TopTreeAnalysisBase/Tools/interface/PlottingTools.h"
 #include "TopTreeAnalysisBase/Tools/interface/TTreeLoader.h"
 //#include "../macros/Style.C"
+#include "/user/kderoove/Software/LHAPDF/LHAPDF-6.1.6/include/LHAPDF/LHAPDF.h"
+#include "/user/kderoove/Software/LHAPDF/LHAPDF-6.1.6/include/LHAPDF/Reweighting.h"
 
 
 struct HighestPt{
@@ -72,11 +75,16 @@ std::vector < int>  decayChannels = {0,1,2,3,-9}; // uuu uue eeu eee all
 int verbose = 2;
 
 
+
+
+string intToStr (int number);
 string MakeTimeStamp();
+void CalculatePDFWeight(string dataSetName, float BDT, float MVA_weight);
 void InitMSPlots(string prefix, vector<int> decayChannels, bool istoppair);
 void Init1DPlots();
 void Init2DPlots();
-void InitTree(TTree* tree, bool isData, bool istoppair);
+void InitTree(TTree* tree, bool isData, bool istoppair, bool doZct);
+void InitCalculatePDFWeightHisto(string dataSetName);
 // data from global tree
 void ClearMetaData();
 void GetMetaData(TTree* tree, bool isData,int Entries, bool isAMC);
@@ -99,13 +107,25 @@ string pathOutputdate = "";
 
 // Declaration of leaf types
 Float_t         MVA_Zboson_pt;
-Float_t         MVA_dRWlepb;
 Float_t         MVA_dPhiWlepb;
 Float_t         MVA_charge_asym;
-Float_t         MVA_dRZWlep;
 Float_t         MVA_bdiscCSVv2_jet_0;
+
+Float_t         MVA_cdiscCvsB_jet_1;
+Float_t         MVA_cdiscCvsB_jet_0;
+Float_t         MVA_dRZc;
+Float_t         MVA_dRWlepb;
+Float_t         MVA_dRZWlep;
 Float_t         MVA_mlb;
+Float_t         MVA_FCNCtop_M;
+Int_t           MVA_nJets_CharmL;
+Int_t           MVA_NJets_CSVv2M;
 Float_t         MVA_region;
+Float_t         MVA_x1;
+Float_t         MVA_x2;
+Float_t         MVA_id1;
+Float_t         MVA_id2;
+Float_t         MVA_q;
 Float_t         MVA_weight;
 Float_t         MVA_channel;
 Float_t         BDT;
@@ -132,23 +152,28 @@ Float_t         MVA_weight_btagSF_lfstats1_up;
 Float_t         MVA_weight_btagSF_lfstats1_down;
 Float_t         MVA_weight_btagSF_lfstats2_up;
 Float_t         MVA_weight_btagSF_lfstats2_down;
-Float_t         MVA_cdiscCvsL_jet_1;
-Float_t         MVA_cdiscCvsL_jet_0;
-Float_t         MVA_dRZc;
-
 
 // List of branches
-TBranch        *b_MVA_cdiscCvsL_jet_1;
-TBranch        *b_MVA_cdiscCvsL_jet_0;
-TBranch        *b_MVA_dRZc;
 TBranch        *b_MVA_Zboson_pt;   //!
-TBranch        *b_MVA_dRWlepb;   //!
 TBranch        *b_MVA_dPhiWlepb;   //!
 TBranch        *b_MVA_charge_asym;   //!
-TBranch        *b_MVA_dRZWlep;   //!
 TBranch        *b_MVA_bdiscCSVv2_jet_0;   //!
+
+TBranch        *b_MVA_cdiscCvsB_jet_1;   //!
+TBranch        *b_MVA_cdiscCvsB_jet_0;   //!
+TBranch        *b_MVA_dRZc;   //!
+TBranch        *b_MVA_dRWlepb;   //!
+TBranch        *b_MVA_dRZWlep;   //!
 TBranch        *b_MVA_mlb;   //!
+TBranch        *b_MVA_FCNCtop_M;   //!
+TBranch        *b_MVA_nJets_CharmL;   //!
+TBranch        *b_MVA_NJets_CSVv2M;   //!
 TBranch        *b_MVA_region;   //!
+TBranch        *b_MVA_x1;   //!
+TBranch        *b_MVA_x2;   //!
+TBranch        *b_MVA_id1;   //!
+TBranch        *b_MVA_id2;   //!
+TBranch        *b_MVA_q;   //!
 TBranch        *b_MVA_weight;   //!
 TBranch        *b_MVA_channel;   //!
 TBranch        *b_BDT;   //!
@@ -175,6 +200,7 @@ TBranch        *b_MVA_weight_btagSF_lfstats1_up;   //!
 TBranch        *b_MVA_weight_btagSF_lfstats1_down;   //!
 TBranch        *b_MVA_weight_btagSF_lfstats2_up;   //!
 TBranch        *b_MVA_weight_btagSF_lfstats2_down;   //!
+
 
 string placeOutputReading ="";
 string template_name = "";
@@ -208,6 +234,7 @@ int main(int argc, char* argv[]){
   
   
   
+  
   //  load datasets
   datasets.clear();
   
@@ -230,7 +257,7 @@ int main(int argc, char* argv[]){
   bool toppair = false;
   bool addData = false;
   bool DetermineCut = false;
-  
+  bool doPDFunc  = false;
   for(int i = 0; i <argc; i++){
     if(string(argv[i]).find("help")!=string::npos) {
       std::cout << "****** help ******" << endl;
@@ -244,7 +271,11 @@ int main(int argc, char* argv[]){
       std::cout << "   Data: add CRcut" << endl;
       std::cout << "   PSdata: generate pseudo data" << endl;
       std::cout << "   Systematics: loop over systematics" << endl;
+      std::cout << "   doPDFunc: calculate PDF unc" << endl;
       return 0;
+    }
+    if(string(argv[i]).find("doPDFunc")!=std::string::npos){
+      doPDFunc = true;
     }
     if(string(argv[i]).find("Systematics")!=std::string::npos) {
       doSystematics= true;
@@ -332,7 +363,8 @@ int main(int argc, char* argv[]){
       if(isys != 0 ) tempstring += "_"+ systematics;
       InitMSPlots(tempstring, decayChannels, toppair);
     }
-    Init1DPlots();
+   // Init1DPlots();
+    
     Init2DPlots();
   }
   
@@ -373,7 +405,6 @@ int main(int argc, char* argv[]){
   
   
   TH1::SetDefaultSumw2();
-  TH1F *hist_BDT(0), *hist_BDTG(0);
   TH1F *hist_uuu = 0, *hist_uue = 0, *hist_eeu = 0, *hist_eee = 0;
   
   for (int d = 0; d < datasets.size(); d++)   //Loop through datasets
@@ -384,10 +415,6 @@ int main(int argc, char* argv[]){
       Luminosity = datasets[d]->EquivalentLumi();
       datafound = true;
     }
-    
-    
-    
-    
     
   }
   
@@ -416,7 +443,9 @@ int main(int argc, char* argv[]){
       //cout << "meta data cleared" << endl;
       dataSetName = datasets[d]->Name();
       Xsect = datasets[d]->Xsection();
-      // if(dataSetName.find("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut")==std::string::npos) continue;
+      if(dataSetName.find("WZTo3LNu")!=std::string::npos && doPDFunc){
+        InitCalculatePDFWeightHisto(dataSetName);
+      }
       
       if (verbose > 1)
       {
@@ -451,7 +480,7 @@ int main(int argc, char* argv[]){
       
       
       // Set branch addresses and branch pointers
-      InitTree(tTree[dataSetName.c_str()], isData, toppair);
+      InitTree(tTree[dataSetName.c_str()], isData, toppair, doZct);
       
       std::cout << "--- Select "<<datasets[d]->Name()<<" sample" << std::endl;
       // prepare outpout histograms
@@ -465,7 +494,7 @@ int main(int argc, char* argv[]){
       if(!doSystematics && isys != 0) continue;
       int endEvent =nEntries;
       if(testing){
-        if(endEvent > 100) endEvent = 100;
+        if(endEvent > 10) endEvent = 10;
       }
       int istartevt = 0;
       
@@ -505,6 +534,13 @@ int main(int argc, char* argv[]){
           if(systematic.find("btagSF_lfstats2_up")) weight = MVA_weight_btagSF_lfstats2_up;
           if(systematic.find("btagSF_lfstats2_down")) weight = MVA_weight_btagSF_lfstats2_down;
           
+        }
+        
+        
+        
+        
+        if(doPDFunc){
+          if(dataSetName.find("WZTo3LNu")!=std::string::npos) CalculatePDFWeight(dataSetName, BDT, MVA_weight);
         }
         
         
@@ -623,23 +659,24 @@ int main(int argc, char* argv[]){
   ///*****************///
   ///   Write plots   ///
   ///*****************///
+  
+  string rootFileName ="NtupleMVAPlots.root";
+  string place =pathOutputdate+"/MSPlotMVA/";
+  string placeTH1F = pathOutputdate+"/TH1F/";
+  string placeTH2F = pathOutputdate+"/TH2F/";
+  vector <string> vlabel_chan = {"uuu", "uue", "eeu", "eee"};
+  mkdir(place.c_str(),0777);
+  mkdir(placeTH1F.c_str(),0777);
+  mkdir(placeTH2F.c_str(),0777);
+  
+  cout << " - Recreate output file ..." << endl;
+  TFile *fout = new TFile ((pathOutputdate+rootFileName).c_str(), "RECREATE");
+  cout << "   Output file is " << pathOutputdate+rootFileName << endl;
+  
+  ///Write histograms
+  
   if(makePlots){
-    string rootFileName ="NtupleMVAPlots.root";
-    string place =pathOutputdate+"/MSPlotMVA/";
-    string placeTH1F = pathOutputdate+"/TH1F/";
-    string placeTH2F = pathOutputdate+"/TH2F/";
-    vector <string> vlabel_chan = {"uuu", "uue", "eeu", "eee"};
-    mkdir(place.c_str(),0777);
-    mkdir(placeTH1F.c_str(),0777);
-    mkdir(placeTH2F.c_str(),0777);
-    
-    cout << " - Recreate output file ..." << endl;
-    TFile *fout = new TFile ((pathOutputdate+rootFileName).c_str(), "RECREATE");
-    cout << "   Output file is " << pathOutputdate+rootFileName << endl;
-    
-    ///Write histograms
     fout->cd();
-    
     for (map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
     {
       cout << "MSPlot: " << it->first << endl;
@@ -658,24 +695,14 @@ int main(int argc, char* argv[]){
       cout << "temp " << temp << endl;
       temp->Write(fout, name, true, (pathOutputdate+"/MSPlotMVA").c_str(), "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
     }
-    
-    
-    TDirectory* th1dir = fout->mkdir("1D_histograms");
-    th1dir->cd();
-    gStyle->SetOptStat(1110);
-    for (std::map<std::string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
-    {
-      TH1F *temp = it->second;
-      int N = temp->GetNbinsX();
-      temp->SetBinContent(N,temp->GetBinContent(N)+temp->GetBinContent(N+1));
-      temp->SetBinContent(N+1,0);
-      temp->SetEntries(temp->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-      temp->Write();
-      TCanvas* tempCanvas = TCanvasCreator(temp, it->first);
-      tempCanvas->SaveAs( (placeTH1F+it->first+".png").c_str() );
-    }
-    
+  
+  
+  //TDirectory* th1dir = fout->mkdir("1D_histograms");
+  //th1dir->cd();
+  
+  
     // 2D
+
     TDirectory* th2dir = fout->mkdir("2D_histograms");
     th2dir->cd();
     gStyle->SetPalette(55);
@@ -690,8 +717,39 @@ int main(int argc, char* argv[]){
     fout->Close();
     
     delete fout;
+
+    
+    
+    if(doPDFunc){
+      string rootFileNamePDF ="PDFweights.root";
+      string placePDF ="PDFweights/";
+      if(doPDFunc) mkdir(placePDF.c_str(),0777);
+      gStyle->SetOptStat(1110);
+      
+      cout << " - Recreate output file ..." << endl;
+      TFile *foutPDF= new TFile ((placePDF+rootFileNamePDF).c_str(), "RECREATE");
+      cout << "   Output file is " << placePDF+rootFileNamePDF << endl;
+      
+      foutPDF->cd();
+      for (std::map<std::string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
+      {
+        TH1F *temp = it->second;
+        cout << it->first << " temp " << temp << endl;
+        /* int N = nbin;
+         temp->SetBinContent(N,temp->GetBinContent(N)+temp->GetBinContent(N+1));
+         temp->SetBinContent(N+1,0);
+         temp->SetEntries(temp->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...*/
+        temp->Write();
+        //temp->GetEntries();
+        //TCanvas* tempCanvas = TCanvasCreator(temp, it->first);
+        //tempCanvas->SaveAs( (placeTH1F+it->first+".png").c_str() );
+        
+      }
+      foutPDF->Write();
+      foutPDF->Close();
+      delete foutPDF;
+    }
   }
-  
   if(doPseudoData && !addData){
     cout << "generating pseudo data" << endl;
     TRandom3 therand(0); //Randomization
@@ -835,7 +893,12 @@ string MakeTimeStamp(){
   string date_str = year_str + month_str + day_str + "_" + hour_str + min_str;
   return date_str;
 }
-
+string intToStr (int number)
+{
+  ostringstream buff;
+  buff<<number;
+  return buff.str();
+}
 ///////////////////////////////////// BDT cyt /////////////////////////////////////////
 vector<double> BDTCUT(string region, string coupling){
   cout << "Determine BDT cut " << endl;
@@ -924,7 +987,7 @@ vector<double> BDTCUT(string region, string coupling){
     h_total->Add(h_sum_sig);
     
     //Normalization
-  h_total->Scale(1/h_total->Integral()); //Integral() : Return integral of bin contents in range [binx1,binx2] (inclusive !)
+    h_total->Scale(1/h_total->Integral()); //Integral() : Return integral of bin contents in range [binx1,binx2] (inclusive !)
     h_sum_bkg->Scale(1/h_sum_bkg->Integral());
     h_sum_sig->Scale(1/h_sum_sig->Integral());
     
@@ -985,7 +1048,7 @@ vector<double> BDTCUT(string region, string coupling){
     cout<<"---------------------------------------"<<endl<<endl;
     
     //for(int i=0; i<h_sig->GetNbinsX(); i++) {cout<<"bin content "<<i+1<<" = "<<h_sig->GetBinContent(i+1)<<endl;} //If want to verify that the signal is computed correctly
-     delete c; delete leg; delete l;
+    delete c; delete leg; delete l;
     if(channel.find("uuu") != std::string::npos) cut_uuu = cut;
     else if(channel.find("eeu") != std::string::npos) cut_eeu = cut;
     else if(channel.find("eee") != std::string::npos) cut_eee = cut;
@@ -1039,8 +1102,8 @@ void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair){
     
     
     if(istoppair){
-      MSPlot[(prefix+"_MVA_cdiscCvsL_jet_1_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_cdiscCvsL_jet_1_"+decaystring).c_str(),50,-1, 1, "CvsL 2nd Highest pt jet");
-      MSPlot[(prefix+"_MVA_cdiscCvsL_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_cdiscCvsL_jet_0_"+decaystring).c_str(),50, -1, 1, "CvsL Highest pt jet");
+      // MSPlot[(prefix+"_MVA_cdiscCvsL_jet_1_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_cdiscCvsL_jet_1_"+decaystring).c_str(),50,-1, 1, "CvsL 2nd Highest pt jet");
+      //  MSPlot[(prefix+"_MVA_cdiscCvsL_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_cdiscCvsL_jet_0_"+decaystring).c_str(),50, -1, 1, "CvsL Highest pt jet");
       MSPlot[(prefix+"_MVA_dRZc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRZc_"+decaystring).c_str(),30,0, 6, "dR(Z,Ljet)");
       MSPlot[(prefix+"_MVA_mlb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_mlb_"+decaystring).c_str(),100, 0, 500, "M(l_{W}b)");
       
@@ -1068,28 +1131,31 @@ void Init2DPlots(){
 }
 
 ///////////////////////////////////// INIT TREES /////////////////////////////////////////
-void InitTree(TTree* tree, bool isData, bool istoppair){
+void InitTree(TTree* tree, bool isData, bool istoppair, bool doZct){
   // Set branch addresses and branch pointers
   if (!tree) return;
   tree->SetMakeClass(1);
-  if(istoppair){
-    tree->SetBranchAddress("MVA_cdiscCvsL_jet_1", &MVA_cdiscCvsL_jet_1, &b_MVA_cdiscCvsL_jet_1);
-    tree->SetBranchAddress("MVA_cdiscCvsL_jet_0", &MVA_cdiscCvsL_jet_0, &b_MVA_cdiscCvsL_jet_0);
+  if(istoppair && !doZct){
+    tree->SetBranchAddress("MVA_cdiscCvsB_jet_1", &MVA_cdiscCvsB_jet_1, &b_MVA_cdiscCvsB_jet_1);
+    tree->SetBranchAddress("MVA_cdiscCvsB_jet_0", &MVA_cdiscCvsB_jet_0, &b_MVA_cdiscCvsB_jet_0);
     tree->SetBranchAddress("MVA_dRZc", &MVA_dRZc, &b_MVA_dRZc);
     tree->SetBranchAddress("MVA_dRWlepb", &MVA_dRWlepb, &b_MVA_dRWlepb);
+    tree->SetBranchAddress("MVA_dRZWlep", &MVA_dRZWlep, &b_MVA_dRZWlep);
     tree->SetBranchAddress("MVA_mlb", &MVA_mlb, &b_MVA_mlb);
-    tree->SetBranchAddress("MVA_charge_asym", &MVA_charge_asym, &b_MVA_charge_asym);
-    
+    tree->SetBranchAddress("MVA_FCNCtop_M", &MVA_FCNCtop_M, &b_MVA_FCNCtop_M);
+    tree->SetBranchAddress("MVA_nJets_CharmL", &MVA_nJets_CharmL, &b_MVA_nJets_CharmL);
+    tree->SetBranchAddress("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, &b_MVA_NJets_CSVv2M);
   }
-  else if(!istoppair){
+  else if(!istoppair && !doZct){
+    
     tree->SetBranchAddress("MVA_Zboson_pt", &MVA_Zboson_pt, &b_MVA_Zboson_pt);
     tree->SetBranchAddress("MVA_dRWlepb", &MVA_dRWlepb, &b_MVA_dRWlepb);
     tree->SetBranchAddress("MVA_dPhiWlepb", &MVA_dPhiWlepb, &b_MVA_dPhiWlepb);
     tree->SetBranchAddress("MVA_charge_asym", &MVA_charge_asym, &b_MVA_charge_asym);
     tree->SetBranchAddress("MVA_dRZWlep", &MVA_dRZWlep, &b_MVA_dRZWlep);
     tree->SetBranchAddress("MVA_bdiscCSVv2_jet_0", &MVA_bdiscCSVv2_jet_0, &b_MVA_bdiscCSVv2_jet_0);
+    tree->SetBranchAddress("MVA_cdiscCvsB_jet_0", &MVA_cdiscCvsB_jet_0, &b_MVA_cdiscCvsB_jet_0);
     tree->SetBranchAddress("MVA_mlb", &MVA_mlb, &b_MVA_mlb);
-    
     
   }
   
@@ -1100,6 +1166,12 @@ void InitTree(TTree* tree, bool isData, bool istoppair){
   tree->SetBranchAddress("MVA_EqLumi", &MVA_EqLumi, &b_MVA_EqLumi);
   tree->SetBranchAddress("MVA_weight", &MVA_weight, &b_MVA_weight);
   if(!isData){
+    tree->SetBranchAddress("MVA_x1", &MVA_x1, &b_MVA_x1);
+    tree->SetBranchAddress("MVA_x2", &MVA_x2, &b_MVA_x2);
+    tree->SetBranchAddress("MVA_id1", &MVA_id1, &b_MVA_id1);
+    tree->SetBranchAddress("MVA_id2", &MVA_id2, &b_MVA_id2);
+    tree->SetBranchAddress("MVA_q", &MVA_q, &b_MVA_q);
+    
     tree->SetBranchAddress("MVA_weight_puSF_up", &MVA_weight_puSF_up, &b_MVA_weight_puSF_up);
     tree->SetBranchAddress("MVA_weight_puSF_down", &MVA_weight_puSF_down, &b_MVA_weight_puSF_down);
     tree->SetBranchAddress("MVA_weight_electronSF_up", &MVA_weight_electronSF_up, &b_MVA_weight_electronSF_up);
@@ -1154,8 +1226,8 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
     MSPlot[(sregion+"_MVA_dRZWlep_"+decaystring).c_str()]->Fill(MVA_dRZWlep , datasets[d], true, eventW);
     
     if(toppair){
-      MSPlot[(sregion+"_MVA_cdiscCvsL_jet_1_"+decaystring).c_str()]->Fill(MVA_cdiscCvsL_jet_1 , datasets[d], true, eventW);
-      MSPlot[(sregion+"_MVA_cdiscCvsL_jet_0_"+decaystring).c_str()]->Fill(MVA_cdiscCvsL_jet_0 , datasets[d], true, eventW);
+      // MSPlot[(sregion+"_MVA_cdiscCvsL_jet_1_"+decaystring).c_str()]->Fill(MVA_cdiscCvsL_jet_1 , datasets[d], true, eventW);
+      //MSPlot[(sregion+"_MVA_cdiscCvsL_jet_0_"+decaystring).c_str()]->Fill(MVA_cdiscCvsL_jet_0 , datasets[d], true, eventW);
       MSPlot[(sregion+"_MVA_dRZc_"+decaystring).c_str()]->Fill(MVA_dRZc , datasets[d], true, eventW);
     }
     else{
@@ -1182,6 +1254,51 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
 }
 
 
+void CalculatePDFWeight(string dataSetName, float BDT, float MVA_weight){
+  // cout << "calculate pdf" << endl;
+  //std::vector<double> pdfweights;
+  
+  //PDF weights calculation
+  LHAPDF::setVerbosity(0);
+  LHAPDF::PDFSet basepdfSet("NNPDF30_nlo_as_0118"); //kevin (ttbar)
+  //LHAPDF::PDFSet basepdfSet("NNPDF30_lo_as_0130"); // base from main MC // WZ
+  LHAPDF::PDFSet newpdfSet("PDF4LHC15_nlo_100"); // give the correct name see https://twiki.cern.ch/twiki/bin/view/CMS/TopSystematics#PDF_uncertainties
+  
+  const LHAPDF::PDF* basepdf = basepdfSet.mkPDF(0);
+  for ( size_t i=0; i<newpdfSet.size(); i++)
+  {
+    const LHAPDF::PDF* newpdf = newpdfSet.mkPDF(i);
+    double weight = LHAPDF::weightxxQ(MVA_id1, MVA_id2, MVA_x1, MVA_x2, MVA_q, *basepdf, *newpdf);
+    histo1D[dataSetName+"_BDT_"+intToStr(i)]->Fill(weight);
+    cout << "fill " << (dataSetName+"_BDT"+"_"+intToStr(i)).c_str() << " with " << BDT << " " <<  weight << endl;
+    //cout << "pdf weight " << weight << endl;
+    //pdfweights.push_back(weight);
+    
+    delete newpdf;
+    
+  }
+  
+  delete basepdf;
+  
+}
+
+
+
+
+void InitCalculatePDFWeightHisto(string dataSetName){
+  cout << "init pdf histo" << endl;
+  
+  TH1::SetDefaultSumw2();
+  
+  
+  for ( int i=0; i<101; i++)
+  {
+    string histoName = dataSetName+"_BDT_"+intToStr(i);
+    histo1D[histoName] = new TH1F(histoName.c_str(), histoName.c_str(), nbin,-1.,1.);
+  }
+  
+  
+}
 
 
 
