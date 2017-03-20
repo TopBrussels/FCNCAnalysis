@@ -182,7 +182,6 @@ int main (int argc, char *argv[])
   // to put on with agrs
   bool applyJER = false;
   bool applyJES = false;
-  bool fillBtagHisto = false;
   
   bool doFakeLepton  =false;
   
@@ -224,7 +223,7 @@ int main (int argc, char *argv[])
   // if there only two arguments after the fileName, the jobNum will be set to 0 by default as an integer is expected and it will get a string (lastfile of the list)
   const int JES                 =  strtol(argv[argc-7], NULL,10);
   const int JER                 =  strtol(argv[argc-6], NULL,10);
-  const int FillBtagHisto	 =  strtol(argv[argc-5], NULL,10);
+  const int doFakes	 =  strtol(argv[argc-5], NULL,10);
   const int doJESJERshiftarg = strtol(argv[argc-4], NULL,10);
   const int JobNum		  = strtol(argv[argc-3], NULL, 10);
   const int startEvent  	  = strtol(argv[argc-2], NULL, 10);
@@ -232,16 +231,9 @@ int main (int argc, char *argv[])
   
   applyJES = JES;
   applyJER = JER;
-  fillBtagHisto = FillBtagHisto;
+  doFakeLepton= doFakes;
   int doJESJERshift = doJESJERshiftarg;
   const int Usettbar = 1;
-  
-  string btag_dir = "BTagHistosPtEta";
-  if(fillBtagHisto)
-  {
-    
-    mkdir(btag_dir.c_str(),0777);
-  }
   
   // all the files are stored from arg 11 to argc-2
   vector<string> vecfileNames;
@@ -312,9 +304,11 @@ int main (int argc, char *argv[])
   anaEnv.PrimaryVertexCollection = "PrimaryVertex";
   anaEnv.JetCollection = "PFJets_slimmedJets";
   anaEnv.FatJetCollection = "FatJets_slimmedJetsAK8";
-  anaEnv.METCollection = "PFMET_slimmedMETs";
+  if(!isData)  anaEnv.METCollection = "PFMET_slimmedMETs";
+  else if(isData) anaEnv.METCollection = "PFMET_slimmedMETsMuEGClean";
+  //anaEnv.METCollection = "PFMET_slimmedMETs";
   anaEnv.MuonCollection = "Muons_slimmedMuons";
-  anaEnv.ElectronCollection = "Electrons_calibratedPatElectrons";
+  anaEnv.ElectronCollection = "Electrons_selectedElectrons";
   anaEnv.GenJetCollection   = "GenJets_slimmedGenJets";
   //  anaEnv.TrackMETCollection = "";
   //  anaEnv.GenEventCollection = "GenEvent";
@@ -358,9 +352,7 @@ int main (int argc, char *argv[])
   ////////////////////////
   // intialize  Calibrations      //
   ///////////////////////
-  BTagCalibration *btagcalib;
-  BTagCalibrationReader *btagreader;
-  BTagWeightTools *btwt = 0;
+
   BTagCalibrationReader * reader_csvv2;
   BTagCalibrationReader * reader_csvv2_JESdown;
   BTagCalibrationReader * reader_csvv2_JESup;
@@ -399,14 +391,14 @@ int main (int argc, char *argv[])
   stringstream ss;
   ss << JobNum;
   string strJobNum = ss.str();
-  string histo_dir = "NtupleMakerOutput/TriLepton_histos/";
+ /* string histo_dir = "NtupleMakerOutput/TriLepton_histos/";
   string histo_dirdecay = histo_dir ;
   string histo_dir_date = histo_dirdecay+"/TriLepton_histos_" + dateString +"/";
   mkdir(histo_dir.c_str(),0777);
   mkdir(histo_dirdecay.c_str(),0777);
-  mkdir(histo_dir_date.c_str(),0777);
+  mkdir(histo_dir_date.c_str(),0777);*/
   
-  string rootFileName (histo_dir_date+"/FCNC_3L_"+dName+".root");
+  /*string rootFileName (histo_dir_date+"/FCNC_3L_"+dName+".root");
   if (strJobNum != "0")
   {
     if(verbose > 0) cout << "strJobNum is " << strJobNum << endl;
@@ -414,7 +406,7 @@ int main (int argc, char *argv[])
   }
   cout << "Histofile: " << rootFileName << endl;
   TFile *fout = new TFile (rootFileName.c_str(), "RECREATE");
-  
+  */
   ///////////////////////////
   /// Global variables ////
   //////////////////////////
@@ -662,30 +654,7 @@ int main (int argc, char *argv[])
     if(!isData )
     {
       // documentation at http://mon.iihe.ac.be/~smoortga/TopTrees/BTagSF/BTaggingSF_inTopTrees.pdf
-      //	   btagcalib = new BTagCalibration("CSVv2", "../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_13TeV_25ns_com@
-      //     btagcalib = new BTagCalibration("CSVv2", "../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2_80X_ichep_incl_ChangedTo_mujets.csv");
-      btagcalib = new BTagCalibration("CSVv2", "../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2Moriond17_2017_1_26_BtoH.csv");
-      btagreader = new BTagCalibrationReader(btagcalib, BTagEntry::OP_LOOSE, "comb","central");
-      
-      
-      
-      if(fillBtagHisto)  // before btag reweighting can be apply, you first have to make the histograms
-      {
-        cout << "filling btag histo's" << endl;
-        //histoFileHandle = TFile::Open(histfile.c_str(), "UPDATE");
-        btwt = new BTagWeightTools(btagreader,histfile.c_str(),false,30,999,2.4);
-      }
-      else if(!fillBtagHisto)
-      {
-        cout << "reading btag histo's from " << histreadfile.c_str() << endl;
-        // histoFileHandle = TFile::Open("BTagHistosPtEta/HistosPtEta_"+daName+ "_comb_central.root", "READ");
-        //histoFileHandle = TFile::Open(histreadfile.c_str());
-        
-        btwt = new BTagWeightTools(btagreader,histreadfile.c_str(),true,30,999,2.4);
-        //btwt = new BTagWeightTools(btagreader,"BTagHistosPtEta/HistosPtEta_TTJets_mujets_central.root",false,30,999,2.4);
-      }
-      
-      BTagCalibration calib_csvv2("csvv2", "../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2Moriond17_2017_1_26_BtoH.csv");
+        BTagCalibration calib_csvv2("csvv2", "../TopTreeAnalysisBase/Calibrations/BTagging/CSVv2Moriond17_2017_1_26_BtoH.csv");
       reader_csvv2 = new BTagCalibrationReader(&calib_csvv2, // calibration instance
                                                BTagEntry::OP_RESHAPING, // operating point
                                                "iterativefit", // measurement type
@@ -899,9 +868,12 @@ int main (int argc, char *argv[])
     ////////////////////////////////////////////////////////////
     // Setup Date string and nTuple for output
     ///////////////////////////////////////////////////////////
+    if(!isData) doFakeLepton = false;
     
     string channel_dir = "NtupleMakerOutput/Ntuples/" ;
+    if(doFakeLepton) channel_dir = "NtupleMakerOutput/Ntuples_fakes/" ;
     string date_dir = channel_dir+ "/Ntuples_" + dateString +"/";
+    mkdir("NtupleMakerOutput",0777);
     mkdir(channel_dir.c_str(),0777);
     mkdir(date_dir.c_str(),0777);
     
@@ -945,7 +917,7 @@ int main (int argc, char *argv[])
     Double_t puSF;
     Double_t puSF_up;
     Double_t puSF_down;
-    Double_t btagSF;
+
     Double_t btagSFshape = 1.;
     Double_t btagSFshape_down_cferr1 = 1.;
     Double_t btagSFshape_down_cferr2 = 1.;
@@ -1155,7 +1127,6 @@ int main (int argc, char *argv[])
     myTree->Branch("puSF",&puSF,"puSF/D");
     myTree->Branch("puSF_up",&puSF_up,"puSF_up/D");
     myTree->Branch("puSF_down",&puSF_down,"puSF_down/D");
-    myTree->Branch("btagSF",&btagSF,"btagSF/D");
     myTree->Branch("btagSFshape",&btagSFshape,"btagSFshape/D");
     myTree->Branch("btagSFshape_down_cferr1",&btagSFshape_down_cferr1,"btagSFshape_down_cferr1/D");
     myTree->Branch("btagSFshape_down_cferr2",&btagSFshape_down_cferr2,"btagSFshape_down_cferr2/D");
@@ -1475,11 +1446,12 @@ int main (int argc, char *argv[])
       }
       init_jets_corrected = init_jets;
       
-      if(verbose>1)
+      if(true)
       {
         cout <<"Number of Electrons Loaded: " << init_electrons.size() <<endl;
         cout <<"Number of Muons Loaded: " << init_muons.size() <<endl;
         cout << "Number of Jets  Loaded: " << init_jets.size() << endl;
+	cout << "met size " << mets.size() << endl; 
         cout << "Met px / py loaded: "<< mets[0]->Px() << " / " << mets[0]->Py() << endl;
       }
       
@@ -1874,7 +1846,7 @@ int main (int argc, char *argv[])
       ////////////////////////////////////
       //   Event Weights               ///
       ///////////////////////////////////
-      double btagWeight  =  1.;
+     
       double btagWeightShape = 1.;
       Double_t btagWeight_shape_up_lf= 1.;
       Double_t btagWeight_shape_down_lf= 1.;
@@ -1896,16 +1868,6 @@ int main (int argc, char *argv[])
       bTagEff_HFStats1Down = 1., bTagEff_HFStats2Up = 1., bTagEff_HFStats2Down = 1., bTagEff_LFStats1Up = 1., bTagEff_LFStats1Down = 1.,
       bTagEff_LFStats2Up = 1., bTagEff_LFStats2Down = 1., bTagEff_CFErr1Up = 1., bTagEff_CFErr1Down = 1., bTagEff_CFErr2Up = 1., bTagEff_CFErr2Down = 1.;
       
-      if( fillBtagHisto && !isData )
-      {
-        btwt->FillMCEfficiencyHistos(selectedJets);
-        
-      }
-      else if( !fillBtagHisto && !isData)
-      {
-        btagWeight =  btwt->getMCEventWeight(selectedJets,false);  // use parton flavour = true or hadron flavour = false
-        
-      }
       if( !isData )
       {
         bool isBFlav = false;
@@ -2094,7 +2056,7 @@ int main (int argc, char *argv[])
       if(!isData)puSF_down =  LumiWeights_down.ITweight((int)event->nTruePU());
       
       
-      btagSF= 1.;
+      
       btagSFshape = 1.;
       btagSFshape_down_cferr1 = 1.;
       btagSFshape_down_cferr2 = 1.;
@@ -2118,7 +2080,7 @@ int main (int argc, char *argv[])
       
       
       if(!isData){
-        btagSF = btagWeight;
+        
         btagSFshape = btagWeightShape;
         btagSFshape_up_lf = btagWeight_shape_up_lf;
         btagSFshape_down_lf = btagWeight_shape_down_lf;
@@ -2137,7 +2099,7 @@ int main (int argc, char *argv[])
         btagSFshape_up_cferr2 = btagWeight_shape_up_cferr2;
         btagSFshape_down_cferr2 = btagWeight_shape_down_cferr2;
       }
-      else if(isData) {btagSFshape = 1.;  btagSF = 1.; puSF_down = 1.; puSF_up = 1.; puSF = 1.;
+      else if(isData) {btagSFshape = 1.;   puSF_down = 1.; puSF_up = 1.; puSF = 1.;
         
       }
       
@@ -2382,11 +2344,6 @@ int main (int argc, char *argv[])
     tupfile->Close();
     
     delete tupfile;
-    if(!isData ){
-      delete btwt;
-      //histoFileHandle->Close();
-      //delete histoFileHandle;
-    }
     
     treeLoader.UnLoadDataset();
   } //End Loop on Datasets
@@ -2400,7 +2357,7 @@ int main (int argc, char *argv[])
   cout << " - Writing outputs to the files ..." << endl;
   
   
-  
+  /*
   fout-> cd();
   for (map<string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
   {
@@ -2424,7 +2381,7 @@ int main (int argc, char *argv[])
   fout->Close();
   delete fout;
   
-  
+  */
   cout << "It took us " << ((double)clock() - start) / CLOCKS_PER_SEC << " to run the program" << endl;
   cout << "********************************************" << endl;
   cout << "           End of the program !!            " << endl;

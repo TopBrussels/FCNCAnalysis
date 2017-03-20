@@ -24,11 +24,11 @@ date = yyyy+mm+dd
 
 #channels = ["MuMu","ElEl"] 
 #channels = ["mumumu","eee","all"] 
-channels = ["all"]
+channels = ["JERup"]
 doFakes = 0; 
 JES = 1; 
 JER = 1; 
-doJESJER = 0; 
+doJESJER = 3; 
 
 #if(doJESJERshift == 1) postfix = "_JESdown" ;
 #    if(doJESJERshift == 2) postfix = "_JESup" ;
@@ -38,6 +38,7 @@ doJESJER = 0;
 
 # loop over channels
 for chan in channels:
+    tree = ET.ElementTree(file='../config/Run2TriLepton_samples.xml')
     print "\nSearching list of sample used for ", chan, " channel!"
     # getting the appropriate xml file
     if "mumumu" in chan:
@@ -51,7 +52,7 @@ for chan in channels:
         tree = ET.ElementTree(file='../config/FullSamplesElMuV9.xml')
     else:
         print "Channel '", chan , "' is not a correct channel name. No tree has been loaded!"
-        sys.exit()
+        #sys.exit()
     
     root = tree.getroot()
     datasets = root.find('datasets')
@@ -88,7 +89,7 @@ for chan in channels:
     
     # loop over all the dataset with add="1"
     for d in datasets:
-        if d.attrib['add'] == '1' and not "80X" in str(d.attrib['name']):
+        if d.attrib['add'] == '1' and  "80X" in str(d.attrib['name']):
             print "found dataset to be added..." + str(d.attrib['name'])
             commandString = "./Ntupler "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff'])
             topTrees = glob.glob(d.attrib['filenames'])

@@ -56,19 +56,19 @@
 
 <!-- Double Mu -->
 
-<d name="data_DoubleMuon_Run_2016B" title="data_DoubleMuon_Run_2016B" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4936629374.736" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v7-DataOnly/TTP-CMSSW_80X_v7-DataOnly--GT-80X_dataRun2_2016SeptRepro_v7/DoubleMuon/crab_DoubleMuon-Run2016B-03Feb2017_ver2-v2crab1/170316_215406/000*/TOPTREE_*.root"/>
+<d name="data_DoubleMuon_Run_2016B" title="data_DoubleMuon_Run_2016B" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4936629374.736" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/ivanpari/TopTree/CMSSW_80X_v7/TTP-CMSSW_80X_v7--GT-80X_dataRun2_2016SeptRepro_v7/DoubleMuon/crab_DoubleMuon-Run2016B*/*/000*/TOPTREE_*.root"/>
 
-<d name="data_DoubleMuon_Run_2016C" title="data_DoubleMuon_Run_2016C" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="2608979221.209" xsection="1" PreselEff="0.0" filenames="//pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v7-DataOnly/TTP-CMSSW_80X_v7-DataOnly--GT-80X_dataRun2_2016SeptRepro_v7/DoubleMuon/crab_DoubleMuon-Run2016C-03Feb2017-v1crab2/170316_220332/000*/TOPTREE_*.root"/>
+<d name="data_DoubleMuon_Run_2016C" title="data_DoubleMuon_Run_2016C" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="2608979221.209" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/ivanpari/TopTree/CMSSW_80X_v7/TTP-CMSSW_80X_v7--GT-80X_dataRun2_2016SeptRepro_v7/DoubleMuon/crab_DoubleMuon-Run2016C*/*/000*/TOPTREE_*.root"/>
 
-<d name="data_DoubleMuon_Run_2016D" title="data_DoubleMuon_Run_2016D" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4334569036.792" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v7-DataOnly/TTP-CMSSW_80X_v7-DataOnly--GT-80X_dataRun2_2016SeptRepro_v7/DoubleMuon/crab_DoubleMuon-Run2016D-03Feb2017-v1crab3/170316_220429/000*/TOPTREE_*.root"/>
+<d name="data_DoubleMuon_Run_2016D" title="data_DoubleMuon_Run_2016D" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4334569036.792" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/ivanpari/TopTree/CMSSW_80X_v7/TTP-CMSSW_80X_v7--GT-80X_dataRun2_2016SeptRepro_v7/DoubleMuon/crab_DoubleMuon-Run2016D*/*/000*/TOPTREE_*.root"/>
 
-<d name="data_DoubleMuon_Run_2016E" title="data_DoubleMuon_Run_2016E" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4002314514.015" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v7-DataOnly/TTP-CMSSW_80X_v7-DataOnly--GT-80X_dataRun2_2016SeptRepro_v7/DoubleMuon/crab_DoubleMuon-Run2016E-03Feb2017-v1crab4/170316_220515/00*/TOPTREE_*.root"/>
+<d name="data_DoubleMuon_Run_2016E" title="data_DoubleMuon_Run_2016E" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4002314514.015" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/ivanpari/TopTree/CMSSW_80X_v7/TTP-CMSSW_80X_v7--GT-80X_dataRun2_2016SeptRepro_v7/DoubleMuon/crab_DoubleMuon-Run2016E*/*/000*/TOPTREE_*.root"/>
 
-<d name="data_DoubleMuon_Run_2016F" title="data_DoubleMuon_Run_2016F" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="3116018861.831" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v7-DataOnly/TTP-CMSSW_80X_v7-DataOnly--GT-80X_dataRun2_2016SeptRepro_v7/DoubleMuon/crab_DoubleMuon-Run2016F-03Feb2017-v1crab5/170316_220608/000*/TOPTREE_*.root"/>
+<d name="data_DoubleMuon_Run_2016F" title="data_DoubleMuon_Run_2016F" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="3116018861.831" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/ivanpari/TopTree/CMSSW_80X_v7/TTP-CMSSW_80X_v7--GT-80X_dataRun2_2016SeptRepro_v7/DoubleMuon/crab_DoubleMuon-Run2016F*/*/000*/TOPTREE_*.root"/>
 
-<d name="data_DoubleMuon_Run_2016G" title="data_DoubleMuon_Run_2016G" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="7165762605.219" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v7-DataOnly/TTP-CMSSW_80X_v7-DataOnly--GT-80X_dataRun2_2016SeptRepro_v7/DoubleMuon/crab_DoubleMuon-Run2016G-03Feb2017-v1crab6/170316_220652/00*/TOPTREE_*.root"/>
+<d name="data_DoubleMuon_Run_2016G" title="data_DoubleMuon_Run_2016G" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="7165762605.219" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/ivanpari/TopTree/CMSSW_80X_v7/TTP-CMSSW_80X_v7--GT-80X_dataRun2_2016SeptRepro_v7/DoubleMuon/crab_DoubleMuon-Run2016G*/*/000*/TOPTREE_*.root"/>
 
-<d name="data_DoubleMuon_Run_2016H" title="data_DoubleMuon_Run_2016H" add="1" color="1" ls="1" lw="2" normf="1" EqLumi=" 8336062616.739" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v7-DataOnly/TTP-CMSSW_80X_v7-DataOnly--GT-80X_dataRun2_2016SeptRepro_v7/DoubleMuon/crab_DoubleMuon-Run2016H-03Feb2017_ver*/*/000*/TOPTREE_*.root"/>
+<d name="data_DoubleMuon_Run_2016H" title="data_DoubleMuon_Run_2016H" add="1" color="1" ls="1" lw="2" normf="1" EqLumi=" 8336062616.739" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/ivanpari/TopTree/CMSSW_80X_v7/TTP-CMSSW_80X_v7--GT-80X_dataRun2_2016SeptRepro_v7/DoubleMuon/crab_DoubleMuon-Run2016H*/*/000*/TOPTREE_*.root"/>
 
 
 <!-- MuonEG -->
