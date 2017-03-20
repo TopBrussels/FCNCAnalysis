@@ -33,8 +33,9 @@
 #include "TopTreeAnalysisBase/Tools/interface/TTreeLoader.h"
 //#include "../macros/Style.C"
 
-#include "/user/ivanpari/Software/LHAPDF-6.1.6/include/LHAPDF/LHAPDF.h"
-#include "/user/ivanpari/Software/LHAPDF-6.1.6/include/LHAPDF/Reweighting.h"
+//#include "/user/kederoove/Software/LHAPDF-6.1.6/include/LHAPDF/LHAPDF.h"
+//#include "/user/kderoove/Software/LHAPDF-6.1.6/include/LHAPDF/Reweighting.h"
+
 
 struct HighestPt{
   bool operator()(TLorentzVector j1, TLorentzVector j2) const
@@ -117,6 +118,13 @@ Float_t MVA_weight_btagSF_lfstats1_up =1.;
 Float_t MVA_weight_btagSF_lfstats1_down = 1.;
 Float_t MVA_weight_btagSF_lfstats2_up = 1.;
 Float_t MVA_weight_btagSF_lfstats2_down = 1.;
+
+Float_t         MVA_id1;
+Float_t         MVA_id2;
+Float_t         MVA_x1;
+Float_t         MVA_x2;
+Float_t         MVA_q;
+
 
 Float_t MVA_region = -999.;
 Double_t MVA_EqLumi = -999;
@@ -617,7 +625,7 @@ TBranch        *b_met_after_JES;   //!
 
 int verbose = 2;
 
-void CalculatePDF();
+
 string MakeTimeStamp();
 void InitMSPlots(string prefix, vector<int> decayChannels);
 void InitMVAMSPlotsSingletop(string prefix,vector<int> decayChannels);
@@ -937,7 +945,7 @@ int main(int argc, char* argv[]){
   bool applyPUSF_up = false;
   bool applyNloSF = false;
   bool applyMETfilter = false;
-  bool doPDFunc  = false;
+  
   string placeNtup = "singletop/170214";
   int channel = -999;
   datafound = false;
@@ -970,12 +978,10 @@ int main(int argc, char* argv[]){
       std::cout << "   noTrigger: do not apply trigger " << endl;
       std::cout << "   checkTrigger: check trigger in data " << endl;
       std::cout << "   Test: loop over 1000 events" << endl;
-      std::cout << "   PDF: calculate PDF unc" << endl;
+
       return 0;
     }
-    f(string(argv[i]).find("doPDFunc")!=std::string::npos){
-      doPDFunc = true;
-    }
+
     if(string(argv[i]).find("applyJEC")!=std::string::npos) {
       
       i++;
@@ -1145,7 +1151,7 @@ int main(int argc, char* argv[]){
     //cout << "meta data cleared" << endl;
     dataSetName = datasets[d]->Name();
     Xsect = datasets[d]->Xsection();
-    if(dataSetName.find("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80X")==std::string::npos) continue; // TO FIX
+    //if(dataSetName.find("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80X")==std::string::npos) continue; // TO FIX
     if (verbose > 1)
     {
       cout << "   Dataset " << d << ": " << datasets[d]->Name() << " / title : " << datasets[d]->Title() << endl;
@@ -1595,12 +1601,11 @@ int main(int argc, char* argv[]){
         if(Region == 2) FillMVAPlots(d,dataSetName, Region, "wzcontrol", decayChannels);
       }
       
-      if(doPDFunc){
-        if(dataSetName.find("WZTo3LNu_3Jets_MLL50")!=std::string::npos) CalculatePDF();
-      }
+      
       
     } // events
     
+   
     
     if(isData && checktrigger){
       myfile.close();
@@ -2158,13 +2163,22 @@ int main(int argc, char* argv[]){
 void MakeMVAvars(int Region, Double_t scaleFactor){
   clock_t start_sub = clock();
   
+  MVA_x1 = static_cast<float>(x1);
+  MVA_x2 = static_cast<float>(x2);
+  MVA_q = static_cast<float>(q);
+  MVA_id1 = static_cast<float>(id1);
+  MVA_id2 = static_cast<float>(id2);
+  
+  
+  
+  
   MVA_channel = static_cast<float>( channelInt);
   MVA_weight = static_cast<float>( scaleFactor * Luminosity /EquilumiSF );
   MVA_weight_puSF_up = static_cast<float>( scaleFactor_puSF_up * Luminosity /EquilumiSF );
   MVA_weight_puSF_down = static_cast<float>( scaleFactor_puSF_down * Luminosity /EquilumiSF );
   MVA_weight_electronSF_up = static_cast<float>( scaleFactor_electronSF_up * Luminosity /EquilumiSF );
   MVA_weight_electronSF_down = static_cast<float>( scaleFactor_electronSF_down * Luminosity /EquilumiSF );
-  MVA_weight_muonSF_up = static_cast<float>( scaleFactor_muonSF_up * Luminosity /JEC );
+  MVA_weight_muonSF_up = static_cast<float>( scaleFactor_muonSF_up * Luminosity /EquilumiSF );
   MVA_weight_muonSF_down = static_cast<float>( scaleFactor_muonSF_down * Luminosity /EquilumiSF );
   MVA_weight_btagSF_cferr1_up = static_cast<float>( scaleFactor_btagSF_cferr1_up * Luminosity /EquilumiSF );
   MVA_weight_btagSF_cferr1_down = static_cast<float>( scaleFactor_btagSF_cferr1_down * Luminosity /EquilumiSF );
@@ -2342,6 +2356,12 @@ void createMVAtree(string dataSetName){
   
   
   // event
+  // for pdf unc
+  mvatree->Branch("MVA_x1", &MVA_x1, "MVA_x1/F");
+  mvatree->Branch("MVA_x2", &MVA_x2, "MVA_x2/F");
+  mvatree->Branch("MVA_id1", &MVA_id1, "MVA_id1/F");
+  mvatree->Branch("MVA_id2", &MVA_id2, "MVA_id2/F");
+  mvatree->Branch("MVA_q", &MVA_q, "MVA_q/F");
   
   mvatree->Branch("MVA_channel", &MVA_channel , "MVA_channel/F");
   mvatree->Branch("MVA_weight", &MVA_weight, "MVA_weight/F");
@@ -5341,12 +5361,6 @@ void EventSearcher(vector < TLorentzVector> mcParticles, string dataSetName, boo
   
 }
 
-void CalculatePDF(){
-  //PDF weights calculation
-  LHAPDF::setVerbosity(0);
-  LHAPDF::PDFSet basepdfSet("NNPDF30_nlo_as_0118"); // base from main MC
-  LHAPDF::PDFSet newpdfSet("PDF4LHC15_nlo_100"); // give the correct name see https://twiki.cern.ch/twiki/bin/view/CMS/TopSystematics#PDF_uncertainties
 
-}
 
 
