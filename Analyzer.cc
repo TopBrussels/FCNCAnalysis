@@ -1,5 +1,6 @@
 //#define TreeAnalyzer_cxx
 //#include "TreeAnalyzer.h"
+#include <TH1.h>
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
@@ -94,39 +95,40 @@ TTree* mvatree_JERup = 0;
 TTree* mvatree_JERdown = 0;
 
 
-Float_t MVA_channel = -999.;
+Int_t MVA_channel = -999.;
 Float_t MVA_weight = 1.;
-Float_t MVA_weight_puSF_up = 1.;
-Float_t MVA_weight_puSF_down = 1.;
-Float_t MVA_weight_electronSF_up =1.;
-Float_t MVA_weight_electronSF_down = 1.;
-Float_t MVA_weight_muonSF_up = 1.;
-Float_t MVA_weight_muonSF_down = 1.;
-Float_t MVA_weight_btagSF_cferr1_up = 1.;
-Float_t MVA_weight_btagSF_cferr1_down = 1.;
-Float_t MVA_weight_btagSF_cferr2_up = 1.;
-Float_t MVA_weight_btagSF_cferr2_down = 1.;
-Float_t MVA_weight_btagSF_hf_up = 1.;
-Float_t MVA_weight_btagSF_hf_down = 1.;
-Float_t MVA_weight_btagSF_hfstats1_up = 1.;
-Float_t MVA_weight_btagSF_hfstats1_down = 1.;
-Float_t MVA_weight_btagSF_hfstats2_up = 1.;
-Float_t MVA_weight_btagSF_hfstats2_down = 1.;
-Float_t MVA_weight_btagSF_lf_up = 1.;
-Float_t MVA_weight_btagSF_lf_down = 1.;
-Float_t MVA_weight_btagSF_lfstats1_up =1.;
-Float_t MVA_weight_btagSF_lfstats1_down = 1.;
-Float_t MVA_weight_btagSF_lfstats2_up = 1.;
-Float_t MVA_weight_btagSF_lfstats2_down = 1.;
+Float_t MVA_weight_nom = 1.;
+Double_t MVA_weight_puSF_up = 1.;
+Double_t MVA_weight_puSF_down = 1.;
+Double_t MVA_weight_electronSF_up =1.;
+Double_t MVA_weight_electronSF_down = 1.;
+Double_t MVA_weight_muonSF_up = 1.;
+Double_t MVA_weight_muonSF_down = 1.;
+Double_t MVA_weight_btagSF_cferr1_up = 1.;
+Double_t MVA_weight_btagSF_cferr1_down = 1.;
+Double_t MVA_weight_btagSF_cferr2_up = 1.;
+Double_t MVA_weight_btagSF_cferr2_down = 1.;
+Double_t MVA_weight_btagSF_hf_up = 1.;
+Double_t MVA_weight_btagSF_hf_down = 1.;
+Double_t MVA_weight_btagSF_hfstats1_up = 1.;
+Double_t MVA_weight_btagSF_hfstats1_down = 1.;
+Double_t MVA_weight_btagSF_hfstats2_up = 1.;
+Double_t MVA_weight_btagSF_hfstats2_down = 1.;
+Double_t MVA_weight_btagSF_lf_up = 1.;
+Double_t MVA_weight_btagSF_lf_down = 1.;
+Double_t MVA_weight_btagSF_lfstats1_up =1.;
+Double_t MVA_weight_btagSF_lfstats1_down = 1.;
+Double_t MVA_weight_btagSF_lfstats2_up = 1.;
+Double_t MVA_weight_btagSF_lfstats2_down = 1.;
 
-Float_t         MVA_id1;
-Float_t         MVA_id2;
-Float_t         MVA_x1;
-Float_t         MVA_x2;
-Float_t         MVA_q;
+Double_t         MVA_id1;
+Double_t         MVA_id2;
+Double_t         MVA_x1;
+Double_t         MVA_x2;
+Double_t         MVA_q;
 
 
-Float_t MVA_region = -999.;
+Int_t MVA_region = -999.;
 Double_t MVA_EqLumi = -999;
 
 
@@ -2163,39 +2165,40 @@ int main(int argc, char* argv[]){
 void MakeMVAvars(int Region, Double_t scaleFactor){
   clock_t start_sub = clock();
   
-  MVA_x1 = static_cast<float>(x1);
-  MVA_x2 = static_cast<float>(x2);
-  MVA_q = static_cast<float>(q);
-  MVA_id1 = static_cast<float>(id1);
-  MVA_id2 = static_cast<float>(id2);
+  MVA_x1 = x1;
+  MVA_x2 = x2;
+  MVA_q = q;
+  MVA_id1 = id1;
+  MVA_id2 = id2;
   
   
   
   
   MVA_channel = static_cast<float>( channelInt);
   MVA_weight = static_cast<float>( scaleFactor * Luminosity /EquilumiSF );
-  MVA_weight_puSF_up = static_cast<float>( scaleFactor_puSF_up * Luminosity /EquilumiSF );
-  MVA_weight_puSF_down = static_cast<float>( scaleFactor_puSF_down * Luminosity /EquilumiSF );
-  MVA_weight_electronSF_up = static_cast<float>( scaleFactor_electronSF_up * Luminosity /EquilumiSF );
-  MVA_weight_electronSF_down = static_cast<float>( scaleFactor_electronSF_down * Luminosity /EquilumiSF );
-  MVA_weight_muonSF_up = static_cast<float>( scaleFactor_muonSF_up * Luminosity /EquilumiSF );
-  MVA_weight_muonSF_down = static_cast<float>( scaleFactor_muonSF_down * Luminosity /EquilumiSF );
-  MVA_weight_btagSF_cferr1_up = static_cast<float>( scaleFactor_btagSF_cferr1_up * Luminosity /EquilumiSF );
-  MVA_weight_btagSF_cferr1_down = static_cast<float>( scaleFactor_btagSF_cferr1_down * Luminosity /EquilumiSF );
-  MVA_weight_btagSF_cferr2_up = static_cast<float>( scaleFactor_btagSF_cferr2_up * Luminosity /EquilumiSF );
-  MVA_weight_btagSF_cferr2_down = static_cast<float>( scaleFactor_btagSF_cferr2_down * Luminosity /EquilumiSF );
-  MVA_weight_btagSF_hf_up = static_cast<float>( scaleFactor_btagSF_hf_up * Luminosity /EquilumiSF );
-  MVA_weight_btagSF_hf_down = static_cast<float>( scaleFactor_btagSF_hf_down * Luminosity /EquilumiSF );
-  MVA_weight_btagSF_hfstats1_up = static_cast<float>( scaleFactor_btagSF_hfstats1_up * Luminosity /EquilumiSF );
-  MVA_weight_btagSF_hfstats1_down = static_cast<float>( scaleFactor_btagSF_hfstats1_down * Luminosity /EquilumiSF );
-  MVA_weight_btagSF_hfstats2_up = static_cast<float>( scaleFactor_btagSF_hfstats2_up * Luminosity /EquilumiSF );
-  MVA_weight_btagSF_hfstats2_down = static_cast<float>( scaleFactor_btagSF_hfstats2_down * Luminosity /EquilumiSF );
-  MVA_weight_btagSF_lf_up = static_cast<float>( scaleFactor_btagSF_lf_up * Luminosity /EquilumiSF );
-  MVA_weight_btagSF_lf_down = static_cast<float>( scaleFactor_btagSF_lf_down * Luminosity /EquilumiSF );
-  MVA_weight_btagSF_lfstats1_up = static_cast<float>( scaleFactor_btagSF_lfstats1_up * Luminosity /EquilumiSF );
-  MVA_weight_btagSF_lfstats1_down = static_cast<float>( scaleFactor_btagSF_lfstats1_down * Luminosity /EquilumiSF );
-  MVA_weight_btagSF_lfstats2_up = static_cast<float>( scaleFactor_btagSF_lfstats2_up * Luminosity /EquilumiSF );
-  MVA_weight_btagSF_lfstats2_down = static_cast<float>( scaleFactor_btagSF_lfstats2_down * Luminosity /EquilumiSF );
+  MVA_weight_nom =  scaleFactor * Luminosity /EquilumiSF ;
+  MVA_weight_puSF_up =  scaleFactor_puSF_up * Luminosity /EquilumiSF ;
+  MVA_weight_puSF_down =  scaleFactor_puSF_down * Luminosity /EquilumiSF ;
+  MVA_weight_electronSF_up =  scaleFactor_electronSF_up * Luminosity /EquilumiSF ;
+  MVA_weight_electronSF_down =  scaleFactor_electronSF_down * Luminosity /EquilumiSF ;
+  MVA_weight_muonSF_up =  scaleFactor_muonSF_up * Luminosity /EquilumiSF ;
+  MVA_weight_muonSF_down =  scaleFactor_muonSF_down * Luminosity /EquilumiSF ;
+  MVA_weight_btagSF_cferr1_up =  scaleFactor_btagSF_cferr1_up * Luminosity /EquilumiSF ;
+  MVA_weight_btagSF_cferr1_down =  scaleFactor_btagSF_cferr1_down * Luminosity /EquilumiSF ;
+  MVA_weight_btagSF_cferr2_up =  scaleFactor_btagSF_cferr2_up * Luminosity /EquilumiSF ;
+  MVA_weight_btagSF_cferr2_down =  scaleFactor_btagSF_cferr2_down * Luminosity /EquilumiSF ;
+  MVA_weight_btagSF_hf_up =  scaleFactor_btagSF_hf_up * Luminosity /EquilumiSF ;
+  MVA_weight_btagSF_hf_down =  scaleFactor_btagSF_hf_down * Luminosity /EquilumiSF ;
+  MVA_weight_btagSF_hfstats1_up =  scaleFactor_btagSF_hfstats1_up * Luminosity /EquilumiSF ;
+  MVA_weight_btagSF_hfstats1_down =  scaleFactor_btagSF_hfstats1_down * Luminosity /EquilumiSF ;
+  MVA_weight_btagSF_hfstats2_up =  scaleFactor_btagSF_hfstats2_up * Luminosity /EquilumiSF ;
+  MVA_weight_btagSF_hfstats2_down =  scaleFactor_btagSF_hfstats2_down * Luminosity /EquilumiSF ;
+  MVA_weight_btagSF_lf_up =  scaleFactor_btagSF_lf_up * Luminosity /EquilumiSF ;
+  MVA_weight_btagSF_lf_down =  scaleFactor_btagSF_lf_down * Luminosity /EquilumiSF ;
+  MVA_weight_btagSF_lfstats1_up =  scaleFactor_btagSF_lfstats1_up * Luminosity /EquilumiSF ;
+  MVA_weight_btagSF_lfstats1_down =  scaleFactor_btagSF_lfstats1_down * Luminosity /EquilumiSF ;
+  MVA_weight_btagSF_lfstats2_up =  scaleFactor_btagSF_lfstats2_up * Luminosity /EquilumiSF ;
+  MVA_weight_btagSF_lfstats2_down =  scaleFactor_btagSF_lfstats2_down * Luminosity /EquilumiSF ;
   
   MVA_region = static_cast<float>( Region);
   
@@ -2357,41 +2360,42 @@ void createMVAtree(string dataSetName){
   
   // event
   // for pdf unc
-  mvatree->Branch("MVA_x1", &MVA_x1, "MVA_x1/F");
-  mvatree->Branch("MVA_x2", &MVA_x2, "MVA_x2/F");
-  mvatree->Branch("MVA_id1", &MVA_id1, "MVA_id1/F");
-  mvatree->Branch("MVA_id2", &MVA_id2, "MVA_id2/F");
-  mvatree->Branch("MVA_q", &MVA_q, "MVA_q/F");
+  mvatree->Branch("MVA_x1", &MVA_x1, "MVA_x1/D");
+  mvatree->Branch("MVA_x2", &MVA_x2, "MVA_x2/D");
+  mvatree->Branch("MVA_id1", &MVA_id1, "MVA_id1/D");
+  mvatree->Branch("MVA_id2", &MVA_id2, "MVA_id2/D");
+  mvatree->Branch("MVA_q", &MVA_q, "MVA_q/D");
   
-  mvatree->Branch("MVA_channel", &MVA_channel , "MVA_channel/F");
+  mvatree->Branch("MVA_channel", &MVA_channel , "MVA_channel/I");
   mvatree->Branch("MVA_weight", &MVA_weight, "MVA_weight/F");
-  mvatree->Branch("MVA_weight_puSF_up", &MVA_weight_puSF_up, "MVA_weight_puSF_up/F");
-  mvatree->Branch("MVA_weight_puSF_down", &MVA_weight_puSF_down, "MVA_weight_puSF_down/F");
-  mvatree->Branch("MVA_weight_electronSF_up", &MVA_weight_electronSF_up, "MVA_weight_electronSF_up/F");
-  mvatree->Branch("MVA_weight_electronSF_down", &MVA_weight_electronSF_down, "MVA_weight_electronSF_down/F");
+  mvatree->Branch("MVA_weight_nom", &MVA_weight_nom, "MVA_weight_nom/D");
+  mvatree->Branch("MVA_weight_puSF_up", &MVA_weight_puSF_up, "MVA_weight_puSF_up/D");
+  mvatree->Branch("MVA_weight_puSF_down", &MVA_weight_puSF_down, "MVA_weight_puSF_down/D");
+  mvatree->Branch("MVA_weight_electronSF_up", &MVA_weight_electronSF_up, "MVA_weight_electronSF_up/D");
+  mvatree->Branch("MVA_weight_electronSF_down", &MVA_weight_electronSF_down, "MVA_weight_electronSF_down/D");
   
-  mvatree->Branch("MVA_weight_muonSF_up", &MVA_weight_muonSF_up, "MVA_weight_muonSF_up/F");
-  mvatree->Branch("MVA_weight_muonSF_down", &MVA_weight_muonSF_down, "MVA_weight_muonSF_down/F");
-  mvatree->Branch("MVA_weight_btagSF_cferr1_up", &MVA_weight_btagSF_cferr1_up, "MVA_weight_btagSF_cferr1_up/F");
-  mvatree->Branch("MVA_weight_btagSF_cferr1_down", &MVA_weight_btagSF_cferr1_down, "MVA_weight_btagSF_cferr1_down/F");
-  mvatree->Branch("MVA_weight_btagSF_cferr2_up", &MVA_weight_btagSF_cferr2_up, "MVA_weight_btagSF_cferr2_up/F");
-  mvatree->Branch("MVA_weight_btagSF_cferr2_down", &MVA_weight_btagSF_cferr2_down, "MVA_weight_btagSF_cferr2_down/F");
-  mvatree->Branch("MVA_weight_btagSF_hf_up", &MVA_weight_btagSF_hf_up, "MVA_weight_btagSF_hf_up/F");
-  mvatree->Branch("MVA_weight_btagSF_hf_down", &MVA_weight_btagSF_hf_down, "MVA_weight_btagSF_hf_down/F");
-  mvatree->Branch("MVA_weight_btagSF_hfstats1_up", &MVA_weight_btagSF_hfstats1_up, "MVA_weight_btagSF_hfstats1_up/F");
-  mvatree->Branch("MVA_weight_btagSF_hfstats1_down", &MVA_weight_btagSF_hfstats1_down, "MVA_weight_btagSF_hfstats1_down/F");
-  mvatree->Branch("MVA_weight_btagSF_hfstats2_up", &MVA_weight_btagSF_hfstats2_up, "MVA_weight_btagSF_hfstats2_up/F");
-  mvatree->Branch("MVA_weight_btagSF_hfstats2_down", &MVA_weight_btagSF_hfstats2_down, "MVA_weight_btagSF_hfstats2_down/F");
-  mvatree->Branch("MVA_weight_btagSF_lf_up", &MVA_weight_btagSF_lf_up, "MVA_weight_btagSF_lf_up/F");
-  mvatree->Branch("MVA_weight_btagSF_lf_down", &MVA_weight_btagSF_lf_down, "MVA_weight_btagSF_lf_down/F");
-  mvatree->Branch("MVA_weight_btagSF_lfstats1_up", &MVA_weight_btagSF_lfstats1_up, "MVA_weight_btagSF_lfstats1_up/F");
-  mvatree->Branch("MVA_weight_btagSF_lfstats1_down", &MVA_weight_btagSF_lfstats1_down, "MVA_weight_btagSF_lfstats1_down/F");
-  mvatree->Branch("MVA_weight_btagSF_lfstats2_up", &MVA_weight_btagSF_lfstats2_up, "MVA_weight_btagSF_lfstats2_up/F");
-  mvatree->Branch("MVA_weight_btagSF_lfstats2_down", &MVA_weight_btagSF_lfstats2_down, "MVA_weight_btagSF_lfstats2_down/F");
+  mvatree->Branch("MVA_weight_muonSF_up", &MVA_weight_muonSF_up, "MVA_weight_muonSF_up/D");
+  mvatree->Branch("MVA_weight_muonSF_down", &MVA_weight_muonSF_down, "MVA_weight_muonSF_down/D");
+  mvatree->Branch("MVA_weight_btagSF_cferr1_up", &MVA_weight_btagSF_cferr1_up, "MVA_weight_btagSF_cferr1_up/D");
+  mvatree->Branch("MVA_weight_btagSF_cferr1_down", &MVA_weight_btagSF_cferr1_down, "MVA_weight_btagSF_cferr1_down/D");
+  mvatree->Branch("MVA_weight_btagSF_cferr2_up", &MVA_weight_btagSF_cferr2_up, "MVA_weight_btagSF_cferr2_up/D");
+  mvatree->Branch("MVA_weight_btagSF_cferr2_down", &MVA_weight_btagSF_cferr2_down, "MVA_weight_btagSF_cferr2_down/D");
+  mvatree->Branch("MVA_weight_btagSF_hf_up", &MVA_weight_btagSF_hf_up, "MVA_weight_btagSF_hf_up/D");
+  mvatree->Branch("MVA_weight_btagSF_hf_down", &MVA_weight_btagSF_hf_down, "MVA_weight_btagSF_hf_down/D");
+  mvatree->Branch("MVA_weight_btagSF_hfstats1_up", &MVA_weight_btagSF_hfstats1_up, "MVA_weight_btagSF_hfstats1_up/D");
+  mvatree->Branch("MVA_weight_btagSF_hfstats1_down", &MVA_weight_btagSF_hfstats1_down, "MVA_weight_btagSF_hfstats1_down/D");
+  mvatree->Branch("MVA_weight_btagSF_hfstats2_up", &MVA_weight_btagSF_hfstats2_up, "MVA_weight_btagSF_hfstats2_up/D");
+  mvatree->Branch("MVA_weight_btagSF_hfstats2_down", &MVA_weight_btagSF_hfstats2_down, "MVA_weight_btagSF_hfstats2_down/D");
+  mvatree->Branch("MVA_weight_btagSF_lf_up", &MVA_weight_btagSF_lf_up, "MVA_weight_btagSF_lf_up/D");
+  mvatree->Branch("MVA_weight_btagSF_lf_down", &MVA_weight_btagSF_lf_down, "MVA_weight_btagSF_lf_down/D");
+  mvatree->Branch("MVA_weight_btagSF_lfstats1_up", &MVA_weight_btagSF_lfstats1_up, "MVA_weight_btagSF_lfstats1_up/D");
+  mvatree->Branch("MVA_weight_btagSF_lfstats1_down", &MVA_weight_btagSF_lfstats1_down, "MVA_weight_btagSF_lfstats1_down/D");
+  mvatree->Branch("MVA_weight_btagSF_lfstats2_up", &MVA_weight_btagSF_lfstats2_up, "MVA_weight_btagSF_lfstats2_up/D");
+  mvatree->Branch("MVA_weight_btagSF_lfstats2_down", &MVA_weight_btagSF_lfstats2_down, "MVA_weight_btagSF_lfstats2_down/D");
   
   
   
-  mvatree->Branch("MVA_region", &MVA_region, "MVA_region/F");
+  mvatree->Branch("MVA_region", &MVA_region, "MVA_region/I");
   mvatree->Branch("MVA_EqLumi",&MVA_EqLumi,"MVA_EqLumi/D");
   
   // pt
@@ -3309,8 +3313,9 @@ void ClearObjects(){
   
 }
 void ClearMVAVars(){
-  MVA_channel = -999.;
+  MVA_channel = -999;
   MVA_weight = 1.;
+  MVA_weight_nom = 1.;
   MVA_weight_puSF_up = 1.;
   MVA_weight_puSF_down = 1.;
   MVA_weight_electronSF_up =1.;
