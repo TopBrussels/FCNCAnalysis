@@ -53,30 +53,40 @@ void Trigger::bookTriggers(bool isData, string dName)
   
   /// Add relevant triggers to triggerlist
   //  Recommended triggers for TOP analyses
-  //  Last updated: 29 June 2016. https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopTrigger
+  //  Last updated: 6 dec 2016. https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopTrigger
   if (singleLep && !doubleLep && !trilep)
   {
     if (muon)
     {
       if (isData)
       {
-        if( dName.find("Data_Run2016B")!=string::npos || dName.find("Data_Run2016C")!=string::npos || dName.find("Data_Run2016D")!=string::npos || dName.find("Data_Run2016E")!=string::npos || dName.find("Data_Run2016F")!=string::npos)
+        if( dName.find("Run_2016B")!=string::npos || dName.find("Run_2016C")!=string::npos || dName.find("Run_2016D")!=string::npos || dName.find("Run_2016E")!=string::npos || dName.find("Run_2016F")!=string::npos || dName.find("Run_2016G")!=string::npos || dName.find("Run_2016H")!=string::npos)
         {
-          triggerList.push_back("HLT_IsoMu22_v*");
-          triggerList.push_back("HLT_IsoTkMu22_v*");
-//          triggerList.push_back("HLT_IsoMu24_v*");
-//          triggerList.push_back("HLT_IsoTkMu24_v*");
+          triggerList.push_back("HLT_IsoMu24_v*");
+          triggerList.push_back("HLT_IsoTkMu24_v*");
         }
-        else if( dName.find("Data_Run2015C")!=string::npos || dName.find("Data_Run2015D")!=string::npos ){
+        /*else if(  dName.find("Run_2016G")!=string::npos || dName.find("Run_2016H")!=string::npos)
+        {
+         // triggerList.push_back("HLT_Mu50_v*");
+         // triggerList.push_back("HLT_TkMu50_v*");
+        }*/
+    /*else if( dName.find("Run_2015C")!=string::npos || dName.find("Run_2015D")!=string::npos ){
           triggerList.push_back("HLT_IsoMu18_v*");  // Data
           //           triggerList.push_back("HLT_IsoTkMu2_v*");
         }
-        else cout << "ERROR: no correct data triggers selected" << endl;
+*/        else cout << "ERROR: no correct data triggers selected ins single mu" << endl;
+      /*  if( dName.find("Run_2016C")!=string::npos || dName.find("Run_2016D")!=string::npos || dName.find("Run_2016E")!=string::npos || dName.find("Run_2016F")!=string::npos || dName.find("Run_2016G")!=string::npos || dName.find("Run_2016H")!=string::npos)
+        {
+          triggerList.push_back("HLT_IsoMu22_eta2p1_v*");  // prescaled!
+          triggerList.push_back("HLT_IsoTkMu22_eta2p1_v*"); // prescaled!
+        }*/
       }
       else
       {
         if( dName.find("80X")!=string::npos)
         {
+      //    triggerList.push_back("HLT_IsoMu22_eta2p1_v*");
+       //   triggerList.push_back("HLT_IsoTkMu22_eta2p1_v*");
           triggerList.push_back("HLT_IsoMu24_v2");
           triggerList.push_back("HLT_IsoTkMu24_v2");
         }
@@ -92,21 +102,24 @@ void Trigger::bookTriggers(bool isData, string dName)
       if (isData)
       {
         
-        if( dName.find("Data_Run2016B")!=string::npos || dName.find("Data_Run2016C")!=string::npos || dName.find("Data_Run2016D")!=string::npos || dName.find("Data_Run2016E")!=string::npos || dName.find("Data_Run2016F")!=string::npos)
-        {
+        if( dName.find("Run_2016B")!=string::npos || dName.find("Run_2016C")!=string::npos || dName.find("Run_2016D")!=string::npos || dName.find("Run_2016E")!=string::npos || dName.find("Run_2016F")!=string::npos || dName.find("Run_2016G")!=string::npos || dName.find("Run_2016H")!=string::npos)        {
           triggerList.push_back("HLT_Ele32_eta2p1_WPTight_Gsf_v*");
+          //triggerList.push_back("HLT_Ele27_WPTight_Gsf_v*"); // relative unprescaled
+          //triggerList.push_back("HLT_Ele25_eta2p1_WPTight_Gsf_v*"); // relative unprescaled
         }
-        else if( dName.find("Data_Run2015C")!=string::npos || dName.find("Data_Run2015D")!=string::npos ){
+     /*   else if( dName.find("Run_2015C")!=string::npos || dName.find("Run_2015D")!=string::npos ){
           triggerList.push_back("HLT_Ele23_WPLoose_Gsf_v*");  // Data, restricted to eta < 2.1
-        }
-        else cout << "ERROR: no correct data triggers selected" << endl;
+        }*/
+        else cout << "ERROR: no correct data triggers selected in single ele" << endl;
         
       }
       else
       {
         if( dName.find("80X")!=string::npos)
         {
-          triggerList.push_back("HLT_Ele32_eta2p1_WPTight_Gsf_v3");
+          triggerList.push_back("HLT_Ele32_eta2p1_WPTight_Gsf_v*");
+       //   triggerList.push_back("HLT_Ele27_WPTight_Gsf_v*");
+       //   triggerList.push_back("HLT_Ele25_eta2p1_WPTight_Gsf_v*");
         }
         else if( dName.find("76X")!=string::npos){
           triggerList.push_back("HLT_Ele23_WPLoose_Gsf_v*");
@@ -124,22 +137,29 @@ void Trigger::bookTriggers(bool isData, string dName)
       if (isData)
       {
         
-        if( dName.find("Data_Run2016B")!=string::npos || dName.find("Data_Run2016C")!=string::npos || dName.find("Data_Run2016D")!=string::npos || dName.find("Data_Run2016E")!=string::npos || dName.find("Data_Run2016F")!=string::npos)
+        if( dName.find("Run_2016B")!=string::npos || dName.find("Run_2016C")!=string::npos || dName.find("Run_2016D")!=string::npos || dName.find("Run_2016E")!=string::npos || dName.find("Run_2016F")!=string::npos || dName.find("Run_2016G")!=string::npos )
+        {
+          //cout << "pushing back " << endl;
+          triggerList.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*"); // prescaled for H
+          triggerList.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*"); // prescaked for H
+        }
+        else if( dName.find("Run_2016H")!=string::npos)
         {
           triggerList.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
- 	  triggerList.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
+          triggerList.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
         }
-        else if( dName.find("Data_Run2015C")!=string::npos || dName.find("Data_Run2015D")!=string::npos ){
+        else if( dName.find("Run_2015C")!=string::npos || dName.find("Run_2015D")!=string::npos ){
           triggerList.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");  // Data, restricted to eta < 2.1
         }
-        else cout << "ERROR: no correct data triggers selected" << endl;
+        else cout << "ERROR: no correct data triggers selected in dimu" << endl;
         
       }
       else
       {
         if( dName.find("80X")!=string::npos)
         {
-          triggerList.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v3");
+          triggerList.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*");
+          triggerList.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*");
         }
         else if( dName.find("76X")!=string::npos ){
           triggerList.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
@@ -152,21 +172,23 @@ void Trigger::bookTriggers(bool isData, string dName)
       if (isData)
       {
         
-        if( dName.find("Data_Run2016B")!=string::npos || dName.find("Data_Run2016C")!=string::npos || dName.find("Data_Run2016D")!=string::npos || dName.find("Data_Run2016E")!=string::npos || dName.find("Data_Run2016F")!=string::npos)
+        if( dName.find("Run_2016B")!=string::npos || dName.find("Run_2016C")!=string::npos || dName.find("Run_2016D")!=string::npos || dName.find("Run_2016E")!=string::npos || dName.find("Run_2016F")!=string::npos || dName.find("Run_2016G")!=string::npos || dName.find("Run_2016H")!=string::npos)
         {
-          triggerList.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+         // triggerList.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+          triggerList.push_back("HLT_DoubleEle24_22_eta2p1_WPLoose_Gsf_v*");
         }
-        else if( dName.find("Data_Run2015C")!=string::npos || dName.find("Data_Run2015D")!=string::npos ){
+        else if( dName.find("Run_2015C")!=string::npos || dName.find("Run_2015D")!=string::npos ){
           triggerList.push_back("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");  // Data, restricted to eta < 2.1
         }
-        else cout << "ERROR: no correct data triggers selected" << endl;
+        else cout << "ERROR: no correct data triggers selected in dilep" << endl;
         
       }
       else
       {
         if( dName.find("80X")!=string::npos)
         {
-          triggerList.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v4");
+         // triggerList.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+          triggerList.push_back("HLT_DoubleEle24_22_eta2p1_WPLoose_Gsf_v*");
         }
         else if( dName.find("76X")!=string::npos) {
           triggerList.push_back("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
@@ -180,26 +202,46 @@ void Trigger::bookTriggers(bool isData, string dName)
       if (isData)
       {
         
-        if( dName.find("Data_Run2016B")!=string::npos || dName.find("Data_Run2016C")!=string::npos || dName.find("Data_Run2016D")!=string::npos || dName.find("Data_Run2016E")!=string::npos || dName.find("Data_Run2016F")!=string::npos)
+        if(dName.find("Run_2016B")!=string::npos || dName.find("Run_2016C")!=string::npos || dName.find("Run_2016D")!=string::npos || dName.find("Run_2016E")!=string::npos || dName.find("Run_2016F")!=string::npos || dName.find("Run_2016G")!=string::npos )
         {
+          //cout << "pushing back " << endl;
           triggerList.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
+             triggerList.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*" );
           triggerList.push_back("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*");
+          
           triggerList.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
           triggerList.push_back("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
           
+
+          
         }
-        else if( dName.find("Data_Run2015C")!=string::npos || dName.find("Data_Run2015D")!=string::npos ){
+          else if(dName.find("Run_2016H")!=string::npos)
+        {
+          //triggerList.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
+          // triggerList.push_back("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*");
+          triggerList.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+          // triggerList.push_back("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+          //triggerList.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*" );
+          //triggerList.push_back("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*");
+          triggerList.push_back("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+          
+        }
+        else if( dName.find("Run_2015C")!=string::npos || dName.find("Run_2015D")!=string::npos ){
           triggerList.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
         }
-        else cout << "ERROR: no correct data triggers selected" << endl;
+        else cout << "ERROR: no correct data triggers selected in muon + electron " << endl;
         
       }
       else
       {
         if( dName.find("80X")!=string::npos)
         {
-          triggerList.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v4");
-          triggerList.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v4");
+          triggerList.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
+          triggerList.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+          triggerList.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*");
+          triggerList.push_back("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*");
+          triggerList.push_back("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+          //triggerList.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v4");
         }
         else if( dName.find("76X")!=string::npos ){
           triggerList.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
@@ -216,18 +258,18 @@ void Trigger::bookTriggers(bool isData, string dName)
       if (isData)
       {
         
-        if( dName.find("Data_Run2016B")!=string::npos || dName.find("Data_Run2016C")!=string::npos || dName.find("Data_Run2016D")!=string::npos || dName.find("Data_Run2016E")!=string::npos || dName.find("Data_Run2016F")!=string::npos)
+        if( dName.find("Run_2016B")!=string::npos || dName.find("Run_2016C")!=string::npos || dName.find("Run_2016D")!=string::npos || dName.find("Run_2016E")!=string::npos || dName.find("Run_2016F")!=string::npos || dName.find("Run_2016G")!=string::npos || dName.find("Run_2016H")!=string::npos)
         {
           triggerList.push_back("HLT_TripleMu_12_10_5_v*");
           triggerList.push_back("HLT_TripleMu_5_3_3_v*");
           
         }
-        else if( dName.find("Data_Run2015C")!=string::npos || dName.find("Data_Run2015D")!=string::npos ){
+        else if( dName.find("Run_2015C")!=string::npos || dName.find("Run_2015D")!=string::npos ){
            triggerList.push_back("HLT_TripleMu_12_10_5_v*");
           
         
         }
-        else cout << "ERROR: no correct data triggers selected" << endl;
+        else cout << "ERROR: no correct data triggers selected in trilep muons" << endl;
         
       }
       else
