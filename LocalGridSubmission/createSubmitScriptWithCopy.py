@@ -24,11 +24,11 @@ date = yyyy+mm+dd
 
 #channels = ["MuMu","ElEl"] 
 #channels = ["mumumu","eee","all"] 
-channels = ["JERup"]
+channels = ["all"]
 doFakes = 0; 
 JES = 1; 
 JER = 1; 
-doJESJER = 3; 
+doJESJER = 0; 
 
 #if(doJESJERshift == 1) postfix = "_JESdown" ;
 #    if(doJESJERshift == 2) postfix = "_JESup" ;
@@ -89,7 +89,7 @@ for chan in channels:
     
     # loop over all the dataset with add="1"
     for d in datasets:
-        if d.attrib['add'] == '1' and  "80X" in str(d.attrib['name']):
+        if d.attrib['add'] == '1' and  "STt_a" in str(d.attrib['name']):
             print "found dataset to be added..." + str(d.attrib['name'])
             commandString = "./Ntupler "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff'])
             topTrees = glob.glob(d.attrib['filenames'])
