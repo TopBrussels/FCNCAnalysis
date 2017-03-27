@@ -34,8 +34,7 @@
 #include "TopTreeAnalysisBase/Tools/interface/TTreeLoader.h"
 //#include "../macros/Style.C"
 
-//#include "/user/kederoove/Software/LHAPDF-6.1.6/include/LHAPDF/LHAPDF.h"
-//#include "/user/kderoove/Software/LHAPDF-6.1.6/include/LHAPDF/Reweighting.h"
+
 
 
 struct HighestPt{
@@ -97,7 +96,7 @@ TTree* mvatree_JERdown = 0;
 
 Int_t MVA_channel = -999.;
 Float_t MVA_weight = 1.;
-Float_t MVA_weight_nom = 1.;
+Double_t MVA_weight_nom = 1.;
 Double_t MVA_weight_puSF_up = 1.;
 Double_t MVA_weight_puSF_down = 1.;
 Double_t MVA_weight_electronSF_up =1.;
@@ -121,14 +120,14 @@ Double_t MVA_weight_btagSF_lfstats1_down = 1.;
 Double_t MVA_weight_btagSF_lfstats2_up = 1.;
 Double_t MVA_weight_btagSF_lfstats2_down = 1.;
 
-Double_t         MVA_id1;
-Double_t         MVA_id2;
+Int_t         MVA_id1;
+Int_t         MVA_id2;
 Double_t         MVA_x1;
 Double_t         MVA_x2;
 Double_t         MVA_q;
 
 
-Int_t MVA_region = -999.;
+Float_t MVA_region = -999.;
 Double_t MVA_EqLumi = -999;
 
 
@@ -184,14 +183,14 @@ Float_t MVA_FCNCtop_phi= -999.;
 
 // nbrs
 Int_t MVA_nMuons = -999;
-Int_t MVA_NJets_CSVv2T = -999;
-Int_t MVA_NJets_CSVv2M = -999;
-Int_t MVA_NJets_CSVv2L = -999;
-Int_t MVA_nJets = -999;
-Int_t MVA_nElectrons = -999;
-Int_t MVA_nJets_CharmL = -999;
-Int_t MVA_nJets_CharmM = -999;
-Int_t MVA_nJets_CharmT = -999;
+Float_t MVA_NJets_CSVv2T = -999;
+Float_t MVA_NJets_CSVv2M = -999;
+Float_t MVA_NJets_CSVv2L = -999;
+Float_t MVA_nJets = -999;
+Float_t MVA_nElectrons = -999;
+Float_t MVA_nJets_CharmL = -999;
+Float_t MVA_nJets_CharmM = -999;
+Float_t MVA_nJets_CharmT = -999;
 
 
 //SM kinematics
@@ -204,7 +203,7 @@ Float_t MVA_dRWlepb = -999.;
 
 Float_t MVA_dPhiWlepb = -999.;
 
-Int_t MVA_Wlep_Charge = -999;
+Float_t MVA_Wlep_Charge = -999;
 Float_t MVA_charge_asym = -999.;
 Float_t MVA_TotalPt = -999.;
 Float_t MVA_TotalHt = -999.;
@@ -402,7 +401,6 @@ Int_t           npu;
 Double_t        puSF;
 Double_t        puSF_up;
 Double_t        puSF_down;
-Double_t        btagSF;
 Int_t           PassedMETFilter;
 Int_t           PassedTrigger;
 Int_t		PassedTriggerNoLogic;
@@ -531,7 +529,6 @@ TBranch        *b_npu;   //!
 TBranch        *b_puSF;   //!
 TBranch        *b_puSF_down;   //!
 TBranch        *b_puSF_up;   //!
-TBranch        *b_btagSF;   //!
 TBranch        *b_PassedMETFilter;   //!
 TBranch        *b_PassedTrigger;   //!
 TBranch        *b_PassedTriggerNoLogic;
@@ -1189,7 +1186,6 @@ int main(int argc, char* argv[]){
       Init1DPlots(dataSetName);
     }
     
-    
     string ntupleFileName = "NtupleMakerOutput/MergedTuples/"+placeNtup+"/"+dataSetName+".root";
     tFileMap[dataSetName.c_str()] = new TFile((ntupleFileName).c_str(),"READ"); //create TFile for each dataset
     
@@ -1203,7 +1199,7 @@ int main(int argc, char* argv[]){
     
     tTreeName += postfix;
     tStatsTreeName +=  postfix;
-    cout << "looking at " << tStatsTreeName << " and " << tTreeName << endl;
+    //cout << "looking at " << tStatsTreeName << " and " << tTreeName << endl;
     /// Get meta data
     tStatsTree[dataSetName.c_str()] = (TTree*)tFileMap[dataSetName.c_str()]->Get(tStatsTreeName.c_str());
     globalnEntries = (int) tStatsTree[dataSetName.c_str()]->GetEntries();
@@ -1438,7 +1434,7 @@ int main(int argc, char* argv[]){
       if (! isData)
       {
         if (applyMuonSF) {
-          if(ievt == 2)cout << "                - applying muon factors " << endl;
+         // if(ievt == 2)cout << "                - applying muon factors " << endl;
           muonSFtemp = 1.;
           for(unsigned int iMu = 0;  iMu < nMuons ;  iMu++){
             if(applyMuonSF_up){
@@ -1465,7 +1461,7 @@ int main(int argc, char* argv[]){
         else muonSFtemp = 1.;
         
         if (applyElectronSF) {
-          if(ievt == 2)cout << "                - applying electron factors " << endl;
+          //if(ievt == 2)cout << "                - applying electron factors " << endl;
           electronSFtemp = 1.;
           
           for(unsigned int iEl = 0; iEl < nElectrons ; iEl++){
@@ -1496,7 +1492,7 @@ int main(int argc, char* argv[]){
           scaleFactor_puSF_up *= puSF_up;
           scaleFactor_puSF_down *= puSF_down;
           
-          if(ievt == 2)cout << "                - applying pu factors " << endl;
+          //if(ievt == 2)cout << "                - applying pu factors " << endl;
         }
         else puSF  =1.;
         
@@ -1519,13 +1515,13 @@ int main(int argc, char* argv[]){
           scaleFactor_btagSF_lfstats1_up*= btagSFshape_up_lfstats1  ;
           scaleFactor_btagSF_lfstats2_down*= btagSFshape_down_lfstats2  ;
           scaleFactor_btagSF_lfstats2_up*= btagSFshape_up_lfstats2  ;
-          if(ievt == 2)cout << "                - applying btag factors " << endl;
+         // if(ievt == 2)cout << "                - applying btag factors " << endl;
         }
-        else btagSF = 1.;
+        else btagSFshape = 1.;
         
         if (applyNloSF && isAMC) {
           scaleFactor *= nloWeight * nloSF;
-          if(ievt == 2) cout << "                - applying nlo factors " << endl;
+         // if(ievt == 2) cout << "                - applying nlo factors " << endl;
         }  // additional SF due to number of events with neg weight!!
         
         scaleFactor_bfBT = scaleFactor/btagSFshape;
@@ -1541,7 +1537,7 @@ int main(int argc, char* argv[]){
         
       }
       else if(isData) scaleFactor = 1.;
-      if(ievt == 2) cout << "                ==> scaleFactor " << scaleFactor << endl;
+     // if(ievt == 2) cout << "                ==> scaleFactor " << scaleFactor << endl;
       
       
       
@@ -2174,7 +2170,7 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
   
   
   
-  MVA_channel = static_cast<float>( channelInt);
+  MVA_channel = channelInt;
   MVA_weight = static_cast<float>( scaleFactor * Luminosity /EquilumiSF );
   MVA_weight_nom =  scaleFactor * Luminosity /EquilumiSF ;
   MVA_weight_puSF_up =  scaleFactor_puSF_up * Luminosity /EquilumiSF ;
@@ -2228,10 +2224,10 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
     MVA_jet1_phi = static_cast<float>( selectedJets[1].Phi());
   }
   
-  MVA_nJets = ( selectedJets.size());
-  MVA_NJets_CSVv2L = ( selectedCSVLJetID.size());
-  MVA_NJets_CSVv2M= ( selectedCSVMJetID.size());
-  MVA_NJets_CSVv2T= ( selectedCSVTJetID.size());
+  MVA_nJets = static_cast<float>( selectedJets.size());
+  MVA_NJets_CSVv2L =static_cast<float>( selectedCSVLJetID.size());
+  MVA_NJets_CSVv2M= static_cast<float>( selectedCSVMJetID.size());
+  MVA_NJets_CSVv2T= static_cast<float>( selectedCSVTJetID.size());
   //cout << "jets done" << endl);
   
   // SM side
@@ -2267,9 +2263,9 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
     MVA_FCNCtop_eta = static_cast<float>( FCNCtop.Eta());
     MVA_FCNCtop_phi =static_cast<float>( FCNCtop.Phi());
     
-    MVA_nJets_CharmL = ( selectedCharmLJetsindex.size());
-    MVA_nJets_CharmM = ( selectedCharmMJetsindex.size());
-    MVA_nJets_CharmT = ( selectedCharmTJetsindex.size());
+    MVA_nJets_CharmL = static_cast<float>( selectedCharmLJetsindex.size());
+    MVA_nJets_CharmM = static_cast<float>( selectedCharmMJetsindex.size());
+    MVA_nJets_CharmT = static_cast<float>( selectedCharmTJetsindex.size());
   }
   
   // cout << "FCNC side " << endl);
@@ -2284,8 +2280,8 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
   
   MVA_dPhiWlepb = static_cast<float>(Wlep.DeltaPhi(SMbjet));
   
-  if(WmuIndiceF != -999) MVA_Wlep_Charge = ( selectedMuonsCharge[WmuIndiceF]);
-  else if(WelecIndiceF != -999) MVA_Wlep_Charge = ( selectedElectronsCharge[WelecIndiceF]);
+  if(WmuIndiceF != -999) MVA_Wlep_Charge =static_cast<float> ( selectedMuonsCharge[WmuIndiceF]);
+  else if(WelecIndiceF != -999) MVA_Wlep_Charge = static_cast<float>( selectedElectronsCharge[WelecIndiceF]);
   MVA_charge_asym = static_cast<float>( MVA_Wlep_Charge*fabs(Wlep.Eta()));
   if(selectedJets.size()>1) MVA_bdiscCSVv2_jet_1 = static_cast<float>( bdisc_jet[1]);
   if(selectedJets.size()>0) MVA_bdiscCSVv2_jet_0 = static_cast<float>(bdisc_jet[0]);
@@ -2362,8 +2358,8 @@ void createMVAtree(string dataSetName){
   // for pdf unc
   mvatree->Branch("MVA_x1", &MVA_x1, "MVA_x1/D");
   mvatree->Branch("MVA_x2", &MVA_x2, "MVA_x2/D");
-  mvatree->Branch("MVA_id1", &MVA_id1, "MVA_id1/D");
-  mvatree->Branch("MVA_id2", &MVA_id2, "MVA_id2/D");
+  mvatree->Branch("MVA_id1", &MVA_id1, "MVA_id1/I");
+  mvatree->Branch("MVA_id2", &MVA_id2, "MVA_id2/I");
   mvatree->Branch("MVA_q", &MVA_q, "MVA_q/D");
   
   mvatree->Branch("MVA_channel", &MVA_channel , "MVA_channel/I");
@@ -2395,7 +2391,7 @@ void createMVAtree(string dataSetName){
   
   
   
-  mvatree->Branch("MVA_region", &MVA_region, "MVA_region/I");
+  mvatree->Branch("MVA_region", &MVA_region, "MVA_region/F");
   mvatree->Branch("MVA_EqLumi",&MVA_EqLumi,"MVA_EqLumi/D");
   
   // pt
@@ -2441,10 +2437,10 @@ void createMVAtree(string dataSetName){
   
   //nbrs
   mvatree->Branch("MVA_nElectrons", &MVA_nElectrons, "MVA_nElectrons/I");
-  mvatree->Branch("MVA_nJets", &MVA_nJets, "MVA_nJets/I");
-  mvatree->Branch("MVA_NJets_CSVv2L", &MVA_NJets_CSVv2L, "MVA_NJets_CSVv2L/I");
-  mvatree->Branch("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, "MVA_NJets_CSVv2M/I");
-  mvatree->Branch("MVA_NJets_CSVv2T", &MVA_NJets_CSVv2T, "MVA_NJets_CSVv2T/I");
+  mvatree->Branch("MVA_nJets", &MVA_nJets, "MVA_nJets/F");
+  mvatree->Branch("MVA_NJets_CSVv2L", &MVA_NJets_CSVv2L, "MVA_NJets_CSVv2L/F");
+  mvatree->Branch("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, "MVA_NJets_CSVv2M/F");
+  mvatree->Branch("MVA_NJets_CSVv2T", &MVA_NJets_CSVv2T, "MVA_NJets_CSVv2T/F");
   mvatree->Branch("MVA_nMuons", &MVA_nMuons, "MVA_nMuons/I");
   
   
@@ -2461,7 +2457,7 @@ void createMVAtree(string dataSetName){
   
   mvatree->Branch("MVA_dPhiWlepb", &MVA_dPhiWlepb, "MVA_dPhiWlepb/F");
   
-  mvatree->Branch("MVA_Wlep_Charge", &MVA_Wlep_Charge,"MVA_Wlep_Charge/I");
+  mvatree->Branch("MVA_Wlep_Charge", &MVA_Wlep_Charge,"MVA_Wlep_Charge/F");
   mvatree->Branch("MVA_charge_asym", &MVA_charge_asym, "MVA_charge_asym/F");
   mvatree->Branch("MVA_TotalPt", &MVA_TotalPt, "MVA_TotalPt/F");
   mvatree->Branch("MVA_TotalHt", &MVA_TotalHt,"MVA_TotalHt/F");
@@ -2496,9 +2492,9 @@ void createMVAtree(string dataSetName){
   mvatree->Branch("MVA_cdiscCvsB_jet_0", &MVA_cdiscCvsB_jet_0,"MVA_cdiscCvsB_jet_0/F");
   mvatree->Branch("MVA_cdiscCvsL_jet_0", &MVA_cdiscCvsL_jet_0,"MVA_cdiscCvsL_jet_0/F");
   
-  mvatree->Branch("MVA_nJets_CharmL", &MVA_nJets_CharmL, "MVA_nJets_CharmL/I");
-  mvatree->Branch("MVA_nJets_CharmM", &MVA_nJets_CharmM, "MVA_nJets_CharmM/I");
-  mvatree->Branch("MVA_nJets_CharmT", &MVA_nJets_CharmT, "MVA_nJets_CharmT/I");
+  mvatree->Branch("MVA_nJets_CharmL", &MVA_nJets_CharmL, "MVA_nJets_CharmL/F");
+  mvatree->Branch("MVA_nJets_CharmM", &MVA_nJets_CharmM, "MVA_nJets_CharmM/F");
+  mvatree->Branch("MVA_nJets_CharmT", &MVA_nJets_CharmT, "MVA_nJets_CharmT/F");
   
   // interplay
   mvatree->Branch("MVA_dRSMFCNCtop", &MVA_dRSMFCNCtop,"MVA_dRSMFCNCtop/F");
@@ -4191,7 +4187,6 @@ void InitTree(TTree* tree, bool isData){
   tree->SetBranchAddress("puSF", &puSF, &b_puSF);
   tree->SetBranchAddress("puSF_up", &puSF_up, &b_puSF_up);
   tree->SetBranchAddress("puSF_down", &puSF_down, &b_puSF_down);
-  tree->SetBranchAddress("btagSF", &btagSF, &b_btagSF);
   tree->SetBranchAddress("PassedMETFilter", &PassedMETFilter, &b_PassedMETFilter);
   tree->SetBranchAddress("PassedTrigger", &PassedTrigger, &b_PassedTrigger);
   tree->SetBranchAddress("PassedTriggerNoLogic", &PassedTriggerNoLogic, &b_PassedTriggerNoLogic);
