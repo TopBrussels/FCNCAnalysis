@@ -4869,11 +4869,11 @@ bool MatchingFunction(string dataSetName, vector <TLorentzVector> Leptons, vecto
   if(WmuIndiceF == WmuIndiceM && WmuIndiceM != -999 ) WlepMatched++;
   else if(WelecIndiceF == WelecIndiceM && WelecIndiceM != -999 ) WlepMatched++;
   else matchedEvent = false;
-  if(ZmuIndiceF_0 == ZmuIndiceF_0 && ZmuIndiceF_1 == ZmuIndiceM_1 && ZmuIndiceM_1!= -999 && ZmuIndiceM_0 != -999  ) ZlepMatched++;
-  else if(ZmuIndiceF_1== ZmuIndiceF_0 && ZmuIndiceF_0 == ZmuIndiceM_1 && ZmuIndiceM_1!= -999 && ZmuIndiceM_0 != -999 ) ZlepMatched++;
+  if(ZmuIndiceF_0 == ZmuIndiceM_0 && ZmuIndiceF_1 == ZmuIndiceM_1 && ZmuIndiceM_1!= -999 && ZmuIndiceM_0 != -999  ) ZlepMatched++;
+  else if(ZmuIndiceF_1== ZmuIndiceM_0 && ZmuIndiceF_0 == ZmuIndiceM_1 && ZmuIndiceM_1!= -999 && ZmuIndiceM_0 != -999 ) ZlepMatched++;
   else matchedEvent = false;
-  if(ZelecIndiceF_0== ZelecIndiceF_0 && ZelecIndiceF_1 == ZelecIndiceM_1 && ZelecIndiceM_1!= -999 && ZelecIndiceM_0 != -999) ZlepMatched++;
-  else if(ZelecIndiceF_1== ZelecIndiceF_0 && ZelecIndiceF_0 == ZelecIndiceM_1 && ZelecIndiceM_1!= -999 && ZelecIndiceM_0 != -999 ) ZlepMatched++;
+  if(ZelecIndiceM_0== ZelecIndiceF_0 && ZelecIndiceF_1 == ZelecIndiceM_1 && ZelecIndiceM_1!= -999 && ZelecIndiceM_0 != -999) ZlepMatched++;
+  else if(ZelecIndiceM_1== ZelecIndiceF_0 && ZelecIndiceF_0 == ZelecIndiceM_1 && ZelecIndiceM_1!= -999 && ZelecIndiceM_0 != -999 ) ZlepMatched++;
   else matchedEvent = false;
   
   if(WmuIndiceM != -999 || WelecIndiceM != -999 ) WlepMatchedevent++;;
