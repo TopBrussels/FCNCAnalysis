@@ -42,6 +42,7 @@ using namespace TopTree;
 ///////////////////////////////////// PLOT MAPPING /////////////////////////////////////////
 // Normal Plots (TH1F* and TH2F*)
 map<string,TH1F*> histo1D;
+map<string,TH1F*> histo1DPDF;
 map<string,TH2F*> histo2D;
 map<string,MultiSamplePlot*> MSPlot;
 
@@ -53,22 +54,24 @@ vector < Dataset* > datasets;
 
 ////////////////////////////////// functions ////////////////////////////////////////////
 // bookkeeping
+std::vector<std::string> split(const std::string &text,  char sep) ;
 string ConvertIntToString(int Number, int pad);
 string MakeTimeStamp();
 string intToStr (int number);
 double maximumValue(vector<double> array);
 double minimumValue(vector<double> array);
 // initialisations
-void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair);
+void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair, bool isZut);
 //void InitCalculatePDFWeightHisto(string dataSetName);
 void InitSystematicHisto(string dataSetName, string systematic);
 void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut);
+void Init1DHisto(string dataSetName, string systematic, bool istoppair, bool isZut, vector <int> decayChannels);
 // functions
 vector<double> BDTCUT(string region, string coupling);
 //void CalculatePDFWeight(string dataSetName, double BDT, double MVA_weight_nom, int MVA_channel);
-void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isData, bool toppair, double weight_, int MVA_channel);
+void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool doZut, bool toppair, double weight_, int MVA_channel);
 //void GetPDFEnvelope(string dataSetName);
-
+void Fill1DHisto(string dataSetName,string systematic, bool istoppair, bool isZut, vector <int> decayChannels, double weight_, int MVA_channel);
 //////////////////////////////// settings ////////////////////////////////
 bool makePlots = false;
 bool PlotSystematics = false;
@@ -82,6 +85,7 @@ bool toppair = false;
 bool addData = false;
 bool DetermineCut = false;
 bool doPDFunc  = false;
+bool PlotMVAvars = false;
 string placeNtup = "";
 string tempstring = "";
 string systematic = "";
@@ -110,6 +114,8 @@ Float_t         MVA_bdiscCSVv2_jet_0;
 
 Float_t         MVA_cdiscCvsB_jet_1;
 Float_t         MVA_cdiscCvsB_jet_0;
+Float_t         MVA_cdiscCvsL_jet_1;
+Float_t         MVA_cdiscCvsL_jet_0;
 Float_t         MVA_dRZc;
 Float_t         MVA_dRWlepb;
 Float_t         MVA_dRZWlep;
@@ -159,6 +165,8 @@ TBranch        *b_MVA_bdiscCSVv2_jet_0;   //!
 
 TBranch        *b_MVA_cdiscCvsB_jet_1;   //!
 TBranch        *b_MVA_cdiscCvsB_jet_0;   //!
+TBranch        *b_MVA_cdiscCvsL_jet_1;   //!
+TBranch        *b_MVA_cdiscCvsL_jet_0;   //!
 TBranch        *b_MVA_dRZc;   //!
 TBranch        *b_MVA_dRWlepb;   //!
 TBranch        *b_MVA_dRZWlep;   //!
@@ -230,7 +238,8 @@ int main(int argc, char* argv[]){
       std::cout << "   PSdata: generate pseudo data" << endl;
       std::cout << "   Systematics: loop over systematics" << endl;
       std::cout << "   doPDFunc: calculate PDF unc" << endl;
-      std::cout << "   PlotSystematics: calculate PDF unc" << endl;
+      std::cout << "   PlotSystematics: make sys plots fo WZ" << endl;
+      std::cout << "   PlotMVAvars: plot mva vars" << endl;
       return 0;
     }
     if(string(argv[i]).find("doPDFunc")!=std::string::npos){
@@ -272,7 +281,9 @@ int main(int argc, char* argv[]){
     if(string(argv[i]).find("DetermineCut")!=string::npos) {
       DetermineCut= true;
     }
-    
+    if(string(argv[i]).find("PlotMVAvars")!=string::npos) {
+      PlotMVAvars= true;
+    }
   }
   string xmlFileName = "";
   xmlFileName = "config/Run2TriLepton_samples_analyBDT.xml" ;
@@ -351,7 +362,7 @@ int main(int argc, char* argv[]){
       systematic = thesystlist[isys];
       tempstring = region + "_"+coupling;
       if(isys != 0 ) tempstring += "_"+ systematic;
-      InitMSPlots(tempstring, decayChannels, toppair);
+      InitMSPlots(tempstring, decayChannels, toppair, doZut);
     }
   }
   
@@ -399,8 +410,11 @@ int main(int argc, char* argv[]){
       // Initialise tree
       InitTree(tTree[dataSetName.c_str()], isData, toppair, doZut);
       
-      
-      
+      // Initialise plots
+      if(PlotMVAvars){
+        if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TT_FCNC")!=std::string::npos) && toppair && PlotMVAvars && isys == 0) Init1DHisto(dataSetName, systematic, toppair, doZut, decayChannels);
+        else if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("ST_FCNC")!=std::string::npos) && !toppair && PlotMVAvars && isys == 0) Init1DHisto(dataSetName, systematic, toppair, doZut, decayChannels);
+      }
       // initialise combine output histograms
       TH1::SetDefaultSumw2();
       
@@ -472,7 +486,10 @@ int main(int argc, char* argv[]){
         if(doPDFunc){
           //if(dataSetName.find("WZTo3LNu")!=std::string::npos) CalculatePDFWeight(dataSetName, MVA_BDT, MVA_weight_nom, MVA_channel);
         }
-        
+        if(PlotMVAvars && isys == 0){
+          if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TT_FCNC")!=std::string::npos )&& toppair) Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
+          else  if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("ST_FCNC")!=std::string::npos) && !toppair) Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
+        }
         
         // if(addData && BDT < cut) continue;
         if (makePlots)
@@ -480,7 +497,7 @@ int main(int argc, char* argv[]){
           //cout << "ievt " << ievt << endl;
           tempstring = region + "_"+coupling;
           if(isys != 0) tempstring += "_"+ systematic;
-          FillGeneralPlots(d, tempstring, decayChannels, isData, toppair, weight, MVA_channel);
+          FillGeneralPlots(d, tempstring, decayChannels, doZut, toppair, weight, MVA_channel);
         }
         
       } // events
@@ -643,7 +660,7 @@ int main(int argc, char* argv[]){
   ///*****************///
   ///   Write plots   ///
   ///*****************///
-  if(makePlots || doPDFunc){
+  if(makePlots || doPDFunc || PlotMVAvars){
     string pathOutput = "OutputPlots/";
     mkdir(pathOutput.c_str(),0777);
     string pathOutputdate = pathOutput + dateString + "/"  ;
@@ -684,10 +701,10 @@ int main(int argc, char* argv[]){
       }
       
     }
-    TDirectory* th1dir = fout->mkdir("1D_histograms");
+    TDirectory* th1dir = fout->mkdir("1D_PDF_histograms");
     th1dir->cd();
     gStyle->SetOptStat(1110);
-    for (std::map<std::string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
+    for (std::map<std::string,TH1F*>::const_iterator it = histo1DPDF.begin(); it != histo1DPDF.end(); it++)
     {
       TH1F *temp = it->second;
       int N = temp->GetNbinsX();
@@ -701,7 +718,79 @@ int main(int argc, char* argv[]){
       }
     }
     
-    
+    if(PlotMVAvars){
+     // cout << "plot mva vars " << endl;
+      TDirectory* th1dirmva = fout->mkdir("1D_MVA_histograms");
+      th1dir->cd();
+      gStyle->SetOptStat(0);
+     
+      std::string splitname = "";
+      char seperator = '_';
+      std::vector < std::string > variables;
+      for (std::map<std::string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
+      {
+        
+        if(toppair && it->first.find("TT_FCNC")!=std::string::npos && it->first.find("all")!=std::string::npos){}
+        else if(!toppair && it->first.find("ST_FCNC")!=std::string::npos && it->first.find("all")!=std::string::npos){
+            //cout << it->first << endl;
+          
+        }
+        else continue;
+        
+        splitname = (split(it->first, seperator))[0];
+        variables.push_back(splitname);
+      }
+      for(int i = 0 ; i < variables.size(); i++){
+        TH1F *tempBKG(0);
+        TH1F *tempSignal(0);
+        splitname = variables[i];
+        cout << "name " << splitname << endl;
+       for (std::map<std::string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
+        {
+          if(it->first.find(splitname.c_str())==std::string::npos) continue;
+          
+          TH1F *temp = it->second;
+          if(it->first.find("WZTo3LNu")!=std::string::npos) {
+            if(tempBKG == 0) tempBKG = (TH1F*) temp->Clone();
+            else tempBKG->Add(temp);
+          }
+          if(it->first.find("FCNC")!=std::string::npos) {
+            if(tempSignal == 0) tempSignal= (TH1F*) temp->Clone();
+            else tempSignal->Add(temp);
+          }
+          delete temp;
+        }
+        tempBKG->SetLineColor(kBlue);
+        tempSignal->SetLineColor(kRed);
+        tempBKG->SetName(splitname.c_str());
+        tempBKG->SetTitle("Normalised MVA distribution");
+        
+        Double_t scaleBKG = 1./tempBKG->Integral();
+        tempBKG->Scale(scaleBKG);
+        Double_t scaleSig = 1./tempSignal->Integral();
+        tempSignal->Scale(scaleSig);
+        double max = TMath::Max(tempSignal->GetMaximum(), tempBKG->GetMaximum());
+        tempBKG->SetMaximum(max*1.2);
+        tempBKG->GetXaxis()->SetTitle(splitname.c_str());
+        tempBKG->GetYaxis()->SetTitle("Nb. Events");
+        
+        
+        Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
+        TLegend *leg = new TLegend(xl1,yl1,xl2,yl2);
+        leg->AddEntry(tempSignal,"Signal","L");   // h1 and h2 are histogram pointers
+        leg->AddEntry(tempBKG,"WZ background","L");
+        
+        
+        TCanvas* tempCanvas = TCanvasCreator(tempBKG,"Normalised MVA distribution" );
+        tempBKG->Draw("L");
+        tempSignal->Draw("L,Sames");
+        leg->Draw("Same");
+        tempCanvas->SaveAs( (placeTH1F+splitname+".png").c_str() );
+        delete tempCanvas;
+        delete tempSignal;
+        delete tempBKG;
+      }
+    }
     if(PlotSystematics){
       
     }
@@ -781,6 +870,20 @@ int main(int argc, char* argv[]){
 
 
 ///// BOOK KEEPING FUNCTIONS
+std::vector<std::string> split(const std::string &text, char sep) {
+  std::vector<std::string> tokens;
+  std::size_t start = 0, end = 0;
+  while ((end = text.find(sep, start)) != std::string::npos) {
+    if (end != start) {
+      tokens.push_back(text.substr(start, end - start));
+    }
+    start = end + 1;
+  }
+  if (end != start) {
+    tokens.push_back(text.substr(start));
+  }
+  return tokens;
+}
 string ConvertIntToString(int Number, int pad){
   ostringstream convert;
   convert.clear();  // clear bits
@@ -839,11 +942,9 @@ double minimumValue(vector<double> array){
 }
 
 //// INITIALISATIONS
-void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair){
+void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair, bool isZut){
   clock_t start_sub = clock();
-  
-  
-  MSPlot[(prefix+"_test")] = new MultiSamplePlot(datasets, (prefix+"_test").c_str(), 10, -1.,1., "test");
+  prefix = prefix + "_";
   // control plots
   for(int iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
@@ -855,7 +956,50 @@ void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair){
     
     
     //cout << "init " << (prefix+"_BDT_"+decaystring).c_str() << endl;
-    MSPlot[(prefix+"_BDT_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_BDT_"+decaystring).c_str(), nbin, -1.,1., "BDT");
+    MSPlot[(prefix+"BDT_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_BDT_"+decaystring).c_str(), nbin, -1.,1., "BDT");
+    MSPlot[ (prefix+"channel_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"channel_"+decaystring).c_str(), 5,-0.5, 4.5, "decay");
+    MSPlot[ (prefix+"weight_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"weight_"+decaystring).c_str(), 100,0, 0.3, "eventweight");
+    
+    if(!istoppair){
+      MSPlot[(prefix+"mlb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"mlb_"+decaystring).c_str(),10, 0, 500, "M(l_{W}b)");
+      MSPlot[(prefix+"dRWlepb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dRWlepb_"+decaystring).c_str(),10,0, 5, "dR(l_{W}b)");
+      MSPlot[(prefix+"dPhiWlepb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dPhiWlepb_"+decaystring).c_str(),10,-4, 4, "d#Phi (l_{W}b)");
+      MSPlot[(prefix+"Zboson_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"Zboson_pt_"+decaystring).c_str(), 20,0, 500, "p_{T} (Z)[GeV]");
+      MSPlot[(prefix+"dRZWlep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dRZWlep_"+decaystring).c_str(),30,0, 6, "dR(Z,l_{W})");
+      MSPlot[(prefix+"bdiscCSVv2_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"bdiscCSVv2_jet_0_"+decaystring).c_str(),20, 0.5, 1, "CSVv2 Highest pt jet");
+      MSPlot[(prefix+"cdiscCvsB_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"cdiscCvsB_jet_0_"+decaystring).c_str(),10, 0, 0.8, "Charm vs B disc of Highest pt jet");
+      
+      if(isZut){
+        MSPlot[(prefix+"charge_asym_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"charge_asym_"+decaystring).c_str(),10, -4, 4, "Q(l_{W})|#eta(W)|");
+        
+      }
+      else{
+        MSPlot[(prefix+"cdiscCvsL_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"cdiscCvsL_jet_0_"+decaystring).c_str(),25, 0, 1, "Charm vs Light disc of Highest pt jet");
+        
+      }
+      
+    }
+    else if(istoppair ){
+      MSPlot[(prefix+"mlb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"mlb_"+decaystring).c_str(),25, 0, 500, "M(l_{W}b)");
+      MSPlot[(prefix+"FCNCtop_M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"FCNCtop_M_"+decaystring).c_str(),20, 100, 500, "M(Z+Ljet)");
+      MSPlot[(prefix+"dRWlepb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dRWlepb_"+decaystring).c_str(),20,0, 6, "dR(b,l_{W})");
+      MSPlot[(prefix+"nJets_CSVv2M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"nJets_CSVv2M_"+decaystring).c_str(),10,-0.5, 9.5, "Nb. of CSVv2 M jets");
+      MSPlot[(prefix+"nJets_CharmL_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"nJets_CharmL_"+decaystring).c_str(),10,-0.5, 9.5, "Nb. of charm L jets");
+      MSPlot[(prefix+"dRZWlep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dRZWlep_"+decaystring).c_str(),20,0, 6, "dR(Z,l_{W})");
+      MSPlot[(prefix+"dRZc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dRZc_"+decaystring).c_str(),30,0, 6, "dR(Z,light jet)");
+      
+      if(isZut){
+        MSPlot[(prefix+"cdiscCvsB_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"cdiscCvsB_jet_0_"+decaystring).c_str(),20, 0, 0.8, "Charm vs B disc of Highest pt jet");
+        MSPlot[(prefix+"cdiscCvsB_jet_1_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"cdiscCvsB_jet_1_"+decaystring).c_str(),20, 0, 0.85, "Charm vs B disc of 2nd Highest pt jet");
+        
+      }
+      else{
+        MSPlot[(prefix+"cdiscCvsL_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"cdiscCvsL_jet_0_"+decaystring).c_str(),20, 0, 1, "Charm vs Light disc of Highest pt jet");
+        MSPlot[(prefix+"cdiscCvsL_jet_1_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"cdiscCvsL_jet_1_"+decaystring).c_str(),20, 0, 1, "Charm vs Light disc of 2nd Highest pt jet");
+        
+        
+      }
+    }
     
   }
   
@@ -877,14 +1021,14 @@ void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair){
     for ( int i=0; i<101; i++)
     {
       output_histo_name = dataSetName+"_BDT_"+channel+"_"+intToStr(i);
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,-1.,1.);
+      histo1DPDF[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,-1.,1.);
     }
     output_histo_name = dataSetName+"_BDT_"+channel+"_nominal";
-    histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,-1.,1.);
+    histo1DPDF[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,-1.,1.);
     output_histo_name = dataSetName+"_BDT_"+channel+"_PDFEnvelopeUp";
-    histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,-1.,1.);
+    histo1DPDF[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,-1.,1.);
     output_histo_name = dataSetName+"_BDT_"+channel+"_PDFEnvelopeDown";
-    histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,-1.,1.);
+    histo1DPDF[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,-1.,1.);
     
     output_histo_name = "";
   }
@@ -914,6 +1058,17 @@ void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut){
     tree->SetBranchAddress("MVA_nJets_CharmL", &MVA_nJets_CharmL, &b_MVA_nJets_CharmL);
     tree->SetBranchAddress("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, &b_MVA_NJets_CSVv2M);
   }
+  else  if(istoppair && !doZut){
+    tree->SetBranchAddress("MVA_cdiscCvsL_jet_1", &MVA_cdiscCvsL_jet_1, &b_MVA_cdiscCvsL_jet_1);
+    tree->SetBranchAddress("MVA_cdiscCvsL_jet_0", &MVA_cdiscCvsL_jet_0, &b_MVA_cdiscCvsL_jet_0);
+    tree->SetBranchAddress("MVA_dRZc", &MVA_dRZc, &b_MVA_dRZc);
+    tree->SetBranchAddress("MVA_dRWlepb", &MVA_dRWlepb, &b_MVA_dRWlepb);
+    tree->SetBranchAddress("MVA_dRZWlep", &MVA_dRZWlep, &b_MVA_dRZWlep);
+    tree->SetBranchAddress("MVA_mlb", &MVA_mlb, &b_MVA_mlb);
+    tree->SetBranchAddress("MVA_FCNCtop_M", &MVA_FCNCtop_M, &b_MVA_FCNCtop_M);
+    tree->SetBranchAddress("MVA_nJets_CharmL", &MVA_nJets_CharmL, &b_MVA_nJets_CharmL);
+    tree->SetBranchAddress("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, &b_MVA_NJets_CSVv2M);
+  }
   else if(!istoppair && doZut){
     
     tree->SetBranchAddress("MVA_Zboson_pt", &MVA_Zboson_pt, &b_MVA_Zboson_pt);
@@ -925,6 +1080,17 @@ void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut){
     tree->SetBranchAddress("MVA_cdiscCvsB_jet_0", &MVA_cdiscCvsB_jet_0, &b_MVA_cdiscCvsB_jet_0);
     tree->SetBranchAddress("MVA_mlb", &MVA_mlb, &b_MVA_mlb);
     
+  }
+  else if(!istoppair && !doZut){
+    
+    tree->SetBranchAddress("MVA_Zboson_pt", &MVA_Zboson_pt, &b_MVA_Zboson_pt);
+    tree->SetBranchAddress("MVA_dRWlepb", &MVA_dRWlepb, &b_MVA_dRWlepb);
+    tree->SetBranchAddress("MVA_dPhiWlepb", &MVA_dPhiWlepb, &b_MVA_dPhiWlepb);
+    tree->SetBranchAddress("MVA_dRZWlep", &MVA_dRZWlep, &b_MVA_dRZWlep);
+    tree->SetBranchAddress("MVA_bdiscCSVv2_jet_0", &MVA_bdiscCSVv2_jet_0, &b_MVA_bdiscCSVv2_jet_0);
+    tree->SetBranchAddress("MVA_cdiscCvsL_jet_0", &MVA_cdiscCvsL_jet_0, &b_MVA_cdiscCvsL_jet_0);
+    tree->SetBranchAddress("MVA_mlb", &MVA_mlb, &b_MVA_mlb);
+    tree->SetBranchAddress("MVA_cdiscCvsB_jet_0", &MVA_cdiscCvsB_jet_0, &b_MVA_cdiscCvsB_jet_0);
   }
   
   tree->SetBranchAddress("MVA_region", &MVA_region, &b_MVA_region);
@@ -963,6 +1129,88 @@ void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut){
   tree->SetBranchAddress("MVA_weight_btagSF_lfstats2_up", &MVA_weight_btagSF_lfstats2_up, &b_MVA_weight_btagSF_lfstats2_up);
   tree->SetBranchAddress("MVA_weight_btagSF_lfstats2_down", &MVA_weight_btagSF_lfstats2_down, &b_MVA_weight_btagSF_lfstats2_down);
   
+  
+}
+void Init1DHisto(string dataSetName, string systematic, bool istoppair, bool isZut, vector <int> decayChannels){
+  TH1::SetDefaultSumw2();
+  
+  // control plots
+  for(int iChan =0; iChan < decayChannels.size() ; iChan++){
+    decaystring = "";
+    if(decayChannels[iChan] == 0) decaystring = "uuu";
+    if(decayChannels[iChan] == 1) decaystring = "uue";
+    if(decayChannels[iChan] == 2) decaystring = "eeu";
+    if(decayChannels[iChan] == 3) decaystring = "eee";
+    if(decayChannels[iChan] == -9) decaystring = "all";
+    
+    output_histo_name = "BDT_"+dataSetName +"_"+decaystring+"_"+systematic;
+    histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,-1.,1.);
+    
+    if(!istoppair){
+      output_histo_name = "mlb_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),10,0,500);
+      output_histo_name = "dRWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),10,0,5);
+      output_histo_name = "dPhiWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),10,-4,4);
+      output_histo_name = "ZbosonPt_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
+      output_histo_name = "dRZWlep_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),30,0,6);
+      output_histo_name = "bdiscCSVv2jet0_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0.5,1);
+      output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
+      if(isZut){
+        output_histo_name = "chargeAsym_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),10,-4,4);
+        
+      }
+      else
+      {
+        output_histo_name = "cdiscCvsLjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),25,0,1);
+        
+      }
+      
+      
+    }
+    else if(istoppair ){
+      output_histo_name = "mlb_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),25,0,500);
+      output_histo_name = "FCNCtopM_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
+      output_histo_name = "dRWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,6);
+      output_histo_name = "dRZWlep_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,6);
+      output_histo_name = "dRZc_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),30,0,6);
+      output_histo_name = "nJetsCSVv2M_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),10,-0.5,9.5);
+      output_histo_name = "nJetsCharmL_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),10,-0.5,9.5);
+      output_histo_name = "bdiscCSVv2jet0_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0.5,1);
+
+      if(isZut){
+        output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
+        output_histo_name = "cdiscCvsBjet1_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
+        
+      }
+      else{
+        output_histo_name = "cdiscCvsLjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
+        output_histo_name = "cdiscCvsLjet1_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
+      }
+    }
+    
+  }
+  
+  output_histo_name = "";
   
 }
 ////////// FUNCTIONS
@@ -1167,7 +1415,7 @@ vector<double> BDTCUT(string region, string coupling){
     
     double weightpdf = LHAPDF::weightxxQ(MVA_id1, MVA_id2, MVA_x1, MVA_x2, MVA_q, *basepdf, *newpdf);
     output_histo_name = dataSetName+"_BDT_"+channel+"_"+intToStr(i);
-    histo1D[output_histo_name]->Fill(MVA_BDT, MVA_weight_nom*weightpdf);
+    histo1DPDF[output_histo_name]->Fill(MVA_BDT, MVA_weight_nom*weightpdf);
     // cout << "fill " << (dataSetName+"_BDT"+"_"+intToStr(i)).c_str() << " with " << BDT << " " <<  weightpdf << endl;
     //cout << "pdf weight " << weight << endl;
     //pdfweights.push_back(weight);
@@ -1176,18 +1424,18 @@ vector<double> BDTCUT(string region, string coupling){
     
   }
   output_histo_name = dataSetName+"_BDT_"+channel+"_nominal";
-  histo1D[output_histo_name]->Fill(MVA_BDT, MVA_weight_nom);
+  histo1DPDF[output_histo_name]->Fill(MVA_BDT, MVA_weight_nom);
   output_histo_name = "";
   delete basepdf;
   
 }*/
-void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isData, bool toppair, double weight_, int MVA_channel){
+void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isZut , bool istoppair, double weight_, int MVA_channel){
   //cout << "fill plots" << endl;
   decaystring = "";
   Double_t eventW = 1.;
   eventW = weight_;
   
-  MSPlot[(prefix+"_test").c_str()]->Fill(0., datasets[d], true, Luminosity);
+  
   // if(datasets[d]->Name().find("fake")!=std::string::npos) eventW *= 0.0001;
   
   for(int iChan =0; iChan < decayChannels.size() ; iChan++){
@@ -1202,7 +1450,50 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
     //cout << "filling " << datasets[d]->Name() << endl;
     
     //cout << "bdt " << MVA_BDT << " in " << (prefix+"_BDT_"+decaystring).c_str()<< endl;
-    MSPlot[(prefix+"_BDT_"+decaystring).c_str()]->Fill(MVA_BDT , datasets[d], true, eventW);
+    MSPlot[(prefix+"_BDT_"+decaystring).c_str()]->Fill(MVA_BDT , datasets[d], true, weight_);
+    MSPlot[ (prefix+"channel_"+decaystring).c_str()]->Fill(MVA_channel, datasets[d], true, weight_);
+    MSPlot[ (prefix+"weight_"+decaystring).c_str()]->Fill(weight_, datasets[d], true, 1.);
+    
+    if(!istoppair){
+      MSPlot[(prefix+"mlb_"+decaystring).c_str()] ->Fill(MVA_mlb, datasets[d], true, weight_);
+      MSPlot[(prefix+"dRWlepb_"+decaystring).c_str()] ->Fill(MVA_dRWlepb, datasets[d], true, weight_);
+      MSPlot[(prefix+"dPhiWlepb_"+decaystring).c_str()] ->Fill(MVA_dPhiWlepb, datasets[d], true, weight_);
+      MSPlot[(prefix+"Zboson_pt_"+decaystring).c_str()]->Fill(MVA_Zboson_pt, datasets[d], true, weight_);
+      MSPlot[(prefix+"dRZWlep_"+decaystring).c_str()] ->Fill(MVA_dRZWlep, datasets[d], true, weight_);
+      MSPlot[(prefix+"bdiscCSVv2_jet_0_"+decaystring).c_str()]->Fill(MVA_bdiscCSVv2_jet_0, datasets[d], true, weight_);
+      MSPlot[(prefix+"cdiscCvsB_jet_0_"+decaystring).c_str()]->Fill(MVA_cdiscCvsB_jet_0, datasets[d], true, weight_);
+      
+      if(isZut){
+        MSPlot[(prefix+"charge_asym_"+decaystring).c_str()]->Fill(MVA_charge_asym, datasets[d], true, weight_);
+        
+      }
+      else{
+        MSPlot[(prefix+"cdiscCvsL_jet_0_"+decaystring).c_str()]->Fill(MVA_cdiscCvsL_jet_0, datasets[d], true, weight_);
+        
+      }
+      
+    }
+    else if(istoppair ){
+      MSPlot[(prefix+"mlb_"+decaystring).c_str()] ->Fill(MVA_mlb, datasets[d], true, weight_);
+      MSPlot[(prefix+"FCNCtop_M_"+decaystring).c_str()] ->Fill(MVA_FCNCtop_M, datasets[d], true, weight_);
+      MSPlot[(prefix+"dRWlepb_"+decaystring).c_str()] ->Fill(MVA_dRWlepb, datasets[d], true, weight_);
+      MSPlot[(prefix+"nJets_CSVv2M_"+decaystring).c_str()]->Fill(MVA_NJets_CSVv2M,  datasets[d], true, weight_);
+      MSPlot[(prefix+"nJets_CharmL_"+decaystring).c_str()] ->Fill(MVA_nJets_CharmL, datasets[d], true, weight_);
+      MSPlot[(prefix+"dRZWlep_"+decaystring).c_str()] ->Fill(MVA_dRZWlep, datasets[d], true, weight_);
+      MSPlot[(prefix+"dRZc_"+decaystring).c_str()] ->Fill(MVA_dRZc, datasets[d], true, weight_);
+      
+      if(isZut){
+        MSPlot[(prefix+"cdiscCvsB_jet_0_"+decaystring).c_str()] ->Fill(MVA_cdiscCvsB_jet_0, datasets[d], true, weight_);
+        MSPlot[(prefix+"cdiscCvsB_jet_1_"+decaystring).c_str()] ->Fill(MVA_cdiscCvsB_jet_1, datasets[d], true, weight_);
+        
+      }
+      else{
+        MSPlot[(prefix+"cdiscCvsL_jet_0_"+decaystring).c_str()] ->Fill(MVA_cdiscCvsL_jet_0, datasets[d], true, weight_);
+        MSPlot[(prefix+"cdiscCvsL_jet_1_"+decaystring).c_str()] ->Fill(MVA_cdiscCvsL_jet_1, datasets[d], true, weight_);
+        
+        
+      }
+    }
   }
 }
 /*
@@ -1222,7 +1513,7 @@ void GetPDFEnvelope(string dataSetName){
     channel = channel_list[iChan];
     output_histo_name = dataSetName+"_BDT_" + channel + "_nominal";
     // get nominal th1F
-    TH1F* histo_nom = (TH1F*) histo1D[output_histo_name]->Clone();
+    TH1F* histo_nom = (TH1F*) histo1DPDF[output_histo_name]->Clone();
     
     // loop over bins
     for( int ibin = 1; ibin <histo_nom->GetNbinsX(); ibin++)
@@ -1234,7 +1525,7 @@ void GetPDFEnvelope(string dataSetName){
       for(int iCount = 0; iCount < 101; iCount++)
       {
         output_histo_name = dataSetName+"_BDT_"+channel + "_" +intToStr(iCount);
-        bincontents.push_back(histo1D[output_histo_name]->GetBinContent(ibin));
+        bincontents.push_back(histo1DPDF[output_histo_name]->GetBinContent(ibin));
       }
       if(binContentMin > minimumValue(bincontents)) binContentMin = minimumValue(bincontents);
       else binContentMin = histo_nom->GetBinContent(ibin);
@@ -1242,10 +1533,98 @@ void GetPDFEnvelope(string dataSetName){
       else binContentMax = histo_nom->GetBinContent(ibin);
       
       output_histo_name = dataSetName+"_BDT_"+channel + "_PDFEnvelopeUp";
-      histo1D[output_histo_name]->SetBinContent(ibin, binContentMax);
+      histo1DPDF[output_histo_name]->SetBinContent(ibin, binContentMax);
       output_histo_name = dataSetName+"_BDT_"+channel + "_PDFEnvelopeDown";
-      histo1D[output_histo_name]->SetBinContent(ibin, binContentMin);;
+      histo1DPDF[output_histo_name]->SetBinContent(ibin, binContentMin);;
       output_histo_name = "";
     }// bins
   }//channels
 }*/
+void Fill1DHisto(string dataSetName, string systematic, bool istoppair, bool isZut, vector <int> decayChannels, double weight_, int MVA_channel){
+
+  
+  for(int iChan =0; iChan < decayChannels.size() ; iChan++){
+    decaystring = "";
+    
+    
+    
+    if((decayChannels[iChan] != -9) && (decayChannels[iChan] != MVA_channel)) continue;
+    if(decayChannels[iChan] == 0) decaystring = "uuu";
+    if(decayChannels[iChan] == 1) decaystring = "uue";
+    if(decayChannels[iChan] == 2) decaystring = "eeu";
+    if(decayChannels[iChan] == 3) decaystring = "eee";
+    if(decayChannels[iChan] == -9) decaystring = "all";
+
+    
+    output_histo_name = "BDT_"+dataSetName +"_"+decaystring+"_"+systematic;
+    histo1D[output_histo_name] ->Fill(  MVA_BDT        ,weight_);
+    
+    if(!istoppair){
+      output_histo_name = "mlb_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill( MVA_mlb         ,weight_);
+      output_histo_name = "dRWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(   MVA_dRWlepb       ,weight_);
+      output_histo_name = "dPhiWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(  MVA_dPhiWlepb        ,weight_);
+      output_histo_name = "ZbosonPt_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(   MVA_Zboson_pt       ,weight_);
+      output_histo_name = "dRZWlep_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(   MVA_dRZWlep        ,weight_);
+      output_histo_name = "bdiscCSVv2jet0_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(    MVA_bdiscCSVv2_jet_0      ,weight_);
+      output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(   MVA_cdiscCvsB_jet_0       ,weight_);
+      if(isZut){
+        output_histo_name = "chargeAsym_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] ->Fill( MVA_charge_asym         ,weight_);
+        
+      }
+      else
+      {
+        output_histo_name = "cdiscCvsLjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] ->Fill(   MVA_cdiscCvsL_jet_0       ,weight_);
+        
+      }
+      
+      
+    }
+    else if(istoppair ){
+      output_histo_name = "mlb_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(   MVA_mlb       ,weight_);
+      output_histo_name = "FCNCtopM_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(   MVA_FCNCtop_M       ,weight_);
+      output_histo_name = "dRWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(    MVA_dRWlepb      ,weight_);
+      output_histo_name = "dRZWlep_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(   MVA_dRZWlep       ,weight_);
+      output_histo_name = "dRZc_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(   MVA_dRZc       ,weight_);
+      output_histo_name = "nJetsCSVv2M_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(   MVA_NJets_CSVv2M       ,weight_);
+      output_histo_name = "nJetsCharmL_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill( MVA_nJets_CharmL        ,weight_);
+      output_histo_name = "bdiscCSVv2jet0_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(  MVA_bdiscCSVv2_jet_0        ,weight_);
+      
+      if(isZut){
+        output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] ->Fill(  MVA_cdiscCvsB_jet_0        ,weight_);
+        output_histo_name = "cdiscCvsBjet1_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] ->Fill(   MVA_cdiscCvsB_jet_1       ,weight_);
+        
+      }
+      else{
+        output_histo_name = "cdiscCvsLjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] ->Fill(   MVA_cdiscCvsL_jet_0       ,weight_);
+        output_histo_name = "cdiscCvsLjet1_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] ->Fill(   MVA_cdiscCvsL_jet_1       ,weight_);
+      }
+    }
+    
+  }
+  
+  output_histo_name = "";
+  
+}
+
+
