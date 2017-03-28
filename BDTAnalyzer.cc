@@ -412,8 +412,8 @@ int main(int argc, char* argv[]){
       
       // Initialise plots
       if(PlotMVAvars){
-        if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TT_FCNC")!=std::string::npos) && toppair && PlotMVAvars && isys == 0) Init1DHisto(dataSetName, systematic, toppair, doZut, decayChannels);
-        else if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("ST_FCNC")!=std::string::npos) && !toppair && PlotMVAvars && isys == 0) Init1DHisto(dataSetName, systematic, toppair, doZut, decayChannels);
+        if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TT_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && toppair && PlotMVAvars && isys == 0) Init1DHisto(dataSetName, systematic, toppair, doZut, decayChannels);
+        else if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("ST_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && !toppair && PlotMVAvars && isys == 0) Init1DHisto(dataSetName, systematic, toppair, doZut, decayChannels);
       }
       // initialise combine output histograms
       TH1::SetDefaultSumw2();
@@ -487,8 +487,8 @@ int main(int argc, char* argv[]){
           //if(dataSetName.find("WZTo3LNu")!=std::string::npos) CalculatePDFWeight(dataSetName, MVA_BDT, MVA_weight_nom, MVA_channel);
         }
         if(PlotMVAvars && isys == 0){
-          if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TT_FCNC")!=std::string::npos )&& toppair) Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
-          else  if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("ST_FCNC")!=std::string::npos) && !toppair) Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
+          if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TT_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos )&& toppair) Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
+          else  if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("ST_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && !toppair) Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
         }
         
         // if(addData && BDT < cut) continue;
@@ -743,6 +743,7 @@ int main(int argc, char* argv[]){
       for(int i = 0 ; i < variables.size(); i++){
         TH1F *tempBKG(0);
         TH1F *tempSignal(0);
+        TH1F *tempfake(0);
         splitname = variables[i];
         cout << "name " << splitname << endl;
        for (std::map<std::string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
@@ -754,6 +755,10 @@ int main(int argc, char* argv[]){
             if(tempBKG == 0) tempBKG = (TH1F*) temp->Clone();
             else tempBKG->Add(temp);
           }
+          if(it->first.find("fake")!=std::string::npos) {
+            if(tempfake == 0) tempfake = (TH1F*) temp->Clone();
+            else tempfake->Add(temp);
+          }
           if(it->first.find("FCNC")!=std::string::npos) {
             if(tempSignal == 0) tempSignal= (TH1F*) temp->Clone();
             else tempSignal->Add(temp);
@@ -762,6 +767,7 @@ int main(int argc, char* argv[]){
         }
         tempBKG->SetLineColor(kBlue);
         tempSignal->SetLineColor(kRed);
+        tempfake->SetLineColor(kGreen);
         tempBKG->SetName(splitname.c_str());
         tempBKG->SetTitle("Normalised MVA distribution");
         
@@ -769,7 +775,10 @@ int main(int argc, char* argv[]){
         tempBKG->Scale(scaleBKG);
         Double_t scaleSig = 1./tempSignal->Integral();
         tempSignal->Scale(scaleSig);
-        double max = TMath::Max(tempSignal->GetMaximum(), tempBKG->GetMaximum());
+        Double_t scalefake = 1./tempfake->Integral();
+        tempfake->Scale(scalefake);
+        double max0 = TMath::Max(tempSignal->GetMaximum(), tempBKG->GetMaximum());
+        double max = TMath::Max(max0, tempfake->GetMaximum());
         tempBKG->SetMaximum(max*1.2);
         tempBKG->GetXaxis()->SetTitle(splitname.c_str());
         tempBKG->GetYaxis()->SetTitle("Nb. Events");
@@ -779,15 +788,17 @@ int main(int argc, char* argv[]){
         TLegend *leg = new TLegend(xl1,yl1,xl2,yl2);
         leg->AddEntry(tempSignal,"Signal","L");   // h1 and h2 are histogram pointers
         leg->AddEntry(tempBKG,"WZ background","L");
-        
+        leg->AddEntry(tempfake,"DD non prompt","L");
         
         TCanvas* tempCanvas = TCanvasCreator(tempBKG,"Normalised MVA distribution" );
         tempBKG->Draw("L");
         tempSignal->Draw("L,Sames");
+        tempfake->Draw("L,Sames");
         leg->Draw("Same");
         tempCanvas->SaveAs( (placeTH1F+splitname+".png").c_str() );
         delete tempCanvas;
         delete tempSignal;
+        delete tempfake;
         delete tempBKG;
       }
     }
@@ -1059,6 +1070,7 @@ void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut){
     tree->SetBranchAddress("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, &b_MVA_NJets_CSVv2M);
   }
   else  if(istoppair && !doZut){
+    tree->SetBranchAddress("MVA_cdiscCvsB_jet_0", &MVA_cdiscCvsB_jet_0, &b_MVA_cdiscCvsB_jet_0);
     tree->SetBranchAddress("MVA_cdiscCvsL_jet_1", &MVA_cdiscCvsL_jet_1, &b_MVA_cdiscCvsL_jet_1);
     tree->SetBranchAddress("MVA_cdiscCvsL_jet_0", &MVA_cdiscCvsL_jet_0, &b_MVA_cdiscCvsL_jet_0);
     tree->SetBranchAddress("MVA_dRZc", &MVA_dRZc, &b_MVA_dRZc);
