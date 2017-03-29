@@ -12,7 +12,7 @@ dd = str(now.day)
 mm = str(now.month)
 yyyy = str(now.year)
 # pick one of the two above
-date = "170313"
+date = "170320"
 #date = "17_1_2016"
 
 #channels = ["_MuMu","_ElEl"]
@@ -64,7 +64,7 @@ for chan in channels:
             print "found dataset to be added..." + str(d.attrib['name'])
 
             # select a subset of the existing root file
-            if not "80X" in str(d.attrib['name']) :
+            if  "80X" in str(d.attrib['name']) :
                 datasetNames.append(str(d.attrib['name']))
                 print str(d.attrib['name'])
     
@@ -102,14 +102,14 @@ for chan in channels:
         for zombie in listOfZombie:
             print >> outfile, zombie
     
-    mergeData=True
+    mergeData=False
     
     if (mergeData):
     # combining all the Data in one
-        cmd1 = "rm data.root"; 
+        cmd1 = "rm data_fake.root"; 
         dataList=glob.glob(pathMerged+"*data*.root")
     
-	cmd = "hadd " + pathMerged + "/"+ "data_fake.root"
+	cmd = "hadd -f " + pathMerged + "/"+ "data_fake.root"
         for data in dataList:
             cmd = cmd + " " + data
 	os.system(cmd1)
