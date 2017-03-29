@@ -32,8 +32,8 @@
 #include "TopTreeAnalysisBase/Tools/interface/PlottingTools.h"
 #include "TopTreeAnalysisBase/Tools/interface/TTreeLoader.h"
 
-#include "/user/kderoove/Software/LHAPDF/LHAPDF-6.1.6/include/LHAPDF/LHAPDF.h"
-#include "/user/kderoove/Software/LHAPDF/LHAPDF-6.1.6/include/LHAPDF/Reweighting.h"
+//#include "/user/kderoove/Software/LHAPDF/LHAPDF-6.1.6/include/LHAPDF/LHAPDF.h"
+//#include "/user/kderoove/Software/LHAPDF/LHAPDF-6.1.6/include/LHAPDF/Reweighting.h"
 
 using namespace std;
 using namespace TopTree;
@@ -49,6 +49,7 @@ map<string,MultiSamplePlot*> MSPlot;
 
 ////////////////////////////////// mapping ///////////////////////////////
 map<string,TFile*> tFileMap;
+TFile *fin;
 map<string,TTree*> tTree;
 map<string,TTree*> tStatsTree;
 vector < Dataset* > datasets;
@@ -65,7 +66,7 @@ double minimumValue(vector<double> array);
 
 void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair, bool isZut);
 void InitCalculatePDFWeightHisto(string dataSetName);
-void InitSystematicHisto(string dataSetName, string systematic);
+void InitSystematicHisto(string dataSetName, string systematic, int isys);
 void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut);
 void Init1DHisto(string dataSetName, string systematic, bool istoppair, bool isZut, vector <int> decayChannels);
 // functions
@@ -312,7 +313,7 @@ int main(int argc, char* argv[]){
   thesystlist.clear();
   thesystlist.push_back(""); // nominal
   if(doSystematics){
-    //cout << "pushing back systematics" << endl;
+    cout << "pushing back systematics" << endl;
     thesystlist.push_back("puSF_down");
     thesystlist.push_back("electronSF_down");
     thesystlist.push_back("muonSF_down");
@@ -399,7 +400,9 @@ int main(int argc, char* argv[]){
   ///*****************///
   ///   MAIN CODE  ///
   ///*****************///
-  
+  ntupleFileName = placeNtup;
+  fin = new TFile((ntupleFileName).c_str(),"READ");
+  bool onlynomforsys = false;
   for(int isys = 0; isys < thesystlist.size() ; isys++){
     systematic = thesystlist[isys];
     
@@ -414,10 +417,10 @@ int main(int argc, char* argv[]){
       }
       
       if ((dataSetName.find("Data")!=std::string::npos || dataSetName.find("data")!=std::string::npos|| dataSetName.find("DATA")!=std::string::npos || dataSetName.find("fake")!=std::string::npos   ) && isys != 0){
-        continue;
+        onlynomforsys = true;
       }
-      ntupleFileName = placeNtup;
-      tFileMap[dataSetName.c_str()] = new TFile((ntupleFileName).c_str(),"READ"); //create TFile for each dataset
+      
+     // tFileMap[dataSetName.c_str()] = new TFile((ntupleFileName).c_str(),"READ"); //create TFile for each dataset
       
       postfix = "";
       if(systematic.find("JES_down")!=std::string::npos) postfix = "_JESdown";
@@ -425,10 +428,13 @@ int main(int argc, char* argv[]){
       else if(systematic.find("JER_down")!=std::string::npos) postfix = "_JERdown";
       else if(systematic.find("JER_up")!=std::string::npos) postfix = "_JERup";
       else postfix = "";
+      
+      if(onlynomforsys) postfix = "";
       tTreeName = "Control_"+dataSetName + postfix;
       /// Get data
       cout << "   treename " << tTreeName << " from " << ntupleFileName <<  endl;
-      tTree[dataSetName.c_str()] = (TTree*)tFileMap[dataSetName.c_str()]->Get(tTreeName.c_str()); //get ttree for each dataset
+     //tTree[dataSetName.c_str()] = (TTree*)tFileMap[dataSetName.c_str()]->Get(tTreeName.c_str()); //get ttree for each dataset
+      tTree[dataSetName.c_str()] = (TTree*)fin->Get(tTreeName.c_str());
       nEntries = -1;
       nEntries = (int)tTree[dataSetName.c_str()]->GetEntries();
       cout << "                nEntries: " << nEntries << endl;
@@ -437,9 +443,9 @@ int main(int argc, char* argv[]){
       InitTree(tTree[dataSetName.c_str()], isData, toppair, doZut);
       
       // Initialise plots
-      if(PlotMVAvars){
-        if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TT_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && toppair && PlotMVAvars && isys == 0) Init1DHisto(dataSetName, systematic, toppair, doZut, decayChannels);
-        else if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("ST_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && !toppair && PlotMVAvars && isys == 0) Init1DHisto(dataSetName, systematic, toppair, doZut, decayChannels);
+      if(PlotMVAvars && isys == 0){
+        if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TT_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && toppair ) Init1DHisto(dataSetName, systematic, toppair, doZut, decayChannels);
+        else if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("ST_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && !toppair ) Init1DHisto(dataSetName, systematic, toppair, doZut, decayChannels);
       }
       // initialise combine output histograms
       TH1::SetDefaultSumw2();
@@ -453,12 +459,11 @@ int main(int argc, char* argv[]){
       if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos && doPDFunc){
         InitCalculatePDFWeightHisto(dataSetName);
       }
-      if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos && PlotSystematics){
-        InitSystematicHisto(dataSetName, systematic);
+      if(dataSetName.find("WZTo3LNu")!=std::string::npos && PlotSystematics){
+        InitSystematicHisto(dataSetName, systematic, isys);
       }
       
       // safeties
-      if(isData && isys != 0) continue;
       if(!doSystematics && isys != 0) continue;
       int endEvent =nEntries;
       if(testing){
@@ -478,7 +483,7 @@ int main(int argc, char* argv[]){
         // cout << "mva channel " << MVA_channel << endl;
         
         weight = MVA_weight_nom;
-        if(!isData){
+        if(!isData && !onlynomforsys){
           if(systematic.find("puSF_up")) weight = MVA_weight_puSF_up;
           if(systematic.find("puSF_down")) weight = MVA_weight_puSF_down;
           if(systematic.find("electronSF_up")) weight = MVA_weight_electronSF_up;
@@ -512,7 +517,7 @@ int main(int argc, char* argv[]){
         if(doPDFunc){
           if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos) CalculatePDFWeight(dataSetName, MVA_BDT, MVA_weight_nom, MVA_channel);
         }
-        if(PlotMVAvars && isys == 0){
+        if(PlotMVAvars  && isys == 0){
           if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TT_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos )&& toppair) Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
           else  if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("ST_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && !toppair) Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
         }
@@ -525,13 +530,13 @@ int main(int argc, char* argv[]){
           if(isys != 0) tempstring += "_"+ systematic;
           FillGeneralPlots(d, tempstring, decayChannels, doZut, toppair, weight, MVA_channel);
         }
-        if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos && PlotSystematics){
+        if(dataSetName.find("WZTo3LNu")!=std::string::npos && PlotSystematics){
           FillSystematicHisto(dataSetName, systematic, weight, isys);
         }
         
       } // events
       cout << endl;
-      
+     
       /// Write combine histograms
       // --- Write histograms
       TFile* combinetemplate_file = TFile::Open( combinetemplate_filename.c_str(), "RECREATE" );
@@ -580,13 +585,16 @@ int main(int argc, char* argv[]){
       combinetemplate_file->Close();
       delete combinetemplate_file;
       delete  hist_eee; delete hist_uuu; delete hist_uue; delete hist_eeu;
+      
+       //tFileMap[dataSetName.c_str()]->Close();
     }// datasets
     
     if(isys != 0) cout<<"Done with "<< systematic <<" systematic"<<endl;
     else cout<<"Done with nominal sample"<<endl;
     systematic = "";
   } // systematics
-  
+  fin->Close();
+  delete fin;
   
   ///*****************///
   ///   PDF envelope   ///
@@ -750,9 +758,16 @@ int main(int argc, char* argv[]){
     if(PlotMVAvars){
      // cout << "plot mva vars " << endl;
       TDirectory* th1dirmva = fout->mkdir("1D_MVA_histograms");
-      th1dir->cd();
+      th1dirmva->cd();
       gStyle->SetOptStat(0);
      
+      std::vector<string> channellist;
+      channellist.push_back("all");
+      channellist.push_back("eee");
+      channellist.push_back("uue");
+      channellist.push_back("eeu");
+      channellist.push_back("uuu");
+      // find all variables
       std::string splitname = "";
       char seperator = '_';
       std::vector < std::string > variables;
@@ -767,68 +782,85 @@ int main(int argc, char* argv[]){
         else continue;
         
         splitname = (split(it->first, seperator))[0];
+        
         variables.push_back(splitname);
       }
       for(int i = 0 ; i < variables.size(); i++){
-        TH1F *tempBKG(0);
-        TH1F *tempSignal(0);
-        TH1F *tempfake(0);
         splitname = variables[i];
-        cout << "name " << splitname << endl;
-       for (std::map<std::string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
-        {
-          if(it->first.find(splitname.c_str())==std::string::npos) continue;
+       // cout << "name " << splitname << endl;
+        for(int iChan = 0; iChan < channellist.size(); iChan++){
+          TH1F *tempBKG(0);
+          TH1F *tempSignal(0);
+          TH1F *tempfake(0);
           
-          TH1F *temp = it->second;
-          if(it->first.find("WZTo3LNu")!=std::string::npos) {
-            if(tempBKG == 0) tempBKG = (TH1F*) temp->Clone();
-            else tempBKG->Add(temp);
+          for (std::map<std::string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
+          {
+            if(it->first.find(channellist[iChan].c_str())==std::string::npos) continue;
+            if(it->first.find(splitname.c_str())==std::string::npos) continue;
+            
+            //cout << "looking at " << it->first << endl;
+            TH1F *temp = it->second;
+            if(it->first.find("WZTo3LNu")!=std::string::npos) {
+              if(tempBKG == 0) tempBKG = (TH1F*) temp->Clone();
+              else tempBKG->Add(temp);
+            }
+            /*if(it->first.find("fake")!=std::string::npos) {
+              cout << "filling fake " << tempfake << " " << temp << endl;
+              if(tempfake == 0) tempfake = (TH1F*) it->second->Clone();
+              else tempfake->Add(temp);
+               cout << "filling fake " << tempfake << endl;
+            }*/
+            if(it->first.find("T_FCNC")!=std::string::npos) {
+              if(tempSignal == 0) tempSignal = (TH1F*) temp->Clone();
+              else tempSignal->Add(temp);
+            }
+            //delete temp;
           }
-          if(it->first.find("fake")!=std::string::npos) {
-            if(tempfake == 0) tempfake = (TH1F*) temp->Clone();
-            else tempfake->Add(temp);
-          }
-          if(it->first.find("FCNC")!=std::string::npos) {
-            if(tempSignal == 0) tempSignal= (TH1F*) temp->Clone();
-            else tempSignal->Add(temp);
-          }
-          delete temp;
-        }
-        tempBKG->SetLineColor(kBlue);
-        tempSignal->SetLineColor(kRed);
-        tempfake->SetLineColor(kGreen);
-        tempBKG->SetName(splitname.c_str());
-        tempBKG->SetTitle("Normalised MVA distribution");
-        
-        Double_t scaleBKG = 1./tempBKG->Integral();
-        tempBKG->Scale(scaleBKG);
-        Double_t scaleSig = 1./tempSignal->Integral();
-        tempSignal->Scale(scaleSig);
-        Double_t scalefake = 1./tempfake->Integral();
-        tempfake->Scale(scalefake);
-        double max0 = TMath::Max(tempSignal->GetMaximum(), tempBKG->GetMaximum());
-        double max = TMath::Max(max0, tempfake->GetMaximum());
-        tempBKG->SetMaximum(max*1.2);
-        tempBKG->GetXaxis()->SetTitle(splitname.c_str());
-        tempBKG->GetYaxis()->SetTitle("Nb. Events");
-        
-        
-        Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
-        TLegend *leg = new TLegend(xl1,yl1,xl2,yl2);
-        leg->AddEntry(tempSignal,"Signal","L");   // h1 and h2 are histogram pointers
-        leg->AddEntry(tempBKG,"WZ background","L");
-        leg->AddEntry(tempfake,"DD non prompt","L");
-        
-        TCanvas* tempCanvas = TCanvasCreator(tempBKG,"Normalised MVA distribution" );
-        tempBKG->Draw("L");
-        tempSignal->Draw("L,Sames");
-        tempfake->Draw("L,Sames");
-        leg->Draw("Same");
-        tempCanvas->SaveAs( (placeTH1F+splitname+".png").c_str() );
-        delete tempCanvas;
-        delete tempSignal;
-        delete tempfake;
-        delete tempBKG;
+          //cout << "filled histos " << endl;
+          if(tempBKG == 0) cout << "ERROR tempBKG is null" << endl ;
+          //if(tempfake == 0) cout << "ERROR tempfake is null" << endl ;
+          if(tempSignal == 0) cout << "ERROR tempSignal is null" << endl ;
+          
+          tempBKG->SetLineColor(kBlue);
+          tempSignal->SetLineColor(kRed);
+         // tempfake->SetLineColor(kGreen);
+          tempBKG->SetName(splitname.c_str());
+          tempBKG->SetTitle(("Shape comparison - " + channellist[iChan]).c_str());
+          
+          Double_t scaleBKG = 1./tempBKG->Integral();
+          tempBKG->Scale(scaleBKG);
+          Double_t scaleSig = 1./tempSignal->Integral();
+          tempSignal->Scale(scaleSig);
+         // Double_t scalefake = 1./tempfake->Integral();
+         // tempfake->Scale(scalefake);
+          double max = TMath::Max(tempSignal->GetMaximum(), tempBKG->GetMaximum());
+         // double max = TMath::Max(max0, tempfake->GetMaximum());
+          tempBKG->SetMaximum(max*1.2);
+          tempBKG->GetXaxis()->SetTitle(splitname.c_str());
+          tempBKG->GetYaxis()->SetTitle("Nb. Events");
+          
+          
+          Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
+          TLegend *leg = new TLegend(xl1,yl1,xl2,yl2);
+          leg->AddEntry(tempSignal,"Signal","L");   // h1 and h2 are histogram pointers
+          leg->AddEntry(tempBKG,"WZ background","L");
+          //leg->AddEntry(tempfake,"DD non prompt","L");
+          
+          TCanvas* tempCanvas = TCanvasCreator(tempBKG,"Normalised MVA distribution" );
+          tempBKG->Draw("h");
+          tempSignal->Draw("h,Sames");
+          //tempfake->Draw("L,Sames");
+          leg->Draw("Same");
+          tempCanvas->SaveAs( (placeTH1F+splitname+"_"+channellist[iChan]+".png").c_str() );
+          
+          tempBKG->Write();
+          tempSignal->Write();
+          // tempfake->Write();
+          delete tempCanvas;
+          delete tempSignal;
+          //delete tempfake;
+          delete tempBKG;
+        } // channellist
       }
     }
     if(PlotSystematics){
@@ -841,7 +873,8 @@ int main(int argc, char* argv[]){
       for (std::map<std::string,TH1F*>::const_iterator it = histo1DSys.begin(); it != histo1DSys.end(); it++)
       {
         if(it->first.find("nominal")!=std::string::npos){
-          temp_nom = it->second;
+          if(temp_nom == 0) temp_nom = (TH1F*) it->second->Clone();
+          else temp_nom->Add(it->second);
           //cout << "found nominal " << it->first << endl;
         }
       }
@@ -856,8 +889,14 @@ int main(int argc, char* argv[]){
         for (std::map<std::string,TH1F*>::const_iterator it = histo1DSys.begin(); it != histo1DSys.end(); it++)
         {
           if(it->first.find(systematic.c_str())!=std::string::npos){
-            if(it->first.find("up")!=std::string::npos){ temp_up = it->second; }//cout << "found " << it->first << endl; }
-            else if(it->first.find("down")!=std::string::npos){ temp_down = it->second;}// cout << "found " << it->first << endl;}
+            if(it->first.find("up")!=std::string::npos){
+              if(temp_up ==0) temp_up = (TH1F*) it->second->Clone();
+              else temp_up->Add(it->second);
+            }//cout << "found " << it->first << endl; }
+            else if(it->first.find("down")!=std::string::npos){
+              if(temp_down == 0) temp_down = (TH1F*) it->second->Clone();
+              else temp_down->Add(it->second);
+            }// cout << "found " << it->first << endl;}
             
             
           }
@@ -871,8 +910,10 @@ int main(int argc, char* argv[]){
         temp_nom->SetLineColor(kRed);
         temp_up->SetLineColor(kBlue);
         temp_down->SetLineColor(kViolet);
-        
-        TLegend *legend = new TLegend(0.1,0.7,0.48,0.9);//(0.55,0.65,0.76,0.82);
+        temp_up->SetTitle(("Influence of "+systematic).c_str());
+        Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
+        TLegend *legend = new TLegend(xl1,yl1,xl2,yl2);
+        //TLegend *legend = new TLegend(0.1,0.7,0.48,0.9);//(0.55,0.65,0.76,0.82);
         legend->AddEntry(temp_nom,"nominal","L");
         legend->AddEntry(temp_down,(systematic+" down").c_str(),"L");
         legend->AddEntry(temp_up,(systematic+" up").c_str(),"L");
@@ -881,13 +922,16 @@ int main(int argc, char* argv[]){
         Canvas =  TCanvasCreator(temp_up, systematic.c_str() );//new TCanvas("Canvas_PU","Canvas_PU");
         Canvas->cd();
         gStyle->SetOptStat(0);
-        temp_nom->GetXaxis()->SetTitle("BDT");
+        temp_up->GetXaxis()->SetTitle("BDT");
         
-        temp_up->Draw("");
-        temp_nom->Draw("SAME,C");
-        temp_down->Draw("SAME,C");
+        temp_up->Draw("h");
+        temp_nom->Draw("SAME,h");
+        temp_down->Draw("SAME,h");
         legend->Draw("SAME");
         Canvas->SaveAs( (placeTH1F+nameplot+".png").c_str() );
+        Canvas->SetLogy();
+        Canvas->Update();
+        Canvas->SaveAs( (placeTH1F+nameplot+"_LogY.png").c_str() );
       }
     }
     
@@ -1132,15 +1176,14 @@ void InitCalculatePDFWeightHisto(string dataSetName){
     output_histo_name = "";
   }
 }
-void InitSystematicHisto(string dataSetName, string systematic){
+void InitSystematicHisto(string dataSetName, string systematic, int isys){
   TH1::SetDefaultSumw2();
   
-  
-   output_histo_name = dataSetName+"_BDT_nominal";
+  if(isys == 0) output_histo_name = dataSetName+"_BDT_nominal";
+  else output_histo_name = dataSetName+"_BDT_"+systematic;
+
    histo1DSys[output_histo_name] = new TH1F(output_histo_name.c_str(), dataSetName.c_str(), nbin,-1.,1.);
-   output_histo_name = dataSetName+"_BDT_"+systematic;
-  // cout << "initialising " << output_histo_name.c_str() << endl;
-   histo1DSys[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,-1.,1.);
+
    output_histo_name = "";
   
 }
@@ -1160,7 +1203,7 @@ void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut){
     tree->SetBranchAddress("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, &b_MVA_NJets_CSVv2M);
   }
   else  if(istoppair && !doZut){
-    tree->SetBranchAddress("MVA_cdiscCvsB_jet_0", &MVA_cdiscCvsB_jet_0, &b_MVA_cdiscCvsB_jet_0);
+    //tree->SetBranchAddress("MVA_cdiscCvsB_jet_0", &MVA_cdiscCvsB_jet_0, &b_MVA_cdiscCvsB_jet_0);
     tree->SetBranchAddress("MVA_cdiscCvsL_jet_1", &MVA_cdiscCvsL_jet_1, &b_MVA_cdiscCvsL_jet_1);
     tree->SetBranchAddress("MVA_cdiscCvsL_jet_0", &MVA_cdiscCvsL_jet_0, &b_MVA_cdiscCvsL_jet_0);
     tree->SetBranchAddress("MVA_dRZc", &MVA_dRZc, &b_MVA_dRZc);
@@ -1235,7 +1278,7 @@ void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut){
 }
 void Init1DHisto(string dataSetName, string systematic, bool istoppair, bool isZut, vector <int> decayChannels){
   TH1::SetDefaultSumw2();
-  
+  cout << "initialising MVA var histo" << endl;
   // control plots
   for(int iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
@@ -1292,9 +1335,7 @@ void Init1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
       histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),10,-0.5,9.5);
       output_histo_name = "nJetsCharmL_"+dataSetName + "_" +decaystring+"_"+systematic;
       histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),10,-0.5,9.5);
-      output_histo_name = "bdiscCSVv2jet0_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0.5,1);
-
+     
       if(isZut){
         output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
         histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
@@ -1495,7 +1536,7 @@ void CalculatePDFWeight(string dataSetName, double BDT, double MVA_weight_nom, i
   channel_list.push_back("eeu");
   channel_list.push_back("uuu");
   string channel = "";
-  
+  /*
   //PDF weights calculation
   LHAPDF::setVerbosity(0);
   string sbase = "";
@@ -1529,7 +1570,7 @@ void CalculatePDFWeight(string dataSetName, double BDT, double MVA_weight_nom, i
   histo1DPDF[output_histo_name]->Fill(MVA_BDT, MVA_weight_nom);
   output_histo_name = "";
   delete basepdf;
-  
+  */
 
 }
 void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isZut , bool istoppair, double weight_, int MVA_channel){
@@ -1708,8 +1749,6 @@ void Fill1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
       histo1D[output_histo_name] ->Fill(   MVA_NJets_CSVv2M       ,weight_);
       output_histo_name = "nJetsCharmL_"+dataSetName + "_" +decaystring+"_"+systematic;
       histo1D[output_histo_name] ->Fill( MVA_nJets_CharmL        ,weight_);
-      output_histo_name = "bdiscCSVv2jet0_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] ->Fill(  MVA_bdiscCSVv2_jet_0        ,weight_);
       
       if(isZut){
         output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
