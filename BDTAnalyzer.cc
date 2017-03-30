@@ -540,7 +540,7 @@ int main(int argc, char* argv[]){
       /// Write combine histograms
       // --- Write histograms
       TFile* combinetemplate_file(0);
-      if(d == 0) combinetemplate_file = TFile::Open( combinetemplate_filename.c_str(), "RECREATE" );
+      if(d == 0 && isys == 0) combinetemplate_file = TFile::Open( combinetemplate_filename.c_str(), "RECREATE" );
       else combinetemplate_file = TFile::Open( combinetemplate_filename.c_str(), "UPDATE" );
       combinetemplate_file->cd();
       //cout << "opened " << combinetemplate_filename.c_str() << endl;
