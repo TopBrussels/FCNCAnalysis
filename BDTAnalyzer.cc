@@ -539,9 +539,11 @@ int main(int argc, char* argv[]){
      
       /// Write combine histograms
       // --- Write histograms
-      TFile* combinetemplate_file = TFile::Open( combinetemplate_filename.c_str(), "RECREATE" );
+      TFile* combinetemplate_file(0);
+      if(d == 0) combinetemplate_file = TFile::Open( combinetemplate_filename.c_str(), "RECREATE" );
+      else combinetemplate_file = TFile::Open( combinetemplate_filename.c_str(), "UPDATE" );
       combinetemplate_file->cd();
-      
+      //cout << "opened " << combinetemplate_filename.c_str() << endl;
       //NB : theta name convention = <observable>__<process>[__<uncertainty>__(plus,minus)] FIX ME
       output_histo_name = "";
       if (dataSetName.find("fake")!=std::string::npos ) //Last fake MC sample or data-driven fakes -> write fake histo w/ special name (for THETA)
@@ -642,7 +644,7 @@ int main(int argc, char* argv[]){
         string dataSetName = datasets[isample]->Name();
         // cout << dataSetName << endl;
         if(datasets[isample]->Name().find("FCNC")!=std::string::npos) {continue; } // no signal in data
-        if(datasets[isample]->Name().find("data")!=std::string::npos) {continue; } // no signal in data
+        if(datasets[isample]->Name().find("data")!=std::string::npos) {continue; } // safety
         if(datasets[isample]->Name().find("fake")==std::string::npos) {
           // cout << "  -- sample " << datasets[isample]->Name() << endl;
           h_tmp = 0;
@@ -804,12 +806,12 @@ int main(int argc, char* argv[]){
               if(tempBKG == 0) tempBKG = (TH1F*) temp->Clone();
               else tempBKG->Add(temp);
             }
-            /*if(it->first.find("fake")!=std::string::npos) {
+            if(it->first.find("fake")!=std::string::npos) {
               cout << "filling fake " << tempfake << " " << temp << endl;
               if(tempfake == 0) tempfake = (TH1F*) it->second->Clone();
               else tempfake->Add(temp);
                cout << "filling fake " << tempfake << endl;
-            }*/
+            }
             if(it->first.find("T_FCNC")!=std::string::npos) {
               if(tempSignal == 0) tempSignal = (TH1F*) temp->Clone();
               else tempSignal->Add(temp);
@@ -818,7 +820,7 @@ int main(int argc, char* argv[]){
           }
           //cout << "filled histos " << endl;
           if(tempBKG == 0) cout << "ERROR tempBKG is null" << endl ;
-          //if(tempfake == 0) cout << "ERROR tempfake is null" << endl ;
+          if(tempfake == 0) cout << "ERROR tempfake is null" << endl ;
           if(tempSignal == 0) cout << "ERROR tempSignal is null" << endl ;
           
           tempBKG->SetLineColor(kBlue);
