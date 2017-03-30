@@ -68,6 +68,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair, boo
 void InitCalculatePDFWeightHisto(string dataSetName);
 void InitSystematicHisto(string dataSetName, string systematic, int isys);
 void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut);
+void InitAnalyzerTree(TTree* tree);
 void Init1DHisto(string dataSetName, string systematic, bool istoppair, bool isZut, vector <int> decayChannels);
 // functions
 vector<double> BDTCUT(string region, string coupling);
@@ -79,6 +80,7 @@ void Fill1DHisto(string dataSetName,string systematic, bool istoppair, bool isZu
 
 //////////////////////////////// settings ////////////////////////////////
 bool makePlots = false;
+bool doMTWtemplate = false;
 bool PlotSystematics = false;
 bool doPseudoData = false;
 bool doSystematics = false;
@@ -125,6 +127,7 @@ Float_t         MVA_dRZc;
 Float_t         MVA_dRWlepb;
 Float_t         MVA_dRZWlep;
 Float_t         MVA_mlb;
+Float_t         MVA_mWt;
 Float_t         MVA_FCNCtop_M;
 Float_t           MVA_nJets_CharmL;
 Float_t           MVA_NJets_CSVv2M;
@@ -176,6 +179,7 @@ TBranch        *b_MVA_dRZc;   //!
 TBranch        *b_MVA_dRWlepb;   //!
 TBranch        *b_MVA_dRZWlep;   //!
 TBranch        *b_MVA_mlb;   //!
+TBranch        *b_MVA_mWt;   //!
 TBranch        *b_MVA_FCNCtop_M;   //!
 TBranch        *b_MVA_nJets_CharmL;   //!
 TBranch        *b_MVA_NJets_CSVv2M;   //!
@@ -245,8 +249,12 @@ int main(int argc, char* argv[]){
       std::cout << "   doPDFunc: calculate PDF unc" << endl;
       std::cout << "   PlotSystematics: make sys plots fo WZ" << endl;
       std::cout << "   PlotMVAvars: plot mva vars" << endl;
-
+      std::cout << "  doMTWtemplate plot mva vars" << endl;
       return 0;
+    }
+    if(string(argv[i]).find("doMTWtemplate")!=std::string::npos){
+      doMTWtemplate = true;
+      cout << "******* making MTW templates *********" << endl;
     }
     if(string(argv[i]).find("doPDFunc")!=std::string::npos){
       doPDFunc = true;
@@ -301,9 +309,11 @@ int main(int argc, char* argv[]){
   mkdir(placeOutputReading.c_str(), 0777);
   placeOutputReading += "outputtemplates";
   mkdir(placeOutputReading.c_str(), 0777);
-  placeOutputReading += "/" + coupling + "_" + region;
+  if(!doMTWtemplate) placeOutputReading += "/" + coupling + "_" + region;
+  else placeOutputReading += "/MTWtemplate" ;
   mkdir(placeOutputReading.c_str(), 0777);
   combinetemplate_filename = placeOutputReading+"/Reader_" + coupling +"_" + region + ".root";
+  if(doMTWtemplate) combinetemplate_filename = placeOutputReading+"/Reader_MTW.root";
   cout <<" - Combine templates stored at " << combinetemplate_filename.c_str() << endl;
   
   std::vector < int>  decayChannels = {0,1,2,3,-9}; // uuu uue eeu eee all
@@ -380,7 +390,7 @@ int main(int argc, char* argv[]){
   
   
   ///////////////// Initialisation ////////////////////
-  if(makePlots){
+  if(makePlots && !doMTWtemplate){
     for(int isys = 0; isys < thesystlist.size() ; isys++){
       systematic = thesystlist[isys];
       tempstring = region + "_"+coupling;
@@ -391,7 +401,7 @@ int main(int argc, char* argv[]){
   
   
   ///////////// General function //////////
-  if(DetermineCut){
+  if(DetermineCut && !doMTWtemplate){
     vector<double> v_cut = BDTCUT(region, coupling);
     return 0;
   }
@@ -401,7 +411,7 @@ int main(int argc, char* argv[]){
   ///   MAIN CODE  ///
   ///*****************///
   ntupleFileName = placeNtup;
-  fin = new TFile((ntupleFileName).c_str(),"READ");
+  if(!doMTWtemplate) fin = new TFile((ntupleFileName).c_str(),"READ");
   bool onlynomforsys = false;
   for(int isys = 0; isys < thesystlist.size() ; isys++){
     systematic = thesystlist[isys];
@@ -421,7 +431,6 @@ int main(int argc, char* argv[]){
         onlynomforsys = true;
       }
       
-     // tFileMap[dataSetName.c_str()] = new TFile((ntupleFileName).c_str(),"READ"); //create TFile for each dataset
       
       postfix = "";
       if(systematic.find("JESDown")!=std::string::npos) postfix = "_JESdown";
@@ -429,38 +438,56 @@ int main(int argc, char* argv[]){
       else if(systematic.find("JERDown")!=std::string::npos) postfix = "_JERdown";
       else if(systematic.find("JERUp")!=std::string::npos) postfix = "_JERup";
       else postfix = "";
-      
       if(onlynomforsys) postfix = "";
-      tTreeName = "Control_"+dataSetName + postfix;
+      
+      if(doMTWtemplate) {
+        ntupleFileName = placeNtup + "MVA_tree_" + dataSetName + postfix + ".root";
+        tFileMap[dataSetName.c_str()] = new TFile((ntupleFileName).c_str(),"READ"); //create TFile for each dataset
+      }
+      
+      if(!doMTWtemplate) tTreeName = "Control_"+dataSetName + postfix;
+      else tTreeName = "mvatree" + postfix;
       /// Get data
       cout << "   treename " << tTreeName << " from " << ntupleFileName <<  endl;
-     //tTree[dataSetName.c_str()] = (TTree*)tFileMap[dataSetName.c_str()]->Get(tTreeName.c_str()); //get ttree for each dataset
-      tTree[dataSetName.c_str()] = (TTree*)fin->Get(tTreeName.c_str());
+      if(doMTWtemplate){
+        tTree[dataSetName.c_str()] = (TTree*)tFileMap[dataSetName.c_str()]->Get(tTreeName.c_str()); //get ttree for each dataset
+      }
+      else if(!doMTWtemplate) tTree[dataSetName.c_str()] = (TTree*)fin->Get(tTreeName.c_str());
       nEntries = -1;
       nEntries = (int)tTree[dataSetName.c_str()]->GetEntries();
       cout << "                nEntries: " << nEntries << endl;
       
       // Initialise tree
-      InitTree(tTree[dataSetName.c_str()], isData, toppair, doZut);
+      if(!doMTWtemplate) InitTree(tTree[dataSetName.c_str()], isData, toppair, doZut);
+      else if(doMTWtemplate) InitAnalyzerTree(tTree[dataSetName.c_str()]);
+      
       
       // Initialise plots
-      if(PlotMVAvars && isys == 0){
+      if(!doMTWtemplate && PlotMVAvars && isys == 0){
         if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TT_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && toppair ) Init1DHisto(dataSetName, systematic, toppair, doZut, decayChannels);
         else if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("ST_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && !toppair ) Init1DHisto(dataSetName, systematic, toppair, doZut, decayChannels);
       }
       // initialise combine output histograms
       TH1::SetDefaultSumw2();
       //cout << "create template histo" << endl;
-      TH1F *hist_uuu     = new TH1F( (coupling + "_" + region+"_uuu").c_str(),           (coupling + "_" + region+"_uuu").c_str(),           nbin, -1, 1 );
-      TH1F *hist_uue     = new TH1F( (coupling + "_" + region+"_uue").c_str(),           (coupling + "_" + region+"_uue").c_str(),           nbin, -1, 1 );
-      TH1F *hist_eeu     = new TH1F( (coupling + "_" + region+"_eeu").c_str(),           (coupling + "_" + region+"_eeu").c_str(),           nbin, -1, 1 );
-      TH1F *hist_eee     = new TH1F( (coupling + "_" + region+"_eee").c_str(),           (coupling + "_" + region+"_eee").c_str(),           nbin, -1, 1 );
-      //cout << "created template histo" << endl;
+      TH1F *hist_uuu(0);
+      if(!doMTWtemplate) hist_uuu = new TH1F( (coupling + "_" + region+"_uuu").c_str(),           (coupling + "_" + region+"_uuu").c_str(),           nbin, -1, 1 );
+      else hist_uuu = new TH1F( (coupling + "_mTW_uuu").c_str(),           (coupling + "_mTW_uuu").c_str(),           20,0, 200 );
+      TH1F *hist_uue(0);
+      if(!doMTWtemplate) hist_uue = new TH1F( (coupling + "_" + region+"_uue").c_str(),           (coupling + "_" + region+"_uue").c_str(),           nbin, -1, 1 );
+      else hist_uue = new TH1F( (coupling + "_mTW_uue").c_str(),           (coupling + "_mTW_uue").c_str(),           20,0, 200 );
+       TH1F *hist_eeu(0);
+      if(!doMTWtemplate) hist_eeu = new TH1F( (coupling + "_" + region+"_eeu").c_str(),           (coupling + "_" + region+"_eeu").c_str(),           nbin, -1, 1 );
+      else hist_eeu = new TH1F( (coupling + "_mTW_eeu").c_str(),           (coupling + "_mTW_eeu").c_str(),           20,0, 200 );
+      TH1F *hist_eee(0);
+      if(!doMTWtemplate) hist_eee = new TH1F( (coupling + "_" + region+"_eee").c_str(),           (coupling + "_" + region+"_eee").c_str(),           nbin, -1, 1 );
+      else hist_eee = new TH1F( (coupling + "_mTW_eee").c_str(),           (coupling + "_mTW_eee").c_str(),           20,0, 200 );
+       //cout << "created template histo" << endl;
       /// Initialise WZ plots
-      if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos && doPDFunc){
+      if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos && doPDFunc && !doMTWtemplate){
         InitCalculatePDFWeightHisto(dataSetName);
       }
-      if(dataSetName.find("WZTo3LNu")!=std::string::npos && PlotSystematics){
+      if(dataSetName.find("WZTo3LNu")!=std::string::npos && PlotSystematics && !doMTWtemplate){
         InitSystematicHisto(dataSetName, systematic, isys);
       }
       
@@ -508,34 +535,41 @@ int main(int argc, char* argv[]){
           
         }
         
-        
+        if(!doMTWtemplate){
         if(MVA_channel== 0) 		{hist_uuu->Fill( MVA_BDT, weight);}
         else if(MVA_channel== 1) {hist_uue->Fill( MVA_BDT, weight);}
         else if(MVA_channel== 2) {hist_eeu->Fill( MVA_BDT, weight);}
         else if(MVA_channel == 3) {hist_eee->Fill( MVA_BDT, weight);}
-        
+        }
+        else if(doMTWtemplate){
+          if(MVA_channel== 0) 		{hist_uuu->Fill( MVA_mWt, weight);}
+          else if(MVA_channel== 1) {hist_uue->Fill( MVA_mWt, weight);}
+          else if(MVA_channel== 2) {hist_eeu->Fill( MVA_mWt, weight);}
+          else if(MVA_channel == 3) {hist_eee->Fill( MVA_mWt, weight);}
+        }
         /// Fill plots
-        if(doPDFunc){
+        if(doPDFunc && !doMTWtemplate){
           if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos) CalculatePDFWeight(dataSetName, MVA_BDT, MVA_weight_nom, MVA_channel);
         }
-        if(PlotMVAvars  && isys == 0){
+        if(PlotMVAvars  && isys == 0 && !doMTWtemplate){
           if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TT_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos )&& toppair) Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
           else  if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("ST_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && !toppair) Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
         }
         
         // if(addData && BDT < cut) continue;
-        if (makePlots)
+        if (makePlots && !doMTWtemplate)
         {
           //cout << "ievt " << ievt << endl;
           tempstring = region + "_"+coupling;
           if(isys != 0) tempstring += "_"+ systematic;
           FillGeneralPlots(d, tempstring, decayChannels, doZut, toppair, weight, MVA_channel);
         }
-        if(dataSetName.find("WZTo3LNu")!=std::string::npos && PlotSystematics){
+        if(dataSetName.find("WZTo3LNu")!=std::string::npos && PlotSystematics && !doMTWtemplate){
           FillSystematicHisto(dataSetName, systematic, weight, isys);
         }
         
       } // events
+      
       cout << endl;
      
       /// Write combine histograms
@@ -553,65 +587,108 @@ int main(int argc, char* argv[]){
       //cout << "opened " << combinetemplate_filename.c_str() << endl;
       //NB : theta name convention = <observable>__<process>[__<uncertainty>__(plus,minus)] FIX ME
       output_histo_name = "";
-      if (dataSetName.find("fake")!=std::string::npos ) //Last fake MC sample or data-driven fakes -> write fake histo w/ special name (for THETA)
-      {
-        if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_uuu_FakeMu_80X_"  + systematic ;
-        else output_histo_name = coupling + "_BDT_" + region+"_uuu_FakeMu_80X"  ;
-        hist_uuu->SetTitle(output_histo_name.c_str());
-        hist_uuu->Write(output_histo_name.c_str());
-        if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_uue_FakeEl_80X_"  + systematic ;
-        else output_histo_name = coupling + "_BDT_" + region+"_uue_FakeEl_80X"  ;
-        hist_uue->SetTitle(output_histo_name.c_str());
-        hist_uue->Write(output_histo_name.c_str());
-        if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_eeu_FakeMu_80X_"  + systematic ;
-        else output_histo_name = coupling + "_BDT_" + region+"_eeu_FakeMu_80X"  ;
-        hist_eeu->SetTitle(output_histo_name.c_str());
-        hist_eeu->Write(output_histo_name.c_str());
-        if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_eee_FakeEl_80X_"  + systematic ;
-        else output_histo_name = coupling + "_BDT_" + region+"_eee_FakeEl_80X"  ;
-        hist_eee->SetTitle(output_histo_name.c_str());
-        hist_eee->Write(output_histo_name.c_str());
+      if(!doMTWtemplate){
+        if (dataSetName.find("fake")!=std::string::npos ) //Last fake MC sample or data-driven fakes -> write fake histo w/ special name (for THETA)
+        {
+          if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_uuu_FakeMu_80X_"  + systematic ;
+          else output_histo_name = coupling + "_BDT_" + region+"_uuu_FakeMu_80X"  ;
+          hist_uuu->SetTitle(output_histo_name.c_str());
+          hist_uuu->Write(output_histo_name.c_str());
+          if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_uue_FakeEl_80X_"  + systematic ;
+          else output_histo_name = coupling + "_BDT_" + region+"_uue_FakeEl_80X"  ;
+          hist_uue->SetTitle(output_histo_name.c_str());
+          hist_uue->Write(output_histo_name.c_str());
+          if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_eeu_FakeMu_80X_"  + systematic ;
+          else output_histo_name = coupling + "_BDT_" + region+"_eeu_FakeMu_80X"  ;
+          hist_eeu->SetTitle(output_histo_name.c_str());
+          hist_eeu->Write(output_histo_name.c_str());
+          if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_eee_FakeEl_80X_"  + systematic ;
+          else output_histo_name = coupling + "_BDT_" + region+"_eee_FakeEl_80X"  ;
+          hist_eee->SetTitle(output_histo_name.c_str());
+          hist_eee->Write(output_histo_name.c_str());
+        }
+        else //If fakes are not considered, or if sample is not fake --> write directly !
+        {
+          if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_uuu_"  + dataSetName + "_" + systematic ;
+          else output_histo_name = coupling + "_BDT_" + region+"_uuu_"  + dataSetName ;
+          hist_uuu->SetTitle(output_histo_name.c_str());
+          hist_uuu->Write(output_histo_name.c_str());
+          if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_uue_"  + dataSetName + "_" + systematic ;
+          else output_histo_name = coupling + "_BDT_" + region+"_uue_"  + dataSetName ;
+          hist_uue->SetTitle(output_histo_name.c_str());
+          hist_uue->Write(output_histo_name.c_str());
+          if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_eeu_"  + dataSetName + "_" + systematic ;
+          else output_histo_name = coupling + "_BDT_" + region+"_eeu_"  + dataSetName ;
+          hist_eeu->SetTitle(output_histo_name.c_str());
+          hist_eeu->Write(output_histo_name.c_str());
+          if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_eee_"  + dataSetName + "_" + systematic ;
+          else output_histo_name = coupling + "_BDT_" + region+"_eee_"  + dataSetName ;
+          hist_eee->SetTitle(output_histo_name.c_str());
+          hist_eee->Write(output_histo_name.c_str());
+        }
       }
-      else //If fakes are not considered, or if sample is not fake --> write directly !
-      {
-        if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_uuu_"  + dataSetName + "_" + systematic ;
-        else output_histo_name = coupling + "_BDT_" + region+"_uuu_"  + dataSetName ;
-        hist_uuu->SetTitle(output_histo_name.c_str());
-        hist_uuu->Write(output_histo_name.c_str());
-        if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_uue_"  + dataSetName + "_" + systematic ;
-        else output_histo_name = coupling + "_BDT_" + region+"_uue_"  + dataSetName ;
-        hist_uue->SetTitle(output_histo_name.c_str());
-        hist_uue->Write(output_histo_name.c_str());
-        if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_eeu_"  + dataSetName + "_" + systematic ;
-        else output_histo_name = coupling + "_BDT_" + region+"_eeu_"  + dataSetName ;
-        hist_eeu->SetTitle(output_histo_name.c_str());
-        hist_eeu->Write(output_histo_name.c_str());
-        if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_eee_"  + dataSetName + "_" + systematic ;
-        else output_histo_name = coupling + "_BDT_" + region+"_eee_"  + dataSetName ;
-        hist_eee->SetTitle(output_histo_name.c_str());
-        hist_eee->Write(output_histo_name.c_str());
+      else if(doMTWtemplate){
+        if (dataSetName.find("fake")!=std::string::npos ) //Last fake MC sample or data-driven fakes -> write fake histo w/ special name (for THETA)
+        {
+          if(isys!=0) output_histo_name = "MTW_uuu_FakeMu_80X_"  + systematic ;
+          else output_histo_name = "MTW_uuu_FakeMu_80X"  ;
+          hist_uuu->SetTitle(output_histo_name.c_str());
+          hist_uuu->Write(output_histo_name.c_str());
+          if(isys!=0) output_histo_name = "MTW_uue_FakeEl_80X_"  + systematic ;
+          else output_histo_name = "MTW_uue_FakeEl_80X"  ;
+          hist_uue->SetTitle(output_histo_name.c_str());
+          hist_uue->Write(output_histo_name.c_str());
+          if(isys!=0) output_histo_name = "MTW_eeu_FakeMu_80X_"  + systematic ;
+          else output_histo_name = "MTW_eeu_FakeMu_80X"  ;
+          hist_eeu->SetTitle(output_histo_name.c_str());
+          hist_eeu->Write(output_histo_name.c_str());
+          if(isys!=0) output_histo_name = "MTW_eee_FakeEl_80X_"  + systematic ;
+          else output_histo_name = "MTW_eee_FakeEl_80X"  ;
+          hist_eee->SetTitle(output_histo_name.c_str());
+          hist_eee->Write(output_histo_name.c_str());
+        }
+        else //If fakes are not considered, or if sample is not fake --> write directly !
+        {
+          if(isys!=0) output_histo_name = "MTW_uuu_"  + dataSetName + "_" + systematic ;
+          else output_histo_name = "MTW_uuu_"  + dataSetName ;
+          hist_uuu->SetTitle(output_histo_name.c_str());
+          hist_uuu->Write(output_histo_name.c_str());
+          if(isys!=0) output_histo_name = "MTW_uue_"  + dataSetName + "_" + systematic ;
+          else output_histo_name = "MTW_uue_"  + dataSetName ;
+          hist_uue->SetTitle(output_histo_name.c_str());
+          hist_uue->Write(output_histo_name.c_str());
+          if(isys!=0) output_histo_name = "MTW_eeu_"  + dataSetName + "_" + systematic ;
+          else output_histo_name = "MTW_eeu_"  + dataSetName ;
+          hist_eeu->SetTitle(output_histo_name.c_str());
+          hist_eeu->Write(output_histo_name.c_str());
+          if(isys!=0) output_histo_name = "MTW_eee_"  + dataSetName + "_" + systematic ;
+          else output_histo_name = "MTW_eee_"  + dataSetName ;
+          hist_eee->SetTitle(output_histo_name.c_str());
+          hist_eee->Write(output_histo_name.c_str());
+        }
       }
       combinetemplate_file->Close();
       //cout << "closed " << combinetemplate_filename.c_str() << endl;
       delete combinetemplate_file;
       delete  hist_eee; delete hist_uuu; delete hist_uue; delete hist_eeu;
       
-       //tFileMap[dataSetName.c_str()]->Close();
+       if(doMTWtemplate) tFileMap[dataSetName.c_str()]->Close();
     }// datasets
     
     if(isys != 0) cout<<"Done with "<< systematic <<" systematic"<<endl;
     else cout<<"Done with nominal sample"<<endl;
     systematic = "";
   } // systematics
-  fin->Close();
-  delete fin;
-  
+  if(!doMTWtemplate){
+    fin->Close();
+    delete fin;
+  }
   ///*****************///
   ///   PDF envelope   ///
   ///*****************///
   
   
-  if(doPDFunc)  GetPDFEnvelope("WZTo3LNu_3Jets_MLL50_80X");
+  if(doPDFunc && !doMTWtemplate)  GetPDFEnvelope("WZTo3LNu_3Jets_MLL50_80X");
   
   ///*****************///
   ///   Pseudodata   ///
@@ -621,6 +698,8 @@ int main(int argc, char* argv[]){
     TRandom3 therand(0); //Randomization
     
     string pseudodata_input_name = placeOutputReading+"/Reader_" + coupling + "_" + region + ".root";
+    
+    if(doMTWtemplate) pseudodata_input_name = placeOutputReading+"/Reader_MTW.root";
     TFile* pseudodata_file = TFile::Open( pseudodata_input_name.c_str(), "UPDATE" );
     
     cout << "Generating pseudo data from " << pseudodata_input_name << endl;
@@ -656,7 +735,8 @@ int main(int argc, char* argv[]){
         if(datasets[isample]->Name().find("fake")==std::string::npos) {
           // cout << "  -- sample " << datasets[isample]->Name() << endl;
           h_tmp = 0;
-          histo_name = coupling + "_BDT_" + region + "_" + channel_list[ichan] + "_" + datasets[isample]->Name();
+          if(!doMTWtemplate) histo_name = coupling + "_BDT_" + region + "_" + channel_list[ichan] + "_" + datasets[isample]->Name();
+          else histo_name = "MTW_" + channel_list[ichan] + "_" + datasets[isample]->Name();
           //histo_name = coupling + "_" + region + "_" + channel_list[ichan] + "_" + datasets[isample]->Name() + "_"  + systematic ;
           //  cout << "  --- histo " << histo_name << endl;
           if(!pseudodata_file->GetListOfKeys()->Contains(histo_name.c_str())) {cout<<endl<<"--- Empty histogram (Reader empty ?) ! Exit !"<<endl<<endl; break;}
@@ -666,7 +746,8 @@ int main(int argc, char* argv[]){
         }
         else{
           
-          histo_name = coupling + "_BDT_" + region + "_" + channel_list[ichan] + "_" + template_fake_name;
+          if(!doMTWtemplate) histo_name = coupling + "_BDT_" + region + "_" + channel_list[ichan] + "_" + template_fake_name;
+          else if(doMTWtemplate) histo_name = "MTW_" + channel_list[ichan] + "_" + template_fake_name;
          // cout << "  --- histo " << histo_name << endl;
           if(!pseudodata_file->GetListOfKeys()->Contains(histo_name.c_str())) {cout<<histo_name<<" : not found"<<endl;}
           else
@@ -692,6 +773,7 @@ int main(int argc, char* argv[]){
       
       pseudodata_file->cd();
       string output_histo_name = coupling + "_BDT_" + region + "_" + channel_list[ichan] + "_data_obs";
+      if(doMTWtemplate) output_histo_name = "MTW_" + channel_list[ichan] + "_data_obs";
       h_sum->SetTitle(output_histo_name.c_str());
       h_sum->SetName(output_histo_name.c_str());
       h_sum->Write(output_histo_name.c_str(), TObject::kOverwrite);
@@ -709,7 +791,7 @@ int main(int argc, char* argv[]){
   ///*****************///
   ///   Write plots   ///
   ///*****************///
-  if(makePlots || doPDFunc || PlotMVAvars || PlotSystematics){
+  if((makePlots || doPDFunc || PlotMVAvars || PlotSystematics) && !doMTWtemplate){
     string pathOutput = "OutputPlots/";
     mkdir(pathOutput.c_str(),0777);
     string pathOutputdate = pathOutput + dateString + "/"  ;
@@ -957,7 +1039,7 @@ int main(int argc, char* argv[]){
   ///************************************///
   ///   ADD PDF UNC TO COMBINE TEMPLATE  ///
   ///************************************///
-  if(doPDFunc){
+  if(doPDFunc && doMTWtemplate){
     TFile* combinetemplate_file = TFile::Open( combinetemplate_filename.c_str(), "UPDATE" );
     combinetemplate_file->cd();
     
@@ -1198,6 +1280,48 @@ void InitSystematicHisto(string dataSetName, string systematic, int isys){
 
    output_histo_name = "";
   
+}
+void InitAnalyzerTree(TTree* tree){
+  // Set branch addresses and branch pointers
+  if (!tree) return;
+  tree->SetMakeClass(1);
+  tree->SetBranchAddress("MVA_region", &MVA_region, &b_MVA_region);
+  //tree->SetBranchAddress("MVA_weight", &MVA_weight, &b_MVA_weight);
+  tree->SetBranchAddress("MVA_channel", &MVA_channel, &b_MVA_channel);
+  tree->SetBranchAddress("MVA_EqLumi", &MVA_EqLumi, &b_MVA_EqLumi);
+  tree->SetBranchAddress("MVA_mWt", &MVA_mWt, &b_MVA_mWt);
+  
+  
+  tree->SetBranchAddress("MVA_x1", &MVA_x1, &b_MVA_x1);
+  tree->SetBranchAddress("MVA_x2", &MVA_x2, &b_MVA_x2);
+  tree->SetBranchAddress("MVA_id1", &MVA_id1, &b_MVA_id1);
+  tree->SetBranchAddress("MVA_id2", &MVA_id2, &b_MVA_id2);
+  tree->SetBranchAddress("MVA_q", &MVA_q, &b_MVA_q);
+  
+  tree->SetBranchAddress("MVA_weight_puSF_up", &MVA_weight_puSF_up, &b_MVA_weight_puSF_up);
+  tree->SetBranchAddress("MVA_weight_puSF_down", &MVA_weight_puSF_down, &b_MVA_weight_puSF_down);
+  tree->SetBranchAddress("MVA_weight_electronSF_up", &MVA_weight_electronSF_up, &b_MVA_weight_electronSF_up);
+  tree->SetBranchAddress("MVA_weight_electronSF_down", &MVA_weight_electronSF_down, &b_MVA_weight_electronSF_down);
+  tree->SetBranchAddress("MVA_weight_muonSF_up", &MVA_weight_muonSF_up, &b_MVA_weight_muonSF_up);
+  tree->SetBranchAddress("MVA_weight_muonSF_down", &MVA_weight_muonSF_down, &b_MVA_weight_muonSF_down);
+  tree->SetBranchAddress("MVA_weight_btagSF_cferr1_up", &MVA_weight_btagSF_cferr1_up, &b_MVA_weight_btagSF_cferr1_up);
+  tree->SetBranchAddress("MVA_weight_btagSF_cferr1_down", &MVA_weight_btagSF_cferr1_down, &b_MVA_weight_btagSF_cferr1_down);
+  tree->SetBranchAddress("MVA_weight_btagSF_cferr2_up", &MVA_weight_btagSF_cferr2_up, &b_MVA_weight_btagSF_cferr2_up);
+  tree->SetBranchAddress("MVA_weight_btagSF_cferr2_down", &MVA_weight_btagSF_cferr2_down, &b_MVA_weight_btagSF_cferr2_down);
+  tree->SetBranchAddress("MVA_weight_btagSF_hf_up", &MVA_weight_btagSF_hf_up, &b_MVA_weight_btagSF_hf_up);
+  tree->SetBranchAddress("MVA_weight_btagSF_hf_down", &MVA_weight_btagSF_hf_down, &b_MVA_weight_btagSF_hf_down);
+  tree->SetBranchAddress("MVA_weight_btagSF_hfstats1_up", &MVA_weight_btagSF_hfstats1_up, &b_MVA_weight_btagSF_hfstats1_up);
+  tree->SetBranchAddress("MVA_weight_btagSF_hfstats1_down", &MVA_weight_btagSF_hfstats1_down, &b_MVA_weight_btagSF_hfstats1_down);
+  tree->SetBranchAddress("MVA_weight_btagSF_hfstats2_up", &MVA_weight_btagSF_hfstats2_up, &b_MVA_weight_btagSF_hfstats2_up);
+  tree->SetBranchAddress("MVA_weight_btagSF_hfstats2_down", &MVA_weight_btagSF_hfstats2_down, &b_MVA_weight_btagSF_hfstats2_down);
+  tree->SetBranchAddress("MVA_weight_btagSF_lf_up", &MVA_weight_btagSF_lf_up, &b_MVA_weight_btagSF_lf_up);
+  tree->SetBranchAddress("MVA_weight_btagSF_lf_down", &MVA_weight_btagSF_lf_down, &b_MVA_weight_btagSF_lf_down);
+  tree->SetBranchAddress("MVA_weight_btagSF_lfstats1_up", &MVA_weight_btagSF_lfstats1_up, &b_MVA_weight_btagSF_lfstats1_up);
+  tree->SetBranchAddress("MVA_weight_btagSF_lfstats1_down", &MVA_weight_btagSF_lfstats1_down, &b_MVA_weight_btagSF_lfstats1_down);
+  tree->SetBranchAddress("MVA_weight_btagSF_lfstats2_up", &MVA_weight_btagSF_lfstats2_up, &b_MVA_weight_btagSF_lfstats2_up);
+  tree->SetBranchAddress("MVA_weight_btagSF_lfstats2_down", &MVA_weight_btagSF_lfstats2_down, &b_MVA_weight_btagSF_lfstats2_down);
+  
+
 }
 void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut){
   // Set branch addresses and branch pointers
