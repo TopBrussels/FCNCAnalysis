@@ -314,36 +314,36 @@ int main(int argc, char* argv[]){
   thesystlist.push_back(""); // nominal
   if(doSystematics){
     cout << "pushing back systematics" << endl;
-    thesystlist.push_back("puSF_down");
-    thesystlist.push_back("electronSF_down");
-    thesystlist.push_back("muonSF_down");
-    thesystlist.push_back("btagSF_cferr1_down");
-    thesystlist.push_back("btagSF_cferr2_down");
-    thesystlist.push_back("btagSF_hf_down");
-    thesystlist.push_back("btagSF_hfstats1_down");
-    thesystlist.push_back("btagSF_hfstats2_down");
-    thesystlist.push_back("btagSF_lf_down");
-    thesystlist.push_back("btagSF_lfstats1_down");
-    thesystlist.push_back("btagSF_lfstats2_down");
-    thesystlist.push_back("JER_up");
-    thesystlist.push_back("JES_up");
+    thesystlist.push_back("puSFDown");
+    thesystlist.push_back("electronSFDown");
+    thesystlist.push_back("muonSFDown");
+    thesystlist.push_back("btagSF_cferr1Down");
+    thesystlist.push_back("btagSF_cferr2Down");
+    thesystlist.push_back("btagSF_hfDown");
+    thesystlist.push_back("btagSF_hfstats1Down");
+    thesystlist.push_back("btagSF_hfstats2Down");
+    thesystlist.push_back("btagSF_lfDown");
+    thesystlist.push_back("btagSF_lfstats1Down");
+    thesystlist.push_back("btagSF_lfstats2Down");
+    thesystlist.push_back("JERUp");
+    thesystlist.push_back("JESUp");
     
-    thesystlist.push_back("puSF_up");
-    thesystlist.push_back("electronSF_up");
-    thesystlist.push_back("muonSF_up");
-    thesystlist.push_back("btagSF_cferr1_up");
-    thesystlist.push_back("btagSF_cferr2_up");
-    thesystlist.push_back("btagSF_hf_up");
-    thesystlist.push_back("btagSF_hfstats1_up");
-    thesystlist.push_back("btagSF_hfstats2_up");
-    thesystlist.push_back("btagSF_lf_up");
-    thesystlist.push_back("btagSF_lfstats1_up");
-    thesystlist.push_back("btagSF_lfstats2_up");
+    thesystlist.push_back("puSFUp");
+    thesystlist.push_back("electronSFUp");
+    thesystlist.push_back("muonSFUp");
+    thesystlist.push_back("btagSF_cferr1Up");
+    thesystlist.push_back("btagSF_cferr2Up");
+    thesystlist.push_back("btagSF_hfUp");
+    thesystlist.push_back("btagSF_hfstats1Up");
+    thesystlist.push_back("btagSF_hfstats2Up");
+    thesystlist.push_back("btagSF_lfUp");
+    thesystlist.push_back("btagSF_lfstats1Up");
+    thesystlist.push_back("btagSF_lfstats2Up");
     
     
-    thesystlist.push_back("JER_down");
+    thesystlist.push_back("JERDown");
     
-    thesystlist.push_back("JES_down");
+    thesystlist.push_back("JESDown");
   }
   //for plotting
   thesystlistnames.push_back("puSF");
@@ -411,6 +411,7 @@ int main(int argc, char* argv[]){
       cout << "   Dataset " << d << ": " << datasets[d]->Name() << " / title : " << datasets[d]->Title() << endl;
       // settings
       isData = false;
+      onlynomforsys = false;
       dataSetName = datasets[d]->Name();
       if (dataSetName.find("Data")!=std::string::npos || dataSetName.find("data")!=std::string::npos|| dataSetName.find("DATA")!=std::string::npos  ){
         isData = true;
@@ -423,10 +424,10 @@ int main(int argc, char* argv[]){
      // tFileMap[dataSetName.c_str()] = new TFile((ntupleFileName).c_str(),"READ"); //create TFile for each dataset
       
       postfix = "";
-      if(systematic.find("JES_down")!=std::string::npos) postfix = "_JESdown";
-      else if(systematic.find("JES_up")!=std::string::npos) postfix = "_JESup";
-      else if(systematic.find("JER_down")!=std::string::npos) postfix = "_JERdown";
-      else if(systematic.find("JER_up")!=std::string::npos) postfix = "_JERup";
+      if(systematic.find("JESDown")!=std::string::npos) postfix = "_JESdown";
+      else if(systematic.find("JESUp")!=std::string::npos) postfix = "_JESup";
+      else if(systematic.find("JERDown")!=std::string::npos) postfix = "_JERdown";
+      else if(systematic.find("JERUp")!=std::string::npos) postfix = "_JERup";
       else postfix = "";
       
       if(onlynomforsys) postfix = "";
@@ -449,12 +450,12 @@ int main(int argc, char* argv[]){
       }
       // initialise combine output histograms
       TH1::SetDefaultSumw2();
-      
+      //cout << "create template histo" << endl;
       TH1F *hist_uuu     = new TH1F( (coupling + "_" + region+"_uuu").c_str(),           (coupling + "_" + region+"_uuu").c_str(),           nbin, -1, 1 );
       TH1F *hist_uue     = new TH1F( (coupling + "_" + region+"_uue").c_str(),           (coupling + "_" + region+"_uue").c_str(),           nbin, -1, 1 );
       TH1F *hist_eeu     = new TH1F( (coupling + "_" + region+"_eeu").c_str(),           (coupling + "_" + region+"_eeu").c_str(),           nbin, -1, 1 );
       TH1F *hist_eee     = new TH1F( (coupling + "_" + region+"_eee").c_str(),           (coupling + "_" + region+"_eee").c_str(),           nbin, -1, 1 );
-      
+      //cout << "created template histo" << endl;
       /// Initialise WZ plots
       if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos && doPDFunc){
         InitCalculatePDFWeightHisto(dataSetName);
@@ -484,26 +485,26 @@ int main(int argc, char* argv[]){
         
         weight = MVA_weight_nom;
         if(!isData && !onlynomforsys){
-          if(systematic.find("puSF_up")) weight = MVA_weight_puSF_up;
-          if(systematic.find("puSF_down")) weight = MVA_weight_puSF_down;
-          if(systematic.find("electronSF_up")) weight = MVA_weight_electronSF_up;
-          if(systematic.find("electronSF_down")) weight = MVA_weight_electronSF_down;
-          if(systematic.find("muonSF_up")) weight = MVA_weight_muonSF_up;
-          if(systematic.find("muonSF_down")) weight = MVA_weight_muonSF_down;
-          if(systematic.find("btagSF_cferr1_up")) weight = MVA_weight_btagSF_cferr1_up;
-          if(systematic.find("btagSF_cferr1_down")) weight = MVA_weight_btagSF_cferr1_down;
-          if(systematic.find("btagSF_cferr2_up")) weight = MVA_weight_btagSF_cferr2_up;
-          if(systematic.find("btagSF_cferr2_down")) weight = MVA_weight_btagSF_cferr2_down;
-          if(systematic.find("btagSF_lf_up")) weight = MVA_weight_btagSF_lf_up;
-          if(systematic.find("btagSF_lf_down")) weight = MVA_weight_btagSF_lf_down;
-          if(systematic.find("btagSF_hf_up")) weight = MVA_weight_btagSF_hf_up;
-          if(systematic.find("btagSF_hf_down")) weight = MVA_weight_btagSF_hf_down;
-          if(systematic.find("btagSF_hfstats1_up")) weight = MVA_weight_btagSF_hfstats1_up;
-          if(systematic.find("btagSF_hfstats1_down")) weight = MVA_weight_btagSF_hfstats1_down;
-          if(systematic.find("btagSF_hfstats2_up")) weight = MVA_weight_btagSF_hfstats2_up;
-          if(systematic.find("btagSF_hfstats2_down")) weight = MVA_weight_btagSF_hfstats2_down;
-          if(systematic.find("btagSF_lfstats2_up")) weight = MVA_weight_btagSF_lfstats2_up;
-          if(systematic.find("btagSF_lfstats2_down")) weight = MVA_weight_btagSF_lfstats2_down;
+          if(systematic.find("puSFUp")) weight = MVA_weight_puSF_up;
+          if(systematic.find("puSFDown")) weight = MVA_weight_puSF_down;
+          if(systematic.find("electronSFUp")) weight = MVA_weight_electronSF_up;
+          if(systematic.find("electronSFDown")) weight = MVA_weight_electronSF_down;
+          if(systematic.find("muonSFUp")) weight = MVA_weight_muonSF_up;
+          if(systematic.find("muonSFDown")) weight = MVA_weight_muonSF_down;
+          if(systematic.find("btagSF_cferr1Up")) weight = MVA_weight_btagSF_cferr1_up;
+          if(systematic.find("btagSF_cferr1Down")) weight = MVA_weight_btagSF_cferr1_down;
+          if(systematic.find("btagSF_cferr2Up")) weight = MVA_weight_btagSF_cferr2_up;
+          if(systematic.find("btagSF_cferr2Down")) weight = MVA_weight_btagSF_cferr2_down;
+          if(systematic.find("btagSF_lfUp")) weight = MVA_weight_btagSF_lf_up;
+          if(systematic.find("btagSF_lfDown")) weight = MVA_weight_btagSF_lf_down;
+          if(systematic.find("btagSF_hfUp")) weight = MVA_weight_btagSF_hf_up;
+          if(systematic.find("btagSF_hfDown")) weight = MVA_weight_btagSF_hf_down;
+          if(systematic.find("btagSF_hfstats1Up")) weight = MVA_weight_btagSF_hfstats1_up;
+          if(systematic.find("btagSF_hfstats1Down")) weight = MVA_weight_btagSF_hfstats1_down;
+          if(systematic.find("btagSF_hfstats2Up")) weight = MVA_weight_btagSF_hfstats2_up;
+          if(systematic.find("btagSF_hfstats2Down")) weight = MVA_weight_btagSF_hfstats2_down;
+          if(systematic.find("btagSF_lfstats2Up")) weight = MVA_weight_btagSF_lfstats2_up;
+          if(systematic.find("btagSF_lfstats2Down")) weight = MVA_weight_btagSF_lfstats2_down;
           
         }
         
@@ -539,6 +540,12 @@ int main(int argc, char* argv[]){
      
       /// Write combine histograms
       // --- Write histograms
+      //cout << "DATASET " << dataSetName << " ISYS " << isys << endl;
+      if((dataSetName.find("data")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && isys != 0) {
+        delete  hist_eee; delete hist_uuu; delete hist_uue; delete hist_eeu;
+        continue;
+      }
+      //cout << "making template" << endl;
       TFile* combinetemplate_file(0);
       if(d == 0 && isys == 0) combinetemplate_file = TFile::Open( combinetemplate_filename.c_str(), "RECREATE" );
       else combinetemplate_file = TFile::Open( combinetemplate_filename.c_str(), "UPDATE" );
@@ -548,20 +555,20 @@ int main(int argc, char* argv[]){
       output_histo_name = "";
       if (dataSetName.find("fake")!=std::string::npos ) //Last fake MC sample or data-driven fakes -> write fake histo w/ special name (for THETA)
       {
-        if(isys!=0) output_histo_name = coupling + "_" + region+"_uuu_FakeMu_"  + systematic ;
-        else output_histo_name = coupling + "_" + region+"_uuu_FakeMu"  ;
+        if(isys!=0) output_histo_name = coupling + "_" + region+"_uuu_FakeMu_80X_"  + systematic ;
+        else output_histo_name = coupling + "_" + region+"_uuu_FakeMu_80X"  ;
         hist_uuu->SetTitle(output_histo_name.c_str());
         hist_uuu->Write(output_histo_name.c_str());
-        if(isys!=0) output_histo_name = coupling + "_" + region+"_uue_FakeEl_"  + systematic ;
-        else output_histo_name = coupling + "_" + region+"_uue_FakeEl"  ;
+        if(isys!=0) output_histo_name = coupling + "_" + region+"_uue_FakeEl_80X_"  + systematic ;
+        else output_histo_name = coupling + "_" + region+"_uue_FakeEl_80X"  ;
         hist_uue->SetTitle(output_histo_name.c_str());
         hist_uue->Write(output_histo_name.c_str());
-        if(isys!=0) output_histo_name = coupling + "_" + region+"_eeu_FakeMu_"  + systematic ;
-        else output_histo_name = coupling + "_" + region+"_eeu_FakeMu"  ;
+        if(isys!=0) output_histo_name = coupling + "_" + region+"_eeu_FakeMu_80X_"  + systematic ;
+        else output_histo_name = coupling + "_" + region+"_eeu_FakeMu_80X"  ;
         hist_eeu->SetTitle(output_histo_name.c_str());
         hist_eeu->Write(output_histo_name.c_str());
-        if(isys!=0) output_histo_name = coupling + "_" + region+"_eee_FakeEl_"  + systematic ;
-        else output_histo_name = coupling + "_" + region+"_eee_FakeEl"  ;
+        if(isys!=0) output_histo_name = coupling + "_" + region+"_eee_FakeEl_80X_"  + systematic ;
+        else output_histo_name = coupling + "_" + region+"_eee_FakeEl_80X"  ;
         hist_eee->SetTitle(output_histo_name.c_str());
         hist_eee->Write(output_histo_name.c_str());
       }
@@ -585,6 +592,7 @@ int main(int argc, char* argv[]){
         hist_eee->Write(output_histo_name.c_str());
       }
       combinetemplate_file->Close();
+      //cout << "closed " << combinetemplate_filename.c_str() << endl;
       delete combinetemplate_file;
       delete  hist_eee; delete hist_uuu; delete hist_uue; delete hist_eeu;
       
@@ -633,8 +641,8 @@ int main(int argc, char* argv[]){
     {
       h_sum = 0;
       histo_name = "";
-      if(channel_list[ichan] == "uuu" || channel_list[ichan] == "eeu") {template_fake_name = "FakeMu";}
-      else {template_fake_name = "FakeEl";}
+      if(channel_list[ichan] == "uuu" || channel_list[ichan] == "eeu") {template_fake_name = "FakeMu_80X";}
+      else {template_fake_name = "FakeEl_80X";}
       
       
       
@@ -659,7 +667,7 @@ int main(int argc, char* argv[]){
         else{
           
           histo_name = coupling + "_" + region + "_" + channel_list[ichan] + "_" + template_fake_name;
-          cout << "  --- histo " << histo_name << endl;
+         // cout << "  --- histo " << histo_name << endl;
           if(!pseudodata_file->GetListOfKeys()->Contains(histo_name.c_str())) {cout<<histo_name<<" : not found"<<endl;}
           else
           {
@@ -684,6 +692,8 @@ int main(int argc, char* argv[]){
       
       pseudodata_file->cd();
       string output_histo_name = coupling + "_" + region + "_" + channel_list[ichan] + "_data_obs"; // TO FIX
+      h_sum->SetTitle(output_histo_name.c_str());
+      h_sum->SetName(output_histo_name.c_str());
       h_sum->Write(output_histo_name.c_str(), TObject::kOverwrite);
       
     } // chan
@@ -891,11 +901,11 @@ int main(int argc, char* argv[]){
         for (std::map<std::string,TH1F*>::const_iterator it = histo1DSys.begin(); it != histo1DSys.end(); it++)
         {
           if(it->first.find(systematic.c_str())!=std::string::npos){
-            if(it->first.find("up")!=std::string::npos){
+            if(it->first.find("Up")!=std::string::npos){
               if(temp_up ==0) temp_up = (TH1F*) it->second->Clone();
               else temp_up->Add(it->second);
             }//cout << "found " << it->first << endl; }
-            else if(it->first.find("down")!=std::string::npos){
+            else if(it->first.find("Down")!=std::string::npos){
               if(temp_down == 0) temp_down = (TH1F*) it->second->Clone();
               else temp_down->Add(it->second);
             }// cout << "found " << it->first << endl;}
