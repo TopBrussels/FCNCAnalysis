@@ -555,39 +555,39 @@ int main(int argc, char* argv[]){
       output_histo_name = "";
       if (dataSetName.find("fake")!=std::string::npos ) //Last fake MC sample or data-driven fakes -> write fake histo w/ special name (for THETA)
       {
-        if(isys!=0) output_histo_name = coupling + "_" + region+"_uuu_FakeMu_80X_"  + systematic ;
-        else output_histo_name = coupling + "_" + region+"_uuu_FakeMu_80X"  ;
+        if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_uuu_FakeMu_80X_"  + systematic ;
+        else output_histo_name = coupling + "_BDT_" + region+"_uuu_FakeMu_80X"  ;
         hist_uuu->SetTitle(output_histo_name.c_str());
         hist_uuu->Write(output_histo_name.c_str());
-        if(isys!=0) output_histo_name = coupling + "_" + region+"_uue_FakeEl_80X_"  + systematic ;
-        else output_histo_name = coupling + "_" + region+"_uue_FakeEl_80X"  ;
+        if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_uue_FakeEl_80X_"  + systematic ;
+        else output_histo_name = coupling + "_BDT_" + region+"_uue_FakeEl_80X"  ;
         hist_uue->SetTitle(output_histo_name.c_str());
         hist_uue->Write(output_histo_name.c_str());
-        if(isys!=0) output_histo_name = coupling + "_" + region+"_eeu_FakeMu_80X_"  + systematic ;
-        else output_histo_name = coupling + "_" + region+"_eeu_FakeMu_80X"  ;
+        if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_eeu_FakeMu_80X_"  + systematic ;
+        else output_histo_name = coupling + "_BDT_" + region+"_eeu_FakeMu_80X"  ;
         hist_eeu->SetTitle(output_histo_name.c_str());
         hist_eeu->Write(output_histo_name.c_str());
-        if(isys!=0) output_histo_name = coupling + "_" + region+"_eee_FakeEl_80X_"  + systematic ;
-        else output_histo_name = coupling + "_" + region+"_eee_FakeEl_80X"  ;
+        if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_eee_FakeEl_80X_"  + systematic ;
+        else output_histo_name = coupling + "_BDT_" + region+"_eee_FakeEl_80X"  ;
         hist_eee->SetTitle(output_histo_name.c_str());
         hist_eee->Write(output_histo_name.c_str());
       }
       else //If fakes are not considered, or if sample is not fake --> write directly !
       {
-        if(isys!=0) output_histo_name = coupling + "_" + region+"_uuu_"  + dataSetName + "_" + systematic ;
-        else output_histo_name = coupling + "_" + region+"_uuu_"  + dataSetName ;
+        if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_uuu_"  + dataSetName + "_" + systematic ;
+        else output_histo_name = coupling + "_BDT_" + region+"_uuu_"  + dataSetName ;
         hist_uuu->SetTitle(output_histo_name.c_str());
         hist_uuu->Write(output_histo_name.c_str());
-        if(isys!=0) output_histo_name = coupling + "_" + region+"_uue_"  + dataSetName + "_" + systematic ;
-        else output_histo_name = coupling + "_" + region+"_uue_"  + dataSetName ;
+        if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_uue_"  + dataSetName + "_" + systematic ;
+        else output_histo_name = coupling + "_BDT_" + region+"_uue_"  + dataSetName ;
         hist_uue->SetTitle(output_histo_name.c_str());
         hist_uue->Write(output_histo_name.c_str());
-        if(isys!=0) output_histo_name = coupling + "_" + region+"_eeu_"  + dataSetName + "_" + systematic ;
-        else output_histo_name = coupling + "_" + region+"_eeu_"  + dataSetName ;
+        if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_eeu_"  + dataSetName + "_" + systematic ;
+        else output_histo_name = coupling + "_BDT_" + region+"_eeu_"  + dataSetName ;
         hist_eeu->SetTitle(output_histo_name.c_str());
         hist_eeu->Write(output_histo_name.c_str());
-        if(isys!=0) output_histo_name = coupling + "_" + region+"_eee_"  + dataSetName + "_" + systematic ;
-        else output_histo_name = coupling + "_" + region+"_eee_"  + dataSetName ;
+        if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_eee_"  + dataSetName + "_" + systematic ;
+        else output_histo_name = coupling + "_BDT_" + region+"_eee_"  + dataSetName ;
         hist_eee->SetTitle(output_histo_name.c_str());
         hist_eee->Write(output_histo_name.c_str());
       }
@@ -656,7 +656,7 @@ int main(int argc, char* argv[]){
         if(datasets[isample]->Name().find("fake")==std::string::npos) {
           // cout << "  -- sample " << datasets[isample]->Name() << endl;
           h_tmp = 0;
-          histo_name = coupling + "_" + region + "_" + channel_list[ichan] + "_" + datasets[isample]->Name();
+          histo_name = coupling + "_BDT_" + region + "_" + channel_list[ichan] + "_" + datasets[isample]->Name();
           //histo_name = coupling + "_" + region + "_" + channel_list[ichan] + "_" + datasets[isample]->Name() + "_"  + systematic ;
           //  cout << "  --- histo " << histo_name << endl;
           if(!pseudodata_file->GetListOfKeys()->Contains(histo_name.c_str())) {cout<<endl<<"--- Empty histogram (Reader empty ?) ! Exit !"<<endl<<endl; break;}
@@ -666,7 +666,7 @@ int main(int argc, char* argv[]){
         }
         else{
           
-          histo_name = coupling + "_" + region + "_" + channel_list[ichan] + "_" + template_fake_name;
+          histo_name = coupling + "_BDT_" + region + "_" + channel_list[ichan] + "_" + template_fake_name;
          // cout << "  --- histo " << histo_name << endl;
           if(!pseudodata_file->GetListOfKeys()->Contains(histo_name.c_str())) {cout<<histo_name<<" : not found"<<endl;}
           else
@@ -691,7 +691,7 @@ int main(int argc, char* argv[]){
       }
       
       pseudodata_file->cd();
-      string output_histo_name = coupling + "_" + region + "_" + channel_list[ichan] + "_data_obs"; // TO FIX
+      string output_histo_name = coupling + "_BDT_" + region + "_" + channel_list[ichan] + "_data_obs";
       h_sum->SetTitle(output_histo_name.c_str());
       h_sum->SetName(output_histo_name.c_str());
       h_sum->Write(output_histo_name.c_str(), TObject::kOverwrite);
