@@ -1,3 +1,5 @@
+///// NB: the command line to run this code is ./Ntuples_Processor channel tree debug ApplyElecSF ApplyMuSF ApplyPUSF ApplybTagSF ApplyGlobalSF ApplyAMC e.g is
+////// ./Ntuples_Processor El_El 2lep 0 1 0 1 1 1 1
 #include "TStyle.h"
 #include "TPaveText.h"
 
@@ -12,12 +14,15 @@
 #include <TFile.h>
 
 //user code
+// used TopTreeAnalysis classes
 #include "TopTreeProducer/interface/TRootRun.h"
 #include "TopTreeProducer/interface/TRootEvent.h"
-#include "TopTreeAnalysisBase/Selection/interface/SelectionTable.h"
 #include "TopTreeAnalysisBase/Content/interface/AnalysisEnvironment.h"
-#include "TopTreeAnalysisBase/Tools/interface/TTreeLoader.h"
+#include "TopTreeAnalysisBase/MCInformation/interface/JetPartonMatching.h"
+#include "TopTreeAnalysisBase/Selection/interface/SelectionTable.h"
 #include "TopTreeAnalysisBase/Tools/interface/MultiSamplePlot.h"
+#include "TopTreeAnalysisBase/Tools/interface/PlottingTools.h"
+#include "TopTreeAnalysisBase/Tools/interface/TTreeLoader.h"
 //#include "../macros/Style.C"
 
 
@@ -40,7 +45,9 @@ map<string,MultiSamplePlot*> MSPlot;
 std::string intToStr (int number);
 //void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinterest, string xmlNom, string TreePath);
 void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinterest, string xmlNom, string TreePath, string pathPNG);
-void  MSPCreator (string pathPNG);
+void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinterest, string xmlNom, string TreePath, string pathPNG, string DecayChan, string TreeName);
+
+void  MSPCreator (string pathPNG , string TreeName);
 
 void TH2FPlotter (int nBinsX,float lowX, float highX, string sVarofinterestX );
 
@@ -75,7 +82,7 @@ int main(int argc, char* argv[])
             cout << "argv[" << i << "] = " << argv[i] << endl;
         }
     }
-    if(argc < 9) cout << " ERROR: 8 arguments expected" << endl;
+    if(argc < 10) cout << " ERROR: 9 arguments expected" << endl;
     
     
     //Placing arguments in properly typed variables
@@ -87,18 +94,20 @@ int main(int argc, char* argv[])
     applyAMC = false;
     
     const string channel = argv[1];
-    debug = strtol(argv[2],NULL,10);
-    applyElectronSF = strtol(argv[3],NULL,10);
-    applyMuonSF = strtol(argv[4],NULL,10);
-    applyPUSF = strtol(argv[5],NULL,10);
-    applyBtagSF = strtol(argv[6],NULL,10);
-    applyGlobalSF = strtol(argv[7],NULL,10);
-    applyAMC = strtol(argv[8],NULL,10);
+    const string tree = argv[2];
+    debug = strtol(argv[3],NULL,10);
+    applyElectronSF = strtol(argv[4],NULL,10);
+    applyMuonSF = strtol(argv[5],NULL,10);
+    applyPUSF = strtol(argv[6],NULL,10);
+    applyBtagSF = strtol(argv[7],NULL,10);
+    applyGlobalSF = strtol(argv[8],NULL,10);
+    applyAMC = strtol(argv[9],NULL,10);
     
-    string runDate = "Test_NewSummer16TriggersON_17Jan17"; // adapted to the date of the run and according to mereged ntuples
+    string runDate = "Test_correctingChMisId_31Mar17"; // adapted to the date of the run and according to mereged ntuples
     string xmlFileName;
     string CraneenPath;
-    
+    string decayChan;
+    string Treename;
     CraneenPath = "Merged_Ntuples/";
     
     if(channel=="Mu_Mu")
@@ -107,32 +116,47 @@ int main(int argc, char* argv[])
         channelpostfix = "_Mu_Mu_";
         xmlFileName = "config/Run2SameSignDiLepton_80X_MuMu_V4_Samples.xml"; // to be adapted when have different cfg.xml files according to different dilepton channel
         DileptonMuMu = true;
-        DataLumi  = 15836.83723; // B+C+E+F //8533.766898; // run B+ C  / 4936.629375;  // RunB //  pb-1
+        DataLumi  = 36768.376651703; // 80X_V4 B->H  //  pb-1
         CraneenPath += "MuMu";
+        decayChan = "MuMu";
     }
     else if(channel=="El_El")
     {
-        cout << " --> Using the DiMuon channel..." << endl;
+        cout << " --> Using the DiElectron channel..." << endl;
         channelpostfix = "_El_El_";
         xmlFileName = "config/Run2SameSignDiLepton_80X_ElEl_V4_Samples.xml"; // to be adapted when have different cfg.xml files according to different dilepton channel
         DileptonMuMu = true;
-        DataLumi  =  27915.276096154; //RunC //11716.571246596;//  pb-1
+        DataLumi  =  36768.376571746; //RunC //11716.571246596;//  pb-1
         CraneenPath += "ElecElec";
+        decayChan = "ElEl";
     }
     else if(channel=="El_Mu")
     {
-        cout << " --> Using the DiMuon channel..." << endl;
+        cout << " --> Using the DiElMu channel..." << endl;
         channelpostfix = "_El_Mu_";
         xmlFileName = "config/Run2SameSignDiLepton_80X_ElMu_V4_Samples.xml"; // to be adapted when have different cfg.xml files according to different dilepton channel
         DileptonElMu = true;
         DataLumi  = 11716.571246596;//  pb-1
         CraneenPath += "ElecMu";
+        decayChan = "EMu";
     }
     else
     {
         cerr << "The channel '" << channel << "' is not in the list of authorised channels !!" << endl;
         exit(1);
     }
+    
+    if (tree == "2lep") {
+        Treename  = "2lep";
+    }else if (tree == "2SSlep") {
+        Treename = "2SSlep";
+    }else if (tree == "2OSlep") {
+        Treename = "2OSlep";
+    }else if (tree == "NoZCut") {
+        Treename = "NoZCut";
+    }
+
+    cout << "Treename =  "<< Treename <<endl;
     
     CraneenPath += "/"+runDate+"/";
     
@@ -150,9 +174,10 @@ int main(int argc, char* argv[])
     if(applyElectronSF) cout << "Electron SF on " << endl;
     if(applyMuonSF) cout << "Muon SF on " << endl;
     if(applyPUSF) cout << "PU SF on" <<endl;
+    if(applyBtagSF) cout << "BtagSF on" << endl;
     if(applyGlobalSF) cout << "applying SF " << endl;
     if(applyAMC) cout << "nlo reweight on " << endl;
-    if(applyBtagSF) cout << "BtagSF on" << endl;
+    
    // if(!applyElectronSF && !applyMuonSF && !applyPUSF && !applyAMC) applyGlobalSF = false;
     else cout << "not applying SF " << endl;
 
@@ -161,60 +186,100 @@ int main(int argc, char* argv[])
     
     
     /// General Variables
-    DatasetPlotter(70, -0.5, 69.5, "npu", xmlFileName,CraneenPath,pathPNG);
-    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,CraneenPath,pathPNG);
+    DatasetPlotter(70, -0.5, 69.5, "npu", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 
-    ////****** Jet kinmatics variables *********////////
-        DatasetPlotter(100, 0, 500, "pt_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
-        DatasetPlotter(50, -3.5, 3.5, "eta_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
-        DatasetPlotter(100, -4.0, 4.0, "phi_jet[nJets]", xmlFileName,CraneenPath,pathPNG);
+    ///////////////////////////////////////////////////
+    //****** Jet kinmatics variables *********////////
+    //////////////////////////////////////////////////
+    DatasetPlotter(100, 0, 500, "pt_jet[nJets]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(50, -3.5, 3.5, "eta_jet[nJets]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(100, -4.0, 4.0, "phi_jet[nJets]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(11, -0.5, 10.5, "nJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(11, -0.5, 10.5, "nCSVLbJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(11, -0.5, 10.5, "nCSVMbJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(11, -0.5, 10.5, "nCSVTbJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    /// *** float variables *** ////
+//    DatasetPlotter(11, -0.5, 10.5, "MVA_nJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(11, -0.5, 10.5, "MVA_nCSVLbtagJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+
     
-    DatasetPlotter(11, -0.5, 10.5, "nJets", xmlFileName,CraneenPath,pathPNG);
-    DatasetPlotter(11, -0.5, 10.5, "nCSVLbJets", xmlFileName,CraneenPath,pathPNG);
-    DatasetPlotter(11, -0.5, 10.5, "nCSVMbJets", xmlFileName,CraneenPath,pathPNG);
-    DatasetPlotter(11, -0.5, 10.5, "nCSVTbJets", xmlFileName,CraneenPath,pathPNG);
-
-//     muPlot = true;
-////    DatasetPlotter(11, -0.5, 10.5, "nMuons", xmlFileName,CraneenPath,pathPNG);
-////    DatasetPlotter(100, 0, 300, "pt_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
-////    DatasetPlotter(50, -3.5, 3.5, "eta_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
-////    DatasetPlotter(100, -4.0, 4.0, "phi_muon[nMuons]", xmlFileName,CraneenPath,pathPNG);
+    ///////////////////////////////////
+    ////*** DiMuon Varaiables ***/////
+    /////////////////////////////////
+  //   muPlot = true;
+ //   DatasetPlotter(11, -0.5, 10.5, "nMuons", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0, 300, "pt_muon[nMuons]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(50, -3.5, 3.5, "eta_muon[nMuons]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, -4.0, 4.0, "phi_muon[nMuons]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    /// *** float variables *** ////
+//    DatasetPlotter(100, 0.0, 300 , "pt_1st_Muon", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0.0, 300 , "pt_2nd_Muon", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0.0, 5.0 , "DeltaR_Mu0b0_DiMu", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0.0, 5.0 , "DeltaR_Mu1b0_DiMu", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(5, -2.5, 2.5 , "charge_1st_Muon", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(5, -2.5, 2.5 , "charge_2nd_Muon", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    
+    
+    ///////////////////////////////////
+    ///** DiElectron Varaiables **////
+    /////////////////////////////////
     elecPlot = true;
-        DatasetPlotter(11, -0.5, 10.5, "nElectrons", xmlFileName,CraneenPath,pathPNG);
-    
-        DatasetPlotter(100, 0, 300, "pt_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG);
-        DatasetPlotter(50, -3.5, 3.5, "eta_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG);
-        DatasetPlotter(100, -4.0, 4.0, "phi_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG);
-    
-    
-//    
+    DatasetPlotter(11, -0.5, 10.5, "nElectrons", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(100, 0, 300, "pt_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(50, -3.5, 3.5, "eta_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(100, -4.0, 4.0, "phi_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //
-//    DatasetPlotter(100, 0, 500, "met_Pt", xmlFileName,CraneenPath,pathPNG);
-//    DatasetPlotter(50, -3.5, 3.5, "met_Eta", xmlFileName,CraneenPath,pathPNG);
-//    DatasetPlotter(100, -4.0, 4.0, "met_Phi", xmlFileName,CraneenPath,pathPNG);
-//    
-//    DatasetPlotter(100, 0.0, 5.0 , "DeltaR_2L", xmlFileName,CraneenPath,pathPNG);
-//    DatasetPlotter(50, -4.0, 4.0, "DeltaPhi_2L", xmlFileName,CraneenPath,pathPNG);
-//    DatasetPlotter(100, 0.0, 200.0, "invMass_2L", xmlFileName,CraneenPath,pathPNG);
-//    DatasetPlotter(100, 0.0, 5.0 , "DeltaR_Mu0b0", xmlFileName,CraneenPath,pathPNG);
-//    DatasetPlotter(100, 0.0, 500.0, "Mass_JetPair", xmlFileName,CraneenPath,pathPNG);
-//    DatasetPlotter(100, 0.0, 500.0, "Mass_WJetPair", xmlFileName,CraneenPath,pathPNG);
-//    DatasetPlotter(100, 0.0, 1000.0, "Ht", xmlFileName,CraneenPath,pathPNG);
-//    DatasetPlotter(100, 0.0, 1000.0, "St", xmlFileName,CraneenPath,pathPNG);
+    /// *** float variables *** ////
+//    DatasetPlotter(100, 0, 300, "pt_1st_Electron", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0, 300, "pt_2nd_Electron", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0.0, 5.0 , "DeltaR_Elec0b0_DiElec", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0.0, 5.0 , "DeltaR_Elec1b0_DiElec", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(5, -2.5, 2.5 , "charge_1st_Electron", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(5, -2.5, 2.5 , "charge_2nd_Electron", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //
+//    //////////////////////////////
+//    //// ** Met Variables ** ////
+//    /////////////////////////////
+//    DatasetPlotter(100, 0, 500, "met_Pt", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(50, -3.5, 3.5, "met_Eta", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, -4.0, 4.0, "met_Phi", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0, 500, "corrected_met_Pt", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(50, -3.5, 3.5, "corrected_met_Eta", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, -4.0, 4.0, "corrected_met_Phi", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//////
+////    
+////    ////////////////////////////
+////    // ** MVA Variables ** ////
+////    ///////////////////////////
+////
+//    DatasetPlotter(100, 0.0, 5.0 , "DeltaR_2L", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(50, -4.0, 4.0, "DeltaPhi_2L", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(200, 0.0, 200.0, "invMass_2L", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//
+//    DatasetPlotter(100, 0.0, 500.0, "Mass_JetPair", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0.0, 500.0, "Mass_WJetPair", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0.0, 1000.0, "Ht", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0.0, 1000.0, "St", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0.0, 500.0, "MT_lep1", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0.0, 500.0, "MT_lep2", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    
+    
+    ////// variables for NoZcut tree ////
+  //  DatasetPlotter(200, 50.0, 250.0, "invMass_2SSL_Zmass", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+ //   DatasetPlotter(200, 50.0, 250.0, "invMass_2OSL_Zmass", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    
+
 
     
-    
-   // }
-    
-  MSPCreator (pathPNG);
+  MSPCreator (pathPNG , Treename);
     
     
 }//main
 
-void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinterest, string xmlNom, string TreePath, string PathPNG)
+//void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinterest, string xmlNom, string TreePath, string PathPNG)
 //void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinterest, string xmlNom, string TreePath)
+void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinterest, string xmlNom, string TreePath, string PathPNG, string DecayChan, string TreeName)
 {
     cout<<""<<endl;
     cout<<"RUNNING NOMINAL DATASETS"<<endl;
@@ -235,6 +300,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
     string plotname = sVarofinterest;   ///// Non Jet Split plot
     // make for loop here!!!
     MSPlot[plotname.c_str()] = new MultiSamplePlot(datasets, plotname.c_str(), nBins, plotLow, plotHigh, sVarofinterest.c_str());
+    MSPlot[plotname.c_str()]->setChannel(true, DecayChan); // to add the decay channel name on the plot
     
     
     //***********************************************OPEN FILES & GET NTUPLES**********************************************
@@ -243,10 +309,9 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
     int nEntries;
     float ScaleFactor, NormFactor, Luminosity;
     int varofInterest;
-  //  double varofInterest;
+  //  float varofInterest;
+    //  double varofInterest;
     double varofInterest_double [20];
-    
-    
     
     vector<string> v;
     // to avoid modifying original string
@@ -264,7 +329,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
     }
     free(dup);
     
-  //  if (debug) cout << v[0] << "  " << v[1] << endl;
+    if (debug) cout << v[0] << "  " << v[1] << endl;
     
     // get the desired directory
     
@@ -273,9 +338,6 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
         dataSetName = datasets[d]->Name();
         cout<<"Dataset:  :"<<dataSetName<<endl;
         filepath = TreePath + dataSetName + ".root";
-        //filepath = "Tree_"+dataSetName +".root";
-        //filepath = CraneenPath+"Tree_"+dataSetName +".root";
-        //filepath = CraneenPath+dataSetName+ ".root";
         if (debug) cout<<"filepath: "<<filepath<<endl;
         
         // get the tree corresponding to the final state of interest
@@ -283,14 +345,28 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
         string sSSLeptonTree = "SSLeptonTree";
         string sOSLeptonTree = "OSLeptonTree";
         string sglobaltree = "globaltree";
-      //  if (DileptonMuMu) stree = "tree";
+        string sNoZmassVetotree = "NoZmassVetoTree";
         
         
         FileObj[dataSetName.c_str()] = new TFile((filepath).c_str(),"READ"); //create TFile for each dataset
+        string TTreename ;
         
-      //  string TTreename = stree;
-     //  string TTreename = sSSLeptonTree;
-        string TTreename = sOSLeptonTree;
+        if (TreeName == "2lep") {
+            TTreename = stree;
+            cout << "the current tree name is   =   " << TTreename << endl;
+        }else if (TreeName == "2SSlep") {
+             TTreename = sSSLeptonTree;
+            cout << "the current tree name is   =   " << TTreename << endl;
+        }else if (TreeName == "2OSlep") {
+             TTreename = sOSLeptonTree;
+            cout << "the current tree name is   =   " << TTreename << endl;
+        }else if (TreeName == "NoZCut") {
+            TTreename = sNoZmassVetotree;
+            cout << "the current tree name is   =   " << TTreename << endl;
+        }else { cout << "No tree is specified or wrong tree name: it should be 2lep or 2SSlep or 2OSlep  " <<endl;
+            cout << "the current tree name is   =   " << TTreename << endl;
+        
+        }
         
         ttree[dataSetName.c_str()] = (TTree*)FileObj[dataSetName.c_str()]->Get(TTreename.c_str()); //get ttre for each dataset
         nEntries = (int)ttree[dataSetName.c_str()]->GetEntries();
@@ -560,7 +636,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
 
 
 // function that writes all the MSPlots created in a root file
-void MSPCreator (string pathPNG)
+void MSPCreator (string pathPNG , string TreeName)
 {
     // cout << pathPNG.c_str() << endl;
     
@@ -571,13 +647,24 @@ void MSPCreator (string pathPNG)
     // Loop over all the MSPlots
     for(map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
     {
-       // cout<< "hello i am here 1" <<endl;
-        string name = "2OSl_MyMSP_" + it->first;
-       // cout<< "hello i am here 2" <<endl;
+        string treename = "";
+        if (TreeName == "2lep") {
+            treename = "2l_";
+        }else if (TreeName == "2SSlep") {
+            treename = "2SSl_";
+        }else if (TreeName == "2OSlep") {
+            treename = "2OSl_";
+        }else if (TreeName == "NoZCut") {
+            treename = "NoZCut_";
+        }
+        
+        string name = treename+"MyMSP_" + it->first;
+       // string name = "2l_MyMSP_" + it->first;
+       
         cout << " name " << name << endl;
-       // cout<< "hello i am here 3" <<endl;
+       
         MultiSamplePlot *temp = it->second;
-      //  cout<< "hello i am here 4" <<endl;
+      
         if (debug){
             cout << "Saving the MSP" << endl;
             cout << " and it->first is " << it->first << endl;
@@ -589,10 +676,10 @@ void MSPCreator (string pathPNG)
         if(!applyPUSF) name += "_noPUSF";
         if(!applyElectronSF) name += "_noElSF";
         if(!applyMuonSF) name+= "_noMuSF";
-          if(!applyAMC) name+= "_noAMCcor";
+        if(!applyAMC) name+= "_noAMCcor";
         cout << "name " << name << endl;
         temp->Write(outfile, name, true ,pathPNG.c_str() , "png");
-      //  cout<< "hello i am here 6" <<endl;
+      
         //      vector<string> temp_histo = it->GetTH1FNames();
         //      for (int i_hist=0; i_hist < temp_histo.size();i_hist++  ){
         //	cout << "hist is" << temp_histo[i_hist] << endl;
