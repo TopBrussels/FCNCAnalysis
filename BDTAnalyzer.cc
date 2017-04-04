@@ -43,7 +43,7 @@ using namespace TopTree;
 // Normal Plots (TH1F* and TH2F*)
 map<string,TH1F*> histo1D;
 map<string,TH1F*> histo1DPDF;
-map<string, TH1F*> histo1DMTW;
+map<string,TH1F*> histo1DMTW;
 map<string,TH1F*> histo1DSys;
 map<string,TH2F*> histo2D;
 map<string,MultiSamplePlot*> MSPlot;
@@ -148,6 +148,7 @@ Double_t       MVA_weight_nom;
 Int_t         MVA_channel;
 Double_t       MVA_BDT;
 Double_t        MVA_EqLumi;
+Double_t        MVA_Luminosity;
 Double_t       MVA_weight_puSF_up;
 Double_t       MVA_weight_puSF_down;
 Double_t       MVA_weight_electronSF_up;
@@ -199,6 +200,7 @@ TBranch        *b_MVA_weight;   //!
 TBranch        *b_MVA_channel;   //!
 TBranch        *b_MVA_BDT;   //!
 TBranch        *b_MVA_EqLumi;   //!
+TBranch        *b_MVA_Luminosity;   //!
 TBranch        *b_MVA_weight_puSF_up;   //!
 TBranch        *b_MVA_weight_puSF_down;   //!
 TBranch        *b_MVA_weight_electronSF_up;   //!
@@ -427,6 +429,7 @@ int main(int argc, char* argv[]){
   ntupleFileName = placeNtup;
   if(!doMTWtemplate) fin = new TFile((ntupleFileName).c_str(),"READ");
   bool onlynomforsys = false;
+  int WZregionEntries = 0;
   for(int isys = 0; isys < thesystlist.size() ; isys++){
     systematic = thesystlist[isys];
     
@@ -516,6 +519,7 @@ int main(int argc, char* argv[]){
       }
       /// loop on events
       double weight = 1.;
+      WZregionEntries = 0;
       for (int ievt = 0; ievt < endEvent; ievt++)
       {
         if (ievt%100 == 0)
@@ -525,9 +529,10 @@ int main(int argc, char* argv[]){
         /// Load event
         tTree[(dataSetName).c_str()]->GetEntry(ievt);
         
-        //cout << "region " << MVA_region << endl;
+        //if(isData) cout << "region " << MVA_region << endl;
         
-        if(doMTWtemplate && MVA_region != 2) continue ; // only in WZ control region
+        if(doMTWtemplate && MVA_region != 2){ continue ;} // only in WZ control region}
+        else if(doMTWtemplate) { WZregionEntries++; }
         
         weight = MVA_weight_nom;
         if(!isData && !onlynomforsys){
@@ -553,7 +558,11 @@ int main(int argc, char* argv[]){
           if(systematic.find("btagSF_lfstats2Down")) weight = MVA_weight_btagSF_lfstats2_down;
           
         }
+        if(Luminosity/MVA_Luminosity != 1.) cout << "lumi "  << Luminosity << " while tuples are made with " << MVA_Luminosity << endl;
         
+        weight = (weight * Luminosity)/ MVA_Luminosity;
+        if(!datafound) Luminosity = MVA_Luminosity;
+        if(isData) weight = Luminosity;
         if(!doMTWtemplate){
           if(MVA_channel== 0) 		{hist_uuu->Fill( MVA_BDT, weight);}
           else if(MVA_channel== 1) {hist_uue->Fill( MVA_BDT, weight);}
@@ -585,8 +594,8 @@ int main(int argc, char* argv[]){
         }
         if (makePlots && doMTWtemplate)
         {
-          
           if(isys != 0) tempstring = systematic;
+         // if(isData) cout << "fill data " << endl;
           FillMTWPlots(d, tempstring, decayChannels, weight, MVA_channel);
         }
         if(dataSetName.find("WZTo3LNu")!=std::string::npos && PlotSystematics && !doMTWtemplate){
@@ -600,7 +609,7 @@ int main(int argc, char* argv[]){
       } // events
       
       cout << endl;
-      
+     if(doMTWtemplate) cout << "                WZ entries " << WZregionEntries << endl;
       /// Write combine histograms
       // --- Write histograms
       //cout << "DATASET " << dataSetName << " ISYS " << isys << endl;
@@ -848,7 +857,10 @@ int main(int argc, char* argv[]){
         //cout << "MSPlot: " << it->first << endl;
         MultiSamplePlot *temp = it->second;
         string name = it->first;
-        if(!datafound) temp->setDataLumi(Luminosity);
+        if(!datafound){
+          cout << "no data found, setting lumi as " << Luminosity << endl;
+          temp->setDataLumi(Luminosity);
+        }
         if(name.find("all")!=std::string::npos) temp->setChannel(true, "all");
         if(name.find("eee")!=std::string::npos) temp->setChannel(true, "3e");
         if(name.find("eeu")!=std::string::npos) temp->setChannel(true, "2e1#mu");
@@ -1082,7 +1094,8 @@ int main(int argc, char* argv[]){
         Canvas->SaveAs( (placeTH1F+nameplot+"_LogY.png").c_str() );
       }
     }
-    if(makePlots && doMTWtemplate){
+    if(false){ // TO FIX
+    //if(makePlots && doMTWtemplate){
       cout << "plotting mtW shapes " << endl;
       std::vector<string> channellist;
       channellist.push_back("all");
@@ -1097,22 +1110,27 @@ int main(int argc, char* argv[]){
         TH1F *tempfake_nom(0);
         TH1F *tempBKG_up(0);
         TH1F *tempSignalST_up(0);
-        TH1F *tempfake_up(0);
         TH1F *tempBKG_down(0);
         TH1F *tempSignalST_down(0);
-        TH1F *tempfake_down(0);
         TH1F *tempSignalTT_down(0);
         TH1F *tempSignalTT_up(0);
         TH1F *tempSignalTT_nom(0);
+        
+        cout << "histo mtw size " << histo1DMTW.size() << endl;
         for (std::map<std::string,TH1F*>::const_iterator it = histo1DMTW.begin(); it != histo1DMTW.end(); it++)
         {
-          cout << "looking at " << it->first << " " << channellist[iChan].c_str() << endl;
+          cout << "looking at " << it->first << " and the channel to keep " << channellist[iChan].c_str() << endl;
           
-          if(it->first.find(channellist[iChan].c_str())==std::string::npos) continue;
+          if(it->first.find(channellist[iChan].c_str())==std::string::npos){
+            cout << "continuing " << endl;
+            continue;
+          }
+          if(it->first.find("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut_80X_MTW_nominal_all")!=std::string::npos){continue;}
           
           
           TH1F *temp = it->second;
-          cout << "temp address " << &temp << endl;
+          cout << "temp address " << &temp << endl ;
+          cout << "entries " << temp->GetEntries() <<  endl;
           if(it->first.find("WZTo3LNu")!=std::string::npos && it->first.find("nominal")!= std::string::npos) {
             if(tempBKG_nom == 0) tempBKG_nom = (TH1F*) temp->Clone();
             else tempBKG_nom->Add(temp);
@@ -1542,7 +1560,7 @@ void InitMTWShapeHisto(string dataSetName, string systematic, int isys,  vector 
 
     if(isys == 0) output_histo_name = dataSetName+"_MTW_nominal_"+decaystring;
     else output_histo_name = dataSetName+"_MTW_"+systematic + "_" + decaystring;
-    
+   // cout << "init " << output_histo_name << endl;
     histo1DMTW[output_histo_name] = new TH1F(output_histo_name.c_str(), dataSetName.c_str(), nbinMTW,0.,200.);
     
     output_histo_name = "";
@@ -1567,6 +1585,7 @@ void InitAnalyzerTree(TTree* tree){
   //tree->SetBranchAddress("MVA_weight", &MVA_weight, &b_MVA_weight);
   tree->SetBranchAddress("MVA_channel", &MVA_channel, &b_MVA_channel);
   tree->SetBranchAddress("MVA_EqLumi", &MVA_EqLumi, &b_MVA_EqLumi);
+  tree->SetBranchAddress("MVA_Luminosity", &MVA_Luminosity, &b_MVA_Luminosity);
   tree->SetBranchAddress("MVA_mWt", &MVA_mWt, &b_MVA_mWt);
   
   
@@ -1992,9 +2011,7 @@ void FillMTWPlots(int d, string postfix, vector <int> decayChannels, double weig
   Double_t eventW = 1.;
   eventW = weight_;
   
-  
-  // if(datasets[d]->Name().find("fake")!=std::string::npos) eventW *= 0.0001;
-  
+
   for(int iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
     
@@ -2007,7 +2024,7 @@ void FillMTWPlots(int d, string postfix, vector <int> decayChannels, double weig
     //cout << "filling " << datasets[d]->Name() << endl;
     decaystring += postfix;
     
-    
+    //if(datasets[d]->Name().find("data")!=std::string::npos) cout << "filling " << ("MTW_"+decaystring).c_str() << " with " << MVA_mWt << " " << weight_ << endl;
     MSPlotMTW[("MTW_"+decaystring).c_str()]->Fill(MVA_mWt , datasets[d], true, weight_);
   }
 }
@@ -2019,7 +2036,6 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isZ
   eventW = weight_;
   
   
-  // if(datasets[d]->Name().find("fake")!=std::string::npos) eventW *= 0.0001;
   
   for(int iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
@@ -2210,6 +2226,7 @@ void Fill1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
   
 }
 void FillMTWShapeHisto(string dataSetName, string systematic, double weight_,int isys, int MVA_channel, vector <int> decayChannels){
+  
   for(int iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
 
@@ -2222,6 +2239,8 @@ void FillMTWShapeHisto(string dataSetName, string systematic, double weight_,int
     
     if(isys == 0) output_histo_name = dataSetName+"_MTW_nominal_"+decaystring;
     else output_histo_name = dataSetName+"_MTW_"+systematic + "_" + decaystring;
+    
+    //cout << "fill " << output_histo_name << " " << MVA_mWt << " " << weight_ <<  endl;
     histo1DMTW[output_histo_name]->Fill(MVA_mWt, weight_);
     output_histo_name = "";
   }

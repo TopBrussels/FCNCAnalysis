@@ -128,7 +128,8 @@ Double_t         MVA_q;
 
 
 Float_t MVA_region = -999.;
-Double_t MVA_EqLumi = -999;
+Double_t MVA_EqLumi = -999.;
+Double_t MVA_Luminosity = -999.;
 
 
 Float_t MVA_lepton0_pt = -999.;
@@ -1585,6 +1586,7 @@ int main(int argc, char* argv[]){
         
       }
       MVA_EqLumi = EquilumiSF;
+      MVA_Luminosity = Luminosity;
       if(makeMVAtree ){
         //cout << "ievt " << ievt << endl;
         MakeMVAvars(Region, scaleFactor);
@@ -2171,6 +2173,8 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
   
   
   MVA_channel = channelInt;
+  MVA_Luminosity = Luminosity;
+  MVA_EqLumi = EquilumiSF;
   MVA_weight = static_cast<float>( scaleFactor * Luminosity /EquilumiSF );
   MVA_weight_nom =  scaleFactor * Luminosity /EquilumiSF ;
   MVA_weight_puSF_up =  scaleFactor_puSF_up * Luminosity /EquilumiSF ;
@@ -2393,6 +2397,7 @@ void createMVAtree(string dataSetName){
   
   mvatree->Branch("MVA_region", &MVA_region, "MVA_region/F");
   mvatree->Branch("MVA_EqLumi",&MVA_EqLumi,"MVA_EqLumi/D");
+  mvatree->Branch("MVA_Luminosity",&MVA_Luminosity,"MVA_Luminosity/D");
   
   // pt
   mvatree->Branch("MVA_lepton0_pt", &MVA_lepton0_pt,"MVA_lepton0_pt/F");
