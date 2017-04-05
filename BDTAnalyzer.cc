@@ -392,6 +392,7 @@ int main(int argc, char* argv[]){
     {
       Luminosity = datasets[d]->EquivalentLumi();
       datafound = true;
+     // nbin = 5;
       cout << "data found" <<endl;
     }
   }
@@ -528,7 +529,7 @@ int main(int argc, char* argv[]){
         
         /// Load event
         tTree[(dataSetName).c_str()]->GetEntry(ievt);
-       // if(datafound && MVA_BDT > -0.6){ continue;}
+        if(datafound && MVA_BDT > -0.66){ continue;}
         //if(isData) cout << "region " << MVA_region << endl;
         
         if(doMTWtemplate && MVA_region != 2){ continue ;} // only in WZ control region}
@@ -558,7 +559,7 @@ int main(int argc, char* argv[]){
           if(systematic.find("btagSF_lfstats2Down")) weight = MVA_weight_btagSF_lfstats2_down;
           
         }
-        if(Luminosity/MVA_Luminosity != 1. && doMTWtemplate) cout << "lumi "  << Luminosity << " while tuples are made with " << MVA_Luminosity << endl;
+        if(Luminosity/MVA_Luminosity != 1. ) cout << "lumi "  << Luminosity << " while tuples are made with " << MVA_Luminosity << endl;
         
         if(MVA_Luminosity != 0) weight = (weight * Luminosity)/ MVA_Luminosity;
         if(!datafound) Luminosity = MVA_Luminosity;
@@ -869,7 +870,7 @@ int main(int argc, char* argv[]){
         if(name.find("uue")!=std::string::npos) temp->setChannel(true, "1e2#mu");
         if(name.find("uuu")!=std::string::npos) temp->setChannel(true, "3#mu");
         if(name.find("Decay")!=std::string::npos) temp->setBins(vlabel_chan);
-        temp->Draw(name, 1, false, false, false, 100);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
+        temp->Draw(name, 1, false, false, false, 10);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
         cout << "writing to " << pathOutputdate+"MSPlotMTW" << endl;
         cout << "plot " << name << endl;
         cout << "temp " << temp << endl;
@@ -891,7 +892,7 @@ int main(int argc, char* argv[]){
         if(name.find("uue")!=std::string::npos) temp->setChannel(true, "1e2#mu");
         if(name.find("uuu")!=std::string::npos) temp->setChannel(true, "3#mu");
         if(name.find("Decay")!=std::string::npos) temp->setBins(vlabel_chan);
-        temp->Draw(name, 1, false, false, false, 100);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
+        temp->Draw(name, 1, false, false, false, 10);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
         cout << "writing to " << pathOutputdate+"MSPlot" << endl;
         cout << "plot " << name << endl;
         cout << "temp " << temp << endl;
@@ -2051,45 +2052,45 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isZ
     
     //cout << "bdt " << MVA_BDT << " in " << (prefix+"_BDT_"+decaystring).c_str()<< endl;
     MSPlot[(prefix+"_BDT_"+decaystring).c_str()]->Fill(MVA_BDT , datasets[d], true, weight_);
-   // MSPlot[ (prefix+"channel_"+decaystring).c_str()]->Fill(MVA_channel, datasets[d], true, weight_);
-    MSPlot[ (prefix+"weight_"+decaystring).c_str()]->Fill(weight_, datasets[d], true, 1.);
+    MSPlot[ (prefix+"_channel_"+decaystring).c_str()]->Fill(MVA_channel, datasets[d], true, weight_);
+    MSPlot[ (prefix+"_weight_"+decaystring).c_str()]->Fill(weight_, datasets[d], true, 1.);
     
     if(!istoppair){
-      MSPlot[(prefix+"mlb_"+decaystring).c_str()] ->Fill(MVA_mlb, datasets[d], true, weight_);
-      MSPlot[(prefix+"dRWlepb_"+decaystring).c_str()] ->Fill(MVA_dRWlepb, datasets[d], true, weight_);
-      MSPlot[(prefix+"dPhiWlepb_"+decaystring).c_str()] ->Fill(MVA_dPhiWlepb, datasets[d], true, weight_);
-      MSPlot[(prefix+"Zboson_pt_"+decaystring).c_str()]->Fill(MVA_Zboson_pt, datasets[d], true, weight_);
-      MSPlot[(prefix+"dRZWlep_"+decaystring).c_str()] ->Fill(MVA_dRZWlep, datasets[d], true, weight_);
-      MSPlot[(prefix+"bdiscCSVv2_jet_0_"+decaystring).c_str()]->Fill(MVA_bdiscCSVv2_jet_0, datasets[d], true, weight_);
-      MSPlot[(prefix+"cdiscCvsB_jet_0_"+decaystring).c_str()]->Fill(MVA_cdiscCvsB_jet_0, datasets[d], true, weight_);
+      MSPlot[(prefix+"_mlb_"+decaystring).c_str()] ->Fill(MVA_mlb, datasets[d], true, weight_);
+      MSPlot[(prefix+"_dRWlepb_"+decaystring).c_str()] ->Fill(MVA_dRWlepb, datasets[d], true, weight_);
+      MSPlot[(prefix+"_dPhiWlepb_"+decaystring).c_str()] ->Fill(MVA_dPhiWlepb, datasets[d], true, weight_);
+      MSPlot[(prefix+"_Zboson_pt_"+decaystring).c_str()]->Fill(MVA_Zboson_pt, datasets[d], true, weight_);
+      MSPlot[(prefix+"_dRZWlep_"+decaystring).c_str()] ->Fill(MVA_dRZWlep, datasets[d], true, weight_);
+      MSPlot[(prefix+"_bdiscCSVv2_jet_0_"+decaystring).c_str()]->Fill(MVA_bdiscCSVv2_jet_0, datasets[d], true, weight_);
+      MSPlot[(prefix+"_cdiscCvsB_jet_0_"+decaystring).c_str()]->Fill(MVA_cdiscCvsB_jet_0, datasets[d], true, weight_);
       
       if(isZut){
-        MSPlot[(prefix+"charge_asym_"+decaystring).c_str()]->Fill(MVA_charge_asym, datasets[d], true, weight_);
+        MSPlot[(prefix+"_charge_asym_"+decaystring).c_str()]->Fill(MVA_charge_asym, datasets[d], true, weight_);
         
       }
       else{
-        MSPlot[(prefix+"cdiscCvsL_jet_0_"+decaystring).c_str()]->Fill(MVA_cdiscCvsL_jet_0, datasets[d], true, weight_);
+        MSPlot[(prefix+"_cdiscCvsL_jet_0_"+decaystring).c_str()]->Fill(MVA_cdiscCvsL_jet_0, datasets[d], true, weight_);
         
       }
       
     }
     else if(istoppair ){
-      MSPlot[(prefix+"mlb_"+decaystring).c_str()] ->Fill(MVA_mlb, datasets[d], true, weight_);
-      MSPlot[(prefix+"FCNCtop_M_"+decaystring).c_str()] ->Fill(MVA_FCNCtop_M, datasets[d], true, weight_);
-      MSPlot[(prefix+"dRWlepb_"+decaystring).c_str()] ->Fill(MVA_dRWlepb, datasets[d], true, weight_);
-      MSPlot[(prefix+"nJets_CSVv2M_"+decaystring).c_str()]->Fill(MVA_NJets_CSVv2M,  datasets[d], true, weight_);
-      MSPlot[(prefix+"nJets_CharmL_"+decaystring).c_str()] ->Fill(MVA_nJets_CharmL, datasets[d], true, weight_);
-      MSPlot[(prefix+"dRZWlep_"+decaystring).c_str()] ->Fill(MVA_dRZWlep, datasets[d], true, weight_);
-      MSPlot[(prefix+"dRZc_"+decaystring).c_str()] ->Fill(MVA_dRZc, datasets[d], true, weight_);
+      MSPlot[(prefix+"_mlb_"+decaystring).c_str()] ->Fill(MVA_mlb, datasets[d], true, weight_);
+      MSPlot[(prefix+"_FCNCtop_M_"+decaystring).c_str()] ->Fill(MVA_FCNCtop_M, datasets[d], true, weight_);
+      MSPlot[(prefix+"_dRWlepb_"+decaystring).c_str()] ->Fill(MVA_dRWlepb, datasets[d], true, weight_);
+      MSPlot[(prefix+"_nJets_CSVv2M_"+decaystring).c_str()]->Fill(MVA_NJets_CSVv2M,  datasets[d], true, weight_);
+      MSPlot[(prefix+"_nJets_CharmL_"+decaystring).c_str()] ->Fill(MVA_nJets_CharmL, datasets[d], true, weight_);
+      MSPlot[(prefix+"_dRZWlep_"+decaystring).c_str()] ->Fill(MVA_dRZWlep, datasets[d], true, weight_);
+      MSPlot[(prefix+"_dRZc_"+decaystring).c_str()] ->Fill(MVA_dRZc, datasets[d], true, weight_);
       
       if(isZut){
-        MSPlot[(prefix+"cdiscCvsB_jet_0_"+decaystring).c_str()] ->Fill(MVA_cdiscCvsB_jet_0, datasets[d], true, weight_);
-        MSPlot[(prefix+"cdiscCvsB_jet_1_"+decaystring).c_str()] ->Fill(MVA_cdiscCvsB_jet_1, datasets[d], true, weight_);
+        MSPlot[(prefix+"_cdiscCvsB_jet_0_"+decaystring).c_str()] ->Fill(MVA_cdiscCvsB_jet_0, datasets[d], true, weight_);
+        MSPlot[(prefix+"_cdiscCvsB_jet_1_"+decaystring).c_str()] ->Fill(MVA_cdiscCvsB_jet_1, datasets[d], true, weight_);
         
       }
       else{
-        MSPlot[(prefix+"cdiscCvsL_jet_0_"+decaystring).c_str()] ->Fill(MVA_cdiscCvsL_jet_0, datasets[d], true, weight_);
-        MSPlot[(prefix+"cdiscCvsL_jet_1_"+decaystring).c_str()] ->Fill(MVA_cdiscCvsL_jet_1, datasets[d], true, weight_);
+        MSPlot[(prefix+"_cdiscCvsL_jet_0_"+decaystring).c_str()] ->Fill(MVA_cdiscCvsL_jet_0, datasets[d], true, weight_);
+        MSPlot[(prefix+"_cdiscCvsL_jet_1_"+decaystring).c_str()] ->Fill(MVA_cdiscCvsL_jet_1, datasets[d], true, weight_);
         
         
       }
