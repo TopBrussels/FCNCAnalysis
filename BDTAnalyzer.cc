@@ -528,7 +528,7 @@ int main(int argc, char* argv[]){
         
         /// Load event
         tTree[(dataSetName).c_str()]->GetEntry(ievt);
-        
+       // if(datafound && MVA_BDT > -0.6){ continue;}
         //if(isData) cout << "region " << MVA_region << endl;
         
         if(doMTWtemplate && MVA_region != 2){ continue ;} // only in WZ control region}
@@ -558,9 +558,9 @@ int main(int argc, char* argv[]){
           if(systematic.find("btagSF_lfstats2Down")) weight = MVA_weight_btagSF_lfstats2_down;
           
         }
-        if(Luminosity/MVA_Luminosity != 1.) cout << "lumi "  << Luminosity << " while tuples are made with " << MVA_Luminosity << endl;
+        if(Luminosity/MVA_Luminosity != 1. && doMTWtemplate) cout << "lumi "  << Luminosity << " while tuples are made with " << MVA_Luminosity << endl;
         
-        weight = (weight * Luminosity)/ MVA_Luminosity;
+        if(MVA_Luminosity != 0) weight = (weight * Luminosity)/ MVA_Luminosity;
         if(!datafound) Luminosity = MVA_Luminosity;
         if(isData) weight = Luminosity;
         if(!doMTWtemplate){
@@ -575,6 +575,8 @@ int main(int argc, char* argv[]){
           else if(MVA_channel== 2) {hist_eeu->Fill( MVA_mWt, weight);}
           else if(MVA_channel == 3) {hist_eee->Fill( MVA_mWt, weight);}
         }
+        
+        
         /// Fill plots
         if(doPDFunc && !doMTWtemplate){
           if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos) CalculatePDFWeight(dataSetName, MVA_BDT, MVA_weight_nom, MVA_channel);
@@ -584,7 +586,7 @@ int main(int argc, char* argv[]){
           else  if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("ST_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && !toppair) Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
         }
         
-        // if(addData && BDT < cut) continue;
+        
         if (makePlots && !doMTWtemplate)
         {
           //cout << "ievt " << ievt << endl;
@@ -1676,7 +1678,7 @@ void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut){
   tree->SetBranchAddress("MVA_channel", &MVA_channel, &b_MVA_channel);
   tree->SetBranchAddress("MVA_BDT", &MVA_BDT, &b_MVA_BDT);
   tree->SetBranchAddress("MVA_EqLumi", &MVA_EqLumi, &b_MVA_EqLumi);
-  
+  tree->SetBranchAddress("MVA_Luminosity", &MVA_Luminosity, &b_MVA_Luminosity);
   
   tree->SetBranchAddress("MVA_x1", &MVA_x1, &b_MVA_x1);
   tree->SetBranchAddress("MVA_x2", &MVA_x2, &b_MVA_x2);
@@ -1831,9 +1833,9 @@ vector<double> BDTCUT(string region, string coupling){
       if(datasets[isample]->Name().find("fake")==std::string::npos && datasets[isample]->Name().find("FCNC")==std::string::npos) {
         //cout << "  -- sample " << datasets[isample]->Name() << endl;
         h_tmp = 0;
-        histo_name = coupling + "_" + region + "_" + channel_list[ichan] + "_" + datasets[isample]->Name();
+        histo_name = coupling + "_BDT_" + region + "_" + channel_list[ichan] + "_" + datasets[isample]->Name();
         //histo_name = coupling + "_" + region + "_" + channel_list[ichan] + "_" + datasets[isample]->Name() + "_"  + systematic ;
-        //cout << "  --- histo " << histo_name << endl;
+        cout << "  --- histo " << histo_name << endl;
         if(!bdt_file->GetListOfKeys()->Contains(histo_name.c_str())) {cout<<endl<<"--- Empty histogram (Reader empty ?) ! Exit !"<<endl<<endl; break;}
         h_tmp = (TH1F*) bdt_file->Get(histo_name.c_str());
         //cout << "h_tmp->GetEntries() " << h_tmp->GetEntries()  << endl;
@@ -1844,9 +1846,9 @@ vector<double> BDTCUT(string region, string coupling){
       else if(datasets[isample]->Name().find("FCNC")!=std::string::npos) {
         //cout << "  -- sample " << datasets[isample]->Name() << " is signal "<< endl;
         h_tmp = 0;
-        histo_name = coupling + "_" + region + "_" + channel_list[ichan] + "_" + datasets[isample]->Name();
+        histo_name = coupling + "_BDT_" + region + "_" + channel_list[ichan] + "_" + datasets[isample]->Name();
         //histo_name = coupling + "_" + region + "_" + channel_list[ichan] + "_" + datasets[isample]->Name() + "_"  + systematic ;
-        //cout << "  --- histo " << histo_name << endl;
+        cout << "  --- histo " << histo_name << endl;
         if(!bdt_file->GetListOfKeys()->Contains(histo_name.c_str())) {cout<<endl<<"--- Empty histogram (Reader empty ?) ! Exit !"<<endl<<endl; break;}
         h_tmp = (TH1F*) bdt_file->Get(histo_name.c_str());
         if(h_tmp->GetEntries() != 0){
@@ -1957,7 +1959,6 @@ vector<double> BDTCUT(string region, string coupling){
   v_return.push_back(cut_eee);
   return v_return;
   
-  
 }
 void CalculatePDFWeight(string dataSetName, double BDT, double MVA_weight_nom, int MVA_channel){
   // cout << "calculate pdf" << endl;
@@ -2050,7 +2051,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isZ
     
     //cout << "bdt " << MVA_BDT << " in " << (prefix+"_BDT_"+decaystring).c_str()<< endl;
     MSPlot[(prefix+"_BDT_"+decaystring).c_str()]->Fill(MVA_BDT , datasets[d], true, weight_);
-    MSPlot[ (prefix+"channel_"+decaystring).c_str()]->Fill(MVA_channel, datasets[d], true, weight_);
+   // MSPlot[ (prefix+"channel_"+decaystring).c_str()]->Fill(MVA_channel, datasets[d], true, weight_);
     MSPlot[ (prefix+"weight_"+decaystring).c_str()]->Fill(weight_, datasets[d], true, 1.);
     
     if(!istoppair){
@@ -2247,7 +2248,7 @@ void FillMTWShapeHisto(string dataSetName, string systematic, double weight_,int
 }
 
 void FillSystematicHisto(string dataSetName, string systematic, double weight_, int isys ){
-  
+   
   if(isys == 0) output_histo_name = dataSetName+"_BDT_nominal";
   else output_histo_name = dataSetName+"_BDT_"+systematic;
   
