@@ -393,7 +393,7 @@ int main(int argc, char *argv[])
                     if( W_nloWeight > 0) nPos++;
                     else if( W_nloWeight < 0) nNeg ++;
                 }
-                if(nPos + nNeg != 0) nloSF *= ((double) (nPos - nNeg))/((double) (nPos + nNeg));
+                if(nPos + nNeg != 0) nloSF *=((double) (nPos + nNeg))/ ((double) (nPos - nNeg));
             }		
 
             Double_t average_TopPtWeight = 0.;
@@ -469,7 +469,7 @@ int main(int argc, char *argv[])
                     ScaleFactor *= W_puSF_applied;
                     ScaleFactor *= W_fleptonSF;
                     ScaleFactor *= W_btagWeight_shape;
-                    ScaleFactor *= nloSF;
+                    ScaleFactor *= nloSF * W_nloWeight;
                 }
                 else ScaleFactor = 1.;    
 		          
@@ -494,147 +494,147 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_lf;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfMinus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_lf;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfPlus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_hf;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfMinus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_hf;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats1Plus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_lfstats1;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats1Minus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_lfstats1;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats2Plus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_lfstats2;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats2Minus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_lfstats2;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats1Plus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_hfstats1;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats1Minus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_hfstats1;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats2Plus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_hfstats2;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats2Minus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_hfstats2;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr1Plus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_cferr1;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr1Minus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_cferr1;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr2Plus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_cferr2;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr2Minus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_cferr2;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "pileupPlus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_Plus;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "pileupMinus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_Minus;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "leptonPlus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF_Plus;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "leptonMinus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF_Minus;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "TopPtPlus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                                 if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "TopPtMinus")//Apply no TopPt reweighing
@@ -642,7 +642,7 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "OnlyBTagSF")
                             {
@@ -658,25 +658,25 @@ int main(int argc, char *argv[])
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "OnlyNLOSF")
                             {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "NoBTagSF")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "NoPUSF")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "NoLepSF")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF * W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "NoNLOSF")
                             {

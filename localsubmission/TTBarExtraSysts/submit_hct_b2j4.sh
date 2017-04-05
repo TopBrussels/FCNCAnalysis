@@ -5,8 +5,8 @@
 
 # setting up your code and your env
 source /user/kderoove/.bash_profile
-cd /user/kderoove/FCNC/TopTreeFramework_Run2/CMSSW_8_0_24/src/TopBrussels/FCNCAnalysis
+cd /user/kderoove/FCNC/TopTreeFramework_Run2/CMSSW_8_0_26_patch1/src/TopBrussels/FCNCAnalysis
 cmsenv
 eval `scramv1 runtime -sh`
 
-./TreeProcessor_TTbarExtraSysts 2 4 hct _All _2_3_2017_CSVv2L 0 0 0
+./TreeProcessor_TTbarExtraSysts 2 4 hct _All _18_3_2017 0 0 0

@@ -96,7 +96,7 @@ for chan in channels:
             # setting the number of file per job depending whether it is data sample or not
             # this ca be tweaked
             if "Data" in str(d.attrib['name']):
-                FilePerJob= 60
+                FilePerJob= 30
             else:
                 FilePerJob=1
 
@@ -168,12 +168,12 @@ for chan in channels:
 
                     # run on the files
                     print >> outfile, "# now run on the file copied under /$TMPDIR/ "
-                    print >> outfile, commandString, scractFiles_str , " ", chan , " " , str(N_job+1) , " 0" , " 10000000" 
+                    print >> outfile, commandString, scractFiles_str , " ", chan , " " , str(N_job+1) , " 0" , " 100000000" 
                     if "Data" not in str(d.attrib['name']):
-                        print >> outfile, commandString_JESPlus, scractFiles_str , " ", chan , " " , str(N_job+1) , " 0" , " 10000000" 
-                        print >> outfile, commandString_JESMinus, scractFiles_str , " ", chan , " " , str(N_job+1) , " 0" , " 10000000" 
-                        print >> outfile, commandString_JERPlus, scractFiles_str , " ", chan , " " , str(N_job+1) , " 0" , " 10000000" 
-                        print >> outfile, commandString_JERMinus, scractFiles_str , " ", chan , " " , str(N_job+1) , " 0" , " 10000000" 
+                        print >> outfile, commandString_JESPlus, scractFiles_str , " ", chan , " " , str(N_job+1) , " 0" , " 100000000" 
+                        print >> outfile, commandString_JESMinus, scractFiles_str , " ", chan , " " , str(N_job+1) , " 0" , " 100000000" 
+                        print >> outfile, commandString_JERPlus, scractFiles_str , " ", chan , " " , str(N_job+1) , " 0" , " 100000000" 
+                        print >> outfile, commandString_JERMinus, scractFiles_str , " ", chan , " " , str(N_job+1) , " 0" , " 100000000" 
 
                     # cleaning
                     listOfFiles=[]

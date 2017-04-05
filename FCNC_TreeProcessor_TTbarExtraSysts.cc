@@ -53,6 +53,8 @@ double maximumValue(vector<double> array);
 double minimumValue(vector<double> array);
 double OptimalCut_CombTraining(string category, string coupling);
 
+bool applySumWeights_scaleEnvelope = true;
+
 // functions prototype
 string intToStr (int number);
 void MakeNPV_Distributions(int baseline_jets, int baseline_bjets, string channel, string date, bool debug);
@@ -109,17 +111,14 @@ int main(int argc, char *argv[])
 
     vector<string> WhatSysts;
     
-//    WhatSysts.push_back("weight0");   
     WhatSysts.push_back("weight1");   
     WhatSysts.push_back("weight2");   
     WhatSysts.push_back("weight3");   
     WhatSysts.push_back("weight4");   
-//    WhatSysts.push_back("weight5");   
     WhatSysts.push_back("weight6");   
-//    WhatSysts.push_back("weight7");   
     WhatSysts.push_back("weight8");   
-//    WhatSysts.push_back("hdampup");   
-//    WhatSysts.push_back("hdampdown");   
+    WhatSysts.push_back("_hdampup");   
+    WhatSysts.push_back("_hdampdown");   
     WhatSysts.push_back("_isrup");
     WhatSysts.push_back("_isrdown");   
     WhatSysts.push_back("_fsrup");   
@@ -143,8 +142,8 @@ int main(int argc, char *argv[])
     namingConventionFit["weight8"] = "_weight8";   //Will contain later on the envelope from weight*, isrup, isrdown, fsrup and fsrdown
     namingConventionFit["_UEup"] = "_UEUp";   
     namingConventionFit["_UEdown"] = "_UEDown";   
-    namingConventionFit["hdampup"] = "_MEPSUp";   
-    namingConventionFit["hdampdown"] = "_MEPSDown";   
+    namingConventionFit["_hdampup"] = "_hdampUp";   
+    namingConventionFit["_hdampdown"] = "_hdampDown";   
     namingConventionFit[""] = "";
 
 
@@ -313,7 +312,7 @@ int main(int argc, char *argv[])
             string postfix = WhatSysts[Counter];
             if(isData && WhatSysts[Counter] != "") continue;
             if(!isData) postfix = WhatSysts[Counter];
-            if(WhatSysts[Counter].find("weight")!=string::npos || WhatSysts[Counter].find("hdamp")!=string::npos) postfix = "";
+            if(WhatSysts[Counter].find("weight")!=string::npos) postfix = "";
 
 		        cout<<"Dataset:  :"<<(dataSetName+WhatSysts[Counter]).c_str()<<endl;
 		        filepath = TreePath+"/FCNC_1L3B__Run2_TopTree_Study_"+dataSetName + postfix + ".root";
@@ -740,8 +739,8 @@ int main(int argc, char *argv[])
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight6",&W_weight6);  
 //            ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight7",&W_weight7); 
             ttree[(dataSetName).c_str()]->SetBranchAddress("W_weight8",&W_weight8);  
-            ttree[(dataSetName).c_str()]->SetBranchAddress("W_hdamp_up",&W_hdamp_up);  
-            ttree[(dataSetName).c_str()]->SetBranchAddress("W_hdamp_dw",&W_hdamp_dw);  
+//            ttree[(dataSetName).c_str()]->SetBranchAddress("W_hdamp_up",&W_hdamp_up);  
+//            ttree[(dataSetName).c_str()]->SetBranchAddress("W_hdamp_dw",&W_hdamp_dw);  
 
             ttree[(dataSetName).c_str()]->SetBranchAddress("I_run_num",&run_num);
             ttree[(dataSetName).c_str()]->SetBranchAddress("I_evt_num",&evt_num);
@@ -813,23 +812,46 @@ int main(int argc, char *argv[])
             double EqLumi = datasets[d]->EquivalentLumi();
             int EntryStart = 0;
 
-            if(WhatSysts[Counter] == "_isrup") EqLumi = 70973.6883236;
-            else if(WhatSysts[Counter] == "_isrdown") EqLumi = 34966.5576609;
-            else if(WhatSysts[Counter] == "_fsrdown") EqLumi = 35450.3101856;
-            else if(WhatSysts[Counter] == "_fsrup") EqLumi = 35800.2801289;
-            else if(WhatSysts[Counter] == "_UEup") EqLumi = 35238.9138694;
-            else if(WhatSysts[Counter] == "_UEdown") EqLumi = 34089.0918053;
+            if(WhatSysts[Counter] == "_isrup") EqLumi = 70077.8481774;
+            else if(WhatSysts[Counter] == "_isrdown") EqLumi = 35755.2406944;
+            else if(WhatSysts[Counter] == "_fsrdown") EqLumi = 35577.7940752;
+            else if(WhatSysts[Counter] == "_fsrup") EqLumi = 35799.6357122;
+            else if(WhatSysts[Counter] == "_UEup")
+            {
+                EqLumi = 35238.2898913;
+                Luminosity = Luminosity * 1.003487;
+            }
+            else if(WhatSysts[Counter] == "_UEdown")
+            {
+                EqLumi = 34088.4822545;
+                Luminosity = Luminosity * 1.003487;
+            }
+            else if(WhatSysts[Counter] == "_hdampup")
+            {
+                EqLumi = 35042.3078773;
+                Luminosity = Luminosity * 1.003487;
+            }
+            else if(WhatSysts[Counter] == "_hdampdown")
+            {
+                EqLumi =  34857.4276234;
+                Luminosity = Luminosity * 1.003487;
+            }
             else 
             {
-                if(category=="b2j4" || category=="b2j3")
+                if(category=="b2j4")
                 {
-                    EntryStart = (int) 99*nEntries/100;
-                    EqLumi = EqLumi/100;
+                    EntryStart = (int) 119*nEntries/120;
+                    EqLumi = EqLumi/120;
+                }
+                else if(category=="b2j3")
+                {
+                    EntryStart = (int) 59*nEntries/60;
+                    EqLumi = EqLumi/60;
                 }
                 else if(category=="b3j4")
                 {
-                    EntryStart = (int) 7*nEntries/8;
-                    EqLumi = EqLumi/8;
+                    EntryStart = (int) 9*nEntries/10;
+                    EqLumi = EqLumi/10;
                 }
                 else if(category=="b3j3" || category=="b4j4")
                 {
@@ -838,6 +860,40 @@ int main(int argc, char *argv[])
                 }
             }
 //            EntryStart = nEntries/2+nEntries/3+1;//Manually overwriting the number of events to run over.
+
+            Double_t average_weight1 = 0.;
+            Double_t average_weight2 = 0.;
+            Double_t average_weight3 = 0.;
+            Double_t average_weight4 = 0.;
+            Double_t average_weight6 = 0.;
+            Double_t average_weight8 = 0.;
+
+            if(dataSetName.find("TTJets") != string::npos)
+            {
+                int nEventsPassed = 0;
+                for (int k = 0; k<nEntries; k++)
+                {
+                    ttree[dataSetName.c_str()]->GetEntry(k);
+
+                    average_weight1 = average_weight1 + W_weight1;
+                    average_weight2 = average_weight2 + W_weight2;
+                    average_weight3 = average_weight3 + W_weight3;
+                    average_weight4 = average_weight4 + W_weight4;
+                    average_weight6 = average_weight6 + W_weight6;
+                    average_weight8 = average_weight8 + W_weight8;
+                    nEventsPassed++;
+                }
+                if(nEventsPassed != 0)
+                {
+                    average_weight1 = average_weight1/nEventsPassed;
+                    average_weight2 = average_weight2/nEventsPassed;
+                    average_weight3 = average_weight3/nEventsPassed;
+                    average_weight4 = average_weight4/nEventsPassed;
+                    average_weight6 = average_weight6/nEventsPassed;
+                    average_weight8 = average_weight8/nEventsPassed;
+                }
+            }
+
 
       	    //***********************************************RUNNING OVER EVENTS**********************************************
 		        for (int j = EntryStart; j<nEntries; j++)
@@ -999,15 +1055,25 @@ int main(int argc, char *argv[])
                     ScaleFactor *= W_btagWeight_shape;
                     std::vector<double> pdfweights;
 
+               if(applySumWeights_scaleEnvelope)
+               {
+                    if(WhatSysts[Counter]=="weight1") ScaleFactor *= W_weight1/average_weight1;   
+                    else if(WhatSysts[Counter]=="weight2") ScaleFactor *= W_weight2/average_weight2;   
+                    else if(WhatSysts[Counter]=="weight3") ScaleFactor *= W_weight3/average_weight3;    
+                    else if(WhatSysts[Counter]=="weight4") ScaleFactor *= W_weight4/average_weight4;    
+                    else if(WhatSysts[Counter]=="weight6") ScaleFactor *= W_weight6/average_weight6;   
+                    else if(WhatSysts[Counter]=="weight8") ScaleFactor *= W_weight8/average_weight8;  
+               }
+               else
+               {
                     if(WhatSysts[Counter]=="weight1") ScaleFactor *= W_weight1;   
                     else if(WhatSysts[Counter]=="weight2") ScaleFactor *= W_weight2;   
                     else if(WhatSysts[Counter]=="weight3") ScaleFactor *= W_weight3;    
                     else if(WhatSysts[Counter]=="weight4") ScaleFactor *= W_weight4;    
                     else if(WhatSysts[Counter]=="weight6") ScaleFactor *= W_weight6;   
                     else if(WhatSysts[Counter]=="weight8") ScaleFactor *= W_weight8;  
-                    else if(WhatSysts[Counter]=="hdampup") ScaleFactor  *= W_hdamp_up;
-                    else if(WhatSysts[Counter]=="hdampdown")ScaleFactor  *= W_hdamp_dw;
-                    else if(WhatSysts[Counter]=="" && applyPDFs)
+               }
+               if(WhatSysts[Counter]=="" && applyPDFs)
                     {
                         //PDF weights calculation
                         LHAPDF::setVerbosity(0);
@@ -1060,28 +1126,28 @@ int main(int argc, char *argv[])
                         //-----------------------------------------------------------------------------------------------------------
                         // Fill Plots
                         //-----------------------------------------------------------------------------------------------------------
-                        if(Sample->Name().find("TTJets_bb") != string::npos) histo1D[("maxSTandTT_ttbb"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_maxSTandTT,Luminosity * ScaleFactor  / EqLumi);
-                        else if(Sample->Name().find("TTJets_cc") != string::npos) histo1D[("maxSTandTT_ttcc"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_maxSTandTT,Luminosity * ScaleFactor  / EqLumi);
-                        else if(Sample->Name().find("TTJets_ll") != string::npos) histo1D[("maxSTandTT_ttlf"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_maxSTandTT,Luminosity * ScaleFactor  / EqLumi);
+                        if(Sample->Name().find("TTJets_bb") != string::npos) histo1D[("maxSTandTT_ttbb"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_maxSTandTT,Luminosity * ScaleFactor  / EqLumi );
+                        else if(Sample->Name().find("TTJets_cc") != string::npos) histo1D[("maxSTandTT_ttcc"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_maxSTandTT,Luminosity * ScaleFactor  / EqLumi );
+                        else if(Sample->Name().find("TTJets_ll") != string::npos) histo1D[("maxSTandTT_ttlf"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_maxSTandTT,Luminosity * ScaleFactor  / EqLumi );
                         
-                        if(Sample->Name().find("TTJets_bb") != string::npos) histo1D[("ST_ttbb"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_ST,Luminosity * ScaleFactor  / EqLumi);
-                        else if(Sample->Name().find("TTJets_cc") != string::npos) histo1D[("ST_ttcc"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_ST,Luminosity * ScaleFactor  / EqLumi);
-                        else if(Sample->Name().find("TTJets_ll") != string::npos) histo1D[("ST_ttlf"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_ST,Luminosity * ScaleFactor  / EqLumi);
+                        if(Sample->Name().find("TTJets_bb") != string::npos) histo1D[("ST_ttbb"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_ST,Luminosity * ScaleFactor  / EqLumi );
+                        else if(Sample->Name().find("TTJets_cc") != string::npos) histo1D[("ST_ttcc"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_ST,Luminosity * ScaleFactor  / EqLumi );
+                        else if(Sample->Name().find("TTJets_ll") != string::npos) histo1D[("ST_ttlf"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_ST,Luminosity * ScaleFactor  / EqLumi );
                         
-                        if(Sample->Name().find("TTJets_bb") != string::npos) histo1D[("TT_ttbb"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_TT,Luminosity * ScaleFactor  / EqLumi);
-                        else if(Sample->Name().find("TTJets_cc") != string::npos) histo1D[("TT_ttcc"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_TT,Luminosity * ScaleFactor  / EqLumi);
-                        else if(Sample->Name().find("TTJets_ll") != string::npos) histo1D[("TT_ttlf"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_TT,Luminosity * ScaleFactor  / EqLumi);
+                        if(Sample->Name().find("TTJets_bb") != string::npos) histo1D[("TT_ttbb"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_TT,Luminosity * ScaleFactor  / EqLumi );
+                        else if(Sample->Name().find("TTJets_cc") != string::npos) histo1D[("TT_ttcc"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_TT,Luminosity * ScaleFactor  / EqLumi );
+                        else if(Sample->Name().find("TTJets_ll") != string::npos) histo1D[("TT_ttlf"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_TT,Luminosity * ScaleFactor  / EqLumi );
                         
-                        if(Sample->Name().find("TTJets_bb") != string::npos) histo1D[("combSTandTT_ttbb"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_combSTandTT,Luminosity * ScaleFactor  / EqLumi);
-                        else if(Sample->Name().find("TTJets_cc") != string::npos) histo1D[("combSTandTT_ttcc"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_combSTandTT,Luminosity * ScaleFactor  / EqLumi);
-                        else if(Sample->Name().find("TTJets_ll") != string::npos) histo1D[("combSTandTT_ttlf"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_combSTandTT,Luminosity * ScaleFactor  / EqLumi);			                
+                        if(Sample->Name().find("TTJets_bb") != string::npos) histo1D[("combSTandTT_ttbb"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_combSTandTT,Luminosity * ScaleFactor  / EqLumi );
+                        else if(Sample->Name().find("TTJets_cc") != string::npos) histo1D[("combSTandTT_ttcc"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_combSTandTT,Luminosity * ScaleFactor  / EqLumi );
+                        else if(Sample->Name().find("TTJets_ll") != string::npos) histo1D[("combSTandTT_ttlf"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(MVAvalue_combSTandTT,Luminosity * ScaleFactor  / EqLumi );			                
                                 
                         //Cut-and-Count
                         if(MVAvalue_combSTandTT > OptimalCut_CombTraining(category, SignalSample))
                         {
-                            if(Sample->Name().find("TTJets_bb") != string::npos) histo1D[("combSTandTT_cutCount_ttbb"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(0.,Luminosity * ScaleFactor  / EqLumi);
-                            else if(Sample->Name().find("TTJets_cc") != string::npos) histo1D[("combSTandTT_cutCount_ttcc"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(0.,Luminosity * ScaleFactor  / EqLumi);
-                            else if(Sample->Name().find("TTJets_ll") != string::npos) histo1D[("combSTandTT_cutCount_ttlf"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(0.,Luminosity * ScaleFactor  / EqLumi);			                
+                            if(Sample->Name().find("TTJets_bb") != string::npos) histo1D[("combSTandTT_cutCount_ttbb"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(0.,Luminosity * ScaleFactor  / EqLumi );
+                            else if(Sample->Name().find("TTJets_cc") != string::npos) histo1D[("combSTandTT_cutCount_ttcc"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(0.,Luminosity * ScaleFactor  / EqLumi );
+                            else if(Sample->Name().find("TTJets_ll") != string::npos) histo1D[("combSTandTT_cutCount_ttlf"+namingConventionFit[WhatSysts[Counter]]).c_str()]->Fill(0.,Luminosity * ScaleFactor  / EqLumi );			                
                         }
 
 		        }//for-loop events
@@ -1387,8 +1453,10 @@ void GetEnvelopeScale()
               bincontents.push_back(weight8_->GetBinContent(binN));
               bincontents.push_back(isrup_->GetBinContent(binN));
               bincontents.push_back(isrdown_->GetBinContent(binN));
-              bincontents.push_back(fsrup_->GetBinContent(binN));
-              bincontents.push_back(fsrdown_->GetBinContent(binN));
+              double fsrupDiffNom = sqrt(2)/2*(nominal_->GetBinContent(binN) - fsrup_->GetBinContent(binN));//The recommendation is to downscale fsr variation by sqrt(2)/2
+              double fsrdwDiffNom = sqrt(2)/2*(nominal_->GetBinContent(binN) - fsrdown_->GetBinContent(binN));
+              bincontents.push_back(fsrup_->GetBinContent(binN)+fsrupDiffNom);
+              bincontents.push_back(fsrdown_->GetBinContent(binN)+fsrdwDiffNom);
 
                   if(binContentMin > minimumValue(bincontents)) binContentMin = minimumValue(bincontents);
                   else cout << "ERROR: no minimal bincontent found" << endl;

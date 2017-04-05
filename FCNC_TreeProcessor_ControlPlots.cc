@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
     WhatSysts.push_back("leptonMinus");
     WhatSysts.push_back("TopPtPlus");
     WhatSysts.push_back("TopPtMinus");
-/*    if(doInclusive)
+    if(doInclusive)
     {
         WhatSysts.push_back("noSF");
         WhatSysts.push_back("OnlyTopPtSF");
@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
         WhatSysts.push_back("NoLepSF");
         WhatSysts.push_back("NoNLOSF");
     }
-*/    if(doJESSys) WhatSysts.push_back("JESPlus");
+    if(doJESSys) WhatSysts.push_back("JESPlus");
     if(doJESSys) WhatSysts.push_back("JESMinus");
     if(doJERSys) WhatSysts.push_back("JERPlus");
     if(doJERSys) WhatSysts.push_back("JERMinus");
@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
     WhatSysts_noJECs.push_back("leptonMinus");
     WhatSysts_noJECs.push_back("TopPtPlus");
     WhatSysts_noJECs.push_back("TopPtMinus");
-/*    if(doInclusive)
+    if(doInclusive)
     {
         WhatSysts_noJECs.push_back("noSF");
         WhatSysts_noJECs.push_back("OnlyTopPtSF");
@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
         WhatSysts_noJECs.push_back("NoLepSF");
         WhatSysts_noJECs.push_back("NoNLOSF");
     }
-*/
+
     cout << "------------------------------------------------------------------------------------------------" << endl;
     cout << "Begin program" << endl;
     cout << " - Category: " << category << endl;
@@ -297,6 +297,9 @@ int main(int argc, char *argv[])
     //***************************************************CREATING PLOT****************************************************
     //Format of MSPlots: MultiSamplePlot(vector<Dataset*> datasets, string PlotName, int Nbins, float Min, float Max, string XaxisLabel, string YaxisLabel, string Text, string Units)
 
+    double CSVv2min = 0.;
+    if(baseline_jets == baseline_bjets) CSVv2min = 0.8;
+
     for(int iSyst = 0; iSyst<WhatSysts.size();iSyst++)
     {
     
@@ -343,25 +346,25 @@ int main(int argc, char *argv[])
                 MSPlot[("TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 2., "|q_{b_{HadTop}+q_{b_{LepTop}|","Entries", "");
                 MSPlot[("TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 2., "|q_{b_{HadTop}+q_{lep}|","Entries", "");
 
-                MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{LepTop} CSVv2","Entries", "");
+                MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, CSVv2min, 1., "b_{LepTop} CSVv2","Entries", "");
                 MSPlot[("TopLepBJetPt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetPt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{LepTop}}}","Entries", "","GeV");
                 MSPlot[("TopLepBJetPhi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetPhi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{LepTop}}","Entries", "");
                 MSPlot[("TopLepBJetEta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetEta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{LepTop}}","Entries", "");
                 MSPlot[("TopLepBJetE_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetE_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{LepTop}}","Entries", "","GeV");
 
-                MSPlot[("TopHadBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{HadTop} CSVv2","Entries", "");
+                MSPlot[("TopHadBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadBJetCSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, CSVv2min, 1., "b_{HadTop} CSVv2","Entries", "");
                 MSPlot[("TopHadBJetPt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadBJetPt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{HadTop}}}","Entries", "","GeV");
                 MSPlot[("TopHadBJetPhi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadBJetPhi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{HadTop}}","Entries", "");
                 MSPlot[("TopHadBJetEta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadBJetEta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{HadTop}}","Entries", "");
                 MSPlot[("TopHadBJetE_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadBJetE_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{HadTop}}","Entries", "","GeV");
 
-                MSPlot[("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "j_{WHad1} CSVv2","Entries", "");
+                MSPlot[("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, CSVv2min, 1., "j_{WHad1} CSVv2","Entries", "");
                 MSPlot[("TopHadWNonBJet1Pt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet1Pt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{j_{WHad1}}}","Entries", "","GeV");
                 MSPlot[("TopHadWNonBJet1Phi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet1Phi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{j_{WHad1}}","Entries", "");
                 MSPlot[("TopHadWNonBJet1Eta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet1Eta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{j_{WHad1}}","Entries", "");
                 MSPlot[("TopHadWNonBJet1E_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet1E_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{j_{WHad1}}","Entries", "","GeV");
 
-                MSPlot[("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "j_{WHad2} CSVv2","Entries", "");
+                MSPlot[("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, CSVv2min, 1., "j_{WHad2} CSVv2","Entries", "");
                 MSPlot[("TopHadWNonBJet2Pt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet2Pt_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{j_{WHad2}}}","Entries", "","GeV");
                 MSPlot[("TopHadWNonBJet2Phi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet2Phi_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{j_{WHad2}}","Entries", "");
                 MSPlot[("TopHadWNonBJet2Eta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadWNonBJet2Eta_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{j_{WHad2}}","Entries", "");
@@ -388,25 +391,25 @@ int main(int argc, char *argv[])
                 MSPlot[("TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 2., "|q_{j_{HadTop}+q_{b_{LepTop}|","Entries", "");
                 MSPlot[("TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 2., "|q_{j_{HadTop}+q_{lep}|","Entries", "");
 
-                MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{LepTop} CSVv2","Entries", "");
+                MSPlot[("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, CSVv2min, 1., "b_{LepTop} CSVv2","Entries", "");
                 MSPlot[("TopLepBJetPt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetPt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{LepTop}}}","Entries", "","GeV");
                 MSPlot[("TopLepBJetPhi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetPhi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{LepTop}}","Entries", "");
                 MSPlot[("TopLepBJetEta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetEta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{LepTop}}","Entries", "");
                 MSPlot[("TopLepBJetE_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetE_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{LepTop}}","Entries", "","GeV");
 
-                MSPlot[("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "j_{HadTop} CSVv2","Entries", "");
+                MSPlot[("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadNonBJetCSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, CSVv2min, 1., "j_{HadTop} CSVv2","Entries", "");
                 MSPlot[("TopHadNonBJetPt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadNonBJetPt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{j_{HadTop}}}","Entries", "","GeV");
                 MSPlot[("TopHadNonBJetPhi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadNonBJetPhi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{j_{HadTop}}","Entries", "");
                 MSPlot[("TopHadNonBJetEta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TTopHadNonBJetEta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{j_{HadTop}}","Entries", "");
                 MSPlot[("TopHadNonBJetE_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopHadNonBJetE_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{j_{HadTop}}","Entries", "","GeV");
 
-                MSPlot[("HiggsBJet1CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{H1} CSVv2","Entries", "");
+                MSPlot[("HiggsBJet1CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, CSVv2min, 1., "b_{H1} CSVv2","Entries", "");
                 MSPlot[("HiggsBJet1Pt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1Pt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{H1}}}","Entries", "","GeV");
                 MSPlot[("HiggsBJet1Phi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1Phi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{H1}}","Entries", "");
                 MSPlot[("HiggsBJet1Eta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1Eta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{H1}}","Entries", "");
                 MSPlot[("HiggsBJet1E_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1E_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{H1}}","Entries", "","GeV");
 
-                MSPlot[("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{H2} CSVv2","Entries", "");
+                MSPlot[("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2CSVv2_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, CSVv2min, 1., "b_{H2} CSVv2","Entries", "");
                 MSPlot[("HiggsBJet2Pt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2Pt_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{H2}}}","Entries", "","GeV");
                 MSPlot[("HiggsBJet2Phi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2Phi_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{H2}}","Entries", "");
                 MSPlot[("HiggsBJet2Eta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2Eta_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{H2}}","Entries", "");
@@ -426,19 +429,19 @@ int main(int argc, char *argv[])
                 MSPlot[("TopLepHiggsDr_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepHiggsDr_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 5., "#Delta R(LepTop,H)","Entries", "");
                 MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 5., "#Delta R(b_{H1},b_{H2})","Entries", "");
 
-                MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetCSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{LepTop} CSVv2","Entries", "");
+                MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetCSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, CSVv2min, 1., "b_{LepTop} CSVv2","Entries", "");
                 MSPlot[("TopLepBJetPt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetPt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{LepTop}}}","Entries", "","GeV");
                 MSPlot[("TopLepBJetPhi_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetPhi_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{LepTop}}","Entries", "");
                 MSPlot[("TopLepBJetEta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetEta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{LepTop}}","Entries", "");
                 MSPlot[("TopLepBJetE_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetE_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{LepTop}}","Entries", "","GeV");
 
-                MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{H1} CSVv2","Entries", "");
+                MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, CSVv2min, 1., "b_{H1} CSVv2","Entries", "");
                 MSPlot[("HiggsBJet1Pt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1Pt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{H1}}}","Entries", "","GeV");
                 MSPlot[("HiggsBJet1Phi_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1Phi_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{H1}}","Entries", "");
                 MSPlot[("HiggsBJet1Eta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1Eta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{H1}}","Entries", "");
                 MSPlot[("HiggsBJet1E_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1E_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{H1}}","Entries", "","GeV");
 
-                MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{H2} CSVv2","Entries", "");
+                MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2CSVv2_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, CSVv2min, 1., "b_{H2} CSVv2","Entries", "");
                 MSPlot[("HiggsBJet2Pt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2Pt_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{H2}}}","Entries", "","GeV");
                 MSPlot[("HiggsBJet2Phi_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2Phi_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{H2}}","Entries", "");
                 MSPlot[("HiggsBJet2Eta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2Eta_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{H2}}","Entries", "");
@@ -457,19 +460,19 @@ int main(int argc, char *argv[])
                 MSPlot[("TopLepHiggsDr_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepHiggsDr_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 5., "#Delta R(LepTop,H)","Entries", "");
                 MSPlot[("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 5., "#Delta R(b_{H1},b_{H2})","Entries", "");
 
-                MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetCSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{LepTop} CSVv2","Entries", "");
+                MSPlot[("TopLepBJetCSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetCSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, CSVv2min, 1., "b_{LepTop} CSVv2","Entries", "");
                 MSPlot[("TopLepBJetPt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetPt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{LepTop}}}","Entries", "","GeV");
                 MSPlot[("TopLepBJetPhi_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetPhi_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{LepTop}}","Entries", "");
                 MSPlot[("TopLepBJetEta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetEta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{LepTop}}","Entries", "");
                 MSPlot[("TopLepBJetE_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("TopLepBJetE_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{LepTop}}","Entries", "","GeV");
 
-                MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{H1} CSVv2","Entries", "");
+                MSPlot[("HiggsBJet1CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, CSVv2min, 1., "b_{H1} CSVv2","Entries", "");
                 MSPlot[("HiggsBJet1Pt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1Pt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{H1}}}","Entries", "","GeV");
                 MSPlot[("HiggsBJet1Phi_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1Phi_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{H1}}","Entries", "");
                 MSPlot[("HiggsBJet1Eta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1Eta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{H1}}","Entries", "");
                 MSPlot[("HiggsBJet1E_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet1E_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{H1}}","Entries", "","GeV");
 
-                MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 1., "b_{H2} CSVv2","Entries", "");
+                MSPlot[("HiggsBJet2CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2CSVv2_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, CSVv2min, 1., "b_{H2} CSVv2","Entries", "");
                 MSPlot[("HiggsBJet2Pt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2Pt_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 450, "p_{T_{b_{H2}}}","Entries", "","GeV");
                 MSPlot[("HiggsBJet2Phi_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2Phi_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -3.2, 3.2, "#phi_{b_{H2}}","Entries", "");
                 MSPlot[("HiggsBJet2Eta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2Eta_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -3.5, 3.5, "#eta_{b_{H2}}","Entries", "");
@@ -1056,9 +1059,35 @@ int main(int argc, char *argv[])
             double nloSF = 1.;
             int nPos = 0; 
             int nNeg = 0;
+            int EntryStart = 0;//Manually overwriting the number of events to run over.
+                if(category=="b2j4")
+                {
+                    EntryStart = (int) 29*nEntries/30;
+                    CorrectionForAllChannel = 30;
+                }
+                else if(category=="b2j3")
+                {
+                    EntryStart = (int) 9*nEntries/10;
+                    CorrectionForAllChannel = 10;
+                }
+                else if(category=="b3j4")
+                {
+                    EntryStart = (int) nEntries/2;
+                    CorrectionForAllChannel = 2;
+                }
+                else if(category=="b3j3" || category=="b4j4")
+                {
+                    EntryStart = 0;
+                }
+                else if(doInclusive) 
+                {
+                    EntryStart = (int) 79*nEntries/80;
+                    CorrectionForAllChannel = 80;
+                }
+
             if(isAMC && !isData)
             {
-                for (int k = 0; k<nEntries; k++)
+                for (int k = EntryStart; k<nEntries; k++)
                 {
                     ttree[dataSetName.c_str()]->GetEntry(k);
 		                if(!doInclusive)
@@ -1071,14 +1100,14 @@ int main(int argc, char *argv[])
                     if( W_nloWeight > 0) nPos++;
                     else if( W_nloWeight < 0) nNeg ++;
                 }
-                nloSF *= ((double) (nPos - nNeg))/((double) (nPos + nNeg));
+                nloSF *= ((double) (nPos + nNeg))/((double) (nPos - nNeg));
             }		
 
             Double_t average_TopPtWeight = 0.;
             if(dataSetName.find("TTJets") != string::npos)
             {
                 int nEventsPassed = 0;
-                for (int k = 0; k<nEntries; k++)
+                for (int k = EntryStart; k<nEntries; k++)
                 {
                     ttree[dataSetName.c_str()]->GetEntry(k);
 		                if(!doInclusive)
@@ -1093,9 +1122,11 @@ int main(int argc, char *argv[])
                 }
                 average_TopPtWeight = average_TopPtWeight/nEventsPassed;
             }
+            
+            if(isData) EntryStart = 0;
 		
       	    //***********************************************RUNNING OVER EVENTS**********************************************
-		        for (int j = 0; j<nEntries; j++)
+		        for (int j = EntryStart; j<nEntries; j++)
 		        {
 		                  
                 if(debug)
@@ -1185,7 +1216,7 @@ int main(int argc, char *argv[])
                     ScaleFactor *= W_puSF_applied;
                     ScaleFactor *= W_fleptonSF;
                     ScaleFactor *= W_btagWeight_shape;
-                    ScaleFactor *= nloSF;
+                    ScaleFactor *= nloSF * W_nloWeight;
                 }
                 else ScaleFactor = 1.;    
 		          
@@ -1216,147 +1247,147 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_lf;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfMinus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_lf;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfPlus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_hf;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfMinus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_hf;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats1Plus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_lfstats1;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats1Minus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_lfstats1;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats2Plus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_lfstats2;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_lfstats2Minus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_lfstats2;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats1Plus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_hfstats1;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats1Minus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_hfstats1;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats2Plus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_hfstats2;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_hfstats2Minus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_hfstats2;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr1Plus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_cferr1;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr1Minus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_cferr1;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr2Plus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_up_cferr2;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "iterativefit_cferr2Minus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape_down_cferr2;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "pileupPlus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_Plus;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "pileupMinus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_Minus;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "leptonPlus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF_Plus;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "leptonMinus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF_Minus;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "TopPtPlus")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                                 if(dataSetName.find("TTJets") != string::npos) SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_TopPtReweighing/average_TopPtWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "TopPtMinus")//Apply no TopPt reweighing
@@ -1364,7 +1395,7 @@ int main(int argc, char *argv[])
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "OnlyTopPtSF")
                             {
@@ -1384,25 +1415,25 @@ int main(int argc, char *argv[])
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "OnlyNLOSF")
                             {
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "NoBTagSF")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "NoPUSF")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_fleptonSF;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "NoLepSF")
                             {
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_puSF_applied;
                                 SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= W_btagWeight_shape;
-                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF;
+                                SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] *= nloSF* W_nloWeight;
                             }
                             else if(WhatSysts_noJECs[iSyst_] == "NoNLOSF")
                             {
