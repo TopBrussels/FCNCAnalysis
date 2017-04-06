@@ -114,9 +114,9 @@ string postfix = "";
 string output_histo_name = "";
 string ntupleFileName ="";
 int nbin = 10;
-int nbinMTW = 20;
+int nbinMTW = 10;
 int nEntries = -1;
-
+int scaleNP = 10;
 
 //////////////////////////// branches //////////////////////////////
 // Declaration of leaf types
@@ -321,7 +321,7 @@ int main(int argc, char* argv[]){
   else placeOutputReading += "/MTWtemplate" ;
   mkdir(placeOutputReading.c_str(), 0777);
   combinetemplate_filename = placeOutputReading+"/Reader_" + coupling +"_" + region + ".root";
-  if(doMTWtemplate) combinetemplate_filename = placeOutputReading+"/Reader_MTW.root";
+  if(doMTWtemplate) combinetemplate_filename = placeOutputReading+"/Reader_"+coupling+"_MTW.root";
   cout <<" - Combine templates stored at " << combinetemplate_filename.c_str() << endl;
   
   std::vector < int>  decayChannels = {0,1,2,3,-9}; // uuu uue eeu eee all
@@ -411,7 +411,7 @@ int main(int argc, char* argv[]){
   if(makePlots && doMTWtemplate){
     for(int isys = 0; isys < thesystlist.size() ; isys++){
       systematic = thesystlist[isys];
-      if(isys != 0 ) tempstring = systematic;
+      if(isys != 0 ) tempstring = "_" + systematic;
       InitMSPlotsMTW(tempstring, decayChannels);
     }
   }
@@ -490,16 +490,16 @@ int main(int argc, char* argv[]){
       //cout << "create template histo" << endl;
       TH1F *hist_uuu(0);
       if(!doMTWtemplate) hist_uuu = new TH1F( (coupling + "_" + region+"_uuu").c_str(),           (coupling + "_" + region+"_uuu").c_str(),           nbin, -1, 1 );
-      else hist_uuu = new TH1F( (coupling + "_mTW_uuu").c_str(),           (coupling + "_mTW_uuu").c_str(),           nbinMTW,0, 200 );
+      else hist_uuu = new TH1F( (coupling + "_mTW_uuu").c_str(),           (coupling + "_mTW_uuu").c_str(),           nbinMTW,0, 250 );
       TH1F *hist_uue(0);
       if(!doMTWtemplate) hist_uue = new TH1F( (coupling + "_" + region+"_uue").c_str(),           (coupling + "_" + region+"_uue").c_str(),           nbin, -1, 1 );
-      else hist_uue = new TH1F( (coupling + "_mTW_uue").c_str(),           (coupling + "_mTW_uue").c_str(),           nbinMTW,0, 200 );
+      else hist_uue = new TH1F( (coupling + "_mTW_uue").c_str(),           (coupling + "_mTW_uue").c_str(),           nbinMTW,0, 250 );
       TH1F *hist_eeu(0);
       if(!doMTWtemplate) hist_eeu = new TH1F( (coupling + "_" + region+"_eeu").c_str(),           (coupling + "_" + region+"_eeu").c_str(),           nbin, -1, 1 );
-      else hist_eeu = new TH1F( (coupling + "_mTW_eeu").c_str(),           (coupling + "_mTW_eeu").c_str(),           nbinMTW,0, 200 );
+      else hist_eeu = new TH1F( (coupling + "_mTW_eeu").c_str(),           (coupling + "_mTW_eeu").c_str(),           nbinMTW,0, 250 );
       TH1F *hist_eee(0);
       if(!doMTWtemplate) hist_eee = new TH1F( (coupling + "_" + region+"_eee").c_str(),           (coupling + "_" + region+"_eee").c_str(),           nbin, -1, 1 );
-      else hist_eee = new TH1F( (coupling + "_mTW_eee").c_str(),           (coupling + "_mTW_eee").c_str(),           nbinMTW,0, 200 );
+      else hist_eee = new TH1F( (coupling + "_mTW_eee").c_str(),           (coupling + "_mTW_eee").c_str(),           nbinMTW,0, 250 );
       //cout << "created template histo" << endl;
       /// Initialise WZ plots
       if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos && doPDFunc && !doMTWtemplate){
@@ -521,6 +521,7 @@ int main(int argc, char* argv[]){
       /// loop on events
       double weight = 1.;
       WZregionEntries = 0;
+      int WZregionEntriesuuu = 0;
       for (int ievt = 0; ievt < endEvent; ievt++)
       {
         if (ievt%100 == 0)
@@ -529,12 +530,13 @@ int main(int argc, char* argv[]){
         
         /// Load event
         tTree[(dataSetName).c_str()]->GetEntry(ievt);
-        if(datafound && MVA_BDT > -0.66){ continue;}
+        if(datafound && MVA_BDT > -0.66 && !doMTWtemplate){ continue;}
         //if(isData) cout << "region " << MVA_region << endl;
         
         if(doMTWtemplate && MVA_region != 2){ continue ;} // only in WZ control region}
         else if(doMTWtemplate) { WZregionEntries++; }
         
+        if(doMTWtemplate && MVA_region == 2 && MVA_channel == 0) { WZregionEntriesuuu++;}
         weight = MVA_weight_nom;
         if(!isData && !onlynomforsys){
           if(systematic.find("puSFUp")) weight = MVA_weight_puSF_up;
@@ -559,11 +561,13 @@ int main(int argc, char* argv[]){
           if(systematic.find("btagSF_lfstats2Down")) weight = MVA_weight_btagSF_lfstats2_down;
           
         }
-        if(Luminosity/MVA_Luminosity != 1. ) cout << "lumi "  << Luminosity << " while tuples are made with " << MVA_Luminosity << endl;
+        //if(Luminosity/MVA_Luminosity != 1. ) cout << "lumi "  << Luminosity << " while tuples are made with " << MVA_Luminosity << endl;
         
-        if(MVA_Luminosity != 0) weight = (weight * Luminosity)/ MVA_Luminosity;
+        if(MVA_Luminosity != 0 && !isData) weight = (weight * Luminosity)/ MVA_Luminosity;
         if(!datafound) Luminosity = MVA_Luminosity;
-        if(isData) weight = Luminosity;
+        if(doMTWtemplate && dataSetName.find("fake")!=std::string::npos){ weight *= 0.000001 ;}
+       
+        if( isData){ weight = 1.;}
         if(!doMTWtemplate){
           if(MVA_channel== 0) 		{hist_uuu->Fill( MVA_BDT, weight);}
           else if(MVA_channel== 1) {hist_uue->Fill( MVA_BDT, weight);}
@@ -577,7 +581,9 @@ int main(int argc, char* argv[]){
           else if(MVA_channel == 3) {hist_eee->Fill( MVA_mWt, weight);}
         }
         
-        
+        // for MS plots
+        double weightMSPlot = weight;
+        if(isData) weightMSPlot = Luminosity;
         /// Fill plots
         if(doPDFunc && !doMTWtemplate){
           if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos) CalculatePDFWeight(dataSetName, MVA_BDT, MVA_weight_nom, MVA_channel);
@@ -593,13 +599,13 @@ int main(int argc, char* argv[]){
           //cout << "ievt " << ievt << endl;
           tempstring = region + "_"+coupling;
           if(isys != 0) tempstring += "_"+ systematic;
-          FillGeneralPlots(d, tempstring, decayChannels, doZut, toppair, weight, MVA_channel);
+          FillGeneralPlots(d, tempstring, decayChannels, doZut, toppair, weightMSPlot, MVA_channel);
         }
         if (makePlots && doMTWtemplate)
         {
-          if(isys != 0) tempstring = systematic;
+          if(isys != 0) tempstring = "_" + systematic;
          // if(isData) cout << "fill data " << endl;
-          FillMTWPlots(d, tempstring, decayChannels, weight, MVA_channel);
+          FillMTWPlots(d, tempstring, decayChannels, weightMSPlot, MVA_channel);
         }
         if(dataSetName.find("WZTo3LNu")!=std::string::npos && PlotSystematics && !doMTWtemplate){
           FillSystematicHisto(dataSetName, systematic, weight, isys);
@@ -612,11 +618,15 @@ int main(int argc, char* argv[]){
       } // events
       
       cout << endl;
-     if(doMTWtemplate) cout << "                WZ entries " << WZregionEntries << endl;
+     if(doMTWtemplate) cout << "                WZ entries " << WZregionEntries << " uuu " << WZregionEntriesuuu << endl;
       /// Write combine histograms
       // --- Write histograms
       //cout << "DATASET " << dataSetName << " ISYS " << isys << endl;
       if((dataSetName.find("data")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && isys != 0) {
+        delete  hist_eee; delete hist_uuu; delete hist_uue; delete hist_eeu;
+        continue;
+      }
+      if(doMTWtemplate && WZregionEntries == 0) {
         delete  hist_eee; delete hist_uuu; delete hist_uue; delete hist_eeu;
         continue;
       }
@@ -740,7 +750,7 @@ int main(int argc, char* argv[]){
     
     string pseudodata_input_name = placeOutputReading+"/Reader_" + coupling + "_" + region + ".root";
     
-    if(doMTWtemplate) pseudodata_input_name = placeOutputReading+"/Reader_MTW.root";
+    if(doMTWtemplate) pseudodata_input_name = placeOutputReading+"/Reader_"+coupling+"_MTW.root";
     TFile* pseudodata_file = TFile::Open( pseudodata_input_name.c_str(), "UPDATE" );
     
     cout << "Generating pseudo data from " << pseudodata_input_name << endl;
@@ -772,8 +782,8 @@ int main(int argc, char* argv[]){
         string dataSetName = datasets[isample]->Name();
         // cout << dataSetName << endl;
         if(datasets[isample]->Name().find("FCNC")!=std::string::npos) {continue; } // no signal in data
-        if(datasets[isample]->Name().find("data")!=std::string::npos) {continue; } // safety
-        if(datasets[isample]->Name().find("fake")==std::string::npos) {
+        else if(datasets[isample]->Name().find("data")!=std::string::npos) {continue; } // safety
+        else if(datasets[isample]->Name().find("fake")==std::string::npos) { continue;}/*
           // cout << "  -- sample " << datasets[isample]->Name() << endl;
           h_tmp = 0;
           if(!doMTWtemplate) histo_name = coupling + "_BDT_" + region + "_" + channel_list[ichan] + "_" + datasets[isample]->Name();
@@ -784,7 +794,7 @@ int main(int argc, char* argv[]){
           h_tmp = (TH1F*) pseudodata_file->Get(histo_name.c_str());
           if(h_sum == 0) {h_sum = (TH1F*) h_tmp->Clone();}
           else {h_sum->Add(h_tmp);}
-        }
+        }*/
         else{
           
           if(!doMTWtemplate) histo_name = coupling + "_BDT_" + region + "_" + channel_list[ichan] + "_" + template_fake_name;
@@ -870,7 +880,7 @@ int main(int argc, char* argv[]){
         if(name.find("uue")!=std::string::npos) temp->setChannel(true, "1e2#mu");
         if(name.find("uuu")!=std::string::npos) temp->setChannel(true, "3#mu");
         if(name.find("Decay")!=std::string::npos) temp->setBins(vlabel_chan);
-        temp->Draw(name, 1, false, false, false, 10);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
+        temp->Draw(name, 1, false, false, false, 1);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
         cout << "writing to " << pathOutputdate+"MSPlotMTW" << endl;
         cout << "plot " << name << endl;
         cout << "temp " << temp << endl;
@@ -1453,7 +1463,7 @@ void InitMSPlotsMTW(string prefix, vector <int> decayChannels){
     decaystring += prefix;
     
     
-    MSPlotMTW[("MTW_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("MTW_"+decaystring).c_str(), nbinMTW, 0,200, "M_T(W)");
+    MSPlotMTW[("MTW_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("MTW_"+decaystring).c_str(), nbinMTW, 0,250, "M_T(W)");
   }
 }
 void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair, bool isZut){
