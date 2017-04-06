@@ -4296,7 +4296,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
   Double_t eventW = 1.;
   if(isData) scaleFactor = 1.;
   eventW = Luminosity/EquilumiSF;
-  if(datasets[d]->Name().find("fake")!=std::string::npos) eventW *= 0.25;
+  if(datasets[d]->Name().find("fake")!=std::string::npos) eventW *= 0.01;
   
   for(int iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
