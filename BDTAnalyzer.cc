@@ -115,6 +115,7 @@ string output_histo_name = "";
 string ntupleFileName ="";
 int nbin = 10;
 int nbinMTW = 10;
+double endMTW = 250.;
 int nEntries = -1;
 int scaleNP = 10;
 
@@ -490,16 +491,16 @@ int main(int argc, char* argv[]){
       //cout << "create template histo" << endl;
       TH1F *hist_uuu(0);
       if(!doMTWtemplate) hist_uuu = new TH1F( (coupling + "_" + region+"_uuu").c_str(),           (coupling + "_" + region+"_uuu").c_str(),           nbin, -1, 1 );
-      else hist_uuu = new TH1F( (coupling + "_mTW_uuu").c_str(),           (coupling + "_mTW_uuu").c_str(),           nbinMTW,0, 250 );
+      else hist_uuu = new TH1F( (coupling + "_mTW_uuu").c_str(),           (coupling + "_mTW_uuu").c_str(),           nbinMTW,0, endMTW );
       TH1F *hist_uue(0);
       if(!doMTWtemplate) hist_uue = new TH1F( (coupling + "_" + region+"_uue").c_str(),           (coupling + "_" + region+"_uue").c_str(),           nbin, -1, 1 );
-      else hist_uue = new TH1F( (coupling + "_mTW_uue").c_str(),           (coupling + "_mTW_uue").c_str(),           nbinMTW,0, 250 );
+      else hist_uue = new TH1F( (coupling + "_mTW_uue").c_str(),           (coupling + "_mTW_uue").c_str(),           nbinMTW,0, endMTW );
       TH1F *hist_eeu(0);
       if(!doMTWtemplate) hist_eeu = new TH1F( (coupling + "_" + region+"_eeu").c_str(),           (coupling + "_" + region+"_eeu").c_str(),           nbin, -1, 1 );
-      else hist_eeu = new TH1F( (coupling + "_mTW_eeu").c_str(),           (coupling + "_mTW_eeu").c_str(),           nbinMTW,0, 250 );
+      else hist_eeu = new TH1F( (coupling + "_mTW_eeu").c_str(),           (coupling + "_mTW_eeu").c_str(),           nbinMTW,0, endMTW );
       TH1F *hist_eee(0);
       if(!doMTWtemplate) hist_eee = new TH1F( (coupling + "_" + region+"_eee").c_str(),           (coupling + "_" + region+"_eee").c_str(),           nbin, -1, 1 );
-      else hist_eee = new TH1F( (coupling + "_mTW_eee").c_str(),           (coupling + "_mTW_eee").c_str(),           nbinMTW,0, 250 );
+      else hist_eee = new TH1F( (coupling + "_mTW_eee").c_str(),           (coupling + "_mTW_eee").c_str(),           nbinMTW,0, endMTW );
       //cout << "created template histo" << endl;
       /// Initialise WZ plots
       if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos && doPDFunc && !doMTWtemplate){
@@ -510,7 +511,13 @@ int main(int argc, char* argv[]){
       }
       
       if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && doMTWtemplate){
-        InitMTWShapeHisto(dataSetName, systematic, isys, decayChannels);
+       // InitMTWShapeHisto(dataSetName, systematic, isys, decayChannels);
+        
+        if(isys == 0) output_histo_name = dataSetName+"_MTW_nominal_"+decaystring;
+        else output_histo_name = dataSetName+"_MTW_"+systematic + "_" + decaystring;
+        cout << "init " << output_histo_name.c_str() << endl;
+        histo1DMTW[output_histo_name.c_str()] = new TH1F(output_histo_name.c_str(), dataSetName.c_str(), nbinMTW,0.,endMTW);
+        decaystring = "";
       }
       // safeties
       if(!doSystematics && isys != 0) continue;
@@ -611,8 +618,13 @@ int main(int argc, char* argv[]){
           FillSystematicHisto(dataSetName, systematic, weight, isys);
         }
         if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && doMTWtemplate){
-          //cout << "filling FillMTWShapeHisto" << endl,
-          FillMTWShapeHisto(dataSetName, systematic, weight, isys, MVA_channel,decayChannels);
+          //cout << "filling FillMTWShapeHisto" << endl;
+          //FillMTWShapeHisto(dataSetName, systematic, weight, isys, MVA_channel,decayChannels);
+          if(isys == 0) output_histo_name = dataSetName+"_MTW_nominal_"+decaystring;
+          else output_histo_name = dataSetName+"_MTW_"+systematic + "_" + decaystring;
+          cout << "fill " << output_histo_name.c_str() << endl;
+          
+          histo1DMTW[output_histo_name.c_str()]->Fill(1, 1);
         }
         
       } // events
@@ -842,6 +854,8 @@ int main(int argc, char* argv[]){
   ///*****************///
   ///   Write plots   ///
   ///*****************///
+  cout << "SIZE MTW " << histo1DMTW.size() << endl;
+  
   if((makePlots || doPDFunc || PlotMVAvars || PlotSystematics) ){
     string pathOutput = "OutputPlots/";
     mkdir(pathOutput.c_str(),0777);
@@ -1107,16 +1121,16 @@ int main(int argc, char* argv[]){
         Canvas->SaveAs( (placeTH1F+nameplot+"_LogY.png").c_str() );
       }
     }
-    if(false){ // TO FIX
-    //if(makePlots && doMTWtemplate){
+   // if(false){ // TO FIX
+   if(makePlots && doMTWtemplate){
       cout << "plotting mtW shapes " << endl;
       std::vector<string> channellist;
       channellist.push_back("all");
-      channellist.push_back("eee");
+      /*channellist.push_back("eee");
       channellist.push_back("uue");
       channellist.push_back("eeu");
       channellist.push_back("uuu");
-
+*/
       for(int iChan = 0; iChan < channellist.size(); iChan++){
         TH1F *tempBKG_nom(0);
         TH1F *tempSignalST_nom(0);
@@ -1129,21 +1143,24 @@ int main(int argc, char* argv[]){
         TH1F *tempSignalTT_up(0);
         TH1F *tempSignalTT_nom(0);
         
-        cout << "histo mtw size " << histo1DMTW.size() << endl;
+        //cout << "histo mtw size " << histo1DMTW.size() << endl;
         for (std::map<std::string,TH1F*>::const_iterator it = histo1DMTW.begin(); it != histo1DMTW.end(); it++)
         {
-          cout << "looking at " << it->first << " and the channel to keep " << channellist[iChan].c_str() << endl;
-          
-          if(it->first.find(channellist[iChan].c_str())==std::string::npos){
-            cout << "continuing " << endl;
-            continue;
+         // cout << "looking at " << it->first << " and the channel to keep " << channellist[iChan].c_str() << endl;
+        
+         if(it->first.find(channellist[iChan].c_str())==std::string::npos){
+            //cout << "continuing " << endl;
+           // continue;
           }
-          if(it->first.find("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut_80X_MTW_nominal_all")!=std::string::npos){continue;}
+      
+      
           
           
-          TH1F *temp = it->second;
-          cout << "temp address " << &temp << endl ;
-          cout << "entries " << temp->GetEntries() <<  endl;
+          TH1F *temphisto = it->second;
+          cout << "temp address " << &temphisto << endl ;
+          cout << "entries " << temphisto->GetEntries() <<  endl;
+        }
+       /*
           if(it->first.find("WZTo3LNu")!=std::string::npos && it->first.find("nominal")!= std::string::npos) {
             if(tempBKG_nom == 0) tempBKG_nom = (TH1F*) temp->Clone();
             else tempBKG_nom->Add(temp);
@@ -1300,7 +1317,7 @@ int main(int argc, char* argv[]){
         delete tempBKG_down;
         delete tempSignalST_down;
         delete tempSignalTT_down;
-        
+        */
       } // channellist
       
     }
@@ -1463,8 +1480,9 @@ void InitMSPlotsMTW(string prefix, vector <int> decayChannels){
     decaystring += prefix;
     
     
-    MSPlotMTW[("MTW_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("MTW_"+decaystring).c_str(), nbinMTW, 0,250, "M_T(W)");
+    MSPlotMTW[("MTW_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("MTW_"+decaystring).c_str(), nbinMTW, 0,endMTW, "M_T(W)");
   }
+  decaystring = "";
 }
 void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair, bool isZut){
   clock_t start_sub = clock();
@@ -1528,7 +1546,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair, boo
     }
     
   }
-  
+  decaystring = "";
   
   
   
@@ -1561,6 +1579,7 @@ void InitCalculatePDFWeightHisto(string dataSetName){
 }
 void InitMTWShapeHisto(string dataSetName, string systematic, int isys,  vector <int> decayChannels){
   TH1::SetDefaultSumw2();
+  histo1DMTW.clear();
   for(int iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
     if(decayChannels[iChan] == 0) decaystring = "uuu";
@@ -1573,11 +1592,12 @@ void InitMTWShapeHisto(string dataSetName, string systematic, int isys,  vector 
 
     if(isys == 0) output_histo_name = dataSetName+"_MTW_nominal_"+decaystring;
     else output_histo_name = dataSetName+"_MTW_"+systematic + "_" + decaystring;
-   // cout << "init " << output_histo_name << endl;
-    histo1DMTW[output_histo_name] = new TH1F(output_histo_name.c_str(), dataSetName.c_str(), nbinMTW,0.,200.);
+   //cout << "init " << output_histo_name.c_str() << endl;
+    histo1DMTW[output_histo_name.c_str()] = new TH1F(output_histo_name.c_str(), dataSetName.c_str(), nbinMTW,0.,endMTW);
     
     output_histo_name = "";
   }
+  decaystring = "";
 }
 void InitSystematicHisto(string dataSetName, string systematic, int isys){
   TH1::SetDefaultSumw2();
@@ -1800,7 +1820,7 @@ void Init1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
   }
   
   output_histo_name = "";
-  
+  decaystring = "";
 }
 ////////// FUNCTIONS
 vector<double> BDTCUT(string region, string coupling){
@@ -2039,6 +2059,7 @@ void FillMTWPlots(int d, string postfix, vector <int> decayChannels, double weig
     //if(datasets[d]->Name().find("data")!=std::string::npos) cout << "filling " << ("MTW_"+decaystring).c_str() << " with " << MVA_mWt << " " << weight_ << endl;
     MSPlotMTW[("MTW_"+decaystring).c_str()]->Fill(MVA_mWt , datasets[d], true, weight_);
   }
+  decaystring = "";
 }
 void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isZut , bool istoppair, double weight_, int MVA_channel){
   
@@ -2106,6 +2127,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isZ
       }
     }
   }
+  decaystring = "";
 }
 
 void GetPDFEnvelope(string dataSetName){
@@ -2234,7 +2256,7 @@ void Fill1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
   }
   
   output_histo_name = "";
-  
+  decaystring = "";
   
 }
 void FillMTWShapeHisto(string dataSetName, string systematic, double weight_,int isys, int MVA_channel, vector <int> decayChannels){
@@ -2252,10 +2274,12 @@ void FillMTWShapeHisto(string dataSetName, string systematic, double weight_,int
     if(isys == 0) output_histo_name = dataSetName+"_MTW_nominal_"+decaystring;
     else output_histo_name = dataSetName+"_MTW_"+systematic + "_" + decaystring;
     
-    //cout << "fill " << output_histo_name << " " << MVA_mWt << " " << weight_ <<  endl;
-    histo1DMTW[output_histo_name]->Fill(MVA_mWt, weight_);
+   // cout << "fill " << output_histo_name << " " << MVA_mWt << " " << weight_ <<  endl;
+   // histo1DMTW[output_histo_name.c_str()]->Fill(MVA_mWt, weight_);
+     histo1DMTW[output_histo_name.c_str()]->Fill(1, 1);
     output_histo_name = "";
   }
+  decaystring = "";
 }
 
 void FillSystematicHisto(string dataSetName, string systematic, double weight_, int isys ){
