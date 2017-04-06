@@ -321,7 +321,7 @@ int main(int argc, char* argv[]){
   else placeOutputReading += "/MTWtemplate" ;
   mkdir(placeOutputReading.c_str(), 0777);
   combinetemplate_filename = placeOutputReading+"/Reader_" + coupling +"_" + region + ".root";
-  if(doMTWtemplate) combinetemplate_filename = placeOutputReading+"/Reader_MTW.root";
+  if(doMTWtemplate) combinetemplate_filename = placeOutputReading+"/Reader_"+coupling+"_MTW.root";
   cout <<" - Combine templates stored at " << combinetemplate_filename.c_str() << endl;
   
   std::vector < int>  decayChannels = {0,1,2,3,-9}; // uuu uue eeu eee all
@@ -740,7 +740,7 @@ int main(int argc, char* argv[]){
     
     string pseudodata_input_name = placeOutputReading+"/Reader_" + coupling + "_" + region + ".root";
     
-    if(doMTWtemplate) pseudodata_input_name = placeOutputReading+"/Reader_MTW.root";
+    if(doMTWtemplate) pseudodata_input_name = placeOutputReading+"/Reader_"+coupling+"_MTW.root";
     TFile* pseudodata_file = TFile::Open( pseudodata_input_name.c_str(), "UPDATE" );
     
     cout << "Generating pseudo data from " << pseudodata_input_name << endl;
