@@ -411,7 +411,7 @@ int main(int argc, char* argv[]){
   if(makePlots && doMTWtemplate){
     for(int isys = 0; isys < thesystlist.size() ; isys++){
       systematic = thesystlist[isys];
-      if(isys != 0 ) tempstring = systematic;
+      if(isys != 0 ) tempstring = "_" + systematic;
       InitMSPlotsMTW(tempstring, decayChannels);
     }
   }
@@ -603,7 +603,7 @@ int main(int argc, char* argv[]){
         }
         if (makePlots && doMTWtemplate)
         {
-          if(isys != 0) tempstring = systematic;
+          if(isys != 0) tempstring = "_" + systematic;
          // if(isData) cout << "fill data " << endl;
           FillMTWPlots(d, tempstring, decayChannels, weightMSPlot, MVA_channel);
         }
