@@ -76,7 +76,7 @@ map<string,TTree*> tStatsTree;
 
 
 vector < Dataset* > datasets;
-
+vector < Dataset* > datasetsbefore;
 std::vector < int>  decayChannels = {0,1,2,3,-9}; // uuu uue eeu eee all
 //std::vector < int>  decayChannels = {-9};
 bool firstevent = false;
@@ -918,12 +918,12 @@ int main(int argc, char* argv[]){
   
   //  load datasets
   datasets.clear();
-  
+  datasetsbefore.clear();
   
   
   TTreeLoader treeLoader;
   cout << "loading " << endl;
-  treeLoader.LoadDatasets(datasets, xmlFile);
+  treeLoader.LoadDatasets(datasetsbefore, xmlFile);
   cout << "datasets loaded" <<endl;
   bool makePlots = false;
   bool makeMVAPlots = false;
@@ -1090,6 +1090,20 @@ int main(int argc, char* argv[]){
     }
   }
   
+  for (int d = 0; d < datasetsbefore.size(); d++)   //Loop through datasets
+  {
+    string dataSetName = datasetsbefore[d]->Name();
+    if (dataSetName.find("Data")!=std::string::npos || dataSetName.find("data") !=std::string::npos || dataSetName.find("DATA") !=std::string::npos)
+    {
+      Luminosity = datasetsbefore[d]->EquivalentLumi();
+    }
+    if((applyJEC_down || applyJEC_up || applyJER_down || applyJER_up) & dataSetName.find("data")!=std::string::npos){continue;}
+    else if((applyJEC_down || applyJEC_up || applyJER_down || applyJER_up) & dataSetName.find("fake")!=std::string::npos){continue;}
+    else{
+      datasets.push_back(datasetsbefore[d]);
+    }
+  
+  }
   if(makePlots){
     firstevent = true;
     InitMSPlots("control_afterAtLeast1Jet", decayChannels);
