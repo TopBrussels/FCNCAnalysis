@@ -3216,6 +3216,7 @@ int main (int argc, char *argv[])
                                 }else if (qElec0 != qElec1) {
                                     invMass_2OSL_Zmass = InvMass_ll;
                                 }
+                                NoZmassVetoTree ->Fill();
                             }
                            // if (isData && diElectron && fabs(Zmass - InvMass_ll ) >= 10)
                             if (isData && diElectron && fabs(Zmass - InvMass_ll ) <= 10)
@@ -3346,7 +3347,7 @@ int main (int argc, char *argv[])
                                 
                             }
                             
-                            NoZmassVetoTree ->Fill();
+                            //NoZmassVetoTree ->Fill();
                             
                             
                             if(debug)cout << "the mass of dilepton before Zmass veto =  " <<InvMass_ll << endl;
