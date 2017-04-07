@@ -44,6 +44,7 @@ using namespace TopTree;
 map<string,TH1F*> histo1D;
 map<string,TH1F*> histo1DPDF;
 map<string,TH1F*> histo1DMTW;
+map<string,TH1F*> histo1DMTW;
 map<string,TH1F*> histo1DSys;
 map<string,TH2F*> histo2D;
 map<string,MultiSamplePlot*> MSPlot;
@@ -1121,8 +1122,8 @@ int main(int argc, char* argv[]){
         Canvas->SaveAs( (placeTH1F+nameplot+"_LogY.png").c_str() );
       }
     }
-   // if(false){ // TO FIX
-   if(makePlots && doMTWtemplate){
+  if(false){ // TO FIX
+  // if(makePlots && doMTWtemplate){
       cout << "plotting mtW shapes " << endl;
       std::vector<string> channellist;
       channellist.push_back("all");
@@ -1144,7 +1145,7 @@ int main(int argc, char* argv[]){
         TH1F *tempSignalTT_nom(0);
         
         //cout << "histo mtw size " << histo1DMTW.size() << endl;
-        for (std::map<std::string,TH1F*>::const_iterator it = histo1DMTW.begin(); it != histo1DMTW.end(); it++)
+        for (map<string,TH1F*>::const_iterator it = histo1DMTW.begin(); it != histo1DMTW.end(); it++)
         {
          // cout << "looking at " << it->first << " and the channel to keep " << channellist[iChan].c_str() << endl;
         
