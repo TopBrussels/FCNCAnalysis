@@ -433,6 +433,8 @@ Bool_t          isId_electron[3];   //[nElectrons]
 Bool_t          isIso_electron[3];   //[nElectrons]
 Bool_t          isEBEEGap[3];   //[nElectrons]
 Int_t           nMuons;
+Int_t           badmueventmu[3];
+Int_t           badmueventclonemu[3];
 Double_t        MuonIDSF[3];   //[nMuons]
 Double_t        MuonTrackSF[3];   //[nMuons]
 Double_t        MuonIDSF_up[3];   //[nMuons]
@@ -571,6 +573,8 @@ TBranch        *b_MuonIsoSF_down;   //!
 TBranch        *b_MuonTrigSFv2;   //!
 TBranch        *b_MuonTrigSFv3;   //!
 TBranch        *b_pt_muon;   //!
+TBranch         *b_badmueventclonemu;
+TBranch         *b_badmueventmu;
 TBranch        *b_phi_muon;   //!
 TBranch        *b_eta_muon;   //!
 TBranch        *b_E_muon;   //!
@@ -945,6 +949,7 @@ int main(int argc, char* argv[]){
   bool applyPUSF_up = false;
   bool applyNloSF = false;
   bool applyMETfilter = false;
+  bool removeBadMu  = true;
   
   string placeNtup = "singletop/170214";
   int channel = -999;
@@ -978,10 +983,12 @@ int main(int argc, char* argv[]){
       std::cout << "   noTrigger: do not apply trigger " << endl;
       std::cout << "   checkTrigger: check trigger in data " << endl;
       std::cout << "   Test: loop over 1000 events" << endl;
-
+      std::cout << "   withBadMu " << endl; 
       return 0;
     }
-
+    if(string(argv[i]).find("withBadMu")!=std::string::npos) {
+	removeBadMu = false; 
+    }
     if(string(argv[i]).find("applyJEC")!=std::string::npos) {
       
       i++;
@@ -1287,8 +1294,7 @@ int main(int argc, char* argv[]){
       }
       
       
-      
-      if(applyMETfilter && !PassedMETFilter) continue;
+     if(applyMETfilter && !PassedMETFilter) continue;
       if(applytrigger && !PassedTrigger) continue;
       if(applytriggerNoLogic && !PassedTriggerNoLogic) continue;
       if(applytriggerNoLogic2 && !PassedTriggerNoLogic2) continue;
@@ -1302,6 +1308,9 @@ int main(int argc, char* argv[]){
       tempInvMassObj.SetPtEtaPhiE(0.,0., 0.,0.);
       for(unsigned int iMu = 0; iMu < nMuons ; iMu++){
         if( pt_muon[iMu] < 40. ) continue;
+        if(removeBadMu && !badmueventmu[iMu]) continue;
+        if(removeBadMu && !badmueventclonemu[iMu]) continue;
+        
         muon.Clear();
         muon.SetPtEtaPhiE(pt_muon[iMu], eta_muon[iMu], phi_muon[iMu], E_muon[iMu]);
         
@@ -4246,6 +4255,8 @@ void InitTree(TTree* tree, bool isData){
   tree->SetBranchAddress("MuonIsoSF_down", MuonIsoSF_down, &b_MuonIsoSF_down);
   tree->SetBranchAddress("MuonTrigSFv2", MuonTrigSFv2, &b_MuonTrigSFv2);
   tree->SetBranchAddress("MuonTrigSFv3", MuonTrigSFv3, &b_MuonTrigSFv3);
+  tree->SetBranchAddress("badmueventmu", badmueventmu, &b_badmueventmu);
+  tree->SetBranchAddress("badmueventclonemu", badmueventclonemu, &b_badmueventclonemu);
   tree->SetBranchAddress("pt_muon", pt_muon, &b_pt_muon);
   tree->SetBranchAddress("phi_muon", phi_muon, &b_phi_muon);
   tree->SetBranchAddress("eta_muon", eta_muon, &b_eta_muon);
