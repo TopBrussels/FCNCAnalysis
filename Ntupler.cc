@@ -894,6 +894,7 @@ int main (int argc, char *argv[])
     ///////////////////////////
     /// output tree
     ///////////////////////////
+    
     // event related variables
     Int_t run_num;
     double i_channel;
@@ -907,6 +908,7 @@ int main (int argc, char *argv[])
     Int_t nvtx;
     Int_t npu;
     Int_t PassedMETFilter;
+    
     Int_t PassedTrigger;
     Int_t PassedTriggerNoLogic;
     Int_t PassedTriggerNoLogic2;
@@ -996,6 +998,8 @@ int main (int argc, char *argv[])
     
     //variable for muons
     Int_t nMuons;
+    Int_t badmueventmu[10];
+    Int_t badmueventclonemu[10];
     Double_t pt_muon[10];
     Double_t phi_muon[10];
     Double_t eta_muon[10];
@@ -1146,7 +1150,6 @@ int main (int argc, char *argv[])
     myTree->Branch("btagSFshape_up_lfstats1",&btagSFshape_up_lfstats1,"btagSFshape_up_lfstats1/D");
     myTree->Branch("btagSFshape_up_lfstats2",&btagSFshape_up_lfstats2,"btagSFshape_up_lfstats2/D");
     
-    
     myTree->Branch("PassedMETFilter", &PassedMETFilter,"PassedMETFilter/I");
     myTree->Branch("PassedTrigger", &PassedTrigger, "PassedTrigger/I");
     myTree->Branch("PassedTriggerNoLogic", &PassedTriggerNoLogic, "PassedTriggerNoLogic/I");
@@ -1190,6 +1193,9 @@ int main (int argc, char *argv[])
     
     // muons
     myTree->Branch("nMuons",&nMuons, "nMuons/I");
+    myTree->Branch("badmueventclonemu", &badmueventclonemu, "badmueventclonemu[nMuons]/I");
+    myTree->Branch("badmueventmu", &badmueventmu, "badmueventmu[nMuons]/I");
+    
     myTree->Branch("MuonIDSF",&MuonIDSF,"MuonIDSF[nMuons]/D");
     myTree->Branch("MuonIsoSF",&MuonIsoSF, "MuonIsoSF[nMuons]/D");
      myTree->Branch("MuonTrackSF",&MuonTrackSF, "MuonTrackSF[nMuons]/D");
@@ -1363,6 +1369,7 @@ int main (int argc, char *argv[])
     bool   CSCTight = false;
     bool badchan = false;
     bool badmu = false;
+    
     bool   EcalDead = false;
     //bool    eeBad = false; not recommended
     bool   lep3 = false;
@@ -1485,7 +1492,7 @@ int main (int argc, char *argv[])
       badchan   = event-> getBadChCandFilter();
       badmu	    = event-> getBadPFMuonFilter();
       
-      
+    
       
       lumi_num=event->lumiBlockId();
       nvtx = vertex.size();
@@ -1827,7 +1834,7 @@ int main (int argc, char *argv[])
       bool isGoodPV = selection.isPVSelected(vertex, 4, 24., 2);
       // Met filters
       //if(HBHEnoise && HBHEIso && CSCTight && EcalDead && eeBad && isGoodPV && badchan && badmu) passedMET = true;
-      if(HBHEnoise && HBHEIso && CSCTight && EcalDead  && isGoodPV && badchan && badmu) passedMET = true;
+      if(HBHEnoise && HBHEIso && CSCTight && EcalDead  && isGoodPV && badchan && badmu ) passedMET = true;
       PassedMETFilter = passedMET;
       PassedGoodPV = isGoodPV;
       
@@ -2131,6 +2138,10 @@ int main (int argc, char *argv[])
           eta_muon[nMuons]=selectedMuons[selmu]->Eta();
           E_muon[nMuons]=selectedMuons[selmu]->E();
           
+          badmueventmu[nMuons] = selectedMuons[selmu]->isBad80X();
+          badmueventclonemu[nMuons] = selectedMuons[selmu]->isClone80X();
+          
+          
           pfIso_muon[nMuons]=selectedMuons[selmu]->relPfIso(4,0);
           if(!isData)
           {
@@ -2171,6 +2182,8 @@ int main (int argc, char *argv[])
             phi_muon[nMuons]=selectedFakeMuons[selmu]->Phi();
             eta_muon[nMuons]=selectedFakeMuons[selmu]->Eta();
             E_muon[nMuons]=selectedFakeMuons[selmu]->E();
+            badmueventmu[nMuons] = selectedFakeMuons[selmu]->isBad80X();
+            badmueventclonemu[nMuons] = selectedFakeMuons[selmu]->isClone80X();
             
             pfIso_muon[nMuons]=selectedFakeMuons[selmu]->relPfIso(4,0);
             if(!isData)
