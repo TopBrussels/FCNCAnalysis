@@ -1,3 +1,4 @@
+
 #include <TH1.h>
 #include <TH2.h>
 #include <TStyle.h>
@@ -113,8 +114,8 @@ string postfix = "";
 string output_histo_name = "";
 string ntupleFileName ="";
 int nbin = 10;
-int nbinMTW = 10;
-double endMTW = 250.;
+int nbinMTW = 100;
+double endMTW = 2000.;
 int nEntries = -1;
 int scaleNP = 10;
 
@@ -400,28 +401,32 @@ int main(int argc, char* argv[]){
   for (int d = 0; d < datasetsbf.size(); d++){   //Loop through datasets to get lumi setting
     
     dataSetName = datasetsbf[d]->Name();
+   // cout << "sample " << dataSetName << endl;
     if( dataSetName.find("Data")!=std::string::npos || dataSetName.find("data")!=std::string::npos|| dataSetName.find("DATA")!=std::string::npos  ){
-      Luminosity = datasets[d]->EquivalentLumi();
-      cout << "lumi set to " << Luminosity << endl;
+      Luminosity = datasetsbf[d]->EquivalentLumi();
+      cout << " - lumi set to " << Luminosity << endl;
     }
     
     if((dataSetName.find("Zct")!=std::string::npos || dataSetName.find("zct")!=std::string::npos) && doZut){
-      cout << "removing " << dataSetName << " from samples" << endl;
+      cout << " - removing " << dataSetName << " from samples" << endl;
       continue;
     }
     else if ((dataSetName.find("Zut")!=std::string::npos || dataSetName.find("zut")!=std::string::npos) && !doZut){
-      cout << "removing " << dataSetName << " from samples" << endl;
+      cout << " - removing " << dataSetName << " from samples" << endl;
       continue;
     }
     else{
+      
       if( (dataSetName.find("Data")!=std::string::npos || dataSetName.find("data")!=std::string::npos|| dataSetName.find("DATA")!=std::string::npos  ) && doPseudoData ) {
-        cout << "removing " << dataSetName << " from samples" << endl;
+        cout << " - removing " << dataSetName << " from samples" << endl;
       }
-      else  {
-        if(dataSetName.find("Data")!=std::string::npos || dataSetName.find("data")!=std::string::npos|| dataSetName.find("DATA")!=std::string::npos  ){ datafound = true; }
-        
-        
-        cout << "pushing back " << dataSetName << endl;
+      else if(dataSetName.find("Data")!=std::string::npos || dataSetName.find("data")!=std::string::npos|| dataSetName.find("DATA")!=std::string::npos  ){
+        datafound = true;
+        //cout << "pushing back " << dataSetName << endl;
+        datasets.push_back(datasetsbf[d]);
+      }
+      else {
+        //cout << "pushing back " << dataSetName << endl;
         datasets.push_back(datasetsbf[d]);
       }
     }
@@ -611,7 +616,7 @@ int main(int argc, char* argv[]){
         
         if(MVA_Luminosity != 0 && !isData) weight = (weight * Luminosity)/ MVA_Luminosity;
         if(!datafound) Luminosity = MVA_Luminosity;
-        if(doMTWtemplate && dataSetName.find("fake")!=std::string::npos){ weight *= 0.000001 ;}
+        if(dataSetName.find("fake")!=std::string::npos){ weight *= 0.000001 ;}
        
         if( isData){ weight = 1.;}
         if(!doMTWtemplate){
