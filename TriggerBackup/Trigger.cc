@@ -53,7 +53,7 @@ void Trigger::bookTriggers(bool isData, string dName)
   
   /// Add relevant triggers to triggerlist
   //  Recommended triggers for TOP analyses
-  //  Last updated: 6 dec 2016. https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopTrigger
+  //  Last updated: 12 Apr 2017 . https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopTrigger
   if (singleLep && !doubleLep && !trilep)
   {
     if (muon)
@@ -64,6 +64,11 @@ void Trigger::bookTriggers(bool isData, string dName)
         {
           triggerList.push_back("HLT_IsoMu24_v*");
           triggerList.push_back("HLT_IsoTkMu24_v*");
+          triggerList.push_back("HLT_IsoMu22_v*");
+          triggerList.push_back("HLT_IsoTkMu22_v*");
+          triggerList.push_back("HLT_IsoMu22_eta2p1_v*");
+          triggerList.push_back("HLT_IsoTkMu22_eta2p1_v*");
+          
         }
         /*else if(  dName.find("Run_2016G")!=string::npos || dName.find("Run_2016H")!=string::npos)
         {
@@ -87,8 +92,13 @@ void Trigger::bookTriggers(bool isData, string dName)
         {
       //    triggerList.push_back("HLT_IsoMu22_eta2p1_v*");
        //   triggerList.push_back("HLT_IsoTkMu22_eta2p1_v*");
-          triggerList.push_back("HLT_IsoMu24_v2");
-          triggerList.push_back("HLT_IsoTkMu24_v2");
+          triggerList.push_back("HLT_IsoMu24_v*");
+          triggerList.push_back("HLT_IsoTkMu24_v*");
+          triggerList.push_back("HLT_IsoMu22_v*");
+          triggerList.push_back("HLT_IsoTkMu22_v*");
+          triggerList.push_back("HLT_IsoMu22_eta2p1_v*");
+          triggerList.push_back("HLT_IsoTkMu22_eta2p1_v*");
+          
         }
         else if( dName.find("76X")!=string::npos ){
           triggerList.push_back("HLT_IsoMu18_v*");
@@ -103,9 +113,10 @@ void Trigger::bookTriggers(bool isData, string dName)
       {
         
         if( dName.find("Run_2016B")!=string::npos || dName.find("Run_2016C")!=string::npos || dName.find("Run_2016D")!=string::npos || dName.find("Run_2016E")!=string::npos || dName.find("Run_2016F")!=string::npos || dName.find("Run_2016G")!=string::npos || dName.find("Run_2016H")!=string::npos)        {
-          triggerList.push_back("HLT_Ele32_eta2p1_WPTight_Gsf_v*");
-          //triggerList.push_back("HLT_Ele27_WPTight_Gsf_v*"); // relative unprescaled
-          //triggerList.push_back("HLT_Ele25_eta2p1_WPTight_Gsf_v*"); // relative unprescaled
+          //triggerList.push_back("HLT_Ele32_eta2p1_WPTight_Gsf_v*");
+          triggerList.push_back("HLT_Ele27_WPTight_Gsf_v*"); // relative unprescaled
+          triggerList.push_back("HLT_Ele25_eta2p1_WPTight_Gsf_v*"); // relative unprescaled
+          triggerList.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v*");
         }
      /*   else if( dName.find("Run_2015C")!=string::npos || dName.find("Run_2015D")!=string::npos ){
           triggerList.push_back("HLT_Ele23_WPLoose_Gsf_v*");  // Data, restricted to eta < 2.1
@@ -116,10 +127,14 @@ void Trigger::bookTriggers(bool isData, string dName)
       else
       {
         if( dName.find("80X")!=string::npos)
-        {
-          triggerList.push_back("HLT_Ele32_eta2p1_WPTight_Gsf_v*");
+      {
+      //    triggerList.push_back("HLT_Ele32_eta2p1_WPTight_Gsf_v*");
        //   triggerList.push_back("HLT_Ele27_WPTight_Gsf_v*");
        //   triggerList.push_back("HLT_Ele25_eta2p1_WPTight_Gsf_v*");
+        triggerList.push_back("HLT_Ele27_WPTight_Gsf_v*"); // relative unprescaled
+        triggerList.push_back("HLT_Ele25_eta2p1_WPTight_Gsf_v*"); // relative unprescaled
+        triggerList.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v*");
+        
         }
         else if( dName.find("76X")!=string::npos){
           triggerList.push_back("HLT_Ele23_WPLoose_Gsf_v*");
@@ -142,6 +157,8 @@ void Trigger::bookTriggers(bool isData, string dName)
           //cout << "pushing back " << endl;
           triggerList.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*"); // prescaled for H
           triggerList.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*"); // prescaked for H
+          triggerList.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
+          triggerList.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
         }
         else if( dName.find("Run_2016H")!=string::npos)
         {
@@ -160,6 +177,8 @@ void Trigger::bookTriggers(bool isData, string dName)
         {
           triggerList.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*");
           triggerList.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*");
+          triggerList.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
+          triggerList.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
         }
         else if( dName.find("76X")!=string::npos ){
           triggerList.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
@@ -174,8 +193,8 @@ void Trigger::bookTriggers(bool isData, string dName)
         
         if( dName.find("Run_2016B")!=string::npos || dName.find("Run_2016C")!=string::npos || dName.find("Run_2016D")!=string::npos || dName.find("Run_2016E")!=string::npos || dName.find("Run_2016F")!=string::npos || dName.find("Run_2016G")!=string::npos || dName.find("Run_2016H")!=string::npos)
         {
-         // triggerList.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
-          triggerList.push_back("HLT_DoubleEle24_22_eta2p1_WPLoose_Gsf_v*");
+         triggerList.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+         // triggerList.push_back("HLT_DoubleEle24_22_eta2p1_WPLoose_Gsf_v*");
         }
         else if( dName.find("Run_2015C")!=string::npos || dName.find("Run_2015D")!=string::npos ){
           triggerList.push_back("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");  // Data, restricted to eta < 2.1
@@ -187,8 +206,8 @@ void Trigger::bookTriggers(bool isData, string dName)
       {
         if( dName.find("80X")!=string::npos)
         {
-         // triggerList.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
-          triggerList.push_back("HLT_DoubleEle24_22_eta2p1_WPLoose_Gsf_v*");
+          triggerList.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+         // triggerList.push_back("HLT_DoubleEle24_22_eta2p1_WPLoose_Gsf_v*");
         }
         else if( dName.find("76X")!=string::npos) {
           triggerList.push_back("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
@@ -201,8 +220,14 @@ void Trigger::bookTriggers(bool isData, string dName)
     {
       if (isData)
       {
-        
-        if(dName.find("Run_2016B")!=string::npos || dName.find("Run_2016C")!=string::npos || dName.find("Run_2016D")!=string::npos || dName.find("Run_2016E")!=string::npos || dName.find("Run_2016F")!=string::npos || dName.find("Run_2016G")!=string::npos )
+        if(dName.find("Run_2016B")!=string::npos || dName.find("Run_2016C")!=string::npos || dName.find("Run_2016D")!=string::npos || dName.find("Run_2016E")!=string::npos || dName.find("Run_2016F")!=string::npos || dName.find("Run_2016G")!=string::npos || dName.find("Run_2016H")!=string::npos )
+        {
+          triggerList.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*");
+          triggerList.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+          triggerList.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*" );
+          triggerList.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*" );
+        }
+       /* if(dName.find("Run_2016B")!=string::npos || dName.find("Run_2016C")!=string::npos || dName.find("Run_2016D")!=string::npos || dName.find("Run_2016E")!=string::npos || dName.find("Run_2016F")!=string::npos || dName.find("Run_2016G")!=string::npos )
         {
           //cout << "pushing back " << endl;
           triggerList.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
@@ -225,7 +250,7 @@ void Trigger::bookTriggers(bool isData, string dName)
           //triggerList.push_back("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*");
           triggerList.push_back("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
           
-        }
+        }*/
         else if( dName.find("Run_2015C")!=string::npos || dName.find("Run_2015D")!=string::npos ){
           triggerList.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
         }
@@ -236,11 +261,16 @@ void Trigger::bookTriggers(bool isData, string dName)
       {
         if( dName.find("80X")!=string::npos)
         {
-          triggerList.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
+          triggerList.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*");
+          triggerList.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+          triggerList.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*" );
+          triggerList.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*" );
+          
+         /* triggerList.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
           triggerList.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
           triggerList.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*");
           triggerList.push_back("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*");
-          triggerList.push_back("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+          triggerList.push_back("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");*/
           //triggerList.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v4");
         }
         else if( dName.find("76X")!=string::npos ){
@@ -261,7 +291,7 @@ void Trigger::bookTriggers(bool isData, string dName)
         if( dName.find("Run_2016B")!=string::npos || dName.find("Run_2016C")!=string::npos || dName.find("Run_2016D")!=string::npos || dName.find("Run_2016E")!=string::npos || dName.find("Run_2016F")!=string::npos || dName.find("Run_2016G")!=string::npos || dName.find("Run_2016H")!=string::npos)
         {
           triggerList.push_back("HLT_TripleMu_12_10_5_v*");
-          triggerList.push_back("HLT_TripleMu_5_3_3_v*");
+         // triggerList.push_back("HLT_TripleMu_5_3_3_v*");
           
         }
         else if( dName.find("Run_2015C")!=string::npos || dName.find("Run_2015D")!=string::npos ){
