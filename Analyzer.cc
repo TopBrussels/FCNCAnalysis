@@ -434,6 +434,7 @@ Bool_t          isIso_electron[3];   //[nElectrons]
 Bool_t          isEBEEGap[3];   //[nElectrons]
 Int_t           nMuons;
 Int_t           badmueventmu[3];
+Int_t           rejecteventBadPFmuon;
 Int_t           badmueventclonemu[3];
 Double_t        MuonIDSF[3];   //[nMuons]
 Double_t        MuonTrackSF[3];   //[nMuons]
@@ -574,6 +575,7 @@ TBranch        *b_MuonTrigSFv2;   //!
 TBranch        *b_MuonTrigSFv3;   //!
 TBranch        *b_pt_muon;   //!
 TBranch         *b_badmueventclonemu;
+TBranch         *b_rejecteventBadPFmuon;
 TBranch         *b_badmueventmu;
 TBranch        *b_phi_muon;   //!
 TBranch        *b_eta_muon;   //!
@@ -643,10 +645,10 @@ void FillGenInfoPlots(string dataSetName);
 void InitRecovsGenInfoPlots(string dataSetName);
 void FillRecovsGenInfoPlots(string dataSetName, vector<TLorentzVector> selectedElectrons, vector <TLorentzVector> selectedMuons , vector <TLorentzVector> selectedJets);
 void Fill1DPlots(string dataSetName);
-void InitTree(TTree* tree, bool isData);
+void InitTree(TTree* tree, bool isData, bool isfakes);
 // data from global tree
 void ClearMetaData();
-void GetMetaData(TTree* tree, bool isData,int Entries, bool isAMC);
+void GetMetaData(TTree* tree, bool isData,int Entries, bool isAMC, bool isfakes);
 // put everything to default values
 void ClearObjects();
 void ClearVars();
@@ -655,7 +657,7 @@ void ClearTLVs();
 void ClearMatchingVars();
 void ClearMatchingVarsTLV();
 void ClearMatchingSampleVars();
-void FillGeneralPlots(int d, string prefix, vector<int>decayChannels, bool isData);
+void FillGeneralPlots(int d, string prefix, vector<int>decayChannels, bool isData, bool isfakes);
 void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<int>decayChannels);
 string ConvertIntToString(int nb, bool pad);
 void ReconstructObjects(vector<TLorentzVector> Muons,vector<TLorentzVector> selectedElectrons, vector<TLorentzVector> selectedJets,int Region);
@@ -983,11 +985,11 @@ int main(int argc, char* argv[]){
       std::cout << "   noTrigger: do not apply trigger " << endl;
       std::cout << "   checkTrigger: check trigger in data " << endl;
       std::cout << "   Test: loop over 1000 events" << endl;
-      std::cout << "   withBadMu " << endl; 
+      std::cout << "   withBadMu " << endl;
       return 0;
     }
     if(string(argv[i]).find("withBadMu")!=std::string::npos) {
-	removeBadMu = false; 
+      removeBadMu = false;
     }
     if(string(argv[i]).find("applyJEC")!=std::string::npos) {
       
@@ -1150,6 +1152,7 @@ int main(int argc, char* argv[]){
   string dataSetName, slumi;
   double timePerDataSet[datasets.size()];
   bool isData = false;
+  bool isfakes = false;
   bool isAMC = false;
   int nSelectedEntriesST = 0;
   int nSelectedEntriesTT = 0;
@@ -1179,10 +1182,12 @@ int main(int argc, char* argv[]){
     }
     
     isData = false;
-    if ( dataSetName.find("Data") != std::string::npos || dataSetName.find("data")!= std::string::npos || dataSetName.find("DATA")!= std::string::npos || dataSetName.find("fake")!= std::string::npos)
+    if ( dataSetName.find("Data") != std::string::npos || dataSetName.find("data")!= std::string::npos || dataSetName.find("DATA")!= std::string::npos )
     {
       isData = true;
     }
+    isfakes = false;
+    if(dataSetName.find("fake")!=std::string::npos ) {isfakes = true;}
     isAMC= false;
     if ( dataSetName.find("amc")!= std::string::npos || dataSetName.find("AMC") != std::string::npos  )
     {
@@ -1193,6 +1198,7 @@ int main(int argc, char* argv[]){
     {
       check_matching = false;
     }
+  //  if(!isData) continue;
     
     if(check_matching){
       ClearMatchingSampleVars();
@@ -1209,6 +1215,8 @@ int main(int argc, char* argv[]){
     }
     
     string ntupleFileName = "NtupleMakerOutput/MergedTuples/"+placeNtup+"/"+dataSetName+".root";
+   // ntupleFileName = "FCNC_3L_data_DoubleMuon_Run_2016C_1.root";
+   // ntupleFileName = "FCNC_3L_WZTo3LNu_0Jets_MLL50_80X_1.root";
     tFileMap[dataSetName.c_str()] = new TFile((ntupleFileName).c_str(),"READ"); //create TFile for each dataset
     
     string tTreeName = "tree";
@@ -1226,7 +1234,7 @@ int main(int argc, char* argv[]){
     tStatsTree[dataSetName.c_str()] = (TTree*)tFileMap[dataSetName.c_str()]->Get(tStatsTreeName.c_str());
     globalnEntries = (int) tStatsTree[dataSetName.c_str()]->GetEntries();
     //cout << "getting meta data " << endl;
-    GetMetaData(tStatsTree[dataSetName.c_str()], isData, globalnEntries, isAMC);
+    GetMetaData(tStatsTree[dataSetName.c_str()], isData, globalnEntries, isAMC, isfakes);
     //cout << "meta data gotten" << endl;
     
     
@@ -1237,7 +1245,7 @@ int main(int argc, char* argv[]){
     
     
     // Set branch addresses and branch pointers
-    InitTree(tTree[dataSetName.c_str()], isData);
+    InitTree(tTree[dataSetName.c_str()], isData, isfakes);
     
     if(makeMVAtree){
       
@@ -1271,7 +1279,6 @@ int main(int argc, char* argv[]){
     nSelectedEntriesTTweighted = 0.;
     nSelectedEntriesWZweighted = 0.;
     
-    
     for (int ievt = 0; ievt < endEvent; ievt++)
     {
       ClearObjects(); // put everything to default values
@@ -1286,6 +1293,7 @@ int main(int argc, char* argv[]){
       /// Load event
       tTree[(dataSetName).c_str()]->GetEntry(ievt);
       
+      if(removeBadMu && rejecteventBadPFmuon){ cout << "removing bad pf muon event " << endl; continue;}
       
       if(isData){
         if(evt_num < mineventnb)  mineventnb = evt_num;
@@ -1294,7 +1302,7 @@ int main(int argc, char* argv[]){
       }
       
       
-     if(applyMETfilter && !PassedMETFilter) continue;
+      if(applyMETfilter && !PassedMETFilter){   continue;}
       if(applytrigger && !PassedTrigger) continue;
       if(applytriggerNoLogic && !PassedTriggerNoLogic) continue;
       if(applytriggerNoLogic2 && !PassedTriggerNoLogic2) continue;
@@ -1306,10 +1314,11 @@ int main(int argc, char* argv[]){
       tempPy = 0.;
       tempHt = 0.;
       tempInvMassObj.SetPtEtaPhiE(0.,0., 0.,0.);
+      
       for(unsigned int iMu = 0; iMu < nMuons ; iMu++){
-        if( pt_muon[iMu] < 40. ) continue;
-        if(removeBadMu && !badmueventmu[iMu]) continue;
-        if(removeBadMu && !badmueventclonemu[iMu]) continue;
+        if( pt_muon[iMu] < 40. ){ continue; } //cout << "removing muon with pt " << pt_muon[iMu] << endl;  continue;}
+       // if(removeBadMu && badmueventmu[iMu] ) {cout << "removing bad mu" << endl; continue;}
+       // if(removeBadMu && badmueventclonemu[iMu] ){cout << "removing cloned mu " << endl; continue;}
         
         muon.Clear();
         muon.SetPtEtaPhiE(pt_muon[iMu], eta_muon[iMu], phi_muon[iMu], E_muon[iMu]);
@@ -1322,6 +1331,7 @@ int main(int argc, char* argv[]){
         tempHt = tempHt + muon.Pt();
         tempInvMassObj = tempInvMassObj + muon;
       }
+     // cout << "nMuons " << nMuons << " selected " << selectedMuons.size() << endl;
       
       for(unsigned int iEl = 0; iEl < nElectrons ; iEl++){
         if(pt_electron[iEl]<40.) continue;
@@ -1454,8 +1464,18 @@ int main(int argc, char* argv[]){
        scaleFactor_btagSF_lfstats1_down=1.; 
        scaleFactor_btagSF_lfstats1_up=1.; 
        scaleFactor_btagSF_lfstats2_down=1.; 
-       scaleFactor_btagSF_lfstats2_up=1.; 
-      if (! isData)
+       scaleFactor_btagSF_lfstats2_up=1.;
+      muonSFtemp = 1.;
+      electronSFtemp = 1.;
+      puSF = 1.;
+      scaleFactor_muonSF_up = 1.;
+      scaleFactor_muonSF_down = 1.;
+      scaleFactor_electronSF_down = 1.;
+      scaleFactor_electronSF_up = 1.;
+      scaleFactor_puSF_down = 1. ;
+      scaleFactor_puSF_up = 1.;
+      
+      if (! isData && !isfakes)
       {
         if (applyMuonSF) {
          // if(ievt == 2)cout << "                - applying muon factors " << endl;
@@ -1560,15 +1580,51 @@ int main(int argc, char* argv[]){
         if(scaleFactor_bfPU != scaleFactor_bfPU) scaleFactor_bfPU= 0.;
         
       }
-      else if(isData) scaleFactor = 1.;
-     // if(ievt == 2) cout << "                ==> scaleFactor " << scaleFactor << endl;
-      
+      else if(isData || isfakes ){
+        btagSFshape = 1.;
+        scaleFactor = 1.;
+        scaleFactor_bfBT = 1.;
+        scaleFactor_bfELSF = 1.;
+        scaleFactor_bfMuSF = 1.;
+        scaleFactor_bfPU = 1.;
+        scaleFactor_puSF_down=1.;
+        scaleFactor_puSF_up=1.;
+        scaleFactor_electronSF_down=1.;
+        scaleFactor_electronSF_up=1.;
+        scaleFactor_muonSF_down=1.;
+        scaleFactor_muonSF_up=1.;
+        scaleFactor_btagSF_cferr1_down=1.;
+        scaleFactor_btagSF_cferr1_up=1.;
+        scaleFactor_btagSF_cferr2_down=1.;
+        scaleFactor_btagSF_cferr2_up=1.;
+        scaleFactor_btagSF_hf_down=1.;
+        scaleFactor_btagSF_hf_up=1.;
+        scaleFactor_btagSF_hfstats1_down=1.;
+        scaleFactor_btagSF_hfstats1_up=1.;
+        scaleFactor_btagSF_hfstats2_down=1.;
+        scaleFactor_btagSF_hfstats2_up=1.;
+        scaleFactor_btagSF_lf_down=1.;
+        scaleFactor_btagSF_lf_up=1.;
+        scaleFactor_btagSF_lfstats1_down=1.;
+        scaleFactor_btagSF_lfstats1_up=1.;
+        scaleFactor_btagSF_lfstats2_down=1.;
+        scaleFactor_btagSF_lfstats2_up=1.;
+        muonSFtemp = 1.;
+        electronSFtemp = 1.;
+        puSF = 1.;
+        scaleFactor_muonSF_up = 1.;
+        scaleFactor_muonSF_down = 1.;
+        scaleFactor_electronSF_down = 1.;
+        scaleFactor_electronSF_up = 1.;
+        scaleFactor_puSF_down = 1. ;
+        scaleFactor_puSF_up = 1.;
+      }
       
       
       if (makePlots)
       {
         //cout << "ievt " << ievt << endl;
-        FillGeneralPlots(d, "control_afterAtLeast1Jet", decayChannels, isData);
+        FillGeneralPlots(d, "control_afterAtLeast1Jet", decayChannels, isData, isfakes);
         if(dataSetName.find("WZTo3LNu_3Jets_MLL50")!=std::string::npos) Fill1DPlots(dataSetName);
         
       }
@@ -1577,12 +1633,12 @@ int main(int argc, char* argv[]){
       
       if (makePlots)
       {
-        FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow", decayChannels,isData);
+        FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow", decayChannels,isData, isfakes);
         
       }
       
       if(selectednonCSVLJetID.size()>0 && makePlots){
-        FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels,isData);
+        FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels,isData, isfakes);
       }
       
       bool matcher = false;
@@ -1598,11 +1654,20 @@ int main(int argc, char* argv[]){
       
       
       
-      
-      if(Region == 0 ) nSelectedEntriesSTweighted += scaleFactor*Luminosity/EquilumiSF;
+     // if(isfakes || isData) cout << "equilumisf = " << EquilumiSF << " Lumi " << Luminosity << " SF " << scaleFactor << " scaleFactor*Luminosity/EquiLumi " << scaleFactor*Luminosity/datasets[d]->EquivalentLumi() << " equilumi " << datasets[d]->EquivalentLumi() << endl;
+      // in MSPlot automatically there is divided by eqlumi, for MC this is 1. but for data this is equal to the lumi
+      // for MC: equilumiSF is calculated to fix this factor 1.
+      if(!isfakes &&  !isData){
+      if(Region == 0 ) nSelectedEntriesSTweighted += scaleFactor*Luminosity/EquilumiSF; //
       if(Region == 1 ) nSelectedEntriesTTweighted += scaleFactor*Luminosity/EquilumiSF;
       if(Region == 2 ) nSelectedEntriesWZweighted += scaleFactor*Luminosity/EquilumiSF;
-      
+      }
+      else if(isfakes || isData) {
+        if(Region == 0 ) nSelectedEntriesSTweighted += scaleFactor*Luminosity/datasets[d]->EquivalentLumi();
+        if(Region == 1 ) nSelectedEntriesTTweighted += scaleFactor*Luminosity/datasets[d]->EquivalentLumi();
+        if(Region == 2 ) nSelectedEntriesWZweighted += scaleFactor*Luminosity/datasets[d]->EquivalentLumi();
+        
+      }
       if(isData && checktrigger  ){
         myfile << evt_num << endl;
         if(PassedTrigger)  myfiletrigged << evt_num << endl;
@@ -1638,11 +1703,11 @@ int main(int argc, char* argv[]){
       firstevent = true;
       writeMVAtree();
     }
-    if(isData) {
+   /* if(isData || isfakes) {
       nSelectedEntriesSTweighted = nSelectedEntriesST;
       nSelectedEntriesTTweighted = nSelectedEntriesTT;
       nSelectedEntriesWZweighted = nSelectedEntriesWZ;
-    }
+    }*/
     cout << "                nSelectedEntries ST region: " << nSelectedEntriesST << " weighted " << nSelectedEntriesSTweighted << endl;
     cout << "                nSelectedEntries TT region: " << nSelectedEntriesTT << " weighted " << nSelectedEntriesTTweighted << endl;
     cout << "                nSelectedEntries WZ region: " << nSelectedEntriesWZ  << " weighted " << nSelectedEntriesWZweighted << endl;
@@ -2858,7 +2923,7 @@ int SMjetCalculator(vector<TLorentzVector> Jets,int verb){
   //cout << "SMjetIndex "<< SMjetIndex << endl;
   return index_;
 };
-void GetMetaData(TTree* tree, bool isData,int Entries, bool isAMC){
+void GetMetaData(TTree* tree, bool isData,int Entries, bool isAMC, bool isfakes){
   clock_t start_sub = clock();
   // Set branch addresses and branch pointers
   if (!tree) return;
@@ -2972,7 +3037,7 @@ void GetMetaData(TTree* tree, bool isData,int Entries, bool isAMC){
     
   }
   
-  if(!isData){
+  if(!isData && !isfakes){
     EquilumiSF = TotalEvents / Xsect;
     cout << "                equilumi = " <<  TotalEvents <<" / " << Xsect <<" = " << EquilumiSF << endl;
   }
@@ -3514,6 +3579,33 @@ void ClearTLVs(){
 void ClearVars(){
   Assigned = false;
   scaleFactor = 1.;
+  btagSFshape = 1.;
+  scaleFactor_bfBT = 1.;
+  scaleFactor_bfELSF = 1.;
+  scaleFactor_bfMuSF = 1.;
+  scaleFactor_bfPU = 1.;
+  scaleFactor_puSF_down=1.;
+  scaleFactor_puSF_up=1.;
+  scaleFactor_electronSF_down=1.;
+  scaleFactor_electronSF_up=1.;
+  scaleFactor_muonSF_down=1.;
+  scaleFactor_muonSF_up=1.;
+  scaleFactor_btagSF_cferr1_down=1.;
+  scaleFactor_btagSF_cferr1_up=1.;
+  scaleFactor_btagSF_cferr2_down=1.;
+  scaleFactor_btagSF_cferr2_up=1.;
+  scaleFactor_btagSF_hf_down=1.;
+  scaleFactor_btagSF_hf_up=1.;
+  scaleFactor_btagSF_hfstats1_down=1.;
+  scaleFactor_btagSF_hfstats1_up=1.;
+  scaleFactor_btagSF_hfstats2_down=1.;
+  scaleFactor_btagSF_hfstats2_up=1.;
+  scaleFactor_btagSF_lf_down=1.;
+  scaleFactor_btagSF_lf_up=1.;
+  scaleFactor_btagSF_lfstats1_down=1.;
+  scaleFactor_btagSF_lfstats1_up=1.;
+  scaleFactor_btagSF_lfstats2_down=1.;
+  scaleFactor_btagSF_lfstats2_up=1.;
   muonSFtemp = 1.;
   mWT = -999.;
   mWT2 = -999.;
@@ -3834,15 +3926,15 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
     // vars
     MSPlot[(prefix+"_ZbosonMass_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_ZbosonMass_"+decaystring).c_str(), 70, 60, 130, "Inv Mass Zboson");
     MSPlot[(prefix+"_WbosonMass_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_WbosonMass_"+decaystring).c_str(), 200, 0, 200, "Inv Mass Wboson");
-    MSPlot[(prefix+"_mlb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_mlb_"+decaystring).c_str(), 100, 0, 500, "Inv Mass (l_{W},SMbjet)");
+    MSPlot[(prefix+"_mlb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_mlb_"+decaystring).c_str(), 100, 0, 2000, "Inv Mass (l_{W},SMbjet)");
     MSPlot[(prefix+"_SMTopMass_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_SMTopMass_"+decaystring).c_str(), 100, 0, 500, "Inv Mass SMTop");
-    MSPlot[(prefix+"_mWT_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_mWT_"+decaystring).c_str(), 100, 0, 400, "Transv. Mass Wboson");
-    MSPlot[(prefix+"_mWT2_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_mWT2_"+decaystring).c_str(), 50, 0, 300, "Transv. Mass Wboson");
+    MSPlot[(prefix+"_mWT_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_mWT_"+decaystring).c_str(), 100, 0, 2000, "Transv. Mass Wboson");
+    MSPlot[(prefix+"_mWT2_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_mWT2_"+decaystring).c_str(), 100, 0, 2000, "Transv. Mass Wboson");
     
-    MSPlot[(prefix+"_LeadingJetPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_LeadingJetPt_"+decaystring).c_str(), 125, 0, 500, "Leading Jet Pt [GeV]");
-    MSPlot[(prefix+"_LeadingLepPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_LeadingLepPt_"+decaystring).c_str(), 125, 0, 500, "Leading Lepton Pt [GeV]");
-    MSPlot[(prefix+"_2ndLeadingJetPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_2ndLeadingJetPt_"+decaystring).c_str(), 50, 30, 500, "2ndLeading Jet Pt [GeV]");
-    MSPlot[(prefix+"_2ndLeadingLepPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_2ndLeadingLepPt_"+decaystring).c_str(), 50, 20, 500, "2nd Leading Lepton Pt [GeV]");
+    MSPlot[(prefix+"_LeadingJetPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_LeadingJetPt_"+decaystring).c_str(), 50, 0, 2000, "Leading Jet Pt [GeV]");
+    MSPlot[(prefix+"_LeadingLepPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_LeadingLepPt_"+decaystring).c_str(), 50, 0, 2000, "Leading Lepton Pt [GeV]");
+    MSPlot[(prefix+"_2ndLeadingJetPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_2ndLeadingJetPt_"+decaystring).c_str(), 25, 30, 500, "2ndLeading Jet Pt [GeV]");
+    MSPlot[(prefix+"_2ndLeadingLepPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_2ndLeadingLepPt_"+decaystring).c_str(), 25, 20, 500, "2nd Leading Lepton Pt [GeV]");
     
     MSPlot[(prefix+"_nJets_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefix+"_nJets_"+decaystring).c_str(), 10, -0.5, 9.5, "Nb of Jets");
     MSPlot[(prefix+"_nJetsCSVL_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefix+"_nJetsCSVL_"+decaystring).c_str(), 10, -0.5, 9.5, "Nb of CSVL");
@@ -4177,7 +4269,7 @@ void InitRecovsGenInfoPlots(string dataSetName){
 }
 
 ///////////////////////////////////// INIT TREES /////////////////////////////////////////
-void InitTree(TTree* tree, bool isData){
+void InitTree(TTree* tree, bool isData, bool isfakes){
   // Set branch addresses and branch pointers
   if (!tree) return;
   tree->SetMakeClass(1);
@@ -4254,6 +4346,7 @@ void InitTree(TTree* tree, bool isData){
   tree->SetBranchAddress("MuonIDSF_down", MuonIDSF_down, &b_MuonIDSF_down);
   tree->SetBranchAddress("MuonIsoSF_down", MuonIsoSF_down, &b_MuonIsoSF_down);
   tree->SetBranchAddress("MuonTrigSFv2", MuonTrigSFv2, &b_MuonTrigSFv2);
+  tree->SetBranchAddress("rejecteventBadPFmuon",rejecteventBadPFmuon, &b_rejecteventBadPFmuon);
   tree->SetBranchAddress("MuonTrigSFv3", MuonTrigSFv3, &b_MuonTrigSFv3);
   tree->SetBranchAddress("badmueventmu", badmueventmu, &b_badmueventmu);
   tree->SetBranchAddress("badmueventclonemu", badmueventclonemu, &b_badmueventclonemu);
@@ -4286,7 +4379,7 @@ void InitTree(TTree* tree, bool isData){
   tree->SetBranchAddress("jet_Pt_after_JES", jet_Pt_after_JES, &b_jet_Pt_after_JES);
   tree->SetBranchAddress("cdiscCvsL_jet", cdiscCvsL_jet, &b_cdiscCvsL_jet);
   tree->SetBranchAddress("cdiscCvsB_jet", cdiscCvsB_jet, &b_cdiscCvsB_jet);
-  if(!isData){
+  if(!isData && !isfakes){
     tree->SetBranchAddress("nMCParticles", &nMCParticles, &b_nMCParticles);
     tree->SetBranchAddress("mc_status", mc_status, &b_mc_status);
     tree->SetBranchAddress("mc_pdgId", mc_pdgId, &b_mc_pdgId);
@@ -4315,13 +4408,13 @@ void InitTree(TTree* tree, bool isData){
 
 
 
-void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isData){
+void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isData, bool isfakes){
   //cout << "fill plots" << endl;
   string decaystring = "";
   Double_t eventW = 1.;
-  if(isData) scaleFactor = 1.;
+ // if(isData  ) scaleFactor = 1.;
   eventW = Luminosity/EquilumiSF;
-  if(datasets[d]->Name().find("fake")!=std::string::npos) eventW *= 0.01;
+if(isfakes) eventW *= 0.0001;
   
   for(int iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
@@ -4669,6 +4762,9 @@ void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<i
   string sregion;
   sregion = prefix;
   string decaystring = "";
+  
+  if(dataSetName.find("fake")!=std::string::npos) scaleFactor *= 0.0001;
+
   //cout <<  "region " << sregion << endl;
   for(int iChan = 0;iChan < decayChannels.size() ;iChan++){
     // cout << "chan " << decayChannels[iChan] << " chan in evt " << MVA_channel << endl;

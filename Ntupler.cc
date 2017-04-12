@@ -998,6 +998,8 @@ int main (int argc, char *argv[])
     
     //variable for muons
     Int_t nMuons;
+    Int_t rejecteventBadPFmuon;
+   // Int_t PFmuon;
     Int_t badmueventmu[10];
     Int_t badmueventclonemu[10];
     Double_t pt_muon[10];
@@ -1119,7 +1121,7 @@ int main (int argc, char *argv[])
     myTree->Branch("q",&q,"q/D");
     myTree->Branch("hdamp_up",&hdamp_up,"hdamp_up/D");
     myTree->Branch("hdamp_down",&hdamp_down,"hdamp_down/D");
-    
+    myTree->Branch("rejecteventBadPFmuon", &rejecteventBadPFmuon, "rejecteventBadPFmuon/I");
     
     myTree->Branch("channelInt", &channelInt, "channelInt/I");
     myTree->Branch("nloWeight",&nloWeight,"nloWeight/D");
@@ -1195,6 +1197,7 @@ int main (int argc, char *argv[])
     myTree->Branch("nMuons",&nMuons, "nMuons/I");
     myTree->Branch("badmueventclonemu", &badmueventclonemu, "badmueventclonemu[nMuons]/I");
     myTree->Branch("badmueventmu", &badmueventmu, "badmueventmu[nMuons]/I");
+  //  myTree->Branch("PFmuon", &PFmuon, "PFMuon/I");
     
     myTree->Branch("MuonIDSF",&MuonIDSF,"MuonIDSF[nMuons]/D");
     myTree->Branch("MuonIsoSF",&MuonIsoSF, "MuonIsoSF[nMuons]/D");
@@ -1386,7 +1389,7 @@ int main (int argc, char *argv[])
     
     for (unsigned int ievt = event_start; ievt < end_d; ievt++)
     {
-      
+      rejecteventBadPFmuon = 0;
       eventSelected = false;
       continueFlow = true;
       lep3 = false;
@@ -1468,6 +1471,11 @@ int main (int argc, char *argv[])
       nIniRecoMuons = 0;
       for(int iMu = 0 ; iMu < init_muons.size(); iMu++){
         if(init_muons[iMu]->Pt() > 10.0) nIniRecoMuons++;
+        if(init_muons[iMu]->isBad80X()) rejecteventBadPFmuon = 1;
+        if(init_muons[iMu]->isClone80X()) rejecteventBadPFmuon = 1;
+       // if(!init_muons[iMu]->isPFMuon()) { cout << "rejected muon " << endl; rejecteventBadPFmuon = 1;}
+       // PFmuon =   init_muons[0]->isPFMuon();
+        
       }
       for(int iEl= 0 ; iEl < init_electrons.size(); iEl++){
         if(init_electrons[iEl]->Pt() > 10.0) nIniRecoElectrons++;
