@@ -1766,13 +1766,13 @@ int main (int argc, char *argv[])
         jet_Pt_before_JES[iJ] = init_jets_corrected[iJ]->Pt();
       }
       JESon = 0;
-      if(applyJES && !isData)
+      if(applyJES)
       {
         // cout << "applying JES" << endl;
         if(doJESJERshift == 1)  jetTools->correctJetJESUnc(init_jets_corrected, mets[0], "minus");
         else if(doJESJERshift == 2)  jetTools->correctJetJESUnc(init_jets_corrected, mets[0], "plus");
         
-        jetTools->correctJets(init_jets_corrected,event->fixedGridRhoFastjetAll() ,false);
+        jetTools->correctJets(init_jets_corrected,event->fixedGridRhoFastjetAll() ,isData);
         JESon = 1;
       }
       for(int iJ = 0; iJ < init_jets_corrected.size(); iJ++){
