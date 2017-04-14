@@ -581,7 +581,7 @@ int main(int argc, char* argv[]){
         
         /// Load event
         tTree[(dataSetName).c_str()]->GetEntry(ievt);
-        if(datafound && MVA_BDT > -0.66 && !doMTWtemplate){ continue;}
+      //  if(datafound && MVA_BDT > -0.66 && !doMTWtemplate){ continue;}
         //if(isData) cout << "region " << MVA_region << endl;
         
         if(doMTWtemplate && MVA_region != 2){ continue ;} // only in WZ control region}
@@ -1411,9 +1411,9 @@ int main(int argc, char* argv[]){
     
   }
   
-  delete hist_WZ;
+ /* delete hist_WZ;
   delete hist_TT_FCNC;
-  delete hist_fakes;
+  delete hist_fakes;*/
   ///************************************///
   ///   ADD PDF UNC TO COMBINE TEMPLATE  ///
   ///************************************///
