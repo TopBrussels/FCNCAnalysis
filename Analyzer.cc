@@ -574,9 +574,9 @@ TBranch        *b_MuonIsoSF_down;   //!
 TBranch        *b_MuonTrigSFv2;   //!
 TBranch        *b_MuonTrigSFv3;   //!
 TBranch        *b_pt_muon;   //!
-TBranch         *b_badmueventclonemu;
-TBranch         *b_rejecteventBadPFmuon;
-TBranch         *b_badmueventmu;
+TBranch        *b_badmueventclonemu;
+TBranch        *b_rejecteventBadPFmuon;
+TBranch        *b_badmueventmu;
 TBranch        *b_phi_muon;   //!
 TBranch        *b_eta_muon;   //!
 TBranch        *b_E_muon;   //!
@@ -1111,14 +1111,14 @@ int main(int argc, char* argv[]){
     else{
       datasets.push_back(datasetsbefore[d]);
     }
-  
+    
   }
   if(makePlots){
     firstevent = true;
     InitMSPlots("control_afterAtLeast1Jet", decayChannels);
     InitMSPlots("control_afterAtLeast1Jet_afterZWindow", decayChannels);
     InitMSPlots("control_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels);
-   // Init1DPlots();
+    // Init1DPlots();
     Init2DPlots();
   }
   
@@ -1198,7 +1198,7 @@ int main(int argc, char* argv[]){
     {
       check_matching = false;
     }
-  //  if(!isData) continue;
+    //  if(!isData) continue;
     
     if(check_matching){
       ClearMatchingSampleVars();
@@ -1208,15 +1208,17 @@ int main(int argc, char* argv[]){
       }
     }
     
-//    if(dataSetName.find("TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut")!=std::string::npos){
-    if(dataSetName.find("WZTo3LNu_3Jets_MLL50")!=std::string::npos){
+    //    if(dataSetName.find("TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut")!=std::string::npos){
+   // if(dataSetName.find("WZTo3LNu")!=std::string::npos){
+   // if(dataSetName.find("tZq")!=std::string::npos){
+      if(dataSetName.find("WZTo3LNu_3Jets_MLL50")!=std::string::npos){
       cout << "init 1D plots" << endl;
       Init1DPlots(dataSetName);
     }
     
     string ntupleFileName = "NtupleMakerOutput/MergedTuples/"+placeNtup+"/"+dataSetName+".root";
-   // ntupleFileName = "FCNC_3L_data_DoubleMuon_Run_2016C_1.root";
-   // ntupleFileName = "FCNC_3L_WZTo3LNu_0Jets_MLL50_80X_1.root";
+    // ntupleFileName = "FCNC_3L_data_DoubleMuon_Run_2016C_1.root";
+    // ntupleFileName = "FCNC_3L_WZTo3LNu_0Jets_MLL50_80X_1.root";
     tFileMap[dataSetName.c_str()] = new TFile((ntupleFileName).c_str(),"READ"); //create TFile for each dataset
     
     string tTreeName = "tree";
@@ -1317,8 +1319,8 @@ int main(int argc, char* argv[]){
       
       for(unsigned int iMu = 0; iMu < nMuons ; iMu++){
         if( pt_muon[iMu] < 40. ){ continue; } //cout << "removing muon with pt " << pt_muon[iMu] << endl;  continue;}
-       // if(removeBadMu && badmueventmu[iMu] ) {cout << "removing bad mu" << endl; continue;}
-       // if(removeBadMu && badmueventclonemu[iMu] ){cout << "removing cloned mu " << endl; continue;}
+        // if(removeBadMu && badmueventmu[iMu] ) {cout << "removing bad mu" << endl; continue;}
+        // if(removeBadMu && badmueventclonemu[iMu] ){cout << "removing cloned mu " << endl; continue;}
         
         muon.Clear();
         muon.SetPtEtaPhiE(pt_muon[iMu], eta_muon[iMu], phi_muon[iMu], E_muon[iMu]);
@@ -1331,7 +1333,7 @@ int main(int argc, char* argv[]){
         tempHt = tempHt + muon.Pt();
         tempInvMassObj = tempInvMassObj + muon;
       }
-     // cout << "nMuons " << nMuons << " selected " << selectedMuons.size() << endl;
+      // cout << "nMuons " << nMuons << " selected " << selectedMuons.size() << endl;
       
       for(unsigned int iEl = 0; iEl < nElectrons ; iEl++){
         if(pt_electron[iEl]<40.) continue;
@@ -1443,42 +1445,37 @@ int main(int argc, char* argv[]){
       scaleFactor_bfELSF = 1.;
       scaleFactor_bfMuSF = 1.;
       scaleFactor_bfPU = 1.;
-       scaleFactor_puSF_down=1.; 
-       scaleFactor_puSF_up=1.; 
-       scaleFactor_electronSF_down=1.; 
-       scaleFactor_electronSF_up=1.; 
-       scaleFactor_muonSF_down=1.; 
-       scaleFactor_muonSF_up=1.; 
-       scaleFactor_btagSF_cferr1_down=1.; 
-       scaleFactor_btagSF_cferr1_up=1.; 
-       scaleFactor_btagSF_cferr2_down=1.; 
-       scaleFactor_btagSF_cferr2_up=1.; 
-       scaleFactor_btagSF_hf_down=1.; 
-       scaleFactor_btagSF_hf_up=1.; 
-       scaleFactor_btagSF_hfstats1_down=1.; 
-       scaleFactor_btagSF_hfstats1_up=1.; 
-       scaleFactor_btagSF_hfstats2_down=1.; 
-       scaleFactor_btagSF_hfstats2_up=1.; 
-       scaleFactor_btagSF_lf_down=1.; 
-       scaleFactor_btagSF_lf_up=1.; 
-       scaleFactor_btagSF_lfstats1_down=1.; 
-       scaleFactor_btagSF_lfstats1_up=1.; 
-       scaleFactor_btagSF_lfstats2_down=1.; 
-       scaleFactor_btagSF_lfstats2_up=1.;
+      scaleFactor_puSF_down=1.;
+      scaleFactor_puSF_up=1.;
+      scaleFactor_electronSF_down=1.;
+      scaleFactor_electronSF_up=1.;
+      scaleFactor_muonSF_down=1.;
+      scaleFactor_muonSF_up=1.;
+      scaleFactor_btagSF_cferr1_down=1.;
+      scaleFactor_btagSF_cferr1_up=1.;
+      scaleFactor_btagSF_cferr2_down=1.;
+      scaleFactor_btagSF_cferr2_up=1.;
+      scaleFactor_btagSF_hf_down=1.;
+      scaleFactor_btagSF_hf_up=1.;
+      scaleFactor_btagSF_hfstats1_down=1.;
+      scaleFactor_btagSF_hfstats1_up=1.;
+      scaleFactor_btagSF_hfstats2_down=1.;
+      scaleFactor_btagSF_hfstats2_up=1.;
+      scaleFactor_btagSF_lf_down=1.;
+      scaleFactor_btagSF_lf_up=1.;
+      scaleFactor_btagSF_lfstats1_down=1.;
+      scaleFactor_btagSF_lfstats1_up=1.;
+      scaleFactor_btagSF_lfstats2_down=1.;
+      scaleFactor_btagSF_lfstats2_up=1.;
       muonSFtemp = 1.;
       electronSFtemp = 1.;
       puSF = 1.;
-      scaleFactor_muonSF_up = 1.;
-      scaleFactor_muonSF_down = 1.;
-      scaleFactor_electronSF_down = 1.;
-      scaleFactor_electronSF_up = 1.;
-      scaleFactor_puSF_down = 1. ;
-      scaleFactor_puSF_up = 1.;
+      
       
       if (! isData && !isfakes)
       {
         if (applyMuonSF) {
-         // if(ievt == 2)cout << "                - applying muon factors " << endl;
+          // if(ievt == 2)cout << "                - applying muon factors " << endl;
           muonSFtemp = 1.;
           for(unsigned int iMu = 0;  iMu < nMuons ;  iMu++){
             if(applyMuonSF_up){
@@ -1493,7 +1490,7 @@ int main(int argc, char* argv[]){
               scaleFactor *= MuonIDSF[iMu] * MuonIsoSF[iMu] ;
               // scaleFactor *= MuonIDSF[iMu] * MuonIsoSF[iMu] * MuonTrackSF[iMu] TO FIX
               muonSFtemp *= MuonIDSF[iMu] * MuonIsoSF[iMu] ;
-             // muonSFtemp *= MuonIDSF[iMu] * MuonIsoSF[iMu] * MuonTrackSF[iMu]; TO FIX
+              // muonSFtemp *= MuonIDSF[iMu] * MuonIsoSF[iMu] * MuonTrackSF[iMu]; TO FIX
             }
             
             scaleFactor_muonSF_down *= MuonIDSF_up[iMu] * MuonIsoSF_up[iMu] ;
@@ -1559,13 +1556,13 @@ int main(int argc, char* argv[]){
           scaleFactor_btagSF_lfstats1_up*= btagSFshape_up_lfstats1  ;
           scaleFactor_btagSF_lfstats2_down*= btagSFshape_down_lfstats2  ;
           scaleFactor_btagSF_lfstats2_up*= btagSFshape_up_lfstats2  ;
-         // if(ievt == 2)cout << "                - applying btag factors " << endl;
+          // if(ievt == 2)cout << "                - applying btag factors " << endl;
         }
         else btagSFshape = 1.;
         
         if (applyNloSF && isAMC) {
           scaleFactor *= nloWeight * nloSF;
-         // if(ievt == 2) cout << "                - applying nlo factors " << endl;
+          // if(ievt == 2) cout << "                - applying nlo factors " << endl;
         }  // additional SF due to number of events with neg weight!!
         
         scaleFactor_bfBT = scaleFactor/btagSFshape;
@@ -1578,6 +1575,30 @@ int main(int argc, char* argv[]){
         if(scaleFactor_bfMuSF != scaleFactor_bfMuSF) scaleFactor_bfMuSF = 0.;
         if(scaleFactor_bfELSF != scaleFactor_bfELSF) scaleFactor_bfELSF= 0.;
         if(scaleFactor_bfPU != scaleFactor_bfPU) scaleFactor_bfPU= 0.;
+        
+        
+        scaleFactor_muonSF_down = ( scaleFactor_muonSF_down * scaleFactor ) / muonSFtemp;
+        scaleFactor_muonSF_up = ( scaleFactor_muonSF_up * scaleFactor ) / muonSFtemp;
+        scaleFactor_electronSF_down = ( scaleFactor_electronSF_down * scaleFactor) / electronSFtemp;
+        scaleFactor_electronSF_up = ( scaleFactor_electronSF_up * scaleFactor) / electronSFtemp;
+        scaleFactor_puSF_down = ( scaleFactor_puSF_down * scaleFactor) / puSF;
+        scaleFactor_puSF_up = ( scaleFactor_puSF_up * scaleFactor) / puSF;
+        scaleFactor_btagSF_cferr1_down= ( btagSFshape_down_cferr1  *scaleFactor)/btagSFshape ;
+        scaleFactor_btagSF_cferr1_up= ( btagSFshape_up_cferr1 *scaleFactor)/btagSFshape ;
+        scaleFactor_btagSF_cferr2_down= ( btagSFshape_down_cferr2 *scaleFactor)/btagSFshape  ;
+        scaleFactor_btagSF_cferr2_up= ( btagSFshape_up_cferr2 *scaleFactor)/btagSFshape ;
+        scaleFactor_btagSF_hf_down= ( btagSFshape_down_hf *scaleFactor)/btagSFshape  ;
+        scaleFactor_btagSF_hf_up= ( btagSFshape_up_hf *scaleFactor)/btagSFshape ;
+        scaleFactor_btagSF_hfstats1_down= ( btagSFshape_down_hfstats1*scaleFactor)/btagSFshape ;
+        scaleFactor_btagSF_hfstats1_up= ( btagSFshape_up_hfstats1 *scaleFactor)/btagSFshape ;
+        scaleFactor_btagSF_hfstats2_down= ( btagSFshape_down_hfstats2 *scaleFactor)/btagSFshape  ;
+        scaleFactor_btagSF_hfstats2_up= ( btagSFshape_up_hfstats2 *scaleFactor)/btagSFshape  ;
+        scaleFactor_btagSF_lf_down= ( btagSFshape_down_lf *scaleFactor)/btagSFshape ;
+        scaleFactor_btagSF_lf_up= ( btagSFshape_up_lf *scaleFactor)/btagSFshape ;
+        scaleFactor_btagSF_lfstats1_down= ( btagSFshape_down_lfstats1 *scaleFactor)/btagSFshape ;
+        scaleFactor_btagSF_lfstats1_up= ( btagSFshape_up_lfstats1 *scaleFactor)/btagSFshape ;
+        scaleFactor_btagSF_lfstats2_down= ( btagSFshape_down_lfstats2 *scaleFactor)/btagSFshape ;
+        scaleFactor_btagSF_lfstats2_up= ( btagSFshape_up_lfstats2*scaleFactor)/btagSFshape ;
         
       }
       else if(isData || isfakes ){
@@ -1612,20 +1633,21 @@ int main(int argc, char* argv[]){
         muonSFtemp = 1.;
         electronSFtemp = 1.;
         puSF = 1.;
-        scaleFactor_muonSF_up = 1.;
-        scaleFactor_muonSF_down = 1.;
-        scaleFactor_electronSF_down = 1.;
-        scaleFactor_electronSF_up = 1.;
-        scaleFactor_puSF_down = 1. ;
-        scaleFactor_puSF_up = 1.;
+        
       }
+      
+      
+      
       
       
       if (makePlots)
       {
         //cout << "ievt " << ievt << endl;
         FillGeneralPlots(d, "control_afterAtLeast1Jet", decayChannels, isData, isfakes);
+        //if(dataSetName.find("WZTo3LNu")!=std::string::npos) Fill1DPlots(dataSetName);
         if(dataSetName.find("WZTo3LNu_3Jets_MLL50")!=std::string::npos) Fill1DPlots(dataSetName);
+        
+        //if(dataSetName.find("tZq")!=std::string::npos){ Fill1DPlots(dataSetName);}
         
       }
       //cout << "zmass" << endl;
@@ -1654,13 +1676,13 @@ int main(int argc, char* argv[]){
       
       
       
-     // if(isfakes || isData) cout << "equilumisf = " << EquilumiSF << " Lumi " << Luminosity << " SF " << scaleFactor << " scaleFactor*Luminosity/EquiLumi " << scaleFactor*Luminosity/datasets[d]->EquivalentLumi() << " equilumi " << datasets[d]->EquivalentLumi() << endl;
+      // if(isfakes || isData) cout << "equilumisf = " << EquilumiSF << " Lumi " << Luminosity << " SF " << scaleFactor << " scaleFactor*Luminosity/EquiLumi " << scaleFactor*Luminosity/datasets[d]->EquivalentLumi() << " equilumi " << datasets[d]->EquivalentLumi() << endl;
       // in MSPlot automatically there is divided by eqlumi, for MC this is 1. but for data this is equal to the lumi
       // for MC: equilumiSF is calculated to fix this factor 1.
       if(!isfakes &&  !isData){
-      if(Region == 0 ) nSelectedEntriesSTweighted += scaleFactor*Luminosity/EquilumiSF; //
-      if(Region == 1 ) nSelectedEntriesTTweighted += scaleFactor*Luminosity/EquilumiSF;
-      if(Region == 2 ) nSelectedEntriesWZweighted += scaleFactor*Luminosity/EquilumiSF;
+        if(Region == 0 ) nSelectedEntriesSTweighted += scaleFactor*Luminosity/EquilumiSF; //
+        if(Region == 1 ) nSelectedEntriesTTweighted += scaleFactor*Luminosity/EquilumiSF;
+        if(Region == 2 ) nSelectedEntriesWZweighted += scaleFactor*Luminosity/EquilumiSF;
       }
       else if(isfakes || isData) {
         if(Region == 0 ) nSelectedEntriesSTweighted += scaleFactor*Luminosity/datasets[d]->EquivalentLumi();
@@ -1693,7 +1715,7 @@ int main(int argc, char* argv[]){
       
     } // events
     
-   
+    
     
     if(isData && checktrigger){
       myfile.close();
@@ -1703,11 +1725,11 @@ int main(int argc, char* argv[]){
       firstevent = true;
       writeMVAtree();
     }
-   /* if(isData || isfakes) {
-      nSelectedEntriesSTweighted = nSelectedEntriesST;
-      nSelectedEntriesTTweighted = nSelectedEntriesTT;
-      nSelectedEntriesWZweighted = nSelectedEntriesWZ;
-    }*/
+    /* if(isData || isfakes) {
+     nSelectedEntriesSTweighted = nSelectedEntriesST;
+     nSelectedEntriesTTweighted = nSelectedEntriesTT;
+     nSelectedEntriesWZweighted = nSelectedEntriesWZ;
+     }*/
     cout << "                nSelectedEntries ST region: " << nSelectedEntriesST << " weighted " << nSelectedEntriesSTweighted << endl;
     cout << "                nSelectedEntries TT region: " << nSelectedEntriesTT << " weighted " << nSelectedEntriesTTweighted << endl;
     cout << "                nSelectedEntries WZ region: " << nSelectedEntriesWZ  << " weighted " << nSelectedEntriesWZweighted << endl;
@@ -1724,501 +1746,753 @@ int main(int argc, char* argv[]){
   ///   Write plots   ///
   ///*****************///
   if(makePlots){
-  string rootFileName ="NtuplePlots.root";
-  string place =pathOutputdate+"/MSPlot/";
-  string placeTH1F = pathOutputdate+"/TH1F/";
-  string placeTH2F = pathOutputdate+"/TH2F/";
-  vector <string> vlabel_chan = {"3#mu", "1e2#mu", "2e1#mu", "3e"};
-  mkdir(place.c_str(),0777);
-  mkdir(placeTH1F.c_str(),0777);
-  mkdir(placeTH2F.c_str(),0777);
-  
-  cout << " - Recreate output file ..." << endl;
-  TFile *fout = new TFile ((pathOutputdate+rootFileName).c_str(), "RECREATE");
-  cout << "   Output file is " << pathOutputdate+rootFileName << endl;
-  
-  ///Write histograms
-  fout->cd();
-  
-  for (map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
-  {
-    cout << "MSPlot: " << it->first << endl;
-    MultiSamplePlot *temp = it->second;
-    string name = it->first;
-    if(!datafound) temp->setDataLumi(Luminosity);
-    if(name.find("all")!=std::string::npos) temp->setChannel(true, "all");
-    if(name.find("eee")!=std::string::npos) temp->setChannel(true, "3e");
-    if(name.find("eeu")!=std::string::npos) temp->setChannel(true, "2e1#mu");
-    if(name.find("uue")!=std::string::npos) temp->setChannel(true, "1e2#mu");
-    if(name.find("uuu")!=std::string::npos) temp->setChannel(true, "3#mu");
-    if(name.find("Decay")!=std::string::npos) temp->setBins(vlabel_chan);
-    temp->Draw(name, 1, false, false, false, 10);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
-    cout << "writing to " << pathOutputdate+"MSPlot" << endl;
-    cout << "plot " << name << endl;
-    cout << "temp " << temp << endl;
-    temp->Write(fout, name, true, (pathOutputdate+"/MSPlot").c_str(), "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
-  }
-  
-  
-  TDirectory* th1dir = fout->mkdir("1D_histograms");
-  th1dir->cd();
-  gStyle->SetOptStat(1110);
-  for (std::map<std::string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
-  {
-    TH1F *temp = it->second;
-    int N = temp->GetNbinsX();
-    temp->SetBinContent(N,temp->GetBinContent(N)+temp->GetBinContent(N+1));
-    temp->SetBinContent(N+1,0);
-    temp->SetEntries(temp->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-    temp->Write();
-    TCanvas* tempCanvas = TCanvasCreator(temp, it->first);
-    tempCanvas->SaveAs( (placeTH1F+it->first+".png").c_str() );
-  }
-  
- 
-  TDirectory* th1dirsys = fout->mkdir("1D_histograms_sys");
-  th1dirsys->cd();
-  gStyle->SetOptStat(1110);
-  TH1F *tempnom =0;
-  TH1F *tempup = 0;
-  TH1F *tempdown = 0;
-  int Nnom = 0;
-  int Nup = 0;
-  int Ndown = 0;
-  TCanvas* Canvas = 0;
-  
-  std::map<std::string,TH1F*>::const_iterator nom = histo1D_PUSystematics.begin(), up=histo1D_PUSystematics.begin(), down=histo1D_PUSystematics.begin();
-  
-  
-  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_PUSystematics.begin(); it != histo1D_PUSystematics.end(); it++)
-  {
-    string name = it->first;
-    if(name.find("nom")!=std::string::npos) nom = it;
-    if(name.find("up")!=std::string::npos) up = it;
-    if(name.find("down")!=std::string::npos) down = it;
-  }
-  tempnom = nom->second;
-  tempup = up->second;
-  tempdown = down->second;
-  Nnom= tempnom->GetNbinsX();
-  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-  tempnom->SetBinContent(Nnom+1,0);
-  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempnom->Write();
-  Nup = tempup->GetNbinsX();
-  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-  tempup->SetBinContent(Nup+1,0);
-  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempup->Write();
-  Ndown= tempdown->GetNbinsX();
-  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-  tempdown->SetBinContent(Ndown+1,0);
-  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempdown->Write();
-  tempnom->SetLineColor(kRed);
-  tempup->SetLineColor(kBlue);
-  tempdown->SetLineColor(kViolet);
-  
-  Canvas =  TCanvasCreator(tempnom, "Nb Of vertices: PU SF" );//new TCanvas("Canvas_PU","Canvas_PU");
-  Canvas->cd();
-  tempnom->Draw("L");
-  tempup->Draw("SAME,L");
-  tempdown->Draw("SAME,L");
-  Canvas->SaveAs( (placeTH1F+"PUSF_nvtx.png").c_str() );
-
-  
-  // electron SF
-  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_ElSystematics.begin(); it != histo1D_ElSystematics.end(); it++)
-  {
-    string name = it->first;
-    if(name.find("nom")!=std::string::npos) nom = it;
-    if(name.find("up")!=std::string::npos) up = it;
-    if(name.find("down")!=std::string::npos) down = it;
-  }
-  tempnom = nom->second;
-  tempup = up->second;
-  tempdown = down->second;
-  
-  Nnom= tempnom->GetNbinsX();
-  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-  tempnom->SetBinContent(Nnom+1,0);
-  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempnom->Write();
-  Nup = tempup->GetNbinsX();
-  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-  tempup->SetBinContent(Nup+1,0);
-  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempup->Write();
-  Ndown= tempdown->GetNbinsX();
-  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-  tempdown->SetBinContent(Ndown+1,0);
-  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempdown->Write();
-  tempnom->SetLineColor(kRed);
-  tempup->SetLineColor(kBlue);
-  tempdown->SetLineColor(kViolet);
-  
-  Canvas =  TCanvasCreator(tempnom, "Pt electrons: El SF" );//new TCanvas("Canvas_PU","Canvas_PU");
-  Canvas->cd();
-  tempnom->Draw("L");
-  tempup->Draw("SAME,L");
-  tempdown->Draw("SAME,L");
-  Canvas->SaveAs( (placeTH1F+"ELSF_ptelectron.png").c_str() );
-
-  
-  // muon SF
-  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_MuSystematics.begin(); it != histo1D_MuSystematics.end(); it++)
-  {
-    string name = it->first;
-    if(name.find("nom")!=std::string::npos) nom = it;
-    if(name.find("up")!=std::string::npos) up = it;
-    if(name.find("down")!=std::string::npos) down = it;
-  }
-  tempnom = nom->second;
-  tempup = up->second;
-  tempdown = down->second;
-  Nnom= tempnom->GetNbinsX();
-  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-  tempnom->SetBinContent(Nnom+1,0);
-  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempnom->Write();
-  Nup = tempup->GetNbinsX();
-  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-  tempup->SetBinContent(Nup+1,0);
-  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempup->Write();
-  Ndown= tempdown->GetNbinsX();
-  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-  tempdown->SetBinContent(Ndown+1,0);
-  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempdown->Write();
-  tempnom->SetLineColor(kRed);
-  tempup->SetLineColor(kBlue);
-  tempdown->SetLineColor(kViolet);
-  
-  Canvas =  TCanvasCreator(tempnom, "Pt muons: Mu SF" );//new TCanvas("Canvas_PU","Canvas_PU");
-  Canvas->cd();
-  tempnom->Draw("L");
-  tempup->Draw("SAME,L");
-  tempdown->Draw("SAME,L");
-  Canvas->SaveAs( (placeTH1F+"MUSF_ptmuon.png").c_str() );
-  
-  // btag SF cferr1
-  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bcferr1Systematics.begin(); it != histo1D_Bcferr1Systematics.end(); it++)
-  {
-    string name = it->first;
-    if(name.find("nom")!=std::string::npos) nom = it;
-    if(name.find("up")!=std::string::npos) up = it;
-    if(name.find("down")!=std::string::npos) down = it;
-  }
-  tempnom = nom->second;
-  tempup = up->second;
-  tempdown = down->second;
-  Nnom= tempnom->GetNbinsX();
-  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-  tempnom->SetBinContent(Nnom+1,0);
-  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempnom->Write();
-  Nup = tempup->GetNbinsX();
-  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-  tempup->SetBinContent(Nup+1,0);
-  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempup->Write();
-  Ndown= tempdown->GetNbinsX();
-  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-  tempdown->SetBinContent(Ndown+1,0);
-  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempdown->Write();
-  tempnom->SetLineColor(kRed);
-  tempup->SetLineColor(kBlue);
-  tempdown->SetLineColor(kViolet);
-  
-  Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF cferr1" );//new TCanvas("Canvas_PU","Canvas_PU");
-  Canvas->cd();
-  tempnom->Draw("L");
-  tempup->Draw("SAME,L");
-  tempdown->Draw("SAME,L");
-  Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr1.png").c_str() );
-  
-  // btag SF cferr2
-  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bcferr2Systematics.begin(); it != histo1D_Bcferr2Systematics.end(); it++)
-  {
-    string name = it->first;
-    if(name.find("nom")!=std::string::npos) nom = it;
-    if(name.find("up")!=std::string::npos) up = it;
-    if(name.find("down")!=std::string::npos) down = it;
-  }
-  tempnom = nom->second;
-  tempup = up->second;
-  tempdown = down->second;
-  Nnom= tempnom->GetNbinsX();
-  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-  tempnom->SetBinContent(Nnom+1,0);
-  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempnom->Write();
-  Nup = tempup->GetNbinsX();
-  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-  tempup->SetBinContent(Nup+1,0);
-  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempup->Write();
-  Ndown= tempdown->GetNbinsX();
-  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-  tempdown->SetBinContent(Ndown+1,0);
-  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempdown->Write();
-  tempnom->SetLineColor(kRed);
-  tempup->SetLineColor(kBlue);
-  tempdown->SetLineColor(kViolet);
-  
-  Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF cferr2" );//new TCanvas("Canvas_PU","Canvas_PU");
-  Canvas->cd();
-  tempnom->Draw("L");
-  tempup->Draw("SAME,L");
-  tempdown->Draw("SAME,L");
-  Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr2.png").c_str() );
-  
-  // btag SF hfstats1
-  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bhfstats1Systematics.begin(); it != histo1D_Bhfstats1Systematics.end(); it++)
-  {
-    string name = it->first;
-    if(name.find("nom")!=std::string::npos) nom = it;
-    if(name.find("up")!=std::string::npos) up = it;
-    if(name.find("down")!=std::string::npos) down = it;
-  }
-  tempnom = nom->second;
-  tempup = up->second;
-  tempdown = down->second;
-  Nnom= tempnom->GetNbinsX();
-  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-  tempnom->SetBinContent(Nnom+1,0);
-  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempnom->Write();
-  Nup = tempup->GetNbinsX();
-  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-  tempup->SetBinContent(Nup+1,0);
-  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempup->Write();
-  Ndown= tempdown->GetNbinsX();
-  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-  tempdown->SetBinContent(Ndown+1,0);
-  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempdown->Write();
-  tempnom->SetLineColor(kRed);
-  tempup->SetLineColor(kBlue);
-  tempdown->SetLineColor(kViolet);
-  
-  Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF hfstats1" );//new TCanvas("Canvas_PU","Canvas_PU");
-  Canvas->cd();
-  tempnom->Draw("L");
-  tempup->Draw("SAME,L");
-  tempdown->Draw("SAME,L");
-  Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats1.png").c_str() );
-  
-  // btag SF hfstats2
-  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bhfstats2Systematics.begin(); it != histo1D_Bhfstats2Systematics.end(); it++)
-  {
-    string name = it->first;
-    if(name.find("nom")!=std::string::npos) nom = it;
-    if(name.find("up")!=std::string::npos) up = it;
-    if(name.find("down")!=std::string::npos) down = it;
-  }
-  tempnom = nom->second;
-  tempup = up->second;
-  tempdown = down->second;
-  Nnom= tempnom->GetNbinsX();
-  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-  tempnom->SetBinContent(Nnom+1,0);
-  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempnom->Write();
-  Nup = tempup->GetNbinsX();
-  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-  tempup->SetBinContent(Nup+1,0);
-  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempup->Write();
-  Ndown= tempdown->GetNbinsX();
-  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-  tempdown->SetBinContent(Ndown+1,0);
-  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempdown->Write();
-  tempnom->SetLineColor(kRed);
-  tempup->SetLineColor(kBlue);
-  tempdown->SetLineColor(kViolet);
-  
-  Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF hfstats2" );//new TCanvas("Canvas_PU","Canvas_PU");
-  Canvas->cd();
-  tempnom->Draw("L");
-  tempup->Draw("SAME,L");
-  tempdown->Draw("SAME,L");
-  Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats2.png").c_str() );
-  
-  
-  // btag SF lfstats1
-  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Blfstats1Systematics.begin(); it != histo1D_Blfstats1Systematics.end(); it++)
-  {
-    string name = it->first;
-    if(name.find("nom")!=std::string::npos) nom = it;
-    if(name.find("up")!=std::string::npos) up = it;
-    if(name.find("down")!=std::string::npos) down = it;
-  }
-  tempnom = nom->second;
-  tempup = up->second;
-  tempdown = down->second;
-  Nnom= tempnom->GetNbinsX();
-  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-  tempnom->SetBinContent(Nnom+1,0);
-  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempnom->Write();
-  Nup = tempup->GetNbinsX();
-  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-  tempup->SetBinContent(Nup+1,0);
-  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempup->Write();
-  Ndown= tempdown->GetNbinsX();
-  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-  tempdown->SetBinContent(Ndown+1,0);
-  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempdown->Write();
-  tempnom->SetLineColor(kRed);
-  tempup->SetLineColor(kBlue);
-  tempdown->SetLineColor(kViolet);
-  
-  Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF lfstats1" );//new TCanvas("Canvas_PU","Canvas_PU");
-  Canvas->cd();
-  tempnom->Draw("L");
-  tempup->Draw("SAME,L");
-  tempdown->Draw("SAME,L");
-  Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats1.png").c_str() );
-  
-  // btag SF lfstats2
-  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Blfstats2Systematics.begin(); it != histo1D_Blfstats2Systematics.end(); it++)
-  {
-    string name = it->first;
-    if(name.find("nom")!=std::string::npos) nom = it;
-    if(name.find("up")!=std::string::npos) up = it;
-    if(name.find("down")!=std::string::npos) down = it;
-  }
-  tempnom = nom->second;
-  tempup = up->second;
-  tempdown = down->second;
-  Nnom= tempnom->GetNbinsX();
-  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-  tempnom->SetBinContent(Nnom+1,0);
-  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempnom->Write();
-  Nup = tempup->GetNbinsX();
-  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-  tempup->SetBinContent(Nup+1,0);
-  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempup->Write();
-  Ndown= tempdown->GetNbinsX();
-  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-  tempdown->SetBinContent(Ndown+1,0);
-  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempdown->Write();
-  tempnom->SetLineColor(kRed);
-  tempup->SetLineColor(kBlue);
-  tempdown->SetLineColor(kViolet);
-  
-  Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF lfstats2" );//new TCanvas("Canvas_PU","Canvas_PU");
-  Canvas->cd();
-  tempnom->Draw("L");
-  tempup->Draw("SAME,L");
-  tempdown->Draw("SAME,L");
-  Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats2.png").c_str() );
-  
-  
-  // btag SF hf
-  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_BhfSystematics.begin(); it != histo1D_BhfSystematics.end(); it++)
-  {
-    string name = it->first;
-    if(name.find("nom")!=std::string::npos) nom = it;
-    if(name.find("up")!=std::string::npos) up = it;
-    if(name.find("down")!=std::string::npos) down = it;
-  }
-  tempnom = nom->second;
-  tempup = up->second;
-  tempdown = down->second;
-  Nnom= tempnom->GetNbinsX();
-  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-  tempnom->SetBinContent(Nnom+1,0);
-  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempnom->Write();
-  Nup = tempup->GetNbinsX();
-  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-  tempup->SetBinContent(Nup+1,0);
-  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempup->Write();
-  Ndown= tempdown->GetNbinsX();
-  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-  tempdown->SetBinContent(Ndown+1,0);
-  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempdown->Write();
-  tempnom->SetLineColor(kRed);
-  tempup->SetLineColor(kBlue);
-  tempdown->SetLineColor(kViolet);
-  
-  Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF hf" );//new TCanvas("Canvas_PU","Canvas_PU");
-  Canvas->cd();
-  tempnom->Draw("L");
-  tempup->Draw("SAME,L");
-  tempdown->Draw("SAME,L");
-  Canvas->SaveAs( (placeTH1F+"BSF_bdishf.png").c_str() );
-  
-  // btag SF lf
-  for (std::map<std::string,TH1F*>::const_iterator it = histo1D_BlfSystematics.begin(); it != histo1D_BlfSystematics.end(); it++)
-  {
-    string name = it->first;
-    if(name.find("nom")!=std::string::npos) nom = it;
-    if(name.find("up")!=std::string::npos) up = it;
-    if(name.find("down")!=std::string::npos) down = it;
-  }
-  tempnom = nom->second;
-  tempup = up->second;
-  tempdown = down->second;
-  Nnom= tempnom->GetNbinsX();
-  tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-  tempnom->SetBinContent(Nnom+1,0);
-  tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempnom->Write();
-  Nup = tempup->GetNbinsX();
-  tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-  tempup->SetBinContent(Nup+1,0);
-  tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempup->Write();
-  Ndown= tempdown->GetNbinsX();
-  tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-  tempdown->SetBinContent(Ndown+1,0);
-  tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-  tempdown->Write();
-  tempnom->SetLineColor(kRed);
-  tempup->SetLineColor(kBlue);
-  tempdown->SetLineColor(kViolet);
-  
-  Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF lf" );//new TCanvas("Canvas_PU","Canvas_PU");
-  Canvas->cd();
-  tempnom->Draw("L");
-  tempup->Draw("SAME,L");
-  tempdown->Draw("SAME,L");
-  Canvas->SaveAs( (placeTH1F+"BSF_bdislf.png").c_str() );
-  
-  
-  
-  // 2D
-  TDirectory* th2dir = fout->mkdir("2D_histograms");
-  th2dir->cd();
-  gStyle->SetPalette(55);
-  for(std::map<std::string,TH2F*>::const_iterator it = histo2D.begin(); it != histo2D.end(); it++)
-  {
-    TH2F *temp = it->second;
-    temp->Write();
-    TCanvas* tempCanvas = TCanvasCreator(temp, it->first, "colz");
-    tempCanvas->SaveAs( (placeTH2F+it->first+".png").c_str() );
-  }
-  
-  fout->Close();
-  
-  delete fout;
-  
+    string rootFileName ="NtuplePlots.root";
+    string place =pathOutputdate+"/MSPlot/";
+    string placeTH1F = pathOutputdate+"/TH1F/";
+    string placeTH2F = pathOutputdate+"/TH2F/";
+    vector <string> vlabel_chan = {"3#mu", "1e2#mu", "2e1#mu", "3e"};
+    mkdir(place.c_str(),0777);
+    mkdir(placeTH1F.c_str(),0777);
+    mkdir(placeTH2F.c_str(),0777);
+    
+    cout << " - Recreate output file ..." << endl;
+    TFile *fout = new TFile ((pathOutputdate+rootFileName).c_str(), "RECREATE");
+    cout << "   Output file is " << pathOutputdate+rootFileName << endl;
+    
+    ///Write histograms
+    fout->cd();
+    /*
+     for (map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
+     {
+     cout << "MSPlot: " << it->first << endl;
+     MultiSamplePlot *temp = it->second;
+     string name = it->first;
+     if(!datafound) temp->setDataLumi(Luminosity);
+     if(name.find("all")!=std::string::npos) temp->setChannel(true, "all");
+     if(name.find("eee")!=std::string::npos) temp->setChannel(true, "3e");
+     if(name.find("eeu")!=std::string::npos) temp->setChannel(true, "2e1#mu");
+     if(name.find("uue")!=std::string::npos) temp->setChannel(true, "1e2#mu");
+     if(name.find("uuu")!=std::string::npos) temp->setChannel(true, "3#mu");
+     if(name.find("Decay")!=std::string::npos) temp->setBins(vlabel_chan);
+     temp->Draw(name, 1, false, false, false, 10);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
+     cout << "writing to " << pathOutputdate+"MSPlot" << endl;
+     cout << "plot " << name << endl;
+     cout << "temp " << temp << endl;
+     temp->Write(fout, name, true, (pathOutputdate+"/MSPlot").c_str(), "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
+     }
+     
+     
+     TDirectory* th1dir = fout->mkdir("1D_histograms");
+     th1dir->cd();
+     gStyle->SetOptStat(1110);
+     for (std::map<std::string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
+     {
+     TH1F *temp = it->second;
+     int N = temp->GetNbinsX();
+     temp->SetBinContent(N,temp->GetBinContent(N)+temp->GetBinContent(N+1));
+     temp->SetBinContent(N+1,0);
+     temp->SetEntries(temp->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+     temp->Write();
+     TCanvas* tempCanvas = TCanvasCreator(temp, it->first);
+     tempCanvas->SaveAs( (placeTH1F+it->first+".png").c_str() );
+     }
+     */
+    
+    TDirectory* th1dirsys = fout->mkdir("1D_histograms_sys");
+    th1dirsys->cd();
+    gStyle->SetOptStat(1110);
+    gStyle->SetOptStat(0);
+    TH1F *tempnom =0;
+    TH1F *tempup = 0;
+    TH1F *tempdown = 0;
+    int Nnom = 0;
+    int Nup = 0;
+    int Ndown = 0;
+    double max = 0.;
+    double max1 = 0.;
+    TCanvas* Canvas = 0;
+    Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
+    TLegend *leg = new TLegend(xl1,yl1,xl2,yl2);
+    std::map<std::string,TH1F*>::const_iterator nom = histo1D_PUSystematics.begin(), up=histo1D_PUSystematics.begin(), down=histo1D_PUSystematics.begin();
+    
+    
+    for (std::map<std::string,TH1F*>::const_iterator it = histo1D_PUSystematics.begin(); it != histo1D_PUSystematics.end(); it++)
+    {
+      string name = it->first;
+      if(name.find("nom")!=std::string::npos){
+        nom = it;
+        if(tempnom == 0) tempnom = nom->second;
+        else tempnom->Add(nom->second);
+      }
+      if(name.find("up")!=std::string::npos){
+        up= it;
+        if(tempup == 0) tempup = up->second;
+        else tempup->Add(up->second);
+      }
+      if(name.find("down")!=std::string::npos){
+        down = it;
+        if(tempdown == 0) tempdown = down->second;
+        else tempdown->Add(down->second);
+      }
+      
+    }
+    
+    Nnom= tempnom->GetNbinsX();
+    tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+    tempnom->SetBinContent(Nnom+1,0);
+    tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempnom->Write();
+    Nup = tempup->GetNbinsX();
+    tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+    tempup->SetBinContent(Nup+1,0);
+    tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempup->Write();
+    Ndown= tempdown->GetNbinsX();
+    tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+    tempdown->SetBinContent(Ndown+1,0);
+    tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempdown->Write();
+    tempnom->SetLineColor(kRed);
+    tempup->SetLineColor(kBlue);
+    tempdown->SetLineColor(kViolet);
+    
+    leg->AddEntry(tempnom,"Nominal","L");   // h1 and h2 are histogram pointers
+    leg->AddEntry(tempup,"Up","L");
+    leg->AddEntry(tempdown,"Down","L");
+    
+    
+    max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+    max = TMath::Max(max1, tempdown->GetMaximum());
+    tempnom->SetMaximum(max*1.2);
+    
+    
+    tempnom->SetTitle("Nb Of vertices: PU SF");
+    Canvas =  TCanvasCreator(tempnom, "Nb Of vertices: PU SF" );//new TCanvas("Canvas_PU","Canvas_PU");
+    Canvas->cd();
+    tempnom->Draw("h");
+    tempup->Draw("SAME,h");
+    tempdown->Draw("SAME,h");
+    leg->Draw("sames");
+    Canvas->SaveAs( (placeTH1F+"PUSF_nvtx.png").c_str() );
+    Canvas->SetLogy();
+    Canvas->Update();
+    Canvas->SaveAs( (placeTH1F+"PUSF_nvtx_LogY.png").c_str() );
+    
+    tempnom =0;
+    tempup = 0;
+    tempdown = 0;
+    // electron SF
+    for (std::map<std::string,TH1F*>::const_iterator it = histo1D_ElSystematics.begin(); it != histo1D_ElSystematics.end(); it++)
+    {
+      string name = it->first;
+      if(name.find("nom")!=std::string::npos){
+        nom = it;
+        if(tempnom == 0) tempnom = nom->second;
+        else tempnom->Add(nom->second);
+      }
+      if(name.find("up")!=std::string::npos){
+        up= it;
+        if(tempup == 0) tempup = up->second;
+        else tempup->Add(up->second);
+      }
+      if(name.find("down")!=std::string::npos){
+        down = it;
+        if(tempdown == 0) tempdown = down->second;
+        else tempdown->Add(down->second);
+      }
+      
+    }
+    
+    
+    Nnom= tempnom->GetNbinsX();
+    tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+    tempnom->SetBinContent(Nnom+1,0);
+    tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempnom->Write();
+    Nup = tempup->GetNbinsX();
+    tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+    tempup->SetBinContent(Nup+1,0);
+    tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempup->Write();
+    Ndown= tempdown->GetNbinsX();
+    tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+    tempdown->SetBinContent(Ndown+1,0);
+    tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempdown->Write();
+    tempnom->SetLineColor(kRed);
+    tempup->SetLineColor(kBlue);
+    tempdown->SetLineColor(kViolet);
+    
+    max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+    max = TMath::Max(max1, tempdown->GetMaximum());
+    tempnom->SetMaximum(max*1.2);
+    tempnom->SetTitle("Pt electrons: El SF");
+    Canvas =  TCanvasCreator(tempnom, "Pt electrons: El SF" );//new TCanvas("Canvas_PU","Canvas_PU");
+    Canvas->cd();
+    tempnom->Draw("h");
+    tempup->Draw("SAME,h");
+    tempdown->Draw("SAME,h");
+    leg->Draw("sames");
+    Canvas->SaveAs( (placeTH1F+"ELSF_ptelectron.png").c_str() );
+    Canvas->SetLogy();
+    Canvas->Update();
+    Canvas->SaveAs( (placeTH1F+"ELSF_ptelectron_LogY.png").c_str() );
+    
+    // muon SF
+    tempnom =0;
+    tempup = 0;
+    tempdown = 0;
+    
+    for (std::map<std::string,TH1F*>::const_iterator it = histo1D_MuSystematics.begin(); it != histo1D_MuSystematics.end(); it++)
+    {
+      string name = it->first;
+      if(name.find("nom")!=std::string::npos){
+        nom = it;
+        if(tempnom == 0) tempnom = nom->second;
+        else tempnom->Add(nom->second);
+      }
+      if(name.find("up")!=std::string::npos){
+        up= it;
+        if(tempup == 0) tempup = up->second;
+        else tempup->Add(up->second);
+      }
+      if(name.find("down")!=std::string::npos){
+        down = it;
+        if(tempdown == 0) tempdown = down->second;
+        else tempdown->Add(down->second);
+      }
+      
+    }
+    Nnom= tempnom->GetNbinsX();
+    tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+    tempnom->SetBinContent(Nnom+1,0);
+    tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempnom->Write();
+    Nup = tempup->GetNbinsX();
+    tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+    tempup->SetBinContent(Nup+1,0);
+    tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempup->Write();
+    Ndown= tempdown->GetNbinsX();
+    tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+    tempdown->SetBinContent(Ndown+1,0);
+    tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempdown->Write();
+    tempnom->SetLineColor(kRed);
+    tempup->SetLineColor(kBlue);
+    tempdown->SetLineColor(kViolet);
+    
+    max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+    max = TMath::Max(max1, tempdown->GetMaximum());
+    tempnom->SetMaximum(max*1.2);
+    tempnom->SetTitle("Pt muons: Mu SF");
+    Canvas =  TCanvasCreator(tempnom, "Pt muons: Mu SF" );//new TCanvas("Canvas_PU","Canvas_PU");
+    Canvas->cd();
+    tempnom->Draw("h");
+    tempup->Draw("SAME,h");
+    tempdown->Draw("SAME,h");
+    leg->Draw("sames");
+    Canvas->SaveAs( (placeTH1F+"MUSF_ptmuon.png").c_str() );
+    Canvas->SetLogy();
+    Canvas->Update();
+    Canvas->SaveAs( (placeTH1F+"MUSF_ptmuon_LogY.png").c_str() );
+    
+    // btag SF cferr1
+    tempnom =0;
+    tempup = 0;
+    tempdown = 0;
+    
+    for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bcferr1Systematics.begin(); it != histo1D_Bcferr1Systematics.end(); it++)
+    {
+      string name = it->first;
+      if(name.find("nom")!=std::string::npos){
+        nom = it;
+        if(tempnom == 0) tempnom = nom->second;
+        else tempnom->Add(nom->second);
+      }
+      if(name.find("up")!=std::string::npos){
+        up= it;
+        if(tempup == 0) tempup = up->second;
+        else tempup->Add(up->second);
+      }
+      if(name.find("down")!=std::string::npos){
+        down = it;
+        if(tempdown == 0) tempdown = down->second;
+        else tempdown->Add(down->second);
+      }
+      
+    }
+    Nnom= tempnom->GetNbinsX();
+    tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+    tempnom->SetBinContent(Nnom+1,0);
+    tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempnom->Write();
+    Nup = tempup->GetNbinsX();
+    tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+    tempup->SetBinContent(Nup+1,0);
+    tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempup->Write();
+    Ndown= tempdown->GetNbinsX();
+    tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+    tempdown->SetBinContent(Ndown+1,0);
+    tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempdown->Write();
+    tempnom->SetLineColor(kRed);
+    tempup->SetLineColor(kBlue);
+    tempdown->SetLineColor(kViolet);
+    
+    max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+    max = TMath::Max(max1, tempdown->GetMaximum());
+    tempnom->SetMaximum(max*1.2);
+    tempnom->SetTitle("CSVv2: btag SF cferr1");
+    Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF cferr1" );//new TCanvas("Canvas_PU","Canvas_PU");
+    Canvas->cd();
+    tempnom->Draw("h");
+    tempup->Draw("SAME,h");
+    tempdown->Draw("SAME,h");
+    leg->Draw("sames");
+    Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr1.png").c_str() );
+    Canvas->SetLogy();
+    Canvas->Update();
+    Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr1_LogY.png").c_str() );
+    
+    // btag SF cferr2
+    tempnom =0;
+    tempup = 0;
+    tempdown = 0;
+    
+    for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bcferr2Systematics.begin(); it != histo1D_Bcferr2Systematics.end(); it++)
+    {
+      string name = it->first;
+      if(name.find("nom")!=std::string::npos){
+        nom = it;
+        if(tempnom == 0) tempnom = nom->second;
+        else tempnom->Add(nom->second);
+      }
+      if(name.find("up")!=std::string::npos){
+        up= it;
+        if(tempup == 0) tempup = up->second;
+        else tempup->Add(up->second);
+      }
+      if(name.find("down")!=std::string::npos){
+        down = it;
+        if(tempdown == 0) tempdown = down->second;
+        else tempdown->Add(down->second);
+      }
+      
+    }
+    Nnom= tempnom->GetNbinsX();
+    tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+    tempnom->SetBinContent(Nnom+1,0);
+    tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempnom->Write();
+    Nup = tempup->GetNbinsX();
+    tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+    tempup->SetBinContent(Nup+1,0);
+    tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempup->Write();
+    Ndown= tempdown->GetNbinsX();
+    tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+    tempdown->SetBinContent(Ndown+1,0);
+    tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempdown->Write();
+    tempnom->SetLineColor(kRed);
+    tempup->SetLineColor(kBlue);
+    tempdown->SetLineColor(kViolet);
+    
+    max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+    max = TMath::Max(max1, tempdown->GetMaximum());
+    tempnom->SetMaximum(max*1.2);
+    tempnom->SetTitle("CSVv2: btag SF cferr2");
+    Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF cferr2" );//new TCanvas("Canvas_PU","Canvas_PU");
+    Canvas->cd();
+    tempnom->Draw("h");
+    tempup->Draw("SAME,h");
+    tempdown->Draw("SAME,h");
+    leg->Draw("sames");
+    Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr2.png").c_str() );
+    Canvas->SetLogy();
+    Canvas->Update();
+    Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr2_LogY.png").c_str() );
+    
+    // btag SF hfstats1
+    tempnom =0;
+    tempup = 0;
+    tempdown = 0;
+    
+    for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bhfstats1Systematics.begin(); it != histo1D_Bhfstats1Systematics.end(); it++)
+    {
+      string name = it->first;
+      if(name.find("nom")!=std::string::npos){
+        nom = it;
+        if(tempnom == 0) tempnom = nom->second;
+        else tempnom->Add(nom->second);
+      }
+      if(name.find("up")!=std::string::npos){
+        up= it;
+        if(tempup == 0) tempup = up->second;
+        else tempup->Add(up->second);
+      }
+      if(name.find("down")!=std::string::npos){
+        down = it;
+        if(tempdown == 0) tempdown = down->second;
+        else tempdown->Add(down->second);
+      }
+      
+    }
+    Nnom= tempnom->GetNbinsX();
+    tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+    tempnom->SetBinContent(Nnom+1,0);
+    tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempnom->Write();
+    Nup = tempup->GetNbinsX();
+    tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+    tempup->SetBinContent(Nup+1,0);
+    tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempup->Write();
+    Ndown= tempdown->GetNbinsX();
+    tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+    tempdown->SetBinContent(Ndown+1,0);
+    tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempdown->Write();
+    tempnom->SetLineColor(kRed);
+    tempup->SetLineColor(kBlue);
+    tempdown->SetLineColor(kViolet);
+    
+    max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+    max = TMath::Max(max1, tempdown->GetMaximum());
+    tempnom->SetMaximum(max*1.2);
+    tempnom->SetTitle("CSVv2: btag SF hfstats1");
+    Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF hfstats1" );//new TCanvas("Canvas_PU","Canvas_PU");
+    Canvas->cd();
+    tempnom->Draw("h");
+    tempup->Draw("SAME,h");
+    tempdown->Draw("SAME,h");
+    leg->Draw("sames");
+    Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats1.png").c_str() );
+    Canvas->SetLogy();
+    Canvas->Update();
+    Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats1_LogY.png").c_str() );
+    
+    // btag SF hfstats2
+    tempnom =0;
+    tempup = 0;
+    tempdown = 0;
+    
+    for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bhfstats2Systematics.begin(); it != histo1D_Bhfstats2Systematics.end(); it++)
+    {
+      string name = it->first;
+      if(name.find("nom")!=std::string::npos){
+        nom = it;
+        if(tempnom == 0) tempnom = nom->second;
+        else tempnom->Add(nom->second);
+      }
+      if(name.find("up")!=std::string::npos){
+        up= it;
+        if(tempup == 0) tempup = up->second;
+        else tempup->Add(up->second);
+      }
+      if(name.find("down")!=std::string::npos){
+        down = it;
+        if(tempdown == 0) tempdown = down->second;
+        else tempdown->Add(down->second);
+      }
+      
+    }
+    Nnom= tempnom->GetNbinsX();
+    tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+    tempnom->SetBinContent(Nnom+1,0);
+    tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempnom->Write();
+    Nup = tempup->GetNbinsX();
+    tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+    tempup->SetBinContent(Nup+1,0);
+    tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempup->Write();
+    Ndown= tempdown->GetNbinsX();
+    tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+    tempdown->SetBinContent(Ndown+1,0);
+    tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempdown->Write();
+    tempnom->SetLineColor(kRed);
+    tempup->SetLineColor(kBlue);
+    tempdown->SetLineColor(kViolet);
+    
+    max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+    max = TMath::Max(max1, tempdown->GetMaximum());
+    tempnom->SetMaximum(max*1.2);
+    tempnom->SetTitle("CSVv2: btag SF hfstats2");
+    Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF hfstats2" );//new TCanvas("Canvas_PU","Canvas_PU");
+    Canvas->cd();
+    tempnom->Draw("h");
+    tempup->Draw("SAME,h");
+    tempdown->Draw("SAME,h");
+    leg->Draw("sames");
+    Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats2.png").c_str() );
+    Canvas->SetLogy();
+    Canvas->Update();
+    Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats2_LogY.png").c_str() );
+    
+    
+    // btag SF lfstats1
+    tempnom =0;
+    tempup = 0;
+    tempdown = 0;
+    
+    for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Blfstats1Systematics.begin(); it != histo1D_Blfstats1Systematics.end(); it++)
+    {
+      string name = it->first;
+      if(name.find("nom")!=std::string::npos){
+        nom = it;
+        if(tempnom == 0) tempnom = nom->second;
+        else tempnom->Add(nom->second);
+      }
+      if(name.find("up")!=std::string::npos){
+        up= it;
+        if(tempup == 0) tempup = up->second;
+        else tempup->Add(up->second);
+      }
+      if(name.find("down")!=std::string::npos){
+        down = it;
+        if(tempdown == 0) tempdown = down->second;
+        else tempdown->Add(down->second);
+      }
+      
+    }
+    
+    Nnom= tempnom->GetNbinsX();
+    tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+    tempnom->SetBinContent(Nnom+1,0);
+    tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempnom->Write();
+    Nup = tempup->GetNbinsX();
+    tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+    tempup->SetBinContent(Nup+1,0);
+    tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempup->Write();
+    Ndown= tempdown->GetNbinsX();
+    tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+    tempdown->SetBinContent(Ndown+1,0);
+    tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempdown->Write();
+    tempnom->SetLineColor(kRed);
+    tempup->SetLineColor(kBlue);
+    tempdown->SetLineColor(kViolet);
+    
+    max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+    max = TMath::Max(max1, tempdown->GetMaximum());
+    tempnom->SetMaximum(max*1.2);
+    tempnom->SetTitle("CSVv2: btag SF lfstats1");
+    Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF lfstats1" );//new TCanvas("Canvas_PU","Canvas_PU");
+    Canvas->cd();
+    tempnom->Draw("h");
+    tempup->Draw("SAME,h");
+    tempdown->Draw("SAME,h");
+    leg->Draw("sames");
+    Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats1.png").c_str() );
+    Canvas->SetLogy();
+    Canvas->Update();
+    Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats1_LogY.png").c_str() );
+    
+    // btag SF lfstats2
+    tempnom =0;
+    tempup = 0;
+    tempdown = 0;
+    
+    for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Blfstats2Systematics.begin(); it != histo1D_Blfstats2Systematics.end(); it++)
+    {
+      string name = it->first;
+      if(name.find("nom")!=std::string::npos){
+        nom = it;
+        if(tempnom == 0) tempnom = nom->second;
+        else tempnom->Add(nom->second);
+      }
+      if(name.find("up")!=std::string::npos){
+        up= it;
+        if(tempup == 0) tempup = up->second;
+        else tempup->Add(up->second);
+      }
+      if(name.find("down")!=std::string::npos){
+        down = it;
+        if(tempdown == 0) tempdown = down->second;
+        else tempdown->Add(down->second);
+      }
+      
+    }
+    Nnom= tempnom->GetNbinsX();
+    tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+    tempnom->SetBinContent(Nnom+1,0);
+    tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempnom->Write();
+    Nup = tempup->GetNbinsX();
+    tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+    tempup->SetBinContent(Nup+1,0);
+    tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempup->Write();
+    Ndown= tempdown->GetNbinsX();
+    tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+    tempdown->SetBinContent(Ndown+1,0);
+    tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempdown->Write();
+    tempnom->SetLineColor(kRed);
+    tempup->SetLineColor(kBlue);
+    tempdown->SetLineColor(kViolet);
+    
+    max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+    max = TMath::Max(max1, tempdown->GetMaximum());
+    tempnom->SetMaximum(max*1.2);
+    tempnom->SetTitle("CSVv2: btag SF lfstats2");
+    Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF lfstats2" );//new TCanvas("Canvas_PU","Canvas_PU");
+    Canvas->cd();
+    tempnom->Draw("h");
+    tempup->Draw("SAME,h");
+    tempdown->Draw("SAME,h");
+    leg->Draw("sames");
+    Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats2.png").c_str() );
+    Canvas->SetLogy();
+    Canvas->Update();
+    Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats2_LogY.png").c_str() );
+    
+    
+    // btag SF hf
+    tempnom =0;
+    tempup = 0;
+    tempdown = 0;
+    
+    for (std::map<std::string,TH1F*>::const_iterator it = histo1D_BhfSystematics.begin(); it != histo1D_BhfSystematics.end(); it++)
+    {
+      string name = it->first;
+      if(name.find("nom")!=std::string::npos){
+        nom = it;
+        if(tempnom == 0) tempnom = nom->second;
+        else tempnom->Add(nom->second);
+      }
+      if(name.find("up")!=std::string::npos){
+        up= it;
+        if(tempup == 0) tempup = up->second;
+        else tempup->Add(up->second);
+      }
+      if(name.find("down")!=std::string::npos){
+        down = it;
+        if(tempdown == 0) tempdown = down->second;
+        else tempdown->Add(down->second);
+      }
+      
+    }
+    Nnom= tempnom->GetNbinsX();
+    tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+    tempnom->SetBinContent(Nnom+1,0);
+    tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempnom->Write();
+    Nup = tempup->GetNbinsX();
+    tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+    tempup->SetBinContent(Nup+1,0);
+    tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempup->Write();
+    Ndown= tempdown->GetNbinsX();
+    tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+    tempdown->SetBinContent(Ndown+1,0);
+    tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempdown->Write();
+    tempnom->SetLineColor(kRed);
+    tempup->SetLineColor(kBlue);
+    tempdown->SetLineColor(kViolet);
+    
+    max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+    max = TMath::Max(max1, tempdown->GetMaximum());
+    tempnom->SetMaximum(max*1.2);
+    tempnom->SetTitle("CSVv2: btag SF hf");
+    Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF hf" );//new TCanvas("Canvas_PU","Canvas_PU");
+    Canvas->cd();
+    tempnom->Draw("h");
+    tempup->Draw("SAME,h");
+    tempdown->Draw("SAME,h");
+    leg->Draw("sames");
+    Canvas->SaveAs( (placeTH1F+"BSF_bdishf.png").c_str() );
+    Canvas->SetLogy();
+    Canvas->Update();
+    Canvas->SaveAs( (placeTH1F+"BSF_bdishf_LogY.png").c_str() );
+    
+    // btag SF lf
+    tempnom =0;
+    tempup = 0;
+    tempdown = 0;
+    
+    for (std::map<std::string,TH1F*>::const_iterator it = histo1D_BlfSystematics.begin(); it != histo1D_BlfSystematics.end(); it++)
+    {
+      string name = it->first;
+      if(name.find("nom")!=std::string::npos){
+        nom = it;
+        if(tempnom == 0) tempnom = nom->second;
+        else tempnom->Add(nom->second);
+      }
+      if(name.find("up")!=std::string::npos){
+        up= it;
+        if(tempup == 0) tempup = up->second;
+        else tempup->Add(up->second);
+      }
+      if(name.find("down")!=std::string::npos){
+        down = it;
+        if(tempdown == 0) tempdown = down->second;
+        else tempdown->Add(down->second);
+      }
+      
+    }
+    Nnom= tempnom->GetNbinsX();
+    tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+    tempnom->SetBinContent(Nnom+1,0);
+    tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempnom->Write();
+    Nup = tempup->GetNbinsX();
+    tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+    tempup->SetBinContent(Nup+1,0);
+    tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempup->Write();
+    Ndown= tempdown->GetNbinsX();
+    tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+    tempdown->SetBinContent(Ndown+1,0);
+    tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+    tempdown->Write();
+    tempnom->SetLineColor(kRed);
+    tempup->SetLineColor(kBlue);
+    tempdown->SetLineColor(kViolet);
+    
+    max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+    max = TMath::Max(max1, tempdown->GetMaximum());
+    tempnom->SetMaximum(max*1.2);
+    tempnom->SetTitle("CSVv2: btag SF lf");
+    Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF lf" );//new TCanvas("Canvas_PU","Canvas_PU");
+    Canvas->cd();
+    tempnom->Draw("h");
+    tempup->Draw("SAME,h");
+    tempdown->Draw("SAME,h");
+    leg->Draw("sames");
+    Canvas->SaveAs( (placeTH1F+"BSF_bdislf.png").c_str() );
+    Canvas->SetLogy();
+    Canvas->Update();
+    Canvas->SaveAs( (placeTH1F+"BSF_bdislf_LogY.png").c_str() );
+    
+    delete tempdown;
+    delete tempnom;
+    delete tempup;
+    delete leg;
+    
+    // 2D
+    TDirectory* th2dir = fout->mkdir("2D_histograms");
+    th2dir->cd();
+    gStyle->SetPalette(55);
+    for(std::map<std::string,TH2F*>::const_iterator it = histo2D.begin(); it != histo2D.end(); it++)
+    {
+      TH2F *temp = it->second;
+      temp->Write();
+      TCanvas* tempCanvas = TCanvasCreator(temp, it->first, "colz");
+      tempCanvas->SaveAs( (placeTH2F+it->first+".png").c_str() );
+    }
+    
+    fout->Close();
+    
+    delete fout;
+    
   }
   
   double time = ((double)clock() - start) / CLOCKS_PER_SEC;
@@ -3427,7 +3701,7 @@ void ClearMVAVars(){
   MVA_weight_btagSF_lfstats1_down = 1.;
   MVA_weight_btagSF_lfstats2_up = 1.;
   MVA_weight_btagSF_lfstats2_down = 1.;
-
+  
   
   MVA_region = -999.;
   
@@ -3802,7 +4076,7 @@ void Init1DPlots(string dataSetName){
   histo1D_PUSystematics[("NbVertices_up_"+dataSetName).c_str()] = new TH1F(("NbVertices_up_"+dataSetName).c_str(),"Nb Of Vertices",60,-0.5,59);
   histo1D_ElSystematics[("Pt_electron_up_"+dataSetName).c_str()] = new TH1F(("Pt_electron_up_"+dataSetName).c_str(),"Pt leading electron",100,0,600);
   histo1D_MuSystematics[("Pt_muon_up_"+dataSetName).c_str()] = new TH1F(("Pt_muon_up_"+dataSetName).c_str(),"Pt leading muon",100,0,600);
- 
+  
   histo1D_PUSystematics[("NbVertices_down_"+dataSetName).c_str()] = new TH1F(("NbVertices_down_"+dataSetName).c_str(),"Nb Of Vertices",60,-0.5,59);
   histo1D_ElSystematics[("Pt_electron_down_"+dataSetName).c_str()] = new TH1F(("Pt_electron_down_"+dataSetName).c_str(),"Pt leading electron",100,0,600);
   histo1D_MuSystematics[("Pt_muon_down_"+dataSetName).c_str()] = new TH1F(("Pt_muon_down_"+dataSetName).c_str(),"Pt leading muon",100,0,600);
@@ -3837,7 +4111,7 @@ void Init1DPlots(string dataSetName){
   
   
   
-
+  
 }
 
 void InitMSPlotsBDT(string prefix, vector <int> decayChannels){
@@ -4346,7 +4620,8 @@ void InitTree(TTree* tree, bool isData, bool isfakes){
   tree->SetBranchAddress("MuonIDSF_down", MuonIDSF_down, &b_MuonIDSF_down);
   tree->SetBranchAddress("MuonIsoSF_down", MuonIsoSF_down, &b_MuonIsoSF_down);
   tree->SetBranchAddress("MuonTrigSFv2", MuonTrigSFv2, &b_MuonTrigSFv2);
-  tree->SetBranchAddress("rejecteventBadPFmuon",rejecteventBadPFmuon, &b_rejecteventBadPFmuon);
+  
+  //tree->SetBranchAddress("rejecteventBadPFmuon",rejecteventBadPFmuon, &b_rejecteventBadPFmuon);
   tree->SetBranchAddress("MuonTrigSFv3", MuonTrigSFv3, &b_MuonTrigSFv3);
   tree->SetBranchAddress("badmueventmu", badmueventmu, &b_badmueventmu);
   tree->SetBranchAddress("badmueventclonemu", badmueventclonemu, &b_badmueventclonemu);
@@ -4412,9 +4687,9 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
   //cout << "fill plots" << endl;
   string decaystring = "";
   Double_t eventW = 1.;
- // if(isData  ) scaleFactor = 1.;
+  // if(isData  ) scaleFactor = 1.;
   eventW = Luminosity/EquilumiSF;
-if(isfakes) eventW *= 0.0001;
+  if(isfakes) eventW *= 0.0001;
   
   for(int iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
@@ -4550,7 +4825,10 @@ void Fill1DPlots(string dataSetName){
   //cout << "puSF_up" << puSF_up << endl;
   //cout << eventW << " " << (eventW/puSF)*puSF_up<< " " << (eventW/puSF)*puSF_down << endl;
   histo1D_PUSystematics[("NbVertices_nom_"+dataSetName).c_str()]->Fill(nvtx, eventW*scaleFactor);
-  histo1D_ElSystematics[("Pt_electron_nom_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt(), eventW*scaleFactor);
+  // histo1D_ElSystematics[("Pt_electron_nom_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt(), eventW*scaleFactor);
+ // if(selectedElectrons.size()>2) histo1D_ElSystematics[("Pt_electron_nom_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt()+selectedElectrons[1].Pt()+selectedElectrons[2].Pt(), eventW*scaleFactor);
+ // else if(selectedElectrons.size()>1) histo1D_ElSystematics[("Pt_electron_nom_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt()+selectedElectrons[1].Pt(), eventW*scaleFactor);
+  if(selectedElectrons.size()>0) histo1D_ElSystematics[("Pt_electron_nom_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt(), eventW*scaleFactor);
   histo1D_MuSystematics[("Pt_muon_nom_"+dataSetName).c_str()] ->Fill(selectedMuons[0].Pt(), eventW*scaleFactor);
   histo1D_Bcferr1Systematics[("Bdis_cferr1_nom_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor);
   histo1D_Bcferr2Systematics[("Bdis_cferr2_nom_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor);
@@ -4561,11 +4839,14 @@ void Fill1DPlots(string dataSetName){
   histo1D_BhfSystematics[("Bdis_hf_nom_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor);
   histo1D_BlfSystematics[("Bdis_lf_nom_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor);
   
-
+  
   
   
   histo1D_PUSystematics[("NbVertices_up_"+dataSetName).c_str()]->Fill(nvtx, eventW*scaleFactor_puSF_up);
-  histo1D_ElSystematics[("Pt_electron_up_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt(), eventW*scaleFactor_electronSF_up);
+  //if(selectedElectrons.size()>2) histo1D_ElSystematics[("Pt_electron_up_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt()+selectedElectrons[1].Pt()+selectedElectrons[2].Pt(), eventW*scaleFactor_electronSF_up);
+ // else if(selectedElectrons.size()>1) histo1D_ElSystematics[("Pt_electron_up_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt()+selectedElectrons[1].Pt(), eventW*scaleFactor_electronSF_up);
+ if(selectedElectrons.size()>0) histo1D_ElSystematics[("Pt_electron_up_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt(), eventW*scaleFactor_electronSF_up);
+  
   histo1D_MuSystematics[("Pt_muon_up_"+dataSetName).c_str()]->Fill(selectedMuons[0].Pt(), eventW*scaleFactor_muonSF_up);
   histo1D_Bcferr1Systematics[("Bdis_cferr1_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_cferr1_up);
   histo1D_Bcferr2Systematics[("Bdis_cferr2_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_cferr2_up);
@@ -4578,7 +4859,11 @@ void Fill1DPlots(string dataSetName){
   
   
   histo1D_PUSystematics[("NbVertices_down_"+dataSetName).c_str()]->Fill(nvtx, eventW*scaleFactor_puSF_down);
-  histo1D_ElSystematics[("Pt_electron_down_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt(), eventW*scaleFactor_electronSF_down);
+  // histo1D_ElSystematics[("Pt_electron_down_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt(), eventW*scaleFactor_electronSF_down);
+ // if(selectedElectrons.size()>2) histo1D_ElSystematics[("Pt_electron_down_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt()+selectedElectrons[1].Pt()+selectedElectrons[2].Pt(), eventW*scaleFactor_electronSF_down);
+ // else if(selectedElectrons.size()>1) histo1D_ElSystematics[("Pt_electron_down_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt()+selectedElectrons[1].Pt(), eventW*scaleFactor_electronSF_down);
+  if(selectedElectrons.size()>0) histo1D_ElSystematics[("Pt_electron_down_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt(), eventW*scaleFactor_electronSF_down);
+  
   histo1D_MuSystematics[("Pt_muon_down_"+dataSetName).c_str()]->Fill(selectedMuons[0].Pt(), eventW*scaleFactor_muonSF_down);
   histo1D_Bcferr1Systematics[("Bdis_cferr1_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_cferr1_down);
   histo1D_Bcferr2Systematics[("Bdis_cferr2_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_cferr2_down);
@@ -4764,7 +5049,7 @@ void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<i
   string decaystring = "";
   
   if(dataSetName.find("fake")!=std::string::npos) scaleFactor *= 0.0001;
-
+  
   //cout <<  "region " << sregion << endl;
   for(int iChan = 0;iChan < decayChannels.size() ;iChan++){
     // cout << "chan " << decayChannels[iChan] << " chan in evt " << MVA_channel << endl;
