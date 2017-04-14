@@ -762,7 +762,7 @@ int main (int argc, char *argv[])
     
     if(verbose>1) cout << "btag done" << endl;
     
-    TFile *muontrackfile = new TFile("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/Tracking_EfficienciesAndSF_BCDEFGH.root","read");
+    TFile *muontrackfile = new TFile("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/20170413/Tracking_EfficienciesAndSF_BCDEFGH.root","read");
     TGraph* h_muonSFWeightTrack = (TGraph*) muontrackfile->Get("ratio_eff_eta3_dr030e030_corr")->Clone();//Tracking efficiency as function of eta
 
     
@@ -771,25 +771,27 @@ int main (int argc, char *argv[])
     MuonSFWeight* muonSFWeightID_GH;
     MuonSFWeight* muonSFWeightIso_BCDEF;
     MuonSFWeight* muonSFWeightIso_GH;
-    MuonSFWeight* muonSFWeightTrig_BCDEF;
-    MuonSFWeight* muonSFWeightTrig_GH;
+   //MuonSFWeight* muonSFWeightTrig_BCDEF;
+   // MuonSFWeight* muonSFWeightTrig_GH;
     
     
     ElectronSFWeight* electronSFWeightID;
     ElectronSFWeight* electronSFWeightReco;
     
-    muonSFWeightID_BCDEF = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/MuonID_EfficienciesAndSF_BCDEF.root", "MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/abseta_pt_ratio", true, false, false);
-    muonSFWeightID_GH = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/MuonID_EfficienciesAndSF_GH.root", "MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/abseta_pt_ratio", true, false, false);
-    muonSFWeightIso_BCDEF = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/MuonIso_EfficienciesAndSF_BCDEF.root", "TightISO_TightID_pt_eta/abseta_pt_ratio", true, false, false);  // Tight RelIso, Tight ID
-    muonSFWeightIso_GH = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/MuonIso_EfficienciesAndSF_GH.root", "TightISO_TightID_pt_eta/abseta_pt_ratio", true, false, false);  // Tight RelIso, Tight ID
+    muonSFWeightID_BCDEF = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/20170413/IDEfficienciesAndSF_BCDEF.root", "MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/abseta_pt_ratio", true, false, false);
+    muonSFWeightID_GH = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF//20170413/IDEfficienciesAndSF_GH.root", "MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/abseta_pt_ratio", true, false, false);
+    muonSFWeightIso_BCDEF = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/20170413/IsoEfficienciesAndSF_BCDEF.root", "TightISO_TightID_pt_eta/abseta_pt_ratio", true, false, false);  // Tight RelIso, Tight ID
+    muonSFWeightIso_GH = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/20170413/IsoEfficienciesAndSF_GH.root", "TightISO_TightID_pt_eta/abseta_pt_ratio", true, false, false);  // Tight RelIso, Tight ID
     // muonSFWeightTrig_BCDEF = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/SingleMuonTrigger_EfficienciesAndSF_RunsBCDEF.root", "IsoMu24_OR_IsoTkMu24_PtEtaBins/abseta_pt_ratio", true, false, false);
     //  muonSFWeightTrig_GH = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/SingleMuonTrigger_EfficienciesAndSF_RunsGH.root", "IsoMu24_OR_IsoTkMu24_PtEtaBins/abseta_pt_ratio", true, false, false);
     
     
+    
+    
     if(verbose>1) cout << "muon SF loaded" << endl;
     
-    electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/egammaEffi.txt_EGM2D_CutBasedTightID.root","EGamma_SF2D",true,false,false);
-    electronSFWeightReco = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/egammaEffi.txt_EGM2D_RecoEff.root","EGamma_SF2D",true,false,false);
+    electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/20170413/egammaEffi.txt_EGM2D_IDcutbTight_20170413.root","EGamma_SF2D",true,false,false, false); // extend range, debug,  print warnings
+    electronSFWeightReco = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/20170413/egammaEffi.txt_EGM2D_reco_20170413.root","EGamma_SF2D",true,false,false, true);
     
     if(verbose >1) cout << "electron SF loaded " << endl;
     
@@ -943,6 +945,8 @@ int main (int argc, char *argv[])
     Double_t MuonIDSF[10];
     Double_t MuonIsoSF[10];
     Double_t MuonTrackSF[10];
+    Double_t MuonTrackSF_up[10];
+    Double_t MuonTrackSF_down[10];
     Double_t MuonIDSF_up[10];
     Double_t MuonIsoSF_up[10];
     Double_t MuonIDSF_down[10];
@@ -952,6 +956,12 @@ int main (int argc, char *argv[])
     Double_t ElectronSF[10];
     Double_t ElectronSF_up[10];
     Double_t ElectronSF_down[10];
+    Double_t ElectronSFID[10];
+    Double_t ElectronSFID_up[10];
+    Double_t ElectronSFID_down[10];
+    Double_t ElectronSFReco[10];
+    Double_t ElectronSFReco_up[10];
+    Double_t ElectronSFReco_down[10];
     Int_t nofPosWeights;
     Int_t nofNegWeights;
     Int_t sumW;
@@ -1171,6 +1181,13 @@ int main (int argc, char *argv[])
     myTree->Branch("ElectronSF",&ElectronSF,"ElectronSF[nElectrons]/D");
     myTree->Branch("ElectronSF_up",&ElectronSF_up,"ElectronSF_up[nElectrons]/D");
     myTree->Branch("ElectronSF_down",&ElectronSF_down,"ElectronSF_down[nElectrons]/D");
+    myTree->Branch("ElectronSFID",&ElectronSFID,"ElectronSFID[nElectrons]/D");
+    myTree->Branch("ElectronSFID_up",&ElectronSFID_up,"ElectronSFID_up[nElectrons]/D");
+    myTree->Branch("ElectronSFID_down",&ElectronSFID_down,"ElectronSFID_down[nElectrons]/D");
+    myTree->Branch("ElectronSFReco",&ElectronSFReco,"ElectronSFReco[nElectrons]/D");
+    myTree->Branch("ElectronSFReco_up",&ElectronSFReco_up,"ElectronSFReco_up[nElectrons]/D");
+    myTree->Branch("ElectronSFReco_down",&ElectronSFReco_down,"ElectronSFReco_down[nElectrons]/D");
+    
     myTree->Branch("pt_electron",pt_electron,"pt_electron[nElectrons]/D");
     myTree->Branch("phi_electron",phi_electron,"phi_electron[nElectrons]/D");
     myTree->Branch("eta_electron",eta_electron,"eta_electron[nElectrons]/D");
@@ -1202,6 +1219,8 @@ int main (int argc, char *argv[])
     myTree->Branch("MuonIDSF",&MuonIDSF,"MuonIDSF[nMuons]/D");
     myTree->Branch("MuonIsoSF",&MuonIsoSF, "MuonIsoSF[nMuons]/D");
      myTree->Branch("MuonTrackSF",&MuonTrackSF, "MuonTrackSF[nMuons]/D");
+    myTree->Branch("MuonTrackSF_up",&MuonTrackSF_up, "MuonTrackSF_up[nMuons]/D");
+    myTree->Branch("MuonTrackSF_down",&MuonTrackSF_down, "MuonTrackSF_down[nMuons]/D");
     myTree->Branch("MuonIDSF_up",&MuonIDSF_up,"MuonIDSF_up[nMuons]/D");
     myTree->Branch("MuonIsoSF_up",&MuonIsoSF_up, "MuonIsoSF_up[nMuons]/D");
     myTree->Branch("MuonIDSF_down",&MuonIDSF_down,"MuonIDSF_down[nMuons]/D");
@@ -1738,9 +1757,8 @@ int main (int argc, char *argv[])
       {
         // cout << "applying JER" << endl;
         if(doJESJERshift == 3) jetTools->correctJetJER(init_jets_corrected, genjets, mets[0], "minus", false);
-        if(doJESJERshift == 4) jetTools->correctJetJER(init_jets_corrected, genjets, mets[0], "plus", false);
-        
-        jetTools->correctJetJER(init_jets_corrected, genjets, mets[0], "nominal", false);
+        else if(doJESJERshift == 4) jetTools->correctJetJER(init_jets_corrected, genjets, mets[0], "plus", false);
+        else jetTools->correctJetJER(init_jets_corrected, genjets, mets[0], "nominal", false);
         JERon = 1;
       }
       for(int iJ = 0; iJ < init_jets_corrected.size(); iJ++){
@@ -1752,7 +1770,7 @@ int main (int argc, char *argv[])
       {
         // cout << "applying JES" << endl;
         if(doJESJERshift == 1)  jetTools->correctJetJESUnc(init_jets_corrected, mets[0], "minus");
-        if(doJESJERshift == 2)  jetTools->correctJetJESUnc(init_jets_corrected, mets[0], "plus");
+        else if(doJESJERshift == 2)  jetTools->correctJetJESUnc(init_jets_corrected, mets[0], "plus");
         
         jetTools->correctJets(init_jets_corrected,event->fixedGridRhoFastjetAll() ,false);
         JESon = 1;
@@ -2164,6 +2182,9 @@ int main (int argc, char *argv[])
             MuonIDSF_down[nMuons]  = (muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
             MuonIsoSF_down[nMuons] = (muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
             MuonTrackSF[nMuons] = h_muonSFWeightTrack->Eval(selectedMuons[selmu]->Eta());
+            MuonTrackSF_up[nMuons] = h_muonSFWeightTrack->Eval(selectedMuons[selmu]->Eta())*1.01;
+            MuonTrackSF_down[nMuons] = h_muonSFWeightTrack->Eval(selectedMuons[selmu]->Eta())*0.99;
+            
             
             eventweight *= MuonIDSF[nMuons] * MuonIsoSF[nMuons] * MuonTrackSF[nMuons];
           }
@@ -2176,7 +2197,8 @@ int main (int argc, char *argv[])
             MuonIDSF_down[nMuons] = 1.;
             MuonIsoSF_down[nMuons] = 1.;
             MuonTrackSF[nMuons] = 1.;
-            
+            MuonTrackSF_up[nMuons] = 1.;
+            MuonTrackSF_down[nMuons] = 1.;
           }
           if(MuonIDSF[nMuons]*MuonIsoSF[nMuons] == 0 ) cout << "  MuonIDSF[nMuons] " <<  MuonIDSF[nMuons] << " MuonIsoSF[nMuons] " << MuonIsoSF[nMuons] << "  MuonIDSF[nMuons]*MuonIsoSF[nMuons] " <<    MuonIDSF[nMuons]*MuonIsoSF[nMuons]     << endl;
           if(muonSFtemp == 0) cout << " muon SF " << muonSFtemp * MuonIDSF[nMuons]*MuonIsoSF[nMuons] << endl;
@@ -2207,6 +2229,9 @@ int main (int argc, char *argv[])
               MuonIDSF_down[nMuons]  = (muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
               MuonIsoSF_down[nMuons] = (muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
               MuonTrackSF[nMuons] = h_muonSFWeightTrack->Eval(selectedMuons[selmu]->Eta());
+              MuonTrackSF_up[nMuons] = h_muonSFWeightTrack->Eval(selectedMuons[selmu]->Eta())*1.01;
+              MuonTrackSF_down[nMuons] = h_muonSFWeightTrack->Eval(selectedMuons[selmu]->Eta())*0.99;
+              
               eventweight *= MuonIDSF[nMuons] * MuonIsoSF[nMuons] *MuonTrackSF[nMuons];
             }
             else
@@ -2218,6 +2243,8 @@ int main (int argc, char *argv[])
               MuonIDSF_down[nMuons] = 1.;
               MuonIsoSF_down[nMuons] = 1.;
               MuonTrackSF[nMuons] = 1.;
+              MuonTrackSF_up[nMuons] = 1.;
+              MuonTrackSF_down[nMuons] = 1.;
 
             }
             if(MuonIDSF[nMuons]*MuonIsoSF[nMuons] == 0 ) cout << "  MuonIDSF[nMuons] " <<  MuonIDSF[nMuons] << " MuonIsoSF[nMuons] " << MuonIsoSF[nMuons] << "  MuonIDSF[nMuons]*MuonIsoSF[nMuons] " <<    MuonIDSF[nMuons]*MuonIsoSF[nMuons]     << endl;
@@ -2230,6 +2257,7 @@ int main (int argc, char *argv[])
         nElectrons=0;
         for (Int_t selel =0; selel < selectedElectrons.size() ; selel++ )
         {
+          
           pt_electron[nElectrons]=selectedElectrons[selel]->Pt();
           phi_electron[nElectrons]=selectedElectrons[selel]->Phi();
           eta_electron[nElectrons]=selectedElectrons[selel]->Eta();
@@ -2238,12 +2266,30 @@ int main (int argc, char *argv[])
           pfIso_electron[nElectrons]=selectedElectrons[selel]->relPfIso(3,0);
           charge_electron[nElectrons]=selectedElectrons[selel]->charge();
           if(!isData){
+            
+            ElectronSF[nElectrons] = 1.; ElectronSF_up[nElectrons] = 1.; ElectronSF_down[nElectrons] = 1.;
             ElectronSF[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0)*electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0);
             ElectronSF_up[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),1)*electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),1);
             ElectronSF_down[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),-1)*electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),-1);
             
+            ElectronSFID[nElectrons] = 1.; ElectronSFID_up[nElectrons] = 1.; ElectronSFID_down[nElectrons] = 1.;
+            ElectronSFID[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0);
+            ElectronSFID_up[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),1);
+            ElectronSFID_down[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),-1);
+            
+            ElectronSFReco[nElectrons] = 1.; ElectronSFReco_up[nElectrons] = 1.; ElectronSFReco_down[nElectrons] = 1.;
+            ElectronSFReco[nElectrons] = electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0);
+            ElectronSFReco_up[nElectrons] = electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),1);
+            ElectronSFReco_down[nElectrons] = electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),-1);
+           
           }
-          else {ElectronSF[nElectrons] = 1.; ElectronSF_up[nElectrons] = 1.; ElectronSF_down[nElectrons] = 1.;}
+          else {
+            ElectronSF[nElectrons] = 1.; ElectronSF_up[nElectrons] = 1.; ElectronSF_down[nElectrons] = 1.;
+            ElectronSFReco[nElectrons] = 1.; ElectronSFReco_up[nElectrons] = 1.; ElectronSFReco_down[nElectrons] = 1.;
+            ElectronSFID[nElectrons] = 1.; ElectronSFID_up[nElectrons] = 1.; ElectronSFID_down[nElectrons] = 1.;
+            
+          
+          }
           
           eventweight *= ElectronSF[nElectrons];
           nElectrons++;
@@ -2259,12 +2305,30 @@ int main (int argc, char *argv[])
             pfIso_electron[nElectrons]=selectedFakeElectrons[selel]->relPfIso(3,0);
             charge_electron[nElectrons]=selectedFakeElectrons[selel]->charge();
             if(!isData){
+              ElectronSF[nElectrons] = 1.; ElectronSF_up[nElectrons] = 1.; ElectronSF_down[nElectrons] = 1.;
+              
               ElectronSF[nElectrons] = electronSFWeightID->at(selectedFakeElectrons[selel]->Eta(),selectedFakeElectrons[selel]->Pt(),0)*electronSFWeightReco->at(selectedFakeElectrons[selel]->Eta(),selectedFakeElectrons[selel]->Pt(),0);
               ElectronSF_up[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),1)*electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),1);
               ElectronSF_down[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),-1)*electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),-1);
               
+              ElectronSFID[nElectrons] = 1.; ElectronSFID_up[nElectrons] = 1.; ElectronSFID_down[nElectrons] = 1.;
+              ElectronSFID[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0);
+              ElectronSFID_up[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),1);
+              ElectronSFID_down[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),-1);
+              
+              ElectronSFReco[nElectrons] = 1.; ElectronSFReco_up[nElectrons] = 1.; ElectronSFReco_down[nElectrons] = 1.;
+              ElectronSFReco[nElectrons] = electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0);
+              ElectronSFReco_up[nElectrons] = electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),1);
+              ElectronSFReco_down[nElectrons] = electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),-1);
+              
+              
             }
-            else {ElectronSF[nElectrons] = 1.; ElectronSF_up[nElectrons] = 1.; ElectronSF_down[nElectrons] = 1.;}
+            else {
+              ElectronSF[nElectrons] = 1.; ElectronSF_up[nElectrons] = 1.; ElectronSF_down[nElectrons] = 1.;
+              ElectronSFReco[nElectrons] = 1.; ElectronSFReco_up[nElectrons] = 1.; ElectronSFReco_down[nElectrons] = 1.;
+              ElectronSFID[nElectrons] = 1.; ElectronSFID_up[nElectrons] = 1.; ElectronSFID_down[nElectrons] = 1.;
+              
+            }
             
             eventweight *= ElectronSF[nElectrons];
             nElectrons++;
