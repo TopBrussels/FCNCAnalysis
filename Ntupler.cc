@@ -1779,17 +1779,19 @@ int main (int argc, char *argv[])
         jet_Pt_after_JES[iJ] = init_jets_corrected[iJ]->Pt();
         
       }
-      met_before_JES = mets[0]->Pt();
-      if(applyJES ) // jer doesn't need to be applied ||  applyJER)) --> smeared type-1 corrected MET,  NOW only yes --> Type 1 corrected MET
-      {
-        jetTools->correctMETTypeOne(init_jets_corrected, mets[0], isData);
-        METon = 1;
-        //  if JES applied: replaces the vector sum of transverse momenta of particles which can be clustered as jets with the vector sum of the transverse momenta of the jets to which JEC is applied
-        //  if JER applied:  replaces the vector sum of transverse momenta of particles which can be clustered as jets with the vector sum of the transverse momenta of the jets to which smearing is applied.
-        // type 1 correction / sleard pmet correction
-        
+      if(mets.size()>0){
+        met_before_JES = mets[0]->Pt();
+        if(applyJES ) // jer doesn't need to be applied ||  applyJER)) --> smeared type-1 corrected MET,  NOW only yes --> Type 1 corrected MET
+        {
+          jetTools->correctMETTypeOne(init_jets_corrected, mets[0], isData);
+          METon = 1;
+          //  if JES applied: replaces the vector sum of transverse momenta of particles which can be clustered as jets with the vector sum of the transverse momenta of the jets to which JEC is applied
+          //  if JER applied:  replaces the vector sum of transverse momenta of particles which can be clustered as jets with the vector sum of the transverse momenta of the jets to which smearing is applied.
+          // type 1 correction / sleard pmet correction
+          
+        }
+        met_after_JES = mets[0]->Pt();
       }
-      met_after_JES = mets[0]->Pt();
       ///////////////////////////////////////////////////////////
       // Event selection
       ///////////////////////////////////////////////////////////
@@ -1804,9 +1806,9 @@ int main (int argc, char *argv[])
       
       
       
-      selectedMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut, "Tight", "Spring15");   // spring 15 still counts for 2016
-      selectedLooseMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut_loose, "Loose", "Spring15"); // spring 15 still counts for 2016
-      selectedFakeMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut_loose, "Fake", "Spring15");
+      selectedMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut, "Tight", "Summer16");   // spring 15 still counts for 2016
+      selectedLooseMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut_loose, "Loose", "Summer16"); // spring 15 still counts for 2016
+      selectedFakeMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut_loose, "Fake", "Summer16");
       
       // pt, eta, iso // run normally
       selectedElectrons.clear();
