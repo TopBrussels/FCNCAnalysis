@@ -1,6 +1,6 @@
 # FCNCAnalysis
 # Setup Enviroment for Analysis 
-cmsrel CMSSW_8_0_26_patch2
+cmsrel CMSSW_8_0_26_patch1
 
 cmsenv
 
@@ -10,7 +10,7 @@ git clone https://github.com/TopBrussels/TopTreeProducer TopBrussels/TopTreeProd
 
 cd TopBrussels/TopTreeProducer/
 
-git checkout CMSSW_80X_v7 #latest Version which work with reMINIAOD
+git checkout CMSSW_80X_v9 #latest Version which work with reMINIAOD
 
 scram b clean
 
