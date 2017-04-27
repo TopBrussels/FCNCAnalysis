@@ -77,6 +77,8 @@ int main(int argc, char *argv[])
         cout << "    bool doJESSys  = strtol(argv[7], NULL,10);" << endl;
         cout << "    bool doJERSys  = strtol(argv[8], NULL,10);" << endl;
         cout << "    bool debug         =strtol(argv[9], NULL,10);" << endl;
+        cout << "    bool debug         =strtol(argv[9], NULL,10);" << endl;
+        cout << "    bool ApplyPostFit         =strtol(argv[10], NULL,10);" << endl;
 
         return 1;
     }
@@ -91,6 +93,7 @@ int main(int argc, char *argv[])
     bool doJESSys  = strtol(argv[7], NULL,10);
     bool doJERSys  = strtol(argv[8], NULL,10);
     bool debug         =strtol(argv[9], NULL,10);
+    bool ApplyPostFit         =strtol(argv[10], NULL,10);
 
     bool split_ttbar = true;   
     
@@ -1582,6 +1585,11 @@ int main(int argc, char *argv[])
   pathPNG += "/";
   pathPNG += category;
   mkdir(pathPNG.c_str(),0777);
+  if(ApplyPostFit)
+  {
+      pathPNG += "/PostFit";
+      mkdir(pathPNG.c_str(),0777);
+  }
   cout <<"Making directory :"<< pathPNG  <<endl;		//make directory
 
   string outfilename = pathPNG+"/OutputMVA_"+SignalSample+".root";
@@ -1635,9 +1643,17 @@ int main(int argc, char *argv[])
   outfile->Close();
   
   cout << "  - Making total systematic bands " << endl;
-  string errorbandfile = (pathPNG+"/Systematics_BareHistosMVA"+SignalSample+".root");
+  string errorbandfile = "";
   WhatSysts.pop_back();//Delete the last entry (which should be "") for the systematics plotting
-  MakeTotalSystErrorBand_Distributions(pathPNG, category, SignalSample, outfilename, WhatSysts, datasetnames_backgrounds, NominalVariableNames, errorbandfile);
+  if(!ApplyPostFit)
+  {
+      errorbandfile = (pathPNG+"/Systematics_BareHistosMVA"+SignalSample+".root");
+      MakeTotalSystErrorBand_Distributions(pathPNG, category, SignalSample, outfilename, WhatSysts, datasetnames_backgrounds, NominalVariableNames, errorbandfile);
+  }
+  else
+  {
+      errorbandfile = "";//Set the name of the error-band file obtained from the post-fit script.
+  }
 
 
 
@@ -1692,6 +1708,7 @@ int main(int argc, char *argv[])
           }
           cout << "Drawing MSP: " << name << endl;
           temp->showNumberEntries(false);
+          temp->setPreliminary(false);
           temp->setChannel(true,category);
           temp->Draw("MyMSP_"+name, 1, true, true, true, 1);
           temp->Write(outfile_errorbands, name, true,pathPNG, "eps");//You can only call 1 format for saving the plots. The second time you want to draw, the THStacks are empty, because the object has been written to the root-file.

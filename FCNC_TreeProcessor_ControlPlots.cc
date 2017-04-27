@@ -305,6 +305,7 @@ int main(int argc, char *argv[])
     
     
         MSPlot[("NPV"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("NPV"+WhatSysts[iSyst]).c_str(), 51, -0.5, 50.5, "nb. PV","Entries", ""); 
+        MSPlot[("MET"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MET"+WhatSysts[iSyst]).c_str(), 51, -0.5, 50.5, "MET","Entries", ""); 
         MSPlot[("NCSVv2Ljets"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("NCSVv2Ljets"+WhatSysts[iSyst]).c_str(), 11, -0.5, 10.5, "nb. CSVv2 loose jets","Entries", ""); 
         MSPlot[("NCSVv2Mjets"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("NCSVv2Mjets"+WhatSysts[iSyst]).c_str(), 11, -0.5, 10.5, "nb. of CSVv2 medium jets","Entries", ""); 
         MSPlot[("NCSVv2Tjets"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("NCSVv2Tjets"+WhatSysts[iSyst]).c_str(), 11, -0.5, 10.5, "nb. of CSVv2 tight jets","Entries", ""); 
@@ -1452,6 +1453,7 @@ int main(int argc, char *argv[])
 				                MSPlot[("NCSVv2Mjets"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(nJets_CSVM, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
 				                MSPlot[("NCSVv2Tjets"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(nJets_CSVT, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
 				                MSPlot[("Njets"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(nJets, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
+				                MSPlot[("MET"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(met_Pt, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                         MSPlot[("LeptonPt"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(pt_lepton, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                         MSPlot[("LeptonEta"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(eta_lepton, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
                         MSPlot[("LeptonPhi"+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(phi_lepton, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()]);
@@ -1639,6 +1641,7 @@ int main(int argc, char *argv[])
 				                MSPlot[("NCSVv2Mjets"+WhatSysts[JecCounter]).c_str()]->Fill(nJets_CSVM, Sample, ScalePlots, Luminosity * ScaleFactor);
 				                MSPlot[("NCSVv2Tjets"+WhatSysts[JecCounter]).c_str()]->Fill(nJets_CSVT, Sample, ScalePlots, Luminosity * ScaleFactor);
 				                MSPlot[("Njets"+WhatSysts[JecCounter]).c_str()]->Fill(nJets, Sample, ScalePlots, Luminosity * ScaleFactor);
+				                MSPlot[("MET"+WhatSysts[JecCounter]).c_str()]->Fill(met_Pt, Sample, ScalePlots, Luminosity * ScaleFactor);
                         MSPlot[("LeptonPt"+WhatSysts[JecCounter]).c_str()]->Fill(pt_lepton, Sample, ScalePlots, Luminosity * ScaleFactor);
                         MSPlot[("LeptonEta"+WhatSysts[JecCounter]).c_str()]->Fill(eta_lepton, Sample, ScalePlots, Luminosity * ScaleFactor);
                         MSPlot[("LeptonPhi"+WhatSysts[JecCounter]).c_str()]->Fill(phi_lepton, Sample, ScalePlots, Luminosity * ScaleFactor);
@@ -1938,6 +1941,7 @@ int main(int argc, char *argv[])
       }
       cout << "Drawing MSP: " << name << endl;
       temp->showNumberEntries(false);
+      temp->setPreliminary(false);
       temp->setChannel(true,category);
       temp->Draw("MyMSP_"+name, 1, true, true, true, 1);
       bool writePng = false;
