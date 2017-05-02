@@ -196,6 +196,7 @@ Float_t MVA_nJets_CharmT = -999;
 
 //SM kinematics
 Float_t MVA_mWt = -999.;
+Float_t MVA_mWt2 = -999.;
 Float_t MVA_SMtop_M = -999.;
 Float_t MVA_mlb = -999.;
 Float_t MVA_Wboson_M = -999.;
@@ -1163,6 +1164,15 @@ int main(int argc, char* argv[]){
   Long64_t evtID ;
   ofstream myfile;
   ofstream myfiletrigged;
+  
+  ofstream myfileST;
+  ofstream myfileSTtrigged;
+  
+  ofstream myfileTT;
+  ofstream myfileTTtrigged;
+  
+  ofstream myfileWZ;
+  ofstream myfileWZtrigged;
   /// Loop over datasets
   for (int d = 0; d < datasets.size(); d++)   //Loop through datasets
   {
@@ -1185,6 +1195,7 @@ int main(int argc, char* argv[]){
     if ( dataSetName.find("Data") != std::string::npos || dataSetName.find("data")!= std::string::npos || dataSetName.find("DATA")!= std::string::npos )
     {
       isData = true;
+      cout <<" found data " << endl;
     }
     isfakes = false;
     if(dataSetName.find("fake")!=std::string::npos ) {isfakes = true;}
@@ -1224,6 +1235,7 @@ int main(int argc, char* argv[]){
     string tTreeName = "tree";
     string tStatsTreeName = "globaltree";
     string postfix = "";
+    if(isData || isfakes) postfix = "";
     if(applyJEC_down) postfix = "_JESdown";
     if(applyJEC_up) postfix = "_JESup";
     if(applyJER_down) postfix = "_JERdown";
@@ -1265,6 +1277,16 @@ int main(int argc, char* argv[]){
     if(isData && checktrigger ){
       myfile.open((dataSetName+"eventID.txt").c_str());
       myfiletrigged.open((dataSetName+"eventIDtrigged.txt").c_str()); // sort -u eventID.txt | wc -l  (-u ==> unique lines )
+      
+      myfileST.open((dataSetName+"eventID_ST.txt").c_str());
+      myfileSTtrigged.open((dataSetName+"eventIDtrigged_ST.txt").c_str()); // sort -u eventID.txt | wc -l  (-u ==> unique lines )
+     
+      myfileTT.open((dataSetName+"eventID_TT.txt").c_str());
+      myfileTTtrigged.open((dataSetName+"eventIDtrigged_TT.txt").c_str()); // sort -u eventID.txt | wc -l  (-u ==> unique lines )
+      
+      myfileWZ.open((dataSetName+"eventID_WZ.txt").c_str());
+      myfileWZtrigged.open((dataSetName+"eventIDtrigged_WZ.txt").c_str()); // sort -u eventID.txt | wc -l  (-u ==> unique lines )
+      
       
     }
     
@@ -1354,15 +1376,34 @@ int main(int argc, char* argv[]){
       MVA_TotalHt_lep = tempHt,
       MVA_TotalPt_lep = sqrt(tempPx*tempPx + tempPy*tempPx);
       MVA_TotalInvMass_lep = tempInvMassObj.M();
+
+    
+    
       
       tempHt_jet = 0.;
       tempPy_jet = 0.;
       tempPx_jet = 0.;
+      bool PushBack = true;
       tempInvMassObj_jet.Clear();
       for(unsigned int iJet = 0; iJet < nJets ; iJet++){
         if(pt_jet[iJet] < 40. ) continue;
         jet.Clear();
         jet.SetPtEtaPhiE(pt_jet[iJet], eta_jet[iJet], phi_jet[iJet], E_jet[iJet]);
+        PushBack = true;
+        for(int iM = 0; iM < selectedMuons.size(); iM++){
+          if(jet.DeltaR(selectedMuons[iM]) < 0.4) {
+            PushBack = false;
+            break;
+          }
+        }
+        if(!PushBack) continue;
+        for(int iE = 0; iE < selectedElectrons.size(); iE++){
+          if( jet.DeltaR(selectedElectrons[iE]) < 0.3) {
+            PushBack = false;
+            break;
+          }
+        }
+        if(!PushBack) continue;
         selectedJets.push_back(jet);
         tempPx = tempPx + jet.Px();
         tempPy = tempPy + jet.Py();
@@ -1398,7 +1439,9 @@ int main(int argc, char* argv[]){
         
         
       }
-      //if(selectedJets.size()>6) continue;
+      if(selectedJets.size()>6) continue;
+     // if(met_Pt < 50. ) continue;
+      
       MVA_TotalHt = tempHt + met_Pt;
       MVA_TotalPt = sqrt(tempPx*tempPx + tempPy*tempPx);
       MVA_TotalInvMass = tempInvMassObj.M();
@@ -1694,6 +1737,20 @@ int main(int argc, char* argv[]){
         myfile << evt_num << endl;
         if(PassedTrigger)  myfiletrigged << evt_num << endl;
         
+        if(Region ==0){
+        myfileST << evt_num << endl;
+        if(PassedTrigger)  myfileSTtrigged << evt_num << endl;
+        }
+        else if(Region == 1){
+        myfileTT << evt_num << endl;
+        if(PassedTrigger)  myfileTTtrigged << evt_num << endl;
+        }
+        else if(Region == 2){
+        myfileWZ << evt_num << endl;
+        if(PassedTrigger)  myfileWZtrigged << evt_num << endl;
+        }
+        
+        
       }
       MVA_EqLumi = EquilumiSF;
       MVA_Luminosity = Luminosity;
@@ -1720,6 +1777,15 @@ int main(int argc, char* argv[]){
     if(isData && checktrigger){
       myfile.close();
       myfiletrigged.close();
+      
+      myfileST.close();
+      myfileSTtrigged.close();
+      
+      myfileTT.close();
+      myfileTTtrigged.close();
+      
+      myfileWZ.close();
+      myfileWZtrigged.close();
     }
     if(makeMVAtree){
       firstevent = true;
@@ -1761,7 +1827,7 @@ int main(int argc, char* argv[]){
     
     ///Write histograms
     fout->cd();
-    /*
+    
      for (map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
      {
      cout << "MSPlot: " << it->first << endl;
@@ -1796,7 +1862,7 @@ int main(int argc, char* argv[]){
      TCanvas* tempCanvas = TCanvasCreator(temp, it->first);
      tempCanvas->SaveAs( (placeTH1F+it->first+".png").c_str() );
      }
-     */
+     
     
     TDirectory* th1dirsys = fout->mkdir("1D_histograms_sys");
     th1dirsys->cd();
@@ -2691,7 +2757,8 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
   
   //cout << "interplay done " << endl);
   
-  MVA_mWt = static_cast<float>(mWT2);
+  MVA_mWt2 = static_cast<float>(mWT2);
+  MVA_mWt = static_cast<float>(mWT);
   
   mvatree->Fill();
   
@@ -2816,6 +2883,7 @@ void createMVAtree(string dataSetName){
   
   //SM kinematics
   mvatree->Branch("MVA_mWt", &MVA_mWt,"MVA_mWt/F");
+   mvatree->Branch("MVA_mWt2", &MVA_mWt2,"MVA_mWt2/F");
   mvatree->Branch("MVA_SMtop_M", &MVA_SMtop_M, "MVA_SMtop_M/F");
   mvatree->Branch("MVA_mlb", &MVA_mlb,"MVA_mlb/F");
   mvatree->Branch("MVA_Wboson_M", &MVA_Wboson_M, "MVA_Wboson_M/F");
@@ -3768,6 +3836,7 @@ void ClearMVAVars(){
   
   //SM kinematics
   MVA_mWt = -999.;
+  MVA_mWt2 = -999.;
   MVA_SMtop_M = -999.;
   MVA_mlb = -999.;
   MVA_Wboson_M = -999.;
@@ -4188,12 +4257,12 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
     MSPlot[(prefix+"_nEl_bfElSF_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefix+"_nEl_bfElSF_"+decaystring).c_str(), 10, -0.5, 9.5, "Nb of Electrons before Electron SF");
     MSPlot[(prefix+"_elSF_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_elSF_"+decaystring).c_str(), 60, 0.8, 1.05, "Electron SF");
     
-    MSPlot[(prefix+"_JetPt_bfJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_bfJER_"+decaystring).c_str(), 100, 0, 500, "Jet Pt before JER");
-    MSPlot[(prefix+"_JetPt_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_bfJES_"+decaystring).c_str(), 100, 0, 500, "Jet Pt before JES, after JER");
-    MSPlot[(prefix+"_JetPt_afJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_afJER_"+decaystring).c_str(), 100, 0, 500, "Jet Pt after JER");
-    MSPlot[(prefix+"_JetPt_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_afJES_"+decaystring).c_str(), 100, 0, 500, "Jet Pt after JES, after JER");
-    MSPlot[(prefix+"_met_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_met_bfJES_"+decaystring).c_str(), 100, 0, 500, "MET before JES");
-    MSPlot[(prefix+"_met_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_met_afJES_"+decaystring).c_str(), 100, 0, 500, "MET after JES");
+    MSPlot[(prefix+"_JetPt_bfJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_bfJER_"+decaystring).c_str(), 20, 0, 500, "Jet Pt before JER");
+    MSPlot[(prefix+"_JetPt_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_bfJES_"+decaystring).c_str(), 20, 0, 500, "Jet Pt before JES, after JER");
+    MSPlot[(prefix+"_JetPt_afJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_afJER_"+decaystring).c_str(), 20, 0, 500, "Jet Pt after JER");
+    MSPlot[(prefix+"_JetPt_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_JetPt_afJES_"+decaystring).c_str(), 20, 0, 500, "Jet Pt after JES, after JER");
+    MSPlot[(prefix+"_met_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_met_bfJES_"+decaystring).c_str(), 25, 0, 500, "MET before JES");
+    MSPlot[(prefix+"_met_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_met_afJES_"+decaystring).c_str(), 25, 0, 500, "MET after JES");
     
     
     
@@ -4254,8 +4323,8 @@ void InitMVAMSPlotsWZ(string prefix, vector <int> decayChannels){
     if(decayChannels[iChan] == 3) decaystring = "eee";
     if(decayChannels[iChan] == -9) decaystring = "all";
     
-    MSPlot[(prefix+"_MVA_mWt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_mWt_"+decaystring).c_str(),100, 0, 100, "M_{T}(W)");
-    
+    MSPlot[(prefix+"_MVA_mWt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_mWt_"+decaystring).c_str(),50, 0, 1000, "M_{T}(W)");
+    MSPlot[(prefix+"_MVA_mWt2_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_mWt2_"+decaystring).c_str(),50, 0, 1000, "M_{T}(W)");
   }
   
 }
@@ -4281,7 +4350,7 @@ void InitMVAMSPlotsSingletop(string prefix, vector <int> decayChannels){
     MSPlot[(prefix+"_MVA_Zboson_eta_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Zboson_eta_"+decaystring).c_str(),60,-6, 6, "#eta (Z)");
     MSPlot[(prefix+"_MVA_dRWlepb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRWlepb_"+decaystring).c_str(),60,0, 6, "dR(l_{W}b)");
     MSPlot[(prefix+"_MVA_dPhiWlepb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dPhiWlepb_"+decaystring).c_str(),40,-4, 4, "dphi(l_{W}b)");
-    MSPlot[(prefix+"_MVA_TotalHt_jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalHt_jet_"+decaystring).c_str(),500, 0, 5000, "total jet and met H_{T}");
+    MSPlot[(prefix+"_MVA_TotalHt_jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalHt_jet_"+decaystring).c_str(),50, 0, 2000, "total jet and met H_{T}");
     MSPlot[(prefix+"_MVA_dRZb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRZb_"+decaystring).c_str(),60,0, 6, "dR(Z,Bjet)");
     MSPlot[(prefix+"_MVA_dRZWlep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRZWlep_"+decaystring).c_str(),60,0, 6, "dR(Z,l_{W})");
     MSPlot[(prefix+"_MVA_dRZSMtop_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRZSMtop_"+decaystring).c_str(),60,0, 6, "dR(Z,SMtop)");
@@ -4308,16 +4377,16 @@ void InitMVAMSPlotsSingletop(string prefix, vector <int> decayChannels){
     MSPlot[ (prefix+"_MVA_jet0_phi_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_jet0_phi_"+decaystring).c_str(),40,-4, 4, "#phi (jet0)");
     
     // SM side
-    MSPlot[ (prefix+"_MVA_Wlep_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Wlep_pt_"+decaystring).c_str(), 500,0, 500, "p_{T}(l_{W})[GeV]");
+    MSPlot[ (prefix+"_MVA_Wlep_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Wlep_pt_"+decaystring).c_str(), 50,0, 500, "p_{T}(l_{W})[GeV]");
     MSPlot[ (prefix+"_MVA_Wlep_eta_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Wlep_eta_"+decaystring).c_str(),60,-6, 6, "#eta (l_{W})");
     MSPlot[ (prefix+"_MVA_Wlep_phi_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Wlep_phi_"+decaystring).c_str(),40,-4, 4, "#phi (l_{W})");
-    MSPlot[ (prefix+"_MVA_SMbjet_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_SMbjet_pt_"+decaystring).c_str(), 500,0, 500, "p_{T} (Bjet) [GeV]");
+    MSPlot[ (prefix+"_MVA_SMbjet_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_SMbjet_pt_"+decaystring).c_str(), 50,0, 500, "p_{T} (Bjet) [GeV]");
     MSPlot[ (prefix+"_MVA_SMbjet_eta_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_SMbjet_eta_"+decaystring).c_str(),60,-6, 6, "#eta (Bjet)");
     MSPlot[ (prefix+"_MVA_SMbjet_phi_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_SMbjet_phi_"+decaystring).c_str(),40,-4, 4, "#phi (Bjet)");
     MSPlot[ (prefix+"_MVA_Wboson_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Wboson_pt_"+decaystring).c_str(), 100,0, 500, "p_{T}(W) [GeV]");
     MSPlot[ (prefix+"_MVA_Wboson_eta_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Wboson_eta_"+decaystring).c_str(),60,-6, 6, "#eta (W)");
     MSPlot[ (prefix+"_MVA_Wboson_phi_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_Wboson_phi_"+decaystring).c_str(),40,-4, 4, "#phi (W)");
-    MSPlot[ (prefix+"_MVA_met_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_met_"+decaystring).c_str(), 100,0, 500, "met");
+    MSPlot[ (prefix+"_MVA_met_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_met_"+decaystring).c_str(), 25,0, 500, "met");
     MSPlot[ (prefix+"_MVA_SMtop_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_SMtop_pt_"+decaystring).c_str(), 100,0, 500, "p_{T}(SMtop) [GeV]");
     MSPlot[ (prefix+"_MVA_SMtop_phi_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_SMtop_phi_"+decaystring).c_str(),40,-4, 4, "#phi (SMtop)");
     
@@ -4334,20 +4403,20 @@ void InitMVAMSPlotsSingletop(string prefix, vector <int> decayChannels){
     
     //SM kinematics
     MSPlot[(prefix+"_MVA_SMtop_M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_SMtop_M_"+decaystring).c_str(),300, 0,300, "M(SMtop)");
-    MSPlot[(prefix+"_MVA_mlb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_mlb_"+decaystring).c_str(),100, 0, 500, "M(l_{W}b)");
+    MSPlot[(prefix+"_MVA_mlb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_mlb_"+decaystring).c_str(),50, 0, 500, "M(l_{W}b)");
     MSPlot[(prefix+"_MVA_Wboson_M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_Wboson_M_"+decaystring).c_str(),100, 0, 100, "M(W)");
     
     
     MSPlot[(prefix+"_MVA_Wlep_Charge_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_Wlep_Charge_"+decaystring).c_str(),4, -2, 2, "Q(l_{W})");
     MSPlot[(prefix+"_MVA_charge_asym_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_charge_asym_"+decaystring).c_str(),40, -4, 4, "Q(l_{W})|#eta(W)|");
-    MSPlot[(prefix+"_MVA_TotalPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalPt_"+decaystring).c_str(), 500, 0, 5000, "total P_{T}");
-    MSPlot[(prefix+"_MVA_TotalHt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalHt_"+decaystring).c_str(),500, 0, 5000, "total H_{T}");
-    MSPlot[(prefix+"_MVA_TotalInvMass_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalInvMass_"+decaystring).c_str(),500, 0, 5000, "total Inv Mass");
-    MSPlot[(prefix+"_MVA_TotalPt_jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalPt_jet_"+decaystring).c_str(), 500, 0, 5000, "total jet and met P_{T}");
-    MSPlot[(prefix+"_MVA_TotalInvMass_jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalInvMass_jet_"+decaystring).c_str(),500, 0, 5000, "total jet and met Inv Mass");
-    MSPlot[(prefix+"_MVA_TotalPt_lep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalPt_lep_"+decaystring).c_str(), 500, 0, 5000, "total lepton P_{T}");
-    MSPlot[(prefix+"_MVA_TotalHt_lep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalHt_lep_"+decaystring).c_str(),500, 0, 5000, "total lepton H_{T}");
-    MSPlot[(prefix+"_MVA_TotalInvMass_lep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalInvMass_lep_"+decaystring).c_str(),500, 0, 5000, "total lepton Inv Mass");
+    MSPlot[(prefix+"_MVA_TotalPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalPt_"+decaystring).c_str(), 50, 0, 2000, "total P_{T}");
+    MSPlot[(prefix+"_MVA_TotalHt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalHt_"+decaystring).c_str(),50, 0, 2000, "total H_{T}");
+    MSPlot[(prefix+"_MVA_TotalInvMass_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalInvMass_"+decaystring).c_str(),50, 0, 2000, "total Inv Mass");
+    MSPlot[(prefix+"_MVA_TotalPt_jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalPt_jet_"+decaystring).c_str(), 50, 0, 2000, "total jet and met P_{T}");
+    MSPlot[(prefix+"_MVA_TotalInvMass_jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalInvMass_jet_"+decaystring).c_str(),50, 0, 2000, "total jet and met Inv Mass");
+    MSPlot[(prefix+"_MVA_TotalPt_lep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalPt_lep_"+decaystring).c_str(), 50, 0, 2000, "total lepton P_{T}");
+    MSPlot[(prefix+"_MVA_TotalHt_lep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalHt_lep_"+decaystring).c_str(),50, 0, 2000, "total lepton H_{T}");
+    MSPlot[(prefix+"_MVA_TotalInvMass_lep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalInvMass_lep_"+decaystring).c_str(),50, 0, 2000, "total lepton Inv Mass");
     
     
     MSPlot[(prefix+"_MVA_bdiscCSVv2_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_bdiscCSVv2_jet_0_"+decaystring).c_str(),50, 0, 1, "CSVv2 Highest pt jet");
@@ -5164,7 +5233,8 @@ void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<i
     
     
     MSPlot[(sregion+"_MVA_mWt_"+decaystring).c_str()]->Fill(MVA_mWt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-    
+    MSPlot[(sregion+"_MVA_mWt2_"+decaystring).c_str()]->Fill(MVA_mWt2 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+
     
     if(Region == 1){
       MSPlot[(sregion+"_MVA_LightJet_pt_"+decaystring).c_str()]->Fill(MVA_LightJet_pt, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);

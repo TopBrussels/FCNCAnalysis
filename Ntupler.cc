@@ -305,7 +305,7 @@ int main (int argc, char *argv[])
   anaEnv.JetCollection = "PFJets_slimmedJets";
   anaEnv.FatJetCollection = "FatJets_slimmedJetsAK8";
   if(!isData)  anaEnv.METCollection = "PFMET_slimmedMETs";
-  else if(isData) anaEnv.METCollection = "PFMET_slimmedMETsMuEGClean";
+  else if(isData) anaEnv.METCollection = "PFMET_slimmedMETs";
   //anaEnv.METCollection = "PFMET_slimmedMETs";
   anaEnv.MuonCollection = "Muons_slimmedMuons";
   anaEnv.ElectronCollection = "Electrons_selectedElectrons";
@@ -418,12 +418,12 @@ int main (int argc, char *argv[])
   /////////////////////////////
   // electron
   float el_pt_cut =30.; // 42
-  float el_eta_cut = 2.1;
+  float el_eta_cut = 2.5;
   float el_iso_cone  = 0.3;
   // reliso cut fabs(eta supercluster) <= 1.479 --> 0.107587 // (fabs(eta supercluster) > 1.479 && fabs(eta supercluster) < 2.5) --> 0.113254
   // muon
   float mu_pt_cut = 30.; // 40
-  float mu_eta_cut = 2.1;
+  float mu_eta_cut = 2.4;
   float mu_iso_cut = 0.15;
   float mu_iso_cut_loose = 0.25;
   //jets
@@ -1765,34 +1765,28 @@ int main (int argc, char *argv[])
         jet_Pt_after_JER[iJ] = init_jets_corrected[iJ]->Pt();
         jet_Pt_before_JES[iJ] = init_jets_corrected[iJ]->Pt();
       }
+      met_before_JES = mets[0]->Pt();
       JESon = 0;
+      METon = 0;
       if(applyJES)
       {
         // cout << "applying JES" << endl;
         if(doJESJERshift == 1)  jetTools->correctJetJESUnc(init_jets_corrected, mets[0], "minus");
         else if(doJESJERshift == 2)  jetTools->correctJetJESUnc(init_jets_corrected, mets[0], "plus");
         
-        jetTools->correctJets(init_jets_corrected,event->fixedGridRhoFastjetAll() ,isData);
+        
+         jetTools->correctJetsMet(init_jets_corrected,mets[0],event->fixedGridRhoFastjetAll() ,isData);
+        
+        
+        METon = 1;
         JESon = 1;
       }
+      met_after_JES = mets[0]->Pt();
       for(int iJ = 0; iJ < init_jets_corrected.size(); iJ++){
         jet_Pt_after_JES[iJ] = init_jets_corrected[iJ]->Pt();
         
       }
-      if(mets.size()>0){
-        met_before_JES = mets[0]->Pt();
-        if(applyJES ) // jer doesn't need to be applied ||  applyJER)) --> smeared type-1 corrected MET,  NOW only yes --> Type 1 corrected MET
-        {
-          jetTools->correctMETTypeOne(init_jets_corrected, mets[0], isData);
-          METon = 1;
-          //  if JES applied: replaces the vector sum of transverse momenta of particles which can be clustered as jets with the vector sum of the transverse momenta of the jets to which JEC is applied
-          //  if JER applied:  replaces the vector sum of transverse momenta of particles which can be clustered as jets with the vector sum of the transverse momenta of the jets to which smearing is applied.
-          // type 1 correction / sleard pmet correction
-          
-        }
-        met_after_JES = mets[0]->Pt();
-      }
-      ///////////////////////////////////////////////////////////
+           ///////////////////////////////////////////////////////////
       // Event selection
       ///////////////////////////////////////////////////////////
       

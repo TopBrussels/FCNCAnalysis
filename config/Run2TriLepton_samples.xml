@@ -37,8 +37,26 @@
 
 <d name="data" title="data" add="0" color="1" ls="1" lw="2" normf="1" EqLumi="30125.1514218" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v3-Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON_NoL1T/TTP-CMSSW_80X_v3-Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON_NoL1T--GT-80X_dataRun2_2016SeptRepro_v3/DoubleEG/crab_DoubleEG-Run2016B-23Sep2016-v3crab14/161205_193849/000*/TOPTREE_*.root"/>
 
+<!-- data MET -->
+<d name="data_MET_Run_2016B" title="data_MET_Run_2016B" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4936629374.736" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v9/TTP-CMSSW_80X_v9--GT-80X_dataRun2_2016SeptRepro_v7/MET/crab_MET-Run2016B*/*/*/TOPTREE*.root"/>
+<d name="data_MET_Run_2016C" title="data_MET_Run_2016C" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4936629374.736" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v9/TTP-CMSSW_80X_v9--GT-80X_dataRun2_2016SeptRepro_v7/MET/crab_MET-Run2016C*/*/*/TOPTREE*.root"/>
+<d name="data_MET_Run_2016D" title="data_MET_Run_2016D" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4936629374.736" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v9/TTP-CMSSW_80X_v9--GT-80X_dataRun2_2016SeptRepro_v7/MET/crab_MET-Run2016D*/*/*/TOPTREE*.root"/>
+<d name="data_MET_Run_2016E" title="data_MET_Run_2016E" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4936629374.736" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v9/TTP-CMSSW_80X_v9--GT-80X_dataRun2_2016SeptRepro_v7/MET/crab_MET-Run2016E*/*/*/TOPTREE*.root"/>
+<d name="data_MET_Run_2016F" title="data_MET_Run_2016F" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4936629374.736" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v9/TTP-CMSSW_80X_v9--GT-80X_dataRun2_2016SeptRepro_v7/MET/crab_MET-Run2016F*/*/*/TOPTREE*.root"/>
+<d name="data_MET_Run_2016G" title="data_MET_Run_2016G" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4936629374.736" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v9/TTP-CMSSW_80X_v9--GT-80X_dataRun2_2016SeptRepro_v7/MET/crab_MET-Run2016G*/*/*/TOPTREE*.root"/>
+<d name="data_MET_Run_2016H" title="data_MET_Run_2016H" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4936629374.736" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v9/TTP-CMSSW_80X_v9--GT-80X_dataRun2_2016SeptRepro_v7/MET/crab_MET-Run2016H*/*/*/TOPTREE*.root"/>
 
-<!-- data D -->
+
+<!-- data JetHt-->
+<d name="data_JetHt_Run_2016B" title="data_JetHt_Run_2016B" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4936629374.736" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v9/TTP-CMSSW_80X_v9--GT-80X_dataRun2_2016SeptRepro_v7/JetHT/crab_JetHT-Run2016B*/*/000*/TOPTREE_*.root"/>
+<d name="data_JetHt_Run_2016C" title="data_JetHt_Run_2016C" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4936629374.736" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v9/TTP-CMSSW_80X_v9--GT-80X_dataRun2_2016SeptRepro_v7/JetHT/crab_JetHT-Run2016C*/*/000*/TOPTREE_*.root"/>
+<d name="data_JetHt_Run_2016D" title="data_JetHt_Run_2016D" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4936629374.736" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v9/TTP-CMSSW_80X_v9--GT-80X_dataRun2_2016SeptRepro_v7/JetHT/crab_JetHT-Run2016D*/*/000*/TOPTREE_*.root"/>
+<d name="data_JetHt_Run_2016E" title="data_JetHt_Run_2016E" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4936629374.736" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v9/TTP-CMSSW_80X_v9--GT-80X_dataRun2_2016SeptRepro_v7/JetHT/crab_JetHT-Run2016E*/*/000*/TOPTREE_*.root"/>
+<d name="data_JetHt_Run_2016F" title="data_JetHt_Run_2016F" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4936629374.736" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v9/TTP-CMSSW_80X_v9--GT-80X_dataRun2_2016SeptRepro_v7/JetHT/crab_JetHT-Run2016F*/*/000*/TOPTREE_*.root"/>
+<d name="data_JetHt_Run_2016G" title="data_JetHt_Run_2016G" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4936629374.736" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v9/TTP-CMSSW_80X_v9--GT-80X_dataRun2_2016SeptRepro_v7/JetHT/crab_JetHT-Run2016G*/*/000*/TOPTREE_*.root"/>
+<d name="data_JetHt_Run_2016H" title="data_JetHt_Run_2016H" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4936629374.736" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v9/TTP-CMSSW_80X_v9--GT-80X_dataRun2_2016SeptRepro_v7/JetHT/crab_JetHT-Run2016H*/*/000*/TOPTREE_*.root"/>
+
+
 
 <!-- DOUBLE EG -->
 <d name="data_DoubleEG_Run_2016B" title="data_DoubleEG_Run_2016B" add="1" color="1" ls="1" lw="2" normf="1" EqLumi="4936629374.736" xsection="1" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v9/TTP-CMSSW_80X_v9--GT-80X_dataRun2_2016SeptRepro_v7/DoubleEG/crab_DoubleEG-Run2016B*/*/000*/TOPTREE_*.root"/>
