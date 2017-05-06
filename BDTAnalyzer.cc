@@ -96,6 +96,7 @@ bool doZut = false;
 bool toppair = false;
 bool addData = false;
 bool DetermineCut = false;
+bool CalculateSign = false;
 bool doPDFunc  = false;
 bool PlotMVAvars = false;
 string placeNtup = "";
@@ -113,9 +114,9 @@ string tTreeName = "";
 string postfix = "";
 string output_histo_name = "";
 string ntupleFileName ="";
-int nbin = 10;
-int nbinMTW = 100;
-double endMTW = 2000.;
+int nbin = 100;
+int nbinMTW = 50;
+double endMTW = 300.;
 int nEntries = -1;
 int scaleNP = 10;
 
@@ -134,7 +135,7 @@ Float_t         MVA_dRZc;
 Float_t         MVA_dRWlepb;
 Float_t         MVA_dRZWlep;
 Float_t         MVA_mlb;
-Float_t         MVA_mWt;
+Float_t         MVA_mWt2;
 Float_t         MVA_FCNCtop_M;
 Float_t           MVA_nJets_CharmL;
 Float_t           MVA_NJets_CSVv2M;
@@ -187,7 +188,7 @@ TBranch        *b_MVA_dRZc;   //!
 TBranch        *b_MVA_dRWlepb;   //!
 TBranch        *b_MVA_dRZWlep;   //!
 TBranch        *b_MVA_mlb;   //!
-TBranch        *b_MVA_mWt;   //!
+TBranch        *b_MVA_mWt2;   //!
 TBranch        *b_MVA_FCNCtop_M;   //!
 TBranch        *b_MVA_nJets_CharmL;   //!
 TBranch        *b_MVA_NJets_CSVv2M;   //!
@@ -316,6 +317,9 @@ int main(int argc, char* argv[]){
     if(string(argv[i]).find("DetermineCut")!=string::npos) {
       DetermineCut= true;
     }
+    if(string(argv[i]).find("Significane")!=string::npos) {
+      CalculateSign = true;
+    }
     if(string(argv[i]).find("PlotMVAvars")!=string::npos) {
       PlotMVAvars= true;
     }
@@ -407,11 +411,11 @@ int main(int argc, char* argv[]){
       cout << " - lumi set to " << Luminosity << endl;
     }
     
-    if((dataSetName.find("Zct")!=std::string::npos || dataSetName.find("zct")!=std::string::npos) && doZut){
+    if((dataSetName.find("Zct")!=std::string::npos || dataSetName.find("zct")!=std::string::npos) && doZut && !doMTWtemplate){
       cout << " - removing " << dataSetName << " from samples" << endl;
       continue;
     }
-    else if ((dataSetName.find("Zut")!=std::string::npos || dataSetName.find("zut")!=std::string::npos) && !doZut){
+    else if ((dataSetName.find("Zut")!=std::string::npos || dataSetName.find("zut")!=std::string::npos) && !doZut && !doMTWtemplate){
       cout << " - removing " << dataSetName << " from samples" << endl;
       continue;
     }
@@ -435,6 +439,7 @@ int main(int argc, char* argv[]){
   cout << datasets.size() << " samples will be used " << endl;
   ///////////////// Initialisation ////////////////////
 
+  //if(toppair) nbin = 50;
   if(makePlots && !doMTWtemplate){
     for(int isys = 0; isys < thesystlist.size() ; isys++){
       systematic = thesystlist[isys];
@@ -581,7 +586,9 @@ int main(int argc, char* argv[]){
         
         /// Load event
         tTree[(dataSetName).c_str()]->GetEntry(ievt);
-      //  if(datafound && MVA_BDT > -0.66 && !doMTWtemplate){ continue;}
+        /*if(datafound && MVA_BDT > -0.6 && !doMTWtemplate && !toppair && doZut){ continue;}
+        else if(datafound && MVA_BDT > -0.4 && !doMTWtemplate && !toppair && !doZut){ continue;}
+        else if(datafound && MVA_BDT > -0.2 && !doMTWtemplate && toppair){ continue;}*/
         //if(isData) cout << "region " << MVA_region << endl;
         
         if(doMTWtemplate && MVA_region != 2){ continue ;} // only in WZ control region}
@@ -626,10 +633,10 @@ int main(int argc, char* argv[]){
           else if(MVA_channel == 3) {hist_eee->Fill( MVA_BDT, weight);}
         }
         else if(doMTWtemplate){
-          if(MVA_channel== 0) 		{hist_uuu->Fill( MVA_mWt, weight);}
-          else if(MVA_channel== 1) {hist_uue->Fill( MVA_mWt, weight);}
-          else if(MVA_channel== 2) {hist_eeu->Fill( MVA_mWt, weight);}
-          else if(MVA_channel == 3) {hist_eee->Fill( MVA_mWt, weight);}
+          if(MVA_channel== 0) 		{hist_uuu->Fill( MVA_mWt2, weight);}
+          else if(MVA_channel== 1) {hist_uue->Fill( MVA_mWt2, weight);}
+          else if(MVA_channel== 2) {hist_eeu->Fill( MVA_mWt2, weight);}
+          else if(MVA_channel == 3) {hist_eee->Fill( MVA_mWt2, weight);}
         }
         
         // for MS plots
@@ -661,9 +668,9 @@ int main(int argc, char* argv[]){
         if(dataSetName.find("WZTo3LNu")!=std::string::npos && PlotSystematics && !doMTWtemplate){
           FillSystematicHisto(dataSetName, systematic, weight, isys);
         }
-        if(dataSetName.find("WZTo3LNu")!=std::string::npos && isys == 0 && doMTWtemplate) histo1DMTW["MTW_WZ"]->Fill(MVA_mWt, weight);
-        if(dataSetName.find("fake")!=std::string::npos && isys == 0 && doMTWtemplate) histo1DMTW["MTW_fakes"]->Fill(MVA_mWt, weight);
-        if(dataSetName.find("TT_FCNC")!=std::string::npos && isys == 0 && doMTWtemplate) histo1DMTW["MTW_TT_FCNC"]->Fill(MVA_mWt, weight);
+        if(dataSetName.find("WZTo3LNu")!=std::string::npos && isys == 0 && doMTWtemplate) histo1DMTW["MTW_WZ"]->Fill(MVA_mWt2, weight);
+        if(dataSetName.find("fake")!=std::string::npos && isys == 0 && doMTWtemplate) histo1DMTW["MTW_fakes"]->Fill(MVA_mWt2, weight);
+        if(dataSetName.find("TT_FCNC")!=std::string::npos && isys == 0 && doMTWtemplate) histo1DMTW["MTW_TT_FCNC"]->Fill(MVA_mWt2, weight);
         
         
         if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && doMTWtemplate){
@@ -883,8 +890,8 @@ int main(int argc, char* argv[]){
       }
       
       pseudodata_file->cd();
-      string output_histo_name = coupling + "_BDT_" + region + "_" + channel_list[ichan] + "_data_obs";
-      if(doMTWtemplate) output_histo_name = "MTW_" + channel_list[ichan] + "_data_obs";
+      string output_histo_name = coupling + "_BDT_" + region + "_" + channel_list[ichan] + "_data";
+      if(doMTWtemplate) output_histo_name = "MTW_" + channel_list[ichan] + "_data";
       h_sum->SetTitle(output_histo_name.c_str());
       h_sum->SetName(output_histo_name.c_str());
       h_sum->Write(output_histo_name.c_str(), TObject::kOverwrite);
@@ -1705,7 +1712,7 @@ void InitAnalyzerTree(TTree* tree){
   tree->SetBranchAddress("MVA_channel", &MVA_channel, &b_MVA_channel);
   tree->SetBranchAddress("MVA_EqLumi", &MVA_EqLumi, &b_MVA_EqLumi);
   tree->SetBranchAddress("MVA_Luminosity", &MVA_Luminosity, &b_MVA_Luminosity);
-  tree->SetBranchAddress("MVA_mWt", &MVA_mWt, &b_MVA_mWt);
+  tree->SetBranchAddress("MVA_mWt2", &MVA_mWt2, &b_MVA_mWt2);
   
   
   tree->SetBranchAddress("MVA_x1", &MVA_x1, &b_MVA_x1);
@@ -2142,8 +2149,8 @@ void FillMTWPlots(int d, string postfix, vector <int> decayChannels, double weig
     //cout << "filling " << datasets[d]->Name() << endl;
     decaystring += postfix;
     
-    //if(datasets[d]->Name().find("data")!=std::string::npos) cout << "filling " << ("MTW_"+decaystring).c_str() << " with " << MVA_mWt << " " << weight_ << endl;
-    MSPlotMTW[("MTW_"+decaystring).c_str()]->Fill(MVA_mWt , datasets[d], true, weight_);
+    //if(datasets[d]->Name().find("data")!=std::string::npos) cout << "filling " << ("MTW_"+decaystring).c_str() << " with " << MVA_mWt2 << " " << weight_ << endl;
+    MSPlotMTW[("MTW_"+decaystring).c_str()]->Fill(MVA_mWt2 , datasets[d], true, weight_);
   }
   decaystring = "";
 }
@@ -2360,8 +2367,8 @@ void FillMTWShapeHisto(string dataSetName, string systematic, double weight_,int
     if(isys == 0) output_histo_name = dataSetName+"_MTW_nominal_"+decaystring;
     else output_histo_name = dataSetName+"_MTW_"+systematic + "_" + decaystring;
     
-   // cout << "fill " << output_histo_name << " " << MVA_mWt << " " << weight_ <<  endl;
-   histo1DMTW[output_histo_name.c_str()]->Fill(MVA_mWt, 1.);
+   // cout << "fill " << output_histo_name << " " << MVA_mWt2 << " " << weight_ <<  endl;
+   histo1DMTW[output_histo_name.c_str()]->Fill(MVA_mWt2, 1.);
     // histo1DMTW[output_histo_name.c_str()]->Fill(1, 1);
     output_histo_name = "";
   }
