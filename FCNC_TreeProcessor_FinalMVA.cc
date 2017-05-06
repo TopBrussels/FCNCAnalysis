@@ -55,6 +55,7 @@ void MakeNPV_Distributions(int baseline_jets, int baseline_bjets, string channel
 void MakeTotalSystErrorBand_Distributions(string directory, string category, string coupling, string outfilename, vector< string > systematics, vector <string> datasetNames, vector<string> NominalVariableNames, string outputFile);
 double WeightPrivateSignalSample(Int_t n_jets, string samplename);
 double OptimalCut_CombTraining(string category, string coupling);
+double PostFitScaleFactor(string category, string coupling, string samplename);
 
 inline bool FileExists (const string& name) {
   struct stat buffer;   
@@ -971,7 +972,7 @@ int main(int argc, char *argv[])
                       
 
             int EntryStart = 0;
-            int Doubling = 1;
+            double Doubling = 1;
             if(PrivateSampleTraining)
             {
                 if(!isData && dataSetName.find("NP_") == string::npos)
@@ -1204,6 +1205,7 @@ int main(int argc, char *argv[])
 
                 bool ScalePlots = true;
                 if(isData) ScalePlots = false;
+                if(ApplyPostFit) Doubling *= PostFitScaleFactor(category,SignalSample,Sample->Name()); 
 
                 if(filepath.find("JESMinus") == string::npos && filepath.find("JESPlus") == string::npos  && filepath.find("JERMinus") == string::npos && filepath.find("JERPlus") == string::npos)
                 {
@@ -1424,11 +1426,11 @@ int main(int argc, char *argv[])
                         //-----------------------------------------------------------------------------------------------------------
                         // Fill Plots
                         //-----------------------------------------------------------------------------------------------------------
-                        MSPlot[("MVA_MaxTT-ST_"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVAvalue_maxSTandTT, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling); //Factor 2 to compensate for the fact we're running over half the number of simulated events
-                        MSPlot[("MVA_CombTT-ST_"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVAvalue_combSTandTT, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling); //Factor 2 to compensate for the fact we're running over half the number of simulated events
+                        MSPlot[("MVA_MaxTT-ST_"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVAvalue_maxSTandTT, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling); 
+                        MSPlot[("MVA_CombTT-ST_"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVAvalue_combSTandTT, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling); 
 
-                        MSPlot[("MVA_ST"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVAvalue_ST, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling); //Factor 2 to compensate for the fact we're running over half the number of simulated events
-                        MSPlot[("MVA_TT"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVAvalue_TT, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling); //Factor 2 to compensate for the fact we're running over half the number of simulated events
+                        MSPlot[("MVA_ST"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVAvalue_ST, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling); 
+                        MSPlot[("MVA_TT"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVAvalue_TT, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling); 
                         
                         if(Sample->Name().find("NP_") != string::npos && dataSetName.find(SignalSample.c_str()) != string::npos) histo1D[("maxSTandTT_sig"+namingConventionFit[WhatSysts_noJECs[iSyst_]]).c_str()]->Fill(MVAvalue_maxSTandTT,Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling / EqLumi * 0.1);//Downscaling signal by 0.1
                         if(Sample->Name().find("NP_overlay_ST") != string::npos && dataSetName.find(SignalSample.c_str()) != string::npos) histo1D[("maxSTandTT_sig_stop"+namingConventionFit[WhatSysts_noJECs[iSyst_]]).c_str()]->Fill(MVAvalue_maxSTandTT,Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling / EqLumi * 0.1);
@@ -1652,7 +1654,7 @@ int main(int argc, char *argv[])
   }
   else
   {
-      errorbandfile = "";//Set the name of the error-band file obtained from the post-fit script.
+      errorbandfile = (pathPNG+"/PostFitSystematics_BareHistosMVA"+SignalSample+".root");//Set the name of the error-band file obtained from the post-fit script.
   }
 
 
@@ -1674,7 +1676,7 @@ int main(int argc, char *argv[])
           continue;
       }
       
-
+      if(ApplyPostFit && name.find("Comb") == string::npos) continue;
 
      	MultiSamplePlot *temp = it->second;
      	
@@ -2369,4 +2371,98 @@ double OptimalCut_CombTraining(string category, string coupling)
     }
     
     return MVA_cutvalue;
+}
+
+double PostFitScaleFactor(string category, string coupling, string samplename)
+{
+    double SF = 1.;
+    
+    if(coupling == "hct")
+    {
+         if(category == "b2j3")
+         {
+            if(samplename.find("TTJets_ll") != string::npos) SF = 0.98691;
+            else if(samplename.find("TTJets_cc") != string::npos) SF = 0.66657;
+            else if(samplename.find("TTJets_bb") != string::npos) SF = 1.23614;
+            else if(samplename.find("NP_overlay") != string::npos) SF = 0.25245;
+            else SF = 1.40752;
+         }
+         else if(category == "b2j4")
+         {
+            if(samplename.find("TTJets_ll") != string::npos) SF = 0.93653;
+            else if(samplename.find("TTJets_cc") != string::npos) SF = 0.63244;
+            else if(samplename.find("TTJets_bb") != string::npos) SF = 1.14704;
+            else if(samplename.find("NP_overlay") != string::npos) SF = 0.24838;
+            else SF = 1.42345;
+         }
+         else if(category == "b3j3")
+         {
+            if(samplename.find("TTJets_ll") != string::npos) SF = 0.94788;
+            else if(samplename.find("TTJets_cc") != string::npos) SF = 0.63917;
+            else if(samplename.find("TTJets_bb") != string::npos) SF = 1.22019;
+            else if(samplename.find("NP_overlay") != string::npos) SF = 0.25842;
+            else SF = 1.43382;
+         }
+         else if(category == "b3j4")
+         {
+            if(samplename.find("TTJets_ll") != string::npos) SF = 0.88371;
+            else if(samplename.find("TTJets_cc") != string::npos) SF = 0.59189;
+            else if(samplename.find("TTJets_bb") != string::npos) SF = 1.16575;
+            else if(samplename.find("NP_overlay") != string::npos) SF = 0.24746;
+            else SF = 1.46548;
+         }
+         else if(category == "b4j4")
+         {
+            if(samplename.find("TTJets_ll") != string::npos) SF = 0.77713;
+            else if(samplename.find("TTJets_cc") != string::npos) SF = 0.53112;
+            else if(samplename.find("TTJets_bb") != string::npos) SF = 1.11378;
+            else if(samplename.find("NP_overlay") != string::npos) SF = 0.24292;
+            else SF = 1.57951;
+         }
+    }
+    else if(coupling == "hut")
+    {
+         if(category == "b2j3")
+         {
+            if(samplename.find("TTJets_ll") != string::npos) SF = 0.02092;
+            else if(samplename.find("TTJets_cc") != string::npos) SF = 0.69053;
+            else if(samplename.find("TTJets_bb") != string::npos) SF = 1.18725;
+            else if(samplename.find("NP_overlay") != string::npos) SF = 0.09828;
+            else SF = 1.23193;
+         }
+         else if(category == "b2j4")
+         {
+            if(samplename.find("TTJets_ll") != string::npos) SF = 0.96791;
+            else if(samplename.find("TTJets_cc") != string::npos) SF = 0.64368;
+            else if(samplename.find("TTJets_bb") != string::npos) SF = 1.07841;
+            else if(samplename.find("NP_overlay") != string::npos) SF = 0.09192;
+            else SF = 1.19029;
+         }
+         else if(category == "b3j3")
+         {
+            if(samplename.find("TTJets_ll") != string::npos) SF = 0.98820;
+            else if(samplename.find("TTJets_cc") != string::npos) SF = 0.64636;
+            else if(samplename.find("TTJets_bb") != string::npos) SF = 1.23138;
+            else if(samplename.find("NP_overlay") != string::npos) SF = 0.10573;
+            else SF = 1.30119;
+         }
+         else if(category == "b3j4")
+         {
+            if(samplename.find("TTJets_ll") != string::npos) SF = 0.92554;
+            else if(samplename.find("TTJets_cc") != string::npos) SF = 0.60601;
+            else if(samplename.find("TTJets_bb") != string::npos) SF = 1.16177;
+            else if(samplename.find("NP_overlay") != string::npos) SF = 0.10060;
+            else SF = 1.24162;
+         }
+/*         else if(category == "b4j4)
+         {
+            if(samplename.find("TTJets_ll") != string::npos) SF = 0.77713;
+            else if(samplename.find("TTJets_cc") != string::npos) SF = 0.53112;
+            else if(samplename.find("TTJets_bb") != string::npos) SF = 1.11378;
+            else if(samplename.find("NP_overlay") != string::npos) SF = 0.24292;
+            else SF = 1.57951;
+         }
+*/    }
+
+    return SF;
 }

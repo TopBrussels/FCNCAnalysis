@@ -1,0 +1,70 @@
+512+0 records in
+512+0 records out
+524288 bytes (524 kB) copied, 0.00212749 s, 246 MB/s
+/var/torque/mom_priv/jobs/14773330.cream02.iihe.ac.be.SC: line 9: cmsenv: command not found
+
+ *** Break *** segmentation violation
+
+
+
+===========================================================
+There was a crash.
+This is the entire stack trace of all threads:
+===========================================================
+#0  0x000000337b4ac7be in waitpid () from /lib64/libc.so.6
+#1  0x000000337b43e5c9 in do_system () from /lib64/libc.so.6
+#2  0x00007fc8a96e8a89 in TUnixSystem::StackTrace() () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libCore.so
+#3  0x00007fc8a96ea98c in TUnixSystem::DispatchSignals(ESignals) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libCore.so
+#4  <signal handler called>
+#5  0x00007fc8a74b9d95 in ft_mem_free () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libfreetype.so.6
+#6  0x00007fc8a8c9d428 in TTF::LayoutGlyphs() () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#7  0x00007fc8a8c9dabf in TTF::GetTextExtent(unsigned int&, unsigned int&, char*) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#8  0x00007fc8a8c80e19 in TLatex::Analyse(double, double, TLatex::TextSpec_t, char const*, int) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#9  0x00007fc8a8c83aa1 in TLatex::Anal1(TLatex::TextSpec_t, char const*, int) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#10 0x00007fc8a8c7ca5f in TLatex::Analyse(double, double, TLatex::TextSpec_t, char const*, int) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#11 0x00007fc8a8c83aa1 in TLatex::Anal1(TLatex::TextSpec_t, char const*, int) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#12 0x00007fc8a8c7ade8 in TLatex::Analyse(double, double, TLatex::TextSpec_t, char const*, int) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#13 0x00007fc8a8c83aa1 in TLatex::Anal1(TLatex::TextSpec_t, char const*, int) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#14 0x00007fc8a8c83c22 in TLatex::FirstParse(double, double, char const*) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#15 0x00007fc8a8c84626 in TLatex::PaintLatex1(double, double, double, double, char const*) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#16 0x00007fc8a8c857bb in TLatex::PaintLatex(double, double, double, double, char const*) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#17 0x00007fc8a8cc0557 in TGaxis::PaintAxis(double, double, double, double, double&, double&, int&, char const*, double, bool) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#18 0x00007fc89d4bc959 in THistPainter::PaintAxis(bool) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/lcg/root/6.06.00-ikhhed6/lib/libHistPainter.so
+#19 0x00007fc89d4b831d in THistPainter::Paint(char const*) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/lcg/root/6.06.00-ikhhed6/lib/libHistPainter.so
+#20 0x00007fc8a8b1de0c in TPad::Paint(char const*) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGpad.so
+#21 0x00007fc8a8b1cae0 in TPad::Print(char const*, char const*) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGpad.so
+#22 0x00007fc8a8b1d5ec in TPad::SaveAs(char const*, char const*) const () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGpad.so
+#23 0x00007fc8a9dadc9c in MultiSamplePlot::Write(TFile*, std::string, bool, std::string, std::string) () from /user/kderoove/lib/libTopTreeAna80.so
+#24 0x0000000000447723 in main (argc=11, argv=0x7ffe977e9238) at FCNC_TreeProcessor_FinalMVA.cc:1716
+===========================================================
+
+
+The lines below might hint at the cause of the crash.
+If they do not help you then please submit a bug report at
+http://root.cern.ch/bugs. Please post the ENTIRE stack trace
+from above as an attachment in addition to anything else
+that might help us fixing this issue.
+===========================================================
+#5  0x00007fc8a74b9d95 in ft_mem_free () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libfreetype.so.6
+#6  0x00007fc8a8c9d428 in TTF::LayoutGlyphs() () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#7  0x00007fc8a8c9dabf in TTF::GetTextExtent(unsigned int&, unsigned int&, char*) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#8  0x00007fc8a8c80e19 in TLatex::Analyse(double, double, TLatex::TextSpec_t, char const*, int) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#9  0x00007fc8a8c83aa1 in TLatex::Anal1(TLatex::TextSpec_t, char const*, int) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#10 0x00007fc8a8c7ca5f in TLatex::Analyse(double, double, TLatex::TextSpec_t, char const*, int) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#11 0x00007fc8a8c83aa1 in TLatex::Anal1(TLatex::TextSpec_t, char const*, int) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#12 0x00007fc8a8c7ade8 in TLatex::Analyse(double, double, TLatex::TextSpec_t, char const*, int) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#13 0x00007fc8a8c83aa1 in TLatex::Anal1(TLatex::TextSpec_t, char const*, int) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#14 0x00007fc8a8c83c22 in TLatex::FirstParse(double, double, char const*) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#15 0x00007fc8a8c84626 in TLatex::PaintLatex1(double, double, double, double, char const*) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#16 0x00007fc8a8c857bb in TLatex::PaintLatex(double, double, double, double, char const*) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#17 0x00007fc8a8cc0557 in TGaxis::PaintAxis(double, double, double, double, double&, double&, int&, char const*, double, bool) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGraf.so
+#18 0x00007fc89d4bc959 in THistPainter::PaintAxis(bool) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/lcg/root/6.06.00-ikhhed6/lib/libHistPainter.so
+#19 0x00007fc89d4b831d in THistPainter::Paint(char const*) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/lcg/root/6.06.00-ikhhed6/lib/libHistPainter.so
+#20 0x00007fc8a8b1de0c in TPad::Paint(char const*) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGpad.so
+#21 0x00007fc8a8b1cae0 in TPad::Print(char const*, char const*) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGpad.so
+#22 0x00007fc8a8b1d5ec in TPad::SaveAs(char const*, char const*) const () from /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw-patch/CMSSW_8_0_26_patch1/external/slc6_amd64_gcc530/lib/libGpad.so
+#23 0x00007fc8a9dadc9c in MultiSamplePlot::Write(TFile*, std::string, bool, std::string, std::string) () from /user/kderoove/lib/libTopTreeAna80.so
+#24 0x0000000000447723 in main (argc=11, argv=0x7ffe977e9238) at FCNC_TreeProcessor_FinalMVA.cc:1716
+===========================================================
+
+

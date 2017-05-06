@@ -467,12 +467,12 @@ int main (int argc, char *argv[])
         }
         else if(Electron)
         {
-                electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/egammaEffi.txt_EGM2D_CutBasedTightID.root","EGamma_SF2D",true,false,false);
-                electronSFWeightReco = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/egammaEffi.txt_EGM2D_RecoEff.root","EGamma_SF2D",true,false,false);
-                electronSFWeightTrig_BCDEF = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/TriggerSF_Run2016BCDEF_v1.root","HLT_Ele27_WPTight_Gsf",true,false,false);
-                electronSFWeightTrig_GH = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/TriggerSF_Run2016GH_v1.root","HLT_Ele27_WPTight_Gsf",true,false,false);
-                electronSFWeightTrig_2p1_BCDEF = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/TriggerSF_Run2016BCDEF_v1.root","HLT_Ele25_eta2p1_WPTight_Gsf",true,false,false);
-                electronSFWeightTrig_2p1_GH = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/TriggerSF_Run2016GH_v1.root","HLT_Ele25_eta2p1_WPTight_Gsf",true,false,false);
+                electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/egammaEffi.txt_EGM2D_CutBasedTightID.root","EGamma_SF2D",true,false,false,false);
+                electronSFWeightReco = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/egammaEffi.txt_EGM2D_RecoEff.root","EGamma_SF2D",true,false,false,true);
+                electronSFWeightTrig_BCDEF = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/TriggerSF_Run2016BCDEF_v1.root","HLT_Ele27_WPTight_Gsf",true,false,false,false);
+                electronSFWeightTrig_GH = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/TriggerSF_Run2016GH_v1.root","HLT_Ele27_WPTight_Gsf",true,false,false,false);
+                electronSFWeightTrig_2p1_BCDEF = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/TriggerSF_Run2016BCDEF_v1.root","HLT_Ele25_eta2p1_WPTight_Gsf",true,false,false,false);
+                electronSFWeightTrig_2p1_GH = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/TriggerSF_Run2016GH_v1.root","HLT_Ele25_eta2p1_WPTight_Gsf",true,false,false,false);
         }
     }
 
@@ -723,6 +723,10 @@ int main (int argc, char *argv[])
 	      Double_t jet_matchedMC_pdgID[20];
 	      Double_t jet_matchedMC_motherpdgID[20];
 	      Double_t jet_matchedMC_grannypdgID[20];
+        Double_t jet_Pt_before_JER[20];
+        Double_t jet_Pt_after_JER[20];
+        Double_t jet_Pt_before_JES[20];
+        Double_t jet_Pt_after_JES[20];
       
         // met 
         Double_t met_Px; 
@@ -730,6 +734,8 @@ int main (int argc, char *argv[])
         Double_t met_Pt; 
 	      Double_t met_Phi; 
 	      Double_t met_Eta;	      
+        Double_t met_before_JES;
+        Double_t met_after_JES;
 	      
 	      //JetIndices_correctJetComb
 	      Int_t TOPTOPLEPHAD_JetIdx_LepTop;
@@ -1028,6 +1034,10 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("jet_matchedMC_pdgID",&jet_matchedMC_pdgID,"jet_matchedMC_pdgID[nJets]/D");
         tup_ObjectVars->Branch("jet_matchedMC_motherpdgID",&jet_matchedMC_motherpdgID,"jet_matchedMC_motherpdgID[nJets]/D");
         tup_ObjectVars->Branch("jet_matchedMC_grannypdgID",&jet_matchedMC_grannypdgID,"jet_matchedMC_grannypdgID[nJets]/D");
+        tup_ObjectVars->Branch("jet_Pt_before_JER",&jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D");
+        tup_ObjectVars->Branch("jet_Pt_before_JES",jet_Pt_before_JES,"jet_Pt_before_JES[nJets]/D");
+        tup_ObjectVars->Branch("jet_Pt_after_JER",jet_Pt_after_JER,"jet_Pt_after_JER[nJets]/D");
+        tup_ObjectVars->Branch("jet_Pt_after_JES",jet_Pt_after_JES,"jet_Pt_after_JES[nJets]/D");
 
         //MC variables (affected by TopPtReweighing
         tup_ObjectVars->Branch("MC_TopPt",&MC_TopPt,"MC_TopPt/D");
@@ -1046,6 +1056,8 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("met_Pt", &met_Pt, "met_Pt/D"); 
         tup_ObjectVars->Branch("met_Eta", &met_Eta,"met_Eta/D"); 
         tup_ObjectVars->Branch("met_Phi", &met_Phi, "met_Phi/D"); 
+        tup_ObjectVars->Branch("met_before_JES", &met_before_JES, "met_before_JES/D");
+        tup_ObjectVars->Branch("met_after_JES", &met_after_JES, "met_after_JES/D");
 
         // Advanced variables
        tup_ObjectVars->Branch("I_TOPTOPLEPHAD_JetIdx_LepTop",&TOPTOPLEPHAD_JetIdx_LepTop,"TOPTOPLEPHAD_JetIdx_LepTop/I");
@@ -1759,6 +1771,10 @@ int main (int argc, char *argv[])
             ///////////////////////
             // JER smearing
             //////////////////////
+            for(int iJ = 0; iJ < init_jets.size(); iJ++)
+            {
+                jet_Pt_before_JER[iJ] = init_jets[iJ]->Pt();
+            }
             if(applyJER)
             {
                 if(dName.find("Data")==string::npos)//JER smearing only feasible for non-data samples
@@ -1775,26 +1791,39 @@ int main (int argc, char *argv[])
                             jetTools->correctJetJER(init_jets, genjets, mets[0], "nominal", false);
                     }
                     else JERon = -1;
-
-                    // JES
-                    if(applyJES)
-                    {
-                        
-                        JESon = doJESShift;
-                        if (doJESShift == 1)
-                            jetTools->correctJetJESUnc(init_jets, mets[0], "minus");
-                        else if (doJESShift == 2)
-                            jetTools->correctJetJESUnc(init_jets, mets[0], "plus");
-                        
-                            jetTools->correctJets(init_jets,event->fixedGridRhoFastjetAll() ,false);
-                    }
-                    else JESon = -1;
-                    
-                    jetTools->correctMETTypeOne(init_jets, mets[0], isData);
-
-
                 }
             }
+
+            for(int iJ = 0; iJ < init_jets.size(); iJ++)
+            {
+                jet_Pt_after_JER[iJ] = init_jets[iJ]->Pt();
+                jet_Pt_before_JES[iJ] = init_jets[iJ]->Pt();
+            }
+            met_before_JES = mets[0]->Pt();
+            // JES
+            if(applyJES)
+            {
+                   
+                JESon = doJESShift;
+                if (doJESShift == 1)
+                    jetTools->correctJetJESUnc(init_jets, mets[0], "minus");
+                else if (doJESShift == 2)
+                    jetTools->correctJetJESUnc(init_jets, mets[0], "plus");
+                       
+                    jetTools->correctJets(init_jets,event->fixedGridRhoFastjetAll() ,false);
+//            jetTools->correctMETTypeOne(init_jets, mets[0], isData);
+                jetTools->correctJetsMet(init_jets,mets[0],event->fixedGridRhoFastjetAll() ,isData);
+            }
+            else JESon = -1;
+            met_after_JES = mets[0]->Pt();
+            for(int iJ = 0; iJ < init_jets.size(); iJ++)
+            {
+                jet_Pt_after_JES[iJ] = init_jets[iJ]->Pt();              
+            }
+                    
+
+
+
             /////////////////////////////////////
             //  fix negative weights for amc@nlo/// 
             /////////////////////////////////////
@@ -1953,20 +1982,20 @@ int main (int argc, char *argv[])
 				        if (debug)cout<<"Getting Jets"<<endl;
 				        selectedOrigJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Loose"); // ApplyJetId
 				        if (debug)cout<<"Getting Tight Muons"<<endl;
-				        selectedMuons                                       = r2selection.GetSelectedMuons(27,2.1,0.15, "Tight", "Spring15"); //Selected - Trigger: HLT_Iso(Tk)Mu24_v*
+				        selectedMuons                                       = r2selection.GetSelectedMuons(27,2.1,0.15, "Tight", "Summer16"); //Selected - Trigger: HLT_Iso(Tk)Mu24_v*
 				        if (debug)cout<<"Getting Loose Electrons"<<endl;
 				        selectedElectrons                                   = r2selection.GetSelectedElectrons(10,2.5,"Loose", "Spring16_80X", true, true); //Vetoed  
 				        if (debug)cout<<"Getting Loose Muons"<<endl;
-				        selectedExtraMuons                                  = r2selection.GetSelectedMuons(10, 2.4, 0.25,"Loose","Spring15"); //Vetoed         
+				        selectedExtraMuons                                  = r2selection.GetSelectedMuons(10, 2.4, 0.25,"Loose","Summer16"); //Vetoed         
             }
             else if (Electron)
             {
 				        if (debug)cout<<"Getting Jets"<<endl;
 				        selectedOrigJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Loose"); // ApplyJetId
 				        if (debug)cout<<"Getting Loose Muons"<<endl;
-				        selectedMuons                                       = r2selection.GetSelectedMuons(10, 2.4, 0.25,"Loose","Spring15"); //Vetoed
+				        selectedMuons                                       = r2selection.GetSelectedMuons(10, 2.4, 0.25,"Loose","Summer16"); //Vetoed
 				        if (debug)cout<<"Getting Electrons"<<endl;
-				        selectedElectrons                                   = r2selection.GetSelectedElectrons(30,2.5,"Tight", "Spring16_80X", true, true); //Selected - Trigger:  HLT_Ele32_eta2p1_WPTight_Gsf_v*                
+				        selectedElectrons                                   = r2selection.GetSelectedElectrons(35,2.1,"Tight", "Spring16_80X", true, true); //Selected - Trigger:  HLT_Ele32_eta2p1_WPTight_Gsf_v*                
 				        if (debug)cout<<"Getting Loose Electrons"<<endl;
 				        selectedExtraElectrons                              = r2selection.GetSelectedElectrons(10,2.5,"Loose", "Spring16_80X", true, true); //Vetoed
             }

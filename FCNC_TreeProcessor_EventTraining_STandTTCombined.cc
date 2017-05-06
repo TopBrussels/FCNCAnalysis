@@ -68,10 +68,12 @@ int main(int argc, char *argv[])
         cout << "    int baseline_bjets             = strtol(argv[1], NULL,10);" << endl;
         cout << "    int baseline_jets                 = strtol(argv[2], NULL,10);" << endl;
         cout << "    string SignalSample            = argv[3];" << endl;
-        cout << "    string channel            = argv[3];" << endl;
-        cout << "    string date            = argv[4];" << endl;
-        cout << "    bool PVreweighing = strtol(argv[5], NULL,10);" << endl;
-        cout << "    bool debug         =strtol(argv[6], NULL,10);" << endl;
+        cout << "    string channel            = argv[4];" << endl;
+        cout << "    string date            = argv[5];" << endl;
+        cout << "    bool PVreweighing = strtol(argv[6], NULL,10);" << endl;
+        cout << "    bool debug         =strtol(argv[7], NULL,10);" << endl;
+        cout << "    int khut         =strtod(argv[8], NULL,10);" << endl;
+        cout << "    int khct         =strtod(argv[9], NULL,10);" << endl;
 
         return 1;
     }
@@ -79,13 +81,18 @@ int main(int argc, char *argv[])
 
     int baseline_bjets             = strtol(argv[1], NULL,10);
     int baseline_jets                 = strtol(argv[2], NULL,10);
-    string SignalSample  = argv[3];//Valid arguments are: hut & hct
+    string SignalSample  = argv[3];//Valid arguments are: hut & hct, 2D
     string channel            = argv[4];
     string date            = argv[5];
     bool PVreweighing = strtol(argv[6], NULL,10);
     bool debug         =strtol(argv[7], NULL,10);
+    int khut         =strtol(argv[8], NULL,10); //Divide this number by 100
+    int khct         =strtol(argv[9], NULL,10);
     
-   
+   string coupling_hut = "khut0p" + intToStr(khut);
+   if(khut < 10) coupling_hut = "khut0p0" + intToStr(khut);
+   string coupling_hct = "khct0p" + intToStr(khct);
+   if(khct < 10) coupling_hct = "khct0p0" + intToStr(khct);
     
     bool doInclusive = false;
     string category;
@@ -98,7 +105,9 @@ int main(int argc, char *argv[])
     {
         category = "b"+intToStr(baseline_bjets)+"j"+intToStr(baseline_jets);
     }
-    string TrainingName = "CombTraining_" + SignalSample + channel + "_" +  category;//Example: Training_SThut_El_b3j3
+    string TrainingName = "";
+    if(khut == 0 && khct == 0) string TrainingName = "CombTraining_" + SignalSample + channel + "_" +  category;
+    else string TrainingName = "CombTraining_" + SignalSample + "_" + coupling_hut + "_" + coupling_hct + "_" + channel + "_" +  category;
 
     cout << "------------------------------------------------------------------------------------------------" << endl;
     cout << "Begin program" << endl;
@@ -217,10 +226,17 @@ int main(int argc, char *argv[])
         else if(dataSetName.find("NLO") != string::npos || dataSetName.find("nlo") !=string::npos || dataSetName.find("amc") !=string::npos) isAMC = true;
 
 		    bool isSignal = false;
+		    double SignalWeight_2D = 1.;
 		    if(dataSetName.find("NP_overlay")!=string::npos)
 		    {
 		        if(SignalSample == "hut" && dataSetName.find("hut")!=string::npos) isSignal = true;
 		        else if(SignalSample == "hct" && dataSetName.find("hct")!=string::npos) isSignal = true;
+		        else if(SignalSample   == "2D")
+		        {
+		            isSignal = true;
+		            if(dataSetName.find("hct")!=string::npos) SignalWeight_2D = pow(khct/100,2);
+		            else if(dataSetName.find("hut")!=string::npos) SignalWeight_2D = pow(khut/100,2);
+		        }
 		        
 		        if(!isSignal) continue;
 		        
@@ -617,9 +633,9 @@ int main(int argc, char *argv[])
 	          if(isSignal)
             {
 	              if( rnd < 0.5 )
-	                factory->AddSignalTrainingEvent(vars,weight);
+	                factory->AddSignalTrainingEvent(vars,weight*SignalWeight_2D);
 	              else
-	                factory->AddSignalTestEvent(vars,weight);
+	                factory->AddSignalTestEvent(vars,weight*SignalWeight_2D);
 			      }
 			      else
 			      {
