@@ -405,6 +405,7 @@ Double_t        puSF_up;
 Double_t        puSF_down;
 Int_t           PassedMETFilter;
 Int_t           PassedTrigger;
+Int_t           PassedTriggerMET;
 Int_t		PassedTriggerNoLogic;
 Int_t		PassedTriggerNoLogic2;
 Int_t           PassedGoodPV;
@@ -536,6 +537,7 @@ TBranch        *b_puSF_down;   //!
 TBranch        *b_puSF_up;   //!
 TBranch        *b_PassedMETFilter;   //!
 TBranch        *b_PassedTrigger;   //!
+TBranch        *b_PassedTriggerMET;
 TBranch        *b_PassedTriggerNoLogic;
 TBranch		     *b_PassedTriggerNoLogic2;
 TBranch        *b_PassedGoodPV;   //!
@@ -661,7 +663,7 @@ void ClearMatchingSampleVars();
 void FillGeneralPlots(int d, string prefix, vector<int>decayChannels, bool isData, bool isfakes);
 void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<int>decayChannels);
 string ConvertIntToString(int nb, bool pad);
-void ReconstructObjects(vector<TLorentzVector> Muons,vector<TLorentzVector> selectedElectrons, vector<TLorentzVector> selectedJets,int Region);
+void ReconstructObjects(vector<int> selectedJetsID, vector<TLorentzVector> Muons,vector<TLorentzVector> selectedElectrons, vector<TLorentzVector> selectedJets,int Region);
 void MakeMVAvars(int Region, Double_t scaleFactor);
 void createMVAtree(string dataSetName);
 void writeMVAtree();
@@ -683,6 +685,7 @@ vector<TLorentzVector> selectedMuons;
 vector<TLorentzVector> selectedElectrons;
 vector<TLorentzVector> selectedLeptons;
 vector<TLorentzVector> selectedJets;
+vector<TLorentzVector> preselectedJets;
 vector<int> selectedElectronsCharge;
 vector<int> selectedMuonsCharge;
 bool Assigned = false;
@@ -796,6 +799,7 @@ vector <int> selectedCvsLTJetID;
 vector <int> selectedCharmLJetsindex;
 vector <int> selectedCharmMJetsindex;
 vector <int> selectedCharmTJetsindex;
+vector <int> selectedJetsID;
 Double_t scaleFactor;
 Double_t scaleFactor_bfBT;
 Double_t scaleFactor_bfELSF;
@@ -953,7 +957,8 @@ int main(int argc, char* argv[]){
   bool applyNloSF = false;
   bool applyMETfilter = false;
   bool removeBadMu  = true;
-  
+  bool doRunGH = false;
+  bool doRunBCDEF = false;
   string placeNtup = "singletop/170214";
   int channel = -999;
   datafound = false;
@@ -987,7 +992,14 @@ int main(int argc, char* argv[]){
       std::cout << "   checkTrigger: check trigger in data " << endl;
       std::cout << "   Test: loop over 1000 events" << endl;
       std::cout << "   withBadMu " << endl;
+      std::cout << "   RunGH / RunBF " << endl;
       return 0;
+    }
+    if(string(argv[i]).find("RunGH")!=std::string::npos) {
+      doRunGH = true;
+    }
+    if(string(argv[i]).find("RunBF")!=std::string::npos) {
+      doRunBCDEF = true;
     }
     if(string(argv[i]).find("withBadMu")!=std::string::npos) {
       removeBadMu = false;
@@ -1103,14 +1115,20 @@ int main(int argc, char* argv[]){
   for (int d = 0; d < datasetsbefore.size(); d++)   //Loop through datasets
   {
     string dataSetName = datasetsbefore[d]->Name();
+    
     if (dataSetName.find("Data")!=std::string::npos || dataSetName.find("data") !=std::string::npos || dataSetName.find("DATA") !=std::string::npos)
     {
-      Luminosity = datasetsbefore[d]->EquivalentLumi();
+      if(doRunGH && dataSetName.find("RunGH")==std::string::npos){cout << "looking at run GH and this is " << dataSetName << endl;  continue;}
+      else if(doRunBCDEF && dataSetName.find("RunBCDEF")==std::string::npos){cout << "looking at run B-F and this is " << dataSetName << endl;  continue;}
+      else { Luminosity = datasetsbefore[d]->EquivalentLumi();
+        cout << "setting lumi to " << Luminosity << endl;
+      }
     }
     if((applyJEC_down || applyJEC_up || applyJER_down || applyJER_up) & dataSetName.find("data")!=std::string::npos){continue;}
     else if((applyJEC_down || applyJEC_up || applyJER_down || applyJER_up) & dataSetName.find("fake")!=std::string::npos){continue;}
     else{
       datasets.push_back(datasetsbefore[d]);
+      cout << " looking at " << dataSetName << endl;
     }
     
   }
@@ -1131,12 +1149,12 @@ int main(int argc, char* argv[]){
   }
   
   
-  
+  /*
   
   for (int d = 0; d < datasets.size(); d++)   //Loop through datasets
   {
     string dataSetName = datasets[d]->Name();
-    if (dataSetName.find("Data") == 0 || dataSetName.find("data") == 0 || dataSetName.find("DATA") == 0)
+   if (dataSetName.find("Data") == 0 || dataSetName.find("data") == 0 || dataSetName.find("DATA") == 0)
     {
       Luminosity = datasets[d]->EquivalentLumi();
       datafound = true;
@@ -1145,7 +1163,7 @@ int main(int argc, char* argv[]){
     
     
   }
-  
+  */
   ////////////////////////////////////
   ///  Open files and get Ntuples  ///
   ////////////////////////////////////
@@ -1327,6 +1345,7 @@ int main(int argc, char* argv[]){
       
       
       if(applyMETfilter && !PassedMETFilter){   continue;}
+      if(dataSetName.find("data_MET")!=std::string::npos && !PassedTriggerMET) continue;
       if(applytrigger && !PassedTrigger) continue;
       if(applytriggerNoLogic && !PassedTriggerNoLogic) continue;
       if(applytriggerNoLogic2 && !PassedTriggerNoLogic2) continue;
@@ -1338,6 +1357,9 @@ int main(int argc, char* argv[]){
       tempPy = 0.;
       tempHt = 0.;
       tempInvMassObj.SetPtEtaPhiE(0.,0., 0.,0.);
+      
+      
+      
       
       for(unsigned int iMu = 0; iMu < nMuons ; iMu++){
         if( pt_muon[iMu] < 40. ){ continue; } //cout << "removing muon with pt " << pt_muon[iMu] << endl;  continue;}
@@ -1370,6 +1392,32 @@ int main(int argc, char* argv[]){
         tempInvMassObj = tempInvMassObj + electron;
       }
       
+    //  preselectedJets.clear();
+      /*
+      bool goodevent = true;
+      for(unsigned int iJet = 0; iJet < nJets ; iJet++){
+        //if(pt_jet[iJet] < 40. ) continue;
+        jet.Clear();
+        jet.SetPtEtaPhiE(pt_jet[iJet], eta_jet[iJet], phi_jet[iJet], E_jet[iJet]);
+        for(int iM = 0; iM < selectedMuons.size(); iM++){
+          if(jet.DeltaR(selectedMuons[iM]) < 0.4) {
+            goodevent = false;
+            break;
+          }
+        }
+        if(!goodevent) break;
+        
+        for(int iE = 0; iE < selectedElectrons.size(); iE++){
+          if( jet.DeltaR(selectedElectrons[iE]) < 0.3) {
+            goodevent = false;
+            break;
+          }
+        }
+        if(!goodevent) break;
+      }
+      if(!goodevent) continue;
+      */
+      
       if(selectedLeptons.size() != 3) continue;
       
       if(!check_matching) sort(selectedLeptons.begin(), selectedLeptons.end(), HighestPt());
@@ -1377,18 +1425,24 @@ int main(int argc, char* argv[]){
       MVA_TotalPt_lep = sqrt(tempPx*tempPx + tempPy*tempPx);
       MVA_TotalInvMass_lep = tempInvMassObj.M();
 
-    
-    
       
       tempHt_jet = 0.;
       tempPy_jet = 0.;
       tempPx_jet = 0.;
       bool PushBack = true;
       tempInvMassObj_jet.Clear();
+      double bdiscrim  = -5.;
+      double cbdiscrim = -5.;
+      double cldiscrim = -5.;
+      
       for(unsigned int iJet = 0; iJet < nJets ; iJet++){
-        if(pt_jet[iJet] < 40. ) continue;
+        //if(pt_jet[iJet] < 40. ) continue;
         jet.Clear();
         jet.SetPtEtaPhiE(pt_jet[iJet], eta_jet[iJet], phi_jet[iJet], E_jet[iJet]);
+        bdiscrim = bdisc_jet[iJet];
+        cbdiscrim = cdiscCvsB_jet[iJet];
+        cldiscrim = cdiscCvsL_jet[iJet];
+      
         PushBack = true;
         for(int iM = 0; iM < selectedMuons.size(); iM++){
           if(jet.DeltaR(selectedMuons[iM]) < 0.4) {
@@ -1396,52 +1450,65 @@ int main(int argc, char* argv[]){
             break;
           }
         }
-        if(!PushBack) continue;
+        if(!PushBack) {   continue;}
         for(int iE = 0; iE < selectedElectrons.size(); iE++){
           if( jet.DeltaR(selectedElectrons[iE]) < 0.3) {
             PushBack = false;
             break;
           }
         }
-        if(!PushBack) continue;
-        selectedJets.push_back(jet);
-        tempPx = tempPx + jet.Px();
-        tempPy = tempPy + jet.Py();
-        tempHt = tempHt + jet.Pt();
-        tempInvMassObj = tempInvMassObj + jet;
-        
-        tempPx_jet = tempPx_jet + jet.Px();
-        tempPy_jet = tempPy_jet + jet.Py();
-        tempHt_jet = tempHt_jet + jet.Pt();
-        tempInvMassObj_jet = tempInvMassObj_jet + jet;
-        
-        if(bdisc_jet[iJet] >  WPb_L) selectedCSVLJetID.push_back(iJet);
-        else selectednonCSVLJetID.push_back(iJet);
-        if(bdisc_jet[iJet] >  WPb_M) selectedCSVMJetID.push_back(iJet);
-        else selectednonCSVMJetID.push_back(iJet);
-        if(bdisc_jet[iJet] >  WPb_T) selectedCSVTJetID.push_back(iJet);
-        else selectednonCSVTJetID.push_back(iJet);
-        if(cdiscCvsB_jet[iJet] > WPc_CvsB_Loose) selectedCvsBLJetID.push_back(iJet);
-        else selectednonCvsBLJetID.push_back(iJet);
-        if(cdiscCvsB_jet[iJet] > WPc_CvsB_Medium) selectedCvsBMJetID.push_back(iJet);
-        else selectednonCvsBMJetID.push_back(iJet);
-        if(cdiscCvsB_jet[iJet] > WPc_CvsB_Tight) selectedCvsBTJetID.push_back(iJet);
-        else selectednonCvsBTJetID.push_back(iJet);
-        if(cdiscCvsL_jet[iJet] > WPc_CvsL_Loose) selectedCvsLLJetID.push_back(iJet);
-        else selectednonCvsLLJetID.push_back(iJet);
-        if(cdiscCvsL_jet[iJet] > WPc_CvsL_Medium) selectedCvsLMJetID.push_back(iJet);
-        else selectednonCvsLMJetID.push_back(iJet);
-        if(cdiscCvsL_jet[iJet] > WPc_CvsL_Tight) selectedCvsLTJetID.push_back(iJet);
-        else selectednonCvsLTJetID.push_back(iJet);
-        if(cdiscCvsB_jet[iJet] > WPc_CvsB_Loose && cdiscCvsL_jet[iJet] > WPc_CvsL_Loose) selectedCharmLJetsindex.push_back(iJet);
-        if(cdiscCvsB_jet[iJet] > WPc_CvsB_Medium && cdiscCvsL_jet[iJet] > WPc_CvsL_Medium) selectedCharmMJetsindex.push_back(iJet);
-        if(cdiscCvsB_jet[iJet] > WPc_CvsB_Tight && cdiscCvsL_jet[iJet] > WPc_CvsL_Tight) selectedCharmTJetsindex.push_back(iJet);
-        
+        if(!PushBack){   continue;}
+        else{
+          //if(isfakes) cout << "pushing back " << iJet << endl;
+          selectedJets.push_back(jet);
+          selectedJetsID.push_back(iJet);
+          tempPx = tempPx + jet.Px();
+          tempPy = tempPy + jet.Py();
+          tempHt = tempHt + jet.Pt();
+          tempInvMassObj = tempInvMassObj + jet;
+          
+          tempPx_jet = tempPx_jet + jet.Px();
+          tempPy_jet = tempPy_jet + jet.Py();
+          tempHt_jet = tempHt_jet + jet.Pt();
+          tempInvMassObj_jet = tempInvMassObj_jet + jet;
+          
+          // cout << "iJ " << iJet << " bdisc " << bdiscrim << " WP " << WPb_L << endl;
+          if(bdiscrim >  WPb_L){
+            selectedCSVLJetID.push_back(iJet);
+          }
+          else{
+            selectednonCSVLJetID.push_back(iJet);
+          }
+          if(bdiscrim >  WPb_M) selectedCSVMJetID.push_back(iJet);
+          else selectednonCSVMJetID.push_back(iJet);
+          if(bdiscrim >  WPb_T) selectedCSVTJetID.push_back(iJet);
+          else selectednonCSVTJetID.push_back(iJet);
+          if(cbdiscrim > WPc_CvsB_Loose) selectedCvsBLJetID.push_back(iJet);
+          else selectednonCvsBLJetID.push_back(iJet);
+          if(cbdiscrim > WPc_CvsB_Medium) selectedCvsBMJetID.push_back(iJet);
+          else selectednonCvsBMJetID.push_back(iJet);
+          if(cbdiscrim > WPc_CvsB_Tight) selectedCvsBTJetID.push_back(iJet);
+          else selectednonCvsBTJetID.push_back(iJet);
+          if(cldiscrim > WPc_CvsL_Loose) selectedCvsLLJetID.push_back(iJet);
+          else selectednonCvsLLJetID.push_back(iJet);
+          if(cldiscrim > WPc_CvsL_Medium) selectedCvsLMJetID.push_back(iJet);
+          else selectednonCvsLMJetID.push_back(iJet);
+          if(cldiscrim > WPc_CvsL_Tight) selectedCvsLTJetID.push_back(iJet);
+          else selectednonCvsLTJetID.push_back(iJet);
+          if(cbdiscrim > WPc_CvsB_Loose && cldiscrim > WPc_CvsL_Loose) selectedCharmLJetsindex.push_back(iJet);
+          if(cbdiscrim > WPc_CvsB_Medium && cldiscrim > WPc_CvsL_Medium) selectedCharmMJetsindex.push_back(iJet);
+          if(cbdiscrim > WPc_CvsB_Tight && cldiscrim > WPc_CvsL_Tight) selectedCharmTJetsindex.push_back(iJet);
+        }
         
       }
-      if(selectedJets.size()>6) continue;
+      if(selectedJetsID.size()>6) continue; // temp fix
+      if(mWT2 > 300.) continue;  // temp fix
      // if(met_Pt < 50. ) continue;
       
+      
+      for( int iJ = 0; iJ < selectedCSVLJetID.size(); iJ++){
+        if( (bdisc_jet[selectedCSVLJetID[iJ]] <= WPb_L) && isfakes) cout << "is not loose b !! " << bdiscrim << " <= " << WPb_L << endl;
+      }
       MVA_TotalHt = tempHt + met_Pt;
       MVA_TotalPt = sqrt(tempPx*tempPx + tempPy*tempPx);
       MVA_TotalInvMass = tempInvMassObj.M();
@@ -1474,13 +1541,13 @@ int main(int argc, char* argv[]){
       //cout << "WmuIndiceF " << WmuIndiceF <<" WelecIndiceF "<< WelecIndiceF <<" ZmuIndiceF_1 "<< ZmuIndiceF_1 <<" ZmuIndiceF_0 "<< ZmuIndiceF_0 <<" ZelecIndiceF_0 "<< ZelecIndiceF_0 <<" ZelecIndiceF_1 "<< ZelecIndiceF_1 << endl;
       // to be sure
       if((nElectrons + nMuons) != 3) continue;
-      if(selectedJets.size() == 0) continue;
+      if(selectedJetsID.size() == 0) continue;
       
       LeptonAssigner(selectedElectrons, selectedMuons,selectedElectronsCharge ,selectedMuonsCharge);
       //cout << "WmuIndiceF " << WmuIndiceF <<" WelecIndiceF "<< WelecIndiceF <<" ZmuIndiceF_1 "<< ZmuIndiceF_1 <<" ZmuIndiceF_0 "<< ZmuIndiceF_0 <<" ZelecIndiceF_0 "<< ZelecIndiceF_0 <<" ZelecIndiceF_1 "<< ZelecIndiceF_1 << endl;
       if(!Assigned) continue;
       //cout << "in reco" << endl;
-      ReconstructObjects(selectedMuons, selectedElectrons, selectedJets, Region);
+      ReconstructObjects(selectedJetsID, selectedMuons, selectedElectrons, selectedJets, Region);
       
       // apply SF
       scaleFactor = 1.;
@@ -1713,7 +1780,7 @@ int main(int argc, char* argv[]){
       
       if(selectedJets.size() == 1 && selectedCSVLJetID.size() > 0){ Region = 0; nSelectedEntriesST++; } // ST region
       else if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0){ Region = 1; nSelectedEntriesTT++;} // ttbar region
-      else if(selectedJets.size() >0 && selectedCSVLJetID.size() == 0){ Region = 2; nSelectedEntriesWZ++;}// WZ control region
+      else if(selectedJets.size() >0 && selectedCSVLJetID.size()  < 1){ Region = 2; nSelectedEntriesWZ++;}// WZ control region
       else {continue; }
       
       
@@ -2715,8 +2782,8 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
   if(WmuIndiceF != -999) MVA_Wlep_Charge =static_cast<float> ( selectedMuonsCharge[WmuIndiceF]);
   else if(WelecIndiceF != -999) MVA_Wlep_Charge = static_cast<float>( selectedElectronsCharge[WelecIndiceF]);
   MVA_charge_asym = static_cast<float>( MVA_Wlep_Charge*fabs(Wlep.Eta()));
-  if(selectedJets.size()>1) MVA_bdiscCSVv2_jet_1 = static_cast<float>( bdisc_jet[1]);
-  if(selectedJets.size()>0) MVA_bdiscCSVv2_jet_0 = static_cast<float>(bdisc_jet[0]);
+  if(selectedJets.size()>1) MVA_bdiscCSVv2_jet_1 = static_cast<float>( bdisc_jet[selectedJetsID[1]]);
+  if(selectedJets.size()>0) MVA_bdiscCSVv2_jet_0 = static_cast<float>(bdisc_jet[selectedJetsID[0]]);
   MVA_CosTheta = static_cast<float>( (CosThetaCalculation(Wlep, metTLV, SMbjet, false)).first);
   MVA_CosTheta_alt = static_cast<float>( (CosThetaCalculation(Wlep, metTLV, SMbjet,false)).second);
   
@@ -2730,10 +2797,10 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
   if(selectedJets.size()>1 ) MVA_dRZc = static_cast<float>( Zboson.DeltaR(LightJet));
   if(selectedJets.size()>1 ) MVA_dPhiZc = static_cast<float>( Zboson.DeltaPhi(LightJet));
   
-  if(selectedJets.size()>0) MVA_cdiscCvsB_jet_0 = static_cast<float>( cdiscCvsB_jet[0]);
-  if(selectedJets.size()>0) MVA_cdiscCvsL_jet_0 = static_cast<float>( cdiscCvsL_jet[0]);
-  if(selectedJets.size()>1) MVA_cdiscCvsB_jet_1 = static_cast<float>( cdiscCvsB_jet[1]);
-  if(selectedJets.size()>1)  MVA_cdiscCvsL_jet_1 = static_cast<float>( cdiscCvsL_jet[1]);
+  if(selectedJets.size()>0) MVA_cdiscCvsB_jet_0 = static_cast<float>( cdiscCvsB_jet[selectedJetsID[0]]);
+  if(selectedJets.size()>0) MVA_cdiscCvsL_jet_0 = static_cast<float>( cdiscCvsL_jet[selectedJetsID[0]]);
+  if(selectedJets.size()>1) MVA_cdiscCvsB_jet_1 = static_cast<float>( cdiscCvsB_jet[selectedJetsID[1]]);
+  if(selectedJets.size()>1)  MVA_cdiscCvsL_jet_1 = static_cast<float>( cdiscCvsL_jet[selectedJetsID[1]]);
   
   //cout << "fcnc kin " << endl);
   
@@ -3146,7 +3213,7 @@ void LeptonAssigner(vector<TLorentzVector> electrons, vector<TLorentzVector> muo
   
   
 };
-void ReconstructObjects(vector<TLorentzVector> Muons,vector<TLorentzVector> selectedElectrons, vector<TLorentzVector> selectedJets,int Region){
+void ReconstructObjects(vector<int> selectedJetsID, vector<TLorentzVector> Muons,vector<TLorentzVector> selectedElectrons, vector<TLorentzVector> selectedJets,int Region){
   clock_t start_sub =  clock();
   
   
@@ -3232,10 +3299,10 @@ int SMjetCalculator(vector<TLorentzVector> Jets,int verb){
   
   for(int iJ = 0; iJ < Jets.size() ; iJ++){
     
-    if(bdisc_jet[iJ] > tempbdis)
+    if(bdisc_jet[selectedJetsID[iJ]] > tempbdis)
     {
       index_ = iJ;
-      tempbdis = bdisc_jet[iJ];
+      tempbdis = bdisc_jet[selectedJetsID[iJ]];
       //cout << "index is " << iJ << endl ;
     }
   }
@@ -3603,9 +3670,9 @@ int FCNCjetCalculatorCvsBTagger(vector < TLorentzVector>  Jets,int index, int ve
     {
       if(iJ == index) continue;
       
-      if(cdiscCvsB_jet[iJ]>tempcdis){
+      if(cdiscCvsB_jet[selectedJetsID[iJ]]>tempcdis){
         NbInColl = iJ;
-        tempcdis = cdiscCvsB_jet[iJ];
+        tempcdis = cdiscCvsB_jet[selectedJetsID[iJ]];
       }
       
     }
@@ -3630,9 +3697,9 @@ int FCNCjetCalculatorCvsLTagger(vector < TLorentzVector>  Jets,int index, int ve
     {
       if(iJ == index) continue;
       
-      if(cdiscCvsL_jet[iJ]>tempcdis){
+      if(cdiscCvsL_jet[selectedJetsID[iJ]]>tempcdis){
         NbInColl = iJ;
-        tempcdis = cdiscCvsL_jet[iJ];
+        tempcdis = cdiscCvsL_jet[selectedJetsID[iJ]];
       }
       
     }
@@ -3971,6 +4038,7 @@ void ClearVars(){
   selectedCvsBMJetID.clear();
   selectedCvsBLJetID.clear();
   selectedCSVTJetID.clear();
+  selectedJetsID.clear();
   selectedCSVMJetID.clear();
   selectedCSVLJetID.clear();
   selectedCharmLJetsindex.clear();
@@ -4651,6 +4719,7 @@ void InitTree(TTree* tree, bool isData, bool isfakes){
   tree->SetBranchAddress("puSF_up", &puSF_up, &b_puSF_up);
   tree->SetBranchAddress("puSF_down", &puSF_down, &b_puSF_down);
   tree->SetBranchAddress("PassedMETFilter", &PassedMETFilter, &b_PassedMETFilter);
+  tree->SetBranchAddress("PassedTriggerMET", &PassedTriggerMET, &b_PassedTriggerMET);
   tree->SetBranchAddress("PassedTrigger", &PassedTrigger, &b_PassedTrigger);
   tree->SetBranchAddress("PassedTriggerNoLogic", &PassedTriggerNoLogic, &b_PassedTriggerNoLogic);
   tree->SetBranchAddress("PassedTriggerNoLogic2", &PassedTriggerNoLogic2, &b_PassedTriggerNoLogic2);

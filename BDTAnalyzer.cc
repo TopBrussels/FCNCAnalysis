@@ -622,7 +622,7 @@ int main(int argc, char* argv[]){
         //if(Luminosity/MVA_Luminosity != 1. ) cout << "lumi "  << Luminosity << " while tuples are made with " << MVA_Luminosity << endl;
         
         if(MVA_Luminosity != 0 && !isData) weight = (weight * Luminosity)/ MVA_Luminosity;
-        if(!datafound) Luminosity = MVA_Luminosity;
+        if(!datafound){ Luminosity = MVA_Luminosity; cout << "lumi set to " << Luminosity << endl; }
         if(dataSetName.find("fake")!=std::string::npos){ weight *= 0.000001 ;}
        
         if( isData){ weight = 1.;}
@@ -942,6 +942,7 @@ int main(int argc, char* argv[]){
           cout << "no data found, setting lumi as " << Luminosity << endl;
           temp->setDataLumi(Luminosity);
         }
+        temp->setDataLumi(Luminosity);
         if(name.find("all")!=std::string::npos) temp->setChannel(true, "all");
         if(name.find("eee")!=std::string::npos) temp->setChannel(true, "3e");
         if(name.find("eeu")!=std::string::npos) temp->setChannel(true, "2e1#mu");
