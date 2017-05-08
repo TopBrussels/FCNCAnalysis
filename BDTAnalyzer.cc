@@ -45,6 +45,7 @@ using namespace TopTree;
 map<string,TH1F*> histo1D;
 map<string,TH1F*> histo1DPDF;
 map<string,TH1F*> histo1DSys;
+map<string,TH1F*> histo1DSysMTW;
 map<string,TH2F*> histo2D;
 map<string,MultiSamplePlot*> MSPlot;
 map<string,MultiSamplePlot*> MSPlotMTW;
@@ -69,7 +70,7 @@ void InitMSPlotsMTW(string prefix, vector <int> decayChannels);
 void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair, bool isZut);
 void InitCalculatePDFWeightHisto(string dataSetName);
 void InitMTWShapeHisto(string dataSetName, string systematic, int isys,  vector <int> decayChannels);
-void InitSystematicHisto(string dataSetName, string systematic, int isys);
+void InitSystematicHisto(string dataSetName, string systematic, int isys, bool doMTWtemplate);
 void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut);
 void InitAnalyzerTree(TTree* tree);
 void Init1DHisto(string dataSetName, string systematic, bool istoppair, bool isZut, vector <int> decayChannels);
@@ -80,7 +81,7 @@ void FillMTWPlots(int d, string postfix, vector <int> decayChannels, double weig
 void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isData, bool toppair, double weight_, int MVA_channel);
 void GetPDFEnvelope(string dataSetName);
 void FillMTWShapeHisto(string dataSetName, string systematic, double weight_,int isys, int MVA_channel, vector <int> decayChannels);
-void FillSystematicHisto(string dataSetName, string systematic, double weight_, int isys);
+void FillSystematicHisto(string dataSetName, string systematic, double weight_, int isys, bool doMTWtemplate);
 void Fill1DHisto(string dataSetName,string systematic, bool istoppair, bool isZut, vector <int> decayChannels, double weight_, int MVA_channel);
 
 //////////////////////////////// settings ////////////////////////////////
@@ -379,6 +380,7 @@ int main(int argc, char* argv[]){
     
     thesystlist.push_back("JESDown");
   }
+  cout << "Number of systematics " << thesystlist.size() << endl;
   //for plotting
   thesystlistnames.push_back("puSF");
   thesystlistnames.push_back("electronSF");
@@ -484,7 +486,7 @@ int main(int argc, char* argv[]){
   
   for(int isys = 0; isys < thesystlist.size() ; isys++){
     systematic = thesystlist[isys];
-    
+    cout << "looking at " << systematic << " systematics " << endl;
 
     for (int d = 0; d < datasets.size(); d++)   //Loop through datasets
     {
@@ -554,16 +556,16 @@ int main(int argc, char* argv[]){
       else hist_eee = new TH1F( (coupling + "_mTW_eee").c_str(),           (coupling + "_mTW_eee").c_str(),           nbinMTW,0, endMTW );
       //cout << "created template histo" << endl;
       /// Initialise WZ plots
-      if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos && doPDFunc && !doMTWtemplate){
+      if((dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos) && doPDFunc && !doMTWtemplate){
         InitCalculatePDFWeightHisto(dataSetName);
       }
-      if(dataSetName.find("WZTo3LNu")!=std::string::npos && PlotSystematics && !doMTWtemplate){
-        InitSystematicHisto(dataSetName, systematic, isys);
+      if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos) && PlotSystematics ){
+        InitSystematicHisto(dataSetName, systematic, isys, doMTWtemplate);
       }
       
      
     
-      if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && doMTWtemplate){
+      if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos || dataSetName.find("FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && doMTWtemplate){
         // InitMTWShapeHisto(dataSetName, systematic, isys, decayChannels);
        
       }
@@ -644,11 +646,11 @@ int main(int argc, char* argv[]){
         if(isData) weightMSPlot = Luminosity;
         /// Fill plots
         if(doPDFunc && !doMTWtemplate){
-          if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos) CalculatePDFWeight(dataSetName, MVA_BDT, MVA_weight_nom, MVA_channel);
+          if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos) CalculatePDFWeight(dataSetName, MVA_BDT, MVA_weight_nom, MVA_channel);
         }
         if(PlotMVAvars  && isys == 0 && !doMTWtemplate){
-          if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TT_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos )&& toppair) Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
-          else  if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("ST_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && !toppair) Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
+          if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos || dataSetName.find("TT_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos )&& toppair) Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
+          else  if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos || dataSetName.find("ST_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && !toppair) Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
         }
         
         
@@ -665,15 +667,16 @@ int main(int argc, char* argv[]){
          // if(isData) cout << "fill data " << endl;
           FillMTWPlots(d, tempstring, decayChannels, weightMSPlot, MVA_channel);
         }
-        if(dataSetName.find("WZTo3LNu")!=std::string::npos && PlotSystematics && !doMTWtemplate){
-          FillSystematicHisto(dataSetName, systematic, weight, isys);
+        if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos) && PlotSystematics ){
+          FillSystematicHisto(dataSetName, systematic, weight, isys, doMTWtemplate);
         }
-        if(dataSetName.find("WZTo3LNu")!=std::string::npos && isys == 0 && doMTWtemplate) histo1DMTW["MTW_WZ"]->Fill(MVA_mWt2, weight);
+       
+        if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos)&& isys == 0 && doMTWtemplate) histo1DMTW["MTW_WZ"]->Fill(MVA_mWt2, weight);
         if(dataSetName.find("fake")!=std::string::npos && isys == 0 && doMTWtemplate) histo1DMTW["MTW_fakes"]->Fill(MVA_mWt2, weight);
         if(dataSetName.find("TT_FCNC")!=std::string::npos && isys == 0 && doMTWtemplate) histo1DMTW["MTW_TT_FCNC"]->Fill(MVA_mWt2, weight);
         
         
-        if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && doMTWtemplate){
+        if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos || dataSetName.find("FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && doMTWtemplate){
           //cout << "filling FillMTWShapeHisto" << endl;
           //FillMTWShapeHisto(dataSetName, systematic, weight, isys, MVA_channel,decayChannels);
         }
@@ -932,7 +935,7 @@ int main(int argc, char* argv[]){
     ///Write histograms
     fout->cd();
     
-    if(makePlots && doMTWtemplate){
+   /* if(makePlots && doMTWtemplate){
       for (map<string,MultiSamplePlot*>::const_iterator it = MSPlotMTW.begin(); it != MSPlotMTW.end(); it++)
       {
         //cout << "MSPlot: " << it->first << endl;
@@ -956,7 +959,7 @@ int main(int argc, char* argv[]){
         temp->Write(fout, name, true, (pathOutputdate+"MSPlotMTW").c_str(), "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
       }
       
-    }
+    }*/
     
     if(makePlots && !doMTWtemplate){
       for (map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
@@ -1042,7 +1045,7 @@ int main(int argc, char* argv[]){
             
             //cout << "looking at " << it->first << endl;
             TH1F *temp = it->second;
-            if(it->first.find("WZTo3LNu")!=std::string::npos) {
+            if(it->first.find("WZTo3LNu")!=std::string::npos || it->first.find("WZJTo3LNu")!=std::string::npos) {
               if(tempBKG == 0) tempBKG = (TH1F*) temp->Clone();
               else tempBKG->Add(temp);
             }
@@ -1165,6 +1168,80 @@ int main(int argc, char* argv[]){
         Canvas->cd();
         gStyle->SetOptStat(0);
         temp_up->GetXaxis()->SetTitle("BDT");
+        
+        temp_up->Draw("h");
+        temp_nom->Draw("SAME,h");
+        temp_down->Draw("SAME,h");
+        legend->Draw("SAME");
+        Canvas->SaveAs( (placeTH1F+nameplot+".png").c_str() );
+        Canvas->SetLogy();
+        Canvas->Update();
+        Canvas->SaveAs( (placeTH1F+nameplot+"_LogY.png").c_str() );
+      }
+    }
+    if(PlotSystematics && doMTWtemplate){
+      cout << "plot systematics" << endl;
+      TDirectory* th1dirsys = fout->mkdir("1D_Systematic_histograms");
+      th1dirsys->cd();
+      gStyle->SetOptStat(1110);
+      string systematic = "";
+      TH1F *temp_nom(0);
+      for (std::map<std::string,TH1F*>::const_iterator it = histo1DSysMTW.begin(); it != histo1DSysMTW.end(); it++)
+      {
+        cout << "looking at " << it->first<<endl;
+        if(it->first.find("nominal")!=std::string::npos){
+          cout << "found nominal " << it->first << " " << it->second << " " << temp_nom <<  endl;
+          if(temp_nom == 0){ temp_nom = (TH1F*) (it->second); cout << "cloned" << endl;}
+          else temp_nom->Add(it->second);
+          cout << "added nominal " << it->first << endl;
+        }
+      }
+      
+      for(int isys = 1; isys < thesystlistnames.size(); isys++){ // first value was nominal
+        systematic = thesystlistnames[isys];
+        cout << "looking at " << systematic.c_str() << endl;
+        TH1F *temp_up(0);
+        TH1F *temp_down(0);
+        TCanvas* Canvas = 0;
+        string nameplot = systematic;
+        for (std::map<std::string,TH1F*>::const_iterator it = histo1DSysMTW.begin(); it != histo1DSysMTW.end(); it++)
+        {
+          if(it->first.find(systematic.c_str())!=std::string::npos){
+            if(it->first.find("Up")!=std::string::npos){
+              if(temp_up ==0){ temp_up = (TH1F*) (it->second);}
+              else temp_up->Add(it->second);
+              cout << "found " << it->first << endl; }
+            else if(it->first.find("Down")!=std::string::npos){
+              if(temp_down == 0){ temp_down = (TH1F*) (it->second);}
+              else temp_down->Add(it->second);
+              cout << "found " << it->first << endl;}
+            
+            
+          }
+        }
+        
+        if(temp_up == 0 || temp_down == 0 || temp_up == 0){ cout << "Error someting went wrong with " << systematic.c_str() << " ! Skipping..." << endl; continue;}
+        cout << "writing" << endl;
+        temp_down->Write();
+        temp_nom->Write();
+        temp_up->Write();
+        cout << "written" << endl;
+        temp_nom->SetLineColor(kRed);
+        temp_up->SetLineColor(kBlue);
+        temp_down->SetLineColor(kViolet);
+        temp_up->SetTitle(("Influence of "+systematic).c_str());
+        Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
+        TLegend *legend = new TLegend(xl1,yl1,xl2,yl2);
+        //TLegend *legend = new TLegend(0.1,0.7,0.48,0.9);//(0.55,0.65,0.76,0.82);
+        legend->AddEntry(temp_nom,"nominal","L");
+        legend->AddEntry(temp_down,(systematic+" down").c_str(),"L");
+        legend->AddEntry(temp_up,(systematic+" up").c_str(),"L");
+        
+        
+        Canvas =  TCanvasCreator(temp_up, systematic.c_str() );//new TCanvas("Canvas_PU","Canvas_PU");
+        Canvas->cd();
+        gStyle->SetOptStat(0);
+        temp_up->GetXaxis()->SetTitle("M_T(W)");
         
         temp_up->Draw("h");
         temp_nom->Draw("SAME,h");
@@ -1693,14 +1770,16 @@ void InitMTWShapeHisto(string dataSetName, string systematic, int isys,  vector 
   }
   decaystring = "";
 }
-void InitSystematicHisto(string dataSetName, string systematic, int isys){
+void InitSystematicHisto(string dataSetName, string systematic, int isys, bool doMTWtemplate){
   TH1::SetDefaultSumw2();
   
-  if(isys == 0) output_histo_name = dataSetName+"_BDT_nominal";
-  else output_histo_name = dataSetName+"_BDT_"+systematic;
+  if(isys == 0 && !doMTWtemplate) output_histo_name = dataSetName+"_BDT_nominal";
+  else if(isys == 0 && doMTWtemplate) output_histo_name = dataSetName+"_MTW_nominal";
+  else if(!doMTWtemplate) output_histo_name = dataSetName+"_BDT_"+systematic;
+  else if(doMTWtemplate) output_histo_name = dataSetName+"_MTW_"+systematic;
   
-  histo1DSys[output_histo_name] = new TH1F(output_histo_name.c_str(), dataSetName.c_str(), nbin,-1.,1.);
-  
+  if(!doMTWtemplate) histo1DSys[output_histo_name] = new TH1F(output_histo_name.c_str(), dataSetName.c_str(), nbin,-1.,1.);
+  else if(doMTWtemplate) histo1DSysMTW[output_histo_name] = new TH1F(output_histo_name.c_str(), dataSetName.c_str(), nbinMTW,0.,endMTW);
   output_histo_name = "";
   
 }
@@ -2376,13 +2455,16 @@ void FillMTWShapeHisto(string dataSetName, string systematic, double weight_,int
   decaystring = "";
 }
 
-void FillSystematicHisto(string dataSetName, string systematic, double weight_, int isys ){
-   
-  if(isys == 0) output_histo_name = dataSetName+"_BDT_nominal";
-  else output_histo_name = dataSetName+"_BDT_"+systematic;
+void FillSystematicHisto(string dataSetName, string systematic, double weight_, int isys, bool doMTWtemplate ){
+
+  if(isys == 0 && !doMTWtemplate) output_histo_name = dataSetName+"_BDT_nominal";
+  else if(isys == 0 && doMTWtemplate) output_histo_name = dataSetName+"_MTW_nominal";
+  else if(!doMTWtemplate) output_histo_name = dataSetName+"_BDT_"+systematic;
+  else if(doMTWtemplate) output_histo_name = dataSetName+"_MTW_"+systematic;
   
   
-  histo1DSys[output_histo_name]->Fill(MVA_BDT, weight_);
+  if(!doMTWtemplate) histo1DSys[output_histo_name]->Fill(MVA_BDT, weight_);
+  else histo1DSysMTW[output_histo_name]->Fill(MVA_mWt2, weight_);
   
   
   output_histo_name = "";
