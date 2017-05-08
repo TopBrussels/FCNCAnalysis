@@ -1240,7 +1240,7 @@ int main(int argc, char* argv[]){
     //    if(dataSetName.find("TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut")!=std::string::npos){
    // if(dataSetName.find("WZTo3LNu")!=std::string::npos){
    // if(dataSetName.find("tZq")!=std::string::npos){
-      if(dataSetName.find("WZTo3LNu_3Jets_MLL50")!=std::string::npos){
+      if(dataSetName.find("WZJTo3LNu")!=std::string::npos){
       cout << "init 1D plots" << endl;
       Init1DPlots(dataSetName);
     }
@@ -1605,6 +1605,28 @@ int main(int argc, char* argv[]){
             
             scaleFactor_muonSF_down *= MuonIDSF_up[iMu] * MuonIsoSF_up[iMu] ;
             scaleFactor_muonSF_up *= MuonIDSF_down[iMu] * MuonIsoSF_down[iMu] ;
+            
+            scaleFactor_electronSF_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_electronSF_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_puSF_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_puSF_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_btagSF_lfstats2_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_btagSF_lfstats2_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_btagSF_lfstats1_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_btagSF_lfstats1_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_btagSF_lf_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_btagSF_lf_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_btagSF_hfstats2_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_btagSF_hfstats2_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_btagSF_hfstats1_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_btagSF_hfstats1_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_btagSF_hf_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_btagSF_hf_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_btagSF_cferr2_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_btagSF_cferr2_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_btagSF_cferr1_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            scaleFactor_btagSF_cferr1_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu] ;
+            
             //cout << "iMu " << iMu << " MuonIDSF[iMu] " << MuonIDSF[0] << " MuonIsoSF[iMu] " << MuonIsoSF[0] << endl;
           }
           //cout << "muon  SF " << muonSFtemp << endl;
@@ -1630,6 +1652,33 @@ int main(int argc, char* argv[]){
             }
             scaleFactor_electronSF_up *= ElectronSF_up[iEl] ;
             scaleFactor_electronSF_down *= ElectronSF_down[iEl] ;
+            
+            
+            
+            scaleFactor_muonSF_down *=ElectronSF[iEl] ;
+            scaleFactor_muonSF_up *=ElectronSF[iEl] ;
+            
+            //scaleFactor_electronSF_down *= ElectronSF[iEl] ;
+           // scaleFactor_electronSF_up *= ElectronSF[iEl] ;
+            scaleFactor_puSF_down *= ElectronSF[iEl] ;
+            scaleFactor_puSF_up *= ElectronSF[iEl] ;
+            scaleFactor_btagSF_lfstats2_up *= ElectronSF[iEl] ;
+            scaleFactor_btagSF_lfstats2_down *= ElectronSF[iEl] ;
+            scaleFactor_btagSF_lfstats1_up *= ElectronSF[iEl] ;
+            scaleFactor_btagSF_lfstats1_down *= ElectronSF[iEl] ;
+            scaleFactor_btagSF_lf_up *= ElectronSF[iEl] ;
+            scaleFactor_btagSF_lf_down *= ElectronSF[iEl] ;
+            scaleFactor_btagSF_hfstats2_up *= ElectronSF[iEl] ;
+            scaleFactor_btagSF_hfstats2_down *= ElectronSF[iEl] ;
+            scaleFactor_btagSF_hfstats1_up *= ElectronSF[iEl] ;
+            scaleFactor_btagSF_hfstats1_down *= ElectronSF[iEl] ;
+            scaleFactor_btagSF_hf_up *= ElectronSF[iEl] ;
+            scaleFactor_btagSF_hf_down *= ElectronSF[iEl] ;
+            scaleFactor_btagSF_cferr2_up *= ElectronSF[iEl] ;
+            scaleFactor_btagSF_cferr2_down *= ElectronSF[iEl] ;
+            scaleFactor_btagSF_cferr1_up *= ElectronSF[iEl] ;
+            scaleFactor_btagSF_cferr1_down *= ElectronSF[iEl] ;
+            
           }
           
         }
@@ -1642,6 +1691,32 @@ int main(int argc, char* argv[]){
           
           scaleFactor_puSF_up *= puSF_up;
           scaleFactor_puSF_down *= puSF_down;
+          
+          
+          
+          scaleFactor_muonSF_down *=puSF ;
+          scaleFactor_muonSF_up *=puSF ;
+          
+          scaleFactor_electronSF_down *= puSF ;
+          scaleFactor_electronSF_up *= puSF ;
+          //scaleFactor_puSF_down *= puSF ;
+          //scaleFactor_puSF_up *= puSF ;
+          scaleFactor_btagSF_lfstats2_up *= puSF ;
+          scaleFactor_btagSF_lfstats2_down *= puSF ;
+          scaleFactor_btagSF_lfstats1_up *= puSF ;
+          scaleFactor_btagSF_lfstats1_down *= puSF ;
+          scaleFactor_btagSF_lf_up *= puSF ;
+          scaleFactor_btagSF_lf_down *= puSF ;
+          scaleFactor_btagSF_hfstats2_up *= puSF ;
+          scaleFactor_btagSF_hfstats2_down *= puSF ;
+          scaleFactor_btagSF_hfstats1_up *= puSF ;
+          scaleFactor_btagSF_hfstats1_down *= puSF ;
+          scaleFactor_btagSF_hf_up *= puSF ;
+          scaleFactor_btagSF_hf_down *= puSF ;
+          scaleFactor_btagSF_cferr2_up *= puSF ;
+          scaleFactor_btagSF_cferr2_down *= puSF ;
+          scaleFactor_btagSF_cferr1_up *= puSF ;
+          scaleFactor_btagSF_cferr1_down *= puSF ;
           
           //if(ievt == 2)cout << "                - applying pu factors " << endl;
         }
@@ -1667,6 +1742,31 @@ int main(int argc, char* argv[]){
           scaleFactor_btagSF_lfstats2_down*= btagSFshape_down_lfstats2  ;
           scaleFactor_btagSF_lfstats2_up*= btagSFshape_up_lfstats2  ;
           // if(ievt == 2)cout << "                - applying btag factors " << endl;
+          
+          
+          scaleFactor_muonSF_down *=btagsSFshape ;
+          scaleFactor_muonSF_up *=btagsSFshape ;
+          
+          scaleFactor_electronSF_down *= btagsSFshape ;
+          scaleFactor_electronSF_up *= btagsSFshape ;
+          scaleFactor_puSF_down *= btagsSFshape ;
+          scaleFactor_puSF_up *= btagsSFshape ;
+         /* scaleFactor_btagSF_lfstats2_up *= btagsSFshape ;
+          scaleFactor_btagSF_lfstats2_down *= btagsSFshape ;
+          scaleFactor_btagSF_lfstats1_up *= btagsSFshape ;
+          scaleFactor_btagSF_lfstats1_down *= btagsSFshape ;
+          scaleFactor_btagSF_lf_up *= btagsSFshape ;
+          scaleFactor_btagSF_lf_down *= btagsSFshape ;
+          scaleFactor_btagSF_hfstats2_up *= btagsSFshape ;
+          scaleFactor_btagSF_hfstats2_down *= btagsSFshape ;
+          scaleFactor_btagSF_hfstats1_up *= btagsSFshape ;
+          scaleFactor_btagSF_hfstats1_down *= btagsSFshape ;
+          scaleFactor_btagSF_hf_up *= btagsSFshape ;
+          scaleFactor_btagSF_hf_down *= btagsSFshape ;
+          scaleFactor_btagSF_cferr2_up *= btagsSFshape ;
+          scaleFactor_btagSF_cferr2_down *= btagsSFshape ;
+          scaleFactor_btagSF_cferr1_up *= btagsSFshape ;
+          scaleFactor_btagSF_cferr1_down *= btagsSFshape ;*/
         }
         else btagSFshape = 1.;
         
@@ -1686,7 +1786,7 @@ int main(int argc, char* argv[]){
         if(scaleFactor_bfELSF != scaleFactor_bfELSF) scaleFactor_bfELSF= 0.;
         if(scaleFactor_bfPU != scaleFactor_bfPU) scaleFactor_bfPU= 0.;
         
-        
+        /*
         scaleFactor_muonSF_down = ( scaleFactor_muonSF_down * scaleFactor ) / muonSFtemp;
         scaleFactor_muonSF_up = ( scaleFactor_muonSF_up * scaleFactor ) / muonSFtemp;
         scaleFactor_electronSF_down = ( scaleFactor_electronSF_down * scaleFactor) / electronSFtemp;
@@ -1708,7 +1808,7 @@ int main(int argc, char* argv[]){
         scaleFactor_btagSF_lfstats1_down= ( btagSFshape_down_lfstats1 *scaleFactor)/btagSFshape ;
         scaleFactor_btagSF_lfstats1_up= ( btagSFshape_up_lfstats1 *scaleFactor)/btagSFshape ;
         scaleFactor_btagSF_lfstats2_down= ( btagSFshape_down_lfstats2 *scaleFactor)/btagSFshape ;
-        scaleFactor_btagSF_lfstats2_up= ( btagSFshape_up_lfstats2*scaleFactor)/btagSFshape ;
+        scaleFactor_btagSF_lfstats2_up= ( btagSFshape_up_lfstats2*scaleFactor)/btagSFshape ;*/
         
       }
       else if(isData || isfakes ){
@@ -1755,7 +1855,7 @@ int main(int argc, char* argv[]){
         //cout << "ievt " << ievt << endl;
         FillGeneralPlots(d, "control_afterAtLeast1Jet", decayChannels, isData, isfakes);
         //if(dataSetName.find("WZTo3LNu")!=std::string::npos) Fill1DPlots(dataSetName);
-        if(dataSetName.find("WZTo3LNu_3Jets_MLL50")!=std::string::npos) Fill1DPlots(dataSetName);
+        if(dataSetName.find("WZJTo3LNu")!=std::string::npos ) Fill1DPlots(dataSetName);
         
         //if(dataSetName.find("tZq")!=std::string::npos){ Fill1DPlots(dataSetName);}
         

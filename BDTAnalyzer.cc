@@ -115,7 +115,7 @@ string tTreeName = "";
 string postfix = "";
 string output_histo_name = "";
 string ntupleFileName ="";
-int nbin = 100;
+int nbin = 50;
 int nbinMTW = 50;
 double endMTW = 300.;
 int nEntries = -1;
@@ -623,8 +623,8 @@ int main(int argc, char* argv[]){
         }
         //if(Luminosity/MVA_Luminosity != 1. ) cout << "lumi "  << Luminosity << " while tuples are made with " << MVA_Luminosity << endl;
         
-        if(MVA_Luminosity != 0 && !isData) weight = (weight * Luminosity)/ MVA_Luminosity;
-        if(!datafound){ Luminosity = MVA_Luminosity; cout << "lumi set to " << Luminosity << endl; }
+       // if(MVA_Luminosity != 0 && !isData) weight = (weight * Luminosity)/ MVA_Luminosity;
+       // if(!datafound){ Luminosity = MVA_Luminosity; cout << "lumi set to " << Luminosity << endl; }
         if(dataSetName.find("fake")!=std::string::npos){ weight *= 0.000001 ;}
        
         if( isData){ weight = 1.;}
@@ -935,7 +935,7 @@ int main(int argc, char* argv[]){
     ///Write histograms
     fout->cd();
     
-   /* if(makePlots && doMTWtemplate){
+   if(makePlots && doMTWtemplate){
       for (map<string,MultiSamplePlot*>::const_iterator it = MSPlotMTW.begin(); it != MSPlotMTW.end(); it++)
       {
         //cout << "MSPlot: " << it->first << endl;
@@ -959,9 +959,9 @@ int main(int argc, char* argv[]){
         temp->Write(fout, name, true, (pathOutputdate+"MSPlotMTW").c_str(), "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
       }
       
-    }*/
+    }
     
-    if(makePlots && !doMTWtemplate){
+    /*if(makePlots && !doMTWtemplate){
       for (map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
       {
         cout << "MSPlot: " << it->first << endl;
@@ -981,7 +981,7 @@ int main(int argc, char* argv[]){
         temp->Write(fout, name, true, (pathOutputdate+"MSPlot").c_str(), "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
       }
       
-    }
+    }*/
     if(doPDFunc && !doMTWtemplate){
       TDirectory* th1dir = fout->mkdir("1D_PDF_histograms");
       th1dir->cd();
