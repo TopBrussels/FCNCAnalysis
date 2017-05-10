@@ -450,10 +450,11 @@ int main (int argc, char *argv[])
 
     ElectronSFWeight* electronSFWeightID; 
     ElectronSFWeight* electronSFWeightReco; 
-    ElectronSFWeight* electronSFWeightTrig_BCDEF; 
-    ElectronSFWeight* electronSFWeightTrig_GH; 
-    ElectronSFWeight* electronSFWeightTrig_2p1_BCDEF; 
-    ElectronSFWeight* electronSFWeightTrig_2p1_GH; 
+//    ElectronSFWeight* electronSFWeightTrig_BCDEF; 
+//    ElectronSFWeight* electronSFWeightTrig_GH; 
+    ElectronSFWeight* electronSFWeightTrig; 
+//    ElectronSFWeight* electronSFWeightTrig_2p1_BCDEF; 
+//    ElectronSFWeight* electronSFWeightTrig_2p1_GH; 
     if(bLeptonSF)
     {
         if(Muon)
@@ -469,10 +470,11 @@ int main (int argc, char *argv[])
         {
                 electronSFWeightID = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/egammaEffi.txt_EGM2D_CutBasedTightID.root","EGamma_SF2D",true,false,false,false);
                 electronSFWeightReco = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/egammaEffi.txt_EGM2D_RecoEff.root","EGamma_SF2D",true,false,false,true);
-                electronSFWeightTrig_BCDEF = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/TriggerSF_Run2016BCDEF_v1.root","HLT_Ele27_WPTight_Gsf",true,false,false,false);
-                electronSFWeightTrig_GH = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/TriggerSF_Run2016GH_v1.root","HLT_Ele27_WPTight_Gsf",true,false,false,false);
-                electronSFWeightTrig_2p1_BCDEF = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/TriggerSF_Run2016BCDEF_v1.root","HLT_Ele25_eta2p1_WPTight_Gsf",true,false,false,false);
-                electronSFWeightTrig_2p1_GH = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/TriggerSF_Run2016GH_v1.root","HLT_Ele25_eta2p1_WPTight_Gsf",true,false,false,false);
+//                electronSFWeightTrig_BCDEF = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/TriggerSF_Run2016BCDEF_v1.root","HLT_Ele27_WPTight_Gsf",true,false,false,false);
+//                electronSFWeightTrig_GH = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/TriggerSF_Run2016GH_v1.root","HLT_Ele27_WPTight_Gsf",true,false,false,false);
+//                electronSFWeightTrig_2p1_BCDEF = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/TriggerSF_Run2016BCDEF_v1.root","HLT_Ele25_eta2p1_WPTight_Gsf",true,false,false,false);
+//                electronSFWeightTrig_2p1_GH = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/Moriond17/TriggerSF_Run2016GH_v1.root","HLT_Ele25_eta2p1_WPTight_Gsf",true,false,false,false);
+                electronSFWeightTrig = new ElectronSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/ElectronSF/SF_HLT_Ele32_eta2p1.root","SF",true,false,false,true);
         }
     }
 
@@ -2108,14 +2110,14 @@ int main (int argc, char *argv[])
             if(debug) cout << "Past cut 2: passed_FinalSelection trigger" << endl;
             cutstep[3]=cutstep[3]+scaleFactor; //Order of appearance of cutstep & nCuts is important here
             passed_Step4++;
-
+/*
             //Checking which of the two electron triggers are fired, because this alters the selection criteria (and trigSF) of the electron.
             bool elTrig_2p1Only = false;
             if(Electron)
             {
                 if (!trigger->triggermap["HLT_Ele27_WPTight_Gsf_v*"].second) elTrig_2p1Only = true;
             }
-
+*/
 
 
 
@@ -2136,14 +2138,14 @@ int main (int argc, char *argv[])
             else if (!Muon && Electron)
             {
                 if  (  !( nEl ==1)) continue; // Electron Channel Selection
-                
+/*               
                 //Extra electron selection cuts to be in synch with the selections in https://indico.cern.ch/event/604912/contributions/2490011/attachments/1418869/2173471/2017.02.27_EGM_Ele25-and-Ele27-trigger-SF_v1.pdf
                 //In this way we can use the trigger SF they used without any issue.
                 if(elTrig_2p1Only &&  fabs(selectedElectrons[0]->superClusterEta()) > 2.1) continue;//Apply 2.1 eta cut for electrons only passing the 2p1-eta trigger
                 if(selectedElectrons[0]->isEBEEGap() ) continue;//Avoid EB-EE gap
                 if(fabs(selectedElectrons[0]->superClusterEta()) < 1.479 && fabs(selectedElectrons[0]->dz()) > 0.1 && fabs(selectedElectrons[0]->d0()) > 0.05) continue;//Apply loose selection on impact parameters
                 if(fabs(selectedElectrons[0]->superClusterEta()) > 1.479 && fabs(selectedElectrons[0]->dz()) > 0.2 && fabs(selectedElectrons[0]->d0()) > 0.1) continue;//Apply loose selection on impact parameters
-                
+*/                
                 if(debug) cout << "Past cut 3: Single Electron selected" << endl;
             }
             else
@@ -2216,22 +2218,25 @@ int main (int argc, char *argv[])
                 {
                     W_ElectronIDSF = electronSFWeightID->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),0);
                     W_ElectronRecoSF = electronSFWeightReco->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),0);
-                    if(elTrig_2p1Only) W_ElectronTrigSF = (electronSFWeightTrig_2p1_BCDEF->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),0)*lum_RunsBCDEF + electronSFWeightTrig_2p1_GH->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),0)*lum_RunsGH)/(lum_RunsBCDEF+lum_RunsGH); 
-                    else W_ElectronTrigSF = (electronSFWeightTrig_BCDEF->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),0)*lum_RunsBCDEF + electronSFWeightTrig_GH->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),0)*lum_RunsGH)/(lum_RunsBCDEF+lum_RunsGH); 
+//                    if(elTrig_2p1Only) W_ElectronTrigSF = (electronSFWeightTrig_2p1_BCDEF->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),0)*lum_RunsBCDEF + electronSFWeightTrig_2p1_GH->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),0)*lum_RunsGH)/(lum_RunsBCDEF+lum_RunsGH); 
+//                    else W_ElectronTrigSF = (electronSFWeightTrig_BCDEF->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),0)*lum_RunsBCDEF + electronSFWeightTrig_GH->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),0)*lum_RunsGH)/(lum_RunsBCDEF+lum_RunsGH); 
+                    W_ElectronTrigSF = electronSFWeightTrig->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),0);
                     W_fleptonSF = W_ElectronIDSF * W_ElectronRecoSF * W_ElectronTrigSF;
                     W_fleptonSF_noTrigSF = W_ElectronIDSF * W_ElectronRecoSF;
 
                     W_ElectronIDSF_Plus = electronSFWeightID->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),1);
                     W_ElectronRecoSF_Plus = electronSFWeightReco->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),1);
-                    if(elTrig_2p1Only) W_ElectronTrigSF_Plus = (electronSFWeightTrig_2p1_BCDEF->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),1)*lum_RunsBCDEF + electronSFWeightTrig_2p1_GH->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),1)*lum_RunsGH)/(lum_RunsBCDEF+lum_RunsGH); 
-                    else W_ElectronTrigSF_Plus = (electronSFWeightTrig_BCDEF->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),1)*lum_RunsBCDEF + electronSFWeightTrig_GH->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),1)*lum_RunsGH)/(lum_RunsBCDEF+lum_RunsGH); 
+//                    if(elTrig_2p1Only) W_ElectronTrigSF_Plus = (electronSFWeightTrig_2p1_BCDEF->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),1)*lum_RunsBCDEF + electronSFWeightTrig_2p1_GH->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),1)*lum_RunsGH)/(lum_RunsBCDEF+lum_RunsGH); 
+//                    else W_ElectronTrigSF_Plus = (electronSFWeightTrig_BCDEF->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),1)*lum_RunsBCDEF + electronSFWeightTrig_GH->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),1)*lum_RunsGH)/(lum_RunsBCDEF+lum_RunsGH); 
+                    W_ElectronTrigSF_Plus = electronSFWeightTrig->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),1);
                     W_fleptonSF_Plus = W_ElectronIDSF_Plus * W_ElectronRecoSF_Plus * W_ElectronTrigSF_Plus;
                     W_fleptonSF_noTrigSF_Plus = W_ElectronIDSF_Plus * W_ElectronRecoSF_Plus;
 
                     W_ElectronIDSF_Minus = electronSFWeightID->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),-1);
                     W_ElectronRecoSF_Minus = electronSFWeightReco->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),-1);
-                    if(elTrig_2p1Only) W_ElectronTrigSF_Minus = (electronSFWeightTrig_2p1_BCDEF->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),-1)*lum_RunsBCDEF + electronSFWeightTrig_2p1_GH->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),-1)*lum_RunsGH)/(lum_RunsBCDEF+lum_RunsGH); 
-                    else W_ElectronTrigSF_Minus = (electronSFWeightTrig_BCDEF->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),-1)*lum_RunsBCDEF + electronSFWeightTrig_GH->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),-1)*lum_RunsGH)/(lum_RunsBCDEF+lum_RunsGH); 
+//                    if(elTrig_2p1Only) W_ElectronTrigSF_Minus = (electronSFWeightTrig_2p1_BCDEF->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),-1)*lum_RunsBCDEF + electronSFWeightTrig_2p1_GH->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),-1)*lum_RunsGH)/(lum_RunsBCDEF+lum_RunsGH); 
+//                    else W_ElectronTrigSF_Minus = (electronSFWeightTrig_BCDEF->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),-1)*lum_RunsBCDEF + electronSFWeightTrig_GH->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),-1)*lum_RunsGH)/(lum_RunsBCDEF+lum_RunsGH); 
+                    W_ElectronTrigSF_Minus = electronSFWeightTrig->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),-1);
                     W_fleptonSF_Minus = W_ElectronIDSF_Minus * W_ElectronRecoSF_Minus * W_ElectronTrigSF_Minus;
                     W_fleptonSF_noTrigSF_Minus = W_ElectronIDSF_Minus * W_ElectronRecoSF_Minus;
                 }

@@ -800,11 +800,11 @@ int main(int argc, char *argv[])
       if(name.find("CategoryRates") != string::npos)
       {
           vector<string> label;
-          label.push_back("(nj=3,nb=2)");
-          label.push_back("(nj>3,nb=2)");
-          label.push_back("(nj=3,nb=3)");
-          label.push_back("(nj>3,nb=3)");
-          label.push_back("(nj>3,nb=4)");
+          label.push_back("b2j3");
+          label.push_back("b2j4");
+          label.push_back("b3j3");
+          label.push_back("b3j4");
+          label.push_back("b4j4");
           temp->setBins(label);
 
           temp->showNumberEntries(false);

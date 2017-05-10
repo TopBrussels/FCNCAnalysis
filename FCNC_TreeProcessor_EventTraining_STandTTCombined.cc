@@ -62,7 +62,7 @@ inline bool FileExists (const string& name) {
 int main(int argc, char *argv[])
 {
 
-    if(argc < 7)
+    if(argc < 9)
     {
         cerr << "INVALID number of arguments. The necessary arguments are: " << endl;
         cout << "    int baseline_bjets             = strtol(argv[1], NULL,10);" << endl;
@@ -106,8 +106,8 @@ int main(int argc, char *argv[])
         category = "b"+intToStr(baseline_bjets)+"j"+intToStr(baseline_jets);
     }
     string TrainingName = "";
-    if(khut == 0 && khct == 0) string TrainingName = "CombTraining_" + SignalSample + channel + "_" +  category;
-    else string TrainingName = "CombTraining_" + SignalSample + "_" + coupling_hut + "_" + coupling_hct + "_" + channel + "_" +  category;
+    if(khut == 0 && khct == 0) TrainingName = "CombTraining_" + SignalSample + channel + "_" +  category;
+    else TrainingName = "CombTraining_" + SignalSample + "_" + coupling_hut + "_" + coupling_hct + "_" + channel + "_" +  category;
 
     cout << "------------------------------------------------------------------------------------------------" << endl;
     cout << "Begin program" << endl;
@@ -116,7 +116,6 @@ int main(int argc, char *argv[])
 
 
     clock_t start = clock();
-
 
     ///////////////////////////////////////////////////////////////////////////////////////
     // ******* Defining the training factory **********************//
@@ -234,8 +233,8 @@ int main(int argc, char *argv[])
 		        else if(SignalSample   == "2D")
 		        {
 		            isSignal = true;
-		            if(dataSetName.find("hct")!=string::npos) SignalWeight_2D = pow(khct/100,2);
-		            else if(dataSetName.find("hut")!=string::npos) SignalWeight_2D = pow(khut/100,2);
+		            if(dataSetName.find("hct")!=string::npos) SignalWeight_2D = pow(double(khct)/100,2);
+		            else if(dataSetName.find("hut")!=string::npos) SignalWeight_2D = pow(double(khut)/100,2);
 		        }
 		        
 		        if(!isSignal) continue;

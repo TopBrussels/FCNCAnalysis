@@ -1,5 +1,7 @@
 __init__.py
 *.eps
+localsubmission/2D*/SubmitScripts
+localsubmission/2DTraining/SubmitScripts
 MVA_drawingTools/NormHistos.root
 localsubmission/FinalMVAPlotting/Terminal_Output/*
 MVA_drawingTools/draw

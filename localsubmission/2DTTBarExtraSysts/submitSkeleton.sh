@@ -6,7 +6,9 @@
 # setting up your code and your env
 source /user/kderoove/.bash_profile
 cd /user/kderoove/FCNC/TopTreeFramework_Run2/CMSSW_8_0_26_patch1/src/TopBrussels/FCNCAnalysis
-cmsenv
+#cmsenv
 eval `scramv1 runtime -sh`
 
-./TreeProcessor_FinalMVA 3 3 hut _All _18_3_2017 0 1 1 0 1 0 0
+# want you really want to do!!
+
+

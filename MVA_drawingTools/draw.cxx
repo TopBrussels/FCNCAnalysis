@@ -126,7 +126,11 @@ int main(int argc, char *argv[])
 	double errBkg;
 	float intSig = h_sig_test->IntegralAndError(i,nBins,errSig);
 	float intBkg = h_bkg_test->IntegralAndError(i,nBins,errBkg);
-	float sign = intSig/sqrt(intBkg+intSig);
+//	float sign = intSig/sqrt(intBkg+intSig);
+	float sign = intSig/intBkg;
+	if(sign <= 0 || sign != sign) sign = 0;
+	if(intBkg == 0 && intSig != 0) sign = 50;
+//	cout << "sign S/B = " << sign << endl;
 	h_S->SetBinContent(i,sign);
 	h_S->SetBinError(i,0.);
 	if( sign > maxSign )
@@ -137,7 +141,8 @@ int main(int argc, char *argv[])
 	}
      }
    
-   h_S->GetYaxis()->SetTitle("S/#sqrt{S+B}");
+//   h_S->GetYaxis()->SetTitle("S/#sqrt{S+B}");
+   h_S->GetYaxis()->SetTitle("S/B");
    h_S->GetXaxis()->SetTitle(("MVA disc. (max sign:"+floatToStr(xmaxSign)+")").c_str());
    h_S->Draw("hist e1");
    h_S->SetMaximum(maxSign*1.2);
@@ -146,8 +151,62 @@ int main(int argc, char *argv[])
 //   h_S->SetMinimum(3.8);
 //   h_S->SetMaximum(3.7);
 //   h_S->SetMinimum(3.6);
-   c1->Print((outputpics+"sign.eps").c_str());
+//   c1->Print((outputpics+"sign.eps").c_str());
+   c1->Print((outputpics+"sign_SoverB.eps").c_str());
    c1->Clear();
+
+
+
+
+   TH1D *h_Roc = (TH1D*)h_bkg_test->Clone("h_Roc");
+   h_Roc->Clear();
+   float minDist =999.;
+   float xminDist = -1.;
+//   int nBins = h_Roc->GetXaxis()->GetNbins();
+   
+   float TotalBckg = h_bkg_test->Integral();
+   float TotalSig = h_sig_test->Integral();
+   
+   for(int i=1;i<=nBins;i++)
+  {
+	      double errSig;
+	      double errBkg;
+	      float intSig = h_sig_test->Integral(i,nBins);
+	      float intBkg = h_bkg_test->Integral(i,nBins);
+	      
+	      float SigEff = intSig/TotalSig;
+	      float BkgRej = 1-(intBkg/TotalBckg);
+	      
+	      float dist = std::sqrt((1-SigEff)*(1-SigEff) + (1-BkgRej)*(1-BkgRej));
+	      h_Roc->SetBinContent(i,dist);
+	      h_Roc->SetBinError(i,0.);
+	      if( dist < minDist )
+	      {
+	          float binWidth = (h_Roc->GetXaxis()->GetXmax()-h_Roc->GetXaxis()->GetXmin())/nBins;
+	          minDist = dist;
+	          xminDist = h_Roc->GetXaxis()->GetXmin()+i*binWidth;
+	      }
+     }
+   
+   h_Roc->GetYaxis()->SetTitle("#sqrt(2) - #sqrt(SigEff^2 + BkgRej^2)");
+   h_Roc->GetXaxis()->SetTitle(("MVA disc. (optimal ROC:"+floatToStr(xminDist)+")").c_str());
+cout << SignalSample << " " << channel << ": ROC best cut is " << xminDist << endl;
+   h_Roc->Draw("hist e1");
+   h_Roc->SetMaximum(1.2);
+//   h_Roc->SetMinimum(0.);
+//   h_S->SetMaximum(3.9);
+//   h_S->SetMinimum(3.8);
+//   h_S->SetMaximum(3.7);
+//   h_S->SetMinimum(3.6);
+//   c1->Print((outputpics+"sign.eps").c_str());
+   c1->Print((outputpics+"ROC_dist.eps").c_str());
+   c1->Clear();
+
+
+
+
+
+
 
    TH1D *h_CorrelationMatrixS = (TH1D*)f.Get("CorrelationMatrixS");
    h_CorrelationMatrixS->Draw("COLZ");

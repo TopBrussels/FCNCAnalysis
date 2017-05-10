@@ -78,8 +78,9 @@ int main(int argc, char *argv[])
         cout << "    string channel            = argv[4];" << endl;
         cout << "    string date            = argv[5];" << endl;
         cout << "    bool PVreweighing = strtol(argv[6], NULL,10);" << endl;
-        cout << "    bool doControlPlots  = strtol(argv[7], NULL,10);" << endl;
-        cout << "    bool debug         =strtol(argv[8], NULL,10);" << endl;
+        cout << "    bool debug         =strtol(argv[7], NULL,10);" << endl;
+        cout << "    int khut         =strtod(argv[8], NULL,10);" << endl;
+        cout << "    int khct         =strtod(argv[9], NULL,10);" << endl;
 
         return 1;
     }
@@ -91,10 +92,17 @@ int main(int argc, char *argv[])
     string channel            = argv[4];
     string date            = argv[5];
     bool PVreweighing = strtol(argv[6], NULL,10);
-    bool doControlPlots = strtol(argv[7], NULL,10);
-    bool debug         =strtol(argv[8], NULL,10);
+    bool debug         =strtol(argv[7], NULL,10);
+    int khut         =strtol(argv[8], NULL,10); //Divide this number by 100
+    int khct         =strtol(argv[9], NULL,10);
 
     bool split_ttbar = true;   
+
+   string coupling_hut = "khut0p" + intToStr(khut) + "_";
+   if(khut < 10) coupling_hut = "khut0p0" + intToStr(khut) + "_";
+   string coupling_hct = "khct0p" + intToStr(khct) + "_";
+   if(khct < 10) coupling_hct = "khct0p0" + intToStr(khct) + "_";
+
     
     bool doInclusive = false;
     string category;
@@ -107,7 +115,11 @@ int main(int argc, char *argv[])
     {
         category = "b"+intToStr(baseline_bjets)+"j"+intToStr(baseline_jets);
     }    
-    string TrainingName = "Training_" + SignalSample + channel + "_" +  category;//Example: Training_SThut_El_b3j3
+//    string TrainingName = "Training_" + SignalSample + channel + "_" +  category;//Example: Training_SThut_El_b3j3
+
+    string TrainingName = "";
+    if(khut == 0 && khct == 0) TrainingName = "Training_" + SignalSample + channel + "_" +  category;
+    else TrainingName = "Training_" + SignalSample + "_" + coupling_hut + coupling_hct + channel + "_" +  category;
 
     vector<string> WhatSysts;
     
@@ -590,7 +602,12 @@ int main(int argc, char *argv[])
             
 	          std::string weightsFile_ST= "weights/Training_ST" + SignalSample + channel + "_" +  category+"_BDT.weights.xml";
 	          std::string weightsFile_TT= "weights/Training_TT" + SignalSample + channel + "_" +  category+"_BDT.weights.xml";
-	          std::string weightsFile_combSTandTT= "weights/CombTraining_" + SignalSample + channel + "_" +  category+"_BDT.weights.xml";
+	          std::string weightsFile_combSTandTT= "weights/Comb"+TrainingName+"_BDT.weights.xml";
+            if(SignalSample == "2D")
+            {
+                weightsFile_ST = "weights/Training_SThut" + channel + "_" +  category+"_BDT.weights.xml";
+                weightsFile_TT= "weights/Training_TThut" + channel + "_" +  category+"_BDT.weights.xml";
+            }
 	          reader_ST->BookMVA("BDTG method",weightsFile_ST.c_str());
 	          reader_TT->BookMVA("BDTG method",weightsFile_TT.c_str());
 	          reader_combSTandTT->BookMVA("BDTG method",weightsFile_combSTandTT.c_str());
@@ -1253,9 +1270,14 @@ int main(int argc, char *argv[])
 	  outfile_limitsetting_TT->Write("kOverwrite");
 
     //Now store histo's to be used for limit setting
-    string outname_limitsetting_combSTandTT = pathPNG+"/inputExtra_MVA";
-    if(SignalSample == "hct") outname_limitsetting_combSTandTT += "HctComb_"+category+"_"+SignalSample+".root";
-    else if(SignalSample == "hut") outname_limitsetting_combSTandTT += "HutComb_"+category+"_"+SignalSample+".root";
+    string outname_limitsetting_combSTandTT = "";
+    if(khut == 0 && khct == 0)
+    {
+        outname_limitsetting_combSTandTT = pathPNG+"/inputExtra_MVA"+coupling_hut+"_"+coupling_hct;
+        if(SignalSample == "hct") outname_limitsetting_combSTandTT += "HctComb_"+category+"_"+SignalSample+".root";
+        else if(SignalSample == "hut") outname_limitsetting_combSTandTT += "HutComb_"+category+"_"+SignalSample+".root";
+    }
+    else outname_limitsetting_combSTandTT = pathPNG+"/inputExtra_MVA2DComb_"+coupling_hut+"_"+coupling_hct+category+".root";
 
     TFile *outfile_limitsetting_combSTandTT = new TFile(outname_limitsetting_combSTandTT.c_str(),"recreate");
     outfile_limitsetting_combSTandTT->cd();
