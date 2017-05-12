@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
     applyGlobalSF = strtol(argv[8],NULL,10);
     applyAMC = strtol(argv[9],NULL,10);
     
-    string runDate = "Test_correctingChMisId_31Mar17"; // adapted to the date of the run and according to mereged ntuples
+    string runDate = "Test_NewSFV9_24Apr17"; // adapted to the date of the run and according to mereged ntuples
     string xmlFileName;
     string CraneenPath;
     string decayChan;
@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
     {
         cout << " --> Using the DiMuon channel..." << endl;
         channelpostfix = "_Mu_Mu_";
-        xmlFileName = "config/Run2SameSignDiLepton_80X_MuMu_V4_Samples.xml"; // to be adapted when have different cfg.xml files according to different dilepton channel
+        xmlFileName = "config/Run2SameSignDiLepton_80X_MuMu_V9_Samples.xml"; // to be adapted when have different cfg.xml files according to different dilepton channel
         DileptonMuMu = true;
         DataLumi  = 36768.376651703; // 80X_V4 B->H  //  pb-1
         CraneenPath += "MuMu";
@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
     {
         cout << " --> Using the DiElectron channel..." << endl;
         channelpostfix = "_El_El_";
-        xmlFileName = "config/Run2SameSignDiLepton_80X_ElEl_V4_Samples.xml"; // to be adapted when have different cfg.xml files according to different dilepton channel
+        xmlFileName = "config/Run2SameSignDiLepton_80X_ElEl_V9_Samples.xml"; // to be adapted when have different cfg.xml files according to different dilepton channel
         DileptonMuMu = true;
         DataLumi  =  36768.376571746; //RunC //11716.571246596;//  pb-1
         CraneenPath += "ElecElec";
@@ -134,9 +134,9 @@ int main(int argc, char* argv[])
     {
         cout << " --> Using the DiElMu channel..." << endl;
         channelpostfix = "_El_Mu_";
-        xmlFileName = "config/Run2SameSignDiLepton_80X_ElMu_V4_Samples.xml"; // to be adapted when have different cfg.xml files according to different dilepton channel
+        xmlFileName = "config/Run2SameSignDiLepton_80X_ElMu_V9_Samples.xml"; // to be adapted when have different cfg.xml files according to different dilepton channel
         DileptonElMu = true;
-        DataLumi  = 11716.571246596;//  pb-1
+        DataLumi  = 36749.57462;//  pb-1
         CraneenPath += "ElecMu";
         decayChan = "EMu";
     }
@@ -154,6 +154,10 @@ int main(int argc, char* argv[])
         Treename = "2OSlep";
     }else if (tree == "NoZCut") {
         Treename = "NoZCut";
+        //Treename = "SSLNoZCut";
+        //Treename = "OSLNoZCut";
+    }else if (tree == "Init") {
+        Treename = "Init";
     }
 
     cout << "Treename =  "<< Treename <<endl;
@@ -185,29 +189,43 @@ int main(int argc, char* argv[])
    //// calling datasetPlotter to create MSPplots
     
     
-    /// General Variables
-    DatasetPlotter(70, -0.5, 69.5, "npu", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-
-    ///////////////////////////////////////////////////
-    //****** Jet kinmatics variables *********////////
-    //////////////////////////////////////////////////
-    DatasetPlotter(100, 0, 500, "pt_jet[nJets]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-    DatasetPlotter(50, -3.5, 3.5, "eta_jet[nJets]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-    DatasetPlotter(100, -4.0, 4.0, "phi_jet[nJets]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-    DatasetPlotter(11, -0.5, 10.5, "nJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-    DatasetPlotter(11, -0.5, 10.5, "nCSVLbJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-    DatasetPlotter(11, -0.5, 10.5, "nCSVMbJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-    DatasetPlotter(11, -0.5, 10.5, "nCSVTbJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    /// General Variables
+//    DatasetPlotter(70, -0.5, 69.5, "npu", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//
+//    /////////////////////////////////////////////////
+//    /////****** Jet kinmatics variables *********////////
+//    ////////////////////////////////////////////////
+//    DatasetPlotter(100, 0, 500, "pt_jet[nJets]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(50, -3.5, 3.5, "eta_jet[nJets]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, -4.0, 4.0, "phi_jet[nJets]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(11, -0.5, 10.5, "nJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(11, -0.5, 10.5, "nCSVLbJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(11, -0.5, 10.5, "nCSVMbJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(11, -0.5, 10.5, "nCSVTbJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
     /// *** float variables *** ////
-//    DatasetPlotter(11, -0.5, 10.5, "MVA_nJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(11, -0.5, 10.5, "MVA_nCSVLbtagJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(11, -0.5, 10.5, "MVA_nJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(11, -0.5, 10.5, "MVA_nCSVLbtagJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0, 300, "pt_1st_jet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0, 300, "pt_2nd_jet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0, 300, "pt_3rd_jet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0, 300, "pt_4th_jet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    
+    DatasetPlotter(12, -0.1, 1.1, "bdiscCSVv2_1st_bjet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(12, -0.1, 1.1, "bdiscCSVv2_2nd_bjet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(12, -0.1, 1.1, "bdiscCSVv2_1st_jet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(12, -0.1, 1.1, "bdiscCSVv2_2nd_jet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(12, -0.1, 1.1, "bdiscCSVv2_3rd_jet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(12, -0.1, 1.1, "bdiscCSVv2_4th_jet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+
+
+    
 
     
     ///////////////////////////////////
     ////*** DiMuon Varaiables ***/////
     /////////////////////////////////
-  //   muPlot = true;
+     muPlot = true;
  //   DatasetPlotter(11, -0.5, 10.5, "nMuons", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    DatasetPlotter(100, 0, 300, "pt_muon[nMuons]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    DatasetPlotter(50, -3.5, 3.5, "eta_muon[nMuons]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
@@ -217,58 +235,58 @@ int main(int argc, char* argv[])
 //    DatasetPlotter(100, 0.0, 300 , "pt_2nd_Muon", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    DatasetPlotter(100, 0.0, 5.0 , "DeltaR_Mu0b0_DiMu", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    DatasetPlotter(100, 0.0, 5.0 , "DeltaR_Mu1b0_DiMu", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(5, -2.5, 2.5 , "charge_1st_Muon", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(5, -2.5, 2.5 , "charge_2nd_Muon", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    
+  //  DatasetPlotter(5, -2.5, 2.5 , "charge_1st_Muon", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+  //  DatasetPlotter(5, -2.5, 2.5 , "charge_2nd_Muon", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//
     
     ///////////////////////////////////
     ///** DiElectron Varaiables **////
     /////////////////////////////////
     elecPlot = true;
-    DatasetPlotter(11, -0.5, 10.5, "nElectrons", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-    DatasetPlotter(100, 0, 300, "pt_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-    DatasetPlotter(50, -3.5, 3.5, "eta_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-    DatasetPlotter(100, -4.0, 4.0, "phi_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(11, -0.5, 10.5, "nElectrons", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0, 300, "pt_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(50, -3.5, 3.5, "eta_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, -4.0, 4.0, "phi_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //
     /// *** float variables *** ////
-//    DatasetPlotter(100, 0, 300, "pt_1st_Electron", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(100, 0, 300, "pt_2nd_Electron", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(100, 0.0, 5.0 , "DeltaR_Elec0b0_DiElec", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(100, 0.0, 5.0 , "DeltaR_Elec1b0_DiElec", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(50, 0, 300, "pt_1st_Electron", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(50, 0, 300, "pt_2nd_Electron", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(50, 0.0, 5.0 , "DeltaR_Elec0b0_DiElec", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(50, 0.0, 5.0 , "DeltaR_Elec1b0_DiElec", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    DatasetPlotter(5, -2.5, 2.5 , "charge_1st_Electron", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    DatasetPlotter(5, -2.5, 2.5 , "charge_2nd_Electron", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//
-//    //////////////////////////////
-//    //// ** Met Variables ** ////
+////
+////    //////////////////////////////
+////    //// ** Met Variables ** ////
 //    /////////////////////////////
-//    DatasetPlotter(100, 0, 500, "met_Pt", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(100, 0, 500, "met_Pt", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    DatasetPlotter(50, -3.5, 3.5, "met_Eta", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    DatasetPlotter(100, -4.0, 4.0, "met_Phi", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(100, 0, 500, "corrected_met_Pt", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(50, -3.5, 3.5, "corrected_met_Eta", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(100, -4.0, 4.0, "corrected_met_Phi", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//////
-////    
-////    ////////////////////////////
-////    // ** MVA Variables ** ////
-////    ///////////////////////////
 ////
-//    DatasetPlotter(100, 0.0, 5.0 , "DeltaR_2L", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(50, -4.0, 4.0, "DeltaPhi_2L", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(200, 0.0, 200.0, "invMass_2L", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+////    //////////////////////////
+//// /////////    ** MVA Variables ** ////
+////    /////////////////////////
+////
+    DatasetPlotter(50, 0.0, 5.0 , "DeltaR_2L", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(50, -4.0, 4.0, "DeltaPhi_2L", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(50, 0.0, 200.0, "invMass_2L", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+
+    DatasetPlotter(50, 0.0, 500.0, "Mass_JetPair", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(50, 0.0, 500.0, "Mass_WJetPair", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(50, 0.0, 1000.0, "Ht", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(50, 0.0, 1000.0, "St", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(50, 0.0, 500.0, "MT_lep1", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(50, 0.0, 500.0, "MT_lep2", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(50, -4.0, 4.0, "DeltaPhi_met_lep1", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(50, -4.0, 4.0, "DeltaPhi_met_lep2", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //
-//    DatasetPlotter(100, 0.0, 500.0, "Mass_JetPair", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(100, 0.0, 500.0, "Mass_WJetPair", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(100, 0.0, 1000.0, "Ht", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(100, 0.0, 1000.0, "St", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(100, 0.0, 500.0, "MT_lep1", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(100, 0.0, 500.0, "MT_lep2", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    
-    
+//////
+////
     ////// variables for NoZcut tree ////
-  //  DatasetPlotter(200, 50.0, 250.0, "invMass_2SSL_Zmass", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
- //   DatasetPlotter(200, 50.0, 250.0, "invMass_2OSL_Zmass", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-    
+//    DatasetPlotter(100, 0.0, 200.0, "invMass_2SSL_Zmass", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0.0, 200.0, "invMass_2OSL_Zmass", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(100, 0.0, 200.0, "invMass_2L", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+////
 
 
     
@@ -308,8 +326,8 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
     
     int nEntries;
     float ScaleFactor, NormFactor, Luminosity;
-    int varofInterest;
-  //  float varofInterest;
+   // int varofInterest;
+    float varofInterest;
     //  double varofInterest;
     double varofInterest_double [20];
     
@@ -346,6 +364,10 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
         string sOSLeptonTree = "OSLeptonTree";
         string sglobaltree = "globaltree";
         string sNoZmassVetotree = "NoZmassVetoTree";
+        string sSSLNoZmassVetotree = "SSLNoZmassVetoTree";
+        string sOSLNoZmassVetotree = "OSLNoZmassVetoTree";
+        string sInitialTree = "Initialtree";
+        
         
         
         FileObj[dataSetName.c_str()] = new TFile((filepath).c_str(),"READ"); //create TFile for each dataset
@@ -362,6 +384,11 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
             cout << "the current tree name is   =   " << TTreename << endl;
         }else if (TreeName == "NoZCut") {
             TTreename = sNoZmassVetotree;
+           // TTreename = sSSLNoZmassVetotree;
+           // TTreename = sOSLNoZmassVetotree;
+            cout << "the current tree name is   =   " << TTreename << endl;
+        }else if (TreeName == "Init") {
+            TTreename = sInitialTree;
             cout << "the current tree name is   =   " << TTreename << endl;
         }else { cout << "No tree is specified or wrong tree name: it should be 2lep or 2SSlep or 2OSlep  " <<endl;
             cout << "the current tree name is   =   " << TTreename << endl;
@@ -420,7 +447,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
         // determine event scalefactor ///
         //////////////////////////////////
         
-        if(applyGlobalSF) cout << "                 Applying scale factors (not for data)" << endl;
+        if(applyGlobalSF) cout << "    ====== Applying scale factors (not for data)=========" << endl;
         
         // get the SF from the corresponding branch
         Double_t puSF = 1. ;
@@ -431,6 +458,9 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
         
         Double_t muonIso[10];
         ttree[dataSetName.c_str()]->SetBranchAddress("MuonIsoSF", &muonIso);
+        
+        Double_t muonTrackSF[10];
+        ttree[dataSetName.c_str()]->SetBranchAddress("MuonTrackSF", &muonTrackSF);
         
         Double_t sf_electron[10];
         ttree[dataSetName.c_str()]->SetBranchAddress("sf_electron", &sf_electron);
@@ -455,7 +485,6 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
         
         Double_t BSF;
         ttree[dataSetName.c_str()]->SetBranchAddress("btagSF",&BSF);
-        
         
         if(debug) cout << "done setting SF addresses " << endl;
         
@@ -519,10 +548,10 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
                     for(unsigned int i = 0; i < nMu ; i ++)
                     {
                         
-                        globalScaleFactor *= muonID[i] *  muonIso[i]  ;
+                        globalScaleFactor *= muonID[i] *  muonIso[i] * muonTrackSF[i] ;
                         if(debug)
                         {
-                         cout << "MuonID SF is : " << muonID[i] << "   MuonIso SF is :  " << muonIso[i] <<endl;
+                         cout << "MuonID SF is : " << muonID[i] << "   MuonIso SF is :  " << muonIso[i] <<"   MuonTrack SF is :  " << muonTrackSF[i] <<endl;
                         cout << "the globalScaleFactor is " << globalScaleFactor << endl;
                         }
                     }
@@ -560,7 +589,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
                 {
                     // for data, fill once per event, weighted with the event scale factor only ???? what??
                     //		  MSPlot[plotname.c_str()]->Fill(varofInterest, datasets[d], false, globalScaleFactor);
-                    MSPlot[plotname.c_str()]->Fill(varofInterest, datasets[d], false, 1); // false because it data and at this case golbalSF is 1
+                    MSPlot[plotname.c_str()]->Fill(varofInterest, datasets[d], false, 1); // false because it is data and at this case golbalSF is 1
                 }
                 else
                 {
@@ -655,7 +684,11 @@ void MSPCreator (string pathPNG , string TreeName)
         }else if (TreeName == "2OSlep") {
             treename = "2OSl_";
         }else if (TreeName == "NoZCut") {
-            treename = "NoZCut_";
+            treename = "NoZCut_2L";
+           // treename = "NoZCut_2SSL_";
+           // treename = "NoZCut_2OSL_";
+        }else if (TreeName == "Init") {
+            treename = "Init_";
         }
         
         string name = treename+"MyMSP_" + it->first;
