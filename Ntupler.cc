@@ -95,8 +95,8 @@ std::pair <Double_t, Double_t> c_workingpointvalue_Tight(0.69, -0.45); // reduce
 bool synchex = false;
 
 
-double lum_RunsBCDEF = 15.658183109;// /fb
-double lum_RunsGH = 15.199167277;// /fb
+double lum_RunsBCDEF = 19.680129;//15.658183109;// /fb
+double lum_RunsGH = 16.146177; // 15.199167277;// /fb
 
 
 
@@ -144,7 +144,7 @@ int main (int argc, char *argv[])
   cout << "***   Beginning of program: tZq FCNC      ***" << endl;
   cout << "***********************************" << endl;
   cout << "Current time: " << dateString << endl;
-  
+  cout << "nb of arguments " << argc << endl;
   clock_t start = clock();
   
   
@@ -190,7 +190,7 @@ int main (int argc, char *argv[])
   /// Set up everything for local submission ////
   ///////////////////////////////////////////////
   // check the arguments passed
-  if(verbose>3)
+  if(verbose>0)
   {
     cout << " The list of arguments are: " << endl;
     for (int n_arg=1; n_arg<argc; n_arg++)
@@ -229,6 +229,8 @@ int main (int argc, char *argv[])
   const int startEvent  	  = strtol(argv[argc-2], NULL, 10);
   const int endEvent		  = strtol(argv[argc-1], NULL, 10);
   
+  //cout << "argv[argc-1] " << argv[argc-1] << endl;
+  
   applyJES = JES;
   applyJER = JER;
   doFakeLepton= doFakes;
@@ -240,7 +242,7 @@ int main (int argc, char *argv[])
   
   for(int args = 11; args < argc-7; args++)
   {
-    if(verbose > 3){cout << "pushing back " << argv[args] << endl;}
+    cout << "pushing back " << argv[args] << endl;
     vecfileNames.push_back(argv[args]);
     
   }
@@ -339,15 +341,16 @@ int main (int argc, char *argv[])
   ////////////////////////////
   
   if(verbose > 0) cout << "Initializing trigger" << endl;
-  Trigger* trigger_mumu  = new Trigger(1, 0, 0, 1,0); // mu , el, single, double, tri
-  Trigger* trigger_ee  = new Trigger(0, 1, 0, 1,0);
-  Trigger* trigger_emu  = new Trigger(1, 1, 0, 1,0) ;
-  Trigger* trigger_mumumu  = new Trigger(1, 0, 0, 0,1);
-  Trigger* trigger_eee  = new Trigger(0, 1, 0, 0,1);
-  Trigger* trigger_emumu_mumue  = new Trigger(1, 1, 0, 0,1) ;
-  Trigger* trigger_mu  = new Trigger(1, 0, 1, 0,0);
-  Trigger* trigger_e  = new Trigger(0, 1, 1, 0,0);
-  
+  Trigger* trigger_mumu  = new Trigger(1, 0, 0, 1,0,0,0); // mu , el, single, double, tri, met
+  Trigger* trigger_ee  = new Trigger(0, 1, 0, 1,0,0,0);
+  Trigger* trigger_emu  = new Trigger(1, 1, 0, 1,0,0,0) ;
+  Trigger* trigger_mumumu  = new Trigger(1, 0, 0, 0,1,0,0);
+  Trigger* trigger_eee  = new Trigger(0, 1, 0, 0,1,0,0);
+  Trigger* trigger_emumu_mumue  = new Trigger(1, 1, 0, 0,1,0,0) ;
+  Trigger* trigger_mu  = new Trigger(1, 0, 1, 0,0,0,0);
+  Trigger* trigger_e  = new Trigger(0, 1, 1, 0,0,0,0);
+  Trigger* trigger_met = new Trigger(0, 0, 0, 0,0,1,0);
+  Trigger* trigger_jet = new Trigger(0, 0, 0, 0,0,0,1);
   
   ////////////////////////
   // intialize  Calibrations      //
@@ -912,6 +915,8 @@ int main (int argc, char *argv[])
     Int_t PassedMETFilter;
     
     Int_t PassedTrigger;
+    Int_t PassedTriggerMET;
+    Int_t PassedTriggerJET;
     Int_t PassedTriggerNoLogic;
     Int_t PassedTriggerNoLogic2;
     Int_t PassedGoodPV;
@@ -944,6 +949,20 @@ int main (int argc, char *argv[])
     
     Double_t MuonIDSF[10];
     Double_t MuonIsoSF[10];
+    Double_t MuonIDSF_BCDEF[10];
+    Double_t MuonIsoSF_BCDEF[10];
+    Double_t MuonIDSF_GH[10];
+    Double_t MuonIsoSF_GH[10];
+    Double_t MuonIDSF_BCDEF_up[10];
+    Double_t MuonIsoSF_BCDEF_up[10];
+    Double_t MuonIDSF_GH_up[10];
+    Double_t MuonIsoSF_GH_up[10];
+    Double_t MuonIDSF_BCDEF_down[10];
+    Double_t MuonIsoSF_BCDEF_down[10];
+    Double_t MuonIDSF_GH_down[10];
+    Double_t MuonIsoSF_GH_down[10];
+    
+    
     Double_t MuonTrackSF[10];
     Double_t MuonTrackSF_up[10];
     Double_t MuonTrackSF_down[10];
@@ -1163,7 +1182,9 @@ int main (int argc, char *argv[])
     myTree->Branch("btagSFshape_up_lfstats2",&btagSFshape_up_lfstats2,"btagSFshape_up_lfstats2/D");
     
     myTree->Branch("PassedMETFilter", &PassedMETFilter,"PassedMETFilter/I");
+    myTree->Branch("PassedTriggerMET", &PassedTriggerMET, "PassedTriggerMET/I");
     myTree->Branch("PassedTrigger", &PassedTrigger, "PassedTrigger/I");
+    myTree->Branch("PassedTriggerJET", &PassedTriggerJET, "PassedTriggerJET/I");
     myTree->Branch("PassedTriggerNoLogic", &PassedTriggerNoLogic, "PassedTriggerNoLogic/I");
     myTree->Branch("PassedTriggerNoLogic2", &PassedTriggerNoLogic2, "PassedTriggerNoLogic2/I");
     myTree->Branch("PassedGoodPV", &PassedGoodPV,"PassedGoodPV/I");
@@ -1218,6 +1239,21 @@ int main (int argc, char *argv[])
     
     myTree->Branch("MuonIDSF",&MuonIDSF,"MuonIDSF[nMuons]/D");
     myTree->Branch("MuonIsoSF",&MuonIsoSF, "MuonIsoSF[nMuons]/D");
+    
+    myTree->Branch("MuonIDSF_BCDEF",&MuonIDSF_BCDEF,"MuonIDSF_BCDEF[nMuons]/D");
+    myTree->Branch("MuonIsoSF_BCDEF",&MuonIsoSF_BCDEF, "MuonIsoSF_BCDEF[nMuons]/D");
+    myTree->Branch("MuonIDSF_GH",&MuonIDSF_GH,"MuonIDSF_GH[nMuons]/D");
+    myTree->Branch("MuonIsoSF_GH",&MuonIsoSF_GH, "MuonIsoSF_GH[nMuons]/D");
+    myTree->Branch("MuonIDSF_BCDEF_up",&MuonIDSF_BCDEF_up,"MuonIDSF_BCDEF_up[nMuons]/D");
+    myTree->Branch("MuonIsoSF_BCDEF_up",&MuonIsoSF_BCDEF_up, "MuonIsoSF_BCDEF_up[nMuons]/D");
+    myTree->Branch("MuonIDSF_GH_up",&MuonIDSF_GH_up,"MuonIDSF_GH_up[nMuons]/D");
+    myTree->Branch("MuonIsoSF_GH_up",&MuonIsoSF_GH_up, "MuonIsoSF_GH_up[nMuons]/D");
+    myTree->Branch("MuonIDSF_BCDEF_down",&MuonIDSF_BCDEF_down,"MuonIDSF_BCDEF_down[nMuons]/D");
+    myTree->Branch("MuonIsoSF_BCDEF_down",&MuonIsoSF_BCDEF_down, "MuonIsoSF_BCDEF_down[nMuons]/D");
+    myTree->Branch("MuonIDSF_GH_down",&MuonIDSF_GH_down,"MuonIDSF_GH_down[nMuons]/D");
+    myTree->Branch("MuonIsoSF_GH_down",&MuonIsoSF_GH_down, "MuonIsoSF_GH_down[nMuons]/D");
+    
+    
      myTree->Branch("MuonTrackSF",&MuonTrackSF, "MuonTrackSF[nMuons]/D");
     myTree->Branch("MuonTrackSF_up",&MuonTrackSF_up, "MuonTrackSF_up[nMuons]/D");
     myTree->Branch("MuonTrackSF_down",&MuonTrackSF_down, "MuonTrackSF_down[nMuons]/D");
@@ -1304,9 +1340,227 @@ int main (int argc, char *argv[])
     trigger_emumu_mumue->bookTriggers(isData,dName);
     trigger_mu->bookTriggers(isData,dName);
     trigger_e->bookTriggers(isData, dName);
+    trigger_met->bookTriggers(isData, dName);
+    trigger_jet->bookTriggers(isData, dName);
     
     
     
+    //// define trigger branches
+    /*
+    std::array<Int_t,200> triggers_container;
+    // cout << "trigger_mu->triggerList.size() " << trigger_mu->triggerList.size() << endl;
+    // for(int iter_trig=0; iter_trig< (isData?trigger->triggerListData.size():trigger->triggerListMC.size()) && iter_trig<200; iter_trig++){
+    for(int iter_trig=0; iter_trig< trigger_mu->triggerList.size() && iter_trig<200; iter_trig++){
+      TString trigname;
+      trigname = trigger_mu->triggerList[iter_trig];
+      //cout << trigname << endl;
+      trigname.ReplaceAll("_v*","");
+      trigname.ReplaceAll("_v1","");
+      trigname.ReplaceAll("_v2","");
+      trigname.ReplaceAll("_v3","");
+      trigname.ReplaceAll("_v4","");
+      trigname.ReplaceAll("_v5","");
+      trigname.ReplaceAll("_v6","");
+      trigname.ReplaceAll("_v7","");
+      trigname.ReplaceAll("_v8","");
+      trigname.ReplaceAll("_v9","");
+      trigname.ReplaceAll("_v10","");
+      trigname.ReplaceAll("_v11","");
+      trigname.ReplaceAll("_v12","");
+      TString branchname = trigname+"/I";
+      //std::cout << "adding trigger to trees " << trigname << " mapped to element " << iter_trig << " " << branchname << std::endl;
+     // myTree->Branch(trigname,&(triggers_container[iter_trig]),branchname);
+    }
+    for(int iter_trig=0; iter_trig< trigger_mumu->triggerList.size() && iter_trig<200; iter_trig++){
+      TString trigname;
+      trigname = trigger_mumu->triggerList[iter_trig];
+      //cout << trigname << endl;
+      trigname.ReplaceAll("_v*","");
+      trigname.ReplaceAll("_v1","");
+      trigname.ReplaceAll("_v2","");
+      trigname.ReplaceAll("_v3","");
+      trigname.ReplaceAll("_v4","");
+      trigname.ReplaceAll("_v5","");
+      trigname.ReplaceAll("_v6","");
+      trigname.ReplaceAll("_v7","");
+      trigname.ReplaceAll("_v8","");
+      trigname.ReplaceAll("_v9","");
+      trigname.ReplaceAll("_v10","");
+      trigname.ReplaceAll("_v11","");
+      trigname.ReplaceAll("_v12","");
+      TString branchname = trigname+"/I";
+      // std::cout << "adding trigger to trees " << trigname << " mapped to element " << iter_trig << " " << branchname << std::endl;
+     // myTree->Branch(trigname,&(triggers_container[iter_trig]),branchname);
+    }
+    for(int iter_trig=0; iter_trig< trigger_mumumu->triggerList.size() && iter_trig<200; iter_trig++){
+      TString trigname;
+      trigname = trigger_mumumu->triggerList[iter_trig];
+      //cout << trigname << endl;
+      trigname.ReplaceAll("_v*","");
+      trigname.ReplaceAll("_v1","");
+      trigname.ReplaceAll("_v2","");
+      trigname.ReplaceAll("_v3","");
+      trigname.ReplaceAll("_v4","");
+      trigname.ReplaceAll("_v5","");
+      trigname.ReplaceAll("_v6","");
+      trigname.ReplaceAll("_v7","");
+      trigname.ReplaceAll("_v8","");
+      trigname.ReplaceAll("_v9","");
+      trigname.ReplaceAll("_v10","");
+      trigname.ReplaceAll("_v11","");
+      trigname.ReplaceAll("_v12","");
+      TString branchname = trigname+"/I";
+      //std::cout << "adding trigger to trees " << trigname << " mapped to element " << iter_trig << " " << branchname << std::endl;
+      //myTree->Branch(trigname,&(triggers_container[iter_trig]),branchname);
+    }
+    for(int iter_trig=0; iter_trig< trigger_e->triggerList.size() && iter_trig<200; iter_trig++){
+      TString trigname;
+      trigname = trigger_e->triggerList[iter_trig];
+      //cout << trigname << endl;
+      trigname.ReplaceAll("_v*","");
+      trigname.ReplaceAll("_v1","");
+      trigname.ReplaceAll("_v2","");
+      trigname.ReplaceAll("_v3","");
+      trigname.ReplaceAll("_v4","");
+      trigname.ReplaceAll("_v5","");
+      trigname.ReplaceAll("_v6","");
+      trigname.ReplaceAll("_v7","");
+      trigname.ReplaceAll("_v8","");
+      trigname.ReplaceAll("_v9","");
+      trigname.ReplaceAll("_v10","");
+      trigname.ReplaceAll("_v11","");
+      trigname.ReplaceAll("_v12","");
+      TString branchname = trigname+"/I";
+      //std::cout << "adding trigger to trees " << trigname << " mapped to element " << iter_trig << " " << branchname << std::endl;
+     // myTree->Branch(trigname,&(triggers_container[iter_trig]),branchname);
+    }
+    for(int iter_trig=0; iter_trig< trigger_ee->triggerList.size() && iter_trig<200; iter_trig++){
+      TString trigname;
+      trigname = trigger_ee->triggerList[iter_trig];
+      //cout << trigname << endl;
+      trigname.ReplaceAll("_v*","");
+      trigname.ReplaceAll("_v1","");
+      trigname.ReplaceAll("_v2","");
+      trigname.ReplaceAll("_v3","");
+      trigname.ReplaceAll("_v4","");
+      trigname.ReplaceAll("_v5","");
+      trigname.ReplaceAll("_v6","");
+      trigname.ReplaceAll("_v7","");
+      trigname.ReplaceAll("_v8","");
+      trigname.ReplaceAll("_v9","");
+      trigname.ReplaceAll("_v10","");
+      trigname.ReplaceAll("_v11","");
+      trigname.ReplaceAll("_v12","");
+      TString branchname = trigname+"/I";
+      //std::cout << "adding trigger to trees " << trigname << " mapped to element " << iter_trig << " " << branchname << std::endl;
+      //myTree->Branch(trigname,&(triggers_container[iter_trig]),branchname);
+    }
+    for(int iter_trig=0; iter_trig< trigger_eee->triggerList.size() && iter_trig<200; iter_trig++){
+      TString trigname;
+      trigname = trigger_eee->triggerList[iter_trig];
+      //cout << trigname << endl;
+      trigname.ReplaceAll("_v*","");
+      trigname.ReplaceAll("_v1","");
+      trigname.ReplaceAll("_v2","");
+      trigname.ReplaceAll("_v3","");
+      trigname.ReplaceAll("_v4","");
+      trigname.ReplaceAll("_v5","");
+      trigname.ReplaceAll("_v6","");
+      trigname.ReplaceAll("_v7","");
+      trigname.ReplaceAll("_v8","");
+      trigname.ReplaceAll("_v9","");
+      trigname.ReplaceAll("_v10","");
+      trigname.ReplaceAll("_v11","");
+      trigname.ReplaceAll("_v12","");
+      TString branchname = trigname+"/I";
+      //std::cout << "adding trigger to trees " << trigname << " mapped to element " << iter_trig << " " << branchname << std::endl;
+     // myTree->Branch(trigname,&(triggers_container[iter_trig]),branchname);
+    }
+    for(int iter_trig=0; iter_trig< trigger_emu->triggerList.size() && iter_trig<200; iter_trig++){
+      TString trigname;
+      trigname = trigger_emu->triggerList[iter_trig];
+      //cout << trigname << endl;
+      trigname.ReplaceAll("_v*","");
+      trigname.ReplaceAll("_v1","");
+      trigname.ReplaceAll("_v2","");
+      trigname.ReplaceAll("_v3","");
+      trigname.ReplaceAll("_v4","");
+      trigname.ReplaceAll("_v5","");
+      trigname.ReplaceAll("_v6","");
+      trigname.ReplaceAll("_v7","");
+      trigname.ReplaceAll("_v8","");
+      trigname.ReplaceAll("_v9","");
+      trigname.ReplaceAll("_v10","");
+      trigname.ReplaceAll("_v11","");
+      trigname.ReplaceAll("_v12","");
+      TString branchname = trigname+"/I";
+      //std::cout << "adding trigger to trees " << trigname << " mapped to element " << iter_trig << " " << branchname << std::endl;
+     // myTree->Branch(trigname,&(triggers_container[iter_trig]),branchname);
+    }
+    for(int iter_trig=0; iter_trig< trigger_emumu_mumue->triggerList.size() && iter_trig<200; iter_trig++){
+      TString trigname;
+      trigname = trigger_emumu_mumue->triggerList[iter_trig];
+      //cout << trigname << endl;
+      trigname.ReplaceAll("_v*","");
+      trigname.ReplaceAll("_v1","");
+      trigname.ReplaceAll("_v2","");
+      trigname.ReplaceAll("_v3","");
+      trigname.ReplaceAll("_v4","");
+      trigname.ReplaceAll("_v5","");
+      trigname.ReplaceAll("_v6","");
+      trigname.ReplaceAll("_v7","");
+      trigname.ReplaceAll("_v8","");
+      trigname.ReplaceAll("_v9","");
+      trigname.ReplaceAll("_v10","");
+      trigname.ReplaceAll("_v11","");
+      trigname.ReplaceAll("_v12","");
+      TString branchname = trigname+"/I";
+      //std::cout << "adding trigger to trees " << trigname << " mapped to element " << iter_trig << " " << branchname << std::endl;
+      //myTree->Branch(trigname,&(triggers_container[iter_trig]),branchname);
+    }
+    for(int iter_trig=0; iter_trig< trigger_met->triggerList.size() && iter_trig<200; iter_trig++){
+      TString trigname;
+      trigname = trigger_met->triggerList[iter_trig];
+      //cout << trigname << endl;
+      trigname.ReplaceAll("_v*","");
+      trigname.ReplaceAll("_v1","");
+      trigname.ReplaceAll("_v2","");
+      trigname.ReplaceAll("_v3","");
+      trigname.ReplaceAll("_v4","");
+      trigname.ReplaceAll("_v5","");
+      trigname.ReplaceAll("_v6","");
+      trigname.ReplaceAll("_v7","");
+      trigname.ReplaceAll("_v8","");
+      trigname.ReplaceAll("_v9","");
+      trigname.ReplaceAll("_v10","");
+      trigname.ReplaceAll("_v11","");
+      trigname.ReplaceAll("_v12","");
+      TString branchname = trigname+"/I";
+      //std::cout << "adding trigger to trees " << trigname << " mapped to element " << iter_trig << " " << branchname << std::endl;
+     // myTree->Branch(trigname,&(triggers_container[iter_trig]),branchname);
+    }
+    for(int iter_trig=0; iter_trig< trigger_jet->triggerList.size() && iter_trig<200; iter_trig++){
+      TString trigname;
+      trigname = trigger_jet->triggerList[iter_trig];
+      //cout << trigname << endl;
+      trigname.ReplaceAll("_v*","");
+      trigname.ReplaceAll("_v1","");
+      trigname.ReplaceAll("_v2","");
+      trigname.ReplaceAll("_v3","");
+      trigname.ReplaceAll("_v4","");
+      trigname.ReplaceAll("_v5","");
+      trigname.ReplaceAll("_v6","");
+      trigname.ReplaceAll("_v7","");
+      trigname.ReplaceAll("_v8","");
+      trigname.ReplaceAll("_v9","");
+      trigname.ReplaceAll("_v10","");
+      trigname.ReplaceAll("_v11","");
+      trigname.ReplaceAll("_v12","");
+      TString branchname = trigname+"/I";
+      //std::cout << "adding trigger to trees " << trigname << " mapped to element " << iter_trig << " " << branchname << std::endl;
+      //myTree->Branch(trigname,&(triggers_container[iter_trig]),branchname);
+    }
+*/
     if(verbose>1) cout << "triggers booked " << endl;
     
     //////////////////////////////////////////////////
@@ -1644,6 +1898,9 @@ int main (int argc, char *argv[])
       ///////////////////////////////////////////
       PassedTriggerNoLogic = false;
       PassedTriggerNoLogic2 = false;
+      PassedTrigger = false;
+      PassedTriggerMET = false;
+      PassedTriggerJET = false;
       bool trigged = false;
       bool trigged_mumu = false;
       bool trigged_ee = false;
@@ -1655,8 +1912,9 @@ int main (int argc, char *argv[])
       bool trigged_e = false;
       bool filechanged = false;
       bool runchanged = false;
-      
-      if(runHLT )  // FIXME old samples (not withHLT not reHLT) don't contain trigger info
+      bool trigged_met = false;
+      bool trigged_jet = false;
+      if(runHLT )
       {
         trigger_mumu->checkAvail(currentRun, datasets, d, &treeLoader, event, printTrigger);
         trigged_mumu =  trigger_mumu->checkIfFired();
@@ -1674,7 +1932,10 @@ int main (int argc, char *argv[])
         trigged_mu =  trigger_mu->checkIfFired();
         trigger_e->checkAvail(currentRun, datasets, d, &treeLoader, event, printTrigger);
         trigged_e =  trigger_e->checkIfFired();
-        
+        trigger_met->checkAvail(currentRun, datasets, d, &treeLoader, event, printTrigger);
+        trigged_met =  trigger_met->checkIfFired();
+        trigger_jet->checkAvail(currentRun, datasets, d, &treeLoader, event, printTrigger);
+        trigged_jet =  trigger_jet->checkIfFired();
         
         bool emdataset = dName.find("MuonEG")!=string::npos;
         bool mmdataset = dName.find("DoubleM")!=string::npos;
@@ -1695,21 +1956,25 @@ int main (int argc, char *argv[])
         EM2 = trigged_emu;
         MM2 = trigged_mumu;
         EE2 = trigged_ee;
+        
         EM = (trigged_emumu_mumue|| trigged_emu);
         MM = (trigged_mumu || trigged_mumumu ) ;
         EE = (trigged_ee || trigged_eee );
-        
         M  = ( trigged_mu );
         E  = (trigged_e);
+        
+        
         // testing TO FIX
-        if ( EM2 &&                               (emdataset) ) PassedTriggerNoLogic2 = 1;
-        if ( MM2 &&                         (mmdataset) ) PassedTriggerNoLogic2 = 1;
+        if ( EM2 &&                 (emdataset) ) PassedTriggerNoLogic2 = 1;
+        if ( MM2 &&                 (mmdataset) ) PassedTriggerNoLogic2 = 1;
         if ( EE2 &&                 (eedataset) ) PassedTriggerNoLogic2 = 1;
-        if ( EM &&                               (emdataset) ) PassedTriggerNoLogic = 1;
-        if ( MM &&                         (mmdataset) ) PassedTriggerNoLogic = 1;
-        if ( EE &&                 (eedataset) ) PassedTriggerNoLogic = 1;
-        if ( M  &&         (mdataset ) ) PassedTriggerNoLogic = 1;
-        if ( E  &&                (edataset ) ) PassedTriggerNoLogic = 1;
+        
+        if ( EM &&                  (emdataset) ) PassedTriggerNoLogic = 1;
+        if ( MM &&                  (mmdataset) ) PassedTriggerNoLogic = 1;
+        if ( EE &&                  (eedataset) ) PassedTriggerNoLogic = 1;
+        if ( M  &&                  (mdataset ) ) PassedTriggerNoLogic = 1;
+        if ( E  &&                  (edataset ) ) PassedTriggerNoLogic = 1;
+        
         //for data
         if ( EM &&                               (emdataset) ) result_trigger = 1;
         if ( MM && !EM &&                        (mmdataset) ) result_trigger = 1;
@@ -1717,11 +1982,8 @@ int main (int argc, char *argv[])
         if ( M  && !EM && !MM && !EE &&          (mdataset ) ) result_trigger = 1;
         if ( E  && !EM && !MM && !EE && !M &&    (edataset ) ) result_trigger = 1;
         // for MC
-        if ( EM &&                               !isData ) result_trigger = 1;
-        if ( MM && !EM &&                        !isData ) result_trigger = 1;
-        if ( EE && !EM && !MM &&                 !isData ) result_trigger = 1;
-        if ( M  && !EM && !MM && !EE &&          !isData ) result_trigger = 1;
-        if ( E  && !EM && !MM && !EE && !M &&    !isData ) result_trigger = 1;
+        if ( ( EM || MM || EE || E || M )    &&   !isData ) result_trigger = 1;
+        if ( ( EM || MM || EE || E || M )    &&   (dName.find("data_MET")!=string::npos || dName.find("data_Jet")!=string::npos) ) result_trigger = 1;
         
         trigged = result_trigger;
         // if(dName.find("NP")!=string::npos) trigged = true; // needs to be fixed with the new MC
@@ -1740,11 +2002,15 @@ int main (int argc, char *argv[])
       else if(!runHLT)
       {
         trigged = true;
+        trigged_jet = true;
+        trigged_met = true;
       }
       
       if(verbose > 1) cout << "Apply trigger? " << runHLT << " trigged? " << trigged << endl;
-      PassedTrigger = trigged;
       
+      PassedTrigger = trigged;
+      PassedTriggerMET = trigged_met;
+      PassedTriggerJET = trigged_jet;
       ////////////////////////////
       ///// JES - JER smearing     ////
       //////////////////////////
@@ -2149,6 +2415,39 @@ int main (int argc, char *argv[])
         eventweight = 1.;
         eventweight *= puSF;
         eventweight *= btagWeightShape;
+        /*
+        triggers_container.fill(0);
+        for(int iter_trig=0; iter_trig< trigger_mu->triggerList.size() && iter_trig<200; iter_trig++){
+          triggers_container[iter_trig] = trigger_mu->triggermap.find(trigger_mu->triggerList[iter_trig])->second.second;
+        }
+        for(int iter_trig=0; iter_trig< trigger_mumu->triggerList.size() && iter_trig<200; iter_trig++){
+          triggers_container[iter_trig] = trigger_mumu->triggermap.find(trigger_mumu->triggerList[iter_trig])->second.second;
+        }
+        for(int iter_trig=0; iter_trig< trigger_mumumu->triggerList.size() && iter_trig<200; iter_trig++){
+          triggers_container[iter_trig] = trigger_mumumu->triggermap.find(trigger_mumumu->triggerList[iter_trig])->second.second;
+        }
+        for(int iter_trig=0; iter_trig< trigger_e->triggerList.size() && iter_trig<200; iter_trig++){
+          triggers_container[iter_trig] = trigger_e->triggermap.find(trigger_e->triggerList[iter_trig])->second.second;
+        }
+        for(int iter_trig=0; iter_trig< trigger_ee->triggerList.size() && iter_trig<200; iter_trig++){
+          triggers_container[iter_trig] = trigger_ee->triggermap.find(trigger_eee->triggerList[iter_trig])->second.second;
+        }
+        for(int iter_trig=0; iter_trig< trigger_eee->triggerList.size() && iter_trig<200; iter_trig++){
+          triggers_container[iter_trig] = trigger_eee->triggermap.find(trigger_eee->triggerList[iter_trig])->second.second;
+        }
+        for(int iter_trig=0; iter_trig< trigger_emu->triggerList.size() && iter_trig<200; iter_trig++){
+          triggers_container[iter_trig] = trigger_emu->triggermap.find(trigger_emu->triggerList[iter_trig])->second.second;
+        }
+        for(int iter_trig=0; iter_trig< trigger_emumu_mumue->triggerList.size() && iter_trig<200; iter_trig++){
+          triggers_container[iter_trig] = trigger_emumu_mumue->triggermap.find(trigger_emumu_mumue->triggerList[iter_trig])->second.second;
+        }
+        for(int iter_trig=0; iter_trig< trigger_met->triggerList.size() && iter_trig<200; iter_trig++){
+          triggers_container[iter_trig] = trigger_met->triggermap.find(trigger_met->triggerList[iter_trig])->second.second;
+        }
+        for(int iter_trig=0; iter_trig< trigger_jet->triggerList.size() && iter_trig<200; iter_trig++){
+          triggers_container[iter_trig] = trigger_jet->triggermap.find(trigger_jet->triggerList[iter_trig])->second.second;
+        }
+        */
         
         
         nMuons = 0;
@@ -2167,6 +2466,22 @@ int main (int argc, char *argv[])
           pfIso_muon[nMuons]=selectedMuons[selmu]->relPfIso(4,0);
           if(!isData)
           {
+            
+            MuonIDSF_BCDEF[nMuons] = muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+            MuonIsoSF_BCDEF[nMuons] = muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+            MuonIDSF_GH[nMuons] = muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+            MuonIsoSF_GH[nMuons] = muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+            
+            MuonIDSF_BCDEF_down[nMuons] = muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1);
+            MuonIsoSF_BCDEF_down[nMuons] = muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1);
+            MuonIDSF_GH_down[nMuons] = muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1);
+            MuonIsoSF_GH_down[nMuons] = muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1);
+            
+            MuonIDSF_BCDEF_up[nMuons] = muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1);
+            MuonIsoSF_BCDEF_up[nMuons] = muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1);
+            MuonIDSF_GH_up[nMuons] = muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1);
+            MuonIsoSF_GH_up[nMuons] = muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1);
+            
             
             
             MuonIDSF[nMuons]  = (muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
@@ -2214,6 +2529,20 @@ int main (int argc, char *argv[])
             pfIso_muon[nMuons]=selectedFakeMuons[selmu]->relPfIso(4,0);
             if(!isData)
             {
+              MuonIDSF_BCDEF[nMuons] = muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+              MuonIsoSF_BCDEF[nMuons] = muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+              MuonIDSF_GH[nMuons] = muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+              MuonIsoSF_GH[nMuons] = muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+              
+              MuonIDSF_BCDEF_down[nMuons] = muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1);
+              MuonIsoSF_BCDEF_down[nMuons] = muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1);
+              MuonIDSF_GH_down[nMuons] = muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1);
+              MuonIsoSF_GH_down[nMuons] = muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1);
+              
+              MuonIDSF_BCDEF_up[nMuons] = muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1);
+              MuonIsoSF_BCDEF_up[nMuons] = muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1);
+              MuonIDSF_GH_up[nMuons] = muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1);
+              MuonIsoSF_GH_up[nMuons] = muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1);
               
               
               MuonIDSF[nMuons]  = (muonSFWeightID_BCDEF->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 0)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 0)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
