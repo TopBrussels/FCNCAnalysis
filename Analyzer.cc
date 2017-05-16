@@ -1728,14 +1728,14 @@ int main(int argc, char* argv[]){
         if (applyPUSF) {
           if(applyPUSF_up) scaleFactor *= puSF_up;
           else if(applyPUSF_down) scaleFactor *= puSF_down;
- //         else scaleFactor *= puSF;
+          else scaleFactor *= puSF;
           
           scaleFactor_puSF_up *= puSF_up;
           scaleFactor_puSF_down *= puSF_down;
           
           
           
-         /* scaleFactor_muonSF_down *=puSF ;
+          scaleFactor_muonSF_down *=puSF ;
           scaleFactor_muonSF_up *=puSF ;
           
           scaleFactor_electronSF_down *= puSF ;
@@ -1755,7 +1755,7 @@ int main(int argc, char* argv[]){
           scaleFactor_btagSF_cferr2_up *= puSF ;
           scaleFactor_btagSF_cferr2_down *= puSF ;
           scaleFactor_btagSF_cferr1_up *= puSF ;
-          scaleFactor_btagSF_cferr1_down *= puSF ;*/
+          scaleFactor_btagSF_cferr1_down *= puSF ;
           
           //if(ievt == 2)cout << "                - applying pu factors " << endl;
         }
