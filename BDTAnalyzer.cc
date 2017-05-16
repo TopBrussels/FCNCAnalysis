@@ -226,7 +226,7 @@ TBranch        *b_MVA_weight_btagSF_lfstats1_up;   //!
 TBranch        *b_MVA_weight_btagSF_lfstats1_down;   //!
 TBranch        *b_MVA_weight_btagSF_lfstats2_up;   //!
 TBranch        *b_MVA_weight_btagSF_lfstats2_down;   //!
-
+TBranch        *b_MVA_weight_nom; //
 
 
 map<string,TH1F*> histo1DMTW;
@@ -588,39 +588,43 @@ int main(int argc, char* argv[]){
         
         /// Load event
         tTree[(dataSetName).c_str()]->GetEntry(ievt);
-        /*if(datafound && MVA_BDT > -0.6 && !doMTWtemplate && !toppair && doZut){ continue;}
-        else if(datafound && MVA_BDT > -0.4 && !doMTWtemplate && !toppair && !doZut){ continue;}
-        else if(datafound && MVA_BDT > -0.2 && !doMTWtemplate && toppair){ continue;}*/
+        if(datafound && MVA_BDT > -0.68 && !doMTWtemplate && !toppair && doZut){ continue;}
+        else if(datafound && MVA_BDT > -0.6 && !doMTWtemplate && !toppair && !doZut){ continue;}
+        else if(datafound && MVA_BDT > -0.12 && !doMTWtemplate && toppair && !doZut){ continue;}
+        else if(datafound && MVA_BDT > -0.2 && !doMTWtemplate && toppair && doZut){ continue;}
         //if(isData) cout << "region " << MVA_region << endl;
         
         if(doMTWtemplate && MVA_region != 2){ continue ;} // only in WZ control region}
         else if(doMTWtemplate) { WZregionEntries++; }
         
         if(doMTWtemplate && MVA_region == 2 && MVA_channel == 0) { WZregionEntriesuuu++;}
-        weight = MVA_weight_nom;
-        if(!isData && !onlynomforsys){
+        
+        
+        if(!isData && !onlynomforsys && isys != 0){
+          //cout <<  "getting weight for " << systematic << endl;
           if(systematic.find("puSFUp")) weight = MVA_weight_puSF_up;
-          if(systematic.find("puSFDown")) weight = MVA_weight_puSF_down;
-          if(systematic.find("electronSFUp")) weight = MVA_weight_electronSF_up;
-          if(systematic.find("electronSFDown")) weight = MVA_weight_electronSF_down;
-          if(systematic.find("muonSFUp")) weight = MVA_weight_muonSF_up;
-          if(systematic.find("muonSFDown")) weight = MVA_weight_muonSF_down;
-          if(systematic.find("btagSF_cferr1Up")) weight = MVA_weight_btagSF_cferr1_up;
-          if(systematic.find("btagSF_cferr1Down")) weight = MVA_weight_btagSF_cferr1_down;
-          if(systematic.find("btagSF_cferr2Up")) weight = MVA_weight_btagSF_cferr2_up;
-          if(systematic.find("btagSF_cferr2Down")) weight = MVA_weight_btagSF_cferr2_down;
-          if(systematic.find("btagSF_lfUp")) weight = MVA_weight_btagSF_lf_up;
-          if(systematic.find("btagSF_lfDown")) weight = MVA_weight_btagSF_lf_down;
-          if(systematic.find("btagSF_hfUp")) weight = MVA_weight_btagSF_hf_up;
-          if(systematic.find("btagSF_hfDown")) weight = MVA_weight_btagSF_hf_down;
-          if(systematic.find("btagSF_hfstats1Up")) weight = MVA_weight_btagSF_hfstats1_up;
-          if(systematic.find("btagSF_hfstats1Down")) weight = MVA_weight_btagSF_hfstats1_down;
-          if(systematic.find("btagSF_hfstats2Up")) weight = MVA_weight_btagSF_hfstats2_up;
-          if(systematic.find("btagSF_hfstats2Down")) weight = MVA_weight_btagSF_hfstats2_down;
-          if(systematic.find("btagSF_lfstats2Up")) weight = MVA_weight_btagSF_lfstats2_up;
-          if(systematic.find("btagSF_lfstats2Down")) weight = MVA_weight_btagSF_lfstats2_down;
+          else if(systematic.find("puSFDown")) weight = MVA_weight_puSF_down;
+          else if(systematic.find("electronSFUp")) weight = MVA_weight_electronSF_up;
+          else if(systematic.find("electronSFDown")) weight = MVA_weight_electronSF_down;
+          else if(systematic.find("muonSFUp")) weight = MVA_weight_muonSF_up;
+          else if(systematic.find("muonSFDown")) weight = MVA_weight_muonSF_down;
+          else if(systematic.find("btagSF_cferr1Up")) weight = MVA_weight_btagSF_cferr1_up;
+          else if(systematic.find("btagSF_cferr1Down")) weight = MVA_weight_btagSF_cferr1_down;
+          else if(systematic.find("btagSF_cferr2Up")) weight = MVA_weight_btagSF_cferr2_up;
+          else if(systematic.find("btagSF_cferr2Down")) weight = MVA_weight_btagSF_cferr2_down;
+          else if(systematic.find("btagSF_lfUp")) weight = MVA_weight_btagSF_lf_up;
+          else if(systematic.find("btagSF_lfDown")) weight = MVA_weight_btagSF_lf_down;
+          else if(systematic.find("btagSF_hfUp")) weight = MVA_weight_btagSF_hf_up;
+          else if(systematic.find("btagSF_hfDown")) weight = MVA_weight_btagSF_hf_down;
+          else if(systematic.find("btagSF_hfstats1Up")) weight = MVA_weight_btagSF_hfstats1_up;
+          else if(systematic.find("btagSF_hfstats1Down")) weight = MVA_weight_btagSF_hfstats1_down;
+          else if(systematic.find("btagSF_hfstats2Up")) weight = MVA_weight_btagSF_hfstats2_up;
+          else if(systematic.find("btagSF_hfstats2Down")) weight = MVA_weight_btagSF_hfstats2_down;
+          else if(systematic.find("btagSF_lfstats2Up")) weight = MVA_weight_btagSF_lfstats2_up;
+          else if(systematic.find("btagSF_lfstats2Down")) weight = MVA_weight_btagSF_lfstats2_down;
           
         }
+        else if(!isData && !onlynomforsys ){ weight = MVA_weight_nom; }
         //if(Luminosity/MVA_Luminosity != 1. ) cout << "lumi "  << Luminosity << " while tuples are made with " << MVA_Luminosity << endl;
         
        // if(MVA_Luminosity != 0 && !isData) weight = (weight * Luminosity)/ MVA_Luminosity;
@@ -853,7 +857,7 @@ int main(int argc, char* argv[]){
         // cout << dataSetName << endl;
         if(datasets[isample]->Name().find("FCNC")!=std::string::npos) {continue; } // no signal in data
         else if(datasets[isample]->Name().find("data")!=std::string::npos) {continue; } // safety
-        else if(datasets[isample]->Name().find("fake")==std::string::npos) { continue;}/*
+        else if(datasets[isample]->Name().find("fake")==std::string::npos){
           // cout << "  -- sample " << datasets[isample]->Name() << endl;
           h_tmp = 0;
           if(!doMTWtemplate) histo_name = coupling + "_BDT_" + region + "_" + channel_list[ichan] + "_" + datasets[isample]->Name();
@@ -864,7 +868,7 @@ int main(int argc, char* argv[]){
           h_tmp = (TH1F*) pseudodata_file->Get(histo_name.c_str());
           if(h_sum == 0) {h_sum = (TH1F*) h_tmp->Clone();}
           else {h_sum->Add(h_tmp);}
-        }*/
+        }
         else{
           
           if(!doMTWtemplate) histo_name = coupling + "_BDT_" + region + "_" + channel_list[ichan] + "_" + template_fake_name;
@@ -961,7 +965,7 @@ int main(int argc, char* argv[]){
       
     }
     
-    /*if(makePlots && !doMTWtemplate){
+   if(makePlots && !doMTWtemplate){
       for (map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
       {
         cout << "MSPlot: " << it->first << endl;
@@ -981,7 +985,7 @@ int main(int argc, char* argv[]){
         temp->Write(fout, name, true, (pathOutputdate+"MSPlot").c_str(), "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
       }
       
-    }*/
+    }
     if(doPDFunc && !doMTWtemplate){
       TDirectory* th1dir = fout->mkdir("1D_PDF_histograms");
       th1dir->cd();
@@ -1788,7 +1792,7 @@ void InitAnalyzerTree(TTree* tree){
   if (!tree) return;
   tree->SetMakeClass(1);
   tree->SetBranchAddress("MVA_region", &MVA_region, &b_MVA_region);
-  //tree->SetBranchAddress("MVA_weight", &MVA_weight, &b_MVA_weight);
+  tree->SetBranchAddress("MVA_weight_nom", &MVA_weight_nom, &b_MVA_weight_nom);
   tree->SetBranchAddress("MVA_channel", &MVA_channel, &b_MVA_channel);
   tree->SetBranchAddress("MVA_EqLumi", &MVA_EqLumi, &b_MVA_EqLumi);
   tree->SetBranchAddress("MVA_Luminosity", &MVA_Luminosity, &b_MVA_Luminosity);
@@ -1877,8 +1881,8 @@ void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut){
     tree->SetBranchAddress("MVA_cdiscCvsB_jet_0", &MVA_cdiscCvsB_jet_0, &b_MVA_cdiscCvsB_jet_0);
   }
   
-  //tree->SetBranchAddress("MVA_region", &MVA_region, &b_MVA_region);
-  //tree->SetBranchAddress("MVA_weight", &MVA_weight, &b_MVA_weight);
+  tree->SetBranchAddress("MVA_region", &MVA_region, &b_MVA_region);
+  tree->SetBranchAddress("MVA_weight_nom", &MVA_weight_nom, &b_MVA_weight_nom);
   tree->SetBranchAddress("MVA_channel", &MVA_channel, &b_MVA_channel);
   tree->SetBranchAddress("MVA_BDT", &MVA_BDT, &b_MVA_BDT);
   tree->SetBranchAddress("MVA_EqLumi", &MVA_EqLumi, &b_MVA_EqLumi);
@@ -1889,6 +1893,7 @@ void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut){
   tree->SetBranchAddress("MVA_id1", &MVA_id1, &b_MVA_id1);
   tree->SetBranchAddress("MVA_id2", &MVA_id2, &b_MVA_id2);
   tree->SetBranchAddress("MVA_q", &MVA_q, &b_MVA_q);
+  
   
   tree->SetBranchAddress("MVA_weight_puSF_up", &MVA_weight_puSF_up, &b_MVA_weight_puSF_up);
   tree->SetBranchAddress("MVA_weight_puSF_down", &MVA_weight_puSF_down, &b_MVA_weight_puSF_down);
