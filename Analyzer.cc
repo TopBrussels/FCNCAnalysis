@@ -4625,7 +4625,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
     MSPlot[(prefix+"_nJetsCvsB_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefix+"_nJetsCvsB_"+decaystring).c_str(), 10, -0.5, 9.5, "Nb of CvsB Jets");
     
     // finding Z boson
-    /*
+    
     MSPlot[(prefix+"_3dLeadingElPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_3dLeadingElPt_"+decaystring).c_str(), 25, 0, 500, "3d Leading electron Pt [GeV]");
     MSPlot[(prefix+"_3dLeadingMuPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_3dLeadingMuPt_"+decaystring).c_str(), 25, 0, 500, "3d Leading muon Pt [GeV]");
     MSPlot[(prefix+"_2ndLeadingElPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_2ndLeadingElPt_"+decaystring).c_str(), 25, 0, 500, "2nd Leading electron Pt [GeV]");
@@ -4634,7 +4634,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
     MSPlot[(prefix+"_LeadingMuPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_LeadingMuPt_"+decaystring).c_str(), 25, 0, 500, "Leading muon Pt [GeV]");
     MSPlot[(prefix+"_ElPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_ElPt_"+decaystring).c_str(), 25, 0, 500, "Leading electron Pt [GeV]");
     MSPlot[(prefix+"_MuPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MuPt_"+decaystring).c_str(), 25, 0, 500, "Leading muon Pt [GeV]");
-    
+    /*
     MSPlot[(prefix+"_3dLeadingElEta_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_3dLeadingElEta_"+decaystring).c_str(), 30,-6,6, "3d Leading electron Eta ");
     MSPlot[(prefix+"_3dLeadingMuEta_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_3dLeadingMuEta_"+decaystring).c_str(), 30,-6,6, "3d Leading muon Eta ");
     MSPlot[(prefix+"_2ndLeadingElEta_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_2ndLeadingElEta_"+decaystring).c_str(), 30,-6,6, "2nd Leading electron Eta ");
@@ -5214,7 +5214,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
     MSPlot[(prefix+"_nJetsCSVL_"+decaystring).c_str()]->Fill(selectedCSVLJetID.size() , datasets[d], true,eventW*scaleFactor);
     MSPlot[(prefix+"_nJetsCSVM_"+decaystring).c_str()]->Fill(selectedCSVMJetID.size() , datasets[d], true,eventW*scaleFactor);
     MSPlot[(prefix+"_nJetsCSVT_"+decaystring).c_str()]->Fill(selectedCSVTJetID.size() , datasets[d], true,eventW*scaleFactor);
-    /*
+    
     if(selectedElectrons.size()>2) MSPlot[(prefix+"_3dLeadingElPt_"+decaystring).c_str()]->Fill(selectedElectrons[2].Pt() , datasets[d], true,eventW*scaleFactor);
     if(selectedMuons.size()>2)     MSPlot[(prefix+"_3dLeadingMuPt_"+decaystring).c_str()]->Fill(selectedMuons[2].Pt() , datasets[d], true,eventW*scaleFactor);
     if(selectedElectrons.size()>1) MSPlot[(prefix+"_2ndLeadingElPt_"+decaystring).c_str()]->Fill(selectedElectrons[1].Pt() , datasets[d], true,eventW*scaleFactor);
@@ -5227,7 +5227,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
     for(int iter = 0; iter < selectedMuons.size(); iter++){
       MSPlot[(prefix+"_MuPt_"+decaystring).c_str()]->Fill(selectedMuons[iter].Pt() , datasets[d], true,eventW*scaleFactor);
     }
-    
+    /*
     if(selectedElectrons.size()>2) MSPlot[(prefix+"_3dLeadingElEta_"+decaystring).c_str()]->Fill(selectedElectrons[2].Eta() , datasets[d], true,eventW*scaleFactor);
     if(selectedMuons.size()>2)     MSPlot[(prefix+"_3dLeadingMuEta_"+decaystring).c_str()]->Fill(selectedMuons[2].Eta() , datasets[d], true,eventW*scaleFactor);
     if(selectedElectrons.size()>1) MSPlot[(prefix+"_2ndLeadingElEta_"+decaystring).c_str()]->Fill(selectedElectrons[1].Eta() , datasets[d], true,eventW*scaleFactor);
