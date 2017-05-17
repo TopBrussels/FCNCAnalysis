@@ -4640,7 +4640,8 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
       MSPlot[(prefix+"_ZbosonMudPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_ZbosonMudPhi_"+decaystring).c_str(), 100,0,6, "Zboson muon dPhi ");
       MSPlot[(prefix+"_ZbosonMudR_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_ZbosonMudR_"+decaystring).c_str(), 100,0,6, "Zboson muon dR ");
       
-      MSPlot[(prefix+"_ZbosonPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_ZbosonPt_"+decaystring).c_str(), 100,0,500, "Zboson Pt");
+      MSPlot[(prefix+"_ZbosonPtMu_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_ZbosonPtMu_"+decaystring).c_str(), 100,0,500, "Zboson Pt Mu");
+      
       
       MSPlot[(prefix+"_3dLeadingMuPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_3dLeadingMuPhi_"+decaystring).c_str(), 30,-4,4, "3d Leading muon Phi ");
       MSPlot[(prefix+"_2ndLeadingMuPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_2ndLeadingMuPhi_"+decaystring).c_str(), 30,-4,4, "2nd Leading muon Phi ");
@@ -4685,9 +4686,9 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
     */
     
     
-   
+    MSPlot[(prefix+"_ZbosonPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_ZbosonPt_"+decaystring).c_str(), 100,0,500, "Zboson Pt");
     
-      MSPlot[(prefix+"_ZbosonPtMu_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_ZbosonPtMu_"+decaystring).c_str(), 100,0,500, "Zboson Pt Mu");
+    
     
     
     
