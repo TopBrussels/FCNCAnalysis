@@ -4639,6 +4639,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
       MSPlot[(prefix+"_ZbosonMuIso_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_ZbosonMuIso_"+decaystring).c_str(), 10,0,1, "Zboson muon Iso ");
       MSPlot[(prefix+"_ZbosonMudPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_ZbosonMudPhi_"+decaystring).c_str(), 20,-4,4, "Zboson muon dPhi ");
       MSPlot[(prefix+"_ZbosonMudR_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_ZbosonMudR_"+decaystring).c_str(), 50,0,6, "Zboson muon dR ");
+      MSPlot[(prefix+"_ZbosonMassMu_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_ZbosonMassMu_"+decaystring).c_str(), 70, 60, 130, "Inv Mass  Zboson (muon)");
       
       MSPlot[(prefix+"_ZbosonPtMu_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_ZbosonPtMu_"+decaystring).c_str(), 50,0,500, "Zboson Pt Mu");
       
@@ -4677,6 +4678,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
       MSPlot[(prefix+"_ZbosonPtEl_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_ZbosonPtEl_"+decaystring).c_str(), 50,0,500, "Zboson Pt El");
       
       MSPlot[(prefix+"_2ndLeadingElPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_2ndLeadingElPhi_"+decaystring).c_str(), 30,-4,4, "2nd Leading electron Phi ");
+      MSPlot[(prefix+"_ZbosonMassEl_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_ZbosonMassEl_"+decaystring).c_str(), 70, 60, 130, "Inv Mass Zboson (electron)");
       
     }
     if(decayChannels[iChan] == 3 || decayChannels[iChan] == 1 || decayChannels[iChan] == 2|| decayChannels[iChan] == -9){
@@ -5284,6 +5286,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
           MSPlot[(prefix+"_ZbosonEldPhi_"+decaystring).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedElectrons[ZelecIndiceF_0],selectedElectrons[ZelecIndiceF_1]),datasets[d], true,eventW*scaleFactor) ;
           MSPlot[(prefix+"_ZbosonEldR_"+decaystring).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedElectrons[ZelecIndiceF_0],selectedElectrons[ZelecIndiceF_1]),datasets[d], true,eventW*scaleFactor) ;
           MSPlot[(prefix+"_ZbosonPtEl_"+decaystring).c_str()]->Fill(Zboson.Pt(),datasets[d], true,eventW*scaleFactor) ;
+          MSPlot[(prefix+"_ZbosonMassEl_"+decaystring).c_str()]->Fill(Zboson.M(),datasets[d], true,eventW*scaleFactor) ;
           
         }
 
@@ -5322,6 +5325,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
           MSPlot[(prefix+"_ZbosonMudPhi_"+decaystring).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedMuons[ZmuIndiceF_0],selectedMuons[ZmuIndiceF_1]),datasets[d], true,eventW*scaleFactor) ;
           MSPlot[(prefix+"_ZbosonMudR_"+decaystring).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedMuons[ZmuIndiceF_0],selectedMuons[ZmuIndiceF_1]),datasets[d], true,eventW*scaleFactor) ;
           MSPlot[(prefix+"_ZbosonPtMu_"+decaystring).c_str()]->Fill(Zboson.Pt(),datasets[d], true,eventW*scaleFactor) ;
+          MSPlot[(prefix+"_ZbosonMassMu_"+decaystring).c_str()]->Fill(Zboson.M(),datasets[d], true,eventW*scaleFactor) ;
         }
       }
       if(selectedMuons.size()>0 && ( decayChannels[iChan] == 0 || decayChannels[iChan] == 1 || decayChannels[iChan] == 2)){
