@@ -29,6 +29,8 @@
 
 //user code
 
+#include "Math/PtEtaPhiE4D.h"
+#include "rochester/RoccoR.cc"
 #include "TopTreeProducer/interface/TRootRun.h"
 #include "TopTreeProducer/interface/TRootEvent.h"
 #include "TopTreeAnalysisBase/Selection/interface/Run2Selection.h"
@@ -242,7 +244,7 @@ int main (int argc, char *argv[])
   
   for(int args = 11; args < argc-7; args++)
   {
-    cout << "pushing back " << argv[args] << endl;
+   // cout << "pushing back " << argv[args] << endl;
     vecfileNames.push_back(argv[args]);
     
   }
@@ -787,7 +789,7 @@ int main (int argc, char *argv[])
     muonSFWeightIso_GH = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/20170413/IsoEfficienciesAndSF_GH.root", "TightISO_TightID_pt_eta/abseta_pt_ratio", true, false, false);  // Tight RelIso, Tight ID
     // muonSFWeightTrig_BCDEF = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/SingleMuonTrigger_EfficienciesAndSF_RunsBCDEF.root", "IsoMu24_OR_IsoTkMu24_PtEtaBins/abseta_pt_ratio", true, false, false);
     //  muonSFWeightTrig_GH = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/SingleMuonTrigger_EfficienciesAndSF_RunsGH.root", "IsoMu24_OR_IsoTkMu24_PtEtaBins/abseta_pt_ratio", true, false, false);
-    
+    RoccoR rc("rochester/rcdata.2016.v3");
     
     
     
@@ -1032,6 +1034,8 @@ int main (int argc, char *argv[])
     Int_t badmueventmu[10];
     Int_t badmueventclonemu[10];
     Double_t pt_muon[10];
+    Double_t pt_muon_corrected[10];
+    Double_t ptSF_muon[10];
     Double_t phi_muon[10];
     Double_t eta_muon[10];
     Double_t E_muon[10];
@@ -1264,6 +1268,8 @@ int main (int argc, char *argv[])
     myTree->Branch("MuonTrigSFv2",&MuonTrigSFv2,"MuonTrigSFv2[nMuons]/D");
     myTree->Branch("MuonTrigSFv3",&MuonTrigSFv3,"MuonTrigSFv3[nMuons]/D");
     myTree->Branch("pt_muon",pt_muon,"pt_muon[nMuons]/D");
+    myTree->Branch("ptSF_muon",ptSF_muon,"ptSF_muon[nMuons]/D");
+    myTree->Branch("pt_muon_corrected",pt_muon_corrected,"pt_muon_corrected[nMuons]/D");
     myTree->Branch("phi_muon",phi_muon,"phi_muon[nMuons]/D");
     myTree->Branch("eta_muon",eta_muon,"eta_muon[nMuons]/D");
     myTree->Branch("E_muon",E_muon,"E_muon[nMuons]/D");
@@ -1600,6 +1606,7 @@ int main (int argc, char *argv[])
     // initial variables
     vector < TRootVertex* >   vertex;
     vector < TRootMuon* >     init_muons;
+    vector <TRootMuon*>       init_muons_corrected;
     vector < TRootElectron* > init_electrons;
     vector < TRootJet* >      init_jets;
     vector < TRootJet* >      init_jets_corrected;
@@ -1647,7 +1654,7 @@ int main (int argc, char *argv[])
     bool badmu = false;
     
     bool   EcalDead = false;
-    //bool    eeBad = false; not recommended
+    bool    eeBad = false;
     bool   lep3 = false;
     bool lep3veto = false;
     bool lep3veto1J = false;
@@ -1703,7 +1710,7 @@ int main (int argc, char *argv[])
       badchan = false;
       badmu = false;
       EcalDead = false;
-      //eeBad = false;
+      eeBad = false;
 
       if(verbose > 0 ) cout << "new event " << ievt << endl;
       double ievt_d = ievt;
@@ -1742,6 +1749,9 @@ int main (int argc, char *argv[])
       nIniRecoLeptons=0;
       nIniRecoElectrons = 0;
       nIniRecoMuons = 0;
+      double dataMuPTSF = 1.;
+      double mcMuPTSF = 1.;
+      init_muons_corrected = init_muons;
       for(int iMu = 0 ; iMu < init_muons.size(); iMu++){
         if(init_muons[iMu]->Pt() > 10.0) nIniRecoMuons++;
         if(init_muons[iMu]->isBad80X()) rejecteventBadPFmuon = 1;
@@ -1749,7 +1759,9 @@ int main (int argc, char *argv[])
        // if(!init_muons[iMu]->isPFMuon()) { cout << "rejected muon " << endl; rejecteventBadPFmuon = 1;}
        // PFmuon =   init_muons[0]->isPFMuon();
         
+        
       }
+      
       for(int iEl= 0 ; iEl < init_electrons.size(); iEl++){
         if(init_electrons[iEl]->Pt() > 10.0) nIniRecoElectrons++;
       }
@@ -1769,7 +1781,7 @@ int main (int argc, char *argv[])
       HBHEIso = event->getHBHENoiseIsoFilter();
       CSCTight = event->getglobalTightHalo2016Filter();
       EcalDead = event->getEcalDeadCellTriggerPrimitiveFilter();
-      //eeBad = event->getEEBadScFilter();
+      eeBad = event->getEEBadScFilter();
       badchan   = event-> getBadChCandFilter();
       badmu	    = event-> getBadPFMuonFilter();
       
@@ -2057,7 +2069,7 @@ int main (int argc, char *argv[])
       ///////////////////////////////////////////////////////////
       
       // Declare selection instance
-      Run2Selection selection(init_jets_corrected, init_muons, init_electrons, mets,event->fixedGridRhoFastjetAll());
+      Run2Selection selection(init_jets_corrected, init_muons_corrected, init_electrons, mets,event->fixedGridRhoFastjetAll());
       PreselectedJets.clear();
       PreselectedJets  = selection.GetSelectedJets(jet_pt_cut,jet_eta_cut, true, "Loose");
       selectedMuons.clear();
@@ -2082,6 +2094,8 @@ int main (int argc, char *argv[])
       mcParticles.clear();
       if(!isData) treeLoader.LoadMCEvent(ievt, 0,  mcParticles, false);
       if(!isData) sort(mcParticles.begin(),mcParticles.end(),HighestPt());
+      
+      
       
       
       
@@ -2121,8 +2135,8 @@ int main (int argc, char *argv[])
       // Apply primary vertex selection
       bool isGoodPV = selection.isPVSelected(vertex, 4, 24., 2);
       // Met filters
-      //if(HBHEnoise && HBHEIso && CSCTight && EcalDead && eeBad && isGoodPV && badchan && badmu) passedMET = true;
-      if(HBHEnoise && HBHEIso && CSCTight && EcalDead  && isGoodPV && badchan && badmu ) passedMET = true;
+      if(isData && HBHEnoise && HBHEIso && CSCTight && EcalDead && eeBad && isGoodPV && badchan && badmu) passedMET = true;
+      else if(!isData && HBHEnoise && HBHEIso && CSCTight && EcalDead  && isGoodPV && badchan && badmu ) passedMET = true;
       PassedMETFilter = passedMET;
       PassedGoodPV = isGoodPV;
       
@@ -2452,12 +2466,19 @@ int main (int argc, char *argv[])
         
         nMuons = 0;
         double muonSFtemp = 1.;
+        
         for (Int_t selmu =0; selmu < selectedMuons.size() ; selmu++ )
         {
           pt_muon[nMuons]=selectedMuons[selmu]->Pt();
           phi_muon[nMuons]=selectedMuons[selmu]->Phi();
           eta_muon[nMuons]=selectedMuons[selmu]->Eta();
           E_muon[nMuons]=selectedMuons[selmu]->E();
+          if(isData) ptSF_muon[nMuons] = rc.kScaleDT(selectedMuons[selmu]->charge(), selectedMuons[selmu]->Pt(), selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Phi(), 0, 0);
+          else ptSF_muon[nMuons] = rc.kScaleAndSmearMC(selectedMuons[selmu]->charge(), selectedMuons[selmu]->Pt(), selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Phi(), selectedMuons[selmu]->nofTrackerLayersWithMeasurement(),gRandom->Rndm(),gRandom->Rndm(),0, 0);
+          
+          pt_muon_corrected[nMuons]=selectedMuons[selmu]->Pt()*ptSF_muon[nMuons];
+          
+         
           
           badmueventmu[nMuons] = selectedMuons[selmu]->isBad80X();
           badmueventclonemu[nMuons] = selectedMuons[selmu]->isClone80X();
@@ -2525,6 +2546,12 @@ int main (int argc, char *argv[])
             E_muon[nMuons]=selectedFakeMuons[selmu]->E();
             badmueventmu[nMuons] = selectedFakeMuons[selmu]->isBad80X();
             badmueventclonemu[nMuons] = selectedFakeMuons[selmu]->isClone80X();
+            
+            if(isData) ptSF_muon[nMuons] = rc.kScaleDT(selectedFakeMuons[selmu]->charge(), selectedFakeMuons[selmu]->Pt(), selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Phi(), 7, 0);
+            else ptSF_muon[nMuons] = rc.kScaleAndSmearMC(selectedFakeMuons[selmu]->charge(), selectedFakeMuons[selmu]->Pt(), selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Phi(), selectedFakeMuons[selmu]->nofTrackerLayersWithMeasurement(),gRandom->Rndm(),gRandom->Rndm(),7, 0);
+            
+            pt_muon_corrected[nMuons]=selectedFakeMuons[selmu]->Pt()*ptSF_muon[nMuons];
+            
             
             pfIso_muon[nMuons]=selectedFakeMuons[selmu]->relPfIso(4,0);
             if(!isData)
