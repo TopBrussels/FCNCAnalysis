@@ -1891,7 +1891,7 @@ int main(int argc, char* argv[]){
       bool twolepregion = false;
       if(selectedLeptons.size() == 3)  threelepregion = true;
       if(selectedElectrons.size() > 1 || selectedMuons.size() > 1) twolepregion = true;
-      
+      if(! threelepregion && ! twolepregion ) continue; 
 //      if(selectedElectrons.size() != nbOfLooseElectrons ) continue;
 //      if(selectedMuons.size() != nbOfLooseMuons ) continue;
       
