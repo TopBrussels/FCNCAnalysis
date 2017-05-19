@@ -1402,7 +1402,7 @@ int main(int argc, char* argv[]){
       if (ievt%1000 == 0)
         std::cout << "Processing the " << ievt << "th event (" << ((double)ievt/(double)nEntries)*100  << "%)" << flush << "\r";
       
-      
+      cout << "ievt "  << ievt << endl; 
       /// Load event
       tTree[(dataSetName).c_str()]->GetEntry(ievt);
       
@@ -1552,7 +1552,7 @@ int main(int argc, char* argv[]){
         
       }
       
-      cout << "before selections " << endl; 
+      cout << "before selections " << endl;
       
       // selections
       if(selectedJetsID.size()>6) continue; // temp fix
