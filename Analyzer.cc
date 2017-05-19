@@ -1552,7 +1552,7 @@ int main(int argc, char* argv[]){
         
       }
       
-      cout << "before selections " << endl;
+     // cout << "before selections " << endl;
       
       // selections
       if(selectedJetsID.size()>6) continue; // temp fix
@@ -1583,14 +1583,14 @@ int main(int argc, char* argv[]){
       //      if(selectedMuons.size() != nbOfLooseMuons ) continue;
 
       
-      cout << "in assigner" <<endl;
+     // cout << "in assigner" <<endl;
       
       //cout << "WmuIndiceF " << WmuIndiceF <<" WelecIndiceF "<< WelecIndiceF <<" ZmuIndiceF_1 "<< ZmuIndiceF_1 <<" ZmuIndiceF_0 "<< ZmuIndiceF_0 <<" ZelecIndiceF_0 "<< ZelecIndiceF_0 <<" ZelecIndiceF_1 "<< ZelecIndiceF_1 << endl;
       
       LeptonAssigner(selectedElectrons, selectedMuons,selectedElectronsCharge ,selectedMuonsCharge);
-      cout << "WmuIndiceF " << WmuIndiceF <<" WelecIndiceF "<< WelecIndiceF <<" ZmuIndiceF_1 "<< ZmuIndiceF_1 <<" ZmuIndiceF_0 "<< ZmuIndiceF_0 <<" ZelecIndiceF_0 "<< ZelecIndiceF_0 <<" ZelecIndiceF_1 "<< ZelecIndiceF_1 << endl;
+      //cout << "WmuIndiceF " << WmuIndiceF <<" WelecIndiceF "<< WelecIndiceF <<" ZmuIndiceF_1 "<< ZmuIndiceF_1 <<" ZmuIndiceF_0 "<< ZmuIndiceF_0 <<" ZelecIndiceF_0 "<< ZelecIndiceF_0 <<" ZelecIndiceF_1 "<< ZelecIndiceF_1 << endl;
       if(!Assigned) continue;
-      cout << "in reco" << endl;
+      //cout << "in reco" << endl;
       ReconstructObjects(selectedJetsID, selectedMuons, selectedElectrons, selectedJets, Region, threelepregion);
     
       // apply SF
@@ -1901,7 +1901,7 @@ int main(int argc, char* argv[]){
       cout << "twolepregion" << " " << twolepregion << " " << "threelepregion" << " " <<  threelepregion << endl;
       if (makePlots)
       {
-        //cout << "ievt " << ievt << endl;
+        cout << "ievt " << ievt << endl;
         FillGeneralPlots(d, "control_afterAtLeast1Jet", decayChannels, isData, isfakes, threelepregion, twolepregion);
         //if(threelepregion) FillGeneralPlots(d, "3lepcontrol_afterAtLeast1Jet", decayChannels, isData, isfakes, threelepregion, twolepregion);
         //if(dataSetName.find("WZTo3LNu")!=std::string::npos) Fill1DPlots(dataSetName);
@@ -5196,7 +5196,7 @@ void InitTree(TTree* tree, bool isData, bool isfakes){
 
 
 void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isData, bool isfakes, bool threelepregion,bool twolepregion){
-  //cout << "fill plots" << endl;
+  cout << "fill plots" << endl;
   string decaystring = "";
   Double_t eventW = 1.;
   // if(isData  ) scaleFactor = 1.;
@@ -5214,7 +5214,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
      cout << decayChannels[iChan] << " " << channelInt << " " <<  threelepregion << " " << twolepregion << endl;
    // if(decayChannels[iChan] == -9) continue;;
     // cout << decayChannels[iChan] << " " << channelInt << " " << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
-    if(decayChannels[iChan] != channelInt) continue;
+    if(decayChannels[iChan] != channelInt && decayChannels[iChan] != -9) continue;
     // cout << decayChannels[iChan] << " " << channelInt << " " << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
     if(decayChannels[iChan] == 0) decaystring = "uuu";
     if(decayChannels[iChan] == 1) decaystring = "uue";
