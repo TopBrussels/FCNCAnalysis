@@ -2303,7 +2303,7 @@ int main (int argc, char *argv[])
 
       
       if(!doFakeLepton){
-        if(((selectedMuons.size()  < 2 && selectedElectrons.size()) < 2)){
+        if(selectedMuons.size()  < 2 && selectedElectrons.size() < 2){
           selections.push_back(0);
           continueFlow = false;
         }
