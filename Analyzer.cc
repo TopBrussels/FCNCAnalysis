@@ -1552,6 +1552,7 @@ int main(int argc, char* argv[]){
         
       }
       
+      cout << "before selections " << endl; 
       
       // selections
       if(selectedJetsID.size()>6) continue; // temp fix
@@ -1572,7 +1573,7 @@ int main(int argc, char* argv[]){
       MVA_TotalInvMass_jet = tempInvMassObj_jet.M();
       
       
-      //cout << "in assigner" <<endl;
+      cout << "in assigner" <<endl;
       
       //cout << "WmuIndiceF " << WmuIndiceF <<" WelecIndiceF "<< WelecIndiceF <<" ZmuIndiceF_1 "<< ZmuIndiceF_1 <<" ZmuIndiceF_0 "<< ZmuIndiceF_0 <<" ZelecIndiceF_0 "<< ZelecIndiceF_0 <<" ZelecIndiceF_1 "<< ZelecIndiceF_1 << endl;
       
