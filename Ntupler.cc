@@ -1004,6 +1004,7 @@ int main (int argc, char *argv[])
     Int_t channelInt;
     
     // variables for electrons
+    Int_t nbOfLooseElectrons;
     Int_t nElectrons;
     Double_t pt_electron[10];
     Double_t phi_electron[10];
@@ -1028,6 +1029,7 @@ int main (int argc, char *argv[])
     Bool_t isEBEEGap[10];
     
     //variable for muons
+    Int_t nbOfLooseMuons;
     Int_t nMuons;
     Int_t rejecteventBadPFmuon;
    // Int_t PFmuon;
@@ -1202,6 +1204,7 @@ int main (int argc, char *argv[])
      
      */
     // electrons
+    myTree->Branch("nbOfLooseElectrons",&nbOfLooseElectrons, "nbOfLooseElectrons/I");
     myTree->Branch("nElectrons",&nElectrons, "nElectrons/I");//
     myTree->Branch("ElectronSF",&ElectronSF,"ElectronSF[nElectrons]/D");
     myTree->Branch("ElectronSF_up",&ElectronSF_up,"ElectronSF_up[nElectrons]/D");
@@ -1236,6 +1239,7 @@ int main (int argc, char *argv[])
     myTree->Branch("isEBEEGap",isEBEEGap,"isEBEEGap[nElectrons]/O)");
     
     // muons
+    myTree->Branch("nbOfLooseMuons", &nbOfLooseMuons, "nbOfLooseMuons/I");
     myTree->Branch("nMuons",&nMuons, "nMuons/I");
     myTree->Branch("badmueventclonemu", &badmueventclonemu, "badmueventclonemu[nMuons]/I");
     myTree->Branch("badmueventmu", &badmueventmu, "badmueventmu[nMuons]/I");
@@ -2297,7 +2301,7 @@ int main (int argc, char *argv[])
       continueFlow = true;
       nbEvents++;
 
-      channelInt = -5; i_channel = -5;
+      
       if(!doFakeLepton){
         if(((selectedMuons.size() + selectedElectrons.size()) < 2)){
           selections.push_back(0);
@@ -2312,6 +2316,8 @@ int main (int argc, char *argv[])
           else if(selectedElectrons.size() == 3) {channelInt = 3; i_channel = 3;}
           else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {channelInt = 2; i_channel = 2; }
           else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){channelInt = 1; i_channel = 1; }
+          else if(selectedMuons.size() == 2) {channelInt = 4; i_channel = 4;}
+          else if(selectedElectrons.size() == 2) {channelInt = 5; i_channel = 5;}
           //else {cout << "ERROR no channel selected" << endl; break; }
         }
         
