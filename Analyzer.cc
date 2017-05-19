@@ -1897,10 +1897,10 @@ int main(int argc, char* argv[]){
       if (makePlots)
       {
         //cout << "ievt " << ievt << endl;
-        if(twolepregion) FillGeneralPlots(d, "2lepcontrol_afterAtLeast1Jet", decayChannels, isData, isfakes, threelepregion, twolepregion);
-        if(threelepregion) FillGeneralPlots(d, "3lepcontrol_afterAtLeast1Jet", decayChannels, isData, isfakes, threelepregion, twolepregion);
+        FillGeneralPlots(d, "control_afterAtLeast1Jet", decayChannels, isData, isfakes, threelepregion, twolepregion);
+        //if(threelepregion) FillGeneralPlots(d, "3lepcontrol_afterAtLeast1Jet", decayChannels, isData, isfakes, threelepregion, twolepregion);
         //if(dataSetName.find("WZTo3LNu")!=std::string::npos) Fill1DPlots(dataSetName);
-        if(dataSetName.find("WZJTo3LNu")!=std::string::npos ) Fill1DPlots(dataSetName, eventweight_, threelepregion,twolepregion);
+        if(dataSetName.find("WZJTo3LNu")!=std::string::npos && twolepregion ) Fill1DPlots(dataSetName, eventweight_, threelepregion,twolepregion);
         
         //if(dataSetName.find("tZq")!=std::string::npos){ Fill1DPlots(dataSetName);}
         
@@ -1910,14 +1910,14 @@ int main(int argc, char* argv[]){
       
       if (makePlots)
       {
-        if(twolepregion) FillGeneralPlots(d, "2lepcontrol_afterAtLeast1Jet_afterZWindow", decayChannels,isData, isfakes, threelepregion, twolepregion);
-        if(threelepregion) FillGeneralPlots(d, "3lepcontrol_afterAtLeast1Jet_afterZWindow", decayChannels,isData, isfakes, threelepregion, twolepregion);
+        FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow", decayChannels,isData, isfakes, threelepregion, twolepregion);
+        //if(threelepregion) FillGeneralPlots(d, "3lepcontrol_afterAtLeast1Jet_afterZWindow", decayChannels,isData, isfakes, threelepregion, twolepregion);
         
       }
       
       if(selectednonCSVLJetID.size()>0 && makePlots){
-        if(twolepregion) FillGeneralPlots(d, "2lepcontrol_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels,isData, isfakes, threelepregion, twolepregion);
-        if(threelepregion) FillGeneralPlots(d, "3lepcontrol_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels,isData, isfakes, threelepregion, twolepregion);
+        FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels,isData, isfakes, threelepregion, twolepregion);
+        //if(threelepregion) FillGeneralPlots(d, "3lepcontrol_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels,isData, isfakes, threelepregion, twolepregion);
       }
       
       // from here only 3lep analysis !!!!
