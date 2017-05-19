@@ -1926,7 +1926,7 @@ int main(int argc, char* argv[]){
       
       // from here only 3lep analysis !!!!
       
-      if(!threelepregion) continue;
+      if((selectedMuons.size()+selectedElectrons.size())!= 3) continue;
       bool matcher = false;
       if(check_matching) matcher = MatchingFunction(dataSetName, selectedLeptons, selectedMuons, selectedElectrons, selectedJets,makeMatchingPlots, debugmatching);
       if(matcher && debugmatching) cout << " done with matching " << endl;

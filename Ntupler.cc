@@ -2022,7 +2022,7 @@ int main (int argc, char *argv[])
         trigged_met = true;
       }
       
-      if(true) cout << "Apply trigger? " << runHLT << " trigged? " << trigged << endl;
+      if(verbose > 1) cout << "Apply trigger? " << runHLT << " trigged? " << trigged << endl;
       
       PassedTrigger = trigged;
       PassedTriggerMET = trigged_met;
@@ -2303,11 +2303,11 @@ int main (int argc, char *argv[])
 
       
       if(!doFakeLepton){
-        if(selectedMuons.size()  < 2 && selectedElectrons.size() < 2){
+        if(((selectedMuons.size() + selectedElectrons.size()) < 2)){
           selections.push_back(0);
           continueFlow = false;
         }
-        else if((selectedMuons.size() > 1 || selectedElectrons.size()) > 1){
+        else if((selectedMuons.size() + selectedElectrons.size()) >1){
           selections.push_back(1);
           
           if(selectedMuons.size() + selectedElectrons.size() ==3 ){ lep3 = true; nbSelectedEvents_3L++;}
