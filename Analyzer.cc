@@ -5215,7 +5215,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
    // if(decayChannels[iChan] == -9) continue;;
     //cout << decayChannels[iChan] << " " << channelInt << " " << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
     if(decayChannels[iChan] != channelInt && decayChannels[iChan] != -9) continue;
-    if(decayChannels[iChan] == -9))cout << decayChannels[iChan] << " " << channelInt << " passed " << endl;
+    if(decayChannels[iChan] == -9)cout << decayChannels[iChan] << " " << channelInt << " passed " << endl;
     if(decayChannels[iChan] == 0) decaystring = "uuu";
     if(decayChannels[iChan] == 1) decaystring = "uue";
     if(decayChannels[iChan] == 2) decaystring = "eeu";
