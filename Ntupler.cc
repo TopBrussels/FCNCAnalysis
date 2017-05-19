@@ -2297,21 +2297,22 @@ int main (int argc, char *argv[])
       continueFlow = true;
       nbEvents++;
 
-      
+      channelInt = -5; i_channel = -5;
       if(!doFakeLepton){
-        if(((selectedMuons.size() + selectedElectrons.size()) != 3)){
+        if(((selectedMuons.size() + selectedElectrons.size()) < 2)){
           selections.push_back(0);
           continueFlow = false;
         }
-        else if((selectedMuons.size() + selectedElectrons.size()) == 3){
+        else if((selectedMuons.size() + selectedElectrons.size()) >1){
           selections.push_back(1);
-          nbSelectedEvents_3L++;
-          lep3 = true;
+          
+          if(selectedMuons.size() + selectedElectrons.size() ==3 ){ lep3 = true; nbSelectedEvents_3L++;}
+         
           if(selectedMuons.size() == 3) {channelInt = 0; i_channel = 0;}
           else if(selectedElectrons.size() == 3) {channelInt = 3; i_channel = 3;}
           else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {channelInt = 2; i_channel = 2; }
           else if(selectedMuons.size() == 2 && selectedElectrons.size() == 1){channelInt = 1; i_channel = 1; }
-          else {cout << "ERROR no channel selected" << endl; break; }
+          //else {cout << "ERROR no channel selected" << endl; break; }
         }
         
         
@@ -2329,7 +2330,7 @@ int main (int argc, char *argv[])
           else if(selectedElectrons.size() == 2 && selectedFakeMuons.size() == 1  ) {channelInt = 2; i_channel = 2; }
           else if(selectedMuons.size() == 2 && selectedFakeElectrons.size() == 1){channelInt = 1; i_channel = 1; }
           else if(selectedMuons.size() == 1 && selectedElectrons.size() == 1  && selectedFakeMuons.size() == 1){channelInt = 1; i_channel = 1; }
-          else {cout << "ERROR no channel selected" << endl; break; }
+          //else {cout << "ERROR no channel selected" << endl; break; }
         }
         else{
           selections.push_back(0);
@@ -2338,8 +2339,10 @@ int main (int argc, char *argv[])
         
       }
       
+      nbOfLooseMuons = selectedLooseMuons.size();
+      nbOfLooseElectrons = selectedVetoElectrons.size(); 
       
-      if((selectedMuons.size() != selectedLooseMuons.size()) || (selectedVetoElectrons.size() != selectedElectrons.size())){
+     /* if((selectedMuons.size() == 3 && selectedLooseMuons.size() != 3) || (selectedVetoElectrons.size() != 3 &&  selectedElectrons.size()== 3)){
         selections.push_back(0);
         continueFlow = false;
       }
@@ -2351,7 +2354,7 @@ int main (int argc, char *argv[])
           lep3veto = true;
           nbSelectedEvents_3Lveto++;
         }
-      }
+      }*/
       
       double met_px = mets[0]->Px();
       double met_py = mets[0]->Py();
@@ -2408,9 +2411,7 @@ int main (int argc, char *argv[])
         btagSFshape_up_cferr2 = btagWeight_shape_up_cferr2;
         btagSFshape_down_cferr2 = btagWeight_shape_down_cferr2;
       }
-      else if(isData) {btagSFshape = 1.;   puSF_down = 1.; puSF_up = 1.; puSF = 1.;
-        
-      }
+      else if(isData) {btagSFshape = 1.;   puSF_down = 1.; puSF_up = 1.; puSF = 1.;}
       
       
       if( selectedJets.size() >0){
@@ -2422,10 +2423,10 @@ int main (int argc, char *argv[])
       
       //////////////////////////////////////
       //  DO STUFF WITH SELECTED EVENTS ////
-      //////////////////////////////////////
+      /////////////////////////////////////
       // fill the tree
       
-      if((lep3 && !isData) || (eventSelected && isData)){
+      if(eventSelected){
         eventweight = 1.;
         eventweight *= puSF;
         eventweight *= btagWeightShape;
