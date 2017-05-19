@@ -1895,7 +1895,7 @@ int main(int argc, char* argv[]){
 //      if(selectedElectrons.size() != nbOfLooseElectrons ) continue;
 //      if(selectedMuons.size() != nbOfLooseMuons ) continue;
       
-      cout << "twolepregion" << " " << twolepregion << " " << "threelepregion" << " " threelepregion << endl; 
+      cout << "twolepregion" << " " << twolepregion << " " << "threelepregion" << " " <<  threelepregion << endl;
       if (makePlots)
       {
         //cout << "ievt " << ievt << endl;
