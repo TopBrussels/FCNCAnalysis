@@ -5279,7 +5279,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
 
 
     if(decayChannels[iChan] != 0 && decayChannels[iChan]!=4 ){ // not uuu or uu
-      if(selectedElectrons.size()>2 && (decayChannels[iChan]==3 || decayChannels[iChan] ==9)  ){
+      if(selectedElectrons.size()>2 && (decayChannels[iChan]==3 || decayChannels[iChan] ==-9)  ){
         MSPlot[(prefixregion+prefix+"_3dLeadingElPt_"+decaystring).c_str()]->Fill(selectedElectrons[2].Pt() , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_3dLeadingElPhi_"+decaystring).c_str()]->Fill(selectedElectrons[2].Phi() , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_3dLeadingElIso_"+decaystring).c_str()]->Fill(pfIso_electron[electronID[2]] , datasets[d], true,eventW*scaleFactor);
@@ -5287,7 +5287,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
         MSPlot[(prefixregion+prefix+"_3dLeadingElEta_"+decaystring).c_str()]->Fill(eta_electron[electronID[2]] , datasets[d], true,eventW*scaleFactor);
         
       }
-      if(selectedElectrons.size()>1 && (decayChannels[iChan]==3 ||decayChannels[iChan]==2 || decayChannels[iChan]==5 || decayChannels[iChan] ==9) ){
+      if(selectedElectrons.size()>1 && (decayChannels[iChan]==3 ||decayChannels[iChan]==2 || decayChannels[iChan]==5 || decayChannels[iChan] ==-9) ){
         cout << "filling " << (prefixregion+prefix+"_2ndLeadingElEta_"+decaystring).c_str() << endl;
         MSPlot[(prefixregion+prefix+"_2ndLeadingElPt_"+decaystring).c_str()]->Fill(selectedElectrons[1].Pt() , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_2ndLeadingElPhi_"+decaystring).c_str()]->Fill(selectedElectrons[1].Phi() , datasets[d], true,eventW*scaleFactor);
@@ -5304,7 +5304,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
 
         
       }
-      if(selectedElectrons.size()>0 && (decayChannels[iChan]==3 ||decayChannels[iChan]==2 ||decayChannels[iChan]==1 || decayChannels[iChan]==5 || decayChannels[iChan] ==9)){
+      if(selectedElectrons.size()>0 && (decayChannels[iChan]==3 ||decayChannels[iChan]==2 ||decayChannels[iChan]==1 || decayChannels[iChan]==5 || decayChannels[iChan] ==-9)){
         MSPlot[(prefixregion+prefix+"_LeadingElPt_"+decaystring).c_str()]->Fill(selectedElectrons[0].Pt() , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_LeadingElPhi_"+decaystring).c_str()]->Fill(selectedElectrons[0].Phi() , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_LeadingElIso_"+decaystring).c_str()]->Fill(pfIso_electron[electronID[0]] , datasets[d], true,eventW*scaleFactor);
@@ -5320,13 +5320,13 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
 
     }
     if(decayChannels[iChan] != 3 && decayChannels[iChan]!= 5){ // not eee or  ee
-      if(selectedMuons.size()>2 && (decayChannels[iChan] == 0 || decayChannels[iChan] ==9)){
+      if(selectedMuons.size()>2 && (decayChannels[iChan] == 0 || decayChannels[iChan] ==-9)){
         MSPlot[(prefixregion+prefix+"_3dLeadingMuPhi_"+decaystring).c_str()]->Fill(selectedMuons[2].Phi() , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_3dLeadingMuIso_"+decaystring).c_str()]->Fill(pfIso_muon[muonID[2]] , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_3dLeadingMuPt_"+decaystring).c_str()]->Fill(selectedMuons[2].Pt() , datasets[d], true,eventW*scaleFactor);
          MSPlot[(prefixregion+prefix+"_3dLeadingMuEta_"+decaystring).c_str()]->Fill(selectedMuons[2].Eta() , datasets[d], true,eventW*scaleFactor);
       }
-      if(selectedMuons.size()>1 && (decayChannels[iChan] == 0 || decayChannels[iChan] == 1 || decayChannels[iChan]==4 || decayChannels[iChan] ==9)){
+      if(selectedMuons.size()>1 && (decayChannels[iChan] == 0 || decayChannels[iChan] == 1 || decayChannels[iChan]==4 || decayChannels[iChan] ==-9)){
         MSPlot[(prefixregion+prefix+"_2ndLeadingMuPhi_"+decaystring).c_str()]->Fill(selectedMuons[1].Phi() , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_2ndLeadingMuIso_"+decaystring).c_str()]->Fill(pfIso_muon[muonID[1]] , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_2ndLeadingMuPt_"+decaystring).c_str()]->Fill(selectedMuons[1].Pt() , datasets[d], true,eventW*scaleFactor);
@@ -5340,7 +5340,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
           MSPlot[(prefixregion+prefix+"_ZbosonMassMu_"+decaystring).c_str()]->Fill(Zboson.M(),datasets[d], true,eventW*scaleFactor) ;
         }
       }
-      if(selectedMuons.size()>0 && ( decayChannels[iChan] == 0 || decayChannels[iChan] == 1 || decayChannels[iChan] == 2 || decayChannels[iChan]==4 || decayChannels[iChan] ==9)){
+      if(selectedMuons.size()>0 && ( decayChannels[iChan] == 0 || decayChannels[iChan] == 1 || decayChannels[iChan] == 2 || decayChannels[iChan]==4 || decayChannels[iChan] ==-9)){
         MSPlot[(prefixregion+prefix+"_LeadingMuPhi_"+decaystring).c_str()]->Fill(selectedMuons[0].Phi() , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_LeadingMuIso_"+decaystring).c_str()]->Fill(pfIso_muon[muonID[0]] , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_LeadingMuPt_"+decaystring).c_str()]->Fill(selectedMuons[0].Pt() , datasets[d], true,eventW*scaleFactor);
