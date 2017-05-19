@@ -2156,7 +2156,7 @@ int main(int argc, char* argv[]){
     string place =pathOutputdate+"/MSPlot/";
     string placeTH1F = pathOutputdate+"/TH1F/";
     string placeTH2F = pathOutputdate+"/TH2F/";
-    vector <string> vlabel_chan = {"3#mu", "1e2#mu", "2e1#mu", "3e"};
+    vector <string> vlabel_chan = {"3#mu", "1e2#mu", "2e1#mu", "3e","2#mu","2e"};
     mkdir(place.c_str(),0777);
     mkdir(placeTH1F.c_str(),0777);
     mkdir(placeTH2F.c_str(),0777);
