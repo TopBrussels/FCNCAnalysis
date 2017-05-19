@@ -5218,7 +5218,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
     if(decayChannels[iChan] == 3) decaystring = "eee";
     if(decayChannels[iChan] == 4) decaystring = "uu";
     if(decayChannels[iChan] == 5) decaystring = "ee";
-    if(decayChannels[iChan] == 9) decaystring = "all";
+    if(decayChannels[iChan] == -9) decaystring = "all";
     
     if((decayChannels[iChan] == 4 || decayChannels[iChan] == 5) && prefixregion.find("3lep")!=std::string::npos) continue;
     //cout << "nvtx "  << nvtx << endl;
