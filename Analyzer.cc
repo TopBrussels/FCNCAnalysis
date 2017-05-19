@@ -678,7 +678,7 @@ void ClearMatchingSampleVars();
 void FillGeneralPlots(int d, string prefix, vector<int>decayChannels, bool isData, bool isfakes,bool threelepregion,bool twolepregion);
 void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<int>decayChannels);
 string ConvertIntToString(int nb, bool pad);
-void ReconstructObjects(vector<int> selectedJetsID, vector<TLorentzVector> Muons,vector<TLorentzVector> selectedElectrons, vector<TLorentzVector> selectedJets,int Region);
+void ReconstructObjects(vector<int> selectedJetsID, vector<TLorentzVector> Muons,vector<TLorentzVector> selectedElectrons, vector<TLorentzVector> selectedJets,int Region, bool threelepregion);
 void MakeMVAvars(int Region, Double_t scaleFactor);
 void createMVAtree(string dataSetName);
 void writeMVAtree();
@@ -1402,7 +1402,7 @@ int main(int argc, char* argv[]){
       if (ievt%1000 == 0)
         std::cout << "Processing the " << ievt << "th event (" << ((double)ievt/(double)nEntries)*100  << "%)" << flush << "\r";
       
-      cout << "ievt "  << ievt << endl; 
+     // cout << "ievt "  << ievt << endl;
       /// Load event
       tTree[(dataSetName).c_str()]->GetEntry(ievt);
       
@@ -1573,6 +1573,16 @@ int main(int argc, char* argv[]){
       MVA_TotalInvMass_jet = tempInvMassObj_jet.M();
       
       
+      //Three lep vs two lep
+      bool threelepregion = false;
+      bool twolepregion = false;
+      if(selectedLeptons.size() == 3)  threelepregion = true;
+      if(selectedElectrons.size() > 1 || selectedMuons.size() > 1) twolepregion = true;
+      if(! threelepregion && ! twolepregion ) continue;
+      //      if(selectedElectrons.size() != nbOfLooseElectrons ) continue;
+      //      if(selectedMuons.size() != nbOfLooseMuons ) continue;
+
+      
       cout << "in assigner" <<endl;
       
       //cout << "WmuIndiceF " << WmuIndiceF <<" WelecIndiceF "<< WelecIndiceF <<" ZmuIndiceF_1 "<< ZmuIndiceF_1 <<" ZmuIndiceF_0 "<< ZmuIndiceF_0 <<" ZelecIndiceF_0 "<< ZelecIndiceF_0 <<" ZelecIndiceF_1 "<< ZelecIndiceF_1 << endl;
@@ -1581,7 +1591,7 @@ int main(int argc, char* argv[]){
       cout << "WmuIndiceF " << WmuIndiceF <<" WelecIndiceF "<< WelecIndiceF <<" ZmuIndiceF_1 "<< ZmuIndiceF_1 <<" ZmuIndiceF_0 "<< ZmuIndiceF_0 <<" ZelecIndiceF_0 "<< ZelecIndiceF_0 <<" ZelecIndiceF_1 "<< ZelecIndiceF_1 << endl;
       if(!Assigned) continue;
       cout << "in reco" << endl;
-      ReconstructObjects(selectedJetsID, selectedMuons, selectedElectrons, selectedJets, Region);
+      ReconstructObjects(selectedJetsID, selectedMuons, selectedElectrons, selectedJets, Region, threelepregion);
     
       // apply SF
       scaleFactor = 1.;
@@ -1887,14 +1897,6 @@ int main(int argc, char* argv[]){
         
       }
       
-      //Three lep vs two lep
-      bool threelepregion = false;
-      bool twolepregion = false;
-      if(selectedLeptons.size() == 3)  threelepregion = true;
-      if(selectedElectrons.size() > 1 || selectedMuons.size() > 1) twolepregion = true;
-      if(! threelepregion && ! twolepregion ) continue;
-//      if(selectedElectrons.size() != nbOfLooseElectrons ) continue;
-//      if(selectedMuons.size() != nbOfLooseMuons ) continue;
       
       cout << "twolepregion" << " " << twolepregion << " " << "threelepregion" << " " <<  threelepregion << endl;
       if (makePlots)
@@ -3484,7 +3486,7 @@ void LeptonAssigner(vector<TLorentzVector> electrons, vector<TLorentzVector> muo
   
   
 };
-void ReconstructObjects(vector<int> selectedJetsID, vector<TLorentzVector> Muons,vector<TLorentzVector> selectedElectrons, vector<TLorentzVector> selectedJets,int Region){
+void ReconstructObjects(vector<int> selectedJetsID, vector<TLorentzVector> Muons,vector<TLorentzVector> selectedElectrons, vector<TLorentzVector> selectedJets,int Region, bool threelepregion){
   clock_t start_sub =  clock();
   
   
@@ -3501,11 +3503,11 @@ void ReconstructObjects(vector<int> selectedJetsID, vector<TLorentzVector> Muons
   
   bool Wlepfound = false;
   if(WmuIndiceF != -999 && WelecIndiceF != -999) cout << "ERROR: 2 W leptons found" << endl;
-  else if(WmuIndiceF!=-999){
+  else if(WmuIndiceF!=-999 && threelepregion){
     Wlep.SetPtEtaPhiE(selectedMuons[WmuIndiceF].Pt(),selectedMuons[WmuIndiceF].Eta(), selectedMuons[WmuIndiceF].Phi(), selectedMuons[WmuIndiceF].Energy());
     Wlepfound = true;
   }
-  else if(WelecIndiceF!=-999){
+  else if(WelecIndiceF!=-999 && threelepregion){
     Wlep.SetPtEtaPhiE(selectedElectrons[WelecIndiceF].Pt(), selectedElectrons[WelecIndiceF].Eta(), selectedElectrons[WelecIndiceF].Phi(), selectedElectrons[WelecIndiceF].Energy());
     Wlepfound = true;
   }
