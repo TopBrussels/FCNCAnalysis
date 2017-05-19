@@ -261,8 +261,9 @@ int main (int argc, char *argv[])
     anaEnv.JetCollection = "PFJets_slimmedJets";
     anaEnv.GenJetCollection = "GenJets_slimmedGenJets";
     anaEnv.FatJetCollection = "FatJets_slimmedJetsAK8";
-    if(dName.find("Data") == string::npos) anaEnv.METCollection = "PFMET_slimmedMETs";
-    else anaEnv.METCollection = "PFMET_slimmedMETsMuEGClean";
+    anaEnv.METCollection = "PFMET_slimmedMETs";
+//    if(dName.find("Data") == string::npos) anaEnv.METCollection = "PFMET_slimmedMETs";
+//    else anaEnv.METCollection = "PFMET_slimmedMETsMuEGClean";
     anaEnv.MuonCollection = "Muons_slimmedMuons";
     anaEnv.ElectronCollection = "Electrons_selectedElectrons";
     anaEnv.NPGenEventCollection = "NPGenEvent";
@@ -2206,7 +2207,18 @@ int main (int argc, char *argv[])
                     W_MuonTrigSF_Minus = (muonSFWeightTrig_BCDEF->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightTrig_GH->at(selectedMuons[0]->Eta(), selectedMuons[0]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
 
                     double MuonTrackSF = h_muonSFWeightTrack->Eval(selectedMuons[0]->Eta());
-                    
+/*
+cout << " " << endl;
+cout << "W_MuonIDSF: " << W_MuonIDSF << endl;
+cout << "W_MuonIsoSF: " << W_MuonIsoSF << endl;
+cout << "W_MuonTrigSF: " << W_MuonTrigSF << endl;
+cout << "W_MuonIDSF_Plus diff: : " << fabs(W_MuonIDSF-W_MuonIDSF_Plus) << endl;
+cout << "W_MuonIsoSF_Plus diff: " << fabs(W_MuonIsoSF-W_MuonIsoSF_Plus) << endl;
+cout << "W_MuonTrigSF_Plus diff: " << fabs(W_MuonTrigSF-W_MuonTrigSF_Plus) << endl;
+cout << "W_MuonIDSF_Minus diff: : " << fabs(W_MuonIDSF-W_MuonIDSF_Minus) << endl;
+cout << "W_MuonIsoSF_Minus diff: " << fabs(W_MuonIsoSF-W_MuonIsoSF_Minus) << endl;
+cout << "W_MuonTrigSF_Minus diff: " << fabs(W_MuonTrigSF-W_MuonTrigSF_Minus) << endl;
+*/                    
                     W_fleptonSF_Plus = W_MuonIDSF_Plus * W_MuonIsoSF_Plus * W_MuonTrigSF_Plus;
                     W_fleptonSF_Minus = W_MuonIDSF_Minus * W_MuonIsoSF_Minus * W_MuonTrigSF_Minus;
                     W_fleptonSF = W_MuonIDSF * W_MuonIsoSF * W_MuonTrigSF;
@@ -2231,6 +2243,18 @@ int main (int argc, char *argv[])
                     W_ElectronTrigSF_Plus = electronSFWeightTrig->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),1);
                     W_fleptonSF_Plus = W_ElectronIDSF_Plus * W_ElectronRecoSF_Plus * W_ElectronTrigSF_Plus;
                     W_fleptonSF_noTrigSF_Plus = W_ElectronIDSF_Plus * W_ElectronRecoSF_Plus;
+/*
+cout << " " << endl;
+cout << "W_ElectronIDSF: " << W_ElectronIDSF << endl;
+cout << "W_ElectronRecoSF: " << W_ElectronRecoSF << endl;
+cout << "W_ElectronTrigSF: " << W_ElectronTrigSF << endl;
+cout << "W_ElectronIDSF_Plus diff: : " << fabs(W_ElectronIDSF-W_ElectronIDSF_Plus) << endl;
+cout << "W_ElectronRecoSF_Plus diff: " << fabs(W_ElectronRecoSF-W_ElectronRecoSF_Plus) << endl;
+cout << "W_ElectronTrigSF_Plus diff: " << fabs(W_ElectronTrigSF-W_ElectronTrigSF_Plus) << endl;
+cout << "W_ElectronIDSF_Minus diff: : " << fabs(W_ElectronIDSF-W_MuonIDSF_Minus) << endl;
+cout << "W_ElectronRecoSF_Minus diff: " << fabs(W_ElectronRecoSF-W_ElectronRecoSF_Minus) << endl;
+cout << "W_ElectronTrigSF_Minus diff: " << fabs(W_ElectronTrigSF-W_ElectronTrigSF_Minus) << endl;
+*/
 
                     W_ElectronIDSF_Minus = electronSFWeightID->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),-1);
                     W_ElectronRecoSF_Minus = electronSFWeightReco->at(selectedElectrons[0]->superClusterEta(),selectedElectrons[0]->unCalibratedPt(),-1);

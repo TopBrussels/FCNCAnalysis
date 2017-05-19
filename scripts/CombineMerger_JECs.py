@@ -8,14 +8,14 @@ import shutil
 
 # getting the appropriate xml file & defining channel and production date of TreeMakerTrees
 channel = "_All"
-date_output = "_28_4_2017"
+date_output = "_12_5_2017"
 
 tree = ET.ElementTree(file='../config/FullMcBkgdSamples_Mu.xml')
 
-inputdir_Ntuples_Mu = "../NtuplerOutput/Ntuples_Mu/Ntuples_27_4_2017"
-inputdir_Ntuples_Mu_2 = "../NtuplerOutput/Ntuples_Mu/Ntuples_28_4_2017"
-inputdir_Ntuples_El = "../NtuplerOutput/Ntuples_El/Ntuples_27_4_2017"
-inputdir_Ntuples_El_2 = "../NtuplerOutput/Ntuples_El/Ntuples_28_4_2017"
+inputdir_Ntuples_Mu = "../NtuplerOutput/Ntuples_Mu/Ntuples_10_5_2017"
+inputdir_Ntuples_Mu_2 = "../NtuplerOutput/Ntuples_Mu/Ntuples_11_5_2017"
+inputdir_Ntuples_El = "../NtuplerOutput/Ntuples_El/Ntuples_10_5_2017"
+inputdir_Ntuples_El_2 = "../NtuplerOutput/Ntuples_El/Ntuples_11_5_2017"
 
 mergedpath_1 = "../Merged/Ntuples_All"
 if not os.path.exists(mergedpath_1):

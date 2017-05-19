@@ -21,7 +21,7 @@ date = dd+"_"+mm+"_"+yyyy
 
 categories = [" 2 3 "," 2 4 "," 3 3 "," 3 4 "," 4 4 "]
 catnames = ["b2j3","b2j4","b3j3","b3j4","b4j4"]
-couplingVals = [" 0 "," 5 "," 10 "," 30 "]
+couplingVals = [" 0 "," 3 "," 6 "," 9 "," 12 "," 15 ", " 18 ", " 21 ", " 24 "]
 
 for i in range(0,len(categories)):
 
@@ -42,7 +42,7 @@ for i in range(0,len(categories)):
       # copy a skeleton file that set up the code environment, the wall time and the queue 
       shutil.copyfile("submitSkeleton.sh", filename)
             
-      commandString = "./TreeProcessor_FinalMVA "+categories[i]+"2D _All _18_3_2017 0 1 1 0 0 "+khut+khct
+      commandString = "./TreeProcessor_FinalMVA "+categories[i]+"2D _All _12_5_2017 0 1 1 0 0 "+khut+khct
 
       outfile = open (filename, 'a')
       print >> outfile , "#first make all the copies"

@@ -1,0 +1,3225 @@
+------------NEW EVENT: 2342208 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.962742; W_btagWeight_shape=1.13363; Luminosity=35922
+----- MVA value: W_puSF=-0.182405ScaleFactor =1.17972
+----- event number: 69896765, lumi_num: 436309
+ 
+------------NEW EVENT: 2342273 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.975023; W_btagWeight_shape=0.80912; Luminosity=35922
+----- MVA value: W_puSF=0.219253ScaleFactor =0.826795
+----- event number: 50644120, lumi_num: 316131
+ 
+------------NEW EVENT: 2342688 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.962742; W_btagWeight_shape=1.1046; Luminosity=35922
+----- MVA value: W_puSF=0.188181ScaleFactor =1.11856
+----- event number: 39414, lumi_num: 246
+ 
+------------NEW EVENT: 2343151 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.986964; W_btagWeight_shape=0.978433; Luminosity=35922
+----- MVA value: W_puSF=-0.107788ScaleFactor =1.00998
+----- event number: 40489996, lumi_num: 252747
+ 
+------------NEW EVENT: 2343452 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.939988; W_btagWeight_shape=0.949851; Luminosity=35922
+----- MVA value: W_puSF=0.0271143ScaleFactor =0.939121
+----- event number: 45183413, lumi_num: 282044
+ 
+------------NEW EVENT: 2344813 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.975023; W_btagWeight_shape=1.09152; Luminosity=35922
+----- MVA value: W_puSF=-0.372895ScaleFactor =1.28001
+----- event number: 43053315, lumi_num: 268747
+ 
+------------NEW EVENT: 2345129 --------------
+----- Weights are: W_puSF=1.06617; W_fleptonSF=0.975023; W_btagWeight_shape=0.781371; Luminosity=35922
+----- MVA value: W_puSF=0.254434ScaleFactor =0.812265
+----- event number: 104693, lumi_num: 653
+ 
+------------NEW EVENT: 2345998 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.942789; W_btagWeight_shape=0.951264; Luminosity=35922
+----- MVA value: W_puSF=-0.257776ScaleFactor =0.94332
+----- event number: 25580701, lumi_num: 159679
+ 
+------------NEW EVENT: 2346318 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.967213; W_btagWeight_shape=0.921045; Luminosity=35922
+----- MVA value: W_puSF=-0.0044514ScaleFactor =0.962942
+----- event number: 74840296, lumi_num: 467168
+ 
+------------NEW EVENT: 2347875 --------------
+----- Weights are: W_puSF=0.31137; W_fleptonSF=0.966491; W_btagWeight_shape=1.06261; Luminosity=35922
+----- MVA value: W_puSF=-0.153188ScaleFactor =0.319778
+----- event number: 2595125, lumi_num: 16199
+ 
+------------NEW EVENT: 2348077 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.986964; W_btagWeight_shape=1.032; Luminosity=35922
+----- MVA value: W_puSF=-0.180267ScaleFactor =1.08352
+----- event number: 410177, lumi_num: 2561
+ 
+------------NEW EVENT: 2348658 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.993453; W_btagWeight_shape=1.03908; Luminosity=35922
+----- MVA value: W_puSF=0.0339402ScaleFactor =1.07715
+----- event number: 26355656, lumi_num: 164517
+ 
+------------NEW EVENT: 2349496 --------------
+----- Weights are: W_puSF=0.159411; W_fleptonSF=0.967213; W_btagWeight_shape=1.15484; Luminosity=35922
+----- MVA value: W_puSF=-0.376633ScaleFactor =0.178059
+----- event number: 30576933, lumi_num: 190867
+ 
+------------NEW EVENT: 2350138 --------------
+----- Weights are: W_puSF=1.07556; W_fleptonSF=0.964246; W_btagWeight_shape=0.918841; Luminosity=35922
+----- MVA value: W_puSF=-0.252392ScaleFactor =0.952938
+----- event number: 62721153, lumi_num: 391518
+ 
+------------NEW EVENT: 2350432 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.993453; W_btagWeight_shape=1.42201; Luminosity=35922
+----- MVA value: W_puSF=-0.10243ScaleFactor =1.47751
+----- event number: 76123161, lumi_num: 475176
+ 
+------------NEW EVENT: 2350761 --------------
+----- Weights are: W_puSF=0.407767; W_fleptonSF=0.975023; W_btagWeight_shape=1.01603; Luminosity=35922
+----- MVA value: W_puSF=-0.038174ScaleFactor =0.403955
+----- event number: 28704378, lumi_num: 179178
+ 
+------------NEW EVENT: 2351358 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.966491; W_btagWeight_shape=0.667119; Luminosity=35922
+----- MVA value: W_puSF=-0.253996ScaleFactor =0.674342
+----- event number: 1367073, lumi_num: 8533
+ 
+------------NEW EVENT: 2351491 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.975023; W_btagWeight_shape=1.1283; Luminosity=35922
+----- MVA value: W_puSF=-0.249328ScaleFactor =1.25659
+----- event number: 77163801, lumi_num: 481672
+ 
+------------NEW EVENT: 2351516 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.971065; W_btagWeight_shape=0.91028; Luminosity=35922
+----- MVA value: W_puSF=-0.1942ScaleFactor =0.924491
+----- event number: 2112514, lumi_num: 13187
+ 
+------------NEW EVENT: 2351628 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.975023; W_btagWeight_shape=0.735773; Luminosity=35922
+----- MVA value: W_puSF=0.0293271ScaleFactor =0.775454
+----- event number: 57747646, lumi_num: 360472
+ 
+------------NEW EVENT: 2352000 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.975023; W_btagWeight_shape=1.05785; Luminosity=35922
+----- MVA value: W_puSF=-0.209982ScaleFactor =1.21389
+----- event number: 3480030, lumi_num: 21723
+ 
+------------NEW EVENT: 2352125 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.986964; W_btagWeight_shape=0.919709; Luminosity=35922
+----- MVA value: W_puSF=0.0272259ScaleFactor =0.981181
+----- event number: 45384853, lumi_num: 283301
+ 
+------------NEW EVENT: 2352465 --------------
+----- Weights are: W_puSF=0; W_fleptonSF=0.975023; W_btagWeight_shape=1.00996; Luminosity=35922
+----- MVA value: W_puSF=0.0676889ScaleFactor =0
+----- event number: 44019791, lumi_num: 274781
+ 
+------------NEW EVENT: 2352706 --------------
+----- Weights are: W_puSF=1.10478; W_fleptonSF=0.962742; W_btagWeight_shape=0.914192; Luminosity=35922
+----- MVA value: W_puSF=-0.0988948ScaleFactor =0.972347
+----- event number: 50345010, lumi_num: 314263
+ 
+------------NEW EVENT: 2353257 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.975023; W_btagWeight_shape=1.16702; Luminosity=35922
+----- MVA value: W_puSF=0.0349738ScaleFactor =1.36856
+----- event number: 53772526, lumi_num: 335658
+ 
+------------NEW EVENT: 2354001 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.941414; W_btagWeight_shape=0.852671; Luminosity=35922
+----- MVA value: W_puSF=-0.0459934ScaleFactor =0.841264
+----- event number: 9697421, lumi_num: 60533
+ 
+------------NEW EVENT: 2354169 --------------
+----- Weights are: W_puSF=1.04474; W_fleptonSF=0.942789; W_btagWeight_shape=0.911649; Luminosity=35922
+----- MVA value: W_puSF=-0.206305ScaleFactor =0.897946
+----- event number: 26184331, lumi_num: 163448
+ 
+------------NEW EVENT: 2354210 --------------
+----- Weights are: W_puSF=0.698792; W_fleptonSF=0.939922; W_btagWeight_shape=0.884148; Luminosity=35922
+----- MVA value: W_puSF=0.10609ScaleFactor =0.580717
+----- event number: 160077, lumi_num: 999
+ 
+------------NEW EVENT: 2354498 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.964246; W_btagWeight_shape=1.08773; Luminosity=35922
+----- MVA value: W_puSF=0.0741868ScaleFactor =1.19802
+----- event number: 74682524, lumi_num: 466183
+ 
+------------NEW EVENT: 2354732 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.939922; W_btagWeight_shape=1.16686; Luminosity=35922
+----- MVA value: W_puSF=-0.137269ScaleFactor =1.14493
+----- event number: 39615631, lumi_num: 247288
+ 
+------------NEW EVENT: 2355104 --------------
+----- Weights are: W_puSF=1.07556; W_fleptonSF=0.986964; W_btagWeight_shape=1.28904; Luminosity=35922
+----- MVA value: W_puSF=-0.179118ScaleFactor =1.36837
+----- event number: 8058888, lumi_num: 50306
+ 
+------------NEW EVENT: 2357158 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.966491; W_btagWeight_shape=1.32918; Luminosity=35922
+----- MVA value: W_puSF=-0.339893ScaleFactor =1.35121
+----- event number: 66336876, lumi_num: 414088
+ 
+------------NEW EVENT: 2357772 --------------
+----- Weights are: W_puSF=0; W_fleptonSF=0.981438; W_btagWeight_shape=1.27395; Luminosity=35922
+----- MVA value: W_puSF=-0.0107354ScaleFactor =0
+----- event number: 16304481, lumi_num: 101776
+ 
+------------NEW EVENT: 2358042 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.975023; W_btagWeight_shape=0.886537; Luminosity=35922
+----- MVA value: W_puSF=0.103409ScaleFactor =0.934348
+----- event number: 67015959, lumi_num: 418327
+ 
+------------NEW EVENT: 2358682 --------------
+----- Weights are: W_puSF=0.113954; W_fleptonSF=0.987798; W_btagWeight_shape=1.10308; Luminosity=35922
+----- MVA value: W_puSF=0.0378092ScaleFactor =0.124167
+----- event number: 17910555, lumi_num: 111801
+ 
+------------NEW EVENT: 2358741 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.975023; W_btagWeight_shape=1.07725; Luminosity=35922
+----- MVA value: W_puSF=0.132634ScaleFactor =1.11735
+----- event number: 29259582, lumi_num: 182644
+ 
+------------NEW EVENT: 2359101 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.941414; W_btagWeight_shape=1.23212; Luminosity=35922
+----- MVA value: W_puSF=-0.00346701ScaleFactor =1.25886
+----- event number: 70393529, lumi_num: 439411
+ 
+------------NEW EVENT: 2359384 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.962742; W_btagWeight_shape=1.05925; Luminosity=35922
+----- MVA value: W_puSF=-0.406253ScaleFactor =1.05849
+----- event number: 24006314, lumi_num: 149852
+ 
+------------NEW EVENT: 2359453 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.975023; W_btagWeight_shape=1.08293; Luminosity=35922
+----- MVA value: W_puSF=-0.13504ScaleFactor =1.14678
+----- event number: 62002095, lumi_num: 387029
+ 
+------------NEW EVENT: 2359502 --------------
+----- Weights are: W_puSF=0.698792; W_fleptonSF=0.981438; W_btagWeight_shape=1.18547; Luminosity=35922
+----- MVA value: W_puSF=-0.0648875ScaleFactor =0.813017
+----- event number: 2015385, lumi_num: 12581
+ 
+------------NEW EVENT: 2359697 --------------
+----- Weights are: W_puSF=1.07556; W_fleptonSF=0.975023; W_btagWeight_shape=1.10481; Luminosity=35922
+----- MVA value: W_puSF=-0.116802ScaleFactor =1.15862
+----- event number: 79186898, lumi_num: 494301
+ 
+------------NEW EVENT: 2359770 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.986964; W_btagWeight_shape=1.35523; Luminosity=35922
+----- MVA value: W_puSF=-0.300351ScaleFactor =1.52779
+----- event number: 23777594, lumi_num: 148424
+ 
+------------NEW EVENT: 2360012 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.986964; W_btagWeight_shape=0.842362; Luminosity=35922
+----- MVA value: W_puSF=-0.284458ScaleFactor =0.999929
+----- event number: 53697718, lumi_num: 335192
+ 
+------------NEW EVENT: 2360054 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.939922; W_btagWeight_shape=0.899282; Luminosity=35922
+----- MVA value: W_puSF=-0.122973ScaleFactor =0.91366
+----- event number: 8057417, lumi_num: 50296
+ 
+------------NEW EVENT: 2360744 --------------
+----- Weights are: W_puSF=1.10478; W_fleptonSF=0.981438; W_btagWeight_shape=0.818061; Luminosity=35922
+----- MVA value: W_puSF=-0.28483ScaleFactor =0.886997
+----- event number: 59389922, lumi_num: 370723
+ 
+------------NEW EVENT: 2361434 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.939988; W_btagWeight_shape=0.989125; Luminosity=35922
+----- MVA value: W_puSF=-0.0385072ScaleFactor =0.970187
+----- event number: 23906434, lumi_num: 149228
+ 
+------------NEW EVENT: 2362595 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.986964; W_btagWeight_shape=0.840333; Luminosity=35922
+----- MVA value: W_puSF=-0.0329933ScaleFactor =0.869206
+----- event number: 24757072, lumi_num: 154538
+ 
+------------NEW EVENT: 2362861 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.975023; W_btagWeight_shape=1.18004; Luminosity=35922
+----- MVA value: W_puSF=-0.091362ScaleFactor =1.37148
+----- event number: 49765876, lumi_num: 310648
+ 
+------------NEW EVENT: 2363028 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.982956; W_btagWeight_shape=1.03408; Luminosity=35922
+----- MVA value: W_puSF=-0.481649ScaleFactor =1.16102
+----- event number: 54016637, lumi_num: 337183
+ 
+------------NEW EVENT: 2364330 --------------
+----- Weights are: W_puSF=1.10478; W_fleptonSF=0.975023; W_btagWeight_shape=1.09752; Luminosity=35922
+----- MVA value: W_puSF=-0.137943ScaleFactor =1.18222
+----- event number: 24045262, lumi_num: 150096
+ 
+------------NEW EVENT: 2364487 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.962742; W_btagWeight_shape=0.944282; Luminosity=35922
+----- MVA value: W_puSF=-0.249151ScaleFactor =0.943602
+----- event number: 65180210, lumi_num: 406868
+ 
+------------NEW EVENT: 2365231 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.981438; W_btagWeight_shape=0.922936; Luminosity=35922
+----- MVA value: W_puSF=-0.312701ScaleFactor =1.03463
+----- event number: 79774876, lumi_num: 497971
+ 
+------------NEW EVENT: 2365773 --------------
+----- Weights are: W_puSF=1.20029; W_fleptonSF=0.975023; W_btagWeight_shape=0.866801; Luminosity=35922
+----- MVA value: W_puSF=-0.0141757ScaleFactor =1.01443
+----- event number: 58750370, lumi_num: 366732
+ 
+------------NEW EVENT: 2365892 --------------
+----- Weights are: W_puSF=1.11828; W_fleptonSF=0.962742; W_btagWeight_shape=0.787887; Luminosity=35922
+----- MVA value: W_puSF=0.0949929ScaleFactor =0.848253
+----- event number: 21873775, lumi_num: 136541
+ 
+------------NEW EVENT: 2366540 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.975023; W_btagWeight_shape=0.928993; Luminosity=35922
+----- MVA value: W_puSF=-0.0108502ScaleFactor =0.983034
+----- event number: 56476754, lumi_num: 352539
+ 
+------------NEW EVENT: 2366801 --------------
+----- Weights are: W_puSF=0.407767; W_fleptonSF=0.975023; W_btagWeight_shape=0.701781; Luminosity=35922
+----- MVA value: W_puSF=-0.39559ScaleFactor =0.279015
+----- event number: 71342340, lumi_num: 445333
+ 
+------------NEW EVENT: 2366920 --------------
+----- Weights are: W_puSF=1.04474; W_fleptonSF=0.964246; W_btagWeight_shape=0.732304; Luminosity=35922
+----- MVA value: W_puSF=-0.0995722ScaleFactor =0.737713
+----- event number: 71626546, lumi_num: 447107
+ 
+------------NEW EVENT: 2368937 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.966491; W_btagWeight_shape=0.831646; Luminosity=35922
+----- MVA value: W_puSF=-0.113975ScaleFactor =0.834284
+----- event number: 6519786, lumi_num: 40698
+ 
+------------NEW EVENT: 2369554 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.975023; W_btagWeight_shape=0.916047; Luminosity=35922
+----- MVA value: W_puSF=0.0240154ScaleFactor =0.970051
+----- event number: 58369753, lumi_num: 364356
+ 
+------------NEW EVENT: 2369618 --------------
+----- Weights are: W_puSF=0.0122628; W_fleptonSF=0.987798; W_btagWeight_shape=1.35476; Luminosity=35922
+----- MVA value: W_puSF=0.233089ScaleFactor =0.0164104
+----- event number: 75862053, lumi_num: 473546
+ 
+------------NEW EVENT: 2369881 --------------
+----- Weights are: W_puSF=0.972324; W_fleptonSF=0.964246; W_btagWeight_shape=0.904411; Luminosity=35922
+----- MVA value: W_puSF=0.0900551ScaleFactor =0.847939
+----- event number: 37004085, lumi_num: 230987
+ 
+------------NEW EVENT: 2370263 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.964246; W_btagWeight_shape=0.950066; Luminosity=35922
+----- MVA value: W_puSF=-0.269226ScaleFactor =0.963574
+----- event number: 42198822, lumi_num: 263413
+ 
+------------NEW EVENT: 2370397 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.975023; W_btagWeight_shape=1.12452; Luminosity=35922
+----- MVA value: W_puSF=-0.285255ScaleFactor =1.14909
+----- event number: 34591321, lumi_num: 215926
+ 
+------------NEW EVENT: 2370486 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.939922; W_btagWeight_shape=0.891857; Luminosity=35922
+----- MVA value: W_puSF=-0.0318962ScaleFactor =0.870091
+----- event number: 55266429, lumi_num: 344984
+ 
+------------NEW EVENT: 2371375 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.975023; W_btagWeight_shape=1.01314; Luminosity=35922
+----- MVA value: W_puSF=-0.114631ScaleFactor =1.06778
+----- event number: 16790622, lumi_num: 104811
+ 
+------------NEW EVENT: 2372459 --------------
+----- Weights are: W_puSF=1.10478; W_fleptonSF=0.962742; W_btagWeight_shape=1.1474; Luminosity=35922
+----- MVA value: W_puSF=0.107334ScaleFactor =1.22039
+----- event number: 7987986, lumi_num: 49863
+ 
+------------NEW EVENT: 2373020 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.987798; W_btagWeight_shape=0.817299; Luminosity=35922
+----- MVA value: W_puSF=0.0884996ScaleFactor =0.849166
+----- event number: 24156202, lumi_num: 150788
+ 
+------------NEW EVENT: 2373137 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.981438; W_btagWeight_shape=1.03387; Luminosity=35922
+----- MVA value: W_puSF=-0.267237ScaleFactor =1.06341
+----- event number: 6036784, lumi_num: 37683
+ 
+------------NEW EVENT: 2373353 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.981438; W_btagWeight_shape=1.05414; Luminosity=35922
+----- MVA value: W_puSF=0.00604683ScaleFactor =1.07955
+----- event number: 24602903, lumi_num: 153576
+ 
+------------NEW EVENT: 2373647 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.981438; W_btagWeight_shape=1.08675; Luminosity=35922
+----- MVA value: W_puSF=-0.30812ScaleFactor =1.15839
+----- event number: 54011482, lumi_num: 337151
+ 
+------------NEW EVENT: 2373790 --------------
+----- Weights are: W_puSF=1.16905; W_fleptonSF=0.967213; W_btagWeight_shape=0.849883; Luminosity=35922
+----- MVA value: W_puSF=0.0313772ScaleFactor =0.960978
+----- event number: 15592494, lumi_num: 97332
+ 
+------------NEW EVENT: 2374157 --------------
+----- Weights are: W_puSF=0.00729632; W_fleptonSF=0.975023; W_btagWeight_shape=1.08071; Luminosity=35922
+----- MVA value: W_puSF=-0.284561ScaleFactor =0.00768828
+----- event number: 71391392, lumi_num: 445639
+ 
+------------NEW EVENT: 2374418 --------------
+----- Weights are: W_puSF=0; W_fleptonSF=0.964246; W_btagWeight_shape=1.1651; Luminosity=35922
+----- MVA value: W_puSF=0.0449777ScaleFactor =0
+----- event number: 44810701, lumi_num: 279717
+ 
+------------NEW EVENT: 2374540 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.975023; W_btagWeight_shape=0.927288; Luminosity=35922
+----- MVA value: W_puSF=-0.213495ScaleFactor =1.06407
+----- event number: 29840054, lumi_num: 186268
+ 
+------------NEW EVENT: 2374571 --------------
+----- Weights are: W_puSF=0.0759909; W_fleptonSF=0.975023; W_btagWeight_shape=1.24079; Luminosity=35922
+----- MVA value: W_puSF=-0.0840608ScaleFactor =0.091934
+----- event number: 32986657, lumi_num: 205909
+ 
+------------NEW EVENT: 2375076 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.967213; W_btagWeight_shape=0.921781; Luminosity=35922
+----- MVA value: W_puSF=-0.246736ScaleFactor =0.930715
+----- event number: 37908628, lumi_num: 236633
+ 
+------------NEW EVENT: 2375485 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.962742; W_btagWeight_shape=1.122; Luminosity=35922
+----- MVA value: W_puSF=-0.181435ScaleFactor =1.13618
+----- event number: 71974903, lumi_num: 449282
+ 
+------------NEW EVENT: 2375514 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.964246; W_btagWeight_shape=0.900225; Luminosity=35922
+----- MVA value: W_puSF=-0.167372ScaleFactor =1.0216
+----- event number: 5435747, lumi_num: 33931
+ 
+------------NEW EVENT: 2375580 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.993453; W_btagWeight_shape=0.843989; Luminosity=35922
+----- MVA value: W_puSF=-0.0800697ScaleFactor =0.881916
+----- event number: 38023269, lumi_num: 237348
+ 
+------------NEW EVENT: 2375631 --------------
+----- Weights are: W_puSF=1.20029; W_fleptonSF=0.922225; W_btagWeight_shape=0.985329; Luminosity=35922
+----- MVA value: W_puSF=-0.116986ScaleFactor =1.0907
+----- event number: 52028228, lumi_num: 324771
+ 
+------------NEW EVENT: 2375768 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.966491; W_btagWeight_shape=0.906803; Luminosity=35922
+----- MVA value: W_puSF=-0.285965ScaleFactor =0.951858
+----- event number: 24938883, lumi_num: 155673
+ 
+------------NEW EVENT: 2375848 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.975023; W_btagWeight_shape=0.918344; Luminosity=35922
+----- MVA value: W_puSF=0.289178ScaleFactor =0.936481
+----- event number: 14093842, lumi_num: 87977
+ 
+------------NEW EVENT: 2376699 --------------
+----- Weights are: W_puSF=0.31137; W_fleptonSF=0.975023; W_btagWeight_shape=0.897862; Luminosity=35922
+----- MVA value: W_puSF=-0.144887ScaleFactor =0.272584
+----- event number: 77083577, lumi_num: 481171
+ 
+------------NEW EVENT: 2377111 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.966491; W_btagWeight_shape=0.947052; Luminosity=35922
+----- MVA value: W_puSF=0.163579ScaleFactor =0.973706
+----- event number: 56658989, lumi_num: 353677
+ 
+------------NEW EVENT: 2377479 --------------
+----- Weights are: W_puSF=0.972324; W_fleptonSF=0.941414; W_btagWeight_shape=0.793768; Luminosity=35922
+----- MVA value: W_puSF=-0.102625ScaleFactor =0.726583
+----- event number: 16928749, lumi_num: 105673
+ 
+------------NEW EVENT: 2378828 --------------
+----- Weights are: W_puSF=1.16905; W_fleptonSF=0.966491; W_btagWeight_shape=0.695237; Luminosity=35922
+----- MVA value: W_puSF=0.0524831ScaleFactor =0.785529
+----- event number: 3520671, lumi_num: 21977
+ 
+------------NEW EVENT: 2378885 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.975023; W_btagWeight_shape=0.819228; Luminosity=35922
+----- MVA value: W_puSF=-0.178413ScaleFactor =0.84972
+----- event number: 23463093, lumi_num: 146462
+ 
+------------NEW EVENT: 2379750 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.97442; W_btagWeight_shape=1.08918; Luminosity=35922
+----- MVA value: W_puSF=-0.176244ScaleFactor =1.27648
+----- event number: 58968426, lumi_num: 368093
+ 
+------------NEW EVENT: 2379768 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.987798; W_btagWeight_shape=1.22948; Luminosity=35922
+----- MVA value: W_puSF=0.154433ScaleFactor =1.29874
+----- event number: 62894304, lumi_num: 392598
+ 
+------------NEW EVENT: 2380331 --------------
+----- Weights are: W_puSF=0.0307797; W_fleptonSF=0.97442; W_btagWeight_shape=0.761654; Luminosity=35922
+----- MVA value: W_puSF=-0.00777517ScaleFactor =0.0228438
+----- event number: 63368761, lumi_num: 395561
+ 
+------------NEW EVENT: 2380684 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.939922; W_btagWeight_shape=0.857886; Luminosity=35922
+----- MVA value: W_puSF=0.0203669ScaleFactor =0.836949
+----- event number: 49605027, lumi_num: 309644
+ 
+------------NEW EVENT: 2381150 --------------
+----- Weights are: W_puSF=1.07556; W_fleptonSF=0.964246; W_btagWeight_shape=0.800959; Luminosity=35922
+----- MVA value: W_puSF=0.279867ScaleFactor =0.830681
+----- event number: 44163074, lumi_num: 275674
+ 
+------------NEW EVENT: 2381218 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.975023; W_btagWeight_shape=0.828378; Luminosity=35922
+----- MVA value: W_puSF=-0.142092ScaleFactor =0.873052
+----- event number: 56920630, lumi_num: 355309
+ 
+------------NEW EVENT: 2381275 --------------
+----- Weights are: W_puSF=0.972324; W_fleptonSF=0.986964; W_btagWeight_shape=1.0895; Luminosity=35922
+----- MVA value: W_puSF=-0.116569ScaleFactor =1.04554
+----- event number: 16599371, lumi_num: 103617
+ 
+------------NEW EVENT: 2381437 --------------
+----- Weights are: W_puSF=1.10478; W_fleptonSF=0.975023; W_btagWeight_shape=1.17514; Luminosity=35922
+----- MVA value: W_puSF=-0.147442ScaleFactor =1.26584
+----- event number: 49377541, lumi_num: 308224
+ 
+------------NEW EVENT: 2381835 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.966491; W_btagWeight_shape=0.830451; Luminosity=35922
+----- MVA value: W_puSF=0.101345ScaleFactor =0.956731
+----- event number: 33887327, lumi_num: 211532
+ 
+------------NEW EVENT: 2382348 --------------
+----- Weights are: W_puSF=1.06617; W_fleptonSF=0.987798; W_btagWeight_shape=0.815815; Luminosity=35922
+----- MVA value: W_puSF=0.00231244ScaleFactor =0.859182
+----- event number: 61018894, lumi_num: 380892
+ 
+------------NEW EVENT: 2382469 --------------
+----- Weights are: W_puSF=0; W_fleptonSF=0.975023; W_btagWeight_shape=1.27707; Luminosity=35922
+----- MVA value: W_puSF=-0.125004ScaleFactor =0
+----- event number: 78061970, lumi_num: 487278
+ 
+------------NEW EVENT: 2382547 --------------
+----- Weights are: W_puSF=0.00729632; W_fleptonSF=0.941414; W_btagWeight_shape=0.915603; Luminosity=35922
+----- MVA value: W_puSF=0.0141153ScaleFactor =0.00628915
+----- event number: 62946029, lumi_num: 392922
+ 
+------------NEW EVENT: 2382723 --------------
+----- Weights are: W_puSF=0.407767; W_fleptonSF=0.987798; W_btagWeight_shape=0.929278; Luminosity=35922
+----- MVA value: W_puSF=-0.250427ScaleFactor =0.374305
+----- event number: 3177972, lumi_num: 19838
+ 
+------------NEW EVENT: 2383159 --------------
+----- Weights are: W_puSF=0.611571; W_fleptonSF=0.975023; W_btagWeight_shape=1.26077; Luminosity=35922
+----- MVA value: W_puSF=-0.158317ScaleFactor =0.751791
+----- event number: 16480788, lumi_num: 102877
+ 
+------------NEW EVENT: 2383281 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.966491; W_btagWeight_shape=0.889087; Luminosity=35922
+----- MVA value: W_puSF=0.0560838ScaleFactor =0.891907
+----- event number: 72604975, lumi_num: 453214
+ 
+------------NEW EVENT: 2383819 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.975023; W_btagWeight_shape=0.941355; Luminosity=35922
+----- MVA value: W_puSF=-0.193662ScaleFactor =0.957745
+----- event number: 55548348, lumi_num: 346743
+ 
+------------NEW EVENT: 2384019 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.964246; W_btagWeight_shape=0.883929; Luminosity=35922
+----- MVA value: W_puSF=-0.117189ScaleFactor =1.01598
+----- event number: 54135409, lumi_num: 337924
+ 
+------------NEW EVENT: 2384645 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.942789; W_btagWeight_shape=0.980352; Luminosity=35922
+----- MVA value: W_puSF=-0.122559ScaleFactor =1.11164
+----- event number: 49468779, lumi_num: 308794
+ 
+------------NEW EVENT: 2385032 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.962742; W_btagWeight_shape=1.02145; Luminosity=35922
+----- MVA value: W_puSF=-0.133568ScaleFactor =1.04612
+----- event number: 62473489, lumi_num: 389972
+ 
+------------NEW EVENT: 2385160 --------------
+----- Weights are: W_puSF=0.407767; W_fleptonSF=0.941414; W_btagWeight_shape=1.18231; Luminosity=35922
+----- MVA value: W_puSF=0.122572ScaleFactor =0.45386
+----- event number: 58771949, lumi_num: 366866
+ 
+------------NEW EVENT: 2385195 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.962742; W_btagWeight_shape=0.922802; Luminosity=35922
+----- MVA value: W_puSF=-0.108078ScaleFactor =0.931083
+----- event number: 62227600, lumi_num: 388437
+ 
+------------NEW EVENT: 2385332 --------------
+----- Weights are: W_puSF=1.16905; W_fleptonSF=0.966491; W_btagWeight_shape=1.11468; Luminosity=35922
+----- MVA value: W_puSF=0.171547ScaleFactor =1.25945
+----- event number: 56252170, lumi_num: 351137
+ 
+------------NEW EVENT: 2385915 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.975023; W_btagWeight_shape=0.847747; Luminosity=35922
+----- MVA value: W_puSF=0.166161ScaleFactor =0.86941
+----- event number: 30816765, lumi_num: 192364
+ 
+------------NEW EVENT: 2386703 --------------
+----- Weights are: W_puSF=0.0759909; W_fleptonSF=0.964246; W_btagWeight_shape=1.23743; Luminosity=35922
+----- MVA value: W_puSF=0.136858ScaleFactor =0.090671
+----- event number: 45950809, lumi_num: 286834
+ 
+------------NEW EVENT: 2386732 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.987798; W_btagWeight_shape=0.943018; Luminosity=35922
+----- MVA value: W_puSF=-0.0324311ScaleFactor =1.0963
+----- event number: 76251960, lumi_num: 475979
+ 
+------------NEW EVENT: 2386852 --------------
+----- Weights are: W_puSF=1.06617; W_fleptonSF=0.966491; W_btagWeight_shape=0.799336; Luminosity=35922
+----- MVA value: W_puSF=0.140112ScaleFactor =0.823669
+----- event number: 18039302, lumi_num: 112604
+ 
+------------NEW EVENT: 2387271 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.964246; W_btagWeight_shape=0.794548; Luminosity=35922
+----- MVA value: W_puSF=-0.183019ScaleFactor =0.831476
+----- event number: 28533219, lumi_num: 178109
+ 
+------------NEW EVENT: 2387902 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.967213; W_btagWeight_shape=0.924606; Luminosity=35922
+----- MVA value: W_puSF=-0.109253ScaleFactor =0.940637
+----- event number: 61340782, lumi_num: 382902
+ 
+------------NEW EVENT: 2388392 --------------
+----- Weights are: W_puSF=0.222389; W_fleptonSF=0.939988; W_btagWeight_shape=0.809104; Luminosity=35922
+----- MVA value: W_puSF=-0.312908ScaleFactor =0.169137
+----- event number: 58550402, lumi_num: 365483
+ 
+------------NEW EVENT: 2388523 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.975023; W_btagWeight_shape=1.40108; Luminosity=35922
+----- MVA value: W_puSF=-0.0718678ScaleFactor =1.47664
+----- event number: 79906042, lumi_num: 498789
+ 
+------------NEW EVENT: 2388637 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.986964; W_btagWeight_shape=0.86481; Luminosity=35922
+----- MVA value: W_puSF=-0.0735226ScaleFactor =0.89269
+----- event number: 71777644, lumi_num: 448051
+ 
+------------NEW EVENT: 2388769 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.986964; W_btagWeight_shape=0.842268; Luminosity=35922
+----- MVA value: W_puSF=-0.00292209ScaleFactor =0.884316
+----- event number: 73363452, lumi_num: 457949
+ 
+------------NEW EVENT: 2389013 --------------
+----- Weights are: W_puSF=0.972324; W_fleptonSF=0.939922; W_btagWeight_shape=0.945227; Luminosity=35922
+----- MVA value: W_puSF=-0.110099ScaleFactor =0.863852
+----- event number: 16264420, lumi_num: 101526
+ 
+------------NEW EVENT: 2389116 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.975023; W_btagWeight_shape=0.830568; Luminosity=35922
+----- MVA value: W_puSF=-0.204619ScaleFactor =0.845029
+----- event number: 23035367, lumi_num: 143792
+ 
+------------NEW EVENT: 2389421 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.986964; W_btagWeight_shape=0.869543; Luminosity=35922
+----- MVA value: W_puSF=0.239399ScaleFactor =0.902684
+----- event number: 32615956, lumi_num: 203596
+ 
+------------NEW EVENT: 2389469 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.993453; W_btagWeight_shape=1.05861; Luminosity=35922
+----- MVA value: W_puSF=0.151802ScaleFactor =1.14137
+----- event number: 41819637, lumi_num: 261047
+ 
+------------NEW EVENT: 2389968 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.964246; W_btagWeight_shape=0.963102; Luminosity=35922
+----- MVA value: W_puSF=-0.17387ScaleFactor =1.00861
+----- event number: 73422925, lumi_num: 458321
+ 
+------------NEW EVENT: 2390542 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.975023; W_btagWeight_shape=0.841237; Luminosity=35922
+----- MVA value: W_puSF=-0.111755ScaleFactor =0.936883
+----- event number: 3710664, lumi_num: 23163
+ 
+------------NEW EVENT: 2390813 --------------
+----- Weights are: W_puSF=1.04474; W_fleptonSF=0.962742; W_btagWeight_shape=0.816583; Luminosity=35922
+----- MVA value: W_puSF=0.0592078ScaleFactor =0.821331
+----- event number: 15494147, lumi_num: 96718
+ 
+------------NEW EVENT: 2391878 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.942789; W_btagWeight_shape=0.886822; Luminosity=35922
+----- MVA value: W_puSF=-0.164781ScaleFactor =0.907387
+----- event number: 39923799, lumi_num: 249212
+ 
+------------NEW EVENT: 2391916 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.967213; W_btagWeight_shape=0.949236; Luminosity=35922
+----- MVA value: W_puSF=0.143292ScaleFactor =0.958437
+----- event number: 47516965, lumi_num: 296611
+ 
+------------NEW EVENT: 2391933 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.962742; W_btagWeight_shape=1.42995; Luminosity=35922
+----- MVA value: W_puSF=-0.227217ScaleFactor =1.62021
+----- event number: 47517664, lumi_num: 296614
+ 
+------------NEW EVENT: 2392381 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.981438; W_btagWeight_shape=0.90834; Luminosity=35922
+----- MVA value: W_puSF=-0.346764ScaleFactor =0.93429
+----- event number: 52013558, lumi_num: 324679
+ 
+------------NEW EVENT: 2392514 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.942789; W_btagWeight_shape=1.14323; Luminosity=35922
+----- MVA value: W_puSF=0.0197539ScaleFactor =1.16974
+----- event number: 38365249, lumi_num: 239483
+ 
+------------NEW EVENT: 2392873 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.966491; W_btagWeight_shape=0.922106; Luminosity=35922
+----- MVA value: W_puSF=0.0499503ScaleFactor =0.934004
+----- event number: 781939, lumi_num: 4881
+ 
+------------NEW EVENT: 2392939 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.986964; W_btagWeight_shape=1.16817; Luminosity=35922
+----- MVA value: W_puSF=0.0361263ScaleFactor =1.21269
+----- event number: 2322562, lumi_num: 14498
+ 
+------------NEW EVENT: 2393029 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.967213; W_btagWeight_shape=0.759069; Luminosity=35922
+----- MVA value: W_puSF=-0.0502322ScaleFactor =0.875149
+----- event number: 53614783, lumi_num: 334674
+ 
+------------NEW EVENT: 2393147 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.922225; W_btagWeight_shape=1.07912; Luminosity=35922
+----- MVA value: W_puSF=0.00605002ScaleFactor =1.05868
+----- event number: 45649625, lumi_num: 284954
+ 
+------------NEW EVENT: 2393895 --------------
+----- Weights are: W_puSF=0.809728; W_fleptonSF=0.962742; W_btagWeight_shape=0.905838; Luminosity=35922
+----- MVA value: W_puSF=-0.227208ScaleFactor =0.706154
+----- event number: 1220752, lumi_num: 7621
+ 
+------------NEW EVENT: 2395323 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.987798; W_btagWeight_shape=0.925184; Luminosity=35922
+----- MVA value: W_puSF=-0.136759ScaleFactor =0.94858
+----- event number: 78556599, lumi_num: 490366
+ 
+------------NEW EVENT: 2395702 --------------
+----- Weights are: W_puSF=1.20029; W_fleptonSF=0.993453; W_btagWeight_shape=0.896255; Luminosity=35922
+----- MVA value: W_puSF=-0.242244ScaleFactor =1.06872
+----- event number: 35382464, lumi_num: 220864
+ 
+------------NEW EVENT: 2396233 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.964246; W_btagWeight_shape=0.833716; Luminosity=35922
+----- MVA value: W_puSF=-0.184299ScaleFactor =0.966887
+----- event number: 30404824, lumi_num: 189793
+ 
+------------NEW EVENT: 2398023 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.981438; W_btagWeight_shape=0.836002; Luminosity=35922
+----- MVA value: W_puSF=-0.242649ScaleFactor =0.937178
+----- event number: 72994121, lumi_num: 455643
+ 
+------------NEW EVENT: 2398909 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.966491; W_btagWeight_shape=1.13931; Luminosity=35922
+----- MVA value: W_puSF=-0.059678ScaleFactor =1.19592
+----- event number: 26069926, lumi_num: 162733
+ 
+------------NEW EVENT: 2399372 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.962742; W_btagWeight_shape=0.732686; Luminosity=35922
+----- MVA value: W_puSF=-0.113396ScaleFactor =0.840825
+----- event number: 45756685, lumi_num: 285622
+ 
+------------NEW EVENT: 2399500 --------------
+----- Weights are: W_puSF=1.07556; W_fleptonSF=0.975023; W_btagWeight_shape=1.07294; Luminosity=35922
+----- MVA value: W_puSF=-0.196291ScaleFactor =1.12519
+----- event number: 14043362, lumi_num: 87662
+ 
+------------NEW EVENT: 2399744 --------------
+----- Weights are: W_puSF=0.496201; W_fleptonSF=0.967213; W_btagWeight_shape=0.877452; Luminosity=35922
+----- MVA value: W_puSF=-0.316327ScaleFactor =0.421118
+----- event number: 38931741, lumi_num: 243019
+ 
+------------NEW EVENT: 2402358 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.982956; W_btagWeight_shape=1.07428; Luminosity=35922
+----- MVA value: W_puSF=-0.0133776ScaleFactor =1.14143
+----- event number: 27744346, lumi_num: 173186
+ 
+------------NEW EVENT: 2403372 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.986964; W_btagWeight_shape=1.01146; Luminosity=35922
+----- MVA value: W_puSF=0.0320892ScaleFactor =1.03616
+----- event number: 65401172, lumi_num: 408247
+ 
+------------NEW EVENT: 2403504 --------------
+----- Weights are: W_puSF=0; W_fleptonSF=0.987798; W_btagWeight_shape=0.82693; Luminosity=35922
+----- MVA value: W_puSF=-0.00750674ScaleFactor =0
+----- event number: 62752028, lumi_num: 391711
+ 
+------------NEW EVENT: 2404620 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.986964; W_btagWeight_shape=0.925912; Luminosity=35922
+----- MVA value: W_puSF=-0.277387ScaleFactor =1.0755
+----- event number: 62477779, lumi_num: 389998
+ 
+------------NEW EVENT: 2404822 --------------
+----- Weights are: W_puSF=0.113954; W_fleptonSF=0.975023; W_btagWeight_shape=0.909617; Luminosity=35922
+----- MVA value: W_puSF=-0.0305419ScaleFactor =0.101066
+----- event number: 22642811, lumi_num: 141341
+ 
+------------NEW EVENT: 2405137 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.981438; W_btagWeight_shape=0.994236; Luminosity=35922
+----- MVA value: W_puSF=-0.227269ScaleFactor =1.03803
+----- event number: 26621918, lumi_num: 166179
+ 
+------------NEW EVENT: 2405442 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.975023; W_btagWeight_shape=0.975453; Luminosity=35922
+----- MVA value: W_puSF=0.146594ScaleFactor =1.1337
+----- event number: 76528646, lumi_num: 477707
+ 
+------------NEW EVENT: 2406241 --------------
+----- Weights are: W_puSF=0; W_fleptonSF=0.964246; W_btagWeight_shape=1.01287; Luminosity=35922
+----- MVA value: W_puSF=0.0246544ScaleFactor =0
+----- event number: 37595200, lumi_num: 234677
+ 
+------------NEW EVENT: 2406776 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.964246; W_btagWeight_shape=1.08167; Luminosity=35922
+----- MVA value: W_puSF=-0.212924ScaleFactor =1.1274
+----- event number: 65766661, lumi_num: 410528
+ 
+------------NEW EVENT: 2406887 --------------
+----- Weights are: W_puSF=1.20029; W_fleptonSF=0.939922; W_btagWeight_shape=0.762046; Luminosity=35922
+----- MVA value: W_puSF=-0.10744ScaleFactor =0.859725
+----- event number: 63018999, lumi_num: 393377
+ 
+------------NEW EVENT: 2407278 --------------
+----- Weights are: W_puSF=1.10478; W_fleptonSF=0.962742; W_btagWeight_shape=1.30102; Luminosity=35922
+----- MVA value: W_puSF=-0.215846ScaleFactor =1.38378
+----- event number: 23349810, lumi_num: 145754
+ 
+------------NEW EVENT: 2408076 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.993453; W_btagWeight_shape=0.812537; Luminosity=35922
+----- MVA value: W_puSF=0.0237109ScaleFactor =0.922024
+----- event number: 35332045, lumi_num: 220549
+ 
+------------NEW EVENT: 2408703 --------------
+----- Weights are: W_puSF=0.972324; W_fleptonSF=0.941414; W_btagWeight_shape=0.776623; Luminosity=35922
+----- MVA value: W_puSF=-0.33894ScaleFactor =0.71089
+----- event number: 36725567, lumi_num: 229248
+ 
+------------NEW EVENT: 2408790 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.982956; W_btagWeight_shape=1.09438; Luminosity=35922
+----- MVA value: W_puSF=0.302918ScaleFactor =1.1225
+----- event number: 7125164, lumi_num: 44477
+ 
+------------NEW EVENT: 2409023 --------------
+----- Weights are: W_puSF=1.20029; W_fleptonSF=0.967213; W_btagWeight_shape=0.911694; Luminosity=35922
+----- MVA value: W_puSF=0.153792ScaleFactor =1.05842
+----- event number: 20508957, lumi_num: 128021
+ 
+------------NEW EVENT: 2409443 --------------
+----- Weights are: W_puSF=1.06617; W_fleptonSF=0.962742; W_btagWeight_shape=0.876801; Luminosity=35922
+----- MVA value: W_puSF=-0.104164ScaleFactor =0.899987
+----- event number: 68131562, lumi_num: 425291
+ 
+------------NEW EVENT: 2409627 --------------
+----- Weights are: W_puSF=0.113954; W_fleptonSF=0.975023; W_btagWeight_shape=0.90393; Luminosity=35922
+----- MVA value: W_puSF=0.0661072ScaleFactor =0.100434
+----- event number: 67357441, lumi_num: 420458
+ 
+------------NEW EVENT: 2410361 --------------
+----- Weights are: W_puSF=1.07556; W_fleptonSF=0.966491; W_btagWeight_shape=0.934604; Luminosity=35922
+----- MVA value: W_puSF=-0.0498227ScaleFactor =0.971542
+----- event number: 14311851, lumi_num: 89337
+ 
+------------NEW EVENT: 2410832 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.942789; W_btagWeight_shape=0.758154; Luminosity=35922
+----- MVA value: W_puSF=0.210701ScaleFactor =0.751822
+----- event number: 16275810, lumi_num: 101597
+ 
+------------NEW EVENT: 2411090 --------------
+----- Weights are: W_puSF=0.0307797; W_fleptonSF=0.975023; W_btagWeight_shape=1.34974; Luminosity=35922
+----- MVA value: W_puSF=-0.100775ScaleFactor =0.0405069
+----- event number: 21829343, lumi_num: 136263
+ 
+------------NEW EVENT: 2413133 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.966491; W_btagWeight_shape=1.31983; Luminosity=35922
+----- MVA value: W_puSF=0.0854815ScaleFactor =1.34171
+----- event number: 61914450, lumi_num: 386482
+ 
+------------NEW EVENT: 2413214 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.975023; W_btagWeight_shape=0.78519; Luminosity=35922
+----- MVA value: W_puSF=-0.0788203ScaleFactor =0.912572
+----- event number: 4403672, lumi_num: 27488
+ 
+------------NEW EVENT: 2413885 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.975023; W_btagWeight_shape=1.18377; Luminosity=35922
+----- MVA value: W_puSF=0.0576223ScaleFactor =1.21402
+----- event number: 60291755, lumi_num: 376353
+ 
+------------NEW EVENT: 2413915 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.962742; W_btagWeight_shape=1.02036; Luminosity=35922
+----- MVA value: W_puSF=-0.164908ScaleFactor =1.03325
+----- event number: 75960343, lumi_num: 474159
+ 
+------------NEW EVENT: 2414478 --------------
+----- Weights are: W_puSF=1.16905; W_fleptonSF=0.925101; W_btagWeight_shape=1.2006; Luminosity=35922
+----- MVA value: W_puSF=0.089182ScaleFactor =1.29844
+----- event number: 32866424, lumi_num: 205158
+ 
+------------NEW EVENT: 2414498 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.975023; W_btagWeight_shape=0.828942; Luminosity=35922
+----- MVA value: W_puSF=-0.265673ScaleFactor =0.87781
+----- event number: 40343354, lumi_num: 251831
+ 
+------------NEW EVENT: 2414931 --------------
+----- Weights are: W_puSF=1.20029; W_fleptonSF=0.97442; W_btagWeight_shape=0.819317; Luminosity=35922
+----- MVA value: W_puSF=-0.182774ScaleFactor =0.958261
+----- event number: 47840870, lumi_num: 298632
+ 
+------------NEW EVENT: 2415775 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.964246; W_btagWeight_shape=0.756871; Luminosity=35922
+----- MVA value: W_puSF=0.0280812ScaleFactor =0.858915
+----- event number: 67840125, lumi_num: 423472
+ 
+------------NEW EVENT: 2416070 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.966491; W_btagWeight_shape=0.854327; Luminosity=35922
+----- MVA value: W_puSF=-0.0378012ScaleFactor =0.943135
+----- event number: 6203946, lumi_num: 38727
+ 
+------------NEW EVENT: 2416479 --------------
+----- Weights are: W_puSF=0.967597; W_fleptonSF=0.986964; W_btagWeight_shape=0.881467; Luminosity=35922
+----- MVA value: W_puSF=-0.140217ScaleFactor =0.841786
+----- event number: 7727491, lumi_num: 48237
+ 
+------------NEW EVENT: 2416748 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.982956; W_btagWeight_shape=1.01597; Luminosity=35922
+----- MVA value: W_puSF=-0.063519ScaleFactor =1.20111
+----- event number: 8993478, lumi_num: 56139
+ 
+------------NEW EVENT: 2417067 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.962742; W_btagWeight_shape=1.20636; Luminosity=35922
+----- MVA value: W_puSF=-0.00883601ScaleFactor =1.20549
+----- event number: 37090541, lumi_num: 231527
+ 
+------------NEW EVENT: 2419448 --------------
+----- Weights are: W_puSF=1.10478; W_fleptonSF=0.986964; W_btagWeight_shape=0.866533; Luminosity=35922
+----- MVA value: W_puSF=0.0869775ScaleFactor =0.944844
+----- event number: 35917116, lumi_num: 224202
+ 
+------------NEW EVENT: 2419487 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.942789; W_btagWeight_shape=1.18095; Luminosity=35922
+----- MVA value: W_puSF=-0.068217ScaleFactor =1.17109
+----- event number: 59792479, lumi_num: 373237
+ 
+------------NEW EVENT: 2419751 --------------
+----- Weights are: W_puSF=0.222389; W_fleptonSF=0.975023; W_btagWeight_shape=0.978616; Luminosity=35922
+----- MVA value: W_puSF=-0.183765ScaleFactor =0.212198
+----- event number: 327917, lumi_num: 2047
+ 
+------------NEW EVENT: 2419952 --------------
+----- Weights are: W_puSF=0.0201058; W_fleptonSF=0.942789; W_btagWeight_shape=0.993195; Luminosity=35922
+----- MVA value: W_puSF=0.0115459ScaleFactor =0.0188265
+----- event number: 36477066, lumi_num: 227697
+ 
+------------NEW EVENT: 2420120 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.986964; W_btagWeight_shape=0.857146; Luminosity=35922
+----- MVA value: W_puSF=-0.130365ScaleFactor =0.88478
+----- event number: 31393755, lumi_num: 195966
+ 
+------------NEW EVENT: 2420398 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.964246; W_btagWeight_shape=1.12942; Luminosity=35922
+----- MVA value: W_puSF=-0.21586ScaleFactor =1.13037
+----- event number: 54741534, lumi_num: 341707
+ 
+------------NEW EVENT: 2421077 --------------
+----- Weights are: W_puSF=1.16905; W_fleptonSF=0.975023; W_btagWeight_shape=1.0921; Luminosity=35922
+----- MVA value: W_puSF=0.316844ScaleFactor =1.24483
+----- event number: 31537, lumi_num: 197
+ 
+------------NEW EVENT: 2421432 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.97442; W_btagWeight_shape=0.804909; Luminosity=35922
+----- MVA value: W_puSF=-0.100548ScaleFactor =0.820299
+----- event number: 32270485, lumi_num: 201438
+ 
+------------NEW EVENT: 2421612 --------------
+----- Weights are: W_puSF=0.00729632; W_fleptonSF=0.941414; W_btagWeight_shape=0.958752; Luminosity=35922
+----- MVA value: W_puSF=-0.246474ScaleFactor =0.00658554
+----- event number: 60606176, lumi_num: 378316
+ 
+------------NEW EVENT: 2421986 --------------
+----- Weights are: W_puSF=1.04474; W_fleptonSF=0.967213; W_btagWeight_shape=0.780776; Luminosity=35922
+----- MVA value: W_puSF=-0.0600701ScaleFactor =0.788964
+----- event number: 30836362, lumi_num: 192487
+ 
+------------NEW EVENT: 2422271 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.962742; W_btagWeight_shape=0.981891; Luminosity=35922
+----- MVA value: W_puSF=0.0669565ScaleFactor =1.02668
+----- event number: 69195975, lumi_num: 431934
+ 
+------------NEW EVENT: 2422843 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.986964; W_btagWeight_shape=0.88351; Luminosity=35922
+----- MVA value: W_puSF=-0.115852ScaleFactor =0.913866
+----- event number: 78705348, lumi_num: 491294
+ 
+------------NEW EVENT: 2423108 --------------
+----- Weights are: W_puSF=1.04474; W_fleptonSF=0.981438; W_btagWeight_shape=0.896292; Luminosity=35922
+----- MVA value: W_puSF=-0.238901ScaleFactor =0.919011
+----- event number: 27431303, lumi_num: 171232
+ 
+------------NEW EVENT: 2424137 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.962742; W_btagWeight_shape=0.934671; Luminosity=35922
+----- MVA value: W_puSF=-0.0935299ScaleFactor =0.933999
+----- event number: 76590135, lumi_num: 478091
+ 
+------------NEW EVENT: 2426151 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.975023; W_btagWeight_shape=0.855766; Luminosity=35922
+----- MVA value: W_puSF=0.181285ScaleFactor =0.872667
+----- event number: 49097568, lumi_num: 306477
+ 
+------------NEW EVENT: 2426284 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.97442; W_btagWeight_shape=0.6681; Luminosity=35922
+----- MVA value: W_puSF=-0.167832ScaleFactor =0.679312
+----- event number: 19228543, lumi_num: 120028
+ 
+------------NEW EVENT: 2426514 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.964246; W_btagWeight_shape=0.94855; Luminosity=35922
+----- MVA value: W_puSF=-0.0183067ScaleFactor =0.993367
+----- event number: 65647948, lumi_num: 409787
+ 
+------------NEW EVENT: 2426668 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.981438; W_btagWeight_shape=0.943514; Luminosity=35922
+----- MVA value: W_puSF=0.18757ScaleFactor =1.1038
+----- event number: 51042244, lumi_num: 318616
+ 
+------------NEW EVENT: 2428879 --------------
+----- Weights are: W_puSF=1.20029; W_fleptonSF=0.987798; W_btagWeight_shape=1.02307; Luminosity=35922
+----- MVA value: W_puSF=-0.152384ScaleFactor =1.213
+----- event number: 68706716, lumi_num: 428881
+ 
+------------NEW EVENT: 2429615 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.975023; W_btagWeight_shape=1.0602; Luminosity=35922
+----- MVA value: W_puSF=-0.00324909ScaleFactor =1.07912
+----- event number: 30983733, lumi_num: 193407
+ 
+------------NEW EVENT: 2429759 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.962742; W_btagWeight_shape=0.844286; Luminosity=35922
+----- MVA value: W_puSF=-0.112771ScaleFactor =0.848167
+----- event number: 46266587, lumi_num: 288806
+ 
+------------NEW EVENT: 2430238 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.986964; W_btagWeight_shape=0.731726; Luminosity=35922
+----- MVA value: W_puSF=-0.308711ScaleFactor =0.768255
+----- event number: 40978268, lumi_num: 255794
+ 
+------------NEW EVENT: 2430804 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.975023; W_btagWeight_shape=1.22453; Luminosity=35922
+----- MVA value: W_puSF=-0.00239696ScaleFactor =1.40516
+----- event number: 63937701, lumi_num: 399112
+ 
+------------NEW EVENT: 2430949 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.967213; W_btagWeight_shape=1.16736; Luminosity=35922
+----- MVA value: W_puSF=0.245422ScaleFactor =1.18088
+----- event number: 62283719, lumi_num: 388787
+ 
+------------NEW EVENT: 2431354 --------------
+----- Weights are: W_puSF=0.31137; W_fleptonSF=0.986964; W_btagWeight_shape=1.43136; Luminosity=35922
+----- MVA value: W_puSF=-0.0920192ScaleFactor =0.439871
+----- event number: 71144570, lumi_num: 444098
+ 
+------------NEW EVENT: 2431798 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.962742; W_btagWeight_shape=1.40226; Luminosity=35922
+----- MVA value: W_puSF=0.105476ScaleFactor =1.41194
+----- event number: 29118486, lumi_num: 181763
+ 
+------------NEW EVENT: 2432612 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.986964; W_btagWeight_shape=0.914092; Luminosity=35922
+----- MVA value: W_puSF=-0.0777453ScaleFactor =0.941799
+----- event number: 9227651, lumi_num: 57601
+ 
+------------NEW EVENT: 2432850 --------------
+----- Weights are: W_puSF=0.0201058; W_fleptonSF=0.986964; W_btagWeight_shape=1.08616; Luminosity=35922
+----- MVA value: W_puSF=-0.173912ScaleFactor =0.0215534
+----- event number: 45818417, lumi_num: 286008
+ 
+------------NEW EVENT: 2432994 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.939922; W_btagWeight_shape=0.965418; Luminosity=35922
+----- MVA value: W_puSF=-0.135408ScaleFactor =1.09138
+----- event number: 67169845, lumi_num: 419287
+ 
+------------NEW EVENT: 2433081 --------------
+----- Weights are: W_puSF=1.06617; W_fleptonSF=0.975023; W_btagWeight_shape=0.844094; Luminosity=35922
+----- MVA value: W_puSF=-0.0190245ScaleFactor =0.877468
+----- event number: 10767489, lumi_num: 67213
+ 
+------------NEW EVENT: 2433162 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.975023; W_btagWeight_shape=0.947684; Luminosity=35922
+----- MVA value: W_puSF=-0.137438ScaleFactor =0.982957
+----- event number: 59555775, lumi_num: 371759
+ 
+------------NEW EVENT: 2433196 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.962742; W_btagWeight_shape=0.928554; Luminosity=35922
+----- MVA value: W_puSF=-0.153815ScaleFactor =0.934966
+----- event number: 736781, lumi_num: 4599
+ 
+------------NEW EVENT: 2435041 --------------
+----- Weights are: W_puSF=1.07556; W_fleptonSF=0.967213; W_btagWeight_shape=0.985276; Luminosity=35922
+----- MVA value: W_puSF=0.0529815ScaleFactor =1.02498
+----- event number: 55539761, lumi_num: 346691
+ 
+------------NEW EVENT: 2435249 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.986964; W_btagWeight_shape=0.973958; Luminosity=35922
+----- MVA value: W_puSF=-0.251584ScaleFactor =1.00536
+----- event number: 61898513, lumi_num: 386383
+ 
+------------NEW EVENT: 2435497 --------------
+----- Weights are: W_puSF=1.20029; W_fleptonSF=0.964246; W_btagWeight_shape=1.01583; Luminosity=35922
+----- MVA value: W_puSF=0.0726257ScaleFactor =1.1757
+----- event number: 39142611, lumi_num: 244336
+ 
+------------NEW EVENT: 2435706 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.986964; W_btagWeight_shape=1.02055; Luminosity=35922
+----- MVA value: W_puSF=0.157891ScaleFactor =1.05104
+----- event number: 35913958, lumi_num: 224182
+ 
+------------NEW EVENT: 2436513 --------------
+----- Weights are: W_puSF=0.0122628; W_fleptonSF=0.967213; W_btagWeight_shape=0.930525; Luminosity=35922
+----- MVA value: W_puSF=0.147561ScaleFactor =0.0110367
+----- event number: 73818581, lumi_num: 460791
+ 
+------------NEW EVENT: 2437065 --------------
+----- Weights are: W_puSF=0.611571; W_fleptonSF=0.964246; W_btagWeight_shape=1.14187; Luminosity=35922
+----- MVA value: W_puSF=-0.0636325ScaleFactor =0.673364
+----- event number: 21954939, lumi_num: 137047
+ 
+------------NEW EVENT: 2437263 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.962742; W_btagWeight_shape=0.839002; Luminosity=35922
+----- MVA value: W_puSF=0.125668ScaleFactor =0.876626
+----- event number: 9349865, lumi_num: 58363
+ 
+------------NEW EVENT: 2437338 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.964246; W_btagWeight_shape=0.962395; Luminosity=35922
+----- MVA value: W_puSF=-0.101933ScaleFactor =1.05997
+----- event number: 11456819, lumi_num: 71516
+ 
+------------NEW EVENT: 2437652 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.941414; W_btagWeight_shape=0.831363; Luminosity=35922
+----- MVA value: W_puSF=0.146238ScaleFactor =0.81856
+----- event number: 35561700, lumi_num: 221983
+ 
+------------NEW EVENT: 2437832 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.975023; W_btagWeight_shape=0.980383; Luminosity=35922
+----- MVA value: W_puSF=0.0483167ScaleFactor =1.125
+----- event number: 10356530, lumi_num: 64648
+ 
+------------NEW EVENT: 2438273 --------------
+----- Weights are: W_puSF=1.06617; W_fleptonSF=0.986964; W_btagWeight_shape=1.09159; Luminosity=35922
+----- MVA value: W_puSF=-0.261307ScaleFactor =1.14864
+----- event number: 4481233, lumi_num: 27973
+ 
+------------NEW EVENT: 2438714 --------------
+----- Weights are: W_puSF=0.0759909; W_fleptonSF=0.966491; W_btagWeight_shape=1.03392; Luminosity=35922
+----- MVA value: W_puSF=-0.0630903ScaleFactor =0.0759357
+----- event number: 10335745, lumi_num: 64518
+ 
+------------NEW EVENT: 2439122 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.975023; W_btagWeight_shape=0.84424; Luminosity=35922
+----- MVA value: W_puSF=-0.12125ScaleFactor =0.854395
+----- event number: 75189075, lumi_num: 469346
+ 
+------------NEW EVENT: 2439342 --------------
+----- Weights are: W_puSF=1.10478; W_fleptonSF=0.975023; W_btagWeight_shape=0.957076; Luminosity=35922
+----- MVA value: W_puSF=-0.0578486ScaleFactor =1.03094
+----- event number: 20583973, lumi_num: 128489
+ 
+------------NEW EVENT: 2439937 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.922225; W_btagWeight_shape=0.865691; Luminosity=35922
+----- MVA value: W_puSF=0.0295848ScaleFactor =0.960216
+----- event number: 28552526, lumi_num: 178231
+ 
+------------NEW EVENT: 2440246 --------------
+----- Weights are: W_puSF=0.809728; W_fleptonSF=0.939922; W_btagWeight_shape=0.737891; Luminosity=35922
+----- MVA value: W_puSF=-0.189772ScaleFactor =0.561595
+----- event number: 27719781, lumi_num: 173032
+ 
+------------NEW EVENT: 2441273 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.975023; W_btagWeight_shape=0.732671; Luminosity=35922
+----- MVA value: W_puSF=0.22568ScaleFactor =0.851534
+----- event number: 3990687, lumi_num: 24911
+ 
+------------NEW EVENT: 2441795 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.987798; W_btagWeight_shape=1.09114; Luminosity=35922
+----- MVA value: W_puSF=0.0682285ScaleFactor =1.12469
+----- event number: 73951331, lumi_num: 461619
+ 
+------------NEW EVENT: 2442331 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.939922; W_btagWeight_shape=1.1261; Luminosity=35922
+----- MVA value: W_puSF=-0.120373ScaleFactor =1.09861
+----- event number: 12783977, lumi_num: 79801
+ 
+------------NEW EVENT: 2442777 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.964246; W_btagWeight_shape=1.01996; Luminosity=35922
+----- MVA value: W_puSF=0.0954801ScaleFactor =1.06815
+----- event number: 41432795, lumi_num: 258632
+ 
+------------NEW EVENT: 2443185 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.975023; W_btagWeight_shape=0.871253; Luminosity=35922
+----- MVA value: W_puSF=-0.0457667ScaleFactor =0.999768
+----- event number: 29135186, lumi_num: 181868
+ 
+------------NEW EVENT: 2443303 --------------
+----- Weights are: W_puSF=1.11828; W_fleptonSF=0.966491; W_btagWeight_shape=0.84235; Luminosity=35922
+----- MVA value: W_puSF=-0.115895ScaleFactor =0.91042
+----- event number: 6564373, lumi_num: 40976
+ 
+------------NEW EVENT: 2443605 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.981438; W_btagWeight_shape=1.37732; Luminosity=35922
+----- MVA value: W_puSF=-0.166735ScaleFactor =1.44554
+----- event number: 30383798, lumi_num: 189662
+ 
+------------NEW EVENT: 2443684 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.964246; W_btagWeight_shape=0.886872; Luminosity=35922
+----- MVA value: W_puSF=0.186811ScaleFactor =0.899481
+----- event number: 6567782, lumi_num: 40997
+ 
+------------NEW EVENT: 2443769 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.962742; W_btagWeight_shape=1.24153; Luminosity=35922
+----- MVA value: W_puSF=-0.0737458ScaleFactor =1.292
+----- event number: 22188996, lumi_num: 138508
+ 
+------------NEW EVENT: 2443947 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.962742; W_btagWeight_shape=1.04718; Luminosity=35922
+----- MVA value: W_puSF=0.127931ScaleFactor =1.05244
+----- event number: 41602274, lumi_num: 259689
+ 
+------------NEW EVENT: 2444037 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.982956; W_btagWeight_shape=1.01816; Luminosity=35922
+----- MVA value: W_puSF=0.236096ScaleFactor =1.05267
+----- event number: 63297058, lumi_num: 395113
+ 
+------------NEW EVENT: 2444226 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.962742; W_btagWeight_shape=1.1721; Luminosity=35922
+----- MVA value: W_puSF=0.0597981ScaleFactor =1.22557
+----- event number: 62488909, lumi_num: 390068
+ 
+------------NEW EVENT: 2444264 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.975023; W_btagWeight_shape=0.938183; Luminosity=35922
+----- MVA value: W_puSF=-0.0102429ScaleFactor =0.978218
+----- event number: 64154922, lumi_num: 400468
+ 
+------------NEW EVENT: 2444329 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.962742; W_btagWeight_shape=1.01923; Luminosity=35922
+----- MVA value: W_puSF=0.0706366ScaleFactor =1.02627
+----- event number: 14012547, lumi_num: 87469
+ 
+------------NEW EVENT: 2444395 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.922225; W_btagWeight_shape=1.06284; Luminosity=35922
+----- MVA value: W_puSF=0.123171ScaleFactor =1.02725
+----- event number: 74691146, lumi_num: 466237
+ 
+------------NEW EVENT: 2444661 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.962742; W_btagWeight_shape=0.961495; Luminosity=35922
+----- MVA value: W_puSF=0.279075ScaleFactor =1.00535
+----- event number: 62560754, lumi_num: 390517
+ 
+------------NEW EVENT: 2444782 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.941414; W_btagWeight_shape=0.84686; Luminosity=35922
+----- MVA value: W_puSF=-0.162208ScaleFactor =0.827504
+----- event number: 32529168, lumi_num: 203053
+ 
+------------NEW EVENT: 2445006 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.964246; W_btagWeight_shape=0.957681; Luminosity=35922
+----- MVA value: W_puSF=-0.258147ScaleFactor =0.967785
+----- event number: 8805718, lumi_num: 54967
+ 
+------------NEW EVENT: 2445152 --------------
+----- Weights are: W_puSF=0.0122628; W_fleptonSF=0.975023; W_btagWeight_shape=1.16606; Luminosity=35922
+----- MVA value: W_puSF=-0.0814447ScaleFactor =0.013942
+----- event number: 40629729, lumi_num: 253619
+ 
+------------NEW EVENT: 2445202 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.939922; W_btagWeight_shape=0.832458; Luminosity=35922
+----- MVA value: W_puSF=-0.240153ScaleFactor =0.812141
+----- event number: 5630831, lumi_num: 35149
+ 
+------------NEW EVENT: 2445543 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.939922; W_btagWeight_shape=0.965547; Luminosity=35922
+----- MVA value: W_puSF=-0.190904ScaleFactor =0.980985
+----- event number: 8340495, lumi_num: 52063
+ 
+------------NEW EVENT: 2445974 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.986964; W_btagWeight_shape=0.852942; Luminosity=35922
+----- MVA value: W_puSF=0.249664ScaleFactor =0.900232
+----- event number: 23702546, lumi_num: 147956
+ 
+------------NEW EVENT: 2446231 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.975023; W_btagWeight_shape=1.03058; Luminosity=35922
+----- MVA value: W_puSF=-0.0608512ScaleFactor =1.1826
+----- event number: 30151558, lumi_num: 188212
+ 
+------------NEW EVENT: 2446653 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.975023; W_btagWeight_shape=1.031; Luminosity=35922
+----- MVA value: W_puSF=0.090155ScaleFactor =1.05735
+----- event number: 33314771, lumi_num: 207957
+ 
+------------NEW EVENT: 2446690 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.941414; W_btagWeight_shape=1.18589; Luminosity=35922
+----- MVA value: W_puSF=0.0338311ScaleFactor =1.16763
+----- event number: 35058152, lumi_num: 218839
+ 
+------------NEW EVENT: 2446703 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.975023; W_btagWeight_shape=1.03452; Luminosity=35922
+----- MVA value: W_puSF=-0.309151ScaleFactor =1.06096
+----- event number: 35261418, lumi_num: 220108
+ 
+------------NEW EVENT: 2447005 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.942789; W_btagWeight_shape=0.974777; Luminosity=35922
+----- MVA value: W_puSF=-0.0260378ScaleFactor =0.998117
+----- event number: 76652689, lumi_num: 478481
+ 
+------------NEW EVENT: 2447492 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.966491; W_btagWeight_shape=0.913115; Luminosity=35922
+----- MVA value: W_puSF=-0.0698619ScaleFactor =0.94375
+----- event number: 60108344, lumi_num: 375208
+ 
+------------NEW EVENT: 2447895 --------------
+----- Weights are: W_puSF=0.972324; W_fleptonSF=0.987798; W_btagWeight_shape=1.14497; Luminosity=35922
+----- MVA value: W_puSF=-0.0293888ScaleFactor =1.0997
+----- event number: 47472212, lumi_num: 296331
+ 
+------------NEW EVENT: 2448524 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.982956; W_btagWeight_shape=0.966623; Luminosity=35922
+----- MVA value: W_puSF=-0.0492355ScaleFactor =1.03194
+----- event number: 58428529, lumi_num: 364722
+ 
+------------NEW EVENT: 2448759 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.975023; W_btagWeight_shape=1.02429; Luminosity=35922
+----- MVA value: W_puSF=0.219062ScaleFactor =1.07953
+----- event number: 27995579, lumi_num: 174754
+ 
+------------NEW EVENT: 2448871 --------------
+----- Weights are: W_puSF=0.901925; W_fleptonSF=0.966491; W_btagWeight_shape=0.84042; Luminosity=35922
+----- MVA value: W_puSF=-0.187785ScaleFactor =0.732596
+----- event number: 67195940, lumi_num: 419451
+ 
+------------NEW EVENT: 2449652 --------------
+----- Weights are: W_puSF=1.11828; W_fleptonSF=0.967213; W_btagWeight_shape=1.07284; Luminosity=35922
+----- MVA value: W_puSF=-0.232367ScaleFactor =1.16041
+----- event number: 71177170, lumi_num: 444302
+ 
+------------NEW EVENT: 2449922 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.975023; W_btagWeight_shape=0.74822; Luminosity=35922
+----- MVA value: W_puSF=-0.194028ScaleFactor =0.869605
+----- event number: 15792608, lumi_num: 98581
+ 
+------------NEW EVENT: 2449984 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.981438; W_btagWeight_shape=0.868821; Luminosity=35922
+----- MVA value: W_puSF=-0.468887ScaleFactor =0.885056
+----- event number: 44513964, lumi_num: 277864
+ 
+------------NEW EVENT: 2450412 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.967213; W_btagWeight_shape=1.04907; Luminosity=35922
+----- MVA value: W_puSF=0.125257ScaleFactor =1.10202
+----- event number: 69831479, lumi_num: 435902
+ 
+------------NEW EVENT: 2450642 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.939988; W_btagWeight_shape=0.881882; Luminosity=35922
+----- MVA value: W_puSF=-0.35327ScaleFactor =0.997016
+----- event number: 57641538, lumi_num: 359809
+ 
+------------NEW EVENT: 2452010 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.967213; W_btagWeight_shape=1.08485; Luminosity=35922
+----- MVA value: W_puSF=0.19931ScaleFactor =1.262
+----- event number: 18985676, lumi_num: 118512
+ 
+------------NEW EVENT: 2452993 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.939922; W_btagWeight_shape=1.11328; Luminosity=35922
+----- MVA value: W_puSF=0.114606ScaleFactor =1.11315
+----- event number: 38607307, lumi_num: 240994
+ 
+------------NEW EVENT: 2453456 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.975023; W_btagWeight_shape=0.767531; Luminosity=35922
+----- MVA value: W_puSF=-0.251139ScaleFactor =0.808924
+----- event number: 22562415, lumi_num: 140839
+ 
+------------NEW EVENT: 2453677 --------------
+----- Weights are: W_puSF=0.698792; W_fleptonSF=0.981438; W_btagWeight_shape=0.83099; Luminosity=35922
+----- MVA value: W_puSF=0.0597786ScaleFactor =0.56991
+----- event number: 33794799, lumi_num: 210954
+ 
+------------NEW EVENT: 2454199 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.966491; W_btagWeight_shape=0.869074; Luminosity=35922
+----- MVA value: W_puSF=-0.1422ScaleFactor =0.883482
+----- event number: 30662650, lumi_num: 191402
+ 
+------------NEW EVENT: 2455251 --------------
+----- Weights are: W_puSF=0.967597; W_fleptonSF=0.967213; W_btagWeight_shape=0.741109; Luminosity=35922
+----- MVA value: W_puSF=-0.0416473ScaleFactor =0.693583
+----- event number: 26487624, lumi_num: 165341
+ 
+------------NEW EVENT: 2455920 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.987798; W_btagWeight_shape=1.42737; Luminosity=35922
+----- MVA value: W_puSF=-0.237035ScaleFactor =1.4999
+----- event number: 9618859, lumi_num: 60043
+ 
+------------NEW EVENT: 2456130 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.962742; W_btagWeight_shape=0.772758; Luminosity=35922
+----- MVA value: W_puSF=-0.232828ScaleFactor =0.795586
+----- event number: 15194303, lumi_num: 94846
+ 
+------------NEW EVENT: 2456380 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.971065; W_btagWeight_shape=0.991186; Luminosity=35922
+----- MVA value: W_puSF=-0.165067ScaleFactor =1.00478
+----- event number: 77306206, lumi_num: 482561
+ 
+------------NEW EVENT: 2456664 --------------
+----- Weights are: W_puSF=1.11828; W_fleptonSF=0.964246; W_btagWeight_shape=0.955908; Luminosity=35922
+----- MVA value: W_puSF=-0.0257785ScaleFactor =1.03076
+----- event number: 10040994, lumi_num: 62678
+ 
+------------NEW EVENT: 2457045 --------------
+----- Weights are: W_puSF=1.10478; W_fleptonSF=0.975023; W_btagWeight_shape=0.85628; Luminosity=35922
+----- MVA value: W_puSF=-0.0525418ScaleFactor =0.922368
+----- event number: 15618331, lumi_num: 97493
+ 
+------------NEW EVENT: 2457482 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.964246; W_btagWeight_shape=0.829412; Luminosity=35922
+----- MVA value: W_puSF=-0.330095ScaleFactor =0.953314
+----- event number: 23964110, lumi_num: 149588
+ 
+------------NEW EVENT: 2457493 --------------
+----- Weights are: W_puSF=0.496201; W_fleptonSF=0.966491; W_btagWeight_shape=0.859473; Luminosity=35922
+----- MVA value: W_puSF=-0.240187ScaleFactor =0.412181
+----- event number: 23974933, lumi_num: 149657
+ 
+------------NEW EVENT: 2457985 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.922225; W_btagWeight_shape=0.843782; Luminosity=35922
+----- MVA value: W_puSF=-0.0351299ScaleFactor =0.80769
+----- event number: 29863529, lumi_num: 186414
+ 
+------------NEW EVENT: 2458053 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.982956; W_btagWeight_shape=1.12779; Luminosity=35922
+----- MVA value: W_puSF=-0.150587ScaleFactor =1.17929
+----- event number: 39157331, lumi_num: 244428
+ 
+------------NEW EVENT: 2458358 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.986964; W_btagWeight_shape=0.85582; Luminosity=35922
+----- MVA value: W_puSF=-0.0375451ScaleFactor =0.913021
+----- event number: 44464165, lumi_num: 277554
+ 
+------------NEW EVENT: 2459038 --------------
+----- Weights are: W_puSF=1.10478; W_fleptonSF=0.967213; W_btagWeight_shape=1.31846; Luminosity=35922
+----- MVA value: W_puSF=-0.282716ScaleFactor =1.40885
+----- event number: 27540529, lumi_num: 171913
+ 
+------------NEW EVENT: 2459767 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.975023; W_btagWeight_shape=0.905644; Luminosity=35922
+----- MVA value: W_puSF=-0.214591ScaleFactor =1.05257
+----- event number: 55725687, lumi_num: 347851
+ 
+------------NEW EVENT: 2459954 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.975023; W_btagWeight_shape=0.972677; Luminosity=35922
+----- MVA value: W_puSF=-0.0171168ScaleFactor =1.13048
+----- event number: 36880361, lumi_num: 230214
+ 
+------------NEW EVENT: 2459984 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.97442; W_btagWeight_shape=0.753032; Luminosity=35922
+----- MVA value: W_puSF=-0.133222ScaleFactor =0.771797
+----- event number: 38073141, lumi_num: 237661
+ 
+------------NEW EVENT: 2460203 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.975023; W_btagWeight_shape=0.939898; Luminosity=35922
+----- MVA value: W_puSF=-0.175607ScaleFactor =0.995308
+----- event number: 46218154, lumi_num: 288503
+ 
+------------NEW EVENT: 2460315 --------------
+----- Weights are: W_puSF=1.20029; W_fleptonSF=0.964246; W_btagWeight_shape=0.892366; Luminosity=35922
+----- MVA value: W_puSF=0.00179717ScaleFactor =1.0328
+----- event number: 56770960, lumi_num: 354376
+ 
+------------NEW EVENT: 2460346 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.962742; W_btagWeight_shape=0.745418; Luminosity=35922
+----- MVA value: W_puSF=0.119476ScaleFactor =0.744881
+----- event number: 57789821, lumi_num: 360736
+ 
+------------NEW EVENT: 2460791 --------------
+----- Weights are: W_puSF=1.16905; W_fleptonSF=0.993453; W_btagWeight_shape=0.82098; Luminosity=35922
+----- MVA value: W_puSF=-0.287715ScaleFactor =0.953479
+----- event number: 34012594, lumi_num: 212313
+ 
+------------NEW EVENT: 2460847 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.939988; W_btagWeight_shape=0.915297; Luminosity=35922
+----- MVA value: W_puSF=-0.122598ScaleFactor =0.893022
+----- event number: 35695559, lumi_num: 222818
+ 
+------------NEW EVENT: 2461383 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.975023; W_btagWeight_shape=1.0442; Luminosity=35922
+----- MVA value: W_puSF=0.0423791ScaleFactor =1.06284
+----- event number: 62797531, lumi_num: 391994
+ 
+------------NEW EVENT: 2461556 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.939922; W_btagWeight_shape=1.06662; Luminosity=35922
+----- MVA value: W_puSF=0.144061ScaleFactor =1.08884
+----- event number: 18132555, lumi_num: 113187
+ 
+------------NEW EVENT: 2462644 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.966491; W_btagWeight_shape=0.772347; Luminosity=35922
+----- MVA value: W_puSF=-0.101753ScaleFactor =0.798258
+----- event number: 72857182, lumi_num: 454789
+ 
+------------NEW EVENT: 2463010 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.967213; W_btagWeight_shape=0.819605; Luminosity=35922
+----- MVA value: W_puSF=-0.116465ScaleFactor =0.860337
+----- event number: 15789897, lumi_num: 98563
+ 
+------------NEW EVENT: 2463104 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.986964; W_btagWeight_shape=0.823666; Luminosity=35922
+----- MVA value: W_puSF=-0.0584228ScaleFactor =0.864785
+----- event number: 451858, lumi_num: 2821
+ 
+------------NEW EVENT: 2463369 --------------
+----- Weights are: W_puSF=0.611571; W_fleptonSF=0.964246; W_btagWeight_shape=1.15369; Luminosity=35922
+----- MVA value: W_puSF=-0.230886ScaleFactor =0.680338
+----- event number: 79490601, lumi_num: 496196
+ 
+------------NEW EVENT: 2463481 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.964246; W_btagWeight_shape=0.798575; Luminosity=35922
+----- MVA value: W_puSF=0.421125ScaleFactor =0.819143
+----- event number: 59901930, lumi_num: 373919
+ 
+------------NEW EVENT: 2463988 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.975023; W_btagWeight_shape=0.961942; Luminosity=35922
+----- MVA value: W_puSF=0.0574028ScaleFactor =0.973512
+----- event number: 11111794, lumi_num: 69362
+ 
+------------NEW EVENT: 2464046 --------------
+----- Weights are: W_puSF=0.159411; W_fleptonSF=0.981438; W_btagWeight_shape=0.898936; Luminosity=35922
+----- MVA value: W_puSF=0.0759108ScaleFactor =0.140641
+----- event number: 33765169, lumi_num: 210769
+ 
+------------NEW EVENT: 2464115 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.975023; W_btagWeight_shape=0.900274; Luminosity=35922
+----- MVA value: W_puSF=0.236689ScaleFactor =0.952645
+----- event number: 69848323, lumi_num: 436007
+ 
+------------NEW EVENT: 2464780 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.964246; W_btagWeight_shape=1.18474; Luminosity=35922
+----- MVA value: W_puSF=-0.0524133ScaleFactor =1.20159
+----- event number: 2215152, lumi_num: 13827
+ 
+------------NEW EVENT: 2465028 --------------
+----- Weights are: W_puSF=0.611571; W_fleptonSF=0.939988; W_btagWeight_shape=1.03991; Luminosity=35922
+----- MVA value: W_puSF=-0.213665ScaleFactor =0.597814
+----- event number: 42378537, lumi_num: 264536
+ 
+------------NEW EVENT: 2465121 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.964246; W_btagWeight_shape=0.957155; Luminosity=35922
+----- MVA value: W_puSF=-0.0885188ScaleFactor =0.981807
+----- event number: 21009079, lumi_num: 131143
+ 
+------------NEW EVENT: 2465539 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.964246; W_btagWeight_shape=0.791218; Luminosity=35922
+----- MVA value: W_puSF=-0.14263ScaleFactor =0.897892
+----- event number: 17168844, lumi_num: 107172
+ 
+------------NEW EVENT: 2465567 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.982956; W_btagWeight_shape=0.976163; Luminosity=35922
+----- MVA value: W_puSF=-0.0608263ScaleFactor =1.00925
+----- event number: 32188854, lumi_num: 200929
+ 
+------------NEW EVENT: 2465799 --------------
+----- Weights are: W_puSF=1.10478; W_fleptonSF=0.962742; W_btagWeight_shape=0.861625; Luminosity=35922
+----- MVA value: W_puSF=-0.100548ScaleFactor =0.916435
+----- event number: 30499595, lumi_num: 190384
+ 
+------------NEW EVENT: 2467240 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.966491; W_btagWeight_shape=1.03572; Luminosity=35922
+----- MVA value: W_puSF=-0.188399ScaleFactor =1.06487
+----- event number: 42204899, lumi_num: 263452
+ 
+------------NEW EVENT: 2467579 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.966491; W_btagWeight_shape=1.06895; Luminosity=35922
+----- MVA value: W_puSF=-0.390545ScaleFactor =1.2159
+----- event number: 71170930, lumi_num: 444263
+ 
+------------NEW EVENT: 2467928 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.975023; W_btagWeight_shape=1.23319; Luminosity=35922
+----- MVA value: W_puSF=-0.332729ScaleFactor =1.2647
+----- event number: 2709212, lumi_num: 16912
+ 
+------------NEW EVENT: 2468322 --------------
+----- Weights are: W_puSF=0.00729632; W_fleptonSF=0.981438; W_btagWeight_shape=1.12884; Luminosity=35922
+----- MVA value: W_puSF=-0.0457981ScaleFactor =0.00808347
+----- event number: 28114253, lumi_num: 175494
+ 
+------------NEW EVENT: 2468624 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.964246; W_btagWeight_shape=0.852478; Luminosity=35922
+----- MVA value: W_puSF=0.0394698ScaleFactor =0.879032
+----- event number: 79558058, lumi_num: 496617
+ 
+------------NEW EVENT: 2468872 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.982956; W_btagWeight_shape=1.0337; Luminosity=35922
+----- MVA value: W_puSF=0.0710771ScaleFactor =1.08658
+----- event number: 63359485, lumi_num: 395502
+ 
+------------NEW EVENT: 2469562 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.986964; W_btagWeight_shape=0.849976; Luminosity=35922
+----- MVA value: W_puSF=-0.244452ScaleFactor =0.877379
+----- event number: 54872884, lumi_num: 342527
+ 
+------------NEW EVENT: 2469733 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.975023; W_btagWeight_shape=0.829151; Luminosity=35922
+----- MVA value: W_puSF=-0.0199825ScaleFactor =0.843947
+----- event number: 14463061, lumi_num: 90282
+ 
+------------NEW EVENT: 2470173 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.966491; W_btagWeight_shape=0.902247; Luminosity=35922
+----- MVA value: W_puSF=-0.173764ScaleFactor =0.913889
+----- event number: 33959658, lumi_num: 211983
+ 
+------------NEW EVENT: 2470593 --------------
+----- Weights are: W_puSF=0.159411; W_fleptonSF=0.981438; W_btagWeight_shape=0.815867; Luminosity=35922
+----- MVA value: W_puSF=0.229531ScaleFactor =0.127644
+----- event number: 47680272, lumi_num: 297629
+ 
+------------NEW EVENT: 2470881 --------------
+----- Weights are: W_puSF=1.07556; W_fleptonSF=0.962742; W_btagWeight_shape=1.09545; Luminosity=35922
+----- MVA value: W_puSF=-0.265472ScaleFactor =1.13432
+----- event number: 79304865, lumi_num: 495037
+ 
+------------NEW EVENT: 2471313 --------------
+----- Weights are: W_puSF=0.496201; W_fleptonSF=0.975023; W_btagWeight_shape=0.83779; Luminosity=35922
+----- MVA value: W_puSF=-0.131896ScaleFactor =0.405329
+----- event number: 69385623, lumi_num: 433118
+ 
+------------NEW EVENT: 2473392 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.962742; W_btagWeight_shape=1.02435; Luminosity=35922
+----- MVA value: W_puSF=0.216504ScaleFactor =1.05461
+----- event number: 61996660, lumi_num: 386996
+ 
+------------NEW EVENT: 2474108 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.993453; W_btagWeight_shape=0.938727; Luminosity=35922
+----- MVA value: W_puSF=-0.301213ScaleFactor =0.975361
+----- event number: 59908564, lumi_num: 373961
+ 
+------------NEW EVENT: 2474476 --------------
+----- Weights are: W_puSF=1.11828; W_fleptonSF=0.975023; W_btagWeight_shape=1.36019; Luminosity=35922
+----- MVA value: W_puSF=-0.187675ScaleFactor =1.48309
+----- event number: 28202844, lumi_num: 176048
+ 
+------------NEW EVENT: 2474564 --------------
+----- Weights are: W_puSF=0.496201; W_fleptonSF=0.941414; W_btagWeight_shape=0.988854; Luminosity=35922
+----- MVA value: W_puSF=-0.0953677ScaleFactor =0.461925
+----- event number: 54126753, lumi_num: 337869
+ 
+------------NEW EVENT: 2474615 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.975023; W_btagWeight_shape=0.81239; Luminosity=35922
+----- MVA value: W_puSF=-0.0793005ScaleFactor =0.860282
+----- event number: 77354120, lumi_num: 482859
+ 
+------------NEW EVENT: 2474841 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.922225; W_btagWeight_shape=0.739265; Luminosity=35922
+----- MVA value: W_puSF=-0.0990066ScaleFactor =0.713044
+----- event number: 48440097, lumi_num: 302373
+ 
+------------NEW EVENT: 2474981 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.986964; W_btagWeight_shape=1.02834; Luminosity=35922
+----- MVA value: W_puSF=-0.2341ScaleFactor =1.1023
+----- event number: 56997063, lumi_num: 355787
+ 
+------------NEW EVENT: 2475598 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.962742; W_btagWeight_shape=0.805633; Luminosity=35922
+----- MVA value: W_puSF=0.10827ScaleFactor =0.912825
+----- event number: 47887956, lumi_num: 298926
+ 
+------------NEW EVENT: 2475867 --------------
+----- Weights are: W_puSF=1.20029; W_fleptonSF=0.986964; W_btagWeight_shape=0.753861; Luminosity=35922
+----- MVA value: W_puSF=0.1047ScaleFactor =0.893056
+----- event number: 20616471, lumi_num: 128692
+ 
+------------NEW EVENT: 2476469 --------------
+----- Weights are: W_puSF=0.159411; W_fleptonSF=0.962742; W_btagWeight_shape=0.926095; Luminosity=35922
+----- MVA value: W_puSF=0.201715ScaleFactor =0.142129
+----- event number: 39573082, lumi_num: 247023
+ 
+------------NEW EVENT: 2476557 --------------
+----- Weights are: W_puSF=0.496201; W_fleptonSF=0.967213; W_btagWeight_shape=0.821693; Luminosity=35922
+----- MVA value: W_puSF=0.116059ScaleFactor =0.394357
+----- event number: 42594741, lumi_num: 265884
+ 
+------------NEW EVENT: 2476807 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.981438; W_btagWeight_shape=0.953492; Luminosity=35922
+----- MVA value: W_puSF=-0.0428039ScaleFactor =1.0156
+----- event number: 78267719, lumi_num: 488563
+ 
+------------NEW EVENT: 2476830 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.964246; W_btagWeight_shape=0.806236; Luminosity=35922
+----- MVA value: W_puSF=-0.0181038ScaleFactor =0.813072
+----- event number: 2574995, lumi_num: 16073
+ 
+------------NEW EVENT: 2477276 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.922225; W_btagWeight_shape=0.887625; Luminosity=35922
+----- MVA value: W_puSF=-0.100332ScaleFactor =0.854541
+----- event number: 4190303, lumi_num: 26157
+ 
+------------NEW EVENT: 2477346 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.939988; W_btagWeight_shape=0.824608; Luminosity=35922
+----- MVA value: W_puSF=0.217677ScaleFactor =0.810679
+----- event number: 18656445, lumi_num: 116457
+ 
+------------NEW EVENT: 2477397 --------------
+----- Weights are: W_puSF=1.04474; W_fleptonSF=0.967213; W_btagWeight_shape=0.879886; Luminosity=35922
+----- MVA value: W_puSF=-0.0449185ScaleFactor =0.889113
+----- event number: 24416800, lumi_num: 152414
+ 
+------------NEW EVENT: 2478354 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.993453; W_btagWeight_shape=0.688488; Luminosity=35922
+----- MVA value: W_puSF=-0.166624ScaleFactor =0.727611
+----- event number: 44175727, lumi_num: 275753
+ 
+------------NEW EVENT: 2479124 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.986964; W_btagWeight_shape=0.996848; Luminosity=35922
+----- MVA value: W_puSF=-0.0163399ScaleFactor =1.02706
+----- event number: 15842176, lumi_num: 98889
+ 
+------------NEW EVENT: 2479720 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.941414; W_btagWeight_shape=1.44505; Luminosity=35922
+----- MVA value: W_puSF=-0.0511161ScaleFactor =1.44717
+----- event number: 31129807, lumi_num: 194318
+ 
+------------NEW EVENT: 2480122 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.939988; W_btagWeight_shape=0.910993; Luminosity=35922
+----- MVA value: W_puSF=0.0695623ScaleFactor =0.893551
+----- event number: 71033927, lumi_num: 443408
+ 
+------------NEW EVENT: 2480168 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.962742; W_btagWeight_shape=0.88746; Luminosity=35922
+----- MVA value: W_puSF=-0.280064ScaleFactor =1.02761
+----- event number: 46337360, lumi_num: 289247
+ 
+------------NEW EVENT: 2480595 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.939922; W_btagWeight_shape=0.823127; Luminosity=35922
+----- MVA value: W_puSF=-0.0963773ScaleFactor =0.836288
+----- event number: 73014909, lumi_num: 455773
+ 
+------------NEW EVENT: 2481418 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.975023; W_btagWeight_shape=0.929059; Luminosity=35922
+----- MVA value: W_puSF=-0.248038ScaleFactor =0.9528
+----- event number: 47953614, lumi_num: 299336
+ 
+------------NEW EVENT: 2483617 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.975023; W_btagWeight_shape=0.898419; Luminosity=35922
+----- MVA value: W_puSF=-0.172299ScaleFactor =0.909225
+----- event number: 36494380, lumi_num: 227806
+ 
+------------NEW EVENT: 2484123 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.986964; W_btagWeight_shape=0.64525; Luminosity=35922
+----- MVA value: W_puSF=-0.372249ScaleFactor =0.765947
+----- event number: 78171136, lumi_num: 487959
+ 
+------------NEW EVENT: 2484162 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.966491; W_btagWeight_shape=1.22737; Luminosity=35922
+----- MVA value: W_puSF=-0.274584ScaleFactor =1.24772
+----- event number: 4258507, lumi_num: 26582
+ 
+------------NEW EVENT: 2485032 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.975023; W_btagWeight_shape=0.8702; Luminosity=35922
+----- MVA value: W_puSF=-0.230273ScaleFactor =1.01137
+----- event number: 28373451, lumi_num: 177113
+ 
+------------NEW EVENT: 2485153 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.981438; W_btagWeight_shape=0.871058; Luminosity=35922
+----- MVA value: W_puSF=-0.235219ScaleFactor =0.892436
+----- event number: 63769797, lumi_num: 398063
+ 
+------------NEW EVENT: 2485583 --------------
+----- Weights are: W_puSF=0.0523693; W_fleptonSF=0.966491; W_btagWeight_shape=1.11786; Luminosity=35922
+----- MVA value: W_puSF=-0.19667ScaleFactor =0.05658
+----- event number: 27621865, lumi_num: 172421
+ 
+------------NEW EVENT: 2485600 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.975023; W_btagWeight_shape=0.932724; Luminosity=35922
+----- MVA value: W_puSF=-0.109518ScaleFactor =0.956558
+----- event number: 31454635, lumi_num: 196346
+ 
+------------NEW EVENT: 2485713 --------------
+----- Weights are: W_puSF=0.611571; W_fleptonSF=0.964246; W_btagWeight_shape=0.795837; Luminosity=35922
+----- MVA value: W_puSF=-0.0129131ScaleFactor =0.469309
+----- event number: 32295319, lumi_num: 201594
+ 
+------------NEW EVENT: 2485732 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.942789; W_btagWeight_shape=0.917069; Luminosity=35922
+----- MVA value: W_puSF=0.0843274ScaleFactor =0.909409
+----- event number: 2677393, lumi_num: 16713
+ 
+------------NEW EVENT: 2485788 --------------
+----- Weights are: W_puSF=0.222389; W_fleptonSF=0.975023; W_btagWeight_shape=0.917204; Luminosity=35922
+----- MVA value: W_puSF=-0.173368ScaleFactor =0.198881
+----- event number: 15686177, lumi_num: 97916
+ 
+------------NEW EVENT: 2485869 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.967213; W_btagWeight_shape=0.560334; Luminosity=35922
+----- MVA value: W_puSF=-0.205871ScaleFactor =0.576534
+----- event number: 56056229, lumi_num: 349914
+ 
+------------NEW EVENT: 2485921 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.975023; W_btagWeight_shape=1.05795; Luminosity=35922
+----- MVA value: W_puSF=0.200661ScaleFactor =1.08499
+----- event number: 5996160, lumi_num: 37429
+ 
+------------NEW EVENT: 2485922 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.986964; W_btagWeight_shape=0.893787; Luminosity=35922
+----- MVA value: W_puSF=-0.112623ScaleFactor =0.920879
+----- event number: 22176504, lumi_num: 138431
+ 
+------------NEW EVENT: 2486002 --------------
+----- Weights are: W_puSF=0.901925; W_fleptonSF=0.966491; W_btagWeight_shape=0.99823; Luminosity=35922
+----- MVA value: W_puSF=0.0701553ScaleFactor =0.870159
+----- event number: 33246766, lumi_num: 207533
+ 
+------------NEW EVENT: 2486592 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.981438; W_btagWeight_shape=1.04076; Luminosity=35922
+----- MVA value: W_puSF=-0.0508984ScaleFactor =1.22853
+----- event number: 61399825, lumi_num: 383269
+ 
+------------NEW EVENT: 2487184 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.962742; W_btagWeight_shape=0.999436; Luminosity=35922
+----- MVA value: W_puSF=-0.115547ScaleFactor =1.02358
+----- event number: 50423396, lumi_num: 314753
+ 
+------------NEW EVENT: 2487480 --------------
+----- Weights are: W_puSF=1.10478; W_fleptonSF=0.981438; W_btagWeight_shape=0.901204; Luminosity=35922
+----- MVA value: W_puSF=0.115026ScaleFactor =0.977147
+----- event number: 72278586, lumi_num: 451177
+ 
+------------NEW EVENT: 2487631 --------------
+----- Weights are: W_puSF=1.07556; W_fleptonSF=0.981438; W_btagWeight_shape=1.03002; Luminosity=35922
+----- MVA value: W_puSF=-0.146754ScaleFactor =1.08728
+----- event number: 26004020, lumi_num: 162322
+ 
+------------NEW EVENT: 2488017 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.941414; W_btagWeight_shape=1.00498; Luminosity=35922
+----- MVA value: W_puSF=-0.12157ScaleFactor =0.982006
+----- event number: 23090147, lumi_num: 144133
+ 
+------------NEW EVENT: 2489305 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.993453; W_btagWeight_shape=0.952977; Luminosity=35922
+----- MVA value: W_puSF=0.111453ScaleFactor =0.982669
+----- event number: 55177286, lumi_num: 344428
+ 
+------------NEW EVENT: 2489400 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.981438; W_btagWeight_shape=0.80489; Luminosity=35922
+----- MVA value: W_puSF=-0.112842ScaleFactor =0.941624
+----- event number: 25830212, lumi_num: 161237
+ 
+------------NEW EVENT: 2489410 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.986964; W_btagWeight_shape=0.818349; Luminosity=35922
+----- MVA value: W_puSF=0.0378056ScaleFactor =0.844732
+----- event number: 27523295, lumi_num: 171806
+ 
+------------NEW EVENT: 2490144 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.922225; W_btagWeight_shape=0.855622; Luminosity=35922
+----- MVA value: W_puSF=0.190077ScaleFactor =0.826968
+----- event number: 47059121, lumi_num: 293752
+ 
+------------NEW EVENT: 2490196 --------------
+----- Weights are: W_puSF=0.159411; W_fleptonSF=0.962742; W_btagWeight_shape=1.03352; Luminosity=35922
+----- MVA value: W_puSF=0.0959232ScaleFactor =0.158616
+----- event number: 29504160, lumi_num: 184171
+ 
+------------NEW EVENT: 2490572 --------------
+----- Weights are: W_puSF=1.11828; W_fleptonSF=0.962742; W_btagWeight_shape=1.1824; Luminosity=35922
+----- MVA value: W_puSF=-0.149237ScaleFactor =1.27299
+----- event number: 68449251, lumi_num: 427273
+ 
+------------NEW EVENT: 2490652 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.986964; W_btagWeight_shape=1.05573; Luminosity=35922
+----- MVA value: W_puSF=-0.0451106ScaleFactor =1.08976
+----- event number: 49908519, lumi_num: 311539
+ 
+------------NEW EVENT: 2490969 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.986964; W_btagWeight_shape=0.925038; Luminosity=35922
+----- MVA value: W_puSF=-0.167091ScaleFactor =0.953077
+----- event number: 48117015, lumi_num: 300356
+ 
+------------NEW EVENT: 2491308 --------------
+----- Weights are: W_puSF=0.611571; W_fleptonSF=0.939988; W_btagWeight_shape=1.0038; Luminosity=35922
+----- MVA value: W_puSF=-0.121558ScaleFactor =0.577054
+----- event number: 78660089, lumi_num: 491012
+ 
+------------NEW EVENT: 2491502 --------------
+----- Weights are: W_puSF=0.496201; W_fleptonSF=0.975023; W_btagWeight_shape=0.90017; Luminosity=35922
+----- MVA value: W_puSF=0.23033ScaleFactor =0.435509
+----- event number: 31860851, lumi_num: 198882
+ 
+------------NEW EVENT: 2491992 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.986964; W_btagWeight_shape=0.815817; Luminosity=35922
+----- MVA value: W_puSF=-0.0204907ScaleFactor =0.840186
+----- event number: 41739579, lumi_num: 260547
+ 
+------------NEW EVENT: 2492138 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.967213; W_btagWeight_shape=0.979188; Luminosity=35922
+----- MVA value: W_puSF=-0.00233133ScaleFactor =0.988257
+----- event number: 36856215, lumi_num: 230064
+ 
+------------NEW EVENT: 2492390 --------------
+----- Weights are: W_puSF=0.159411; W_fleptonSF=0.962742; W_btagWeight_shape=0.990431; Luminosity=35922
+----- MVA value: W_puSF=-0.106282ScaleFactor =0.152003
+----- event number: 40333388, lumi_num: 251769
+ 
+------------NEW EVENT: 2493042 --------------
+----- Weights are: W_puSF=0.901925; W_fleptonSF=0.939922; W_btagWeight_shape=1.05981; Luminosity=35922
+----- MVA value: W_puSF=-0.197717ScaleFactor =0.898441
+----- event number: 70653469, lumi_num: 441033
+ 
+------------NEW EVENT: 2493241 --------------
+----- Weights are: W_puSF=1.07556; W_fleptonSF=0.975023; W_btagWeight_shape=1.04377; Luminosity=35922
+----- MVA value: W_puSF=0.270201ScaleFactor =1.0946
+----- event number: 1757274, lumi_num: 10969
+ 
+------------NEW EVENT: 2493416 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.981438; W_btagWeight_shape=0.89612; Luminosity=35922
+----- MVA value: W_puSF=-0.132558ScaleFactor =0.935589
+----- event number: 19072237, lumi_num: 119053
+ 
+------------NEW EVENT: 2493493 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.962742; W_btagWeight_shape=0.915681; Luminosity=35922
+----- MVA value: W_puSF=-0.126164ScaleFactor =1.06029
+----- event number: 38265140, lumi_num: 238858
+ 
+------------NEW EVENT: 2493815 --------------
+----- Weights are: W_puSF=0.0759909; W_fleptonSF=0.975023; W_btagWeight_shape=0.913803; Luminosity=35922
+----- MVA value: W_puSF=-0.0846031ScaleFactor =0.0677063
+----- event number: 26429341, lumi_num: 164977
+ 
+------------NEW EVENT: 2494850 --------------
+----- Weights are: W_puSF=1.20029; W_fleptonSF=0.986964; W_btagWeight_shape=0.700994; Luminosity=35922
+----- MVA value: W_puSF=-0.204985ScaleFactor =0.830427
+----- event number: 72743725, lumi_num: 454081
+ 
+------------NEW EVENT: 2496029 --------------
+----- Weights are: W_puSF=0.972324; W_fleptonSF=0.962742; W_btagWeight_shape=0.990985; Luminosity=35922
+----- MVA value: W_puSF=0.0957608ScaleFactor =0.927658
+----- event number: 69900098, lumi_num: 436331
+ 
+------------NEW EVENT: 2496279 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.987798; W_btagWeight_shape=1.06223; Luminosity=35922
+----- MVA value: W_puSF=-0.094895ScaleFactor =1.13418
+----- event number: 14017439, lumi_num: 87499
+ 
+------------NEW EVENT: 2496551 --------------
+----- Weights are: W_puSF=0.31137; W_fleptonSF=0.939988; W_btagWeight_shape=1.12421; Luminosity=35922
+----- MVA value: W_puSF=0.0505472ScaleFactor =0.329037
+----- event number: 35348042, lumi_num: 220649
+ 
+------------NEW EVENT: 2497585 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.942789; W_btagWeight_shape=0.806298; Luminosity=35922
+----- MVA value: W_puSF=0.182207ScaleFactor =0.914281
+----- event number: 62929070, lumi_num: 392816
+ 
+------------NEW EVENT: 2497598 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.975023; W_btagWeight_shape=1.11168; Luminosity=35922
+----- MVA value: W_puSF=-0.0205367ScaleFactor =1.23807
+----- event number: 62929670, lumi_num: 392819
+ 
+------------NEW EVENT: 2497676 --------------
+----- Weights are: W_puSF=1.20029; W_fleptonSF=0.962742; W_btagWeight_shape=0.928094; Luminosity=35922
+----- MVA value: W_puSF=-0.0539129ScaleFactor =1.07248
+----- event number: 33311711, lumi_num: 207938
+ 
+------------NEW EVENT: 2498074 --------------
+----- Weights are: W_puSF=1.16905; W_fleptonSF=0.981438; W_btagWeight_shape=0.790699; Luminosity=35922
+----- MVA value: W_puSF=0.265566ScaleFactor =0.907205
+----- event number: 61958459, lumi_num: 386757
+ 
+------------NEW EVENT: 2498259 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.962742; W_btagWeight_shape=0.869704; Luminosity=35922
+----- MVA value: W_puSF=0.169058ScaleFactor =0.909375
+----- event number: 41046017, lumi_num: 256217
+ 
+------------NEW EVENT: 2498703 --------------
+----- Weights are: W_puSF=1.16905; W_fleptonSF=0.939988; W_btagWeight_shape=1.01521; Luminosity=35922
+----- MVA value: W_puSF=-0.203267ScaleFactor =1.1156
+----- event number: 4621304, lumi_num: 28847
+ 
+------------NEW EVENT: 2498747 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.939922; W_btagWeight_shape=0.948894; Luminosity=35922
+----- MVA value: W_puSF=-0.191178ScaleFactor =0.931057
+----- event number: 5845324, lumi_num: 36488
+ 
+------------NEW EVENT: 2499515 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.986964; W_btagWeight_shape=1.24119; Luminosity=35922
+----- MVA value: W_puSF=-0.117366ScaleFactor =1.31001
+----- event number: 17396185, lumi_num: 108591
+ 
+------------NEW EVENT: 2499520 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.986964; W_btagWeight_shape=1.12727; Luminosity=35922
+----- MVA value: W_puSF=-0.0930833ScaleFactor =1.1548
+----- event number: 17396326, lumi_num: 108592
+ 
+------------NEW EVENT: 2499727 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.966491; W_btagWeight_shape=1.09501; Luminosity=35922
+----- MVA value: W_puSF=-0.0140869ScaleFactor =1.1048
+----- event number: 75367074, lumi_num: 470456
+ 
+------------NEW EVENT: 2500049 --------------
+----- Weights are: W_puSF=0.611571; W_fleptonSF=0.982956; W_btagWeight_shape=1.35824; Luminosity=35922
+----- MVA value: W_puSF=0.121252ScaleFactor =0.816502
+----- event number: 65684988, lumi_num: 410018
+ 
+------------NEW EVENT: 2500302 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.964246; W_btagWeight_shape=1.03837; Luminosity=35922
+----- MVA value: W_puSF=-0.0658198ScaleFactor =1.08227
+----- event number: 35927748, lumi_num: 224268
+ 
+------------NEW EVENT: 2501218 --------------
+----- Weights are: W_puSF=0.809728; W_fleptonSF=0.939922; W_btagWeight_shape=0.787671; Luminosity=35922
+----- MVA value: W_puSF=0.241863ScaleFactor =0.599482
+----- event number: 8737640, lumi_num: 54542
+ 
+------------NEW EVENT: 2501417 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.975023; W_btagWeight_shape=0.729942; Luminosity=35922
+----- MVA value: W_puSF=-0.106839ScaleFactor =0.772404
+----- event number: 6292040, lumi_num: 39276
+ 
+------------NEW EVENT: 2501493 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.986964; W_btagWeight_shape=1.1874; Luminosity=35922
+----- MVA value: W_puSF=-0.0459822ScaleFactor =1.2728
+----- event number: 53724752, lumi_num: 335361
+ 
+------------NEW EVENT: 2502364 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.975023; W_btagWeight_shape=0.752114; Luminosity=35922
+----- MVA value: W_puSF=-0.000342492ScaleFactor =0.796453
+----- event number: 12808317, lumi_num: 79952
+ 
+------------NEW EVENT: 2502458 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.975023; W_btagWeight_shape=1.01552; Luminosity=35922
+----- MVA value: W_puSF=-0.0188263ScaleFactor =1.03364
+----- event number: 73388346, lumi_num: 458104
+ 
+------------NEW EVENT: 2502797 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.975023; W_btagWeight_shape=0.907778; Luminosity=35922
+----- MVA value: W_puSF=-0.0431084ScaleFactor =0.946516
+----- event number: 15128469, lumi_num: 94434
+ 
+------------NEW EVENT: 2502976 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.962742; W_btagWeight_shape=0.989214; Luminosity=35922
+----- MVA value: W_puSF=-0.175193ScaleFactor =1.03434
+----- event number: 61170392, lumi_num: 381838
+ 
+------------NEW EVENT: 2503174 --------------
+----- Weights are: W_puSF=0.901925; W_fleptonSF=0.975023; W_btagWeight_shape=0.99872; Luminosity=35922
+----- MVA value: W_puSF=-0.155471ScaleFactor =0.878272
+----- event number: 53053203, lumi_num: 331168
+ 
+------------NEW EVENT: 2503449 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.993453; W_btagWeight_shape=0.984969; Luminosity=35922
+----- MVA value: W_puSF=-0.0471859ScaleFactor =1.06275
+----- event number: 51575688, lumi_num: 321946
+ 
+------------NEW EVENT: 2503714 --------------
+----- Weights are: W_puSF=0.407767; W_fleptonSF=0.941414; W_btagWeight_shape=1.12751; Luminosity=35922
+----- MVA value: W_puSF=0.27671ScaleFactor =0.432824
+----- event number: 44840476, lumi_num: 279903
+ 
+------------NEW EVENT: 2503853 --------------
+----- Weights are: W_puSF=1.07556; W_fleptonSF=0.981438; W_btagWeight_shape=1.06416; Luminosity=35922
+----- MVA value: W_puSF=0.129778ScaleFactor =1.12332
+----- event number: 49480659, lumi_num: 308868
+ 
+------------NEW EVENT: 2504621 --------------
+----- Weights are: W_puSF=1.07556; W_fleptonSF=0.967213; W_btagWeight_shape=0.97121; Luminosity=35922
+----- MVA value: W_puSF=0.0680306ScaleFactor =1.01035
+----- event number: 64798923, lumi_num: 404488
+ 
+------------NEW EVENT: 2504764 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.967213; W_btagWeight_shape=1.06779; Luminosity=35922
+----- MVA value: W_puSF=-0.160359ScaleFactor =1.07768
+----- event number: 79672795, lumi_num: 497333
+ 
+------------NEW EVENT: 2504827 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.975023; W_btagWeight_shape=0.876096; Luminosity=35922
+----- MVA value: W_puSF=-0.0359597ScaleFactor =0.927061
+----- event number: 77102884, lumi_num: 481292
+ 
+------------NEW EVENT: 2504991 --------------
+----- Weights are: W_puSF=0.222389; W_fleptonSF=0.975023; W_btagWeight_shape=0.932414; Luminosity=35922
+----- MVA value: W_puSF=0.0356035ScaleFactor =0.202179
+----- event number: 7757051, lumi_num: 48421
+ 
+------------NEW EVENT: 2505708 --------------
+----- Weights are: W_puSF=0.698792; W_fleptonSF=0.986964; W_btagWeight_shape=1.20548; Luminosity=35922
+----- MVA value: W_puSF=-0.0432828ScaleFactor =0.831401
+----- event number: 72190536, lumi_num: 450628
+ 
+------------NEW EVENT: 2506127 --------------
+----- Weights are: W_puSF=0.159411; W_fleptonSF=0.966491; W_btagWeight_shape=0.883727; Luminosity=35922
+----- MVA value: W_puSF=0.362413ScaleFactor =0.136155
+----- event number: 17899557, lumi_num: 111733
+ 
+------------NEW EVENT: 2506190 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.962742; W_btagWeight_shape=0.941943; Luminosity=35922
+----- MVA value: W_puSF=0.225694ScaleFactor =1.06727
+----- event number: 35689896, lumi_num: 222783
+ 
+------------NEW EVENT: 2506237 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.966491; W_btagWeight_shape=0.972142; Luminosity=35922
+----- MVA value: W_puSF=-0.174931ScaleFactor =0.980832
+----- event number: 39664442, lumi_num: 247593
+ 
+------------NEW EVENT: 2506326 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.966491; W_btagWeight_shape=1.04966; Luminosity=35922
+----- MVA value: W_puSF=0.185269ScaleFactor =1.101
+----- event number: 29291081, lumi_num: 182841
+ 
+------------NEW EVENT: 2506402 --------------
+----- Weights are: W_puSF=0.222389; W_fleptonSF=0.962742; W_btagWeight_shape=1.06317; Luminosity=35922
+----- MVA value: W_puSF=0.0926296ScaleFactor =0.227628
+----- event number: 67292744, lumi_num: 420054
+ 
+------------NEW EVENT: 2506636 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.964246; W_btagWeight_shape=0.943437; Luminosity=35922
+----- MVA value: W_puSF=-0.122139ScaleFactor =1.03909
+----- event number: 57490174, lumi_num: 358866
+ 
+------------NEW EVENT: 2506808 --------------
+----- Weights are: W_puSF=0.698792; W_fleptonSF=0.922225; W_btagWeight_shape=0.99128; Luminosity=35922
+----- MVA value: W_puSF=-0.021727ScaleFactor =0.638823
+----- event number: 27919522, lumi_num: 174279
+ 
+------------NEW EVENT: 2506965 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.962742; W_btagWeight_shape=0.761229; Luminosity=35922
+----- MVA value: W_puSF=-0.0836033ScaleFactor =0.765054
+----- event number: 1765822, lumi_num: 11023
+ 
+------------NEW EVENT: 2507153 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.981438; W_btagWeight_shape=0.790354; Luminosity=35922
+----- MVA value: W_puSF=-0.164779ScaleFactor =0.805123
+----- event number: 37609478, lumi_num: 234766
+ 
+------------NEW EVENT: 2507346 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.962742; W_btagWeight_shape=0.871063; Luminosity=35922
+----- MVA value: W_puSF=0.148336ScaleFactor =0.882069
+----- event number: 72154364, lumi_num: 450402
+ 
+------------NEW EVENT: 2507379 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.987798; W_btagWeight_shape=0.92381; Luminosity=35922
+----- MVA value: W_puSF=-0.0399891ScaleFactor =1.07397
+----- event number: 74910330, lumi_num: 467606
+ 
+------------NEW EVENT: 2508929 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.982956; W_btagWeight_shape=1.02279; Luminosity=35922
+----- MVA value: W_puSF=-0.236817ScaleFactor =1.09109
+----- event number: 27002319, lumi_num: 168554
+ 
+------------NEW EVENT: 2509267 --------------
+----- Weights are: W_puSF=0.972324; W_fleptonSF=0.962742; W_btagWeight_shape=0.868916; Luminosity=35922
+----- MVA value: W_puSF=-0.314027ScaleFactor =0.81339
+----- event number: 52079548, lumi_num: 325091
+ 
+------------NEW EVENT: 2509269 --------------
+----- Weights are: W_puSF=1.06617; W_fleptonSF=0.939922; W_btagWeight_shape=0.935177; Luminosity=35922
+----- MVA value: W_puSF=0.337963ScaleFactor =0.937154
+----- event number: 52079669, lumi_num: 325092
+ 
+------------NEW EVENT: 2509432 --------------
+----- Weights are: W_puSF=1.07556; W_fleptonSF=0.982956; W_btagWeight_shape=0.81658; Luminosity=35922
+----- MVA value: W_puSF=0.093849ScaleFactor =0.863314
+----- event number: 51363692, lumi_num: 320622
+ 
+------------NEW EVENT: 2509462 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.962742; W_btagWeight_shape=0.909145; Luminosity=35922
+----- MVA value: W_puSF=-0.0389437ScaleFactor =0.950615
+----- event number: 74269090, lumi_num: 463602
+ 
+------------NEW EVENT: 2509776 --------------
+----- Weights are: W_puSF=0.698792; W_fleptonSF=0.975023; W_btagWeight_shape=1.29967; Luminosity=35922
+----- MVA value: W_puSF=0.0651513ScaleFactor =0.885515
+----- event number: 556570, lumi_num: 3474
+ 
+------------NEW EVENT: 2511028 --------------
+----- Weights are: W_puSF=1.06617; W_fleptonSF=0.975023; W_btagWeight_shape=1.10206; Luminosity=35922
+----- MVA value: W_puSF=-0.217342ScaleFactor =1.14563
+----- event number: 71168061, lumi_num: 444246
+ 
+------------NEW EVENT: 2511322 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.962742; W_btagWeight_shape=1.07313; Luminosity=35922
+----- MVA value: W_puSF=-0.257044ScaleFactor =1.12125
+----- event number: 68689977, lumi_num: 428777
+ 
+------------NEW EVENT: 2513467 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.975023; W_btagWeight_shape=0.964976; Luminosity=35922
+----- MVA value: W_puSF=-0.0384576ScaleFactor =1.12153
+----- event number: 21903438, lumi_num: 136726
+ 
+------------NEW EVENT: 2513721 --------------
+----- Weights are: W_puSF=0.113954; W_fleptonSF=0.962742; W_btagWeight_shape=0.834248; Luminosity=35922
+----- MVA value: W_puSF=-0.227708ScaleFactor =0.0915239
+----- event number: 5997896, lumi_num: 37441
+ 
+------------NEW EVENT: 2514044 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.993453; W_btagWeight_shape=0.996242; Luminosity=35922
+----- MVA value: W_puSF=0.0317996ScaleFactor =1.13048
+----- event number: 63073761, lumi_num: 393719
+ 
+------------NEW EVENT: 2515374 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.975023; W_btagWeight_shape=0.825826; Luminosity=35922
+----- MVA value: W_puSF=-0.392776ScaleFactor =0.861067
+----- event number: 9795960, lumi_num: 61148
+ 
+------------NEW EVENT: 2515502 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.939988; W_btagWeight_shape=0.848414; Luminosity=35922
+----- MVA value: W_puSF=0.111508ScaleFactor =0.865509
+----- event number: 62793684, lumi_num: 391971
+ 
+------------NEW EVENT: 2516315 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.939922; W_btagWeight_shape=0.7362; Luminosity=35922
+----- MVA value: W_puSF=-0.125282ScaleFactor =0.751536
+----- event number: 70077259, lumi_num: 437436
+ 
+------------NEW EVENT: 2516350 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.962742; W_btagWeight_shape=0.998144; Luminosity=35922
+----- MVA value: W_puSF=0.157363ScaleFactor =1.04367
+----- event number: 71416551, lumi_num: 445796
+ 
+------------NEW EVENT: 2517333 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.986964; W_btagWeight_shape=0.792427; Luminosity=35922
+----- MVA value: W_puSF=-0.270905ScaleFactor =0.849419
+----- event number: 56002674, lumi_num: 349579
+ 
+------------NEW EVENT: 2517393 --------------
+----- Weights are: W_puSF=0.611571; W_fleptonSF=0.986964; W_btagWeight_shape=0.981864; Luminosity=35922
+----- MVA value: W_puSF=0.0437714ScaleFactor =0.592652
+----- event number: 69495774, lumi_num: 433807
+ 
+------------NEW EVENT: 2517488 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.986964; W_btagWeight_shape=1.11673; Luminosity=35922
+----- MVA value: W_puSF=-0.27891ScaleFactor =1.1593
+----- event number: 24486804, lumi_num: 152852
+ 
+------------NEW EVENT: 2517503 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.967213; W_btagWeight_shape=0.966786; Luminosity=35922
+----- MVA value: W_puSF=0.0929484ScaleFactor =0.975741
+----- event number: 24487273, lumi_num: 152854
+ 
+------------NEW EVENT: 2518325 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.939988; W_btagWeight_shape=0.858244; Luminosity=35922
+----- MVA value: W_puSF=-0.141527ScaleFactor =0.872027
+----- event number: 41403344, lumi_num: 258448
+ 
+------------NEW EVENT: 2518421 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.981438; W_btagWeight_shape=0.781688; Luminosity=35922
+----- MVA value: W_puSF=-0.202913ScaleFactor =0.804019
+----- event number: 54248944, lumi_num: 338633
+ 
+------------NEW EVENT: 2519004 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.962742; W_btagWeight_shape=0.820855; Luminosity=35922
+----- MVA value: W_puSF=0.100822ScaleFactor =0.826523
+----- event number: 33692103, lumi_num: 210313
+ 
+------------NEW EVENT: 2519471 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.981438; W_btagWeight_shape=0.755918; Luminosity=35922
+----- MVA value: W_puSF=-0.00834558ScaleFactor =0.77447
+----- event number: 10891767, lumi_num: 67988
+ 
+------------NEW EVENT: 2520451 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.975023; W_btagWeight_shape=1.00203; Luminosity=35922
+----- MVA value: W_puSF=0.0900973ScaleFactor =1.16459
+----- event number: 40712962, lumi_num: 254138
+ 
+------------NEW EVENT: 2520464 --------------
+----- Weights are: W_puSF=0; W_fleptonSF=0.987798; W_btagWeight_shape=1.04081; Luminosity=35922
+----- MVA value: W_puSF=0.0271924ScaleFactor =0
+----- event number: 3927671, lumi_num: 24517
+ 
+------------NEW EVENT: 2521018 --------------
+----- Weights are: W_puSF=1.04474; W_fleptonSF=0.962742; W_btagWeight_shape=1.23297; Luminosity=35922
+----- MVA value: W_puSF=-0.0768516ScaleFactor =1.24014
+----- event number: 24712498, lumi_num: 154261
+ 
+------------NEW EVENT: 2522024 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.981438; W_btagWeight_shape=1.11618; Luminosity=35922
+----- MVA value: W_puSF=0.217105ScaleFactor =1.3058
+----- event number: 44550167, lumi_num: 278091
+ 
+------------NEW EVENT: 2523189 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.964246; W_btagWeight_shape=0.967151; Luminosity=35922
+----- MVA value: W_puSF=-0.17454ScaleFactor =0.975352
+----- event number: 49720913, lumi_num: 310368
+ 
+------------NEW EVENT: 2523296 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.975023; W_btagWeight_shape=0.894315; Luminosity=35922
+----- MVA value: W_puSF=-0.0811361ScaleFactor =0.947037
+----- event number: 47156806, lumi_num: 294362
+ 
+------------NEW EVENT: 2523352 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.939922; W_btagWeight_shape=0.847124; Luminosity=35922
+----- MVA value: W_puSF=-0.165344ScaleFactor =0.834466
+----- event number: 11305480, lumi_num: 70571
+ 
+------------NEW EVENT: 2523661 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.975023; W_btagWeight_shape=1.40212; Luminosity=35922
+----- MVA value: W_puSF=-0.329271ScaleFactor =1.45431
+----- event number: 12333537, lumi_num: 76988
+ 
+------------NEW EVENT: 2524376 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.942789; W_btagWeight_shape=1.09598; Luminosity=35922
+----- MVA value: W_puSF=-0.233559ScaleFactor =1.18024
+----- event number: 59269980, lumi_num: 369974
+ 
+------------NEW EVENT: 2524623 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.962742; W_btagWeight_shape=1.16282; Luminosity=35922
+----- MVA value: W_puSF=-0.205937ScaleFactor =1.19717
+----- event number: 8760096, lumi_num: 54682
+ 
+------------NEW EVENT: 2524688 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.967213; W_btagWeight_shape=1.16364; Luminosity=35922
+----- MVA value: W_puSF=-0.146673ScaleFactor =1.22237
+----- event number: 43905390, lumi_num: 274066
+ 
+------------NEW EVENT: 2524973 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.975023; W_btagWeight_shape=0.849572; Luminosity=35922
+----- MVA value: W_puSF=0.0499221ScaleFactor =0.899657
+----- event number: 12760408, lumi_num: 79653
+ 
+------------NEW EVENT: 2524981 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.939988; W_btagWeight_shape=0.902218; Luminosity=35922
+----- MVA value: W_puSF=-0.0104557ScaleFactor =0.884944
+----- event number: 14705658, lumi_num: 91796
+ 
+------------NEW EVENT: 2525533 --------------
+----- Weights are: W_puSF=0.0759909; W_fleptonSF=0.964246; W_btagWeight_shape=0.80877; Luminosity=35922
+----- MVA value: W_puSF=-0.265339ScaleFactor =0.0592617
+----- event number: 53438787, lumi_num: 333576
+ 
+------------NEW EVENT: 2525977 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.962742; W_btagWeight_shape=0.842498; Luminosity=35922
+----- MVA value: W_puSF=-0.0446197ScaleFactor =0.87675
+----- event number: 9280037, lumi_num: 57928
+ 
+------------NEW EVENT: 2526352 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.964246; W_btagWeight_shape=1.17507; Luminosity=35922
+----- MVA value: W_puSF=0.00703164ScaleFactor =1.18231
+----- event number: 59387356, lumi_num: 370708
+ 
+------------NEW EVENT: 2526469 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.966491; W_btagWeight_shape=0.946599; Luminosity=35922
+----- MVA value: W_puSF=-0.0350479ScaleFactor =0.988919
+----- event number: 4199461, lumi_num: 26214
+ 
+------------NEW EVENT: 2526473 --------------
+----- Weights are: W_puSF=0.00729632; W_fleptonSF=0.962742; W_btagWeight_shape=0.97233; Luminosity=35922
+----- MVA value: W_puSF=-0.0344116ScaleFactor =0.0068301
+----- event number: 4199577, lumi_num: 26214
+ 
+------------NEW EVENT: 2526482 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.982956; W_btagWeight_shape=0.794866; Luminosity=35922
+----- MVA value: W_puSF=-0.0145977ScaleFactor =0.821809
+----- event number: 23807615, lumi_num: 148612
+ 
+------------NEW EVENT: 2526883 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.964246; W_btagWeight_shape=1.05417; Luminosity=35922
+----- MVA value: W_puSF=-0.0486368ScaleFactor =1.22256
+----- event number: 28596749, lumi_num: 178507
+ 
+------------NEW EVENT: 2527449 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.975023; W_btagWeight_shape=0.734951; Luminosity=35922
+----- MVA value: W_puSF=0.13133ScaleFactor =0.751006
+----- event number: 41066994, lumi_num: 256348
+ 
+------------NEW EVENT: 2527929 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.966491; W_btagWeight_shape=0.999531; Luminosity=35922
+----- MVA value: W_puSF=0.342538ScaleFactor =1.04842
+----- event number: 4819315, lumi_num: 30083
+ 
+------------NEW EVENT: 2528177 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.975023; W_btagWeight_shape=1.00068; Luminosity=35922
+----- MVA value: W_puSF=-0.254932ScaleFactor =1.02625
+----- event number: 67119397, lumi_num: 418973
+ 
+------------NEW EVENT: 2528345 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.975023; W_btagWeight_shape=1.23176; Luminosity=35922
+----- MVA value: W_puSF=0.0998832ScaleFactor =1.2532
+----- event number: 69638134, lumi_num: 434694
+ 
+------------NEW EVENT: 2528600 --------------
+----- Weights are: W_puSF=1.04474; W_fleptonSF=0.975023; W_btagWeight_shape=0.842409; Luminosity=35922
+----- MVA value: W_puSF=0.00490758ScaleFactor =0.858116
+----- event number: 75441368, lumi_num: 470919
+ 
+------------NEW EVENT: 2529399 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.941414; W_btagWeight_shape=1.11906; Luminosity=35922
+----- MVA value: W_puSF=-0.223769ScaleFactor =1.13876
+----- event number: 28299663, lumi_num: 176652
+ 
+------------NEW EVENT: 2529510 --------------
+----- Weights are: W_puSF=0.159411; W_fleptonSF=0.986964; W_btagWeight_shape=1.64301; Luminosity=35922
+----- MVA value: W_puSF=0.0995903ScaleFactor =0.258501
+----- event number: 67394373, lumi_num: 420689
+ 
+------------NEW EVENT: 2529609 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.939988; W_btagWeight_shape=1.05846; Luminosity=35922
+----- MVA value: W_puSF=-0.0534471ScaleFactor =1.06397
+----- event number: 10106604, lumi_num: 63087
+ 
+------------NEW EVENT: 2530102 --------------
+----- Weights are: W_puSF=0.222389; W_fleptonSF=0.964246; W_btagWeight_shape=1.2169; Luminosity=35922
+----- MVA value: W_puSF=0.132081ScaleFactor =0.260949
+----- event number: 77182196, lumi_num: 481787
+ 
+------------NEW EVENT: 2530601 --------------
+----- Weights are: W_puSF=0; W_fleptonSF=0.986964; W_btagWeight_shape=1.25245; Luminosity=35922
+----- MVA value: W_puSF=-0.0646581ScaleFactor =0
+----- event number: 47510480, lumi_num: 296569
+ 
+------------NEW EVENT: 2530829 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.962742; W_btagWeight_shape=1.05209; Luminosity=35922
+----- MVA value: W_puSF=0.463023ScaleFactor =1.21824
+----- event number: 26125729, lumi_num: 163082
+ 
+------------NEW EVENT: 2530960 --------------
+----- Weights are: W_puSF=1.20029; W_fleptonSF=0.986964; W_btagWeight_shape=1.27677; Luminosity=35922
+----- MVA value: W_puSF=0.359682ScaleFactor =1.51251
+----- event number: 32875188, lumi_num: 205213
+ 
+------------NEW EVENT: 2531433 --------------
+----- Weights are: W_puSF=0.0122628; W_fleptonSF=0.981438; W_btagWeight_shape=0.904069; Luminosity=35922
+----- MVA value: W_puSF=-0.0365323ScaleFactor =0.0108806
+----- event number: 50299410, lumi_num: 313979
+ 
+------------NEW EVENT: 2531589 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.982956; W_btagWeight_shape=0.886864; Luminosity=35922
+----- MVA value: W_puSF=-0.236195ScaleFactor =0.94609
+----- event number: 46242256, lumi_num: 288653
+ 
+------------NEW EVENT: 2531702 --------------
+----- Weights are: W_puSF=0.809728; W_fleptonSF=0.981438; W_btagWeight_shape=1.13011; Luminosity=35922
+----- MVA value: W_puSF=-0.178991ScaleFactor =0.898092
+----- event number: 49662250, lumi_num: 310002
+ 
+------------NEW EVENT: 2533207 --------------
+----- Weights are: W_puSF=0.113954; W_fleptonSF=0.939922; W_btagWeight_shape=1.07878; Luminosity=35922
+----- MVA value: W_puSF=0.0491914ScaleFactor =0.115546
+----- event number: 33677773, lumi_num: 210223
+ 
+------------NEW EVENT: 2533986 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.982956; W_btagWeight_shape=1.02364; Luminosity=35922
+----- MVA value: W_puSF=0.0597626ScaleFactor =1.04994
+----- event number: 9911678, lumi_num: 61871
+ 
+------------NEW EVENT: 2534132 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.987798; W_btagWeight_shape=1.11178; Luminosity=35922
+----- MVA value: W_puSF=0.0609397ScaleFactor =1.19275
+----- event number: 30892729, lumi_num: 192838
+ 
+------------NEW EVENT: 2534180 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.962742; W_btagWeight_shape=0.691608; Luminosity=35922
+----- MVA value: W_puSF=0.110719ScaleFactor =0.708314
+----- event number: 49176217, lumi_num: 306968
+ 
+------------NEW EVENT: 2535061 --------------
+----- Weights are: W_puSF=0.809728; W_fleptonSF=0.939922; W_btagWeight_shape=0.983246; Luminosity=35922
+----- MVA value: W_puSF=-0.239825ScaleFactor =0.74833
+----- event number: 56243686, lumi_num: 351084
+ 
+------------NEW EVENT: 2535555 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.981438; W_btagWeight_shape=1.03739; Luminosity=35922
+----- MVA value: W_puSF=0.32222ScaleFactor =1.21362
+----- event number: 56070705, lumi_num: 350004
+ 
+------------NEW EVENT: 2535667 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.986964; W_btagWeight_shape=0.788766; Luminosity=35922
+----- MVA value: W_puSF=-0.302511ScaleFactor =0.812327
+----- event number: 63334851, lumi_num: 395348
+ 
+------------NEW EVENT: 2535906 --------------
+----- Weights are: W_puSF=1.16905; W_fleptonSF=0.975023; W_btagWeight_shape=0.980359; Luminosity=35922
+----- MVA value: W_puSF=0.0441767ScaleFactor =1.11746
+----- event number: 23170214, lumi_num: 144633
+ 
+------------NEW EVENT: 2535999 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.986964; W_btagWeight_shape=0.833155; Luminosity=35922
+----- MVA value: W_puSF=0.101779ScaleFactor =0.967759
+----- event number: 72271860, lumi_num: 451136
+ 
+------------NEW EVENT: 2536094 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.987798; W_btagWeight_shape=0.933844; Luminosity=35922
+----- MVA value: W_puSF=0.270643ScaleFactor =0.964765
+----- event number: 69113592, lumi_num: 431421
+ 
+------------NEW EVENT: 2536417 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.962742; W_btagWeight_shape=0.99818; Luminosity=35922
+----- MVA value: W_puSF=0.102309ScaleFactor =1.01079
+----- event number: 74565222, lumi_num: 465451
+ 
+------------NEW EVENT: 2537909 --------------
+----- Weights are: W_puSF=1.06617; W_fleptonSF=0.975023; W_btagWeight_shape=0.814394; Luminosity=35922
+----- MVA value: W_puSF=0.148386ScaleFactor =0.846593
+----- event number: 5766409, lumi_num: 35996
+ 
+------------NEW EVENT: 2538746 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.942789; W_btagWeight_shape=1.07254; Luminosity=35922
+----- MVA value: W_puSF=0.00250865ScaleFactor =1.09741
+----- event number: 34162781, lumi_num: 213251
+ 
+------------NEW EVENT: 2539800 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.962742; W_btagWeight_shape=1.42604; Luminosity=35922
+----- MVA value: W_puSF=-0.154508ScaleFactor =1.48999
+----- event number: 50262455, lumi_num: 313748
+ 
+------------NEW EVENT: 2540052 --------------
+----- Weights are: W_puSF=0.31137; W_fleptonSF=0.939922; W_btagWeight_shape=0.854069; Luminosity=35922
+----- MVA value: W_puSF=-0.224361ScaleFactor =0.249954
+----- event number: 75369956, lumi_num: 470474
+ 
+------------NEW EVENT: 2540096 --------------
+----- Weights are: W_puSF=1.07556; W_fleptonSF=0.975023; W_btagWeight_shape=1.16669; Luminosity=35922
+----- MVA value: W_puSF=-0.121041ScaleFactor =1.22351
+----- event number: 77235402, lumi_num: 482118
+ 
+------------NEW EVENT: 2540193 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.986964; W_btagWeight_shape=1.45463; Luminosity=35922
+----- MVA value: W_puSF=0.0363883ScaleFactor =1.71133
+----- event number: 16221187, lumi_num: 101256
+ 
+------------NEW EVENT: 2540265 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.975023; W_btagWeight_shape=0.97597; Luminosity=35922
+----- MVA value: W_puSF=-0.0456636ScaleFactor =1.1343
+----- event number: 27793422, lumi_num: 173492
+ 
+------------NEW EVENT: 2541018 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.962742; W_btagWeight_shape=0.983635; Luminosity=35922
+----- MVA value: W_puSF=0.00827658ScaleFactor =0.996064
+----- event number: 29250803, lumi_num: 182589
+ 
+------------NEW EVENT: 2541250 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.981438; W_btagWeight_shape=0.923412; Luminosity=35922
+----- MVA value: W_puSF=-0.152756ScaleFactor =1.08028
+----- event number: 25042680, lumi_num: 156322
+ 
+------------NEW EVENT: 2541306 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.975023; W_btagWeight_shape=1.09771; Luminosity=35922
+----- MVA value: W_puSF=0.0403205ScaleFactor =1.11939
+----- event number: 33812962, lumi_num: 211067
+ 
+------------NEW EVENT: 2541527 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.964246; W_btagWeight_shape=0.827258; Luminosity=35922
+----- MVA value: W_puSF=-0.0296181ScaleFactor =0.832714
+----- event number: 54577162, lumi_num: 340682
+ 
+------------NEW EVENT: 2542708 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.939922; W_btagWeight_shape=1.18718; Luminosity=35922
+----- MVA value: W_puSF=-0.11063ScaleFactor =1.21191
+----- event number: 45027910, lumi_num: 281073
+ 
+------------NEW EVENT: 2543039 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.975023; W_btagWeight_shape=1.45127; Luminosity=35922
+----- MVA value: W_puSF=0.169191ScaleFactor =1.47993
+----- event number: 33861415, lumi_num: 211369
+ 
+------------NEW EVENT: 2543361 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.975023; W_btagWeight_shape=1.11904; Luminosity=35922
+----- MVA value: W_puSF=-0.147616ScaleFactor =1.14764
+----- event number: 10911709, lumi_num: 68113
+ 
+------------NEW EVENT: 2543583 --------------
+----- Weights are: W_puSF=0.496201; W_fleptonSF=0.964246; W_btagWeight_shape=1.22775; Luminosity=35922
+----- MVA value: W_puSF=0.000666421ScaleFactor =0.587429
+----- event number: 17080836, lumi_num: 106622
+ 
+------------NEW EVENT: 2544526 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.967213; W_btagWeight_shape=1.04827; Luminosity=35922
+----- MVA value: W_puSF=-0.104773ScaleFactor =1.09595
+----- event number: 37991308, lumi_num: 237149
+ 
+------------NEW EVENT: 2544591 --------------
+----- Weights are: W_puSF=0.0523693; W_fleptonSF=0.986964; W_btagWeight_shape=1.10173; Luminosity=35922
+----- MVA value: W_puSF=-0.274363ScaleFactor =0.0569449
+----- event number: 55986207, lumi_num: 349477
+ 
+------------NEW EVENT: 2544988 --------------
+----- Weights are: W_puSF=1.20029; W_fleptonSF=0.975023; W_btagWeight_shape=0.798097; Luminosity=35922
+----- MVA value: W_puSF=-0.29938ScaleFactor =0.93402
+----- event number: 42256870, lumi_num: 263776
+ 
+------------NEW EVENT: 2545172 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.975023; W_btagWeight_shape=0.939915; Luminosity=35922
+----- MVA value: W_puSF=-0.193352ScaleFactor =0.990604
+----- event number: 33124330, lumi_num: 206768
+ 
+------------NEW EVENT: 2545443 --------------
+----- Weights are: W_puSF=0.0201058; W_fleptonSF=0.939922; W_btagWeight_shape=0.88572; Luminosity=35922
+----- MVA value: W_puSF=0.0237072ScaleFactor =0.0167382
+----- event number: 26921738, lumi_num: 168051
+ 
+------------NEW EVENT: 2545791 --------------
+----- Weights are: W_puSF=0.972324; W_fleptonSF=0.986964; W_btagWeight_shape=0.982999; Luminosity=35922
+----- MVA value: W_puSF=-0.349513ScaleFactor =0.943334
+----- event number: 73386855, lumi_num: 458096
+ 
+------------NEW EVENT: 2546071 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.966491; W_btagWeight_shape=0.92474; Luminosity=35922
+----- MVA value: W_puSF=-0.100475ScaleFactor =0.936672
+----- event number: 77892802, lumi_num: 486222
+ 
+------------NEW EVENT: 2546574 --------------
+----- Weights are: W_puSF=0.901925; W_fleptonSF=0.939922; W_btagWeight_shape=0.796426; Luminosity=35922
+----- MVA value: W_puSF=0.00670781ScaleFactor =0.675161
+----- event number: 42907213, lumi_num: 267836
+ 
+------------NEW EVENT: 2546599 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.975023; W_btagWeight_shape=0.931211; Luminosity=35922
+----- MVA value: W_puSF=0.0587859ScaleFactor =0.951553
+----- event number: 75921712, lumi_num: 473918
+ 
+------------NEW EVENT: 2547715 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.986964; W_btagWeight_shape=0.808874; Luminosity=35922
+----- MVA value: W_puSF=0.305173ScaleFactor =0.833036
+----- event number: 23121632, lumi_num: 144329
+ 
+------------NEW EVENT: 2547886 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.975023; W_btagWeight_shape=0.87386; Luminosity=35922
+----- MVA value: W_puSF=-0.138268ScaleFactor =1.00276
+----- event number: 62679282, lumi_num: 391257
+ 
+------------NEW EVENT: 2548026 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.962742; W_btagWeight_shape=1.17031; Luminosity=35922
+----- MVA value: W_puSF=0.234686ScaleFactor =1.21788
+----- event number: 8901041, lumi_num: 55562
+ 
+------------NEW EVENT: 2548377 --------------
+----- Weights are: W_puSF=0.809728; W_fleptonSF=0.962742; W_btagWeight_shape=1.16726; Luminosity=35922
+----- MVA value: W_puSF=0.332409ScaleFactor =0.909949
+----- event number: 19324391, lumi_num: 120627
+ 
+------------NEW EVENT: 2548682 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.981438; W_btagWeight_shape=0.787616; Luminosity=35922
+----- MVA value: W_puSF=-0.0655753ScaleFactor =0.909742
+----- event number: 7079414, lumi_num: 44191
+ 
+------------NEW EVENT: 2548886 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.962742; W_btagWeight_shape=0.937374; Luminosity=35922
+----- MVA value: W_puSF=0.0688344ScaleFactor =0.943847
+----- event number: 36808046, lumi_num: 229763
+ 
+------------NEW EVENT: 2549204 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.966491; W_btagWeight_shape=0.898093; Luminosity=35922
+----- MVA value: W_puSF=-0.259019ScaleFactor =0.923368
+----- event number: 15109271, lumi_num: 94316
+ 
+------------NEW EVENT: 2549471 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.993453; W_btagWeight_shape=1.16287; Luminosity=35922
+----- MVA value: W_puSF=-0.134373ScaleFactor =1.21513
+----- event number: 30242804, lumi_num: 188782
+ 
+------------NEW EVENT: 2549702 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.987798; W_btagWeight_shape=1.23219; Luminosity=35922
+----- MVA value: W_puSF=0.0435412ScaleFactor =1.26335
+----- event number: 17652169, lumi_num: 110188
+ 
+------------NEW EVENT: 2549870 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.966491; W_btagWeight_shape=0.94769; Luminosity=35922
+----- MVA value: W_puSF=-0.00804348ScaleFactor =0.979485
+----- event number: 24657641, lumi_num: 153918
+ 
+------------NEW EVENT: 2550329 --------------
+----- Weights are: W_puSF=1.08528; W_fleptonSF=0.986964; W_btagWeight_shape=0.900093; Luminosity=35922
+----- MVA value: W_puSF=0.333108ScaleFactor =0.964118
+----- event number: 8601213, lumi_num: 53691
+ 
+------------NEW EVENT: 2550853 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.962742; W_btagWeight_shape=0.678135; Luminosity=35922
+----- MVA value: W_puSF=-0.157716ScaleFactor =0.785227
+----- event number: 11319603, lumi_num: 70659
+ 
+------------NEW EVENT: 2551418 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.986964; W_btagWeight_shape=0.892501; Luminosity=35922
+----- MVA value: W_puSF=-0.144569ScaleFactor =1.03669
+----- event number: 68888421, lumi_num: 430016
+ 
+------------NEW EVENT: 2551423 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.975023; W_btagWeight_shape=1.04415; Luminosity=35922
+----- MVA value: W_puSF=-0.152517ScaleFactor =1.1057
+----- event number: 68888683, lumi_num: 430017
+ 
+------------NEW EVENT: 2552051 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.993453; W_btagWeight_shape=0.876767; Luminosity=35922
+----- MVA value: W_puSF=-0.00437686ScaleFactor =0.910983
+----- event number: 10526142, lumi_num: 65707
+ 
+------------NEW EVENT: 2552065 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.975023; W_btagWeight_shape=1.1713; Luminosity=35922
+----- MVA value: W_puSF=-0.0984253ScaleFactor =1.18539
+----- event number: 16898835, lumi_num: 105486
+ 
+------------NEW EVENT: 2552895 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.966491; W_btagWeight_shape=0.754014; Luminosity=35922
+----- MVA value: W_puSF=-0.227238ScaleFactor =0.763743
+----- event number: 23981592, lumi_num: 149698
+ 
+------------NEW EVENT: 2552955 --------------
+----- Weights are: W_puSF=1.10478; W_fleptonSF=0.975023; W_btagWeight_shape=0.770984; Luminosity=35922
+----- MVA value: W_puSF=0.268594ScaleFactor =0.83049
+----- event number: 43409251, lumi_num: 270969
+ 
+------------NEW EVENT: 2553123 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.975023; W_btagWeight_shape=1.07701; Luminosity=35922
+----- MVA value: W_puSF=0.00705618ScaleFactor =1.19946
+----- event number: 41205845, lumi_num: 257216
+ 
+------------NEW EVENT: 2553324 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.987798; W_btagWeight_shape=0.722799; Luminosity=35922
+----- MVA value: W_puSF=0.162363ScaleFactor =0.746732
+----- event number: 15068511, lumi_num: 94061
+ 
+------------NEW EVENT: 2554361 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.967213; W_btagWeight_shape=0.75127; Luminosity=35922
+----- MVA value: W_puSF=-0.25949ScaleFactor =0.764296
+----- event number: 49871239, lumi_num: 311306
+ 
+------------NEW EVENT: 2555265 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.975023; W_btagWeight_shape=0.934783; Luminosity=35922
+----- MVA value: W_puSF=0.112152ScaleFactor =0.974673
+----- event number: 68310488, lumi_num: 426408
+ 
+------------NEW EVENT: 2555442 --------------
+----- Weights are: W_puSF=0.31137; W_fleptonSF=0.966491; W_btagWeight_shape=1.0874; Luminosity=35922
+----- MVA value: W_puSF=-0.142251ScaleFactor =0.327239
+----- event number: 59648084, lumi_num: 372336
+ 
+------------NEW EVENT: 2555892 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.993453; W_btagWeight_shape=0.85813; Luminosity=35922
+----- MVA value: W_puSF=-0.120356ScaleFactor =0.911662
+----- event number: 6590386, lumi_num: 41138
+ 
+------------NEW EVENT: 2555902 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.941414; W_btagWeight_shape=1.13717; Luminosity=35922
+----- MVA value: W_puSF=0.180201ScaleFactor =1.25993
+----- event number: 15621344, lumi_num: 97512
+ 
+------------NEW EVENT: 2557080 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.964246; W_btagWeight_shape=0.927815; Luminosity=35922
+----- MVA value: W_puSF=0.034695ScaleFactor =0.971652
+----- event number: 64345071, lumi_num: 401654
+ 
+------------NEW EVENT: 2557416 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.966491; W_btagWeight_shape=1.2239; Luminosity=35922
+----- MVA value: W_puSF=-0.107235ScaleFactor =1.23716
+----- event number: 65572392, lumi_num: 409316
+ 
+------------NEW EVENT: 2557827 --------------
+----- Weights are: W_puSF=0.0201058; W_fleptonSF=0.987798; W_btagWeight_shape=1.11043; Luminosity=35922
+----- MVA value: W_puSF=0.232961ScaleFactor =0.0220537
+----- event number: 49971693, lumi_num: 311933
+ 
+------------NEW EVENT: 2558521 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.964246; W_btagWeight_shape=1.11346; Luminosity=35922
+----- MVA value: W_puSF=-0.128346ScaleFactor =1.14214
+----- event number: 17846596, lumi_num: 111402
+ 
+------------NEW EVENT: 2559594 --------------
+----- Weights are: W_puSF=0; W_fleptonSF=0.986964; W_btagWeight_shape=0.837823; Luminosity=35922
+----- MVA value: W_puSF=0.121244ScaleFactor =0
+----- event number: 11991699, lumi_num: 74854
+ 
+------------NEW EVENT: 2559721 --------------
+----- Weights are: W_puSF=1.04474; W_fleptonSF=0.975023; W_btagWeight_shape=1.05725; Luminosity=35922
+----- MVA value: W_puSF=-0.1562ScaleFactor =1.07697
+----- event number: 14608681, lumi_num: 91191
+ 
+------------NEW EVENT: 2559890 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.975023; W_btagWeight_shape=0.909733; Luminosity=35922
+----- MVA value: W_puSF=-0.17477ScaleFactor =0.920675
+----- event number: 63465268, lumi_num: 396163
+ 
+------------NEW EVENT: 2560547 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.982956; W_btagWeight_shape=0.909978; Luminosity=35922
+----- MVA value: W_puSF=-0.048137ScaleFactor =1.02168
+----- event number: 22900755, lumi_num: 142951
+ 
+------------NEW EVENT: 2560719 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.967213; W_btagWeight_shape=0.967996; Luminosity=35922
+----- MVA value: W_puSF=-0.237553ScaleFactor =0.979208
+----- event number: 59125645, lumi_num: 369074
+ 
+------------NEW EVENT: 2560926 --------------
+----- Weights are: W_puSF=0.901925; W_fleptonSF=0.966491; W_btagWeight_shape=0.946191; Luminosity=35922
+----- MVA value: W_puSF=0.259744ScaleFactor =0.824797
+----- event number: 43119081, lumi_num: 269158
+ 
+------------NEW EVENT: 2560947 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.993453; W_btagWeight_shape=0.84661; Luminosity=35922
+----- MVA value: W_puSF=-0.0994712ScaleFactor =0.894718
+----- event number: 44052890, lumi_num: 274987
+ 
+------------NEW EVENT: 2561090 --------------
+----- Weights are: W_puSF=0.809728; W_fleptonSF=0.993453; W_btagWeight_shape=1.89509; Luminosity=35922
+----- MVA value: W_puSF=0.102506ScaleFactor =1.52446
+----- event number: 6964043, lumi_num: 43471
+ 
+------------NEW EVENT: 2561217 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.975023; W_btagWeight_shape=0.917707; Luminosity=35922
+----- MVA value: W_puSF=-0.248535ScaleFactor =0.951864
+----- event number: 32698490, lumi_num: 204111
+ 
+------------NEW EVENT: 2561434 --------------
+----- Weights are: W_puSF=0.113954; W_fleptonSF=0.97442; W_btagWeight_shape=0.950253; Luminosity=35922
+----- MVA value: W_puSF=-0.237502ScaleFactor =0.105515
+----- event number: 36305006, lumi_num: 226623
+ 
+------------NEW EVENT: 2561906 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.967213; W_btagWeight_shape=0.785853; Luminosity=35922
+----- MVA value: W_puSF=-0.111857ScaleFactor =0.796588
+----- event number: 59159631, lumi_num: 369286
+ 
+------------NEW EVENT: 2562532 --------------
+----- Weights are: W_puSF=0.0201058; W_fleptonSF=0.986964; W_btagWeight_shape=0.860802; Luminosity=35922
+----- MVA value: W_puSF=-0.0638024ScaleFactor =0.0170815
+----- event number: 68559211, lumi_num: 427961
+ 
+------------NEW EVENT: 2562553 --------------
+----- Weights are: W_puSF=1.10478; W_fleptonSF=0.962742; W_btagWeight_shape=0.774015; Luminosity=35922
+----- MVA value: W_puSF=-0.0717368ScaleFactor =0.823253
+----- event number: 69160051, lumi_num: 431711
+ 
+------------NEW EVENT: 2563979 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.975023; W_btagWeight_shape=0.999042; Luminosity=35922
+----- MVA value: W_puSF=0.0919495ScaleFactor =1.11263
+----- event number: 26202064, lumi_num: 163558
+ 
+------------NEW EVENT: 2563981 --------------
+----- Weights are: W_puSF=1.06617; W_fleptonSF=0.975023; W_btagWeight_shape=1.10534; Luminosity=35922
+----- MVA value: W_puSF=-0.327835ScaleFactor =1.14904
+----- event number: 26202090, lumi_num: 163558
+ 
+------------NEW EVENT: 2564228 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.966491; W_btagWeight_shape=1.09192; Luminosity=35922
+----- MVA value: W_puSF=0.0625108ScaleFactor =1.14618
+----- event number: 50149053, lumi_num: 313041
+ 
+------------NEW EVENT: 2564794 --------------
+----- Weights are: W_puSF=0.972324; W_fleptonSF=0.962742; W_btagWeight_shape=0.97232; Luminosity=35922
+----- MVA value: W_puSF=0.13609ScaleFactor =0.910186
+----- event number: 18350982, lumi_num: 114551
+ 
+------------NEW EVENT: 2564896 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.939922; W_btagWeight_shape=1.21261; Luminosity=35922
+----- MVA value: W_puSF=0.0404762ScaleFactor =1.21247
+----- event number: 14216434, lumi_num: 88742
+ 
+------------NEW EVENT: 2565566 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.964246; W_btagWeight_shape=1.01338; Luminosity=35922
+----- MVA value: W_puSF=-0.111296ScaleFactor =1.06126
+----- event number: 47227276, lumi_num: 294802
+ 
+------------NEW EVENT: 2565737 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.967213; W_btagWeight_shape=0.969109; Luminosity=35922
+----- MVA value: W_puSF=-0.192379ScaleFactor =1.01319
+----- event number: 41659228, lumi_num: 260046
+ 
+------------NEW EVENT: 2566256 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.939988; W_btagWeight_shape=0.999517; Luminosity=35922
+----- MVA value: W_puSF=0.0123284ScaleFactor =0.98038
+----- event number: 8916066, lumi_num: 55656
+ 
+------------NEW EVENT: 2567153 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.981438; W_btagWeight_shape=1.19072; Luminosity=35922
+----- MVA value: W_puSF=0.024911ScaleFactor =1.33483
+----- event number: 39063672, lumi_num: 243843
+ 
+------------NEW EVENT: 2567155 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.964246; W_btagWeight_shape=0.883442; Luminosity=35922
+----- MVA value: W_puSF=0.1868ScaleFactor =1.00255
+----- event number: 39063859, lumi_num: 243844
+ 
+------------NEW EVENT: 2567162 --------------
+----- Weights are: W_puSF=1.04474; W_fleptonSF=0.986964; W_btagWeight_shape=0.961587; Luminosity=35922
+----- MVA value: W_puSF=-0.168953ScaleFactor =0.991512
+----- event number: 39726618, lumi_num: 247982
+ 
+------------NEW EVENT: 2567309 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.964246; W_btagWeight_shape=0.744122; Luminosity=35922
+----- MVA value: W_puSF=-0.322922ScaleFactor =0.7673
+----- event number: 5109172, lumi_num: 31892
+ 
+------------NEW EVENT: 2567774 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.966491; W_btagWeight_shape=0.711871; Luminosity=35922
+----- MVA value: W_puSF=-0.325801ScaleFactor =0.721056
+----- event number: 69476091, lumi_num: 433683
+ 
+------------NEW EVENT: 2567913 --------------
+----- Weights are: W_puSF=0.972324; W_fleptonSF=0.939988; W_btagWeight_shape=0.946795; Luminosity=35922
+----- MVA value: W_puSF=-0.313844ScaleFactor =0.865346
+----- event number: 13911379, lumi_num: 86838
+ 
+------------NEW EVENT: 2568361 --------------
+----- Weights are: W_puSF=0.0759909; W_fleptonSF=0.982956; W_btagWeight_shape=0.840843; Luminosity=35922
+----- MVA value: W_puSF=0.0872326ScaleFactor =0.0628074
+----- event number: 29962881, lumi_num: 187034
+ 
+------------NEW EVENT: 2568409 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.967213; W_btagWeight_shape=0.812399; Luminosity=35922
+----- MVA value: W_puSF=-0.0328621ScaleFactor =0.945064
+----- event number: 38686487, lumi_num: 241488
+ 
+------------NEW EVENT: 2568418 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.967213; W_btagWeight_shape=1.40717; Luminosity=35922
+----- MVA value: W_puSF=-0.152374ScaleFactor =1.41269
+----- event number: 53129551, lumi_num: 331646
+ 
+------------NEW EVENT: 2568624 --------------
+----- Weights are: W_puSF=1.20029; W_fleptonSF=0.975023; W_btagWeight_shape=0.966259; Luminosity=35922
+----- MVA value: W_puSF=0.395365ScaleFactor =1.13082
+----- event number: 26630706, lumi_num: 166234
+ 
+------------NEW EVENT: 2568896 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.922225; W_btagWeight_shape=0.926939; Luminosity=35922
+----- MVA value: W_puSF=-0.124788ScaleFactor =0.895896
+----- event number: 52669017, lumi_num: 328771
+ 
+------------NEW EVENT: 2569244 --------------
+----- Weights are: W_puSF=0.0523693; W_fleptonSF=0.975023; W_btagWeight_shape=0.765624; Luminosity=35922
+----- MVA value: W_puSF=0.0531705ScaleFactor =0.0390937
+----- event number: 18118425, lumi_num: 113099
+ 
+------------NEW EVENT: 2570058 --------------
+----- Weights are: W_puSF=1.07556; W_fleptonSF=0.975023; W_btagWeight_shape=0.843882; Luminosity=35922
+----- MVA value: W_puSF=-0.175844ScaleFactor =0.884979
+----- event number: 47883793, lumi_num: 298901
+ 
+------------NEW EVENT: 2570838 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.986964; W_btagWeight_shape=0.895723; Luminosity=35922
+----- MVA value: W_puSF=0.0067451ScaleFactor =0.94044
+----- event number: 22416187, lumi_num: 139927
+ 
+------------NEW EVENT: 2571484 --------------
+----- Weights are: W_puSF=0.159411; W_fleptonSF=0.966491; W_btagWeight_shape=0.819932; Luminosity=35922
+----- MVA value: W_puSF=0.200186ScaleFactor =0.126327
+----- event number: 19327399, lumi_num: 120646
+ 
+------------NEW EVENT: 2571823 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.962742; W_btagWeight_shape=1.08399; Luminosity=35922
+----- MVA value: W_puSF=-0.286521ScaleFactor =1.24398
+----- event number: 35623701, lumi_num: 222371
+ 
+------------NEW EVENT: 2572458 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.964246; W_btagWeight_shape=0.906871; Luminosity=35922
+----- MVA value: W_puSF=0.0625996ScaleFactor =0.949719
+----- event number: 74683689, lumi_num: 466191
+ 
+------------NEW EVENT: 2572663 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.975023; W_btagWeight_shape=1.04679; Luminosity=35922
+----- MVA value: W_puSF=-0.169649ScaleFactor =1.06747
+----- event number: 32886736, lumi_num: 205286
+ 
+------------NEW EVENT: 2572712 --------------
+----- Weights are: W_puSF=0; W_fleptonSF=0.986964; W_btagWeight_shape=0.825429; Luminosity=35922
+----- MVA value: W_puSF=-0.0459136ScaleFactor =0
+----- event number: 62575877, lumi_num: 390611
+ 
+------------NEW EVENT: 2573095 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.975023; W_btagWeight_shape=0.934524; Luminosity=35922
+----- MVA value: W_puSF=-0.222185ScaleFactor =1.07237
+----- event number: 63475130, lumi_num: 396224
+ 
+------------NEW EVENT: 2573736 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.975023; W_btagWeight_shape=1.21497; Luminosity=35922
+----- MVA value: W_puSF=-0.146744ScaleFactor =1.28659
+----- event number: 55121506, lumi_num: 344079
+ 
+------------NEW EVENT: 2574044 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.967213; W_btagWeight_shape=0.78914; Luminosity=35922
+----- MVA value: W_puSF=0.106166ScaleFactor =0.796449
+----- event number: 64945601, lumi_num: 405403
+ 
+------------NEW EVENT: 2575055 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.962742; W_btagWeight_shape=1.13914; Luminosity=35922
+----- MVA value: W_puSF=-0.194497ScaleFactor =1.25268
+----- event number: 78519532, lumi_num: 490134
+ 
+------------NEW EVENT: 2575820 --------------
+----- Weights are: W_puSF=1.04587; W_fleptonSF=0.981438; W_btagWeight_shape=0.715753; Luminosity=35922
+----- MVA value: W_puSF=-0.05071ScaleFactor =0.734691
+----- event number: 20606380, lumi_num: 128629
+ 
+------------NEW EVENT: 2577028 --------------
+----- Weights are: W_puSF=0.809728; W_fleptonSF=0.939988; W_btagWeight_shape=0.826187; Luminosity=35922
+----- MVA value: W_puSF=-0.192089ScaleFactor =0.62884
+----- event number: 79240635, lumi_num: 494636
+ 
+------------NEW EVENT: 2577720 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.975023; W_btagWeight_shape=1.02953; Luminosity=35922
+----- MVA value: W_puSF=0.0100566ScaleFactor =1.18139
+----- event number: 78800613, lumi_num: 491889
+ 
+------------NEW EVENT: 2577955 --------------
+----- Weights are: W_puSF=0.8987; W_fleptonSF=0.975023; W_btagWeight_shape=1.06805; Luminosity=35922
+----- MVA value: W_puSF=0.170944ScaleFactor =0.935886
+----- event number: 79918187, lumi_num: 498866
+ 
+------------NEW EVENT: 2578351 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.975023; W_btagWeight_shape=0.975613; Luminosity=35922
+----- MVA value: W_puSF=0.197876ScaleFactor =1.03313
+----- event number: 53320261, lumi_num: 332836
+ 
+------------NEW EVENT: 2578520 --------------
+----- Weights are: W_puSF=1.10478; W_fleptonSF=0.975023; W_btagWeight_shape=1.11923; Luminosity=35922
+----- MVA value: W_puSF=-0.0781556ScaleFactor =1.20562
+----- event number: 8687130, lumi_num: 54227
+ 
+------------NEW EVENT: 2578671 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.962742; W_btagWeight_shape=1.17913; Luminosity=35922
+----- MVA value: W_puSF=-0.13246ScaleFactor =1.20761
+----- event number: 10522567, lumi_num: 65684
+ 
+------------NEW EVENT: 2578816 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.975023; W_btagWeight_shape=0.893718; Luminosity=35922
+----- MVA value: W_puSF=0.141074ScaleFactor =0.909278
+----- event number: 10648101, lumi_num: 66468
+ 
+------------NEW EVENT: 2578907 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.942789; W_btagWeight_shape=1.14335; Luminosity=35922
+----- MVA value: W_puSF=-0.305188ScaleFactor =1.1338
+----- event number: 64380731, lumi_num: 401877
+ 
+------------NEW EVENT: 2579166 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.967213; W_btagWeight_shape=1.00364; Luminosity=35922
+----- MVA value: W_puSF=-0.0384993ScaleFactor =1.03265
+----- event number: 21533084, lumi_num: 134414
+ 
+------------NEW EVENT: 2579209 --------------
+----- Weights are: W_puSF=0.901925; W_fleptonSF=0.982956; W_btagWeight_shape=0.825227; Luminosity=35922
+----- MVA value: W_puSF=-0.0316788ScaleFactor =0.731607
+----- event number: 39586527, lumi_num: 247107
+ 
+------------NEW EVENT: 2579833 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.986964; W_btagWeight_shape=1.02598; Luminosity=35922
+----- MVA value: W_puSF=-0.0932589ScaleFactor =1.15663
+----- event number: 62810230, lumi_num: 392074
+ 
+------------NEW EVENT: 2581088 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.967213; W_btagWeight_shape=0.839196; Luminosity=35922
+----- MVA value: W_puSF=-0.0964296ScaleFactor =0.853747
+----- event number: 7495180, lumi_num: 46787
+ 
+------------NEW EVENT: 2581461 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.993453; W_btagWeight_shape=1.12396; Luminosity=35922
+----- MVA value: W_puSF=0.0283641ScaleFactor =1.27542
+----- event number: 23206786, lumi_num: 144862
+ 
+------------NEW EVENT: 2582457 --------------
+----- Weights are: W_puSF=0.0201058; W_fleptonSF=0.962742; W_btagWeight_shape=1.81319; Luminosity=35922
+----- MVA value: W_puSF=-0.216472ScaleFactor =0.0350974
+----- event number: 9363333, lumi_num: 58448
+ 
+------------NEW EVENT: 2582738 --------------
+----- Weights are: W_puSF=1.07556; W_fleptonSF=0.964246; W_btagWeight_shape=1.11636; Luminosity=35922
+----- MVA value: W_puSF=-0.106217ScaleFactor =1.15779
+----- event number: 36338923, lumi_num: 226834
+ 
+------------NEW EVENT: 2582839 --------------
+----- Weights are: W_puSF=1.10478; W_fleptonSF=0.941414; W_btagWeight_shape=0.988922; Luminosity=35922
+----- MVA value: W_puSF=-0.0175945ScaleFactor =1.02853
+----- event number: 39353857, lumi_num: 245654
+ 
+------------NEW EVENT: 2583479 --------------
+----- Weights are: W_puSF=0.0523693; W_fleptonSF=0.939922; W_btagWeight_shape=0.86798; Luminosity=35922
+----- MVA value: W_puSF=-0.0224433ScaleFactor =0.0427247
+----- event number: 51588579, lumi_num: 322026
+ 
+------------NEW EVENT: 2583621 --------------
+----- Weights are: W_puSF=1.04474; W_fleptonSF=0.986964; W_btagWeight_shape=0.826629; Luminosity=35922
+----- MVA value: W_puSF=-0.26653ScaleFactor =0.852354
+----- event number: 2575522, lumi_num: 16077
+ 
+------------NEW EVENT: 2584715 --------------
+----- Weights are: W_puSF=0.972324; W_fleptonSF=0.986964; W_btagWeight_shape=1.15526; Luminosity=35922
+----- MVA value: W_puSF=-0.294693ScaleFactor =1.10864
+----- event number: 66763827, lumi_num: 416753
+ 
+------------NEW EVENT: 2584821 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.962742; W_btagWeight_shape=0.844698; Luminosity=35922
+----- MVA value: W_puSF=-0.109856ScaleFactor =0.865102
+----- event number: 37466026, lumi_num: 233871
+ 
+------------NEW EVENT: 2585035 --------------
+----- Weights are: W_puSF=1.08093; W_fleptonSF=0.967213; W_btagWeight_shape=0.983494; Luminosity=35922
+----- MVA value: W_puSF=-0.188626ScaleFactor =1.02823
+----- event number: 73505807, lumi_num: 458838
+ 
+------------NEW EVENT: 2585541 --------------
+----- Weights are: W_puSF=0.0523693; W_fleptonSF=0.964246; W_btagWeight_shape=0.915207; Luminosity=35922
+----- MVA value: W_puSF=-0.193488ScaleFactor =0.0462151
+----- event number: 15546452, lumi_num: 97044
+ 
+------------NEW EVENT: 2586714 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.975023; W_btagWeight_shape=0.849987; Luminosity=35922
+----- MVA value: W_puSF=-0.157835ScaleFactor =0.996774
+----- event number: 34816206, lumi_num: 217329
+ 
+------------NEW EVENT: 2587398 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.966491; W_btagWeight_shape=1.02307; Luminosity=35922
+----- MVA value: W_puSF=0.0377031ScaleFactor =1.03222
+----- event number: 33049577, lumi_num: 206302
+ 
+------------NEW EVENT: 2587547 --------------
+----- Weights are: W_puSF=0.698792; W_fleptonSF=0.987798; W_btagWeight_shape=0.738725; Luminosity=35922
+----- MVA value: W_puSF=-0.101498ScaleFactor =0.509916
+----- event number: 72014688, lumi_num: 449529
+ 
+------------NEW EVENT: 2587747 --------------
+----- Weights are: W_puSF=1.03795; W_fleptonSF=0.975023; W_btagWeight_shape=0.956222; Luminosity=35922
+----- MVA value: W_puSF=-0.125628ScaleFactor =0.967723
+----- event number: 59866045, lumi_num: 373696
+ 
+------------NEW EVENT: 2587906 --------------
+----- Weights are: W_puSF=0.0523693; W_fleptonSF=0.975023; W_btagWeight_shape=0.901043; Luminosity=35922
+----- MVA value: W_puSF=-0.268938ScaleFactor =0.0460084
+----- event number: 56384926, lumi_num: 351966
+ 
+------------NEW EVENT: 2588453 --------------
+----- Weights are: W_puSF=1.06938; W_fleptonSF=0.986964; W_btagWeight_shape=0.979091; Luminosity=35922
+----- MVA value: W_puSF=0.144286ScaleFactor =1.03337
+----- event number: 35777915, lumi_num: 223333
+ 
+------------NEW EVENT: 2588712 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.964246; W_btagWeight_shape=0.972113; Luminosity=35922
+----- MVA value: W_puSF=-0.267252ScaleFactor =0.982368
+----- event number: 46904498, lumi_num: 292787
+ 
+------------NEW EVENT: 2588911 --------------
+----- Weights are: W_puSF=1.07556; W_fleptonSF=0.967213; W_btagWeight_shape=0.96964; Luminosity=35922
+----- MVA value: W_puSF=-0.125592ScaleFactor =1.00872
+----- event number: 28329383, lumi_num: 176838
+ 
+------------NEW EVENT: 2589791 --------------
+----- Weights are: W_puSF=0.222389; W_fleptonSF=0.975023; W_btagWeight_shape=0.697883; Luminosity=35922
+----- MVA value: W_puSF=-0.324172ScaleFactor =0.151325
+----- event number: 78701986, lumi_num: 491273
+ 
+------------NEW EVENT: 2590666 --------------
+----- Weights are: W_puSF=1.06379; W_fleptonSF=0.967213; W_btagWeight_shape=0.694568; Luminosity=35922
+----- MVA value: W_puSF=-0.609382ScaleFactor =0.71465
+----- event number: 43072728, lumi_num: 268868
+ 
+------------NEW EVENT: 2590768 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.975023; W_btagWeight_shape=1.06248; Luminosity=35922
+----- MVA value: W_puSF=0.061838ScaleFactor =1.08569
+----- event number: 22108445, lumi_num: 138006
+ 
+------------NEW EVENT: 2590783 --------------
+----- Weights are: W_puSF=0.222389; W_fleptonSF=0.939922; W_btagWeight_shape=1.27906; Luminosity=35922
+----- MVA value: W_puSF=-0.0287443ScaleFactor =0.26736
+----- event number: 22108948, lumi_num: 138008
+ 
+------------NEW EVENT: 2591411 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.941414; W_btagWeight_shape=0.947905; Luminosity=35922
+----- MVA value: W_puSF=-0.358897ScaleFactor =1.07328
+----- event number: 20117057, lumi_num: 125574
+ 
+------------NEW EVENT: 2591533 --------------
+----- Weights are: W_puSF=1.04802; W_fleptonSF=0.939922; W_btagWeight_shape=1.11496; Luminosity=35922
+----- MVA value: W_puSF=-0.00100107ScaleFactor =1.0983
+----- event number: 65471390, lumi_num: 408686
+ 
+------------NEW EVENT: 2591582 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.975023; W_btagWeight_shape=0.794158; Luminosity=35922
+----- MVA value: W_puSF=-0.0421961ScaleFactor =0.840976
+----- event number: 8165935, lumi_num: 50973
+ 
+------------NEW EVENT: 2592190 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.975023; W_btagWeight_shape=1.02867; Luminosity=35922
+----- MVA value: W_puSF=-0.356822ScaleFactor =1.04702
+----- event number: 11792764, lumi_num: 73613
+ 
+------------NEW EVENT: 2592732 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.986964; W_btagWeight_shape=0.816967; Luminosity=35922
+----- MVA value: W_puSF=-0.357084ScaleFactor =0.948957
+----- event number: 52095787, lumi_num: 325192
+ 
+------------NEW EVENT: 2593051 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.964246; W_btagWeight_shape=0.831391; Luminosity=35922
+----- MVA value: W_puSF=-0.411425ScaleFactor =0.955588
+----- event number: 35386177, lumi_num: 220887
+ 
+------------NEW EVENT: 2593853 --------------
+----- Weights are: W_puSF=0.31137; W_fleptonSF=0.942789; W_btagWeight_shape=1.03242; Luminosity=35922
+----- MVA value: W_puSF=0.165793ScaleFactor =0.303074
+----- event number: 71394124, lumi_num: 445656
+ 
+------------NEW EVENT: 2594009 --------------
+----- Weights are: W_puSF=1.1769; W_fleptonSF=0.981438; W_btagWeight_shape=0.832352; Luminosity=35922
+----- MVA value: W_puSF=0.0432147ScaleFactor =0.961414
+----- event number: 60334288, lumi_num: 376618
+ 
+------------NEW EVENT: 2594487 --------------
+----- Weights are: W_puSF=0.407767; W_fleptonSF=0.939922; W_btagWeight_shape=1.09382; Luminosity=35922
+----- MVA value: W_puSF=-0.226457ScaleFactor =0.419226
+----- event number: 74927673, lumi_num: 467713
+ 
+------------NEW EVENT: 2595030 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.975023; W_btagWeight_shape=1.13762; Luminosity=35922
+----- MVA value: W_puSF=-0.242913ScaleFactor =1.16669
+----- event number: 73393510, lumi_num: 458137
+ 
+------------NEW EVENT: 2595555 --------------
+----- Weights are: W_puSF=0.972324; W_fleptonSF=0.981438; W_btagWeight_shape=1.37099; Luminosity=35922
+----- MVA value: W_puSF=-0.197137ScaleFactor =1.3083
+----- event number: 73401404, lumi_num: 458186
+ 
+------------NEW EVENT: 2595932 --------------
+----- Weights are: W_puSF=0.0201058; W_fleptonSF=0.97442; W_btagWeight_shape=0.988003; Luminosity=35922
+----- MVA value: W_puSF=-0.248972ScaleFactor =0.0193564
+----- event number: 54380449, lumi_num: 339453
+ 
+------------NEW EVENT: 2596108 --------------
+----- Weights are: W_puSF=0; W_fleptonSF=0.975023; W_btagWeight_shape=1.07855; Luminosity=35922
+----- MVA value: W_puSF=0.264201ScaleFactor =0
+----- event number: 47407444, lumi_num: 295927
+ 
+------------NEW EVENT: 2596343 --------------
+----- Weights are: W_puSF=1.08608; W_fleptonSF=0.975023; W_btagWeight_shape=0.875297; Luminosity=35922
+----- MVA value: W_puSF=-0.180118ScaleFactor =0.926899
+----- event number: 26635253, lumi_num: 166263
+ 
+------------NEW EVENT: 2596397 --------------
+----- Weights are: W_puSF=1.192; W_fleptonSF=0.964246; W_btagWeight_shape=1.17029; Luminosity=35922
+----- MVA value: W_puSF=-0.0653553ScaleFactor =1.34511
+----- event number: 60910161, lumi_num: 380213
+ 
+------------NEW EVENT: 2596516 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.964246; W_btagWeight_shape=0.810176; Luminosity=35922
+----- MVA value: W_puSF=-0.203102ScaleFactor =0.939586
+----- event number: 38074636, lumi_num: 237669
+ 
+------------NEW EVENT: 2596622 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.966491; W_btagWeight_shape=1.02956; Luminosity=35922
+----- MVA value: W_puSF=0.0349296ScaleFactor =1.03876
+----- event number: 75807166, lumi_num: 473203
+ 
+------------NEW EVENT: 2596670 --------------
+----- Weights are: W_puSF=1.20273; W_fleptonSF=0.939922; W_btagWeight_shape=0.841107; Luminosity=35922
+----- MVA value: W_puSF=0.22259ScaleFactor =0.950851
+----- event number: 13473884, lumi_num: 84107
+ 
+------------NEW EVENT: 2598338 --------------
+----- Weights are: W_puSF=1.04347; W_fleptonSF=0.939922; W_btagWeight_shape=0.780911; Luminosity=35922
+----- MVA value: W_puSF=-0.361754ScaleFactor =0.765905
+----- event number: 27855396, lumi_num: 173879
+ 
+------------NEW EVENT: 2599864 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.939922; W_btagWeight_shape=0.793313; Luminosity=35922
+----- MVA value: W_puSF=-0.122094ScaleFactor =0.851703
+----- event number: 68939446, lumi_num: 430333
+ 
+------------NEW EVENT: 2599902 --------------
+----- Weights are: W_puSF=1.05182; W_fleptonSF=0.964246; W_btagWeight_shape=0.956432; Luminosity=35922
+----- MVA value: W_puSF=-0.130425ScaleFactor =0.970031
+----- event number: 70522717, lumi_num: 440217
+ 
+------------NEW EVENT: 2600774 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.962742; W_btagWeight_shape=1.04089; Luminosity=35922
+----- MVA value: W_puSF=-0.124809ScaleFactor =1.04612
+----- event number: 10302473, lumi_num: 64311
+ 
+------------NEW EVENT: 2600860 --------------
+----- Weights are: W_puSF=0.972324; W_fleptonSF=0.981438; W_btagWeight_shape=0.742166; Luminosity=35922
+----- MVA value: W_puSF=-0.106093ScaleFactor =0.708231
+----- event number: 11176705, lumi_num: 69767
+ 
+------------NEW EVENT: 2600861 --------------
+----- Weights are: W_puSF=1.20029; W_fleptonSF=0.987798; W_btagWeight_shape=0.826683; Luminosity=35922
+----- MVA value: W_puSF=-0.30126ScaleFactor =0.980151
+----- event number: 11176838, lumi_num: 69768
+ 
+------------NEW EVENT: 2601684 --------------
+----- Weights are: W_puSF=1.14223; W_fleptonSF=0.939922; W_btagWeight_shape=0.92898; Luminosity=35922
+----- MVA value: W_puSF=-0.0718869ScaleFactor =0.997356
+----- event number: 65978109, lumi_num: 411848
+ 
+------------NEW EVENT: 2601942 --------------
+----- Weights are: W_puSF=1.04392; W_fleptonSF=0.964246; W_btagWeight_shape=0.786793; Luminosity=35922
+----- MVA value: W_puSF=-0.00525643ScaleFactor =0.791982
+----- event number: 55252839, lumi_num: 344899
+ 
+------------NEW EVENT: 2601975 --------------
+----- Weights are: W_puSF=1.16905; W_fleptonSF=0.941414; W_btagWeight_shape=1.46361; Luminosity=35922
+----- MVA value: W_puSF=0.149112ScaleFactor =1.61078
+----- event number: 4942769, lumi_num: 30853
+

@@ -341,6 +341,7 @@ int main(int argc, char *argv[])
             Int_t nvtx;
             Int_t npu;
             Int_t genTTX;
+            Double_t pt_lepton;
 
 
             //variable for jets 
@@ -382,6 +383,8 @@ int main(int argc, char *argv[])
             ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets",&nJets);
             ttree[(dataSetName).c_str()]->SetBranchAddress("I_nJets_CSVM",&nJets_CSVM);
            
+            ttree[(dataSetName).c_str()]->SetBranchAddress("pt_lepton",&pt_lepton);
+
             double nloSF = 1.;
             int nPos = 0; 
             int nNeg = 0;
@@ -390,6 +393,7 @@ int main(int argc, char *argv[])
                 for (int k = 0; k<nEntries; k++)
                 {
                     ttree[dataSetName.c_str()]->GetEntry(k);
+if(pt_lepton	< 30) continue;	                  
                     if( W_nloWeight > 0) nPos++;
                     else if( W_nloWeight < 0) nNeg ++;
                 }
@@ -403,6 +407,7 @@ int main(int argc, char *argv[])
                 for (int k = 0; k<nEntries; k++)
                 {
                     ttree[dataSetName.c_str()]->GetEntry(k);
+if(pt_lepton	< 30) continue;	                  
 		                double TopPtReweighing_Up = 1+ 2*(1-W_TopPtReweighing);
 
                     average_TopPtWeight = average_TopPtWeight + W_TopPtReweighing;
@@ -426,6 +431,7 @@ int main(int argc, char *argv[])
                     cout << "------------NEW EVENT: " << j << " --------------" << endl;
                 }
 			          ttree[dataSetName.c_str()]->GetEntry(j);
+if(pt_lepton	< 30) continue;	                  
 
                 Dataset * Sample = 0;
                 if (dataSetName.find("TTJets")!=string::npos && split_ttbar)

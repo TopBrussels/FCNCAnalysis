@@ -128,8 +128,8 @@ int main(int argc, char *argv[])
     WhatSysts.push_back("leptonMinus");
     WhatSysts.push_back("TopPtPlus");
     WhatSysts.push_back("TopPtMinus");
-    if(doInclusive)
-    {
+//    if(doInclusive)
+//    {
         WhatSysts.push_back("noSF");
         WhatSysts.push_back("OnlyTopPtSF");
         WhatSysts.push_back("OnlyBTagSF");
@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
         WhatSysts.push_back("NoPUSF");
         WhatSysts.push_back("NoLepSF");
         WhatSysts.push_back("NoNLOSF");
-    }
+//    }
     if(doJESSys) WhatSysts.push_back("JESPlus");
     if(doJESSys) WhatSysts.push_back("JESMinus");
     if(doJERSys) WhatSysts.push_back("JERPlus");
@@ -171,8 +171,8 @@ int main(int argc, char *argv[])
     WhatSysts_noJECs.push_back("leptonMinus");
     WhatSysts_noJECs.push_back("TopPtPlus");
     WhatSysts_noJECs.push_back("TopPtMinus");
-    if(doInclusive)
-    {
+//    if(doInclusive)
+//    {
         WhatSysts_noJECs.push_back("noSF");
         WhatSysts_noJECs.push_back("OnlyTopPtSF");
         WhatSysts_noJECs.push_back("OnlyBTagSF");
@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
         WhatSysts_noJECs.push_back("NoPUSF");
         WhatSysts_noJECs.push_back("NoLepSF");
         WhatSysts_noJECs.push_back("NoNLOSF");
-    }
+//    }
 
     cout << "------------------------------------------------------------------------------------------------" << endl;
     cout << "Begin program" << endl;
@@ -1091,6 +1091,7 @@ int main(int argc, char *argv[])
                 for (int k = EntryStart; k<nEntries; k++)
                 {
                     ttree[dataSetName.c_str()]->GetEntry(k);
+if(pt_lepton	< 30) continue;	                  
 		                if(!doInclusive)
 		                {
 		                    if(nJets_CSVM != baseline_bjets)  continue;
@@ -1111,6 +1112,7 @@ int main(int argc, char *argv[])
                 for (int k = EntryStart; k<nEntries; k++)
                 {
                     ttree[dataSetName.c_str()]->GetEntry(k);
+if(pt_lepton	< 30) continue;	                  
 		                if(!doInclusive)
 		                {
 		                    if(nJets_CSVM != baseline_bjets)  continue;
@@ -1129,7 +1131,6 @@ int main(int argc, char *argv[])
       	    //***********************************************RUNNING OVER EVENTS**********************************************
 		        for (int j = EntryStart; j<nEntries; j++)
 		        {
-		                  
                 if(debug)
                 {
                     if(!isData) cin.get();
@@ -1137,6 +1138,7 @@ int main(int argc, char *argv[])
                     cout << "------------NEW EVENT: " << j << " --------------" << endl;
                 }
 			          ttree[dataSetName.c_str()]->GetEntry(j);
+if(pt_lepton	< 30) continue;	                  
 		            if(!doInclusive)
 		            {
 		                if(nJets_CSVM != baseline_bjets)  continue;
@@ -1886,7 +1888,7 @@ int main(int argc, char *argv[])
 //      if(doInclusive) temp->Draw("MyMSP_"+name, 1, false, false, false, 1);
       bool writePng = false;
 
-      if(name.find("Minus") == string::npos && name.find("Plus")== string::npos 
+      if(name.find("Minus") == string::npos && name.find("Plus")== string::npos
         && name.find("noSF") == string::npos && name.find("OnlyTopPtSF") == string::npos && name.find("OnlyBTagSF") == string::npos && 
         name.find("OnlyPUSF") == string::npos && name.find("OnlyLepSF") == string::npos && name.find("OnlyNLOSF") == string::npos && 
         name.find("NoTopPtSF") == string::npos && name.find("NoBTagSF") == string::npos && name.find("NoPUSF") == string::npos && 
