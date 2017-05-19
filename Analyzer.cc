@@ -1898,12 +1898,11 @@ int main(int argc, char* argv[]){
       }
       
       
-      cout << "twolepregion" << " " << twolepregion << " " << "threelepregion" << " " <<  threelepregion << endl;
+     // cout << "twolepregion" << " " << twolepregion << " " << "threelepregion" << " " <<  threelepregion << endl;
       if (makePlots)
       {
-        cout << "ievt " << ievt << endl;
+        //cout << "ievt " << ievt << endl;
         FillGeneralPlots(d, "control_afterAtLeast1Jet", decayChannels, isData, isfakes, threelepregion, twolepregion);
-        //if(threelepregion) FillGeneralPlots(d, "3lepcontrol_afterAtLeast1Jet", decayChannels, isData, isfakes, threelepregion, twolepregion);
         //if(dataSetName.find("WZTo3LNu")!=std::string::npos) Fill1DPlots(dataSetName);
         if(dataSetName.find("WZJTo3LNu")!=std::string::npos && twolepregion ) Fill1DPlots(dataSetName, eventweight_, threelepregion,twolepregion);
         
@@ -1916,13 +1915,13 @@ int main(int argc, char* argv[]){
       if (makePlots)
       {
         FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow", decayChannels,isData, isfakes, threelepregion, twolepregion);
-        //if(threelepregion) FillGeneralPlots(d, "3lepcontrol_afterAtLeast1Jet_afterZWindow", decayChannels,isData, isfakes, threelepregion, twolepregion);
+        
         
       }
       
       if(selectednonCSVLJetID.size()>0 && makePlots){
         FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels,isData, isfakes, threelepregion, twolepregion);
-        //if(threelepregion) FillGeneralPlots(d, "3lepcontrol_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels,isData, isfakes, threelepregion, twolepregion);
+        
       }
       
       // from here only 3lep analysis !!!!
@@ -5196,7 +5195,7 @@ void InitTree(TTree* tree, bool isData, bool isfakes){
 
 
 void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isData, bool isfakes, bool threelepregion,bool twolepregion){
-  cout << "fill plots" << endl;
+ // cout << "fill plots" << endl;
   string decaystring = "";
   Double_t eventW = 1.;
   // if(isData  ) scaleFactor = 1.;
@@ -5211,11 +5210,11 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
     if(prefixregion.find("2lep")!=std::string::npos && !twolepregion) continue;
   for(int iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
-     cout << decayChannels[iChan] << " " << channelInt << " " <<  threelepregion << " " << twolepregion << endl;
+   //  cout << decayChannels[iChan] << " " << channelInt << " " <<  threelepregion << " " << twolepregion << endl;
    // if(decayChannels[iChan] == -9) continue;;
     //cout << decayChannels[iChan] << " " << channelInt << " " << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
     if(decayChannels[iChan] != channelInt && decayChannels[iChan] != -9) continue;
-    if(decayChannels[iChan] == -9)cout << decayChannels[iChan] << " " << channelInt << " passed " << endl;
+    //if(decayChannels[iChan] == -9)cout << decayChannels[iChan] << " " << channelInt << " passed " << endl;
     if(decayChannels[iChan] == 0) decaystring = "uuu";
     if(decayChannels[iChan] == 1) decaystring = "uue";
     if(decayChannels[iChan] == 2) decaystring = "eeu";
@@ -5288,7 +5287,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
         
       }
       if(selectedElectrons.size()>1 && (decayChannels[iChan]==3 ||decayChannels[iChan]==2 || decayChannels[iChan]==5 || decayChannels[iChan] ==-9) ){
-        cout << "filling " << (prefixregion+prefix+"_2ndLeadingElEta_"+decaystring).c_str() << endl;
+        //cout << "filling " << (prefixregion+prefix+"_2ndLeadingElEta_"+decaystring).c_str() << endl;
         MSPlot[(prefixregion+prefix+"_2ndLeadingElPt_"+decaystring).c_str()]->Fill(selectedElectrons[1].Pt() , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_2ndLeadingElPhi_"+decaystring).c_str()]->Fill(selectedElectrons[1].Phi() , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_2ndLeadingElIso_"+decaystring).c_str()]->Fill(pfIso_electron[electronID[1]], datasets[d], true,eventW*scaleFactor);
