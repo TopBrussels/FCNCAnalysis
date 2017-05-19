@@ -1263,6 +1263,7 @@ int main(int argc, char* argv[]){
     }
     
     string ntupleFileName = "NtupleMakerOutput/MergedTuples/"+placeNtup+"/"+dataSetName+".root";
+    ntupleFileName = "NtupleMakerOutput/NtuplesTest/"+placeNtup+"/"+dataSetName+".root";
     // ntupleFileName = "FCNC_3L_data_DoubleMuon_Run_2016C_1.root";
     // ntupleFileName = "FCNC_3L_WZTo3LNu_0Jets_MLL50_80X_1.root";
     tFileMap[dataSetName.c_str()] = new TFile((ntupleFileName).c_str(),"READ"); //create TFile for each dataset
@@ -1891,8 +1892,8 @@ int main(int argc, char* argv[]){
       if(selectedLeptons.size() == 3)  threelepregion = true;
       if(selectedLeptons.size() > 1) twolepregion = true;
       
-      if(selectedElectrons.size() != nbOfLooseElectrons ) continue;
-      if(selectedMuons.size() != nbOfLooseMuons ) continue;
+//      if(selectedElectrons.size() != nbOfLooseElectrons ) continue;
+//      if(selectedMuons.size() != nbOfLooseMuons ) continue;
       
       if (makePlots)
       {
