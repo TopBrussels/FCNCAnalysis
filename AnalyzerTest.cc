@@ -649,7 +649,6 @@ TBranch        *b_met_after_JES;   //!
 ///////////////////////////////////// HOME MADE FUNCTIONS AND VARS  /////////////////////////////////////////
 
 
-Double_t met_Pz;
 int verbose = 2;
 
 
@@ -3848,7 +3847,7 @@ TLorentzVector MetzCalculator(TLorentzVector leptW, TLorentzVector v_met, TLoren
   
   // Tranverse momentum of the lepton
   double trmomlep = 4.*( leptonE*leptonE - leptonPz*leptonPz );
-  if( trmomlep < 1e-5 ) { neutrinoPz = -1000.; neutrino.SetPxPyPzE( v_met.Px(), v_met.Py(), neutrinoPz, neutrinoE); met_Pz = neutrinoPz; return neutrino;}
+  if( trmomlep < 1e-5 ) { neutrinoPz = -1000.; neutrino.SetPxPyPzE( v_met.Px(), v_met.Py(), neutrinoPz, neutrinoE); return neutrino;}
   
   //////////////////////////////////////////////////////////////////////////
   // If we assume that the neutrino and the lepton come from the W boson
@@ -3887,7 +3886,7 @@ TLorentzVector MetzCalculator(TLorentzVector leptW, TLorentzVector v_met, TLoren
   
   // Solutions of the equation
   double neutrinoPz_1, neutrinoPz_2;
-  double nu_E1, nu_E2, nu_E;
+  double nu_E1, nu_E2;
   TLorentzVector nu1, nu2;
   Double_t InvMass1, InvMass2;
   if( sqRoot<0 ){
@@ -3900,11 +3899,11 @@ TLorentzVector MetzCalculator(TLorentzVector leptW, TLorentzVector v_met, TLoren
     neutrinoPz_1 = firstPart + secondPart;
     neutrinoPz_2 = firstPart - secondPart;
     
-    nu_E1 = pow( pow(v_met.Px(),2) + pow(v_met.Py(),2) + pow(neutrinoPz_1,2), 0.5);//neglecting neutrino mass
-    nu_E2 = pow( pow(v_met.Px(),2) + pow(v_met.Py(),2) + pow(neutrinoPz_2,2), 0.5);//neglecting neutrino mass
+    nu_E_1 = pow( pow(v_met.Px(),2) + pow(v_met.Py(),2) + pow(neutrinoPz_1,2), 0.5);//neglecting neutrino mass
+    nu_E_2 = pow( pow(v_met.Px(),2) + pow(v_met.Py(),2) + pow(neutrinoPz_2,2), 0.5);//neglecting neutrino mass
     
-    nu1.SetPxPyPzE( v_met.Px(), v_met.Py(), neutrinoPz_1, nu_E1);
-    nu1.SetPxPyPzE( v_met.Px(), v_met.Py(), neutrinoPz_2, nu_E2);
+    nu1.SetPxPyPzE( v_met.Px(), v_met.Py(), neutrinoPz_1, nu_E_1);
+    nu1.SetPxPyPzE( v_met.Px(), v_met.Py(), neutrinoPz_2, nu_E_1);
     // Take solution closets to top
     InvMass1 = fabs((SMjet+nu1+leptW).M() - TopMass);
     InvMass2 = fabs((SMjet+nu2+leptW).M() - TopMass);
@@ -3918,9 +3917,9 @@ TLorentzVector MetzCalculator(TLorentzVector leptW, TLorentzVector v_met, TLoren
   }
   
   
-  //printf("Neutrino pz = %f \n", neutrinoPz);
+  printf("Neutrino pz = %f \n", neutrinoPz);
   
-  met_Pz = neutrinoPz;
+  
   nu_E = pow( pow(v_met.Px(),2) + pow(v_met.Py(),2) + pow(neutrinoPz,2), 0.5);//neglecting neutrino mass
   neutrino.SetPxPyPzE( v_met.Px(), v_met.Py(), neutrinoPz, nu_E);
   return neutrino;
@@ -4742,10 +4741,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
       MSPlot[(prefixregion+prefix+"_JetPt_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_JetPt_afJES_"+decaystring).c_str(), 20, 0, 500, "Jet Pt after JES, after JER");
       MSPlot[(prefixregion+prefix+"_met_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_bfJES_"+decaystring).c_str(), 25, 0, 500, "MET before JES");
       MSPlot[(prefixregion+prefix+"_met_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_afJES_"+decaystring).c_str(), 25, 0, 500, "MET after JES");
-      MSPlot[(prefixregion+prefix+"_met_phi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_phi_"+decaystring).c_str(), 30, -4, 4, "MET Phi");
-      MSPlot[(prefixregion+prefix+"_met_px_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_px_"+decaystring).c_str(), 25, 0, 500, "MET px");
-      MSPlot[(prefixregion+prefix+"_met_py_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_py_"+decaystring).c_str(), 25, 0, 500, "MET py");
-      MSPlot[(prefixregion+prefix+"_met_pz_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_pz_"+decaystring).c_str(), 25, 0, 500, "MET pz");
+      
       
       
       // vars
@@ -5380,10 +5376,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
     }
     MSPlot[(prefixregion+prefix+"_met_bfJES_"+decaystring).c_str()]->Fill(met_before_JES , datasets[d], true,eventW*scaleFactor);
     MSPlot[(prefixregion+prefix+"_met_afJES_"+decaystring).c_str()]->Fill(met_after_JES , datasets[d], true,eventW*scaleFactor);
-    MSPlot[(prefixregion+prefix+"_met_px_"+decaystring).c_str()]->Fill(met_Px , datasets[d], true,eventW*scaleFactor);
-    MSPlot[(prefixregion+prefix+"_met_py_"+decaystring).c_str()]->Fill(met_Py , datasets[d], true,eventW*scaleFactor);
-    MSPlot[(prefixregion+prefix+"_met_phi_"+decaystring).c_str()]->Fill(met_Phi , datasets[d], true,eventW*scaleFactor);
-    MSPlot[(prefixregion+prefix+"_met_pz_"+decaystring).c_str()]->Fill(met_Pz , datasets[d], true,eventW*scaleFactor);
+    
     
     // vars
     
