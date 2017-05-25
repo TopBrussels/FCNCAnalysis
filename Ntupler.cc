@@ -223,10 +223,11 @@ int main (int argc, char *argv[])
   const float PreselEff 	  = strtod(argv[10], NULL);
   string fileName		  = argv[11];
   // if there only two arguments after the fileName, the jobNum will be set to 0 by default as an integer is expected and it will get a string (lastfile of the list)
-  const int JES                 =  strtol(argv[argc-7], NULL,10);
-  const int JER                 =  strtol(argv[argc-6], NULL,10);
-  const int doFakes	 =  strtol(argv[argc-5], NULL,10);
-  const int doJESJERshiftarg = strtol(argv[argc-4], NULL,10);
+  const int JES                 =  strtol(argv[argc-8], NULL,10);
+  const int JER                 =  strtol(argv[argc-7], NULL,10);
+  const int doFakes	 =  strtol(argv[argc-6], NULL,10);
+  const int doJESJERshiftarg = strtol(argv[argc-5], NULL,10);
+  const int doFakeshiftarg = strtol(argv[argc-4], NULL,10);
   const int JobNum		  = strtol(argv[argc-3], NULL, 10);
   const int startEvent  	  = strtol(argv[argc-2], NULL, 10);
   const int endEvent		  = strtol(argv[argc-1], NULL, 10);
@@ -237,12 +238,13 @@ int main (int argc, char *argv[])
   applyJER = JER;
   doFakeLepton= doFakes;
   int doJESJERshift = doJESJERshiftarg;
+  int doFakeshift = doFakeshiftarg;
   const int Usettbar = 1;
   
-  // all the files are stored from arg 11 to argc-2
+  // all the files are stored from arg 11 to argc-8
   vector<string> vecfileNames;
   
-  for(int args = 11; args < argc-7; args++)
+  for(int args = 11; args < argc-8; args++)
   {
    // cout << "pushing back " << argv[args] << endl;
     vecfileNames.push_back(argv[args]);
@@ -431,6 +433,8 @@ int main (int argc, char *argv[])
   float mu_eta_cut = 2.4;
   float mu_iso_cut = 0.15;
   float mu_iso_cut_loose = 0.25;
+  float mu_iso_cut_fakeloose = 0.25;
+  float mu_iso_cut_faketight= 0.15;
   //jets
   float jet_pt_cut = 30.;
   float jet_eta_cut = 2.4;
@@ -889,6 +893,7 @@ int main (int argc, char *argv[])
     if(doJESJERshift == 2) postfix = "_JESup" ;
     if(doJESJERshift == 3) postfix = "_JERdown" ;
     if(doJESJERshift == 4) postfix = "_JERup" ;
+    if(doFakeshift == 1) postfix ="_FakeShift";
     string Ntupname = date_dir +"FCNC_3L_" + dName + "_"+  strJobNum + postfix + ".root";
     cout << "Ntuple " << Ntupname << " created " << endl;
     
@@ -1041,6 +1046,7 @@ int main (int argc, char *argv[])
     Double_t phi_muon[10];
     Double_t eta_muon[10];
     Double_t E_muon[10];
+    Double_t TrackLayers_muon[10];
     Double_t d0_muon[10];
     Double_t d0BeamSpot_muon[10];
     Double_t chargedHadronIso_muon[10];
@@ -1277,6 +1283,7 @@ int main (int argc, char *argv[])
     myTree->Branch("phi_muon",phi_muon,"phi_muon[nMuons]/D");
     myTree->Branch("eta_muon",eta_muon,"eta_muon[nMuons]/D");
     myTree->Branch("E_muon",E_muon,"E_muon[nMuons]/D");
+    myTree->Branch("TrackLayers_muon", TrackLayers_muon,"TrackLayers_muon[nMuons]/D");
     myTree->Branch("chargedHadronIso_muon",chargedHadronIso_muon,"chargedHadronIso_muon[nMuons]/D");
     myTree->Branch("neutralHadronIso_muon",neutralHadronIso_muon,"neutralHadronIso_muon[nMuons]/D");
     myTree->Branch("photonIso_muon",photonIso_muon,"photonIso_muon[nMuons]/D");
@@ -1623,8 +1630,11 @@ int main (int argc, char *argv[])
     vector<TRootMuon*>        selectedMuons;
     vector<TRootMuon*>        selectedLooseMuons;
     vector<TRootMuon*>        selectedFakeMuons;
+    vector<TRootMuon*>        selectedFakeTightMuons;
+    vector<TRootMuon*>        selectedFakeLooseMuons;
     vector<TRootElectron*>    selectedFakeElectrons;
-    
+    vector<TRootElectron*>    selectedFakeTightElectrons;
+    vector<TRootElectron*>    selectedFakeLooseElectrons;
     
     
     vector<TRootMCParticle*> mcParticles;
@@ -2079,20 +2089,32 @@ int main (int argc, char *argv[])
       selectedMuons.clear();
       selectedLooseMuons.clear();
       selectedFakeMuons.clear();
+      selectedFakeLooseMuons.clear();
+      selectedFakeTightMuons.clear();
+      
       
       
       
       selectedMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut, "Tight", "Summer16");   // spring 15 still counts for 2016
       selectedLooseMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut_loose, "Loose", "Summer16"); // spring 15 still counts for 2016
-      selectedFakeMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut_loose, "Fake", "Summer16");
+      selectedFakeTightMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut_faketight, "Fake", "Summer16");
+      selectedFakeLooseMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut_fakeloose, "Fake", "Summer16");
       
+      if(!doFakeshift) selectedFakeMuons = selectedFakeTightMuons;
+      else if(doFakeshift) selectedFakeMuons = selectedFakeLooseMuons;
       // pt, eta, iso // run normally
       selectedElectrons.clear();
       selectedVetoElectrons.clear();
       selectedFakeElectrons.clear();
+      selectedFakeLooseElectrons.clear();
+      selectedFakeTightElectrons.clear();
       selectedElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Tight","Spring16_80X",true,true);// pt, eta, WP point, campaign, cutbased, VID EA
       selectedVetoElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Veto","Spring16_80X",true,true);// pt, eta
-      selectedFakeElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Fake","Spring16_80X",true,false);
+      selectedFakeTightElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "FakeTight","Spring16_80X",true,false);
+      selectedFakeLooseElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "FakeLoose","Spring16_80X",true,false);
+      
+      if(!doFakeshift) selectedFakeElectrons = selectedFakeTightElectrons;
+      else if(doFakeshift) selectedFakeElectrons = selectedFakeLooseElectrons;
       
       /// For MC Information
       mcParticles.clear();
@@ -2480,6 +2502,7 @@ int main (int argc, char *argv[])
           phi_muon[nMuons]=selectedMuons[selmu]->Phi();
           eta_muon[nMuons]=selectedMuons[selmu]->Eta();
           E_muon[nMuons]=selectedMuons[selmu]->E();
+          TrackLayers_muon[nMuons] = selectedMuons[selmu]->nofTrackerLayersWithMeasurement();
           if(isData) ptSF_muon[nMuons] = rc.kScaleDT(selectedMuons[selmu]->charge(), selectedMuons[selmu]->Pt(), selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Phi(), 0, 0);
           else ptSF_muon[nMuons] = rc.kScaleAndSmearMC(selectedMuons[selmu]->charge(), selectedMuons[selmu]->Pt(), selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Phi(), selectedMuons[selmu]->nofTrackerLayersWithMeasurement(),gRandom->Rndm(),gRandom->Rndm(),0, 0);
           
@@ -2553,9 +2576,9 @@ int main (int argc, char *argv[])
             E_muon[nMuons]=selectedFakeMuons[selmu]->E();
             badmueventmu[nMuons] = selectedFakeMuons[selmu]->isBad80X();
             badmueventclonemu[nMuons] = selectedFakeMuons[selmu]->isClone80X();
-            
-            if(isData) ptSF_muon[nMuons] = rc.kScaleDT(selectedFakeMuons[selmu]->charge(), selectedFakeMuons[selmu]->Pt(), selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Phi(), 7, 0);
-            else ptSF_muon[nMuons] = rc.kScaleAndSmearMC(selectedFakeMuons[selmu]->charge(), selectedFakeMuons[selmu]->Pt(), selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Phi(), selectedFakeMuons[selmu]->nofTrackerLayersWithMeasurement(),gRandom->Rndm(),gRandom->Rndm(),7, 0);
+            TrackLayers_muon[nMuons] = selectedFakeMuons[selmu]->nofTrackerLayersWithMeasurement();
+            if(isData) ptSF_muon[nMuons] = rc.kScaleDT(selectedFakeMuons[selmu]->charge(), selectedFakeMuons[selmu]->Pt(), selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Phi(), 0, 0);
+            else ptSF_muon[nMuons] = rc.kScaleAndSmearMC(selectedFakeMuons[selmu]->charge(), selectedFakeMuons[selmu]->Pt(), selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Phi(), selectedFakeMuons[selmu]->nofTrackerLayersWithMeasurement(),gRandom->Rndm(),gRandom->Rndm(),0, 0);
             
             pt_muon_corrected[nMuons]=selectedFakeMuons[selmu]->Pt()*ptSF_muon[nMuons];
             

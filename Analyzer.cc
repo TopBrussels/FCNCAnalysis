@@ -86,12 +86,21 @@ bool firstevent = false;
 TFile* triggerEfffile = 0;
 string triggerEfffilename = "triggerefficiencies.root";
 
+TFile* muonptscalefactorsfile = 0;
+string muonptscalefactorsfilename = "muonptefficiencies.root";
+
 int nbin_Pt_lep0 = 1;
 int nbin_Pt_lep1 = 1;
 int nbin_Pt_lep2 = 1;
 int endbin_Pt_lep0 = 500;
 int endbin_Pt_lep1 = 500;
 int endbin_Pt_lep2 = 500;
+int nbin_MuPtSFHisto_0 = 100;
+int endbin_MuPtSFHisto_0 = 500;
+int nbin_MuPtSFHisto_1 = 100;
+int endbin_MuPtSFHisto_1 = 500;
+int nbin_MuPtSFHisto_2 = 100;
+int endbin_MuPtSFHisto_2 = 500;
 
 ///////////////////////////////////// MVA VARS /////////////////////////////////////////
 // Decleration of MVA variables
@@ -984,6 +993,8 @@ int main(int argc, char* argv[]){
   int channel = -999;
   datafound = false;
   bool applytrigger = true;
+  bool domuonsfpt = false;
+  bool applymuonsfpt = false;
   bool checktrigger = false;
   bool applytriggerNoLogic = false;
   bool applytriggerNoLogic2 = false;
@@ -1016,8 +1027,17 @@ int main(int argc, char* argv[]){
       std::cout << "   RunGH / RunBF " << endl;
       std::cout << "   doDilep: include dilep plots " << endl;
       std::cout << "   noTrlep: exclude trilep plots " << endl;
-
+      std::cout << "   domuonsfpt: make muon eff " << endl;
+      std::cout << "   applymuonsfpt: apply muon eff " << endl;
       return 0;
+    }
+    if(string(argv[i]).find("applymuonsfpt")!=std::string::npos) {
+      applymuonsfpt = true;
+      domuonsfpt = false;
+    }
+    if(string(argv[i]).find("domuonsfpt")!=std::string::npos) {
+      domuonsfpt = true;
+      applymuonsfpt = false;
     }
     if(string(argv[i]).find("noTrilep")!=std::string::npos) {
       noTrilep = true;
@@ -1164,9 +1184,9 @@ int main(int argc, char* argv[]){
   }
   if(makePlots){
     firstevent = true;
-    InitMSPlots("control_afterAtLeast1Jet", decayChannels);
+    //InitMSPlots("control_afterAtLeast1Jet", decayChannels);
     InitMSPlots("control_afterAtLeast1Jet_afterZWindow", decayChannels);
-    InitMSPlots("control_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels);
+   // InitMSPlots("control_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels);
     // Init1DPlots();
     Init2DPlots();
   }
@@ -1224,6 +1244,24 @@ int main(int argc, char* argv[]){
   
   ofstream myfileWZ;
   ofstream myfileWZtrigged;
+  
+  
+  
+  TH1F* MuPtSFHisto_mu0_sum = 0;
+  TH1F* MuPtSFHisto_mu1_sum = 0;
+  TH1F* MuPtSFHisto_mu2_sum = 0;
+  if(domuonsfpt){
+    MuPtSFHisto_mu0_sum = new TH1F("MuPtSFHisto_mu0_sum", "MuPtSFHisto_mu0_sum" , nbin_MuPtSFHisto_0, 0., endbin_MuPtSFHisto_0);
+    MuPtSFHisto_mu1_sum = new TH1F("MuPtSFHisto_mu1_sum", "MuPtSFHisto_mu1_sum" , nbin_MuPtSFHisto_1, 0., endbin_MuPtSFHisto_1);
+    MuPtSFHisto_mu2_sum = new TH1F("MuPtSFHisto_mu2_sum", "MuPtSFHisto_mu2_sum" , nbin_MuPtSFHisto_2, 0., endbin_MuPtSFHisto_2);
+  }
+
+  
+  
+  
+  
+  
+  
   /// Loop over datasets
   for (int d = 0; d < datasets.size(); d++)   //Loop through datasets
   {
@@ -1376,6 +1414,7 @@ int main(int argc, char* argv[]){
     TH1F* histPt_mu0_ratio = (0);
     TH1F* histPt_mu1_ratio = (0);
     TH1F* histPt_mu2_ratio = (0);
+    
     if((isData || dataSetName.find("WZ")!=std::string::npos ) && checktrigger){
       histPt = new TH1F(("histPt_"+ dataSetName).c_str(), ("histPt_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
       histPt_el0 = new TH1F(("histPt_el0_"+ dataSetName).c_str(), ("histPt_el0_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
@@ -1405,6 +1444,15 @@ int main(int argc, char* argv[]){
       
     }
     
+
+    TH1F* MuPtSFHisto_mu0 = 0;
+    TH1F* MuPtSFHisto_mu1 = 0;
+    TH1F* MuPtSFHisto_mu2 = 0;
+    if(domuonsfpt){
+      MuPtSFHisto_mu0 = new TH1F(("MuPtSFHisto_mu0_"+ dataSetName).c_str(), ("MuPtSFHisto_mu0_" + dataSetName).c_str() , nbin_MuPtSFHisto_0, 0., endbin_MuPtSFHisto_0);
+      MuPtSFHisto_mu1 = new TH1F(("MuPtSFHisto_mu1_"+ dataSetName).c_str(), ("MuPtSFHisto_mu1_" + dataSetName).c_str() , nbin_MuPtSFHisto_1, 0., endbin_MuPtSFHisto_1);
+      MuPtSFHisto_mu2 = new TH1F(("MuPtSFHisto_mu2_"+ dataSetName).c_str(), ("MuPtSFHisto_mu2_" + dataSetName).c_str() , nbin_MuPtSFHisto_2, 0., endbin_MuPtSFHisto_2);
+    }
     for (int ievt = 0; ievt < endEvent; ievt++)
     {
       ClearObjects(); // put everything to default values
@@ -1662,8 +1710,39 @@ int main(int argc, char* argv[]){
               muonSFtemp *= MuonIDSF[iMu] * MuonIsoSF[iMu] * MuonTrackSF[iMu];// TO FIX
             }
             
-            scaleFactor_muonSF_up *= MuonIDSF_up[iMu] * MuonIsoSF_up[iMu] * (MuonTrackSF[iMu]*1.1 );
-            scaleFactor_muonSF_down *= MuonIDSF_down[iMu] * MuonIsoSF_down[iMu] * (MuonTrackSF[iMu]*0.9 ) ;
+            if(applymuonsfpt){
+              if(domuonsfpt){
+                muonptscalefactorsfile = TFile::Open( muonptscalefactorsfilename.c_str(), "READ" );
+                
+                int xbin=-5;
+                double muonptsf_1, muonptsf_2, muonptsf_0;
+                if(selectedMuons.size()>0){
+                  xbin = ((TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu0_SF")))->FindBin(selectedMuons[0].Pt());
+                  muonptsf_0 = ((TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu0_SF")))->GetBinContent(xbin);
+                }
+                else muonptsf_0 = 1.;
+                if(selectedMuons.size()>1){
+                    xbin = ((TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu1_SF")))->FindBin(selectedMuons[1].Pt());
+                    muonptsf_1 = ((TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu1_SF")))->GetBinContent(xbin);
+                }
+                 else muonptsf_1 = 1.;
+                if(selectedMuons.size()>2){
+                  xbin = ((TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu2_SF")))->FindBin(selectedMuons[2].Pt());
+                  muonptsf_2 = ((TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu2_SF")))->GetBinContent(xbin);
+                }
+                else  muonptsf_2 = 1.;
+                
+                
+                scaleFactor *= muonptsf_0 * muonptsf_1 * muonptsf_2;
+              
+                muonptscalefactorsfile->Close();
+              }
+
+              
+            }
+            
+            scaleFactor_muonSF_up *= MuonIDSF_up[iMu] * MuonIsoSF_up[iMu] * (MuonTrackSF[iMu]*1.01 );
+            scaleFactor_muonSF_down *= MuonIDSF_down[iMu] * MuonIsoSF_down[iMu] * (MuonTrackSF[iMu]*0.99 ) ;
           /*  scaleFactor_electronSF_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu]* MuonTrackSF[iMu] ;
             scaleFactor_electronSF_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu] *MuonTrackSF[iMu];
             scaleFactor_puSF_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu]* MuonTrackSF[iMu] ;
@@ -1916,7 +1995,7 @@ int main(int argc, char* argv[]){
       if (makePlots)
       {
         //cout << "ievt " << ievt << endl;
-        FillGeneralPlots(d, "control_afterAtLeast1Jet", decayChannels, isData, isfakes, threelepregion, twolepregion);
+        //FillGeneralPlots(d, "control_afterAtLeast1Jet", decayChannels, isData, isfakes, threelepregion, twolepregion);
         //if(dataSetName.find("WZTo3LNu")!=std::string::npos) Fill1DPlots(dataSetName);
         if(dataSetName.find("WZJTo3LNu")!=std::string::npos && twolepregion ) Fill1DPlots(dataSetName, eventweight_, threelepregion,twolepregion);
         
@@ -1926,6 +2005,18 @@ int main(int argc, char* argv[]){
       //cout << "zmass" << endl;
       if(Zboson.M() < 76 || Zboson.M() > 106) continue;
       
+      
+      if( domuonsfpt && twolepregion){
+        if(selectedMuons.size()>0) MuPtSFHisto_mu0 -> Fill(selectedMuons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
+        if(selectedMuons.size()>1) MuPtSFHisto_mu1 -> Fill(selectedMuons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
+        if(selectedMuons.size()>2) MuPtSFHisto_mu2 -> Fill(selectedMuons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
+        if(!isData){
+         if(selectedMuons.size()>0) MuPtSFHisto_mu0_sum -> Fill(selectedMuons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
+         if(selectedMuons.size()>1) MuPtSFHisto_mu1_sum -> Fill(selectedMuons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
+         if(selectedMuons.size()>2) MuPtSFHisto_mu2_sum -> Fill(selectedMuons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
+        }
+      }
+      
       if (makePlots)
       {
         FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow", decayChannels,isData, isfakes, threelepregion, twolepregion);
@@ -1934,7 +2025,7 @@ int main(int argc, char* argv[]){
       }
       
       if(selectednonCSVLJetID.size()>0 && makePlots){
-        FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels,isData, isfakes, threelepregion, twolepregion);
+       // FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels,isData, isfakes, threelepregion, twolepregion);
         
       }
       
@@ -1950,7 +2041,7 @@ int main(int argc, char* argv[]){
       if(selectedJets.size() == 1 && selectedCSVLJetID.size() > 0){ Region = 0; nSelectedEntriesST++; } // ST region
       else if(selectedJets.size() > 1 && selectedCSVLJetID.size() == 1){ Region = 1; nSelectedEntriesTT++;} // ttbar region
       else if(selectedJets.size() >0 && selectedCSVLJetID.size() == 0){ Region = 2; nSelectedEntriesWZ++;}// WZ control region
-      else if(selectedJets.size() >0 && selectedCSVLJetID.size() > 1){ Region = 3; nSelectedEntriesTTZ++;}// ttZ control region
+      else if(selectedJets.size() >1 && selectedCSVLJetID.size() > 1){ Region = 3; nSelectedEntriesTTZ++;}// ttZ control region
       else {continue; }
       
       
@@ -2083,6 +2174,18 @@ int main(int argc, char* argv[]){
       triggerEfffile->Write();
       triggerEfffile->Close();
     }
+    
+    if(domuonsfpt){
+      if(d == 0) muonptscalefactorsfile = TFile::Open( muonptscalefactorsfilename.c_str(), "RECREATE" );
+      else muonptscalefactorsfile = TFile::Open( muonptscalefactorsfilename.c_str(), "UPDATE" );
+      
+      MuPtSFHisto_mu0->Write();
+      MuPtSFHisto_mu1->Write();
+      MuPtSFHisto_mu2->Write();
+      
+      muonptscalefactorsfile->Write();
+      muonptscalefactorsfile->Close();
+    }
    
     
     if((isData || dataSetName.find("WZ")!=std::string::npos)  && checktrigger){
@@ -2114,6 +2217,56 @@ int main(int argc, char* argv[]){
     cout << endl;
     if(check_matching) MatchingEfficiency();
   } // data
+  
+  
+  if(domuonsfpt){
+    muonptscalefactorsfile = TFile::Open( muonptscalefactorsfilename.c_str(), "UPDATE" );
+    
+    
+    
+    TH1F* SumNormal0 = (TH1F*) (MuPtSFHisto_mu0_sum)->Clone("SumNormal0");
+    TH1F* SumNormal1 = (TH1F*) (MuPtSFHisto_mu1_sum)->Clone("SumNormal1");
+    TH1F* SumNormal2 = (TH1F*) (MuPtSFHisto_mu2_sum)->Clone("SumNormal2");
+    TH1F* dataNormal0 = (TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu0_data"))->Clone("dataNormal0");
+    TH1F* dataNormal1 = (TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu1_data"))->Clone("dataNormal1");
+    TH1F* dataNormal2 = (TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu2_data"))->Clone("dataNormal2");
+   
+    
+    SumNormal0->Scale(1/SumNormal0->Integral());
+    SumNormal1->Scale(1/SumNormal1->Integral());
+    SumNormal2->Scale(1/SumNormal2->Integral());
+    dataNormal0->Scale(1/dataNormal0->Integral());
+    dataNormal1->Scale(1/dataNormal1->Integral());
+    dataNormal2->Scale(1/dataNormal2->Integral());
+    
+    TH1F* MuPtSFHisto_mu0_SF = (TH1F*) dataNormal0->Clone("MuPtSFHisto_mu0_SF");
+    TH1F* MuPtSFHisto_mu1_SF = (TH1F*) dataNormal1->Clone("MuPtSFHisto_mu1_SF");
+    TH1F* MuPtSFHisto_mu2_SF = (TH1F*) dataNormal2->Clone("MuPtSFHisto_mu2_SF");
+    
+    MuPtSFHisto_mu0_SF->Divide((TH1F*)SumNormal0);
+    MuPtSFHisto_mu1_SF->Divide((TH1F*)SumNormal1);
+    MuPtSFHisto_mu2_SF->Divide((TH1F*)SumNormal2);
+    
+    muonptscalefactorsfile->cd();
+    
+    
+    
+    MuPtSFHisto_mu0_sum->Write();
+    MuPtSFHisto_mu1_sum->Write();
+    MuPtSFHisto_mu2_sum->Write();
+    SumNormal0->Write();
+    SumNormal1->Write();
+    SumNormal2->Write();
+    dataNormal0->Write();
+    dataNormal1->Write();
+    dataNormal2->Write();
+    MuPtSFHisto_mu0_SF->Write();
+    MuPtSFHisto_mu1_SF->Write();
+    MuPtSFHisto_mu2_SF->Write();
+    
+    muonptscalefactorsfile->Write();
+    muonptscalefactorsfile->Close();
+  }
   
   
   
@@ -4718,7 +4871,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
       
       if((decayChannels[iChan] == 4 || decayChannels[iChan] == 5) && prefixregion.find("3lep")!=std::string::npos) continue;
       
-      MSPlot[(prefixregion+prefix+"_NbOfVertices_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_NbOfVertices_"+decaystring).c_str(), 60, 0, 60, "Nb Of vertices");
+    /*  MSPlot[(prefixregion+prefix+"_NbOfVertices_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_NbOfVertices_"+decaystring).c_str(), 60, 0, 60, "Nb Of vertices");
       MSPlot[(prefixregion+prefix+"_NbOfVertices_bfPU_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_NbOfVertices_bfPU_"+decaystring).c_str(), 60, 0, 60, "Nb Of vertices before PU reweighing");
       MSPlot[(prefixregion+prefix+"_puSF_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_puSF_"+decaystring).c_str(), 200, 0, 2, "Pile up SF");
       
@@ -4772,7 +4925,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
       MSPlot[(prefixregion+prefix+"_nJetsCSVT_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nJetsCSVT_"+decaystring).c_str(), 10, -0.5, 9.5, "Nb of CSVT");
       MSPlot[(prefixregion+prefix+"_nJetsCvsL_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nJetsCvsL_"+decaystring).c_str(), 10, -0.5, 9.5, "Nb of CvsL Jets");
       MSPlot[(prefixregion+prefix+"_nJetsCvsB_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nJetsCvsB_"+decaystring).c_str(), 10, -0.5, 9.5, "Nb of CvsB Jets");
-      
+      */
       // finding Z boson
       
       if(decayChannels[iChan] == 0 || decayChannels[iChan] == -9){
@@ -5354,7 +5507,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
     
     if((decayChannels[iChan] == 4 || decayChannels[iChan] == 5) && prefixregion.find("3lep")!=std::string::npos) continue;
     //cout << "nvtx "  << nvtx << endl;
-    MSPlot[(prefixregion+prefix+"_NbOfVertices_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true,eventW*scaleFactor);
+   /* MSPlot[(prefixregion+prefix+"_NbOfVertices_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true,eventW*scaleFactor);
     MSPlot[(prefixregion+prefix+"_NbOfVertices_bfPU_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true, eventW*scaleFactor_bfPU);
     MSPlot[(prefixregion+prefix+"_puSF_"+decaystring).c_str()]->Fill(puSF , datasets[d], true, 1);
     
@@ -5407,7 +5560,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
     MSPlot[(prefixregion+prefix+"_nJetsCSVM_"+decaystring).c_str()]->Fill(selectedCSVMJetID.size() , datasets[d], true,eventW*scaleFactor);
     MSPlot[(prefixregion+prefix+"_nJetsCSVT_"+decaystring).c_str()]->Fill(selectedCSVTJetID.size() , datasets[d], true,eventW*scaleFactor);
 
-
+*/
 
     if(decayChannels[iChan] != 0 && decayChannels[iChan]!=4 ){ // not uuu or uu
       if(selectedElectrons.size()>2 && (decayChannels[iChan]==3 || decayChannels[iChan] ==-9)  ){

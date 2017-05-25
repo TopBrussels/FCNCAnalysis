@@ -25,10 +25,11 @@ date = yyyy+mm+dd
 #channels = ["MuMu","ElEl"] 
 #channels = ["mumumu","eee","all"] 
 channels = ["all"]
-doFakes = 0; 
+doFakes = 0;
 JES = 1; 
 JER = 1; 
-doJESJER = 0; 
+doJESJER = 0;
+doFakeshift = 0;
 
 #if(doJESJERshift == 1) postfix = "_JESdown" ;
 #    if(doJESJERshift == 2) postfix = "_JESup" ;
@@ -61,18 +62,56 @@ for chan in channels:
     # create new dirs if not already existing
     if not os.path.exists("SubmitScripts/"+date):
         os.makedirs("SubmitScripts/"+date)
-    if not os.path.exists("SubmitScripts/"+date+"/"+chan):
+    if not os.path.exists("SubmitScripts/"+date+"/JERup") and not doFakes and doJESJER == 4:
+       os.makedirs("SubmitScripts/"+date+"/JERup")
+    if not os.path.exists("SubmitScripts/"+date+"/JERup/output") and not doFakes and doJESJER == 4:
+      os.makedirs("SubmitScripts/"+date+"/JERup/output")
+    if not os.path.exists("SubmitScripts/"+date+"/JERdown") and not doFakes and doJESJER == 3:
+      os.makedirs("SubmitScripts/"+date+"/JERdown")
+    if not os.path.exists("SubmitScripts/"+date+"/JERdown/output") and not doFakes and doJESJER == 3:
+      os.makedirs("SubmitScripts/"+date+"/JERdown/output")
+    if not os.path.exists("SubmitScripts/"+date+"/JESup") and not doFakes and doJESJER == 2:
+      os.makedirs("SubmitScripts/"+date+"/JESup")
+    if not os.path.exists("SubmitScripts/"+date+"/JESup/output") and not doFakes and doJESJER == 2:
+      os.makedirs("SubmitScripts/"+date+"/JESup/output")
+    if not os.path.exists("SubmitScripts/"+date+"/JESdown") and not doFakes and doJESJER == 1:
+        os.makedirs("SubmitScripts/"+date+"/JESdown")
+    if not os.path.exists("SubmitScripts/"+date+"/JESdown/output") and not doFakes and doJESJER == 1:
+      os.makedirs("SubmitScripts/"+date+"/JESdown/output")
+    if not os.path.exists("SubmitScripts/"+date+"/"+chan) and not doFakes and doJESJER == 0:
         os.makedirs("SubmitScripts/"+date+"/"+chan)
-    if not os.path.exists("SubmitScripts/"+date+"/"+chan+"/output"):
+    if not os.path.exists("SubmitScripts/"+date+"/"+chan+"/output") and not doFakes and doJESJER == 0:
         os.makedirs("SubmitScripts/"+date+"/"+chan+"/output")
-    if not os.path.exists("SubmitScripts/"+date+"/"+chan+"/test"):
-        os.makedirs("SubmitScripts/"+date+"/"+chan+"/test")
-
+    #if not os.path.exists("SubmitScripts/"+date+"/"+chan+"/test"):
+    #    os.makedirs("SubmitScripts/"+date+"/"+chan+"/test")
+    if not os.path.exists("SubmitScripts/"+date+"/fakes") and doFakes and not doFakeshift:
+        os.makedirs("SubmitScripts/"+date+"/fakes")
+    if not os.path.exists("SubmitScripts/"+date+"/fakes/output") and doFakes and not doFakeshift:
+        os.makedirs("SubmitScripts/"+date+"/fakes/output")
+    if not os.path.exists("SubmitScripts/"+date+"/fakeshift") and doFakes and  doFakeshift:
+       os.makedirs("SubmitScripts/"+date+"/fakeshift")
+    if not os.path.exists("SubmitScripts/"+date+"/fakeshift/output") and doFakes and  doFakeshift:
+       os.makedirs("SubmitScripts/"+date+"/fakeshift/output")
+	
     # copy the submitAll macro
-    copyfile("SubmitAll.sh","SubmitScripts/"+date+"/"+chan+"/SubmitAll.sh")
+    if not doFakes and doJESJER == 0:
+       copyfile("SubmitAll.sh","SubmitScripts/"+date+"/"+chan+"/SubmitAll.sh")
+    if doFakes and not doFakeshift:
+      copyfile("SubmitAll.sh","SubmitScripts/"+date+"/fakes/SubmitAll.sh")
+    if doFakes and doFakeshift:
+      copyfile("SubmitAll.sh","SubmitScripts/"+date+"/fakeshift/SubmitAll.sh")
 
+    if not doFakes and doJESJER == 3:
+       copyfile("SubmitAll.sh","SubmitScripts/"+date+"/JERdown/SubmitAll.sh")
+    if not doFakes and doJESJER == 4:
+      copyfile("SubmitAll.sh","SubmitScripts/"+date+"/JERup/SubmitAll.sh")
+
+    if not doFakes and doJESJER == 1:
+      copyfile("SubmitAll.sh","SubmitScripts/"+date+"/JESdown/SubmitAll.sh")
+    if not doFakes and doJESJER == 2:
+      copyfile("SubmitAll.sh","SubmitScripts/"+date+"/JESup/SubmitAll.sh")
     
-    # list of variables 
+    # list of variables
     topTrees = []
     listOfFiles = []
     files_str=""
@@ -89,18 +128,37 @@ for chan in channels:
     
     # loop over all the dataset with add="1"
     for d in datasets:
-        if d.attrib['add'] == '1' and  "STt_a" in str(d.attrib['name']):
+      if d.attrib['add'] == '1' and  "80X" in str(d.attrib['name']):
             print "found dataset to be added..." + str(d.attrib['name'])
             commandString = "./Ntupler "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff'])
             topTrees = glob.glob(d.attrib['filenames'])
 
             # setting the number of file per job depending whether it is data sample or not
             # this ca be tweaked
-            if "data" in str(d.attrib['name']):
-                FilePerJob=80
+            if "data_MET" in str(d.attrib['name']):
+                FilePerJob=15
+            elif "data_Single" in str(d.attrib['name']):
+                FilePerJob=15
+            elif "data_Double" in str(d.attrib['name']):
+                FilePerJob=15
+            elif "data" in str(d.attrib['name']):
+                FilePerJob=30
+            elif "TTJets" in str(d.attrib['name']):
+                FilePerJob=5
+            elif "DY" in str(d.attrib['name']):
+                FilePerJob=10
+            elif "Zjets" in str(d.attrib['name']):
+                FilePerJob=5
+            elif "tZq" in str(d.attrib['name']):
+                FilePerJob=5
+            elif "TT_no" in str(d.attrib['name']):
+                FilePerJob=10
             else:
-                FilePerJob=50
-            
+                FilePerJob=25
+           
+	          #if doFakes:
+            #   FilePerJob=FilePerJob % 2
+        
             N_job = 0
             N_file = 1
             remainder= len(topTrees)%FilePerJob
@@ -124,13 +182,27 @@ for chan in channels:
 #                    print "len(listOfFiles) is ", len(listOfFiles) 
                     
 
-                    # create a file for this job
-                    filename="SubmitScripts/"+date+"/"+chan+"/submit_"+str(d.attrib['name'])+"_"+str(N_job*FilePerJob+1)+"to"+str(N_job*FilePerJob+len(listOfFiles))+".sh"
+                      # create a file for this job
+                    if not doFakes and doJESJER == 4:
+                        filename="SubmitScripts/"+date+"/JERup/submit_"+str(d.attrib['name'])+"_"+str(N_job*FilePerJob+1)+"to"+str(N_job*FilePerJob+len(listOfFiles))+".sh"
+                    if not doFakes and doJESJER == 3:
+                        filename="SubmitScripts/"+date+"/JERdown/submit_"+str(d.attrib['name'])+"_"+str(N_job*FilePerJob+1)+"to"+str(N_job*FilePerJob+len(listOfFiles))+".sh"
+                    if not doFakes and doJESJER == 2:
+                         filename="SubmitScripts/"+date+"/JESup/submit_"+str(d.attrib['name'])+"_"+str(N_job*FilePerJob+1)+"to"+str(N_job*FilePerJob+len(listOfFiles))+".sh"
+                    if not doFakes and doJESJER == 1:
+                        filename="SubmitScripts/"+date+"/JESdown/submit_"+str(d.attrib['name'])+"_"+str(N_job*FilePerJob+1)+"to"+str(N_job*FilePerJob+len(listOfFiles))+".sh"
+                    if not doFakes and doJESJER == 0:
+                        filename="SubmitScripts/"+date+"/"+chan+"/submit_"+str(d.attrib['name'])+"_"+str(N_job*FilePerJob+1)+"to"+str(N_job*FilePerJob+len(listOfFiles))+".sh"
+                    if doFakes and not doFakeshift:
+                        filename="SubmitScripts/"+date+"/fakes/submit_"+str(d.attrib['name'])+"_"+str(N_job*FilePerJob+1)+"to"+str(N_job*FilePerJob+len(listOfFiles))+".sh"
+                    if doFakes and doFakeshift:
+                        filename="SubmitScripts/"+date+"/fakeshift/submit_"+str(d.attrib['name'])+"_"+str(N_job*FilePerJob+1)+"to"+str(N_job*FilePerJob+len(listOfFiles))+".sh"
+                              
                     # copy a skeleton file that set up the code environment, the wall time and the queue
                     if "data" in str(d.attrib['name']):
-	                shutil.copyfile("submitSkeletondata.sh", filename)
-		    else: 
-			shutil.copyfile("submitSkeleton.sh", filename)
+	                      shutil.copyfile("submitSkeletondata.sh", filename)
+                    else:
+			                  shutil.copyfile("submitSkeleton.sh", filename)
                     # append to the file the actual command
                     outfile = open (filename, 'a')
 
@@ -151,15 +223,15 @@ for chan in channels:
 
 
 
-                    print >> outfile, commandString, files_str, " ", JES, " " , JER, " " , doFakes, " ", doJESJER , " " , str(N_job+1) , " 0" , " 200000000" 
+                    print >> outfile, commandString, files_str, " ", JES, " " , JER, " " , doFakes, " ", doJESJER , " "  , doFakeshift , " ", str(N_job+1) , " 0" , " 2000000000000000000000000000"
 
                     # cleaning
                     listOfFiles=[]
                     files_str=""
-		    listOfScratchFiles=[]
+                    listOfScratchFiles=[]
                     CopyCmdlistOfFiles=[]
                     listOfTmpDirFiles =[]
-		    scractFiles_str=""
+                    scractFiles_str=""
 
                     N_job=N_job+1
 #                    print N_job * FilePerJob

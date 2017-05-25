@@ -23,6 +23,7 @@
 #include <TLeaf.h>
 #include <utility>
 #include "Style.C"
+#include "rochester/RoccoR.cc"
 
 // used TopTreeAnalysis classes
 #include "TopTreeProducer/interface/TRootRun.h"
@@ -81,6 +82,7 @@ vector < Dataset* > datasetsbefore;
 std::vector < int>  decayChannels = {0,1,2,3,-9,4,5}; // uuu uue eeu eee all
 //std::vector < int>  decayChannels = {-9};
 bool firstevent = false;
+
 
 
 TFile* triggerEfffile = 0;
@@ -470,6 +472,7 @@ Double_t        MuonIsoSF[3];   //[nMuons]
 Double_t        MuonTrigSFv2[3];   //[nMuons]
 Double_t        MuonTrigSFv3[3];   //[nMuons]
 Double_t        pt_muon[3];   //[nMuons]
+Double_t        TrackLayers_muon[3];
 Double_t        phi_muon[3];   //[nMuons]
 Double_t        eta_muon[3];   //[nMuons]
 Double_t        E_muon[3];   //[nMuons]
@@ -618,6 +621,7 @@ TBranch        *b_pfIso_muon;   //!
 TBranch        *b_charge_muon;   //!
 TBranch        *b_d0_muon;   //!
 TBranch        *b_d0BeamSpot_muon;   //!
+TBranch        *b_TrackLayers_muon;
 TBranch        *b_nJets;   //!
 TBranch        *b_pt_jet;   //!
 TBranch        *b_px_jet;   //!
@@ -708,6 +712,7 @@ void EventSearcher(vector < TLorentzVector> mcParticles, string dataSetName, boo
 pair< vector< pair<unsigned int, unsigned int>>, vector <string> > LeptonMatching(vector < TLorentzVector> selectedleptons, vector <TLorentzVector> mcParticles, string dataSetName, bool debug);
 pair< vector< pair<unsigned int, unsigned int>>, vector <string> > JetMatching(vector < TLorentzVector> selectedJets, vector <TLorentzVector> mcParticles, string dataSetName, bool debug);
 void MatchingEfficiency();
+Double_t RochLeptonMatching(TLorentzVector selectedlepton, vector <TLorentzVector> mcParticles, bool isData, double nbtracks, int chargelep, bool isNP, bool debug);
 vector<TLorentzVector> selectedMuons;
 vector<TLorentzVector> selectedElectrons;
 vector<TLorentzVector> selectedLeptons;
@@ -760,6 +765,10 @@ Double_t UjetMatchedevent = 0.;
 
 TLorentzVector mcpart;
 vector <TLorentzVector> mcParticles;
+vector <TLorentzVector> mcParticlesroch;
+vector <TLorentzVector> partonsrochester;
+vector <TLorentzVector> selectedleps;
+RoccoR rc("rochester/rcdata.2016.v3");
 bool foundTopQ = false;
 bool foundAntitopQ = false;
 bool foundSMb = false;
@@ -999,6 +1008,7 @@ int main(int argc, char* argv[]){
   bool applytriggerNoLogic = false;
   bool applytriggerNoLogic2 = false;
   bool testing = false;
+  bool dorochester = false;
   doDilep = false;
   for(int i = 0; i <argc; i++){
     if(string(argv[i]).find("help")!=string::npos) {
@@ -1029,7 +1039,12 @@ int main(int argc, char* argv[]){
       std::cout << "   noTrlep: exclude trilep plots " << endl;
       std::cout << "   domuonsfpt: make muon eff " << endl;
       std::cout << "   applymuonsfpt: apply muon eff " << endl;
+      std::cout << "   rochester: apply rochester" << endl;
       return 0;
+    }
+    if(string(argv[i]).find("rochester")!=std::string::npos) {
+      dorochester = true;
+
     }
     if(string(argv[i]).find("applymuonsfpt")!=std::string::npos) {
       applymuonsfpt = true;
@@ -1229,6 +1244,7 @@ int main(int argc, char* argv[]){
   bool isData = false;
   bool isfakes = false;
   bool isAMC = false;
+  bool isNP = false;
   int nSelectedEntriesST = 0;
   int nSelectedEntriesTT = 0;
   int nSelectedEntriesWZ = 0;
@@ -1323,9 +1339,15 @@ int main(int argc, char* argv[]){
       isAMC = true;
       //cout << "amc at nlo sample" <<endl;
     }
+    isNP = false;
+    if (dataSetName.find("FCNC")!=std::string::npos)
+    {
+      isNP = true;
+    }
     if (dataSetName.find("FCNC")==std::string::npos && dataSetName.find("tZq")==std::string::npos)
     {
       check_matching = false;
+      
     }
     //  if(!isData) continue;
     
@@ -1531,9 +1553,10 @@ int main(int argc, char* argv[]){
         if( fabs(eta_muon[iMu]) >= 2.4) {continue; }
         
         muon.Clear();
-       // double ptmu = pt_muon[iMu]; //*ptSF_muon[iMu];
+        double ptmu = pt_muon[iMu];
         muon.SetPtEtaPhiE(pt_muon[iMu], eta_muon[iMu], phi_muon[iMu], E_muon[iMu]);
-        
+        if(dorochester && !isfakes) ptmu = RochLeptonMatching(muon, mcParticles, isData, TrackLayers_muon[iMu],charge_muon[iMu], isNP, 0); //*ptSF_muon[iMu];
+        muon.SetPtEtaPhiE(ptmu, eta_muon[iMu], phi_muon[iMu], E_muon[iMu]);
         selectedMuons.push_back(muon);
         selectedMuonsCharge.push_back(charge_muon[iMu]);
         selectedLeptons.push_back(muon);
@@ -1743,7 +1766,7 @@ int main(int argc, char* argv[]){
             scaleFactor_muonSF_up *= MuonIDSF_up[iMu] * MuonIsoSF_up[iMu];// * (MuonTrackSF[iMu]*1.01 );
             scaleFactor_muonSF_down *= MuonIDSF_down[iMu] * MuonIsoSF_down[iMu];// * (MuonTrackSF[iMu]*0.99 ) ;
           }
-          if(applymuonsfpt){
+          if(applymuonsfpt && !dorochester){
             if(selectedMuons.size()>0){
               //cout << "MuPtSFHisto0 " << MuPtSFHisto0 << " pt " << selectedMuons[0].Pt() << endl;
               if(selectedMuons[0].Pt() > (double) endbin_MuPtSFHisto_0) xbinmuonpt = ((TH1F*) MuPtSFHisto0)->FindBin(((double) endbin_MuPtSFHisto_0)-0.01);
@@ -1768,8 +1791,9 @@ int main(int argc, char* argv[]){
             }
             else  muonptsf_2 = 1.;
             
-            // cout << "scalefactor before " << scaleFactor << endl;
+            //cout << "scalefactor before " << scaleFactor << endl;
             scaleFactor *= muonptsf_0 * muonptsf_1 * muonptsf_2;
+            //cout << "scalefactor after " << scaleFactor << endl;
             muonSFtemp *= muonptsf_0 * muonptsf_1 * muonptsf_2;
             if(scaleFactor < 0) cout << "error something went wrong" << endl;
             
@@ -5394,6 +5418,7 @@ void InitTree(TTree* tree, bool isData, bool isfakes){
   tree->SetBranchAddress("badmueventmu", badmueventmu, &b_badmueventmu);
   tree->SetBranchAddress("badmueventclonemu", badmueventclonemu, &b_badmueventclonemu);
   tree->SetBranchAddress("pt_muon", pt_muon, &b_pt_muon);
+  tree->SetBranchAddress("TrackLayers_muon",TrackLayers_muon, &b_TrackLayers_muon);
   tree->SetBranchAddress("phi_muon", phi_muon, &b_phi_muon);
   tree->SetBranchAddress("eta_muon", eta_muon, &b_eta_muon);
   tree->SetBranchAddress("E_muon", E_muon, &b_E_muon);
@@ -6750,6 +6775,101 @@ void EventSearcher(vector < TLorentzVector> mcParticles, string dataSetName, boo
     cout << "foundSMb "<< foundSMb <<" foundSMel "<< foundSMel <<" foundSMmu "<< foundSMmu << endl;
     
   }
+  
+}
+Double_t RochLeptonMatching(TLorentzVector selectedlepton, vector <TLorentzVector> mcParticles, bool isData, double nbtracks, int chargelep, bool isNP, bool debug){
+  if(debug) cout << "in rochester " << endl;
+  
+  mcParticlesroch.clear();
+  if(!isData){
+    for (int iMC = 0; iMC < nMCParticles; iMC++)
+    {
+      mcpart.Clear();
+      mcpart.SetPtEtaPhiE(mc_pt[iMC], mc_eta[iMC],mc_phi[iMC],mc_E[iMC]);
+      mcParticlesroch.push_back(mcpart);
+    }
+    if(mcParticlesroch.size() != nMCParticles){cout << "ERROR mcP roch not filled correctly" << endl;  }
+    
+  }
+  
+  if(debug) cout << "nb of mc particles " << mcParticlesroch.size() << endl;
+  
+  
+  //vector <TLorentzVector> partonsrochester;
+  partonsrochester.clear();
+  double rocsf = 1.;
+  
+  
+  if(isData){
+    rocsf = rc.kScaleDT(chargelep, selectedlepton.Pt(), selectedlepton.Eta(), selectedlepton.Phi(), 0, 0);
+  }
+  else if(isNP){
+    rocsf = rc.kScaleAndSmearMC(chargelep,selectedlepton.Pt(),selectedlepton.Eta(), selectedlepton.Phi(), nbtracks, gRandom->Rndm(), gRandom->Rndm(), 0, 0);
+  }
+  else{
+    if(debug) cout << "loop over mc particles " << endl;
+    for (unsigned int iMC = 0; iMC < mcParticlesroch.size(); iMC++)
+    {
+      if ( (mc_status[iMC] > 1 && mc_status[iMC] <= 20) || mc_status[iMC] >= 30 ) continue;  /// Final state particle or particle from hardest process
+      if( abs(mc_pdgId[iMC]) ==  13  ){
+        partonsrochester.push_back(mcParticlesroch[iMC]);
+      } // muons
+    }
+    //vector <TLorentzVector> selectedleps;
+    selectedleps.clear();
+    selectedleps.push_back(selectedlepton);
+    
+    JetPartonMatching matchingToollep = JetPartonMatching(partonsrochester, selectedleps,2,true,true,0.1 );
+    
+    if(debug)  cout << "mu parton matching done " << endl;
+    if(debug)  cout << matchingToollep.getNumberOfAvailableCombinations() << endl;
+    
+    if (matchingToollep.getNumberOfAvailableCombinations() != 1)
+      cerr << "matching.getNumberOfAvailableCombinations() = " << matchingToollep.getNumberOfAvailableCombinations() << " .  This should be equal to 1 !!!" << endl;
+    
+    
+    /// Fill match in JetPartonPair;
+    vector< pair<unsigned int, unsigned int> > lepPartonPair; // First one is jet number, second one is mcParticle number
+    lepPartonPair.clear();
+    
+    
+    for (unsigned int i = 0; i < partonsrochester.size(); i++)
+    {
+      int matchedlepNumber = matchingToollep.getMatchForParton(i, 0);
+      //cout << "matchedlepnb " <<matchedlepNumber << endl;
+      if (matchedlepNumber > -1)
+        lepPartonPair.push_back( pair<unsigned int, unsigned int> (matchedlepNumber, i) );
+      // matched lep number is nb in selectedlep collection
+      // i is nb in partons
+      // partonID contains place in mcParticles vector
+    }
+    if(debug) cout << "pushing back partons" << endl;
+    if(debug) cout << "nb of leptonparton pairs " << lepPartonPair.size() << endl;
+    if(lepPartonPair.size()>0){
+      for (unsigned int i = 0; i < lepPartonPair.size(); i++)
+      {
+        unsigned int ipart = lepPartonPair[i].second; // place in mcParticles vector
+        // unsigned int particlenb = lepPartonPair[i].first;  // place in selectedLeptons vector
+        
+        double deltaR = sqrt(pow(selectedlepton.Eta()-partonsrochester[ipart].Eta(),2) + pow(selectedlepton.Phi()-partonsrochester[ipart].Phi(),2));
+        if(deltaR<0.1){
+          rocsf = rc.kScaleFromGenMC(chargelep,selectedlepton.Pt(),selectedlepton.Eta(), selectedlepton.Phi(), nbtracks, partonsrochester[ipart].Pt(), gRandom->Rndm(), 0, 0);
+        }
+        else {
+          rocsf = rc.kScaleAndSmearMC(chargelep,selectedlepton.Pt(),selectedlepton.Eta(), selectedlepton.Phi(), nbtracks, gRandom->Rndm(), gRandom->Rndm(), 0, 0);
+        }
+      }
+    }
+    else{
+      if(debug) cout << "didn't found match" << endl;
+      rocsf = rc.kScaleAndSmearMC(chargelep,selectedlepton.Pt(),selectedlepton.Eta(), selectedlepton.Phi(), nbtracks, gRandom->Rndm(), gRandom->Rndm(), 0, 0);
+    }
+  }
+  
+  
+  
+  if(debug) cout << "in rochester sf is: "  << rocsf << endl;
+  return rocsf;
   
 }
 
