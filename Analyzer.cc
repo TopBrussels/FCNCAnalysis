@@ -23,6 +23,7 @@
 #include <TLeaf.h>
 #include <utility>
 #include "Style.C"
+#include "rochester/RoccoR.cc"
 
 // used TopTreeAnalysis classes
 #include "TopTreeProducer/interface/TRootRun.h"
@@ -83,24 +84,25 @@ std::vector < int>  decayChannels = {0,1,2,3,-9,4,5}; // uuu uue eeu eee all
 bool firstevent = false;
 
 
+
 TFile* triggerEfffile = 0;
 string triggerEfffilename = "triggerefficiencies.root";
 
 TFile* muonptscalefactorsfile = 0;
-string muonptscalefactorsfilename = "muonptefficiencies.root";
+string muonptscalefactorsfilename = "muonptefficiencies";
 
-int nbin_Pt_lep0 = 1;
-int nbin_Pt_lep1 = 1;
+int nbin_Pt_lep0 = 4;
+int nbin_Pt_lep1 = 2;
 int nbin_Pt_lep2 = 1;
 int endbin_Pt_lep0 = 500;
-int endbin_Pt_lep1 = 500;
-int endbin_Pt_lep2 = 500;
-int nbin_MuPtSFHisto_0 = 100;
-int endbin_MuPtSFHisto_0 = 500;
-int nbin_MuPtSFHisto_1 = 100;
-int endbin_MuPtSFHisto_1 = 500;
-int nbin_MuPtSFHisto_2 = 100;
-int endbin_MuPtSFHisto_2 = 500;
+int endbin_Pt_lep1 = 250;
+int endbin_Pt_lep2 = 150;
+int nbin_MuPtSFHisto_0 = 25;
+int endbin_MuPtSFHisto_0 = 250;
+int nbin_MuPtSFHisto_1 = 20;
+int endbin_MuPtSFHisto_1 = 200;
+int nbin_MuPtSFHisto_2 = 10;
+int endbin_MuPtSFHisto_2 = 150;
 
 ///////////////////////////////////// MVA VARS /////////////////////////////////////////
 // Decleration of MVA variables
@@ -470,6 +472,7 @@ Double_t        MuonIsoSF[3];   //[nMuons]
 Double_t        MuonTrigSFv2[3];   //[nMuons]
 Double_t        MuonTrigSFv3[3];   //[nMuons]
 Double_t        pt_muon[3];   //[nMuons]
+Double_t        TrackLayers_muon[3];
 Double_t        phi_muon[3];   //[nMuons]
 Double_t        eta_muon[3];   //[nMuons]
 Double_t        E_muon[3];   //[nMuons]
@@ -618,6 +621,7 @@ TBranch        *b_pfIso_muon;   //!
 TBranch        *b_charge_muon;   //!
 TBranch        *b_d0_muon;   //!
 TBranch        *b_d0BeamSpot_muon;   //!
+TBranch        *b_TrackLayers_muon;
 TBranch        *b_nJets;   //!
 TBranch        *b_pt_jet;   //!
 TBranch        *b_px_jet;   //!
@@ -708,6 +712,7 @@ void EventSearcher(vector < TLorentzVector> mcParticles, string dataSetName, boo
 pair< vector< pair<unsigned int, unsigned int>>, vector <string> > LeptonMatching(vector < TLorentzVector> selectedleptons, vector <TLorentzVector> mcParticles, string dataSetName, bool debug);
 pair< vector< pair<unsigned int, unsigned int>>, vector <string> > JetMatching(vector < TLorentzVector> selectedJets, vector <TLorentzVector> mcParticles, string dataSetName, bool debug);
 void MatchingEfficiency();
+Double_t RochLeptonMatching(TLorentzVector selectedlepton, vector <TLorentzVector> mcParticles, bool isData, double nbtracks, int chargelep, bool isNP, bool debug);
 vector<TLorentzVector> selectedMuons;
 vector<TLorentzVector> selectedElectrons;
 vector<TLorentzVector> selectedLeptons;
@@ -760,6 +765,10 @@ Double_t UjetMatchedevent = 0.;
 
 TLorentzVector mcpart;
 vector <TLorentzVector> mcParticles;
+vector <TLorentzVector> mcParticlesroch;
+vector <TLorentzVector> partonsrochester;
+vector <TLorentzVector> selectedleps;
+RoccoR rc("rochester/rcdata.2016.v3");
 bool foundTopQ = false;
 bool foundAntitopQ = false;
 bool foundSMb = false;
@@ -999,6 +1008,7 @@ int main(int argc, char* argv[]){
   bool applytriggerNoLogic = false;
   bool applytriggerNoLogic2 = false;
   bool testing = false;
+  bool dorochester = false;
   doDilep = false;
   for(int i = 0; i <argc; i++){
     if(string(argv[i]).find("help")!=string::npos) {
@@ -1029,7 +1039,12 @@ int main(int argc, char* argv[]){
       std::cout << "   noTrlep: exclude trilep plots " << endl;
       std::cout << "   domuonsfpt: make muon eff " << endl;
       std::cout << "   applymuonsfpt: apply muon eff " << endl;
+      std::cout << "   rochester: apply rochester" << endl;
       return 0;
+    }
+    if(string(argv[i]).find("rochester")!=std::string::npos) {
+      dorochester = true;
+
     }
     if(string(argv[i]).find("applymuonsfpt")!=std::string::npos) {
       applymuonsfpt = true;
@@ -1070,11 +1085,12 @@ int main(int argc, char* argv[]){
       else if(string(argv[i]).find("NOM")!=string::npos) applyJER_down = applyJER_up = false;
       else { cout << "argument missing for JER" << endl; break; }
     }
-    if(string(argv[i]).find("Test")!=std::string::npos) {
+    if(string(argv[i]).find("Testing")!=std::string::npos) {
       testing = true;
     }
     if(string(argv[i]).find("checkTrigger")!=std::string::npos) {
       checktrigger = true;
+      applytrigger = false;
     }
     if(string(argv[i]).find("noTrigger")!=std::string::npos) {
       applytrigger = false;
@@ -1162,6 +1178,11 @@ int main(int argc, char* argv[]){
     }
   }
   
+  if(domuonsfpt && doDilep) muonptscalefactorsfilename = muonptscalefactorsfilename + "_" + dateString + "_dilep" ;
+  if(domuonsfpt && !doDilep) muonptscalefactorsfilename = muonptscalefactorsfilename + "_" + dateString  ;
+  if(domuonsfpt) muonptscalefactorsfilename = muonptscalefactorsfilename + ".root";
+  else muonptscalefactorsfilename = muonptscalefactorsfilename + "_170524_1136_dilep.root";
+  
   for (int d = 0; d < datasetsbefore.size(); d++)   //Loop through datasets
   {
     string dataSetName = datasetsbefore[d]->Name();
@@ -1224,10 +1245,13 @@ int main(int argc, char* argv[]){
   bool isData = false;
   bool isfakes = false;
   bool isAMC = false;
+  bool isNP = false;
   int nSelectedEntriesST = 0;
   int nSelectedEntriesTT = 0;
   int nSelectedEntriesWZ = 0;
   int nSelectedEntriesTTZ = 0;
+  int nSelectedEntriesDilep = 0;
+  Double_t nSelectedEntriesDilepweighted = 0;
   Double_t nSelectedEntriesSTweighted = 0.;
   Double_t nSelectedEntriesTTweighted = 0.;
   Double_t nSelectedEntriesWZweighted = 0.;
@@ -1246,19 +1270,41 @@ int main(int argc, char* argv[]){
   ofstream myfileWZtrigged;
   
   
-  
+  TH1::SetDefaultSumw2();
   TH1F* MuPtSFHisto_mu0_sum = 0;
   TH1F* MuPtSFHisto_mu1_sum = 0;
   TH1F* MuPtSFHisto_mu2_sum = 0;
+  TH1F* MuPtSFHisto_mu0_data = 0;
+  TH1F* MuPtSFHisto_mu1_data = 0;
+  TH1F* MuPtSFHisto_mu2_data = 0;
   if(domuonsfpt){
     MuPtSFHisto_mu0_sum = new TH1F("MuPtSFHisto_mu0_sum", "MuPtSFHisto_mu0_sum" , nbin_MuPtSFHisto_0, 0., endbin_MuPtSFHisto_0);
     MuPtSFHisto_mu1_sum = new TH1F("MuPtSFHisto_mu1_sum", "MuPtSFHisto_mu1_sum" , nbin_MuPtSFHisto_1, 0., endbin_MuPtSFHisto_1);
     MuPtSFHisto_mu2_sum = new TH1F("MuPtSFHisto_mu2_sum", "MuPtSFHisto_mu2_sum" , nbin_MuPtSFHisto_2, 0., endbin_MuPtSFHisto_2);
+    
+    MuPtSFHisto_mu0_data = new TH1F("MuPtSFHisto_mu0_data", "MuPtSFHisto_mu0_data" , nbin_MuPtSFHisto_0, 0., endbin_MuPtSFHisto_0);
+    MuPtSFHisto_mu1_data = new TH1F("MuPtSFHisto_mu1_data", "MuPtSFHisto_mu1_data" , nbin_MuPtSFHisto_1, 0., endbin_MuPtSFHisto_1);
+    MuPtSFHisto_mu2_data = new TH1F("MuPtSFHisto_mu2_data", "MuPtSFHisto_mu2_data", nbin_MuPtSFHisto_2, 0., endbin_MuPtSFHisto_2);
   }
-
   
-  
-  
+  TH1F* MuPtSFHisto0 = 0;
+  TH1F* MuPtSFHisto1= 0;
+  TH1F* MuPtSFHisto2 = 0;
+  if(applymuonsfpt){
+    muonptscalefactorsfile = TFile::Open( muonptscalefactorsfilename.c_str(), "READ" );
+   // cout << " nbins " << ((TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu0_SF")))->GetNbinsX() << endl;
+    MuPtSFHisto0 = (TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu0_SF"))->Clone("MuPtSFHisto0");
+    MuPtSFHisto1 = (TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu1_SF"))->Clone("MuPtSFHisto1");
+    MuPtSFHisto2 = (TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu2_SF"))->Clone("MuPtSFHisto2");
+    
+    //cout << MuPtSFHisto0 << " " << MuPtSFHisto1 << " " << MuPtSFHisto2 << endl;
+   
+  }
+ // cout << " nbins " << MuPtSFHisto0->GetNbinsX() << endl;
+  int xbinmuonpt=-5;
+  double muonptsf_1, muonptsf_2, muonptsf_0;
+  double eventweight_ = 1.;
+  int endEvent = -5;
   
   
   
@@ -1294,9 +1340,15 @@ int main(int argc, char* argv[]){
       isAMC = true;
       //cout << "amc at nlo sample" <<endl;
     }
+    isNP = false;
+    if (dataSetName.find("FCNC")!=std::string::npos)
+    {
+      isNP = true;
+    }
     if (dataSetName.find("FCNC")==std::string::npos && dataSetName.find("tZq")==std::string::npos)
     {
       check_matching = false;
+      
     }
     //  if(!isData) continue;
     
@@ -1378,9 +1430,9 @@ int main(int argc, char* argv[]){
     }
     
     
-    int endEvent =nEntries;
+    endEvent =nEntries;
     if(testing){
-      if(endEvent > 10000000) endEvent = 10000000;
+      if(endEvent > 1000) endEvent = 1000;
     }
     int istartevt = 0;
     nSelectedEntriesST = 0;
@@ -1389,7 +1441,10 @@ int main(int argc, char* argv[]){
     nSelectedEntriesSTweighted = 0.;
     nSelectedEntriesTTweighted = 0.;
     nSelectedEntriesWZweighted = 0.;
-    
+    nSelectedEntriesDilep = 0;
+    nSelectedEntriesTTZ = 0;
+    nSelectedEntriesTTZweighted = 0.;
+    nSelectedEntriesDilepweighted = 0.;
     
     // for trig eff
     TH1::SetDefaultSumw2();
@@ -1415,44 +1470,62 @@ int main(int argc, char* argv[]){
     TH1F* histPt_mu1_ratio = (0);
     TH1F* histPt_mu2_ratio = (0);
     
+    TH1F* histPt_leadinglep = (0);
+    TH1F* histPt_2ndleadinglep = (0);
+    TH1F* histPt_3dleadinglep = (0);
+    TH1F* histPt_leadinglep_noTrig = (0);
+    TH1F* histPt_2ndleadinglep_noTrig = (0);
+    TH1F* histPt_3dleadinglep_noTrig = (0);
+    TH1F* histPt_leadinglep_ratio = (0);
+    TH1F* histPt_2ndleadinglep_ratio = (0);
+    TH1F* histPt_3dleadinglep_ratio = (0);
+    
     if((isData || dataSetName.find("WZ")!=std::string::npos ) && checktrigger){
       histPt = new TH1F(("histPt_"+ dataSetName).c_str(), ("histPt_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
       histPt_el0 = new TH1F(("histPt_el0_"+ dataSetName).c_str(), ("histPt_el0_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
-      histPt_el1 = new TH1F(("histPt_el1_"+ dataSetName).c_str(), ("histPt_el1_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
-      histPt_el2 = new TH1F(("histPt_el2_"+ dataSetName).c_str(), ("histPt_el2_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
+      histPt_el1 = new TH1F(("histPt_el1_"+ dataSetName).c_str(), ("histPt_el1_" + dataSetName).c_str() , nbin_Pt_lep1, 0., endbin_Pt_lep1);
+      histPt_el2 = new TH1F(("histPt_el2_"+ dataSetName).c_str(), ("histPt_el2_" + dataSetName).c_str() , nbin_Pt_lep2, 0., endbin_Pt_lep2);
       histPt_mu0 = new TH1F(("histPt_mu0_"+ dataSetName).c_str(), ("histPt_mu0_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
-      histPt_mu1 = new TH1F(("histPt_mu1_"+ dataSetName).c_str(), ("histPt_mu1_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
-      histPt_mu2 = new TH1F(("histPt_mu2_"+ dataSetName).c_str(), ("histPt_mu2_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
+      histPt_mu1 = new TH1F(("histPt_mu1_"+ dataSetName).c_str(), ("histPt_mu1_" + dataSetName).c_str() , nbin_Pt_lep1, 0., endbin_Pt_lep1);
+      histPt_mu2 = new TH1F(("histPt_mu2_"+ dataSetName).c_str(), ("histPt_mu2_" + dataSetName).c_str() , nbin_Pt_lep2, 0., endbin_Pt_lep2);
+      histPt_leadinglep = new TH1F(("histPt_leadinglep_"+ dataSetName).c_str(), ("histPt_leadinglep_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
+      histPt_2ndleadinglep= new TH1F(("histPt_2ndleadinglep_"+ dataSetName).c_str(), ("histPt_2ndleadinglep_" + dataSetName).c_str() , nbin_Pt_lep1, 0., endbin_Pt_lep1);
+      histPt_3dleadinglep = new TH1F(("histPt_3dleadinglep_"+ dataSetName).c_str(), ("histPt_3dleadinglep_" + dataSetName).c_str() , nbin_Pt_lep2, 0., endbin_Pt_lep2);
       
       histPt_noTrig = new TH1F(("histPt_noTrig_"+ dataSetName).c_str(), ("histPt_noTrig_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
       
       histPt_el0_noTrig = new TH1F(("histPt_el0_noTrig_"+ dataSetName).c_str(), ("histPt_el0_noTrig_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
-      histPt_el1_noTrig = new TH1F(("histPt_el1_noTrig_"+ dataSetName).c_str(), ("histPt_el1_noTrig_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
-      histPt_el2_noTrig = new TH1F(("histPt_el2_noTrig_"+ dataSetName).c_str(), ("histPt_el2_noTrig_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
+      histPt_el1_noTrig = new TH1F(("histPt_el1_noTrig_"+ dataSetName).c_str(), ("histPt_el1_noTrig_" + dataSetName).c_str() , nbin_Pt_lep1, 0., endbin_Pt_lep1);
+      histPt_el2_noTrig = new TH1F(("histPt_el2_noTrig_"+ dataSetName).c_str(), ("histPt_el2_noTrig_" + dataSetName).c_str() , nbin_Pt_lep2, 0., endbin_Pt_lep2);
       histPt_mu0_noTrig = new TH1F(("histPt_mu0_noTrig_"+ dataSetName).c_str(), ("histPt_mu0_noTrig_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
-      histPt_mu1_noTrig = new TH1F(("histPt_mu1_noTrig_"+ dataSetName).c_str(), ("histPt_mu1_noTrig_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
-      histPt_mu2_noTrig = new TH1F(("histPt_mu2_noTrig_"+ dataSetName).c_str(), ("histPt_mu2_noTrig_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
+      histPt_mu1_noTrig = new TH1F(("histPt_mu1_noTrig_"+ dataSetName).c_str(), ("histPt_mu1_noTrig_" + dataSetName).c_str() , nbin_Pt_lep1, 0., endbin_Pt_lep1);
+      histPt_mu2_noTrig = new TH1F(("histPt_mu2_noTrig_"+ dataSetName).c_str(), ("histPt_mu2_noTrig_" + dataSetName).c_str() , nbin_Pt_lep2, 0., endbin_Pt_lep2);
+      histPt_leadinglep_noTrig = new TH1F(("histPt_leadinglep_noTrig_"+ dataSetName).c_str(), ("histPt_leadinglep_noTrig_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
+      histPt_2ndleadinglep_noTrig= new TH1F(("histPt_2ndleadinglep_noTrig_"+ dataSetName).c_str(), ("histPt_2ndleadinglep_noTrig_" + dataSetName).c_str() , nbin_Pt_lep1, 0., endbin_Pt_lep1);
+      histPt_3dleadinglep_noTrig = new TH1F(("histPt_3dleadinglep_noTrig_"+ dataSetName).c_str(), ("histPt_3dleadinglep_noTrig_" + dataSetName).c_str() , nbin_Pt_lep2, 0., endbin_Pt_lep2);
       
       histPt_ratio = new TH1F(("histPt_ratio_"+ dataSetName).c_str(), ("histPt_ratio_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
       
       histPt_el0_ratio = new TH1F(("histPt_el0_ratio_"+ dataSetName).c_str(), ("histPt_el0_ratio_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
-      histPt_el1_ratio = new TH1F(("histPt_el1_ratio_"+ dataSetName).c_str(), ("histPt_el1_ratio_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
-      histPt_el2_ratio = new TH1F(("histPt_el2_ratio_"+ dataSetName).c_str(), ("histPt_el2_ratio_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
+      histPt_el1_ratio = new TH1F(("histPt_el1_ratio_"+ dataSetName).c_str(), ("histPt_el1_ratio_" + dataSetName).c_str() , nbin_Pt_lep1, 0., endbin_Pt_lep1);
+      histPt_el2_ratio = new TH1F(("histPt_el2_ratio_"+ dataSetName).c_str(), ("histPt_el2_ratio_" + dataSetName).c_str() , nbin_Pt_lep2, 0., endbin_Pt_lep2);
       histPt_mu0_ratio = new TH1F(("histPt_mu0_ratio_"+ dataSetName).c_str(), ("histPt_mu0_ratio_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
-      histPt_mu1_ratio = new TH1F(("histPt_mu1_ratio_"+ dataSetName).c_str(), ("histPt_mu1_ratio_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
-      histPt_mu2_ratio = new TH1F(("histPt_mu2_ratio_"+ dataSetName).c_str(), ("histPt_mu2_ratio_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
+      histPt_mu1_ratio = new TH1F(("histPt_mu1_ratio_"+ dataSetName).c_str(), ("histPt_mu1_ratio_" + dataSetName).c_str() , nbin_Pt_lep1, 0., endbin_Pt_lep1);
+      histPt_mu2_ratio = new TH1F(("histPt_mu2_ratio_"+ dataSetName).c_str(), ("histPt_mu2_ratio_" + dataSetName).c_str() , nbin_Pt_lep2, 0., endbin_Pt_lep2);
+      histPt_leadinglep_ratio = new TH1F(("histPt_leadinglep_ratio_"+ dataSetName).c_str(), ("histPt_leadinglep_ratio_" + dataSetName).c_str() , nbin_Pt_lep0, 0., endbin_Pt_lep0);
+      histPt_2ndleadinglep_ratio= new TH1F(("histPt_2ndleadinglep_ratio_"+ dataSetName).c_str(), ("histPt_2ndleadinglep_ratio_" + dataSetName).c_str() , nbin_Pt_lep1, 0., endbin_Pt_lep1);
+      histPt_3dleadinglep_ratio = new TH1F(("histPt_3dleadinglep_ratio_"+ dataSetName).c_str(), ("histPt_3dleadinglep_ratio_" + dataSetName).c_str() , nbin_Pt_lep2, 0., endbin_Pt_lep2);
       
     }
     
+    
+    bool PushBack = true;
+    double bdiscrim  = -5.;
+    double cbdiscrim = -5.;
+    double cldiscrim = -5.;
+    
 
-    TH1F* MuPtSFHisto_mu0 = 0;
-    TH1F* MuPtSFHisto_mu1 = 0;
-    TH1F* MuPtSFHisto_mu2 = 0;
-    if(domuonsfpt){
-      MuPtSFHisto_mu0 = new TH1F(("MuPtSFHisto_mu0_"+ dataSetName).c_str(), ("MuPtSFHisto_mu0_" + dataSetName).c_str() , nbin_MuPtSFHisto_0, 0., endbin_MuPtSFHisto_0);
-      MuPtSFHisto_mu1 = new TH1F(("MuPtSFHisto_mu1_"+ dataSetName).c_str(), ("MuPtSFHisto_mu1_" + dataSetName).c_str() , nbin_MuPtSFHisto_1, 0., endbin_MuPtSFHisto_1);
-      MuPtSFHisto_mu2 = new TH1F(("MuPtSFHisto_mu2_"+ dataSetName).c_str(), ("MuPtSFHisto_mu2_" + dataSetName).c_str() , nbin_MuPtSFHisto_2, 0., endbin_MuPtSFHisto_2);
-    }
+    
     for (int ievt = 0; ievt < endEvent; ievt++)
     {
       ClearObjects(); // put everything to default values
@@ -1500,9 +1573,13 @@ int main(int argc, char* argv[]){
         if( fabs(eta_muon[iMu]) >= 2.4) {continue; }
         
         muon.Clear();
-        double ptmu = pt_muon[iMu]; //*ptSF_muon[iMu];
-        muon.SetPtEtaPhiE(ptmu, eta_muon[iMu], phi_muon[iMu], E_muon[iMu]);
-        
+       
+        muon.SetPtEtaPhiE(pt_muon[iMu], eta_muon[iMu], phi_muon[iMu], E_muon[iMu]);
+        if(dorochester && !isfakes){
+          double ptmu = pt_muon[iMu];
+          ptmu = RochLeptonMatching(muon, mcParticles, isData, TrackLayers_muon[iMu],charge_muon[iMu], isNP, 0) * pt_muon[iMu] ; //*ptSF_muon[iMu];
+          muon.SetPtEtaPhiE(ptmu, eta_muon[iMu], phi_muon[iMu], E_muon[iMu]);
+        }
         selectedMuons.push_back(muon);
         selectedMuonsCharge.push_back(charge_muon[iMu]);
         selectedLeptons.push_back(muon);
@@ -1540,11 +1617,11 @@ int main(int argc, char* argv[]){
       tempHt_jet = 0.;
       tempPy_jet = 0.;
       tempPx_jet = 0.;
-      bool PushBack = true;
+      PushBack = true;
       tempInvMassObj_jet.Clear();
-      double bdiscrim  = -5.;
-      double cbdiscrim = -5.;
-      double cldiscrim = -5.;
+      bdiscrim  = -5.;
+      cbdiscrim = -5.;
+      cldiscrim = -5.;
       
       for(unsigned int iJet = 0; iJet < nJets ; iJet++){
         if(pt_jet[iJet] < 30. ) continue;
@@ -1622,10 +1699,10 @@ int main(int argc, char* argv[]){
       if(mWT2 > 300.) continue;  // temp fix
      // if(met_Pt < 50. ) continue;
       
-      
+      /*
       for( int iJ = 0; iJ < selectedCSVLJetID.size(); iJ++){
         if( (bdisc_jet[selectedCSVLJetID[iJ]] <= WPb_L) && isfakes) cout << "is not loose b !! " << bdiscrim << " <= " << WPb_L << endl;
-      }
+      }*/
       MVA_TotalHt = tempHt + met_Pt;
       MVA_TotalPt = sqrt(tempPx*tempPx + tempPy*tempPx);
       MVA_TotalInvMass = tempInvMassObj.M();
@@ -1640,9 +1717,9 @@ int main(int argc, char* argv[]){
       bool twolepregion = false;
       if(selectedLeptons.size() == 3)  threelepregion = true;
       if(selectedElectrons.size() > 1 || selectedMuons.size() > 1) twolepregion = true;
-      if(! threelepregion && ! twolepregion ) continue;
-      if(selectedElectrons.size() != nbOfLooseElectrons ) continue;
-      if(selectedMuons.size() != nbOfLooseMuons ) continue;
+      if(! threelepregion && ! twolepregion && !domuonsfpt ) continue;
+      if(selectedElectrons.size() != nbOfLooseElectrons && !domuonsfpt ) continue;
+      if(selectedMuons.size() != nbOfLooseMuons && !domuonsfpt ) continue;
 
       
      // cout << "in assigner" <<endl;
@@ -1651,7 +1728,7 @@ int main(int argc, char* argv[]){
       
       LeptonAssigner(selectedElectrons, selectedMuons,selectedElectronsCharge ,selectedMuonsCharge);
       //cout << "WmuIndiceF " << WmuIndiceF <<" WelecIndiceF "<< WelecIndiceF <<" ZmuIndiceF_1 "<< ZmuIndiceF_1 <<" ZmuIndiceF_0 "<< ZmuIndiceF_0 <<" ZelecIndiceF_0 "<< ZelecIndiceF_0 <<" ZelecIndiceF_1 "<< ZelecIndiceF_1 << endl;
-      if(!Assigned) continue;
+      if(!Assigned ) continue;
       //cout << "in reco" << endl;
       ReconstructObjects(selectedJetsID, selectedMuons, selectedElectrons, selectedJets, Region, threelepregion);
     
@@ -1686,7 +1763,7 @@ int main(int argc, char* argv[]){
       muonSFtemp = 1.;
       electronSFtemp = 1.;
       puSF = 1.;
-      double eventweight_ = 1.;
+      eventweight_ = 1.;
       
       if (! isData && !isfakes)
       {
@@ -1705,70 +1782,45 @@ int main(int argc, char* argv[]){
             }
             else {
              // scaleFactor *= MuonIDSF[iMu] * MuonIsoSF[iMu]*ptSF_muon[iMu] ;
-              scaleFactor *= MuonIDSF[iMu] * MuonIsoSF[iMu] * MuonTrackSF[iMu];
+              scaleFactor *= MuonIDSF[iMu] * MuonIsoSF[iMu] ;//* MuonTrackSF[iMu];
               //muonSFtemp *= MuonIDSF[iMu] * MuonIsoSF[iMu]*ptSF_muon[ ;
-              muonSFtemp *= MuonIDSF[iMu] * MuonIsoSF[iMu] * MuonTrackSF[iMu];// TO FIX
+              muonSFtemp *= MuonIDSF[iMu] * MuonIsoSF[iMu];// * MuonTrackSF[iMu];// TO FIX
             }
-            
-            if(applymuonsfpt){
-              if(domuonsfpt){
-                muonptscalefactorsfile = TFile::Open( muonptscalefactorsfilename.c_str(), "READ" );
-                
-                int xbin=-5;
-                double muonptsf_1, muonptsf_2, muonptsf_0;
-                if(selectedMuons.size()>0){
-                  xbin = ((TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu0_SF")))->FindBin(selectedMuons[0].Pt());
-                  muonptsf_0 = ((TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu0_SF")))->GetBinContent(xbin);
-                }
-                else muonptsf_0 = 1.;
-                if(selectedMuons.size()>1){
-                    xbin = ((TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu1_SF")))->FindBin(selectedMuons[1].Pt());
-                    muonptsf_1 = ((TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu1_SF")))->GetBinContent(xbin);
-                }
-                 else muonptsf_1 = 1.;
-                if(selectedMuons.size()>2){
-                  xbin = ((TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu2_SF")))->FindBin(selectedMuons[2].Pt());
-                  muonptsf_2 = ((TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu2_SF")))->GetBinContent(xbin);
-                }
-                else  muonptsf_2 = 1.;
-                
-                
-                scaleFactor *= muonptsf_0 * muonptsf_1 * muonptsf_2;
-              
-                muonptscalefactorsfile->Close();
-              }
-
-              
-            }
-            
-            scaleFactor_muonSF_up *= MuonIDSF_up[iMu] * MuonIsoSF_up[iMu] * (MuonTrackSF[iMu]*1.01 );
-            scaleFactor_muonSF_down *= MuonIDSF_down[iMu] * MuonIsoSF_down[iMu] * (MuonTrackSF[iMu]*0.99 ) ;
-          /*  scaleFactor_electronSF_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu]* MuonTrackSF[iMu] ;
-            scaleFactor_electronSF_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu] *MuonTrackSF[iMu];
-            scaleFactor_puSF_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu]* MuonTrackSF[iMu] ;
-            scaleFactor_puSF_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu]* MuonTrackSF[iMu] ;
-            scaleFactor_btagSF_lfstats2_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu] * MuonTrackSF[iMu];
-            scaleFactor_btagSF_lfstats2_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu]* MuonTrackSF[iMu] ;
-            scaleFactor_btagSF_lfstats1_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu]* MuonTrackSF[iMu] ;
-            scaleFactor_btagSF_lfstats1_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu] * MuonTrackSF[iMu];
-            scaleFactor_btagSF_lf_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu]* MuonTrackSF[iMu] ;
-            scaleFactor_btagSF_lf_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu]* MuonTrackSF[iMu] ;
-            scaleFactor_btagSF_hfstats2_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu] * MuonTrackSF[iMu];
-            scaleFactor_btagSF_hfstats2_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu] * MuonTrackSF[iMu];
-            scaleFactor_btagSF_hfstats1_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu] * MuonTrackSF[iMu];
-            scaleFactor_btagSF_hfstats1_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu]* MuonTrackSF[iMu] ;
-            scaleFactor_btagSF_hf_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu]* MuonTrackSF[iMu] ;
-            scaleFactor_btagSF_hf_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu]* MuonTrackSF[iMu] ;
-            scaleFactor_btagSF_cferr2_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu]* MuonTrackSF[iMu] ;
-            scaleFactor_btagSF_cferr2_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu] * MuonTrackSF[iMu];
-            scaleFactor_btagSF_cferr1_up *=  MuonIDSF[iMu] * MuonIsoSF[iMu] * MuonTrackSF[iMu];
-            scaleFactor_btagSF_cferr1_down *=  MuonIDSF[iMu] * MuonIsoSF[iMu] * MuonTrackSF[iMu];*/
-            
-           /* cout << "iMu " << iMu << " MuonIDSF[iMu] " << MuonIDSF[0] << " MuonIsoSF[iMu] " << MuonIsoSF[0] << endl;
-            cout << "iMu " << iMu << " MuonIDSF[iMu] " << MuonIDSF_up[0] << " MuonIsoSF[iMu] " << MuonIsoSF_up[0] << endl;
-            cout << "iMu " << iMu << " MuonIDSF[iMu] " << MuonIDSF_down[0] << " MuonIsoSF[iMu] " << MuonIsoSF_down[0] << endl;*/
+            scaleFactor_muonSF_up *= MuonIDSF_up[iMu] * MuonIsoSF_up[iMu];// * (MuonTrackSF[iMu]*1.01 );
+            scaleFactor_muonSF_down *= MuonIDSF_down[iMu] * MuonIsoSF_down[iMu];// * (MuonTrackSF[iMu]*0.99 ) ;
           }
-          //cout << "muon  SF " << muonSFtemp << endl;
+          if(applymuonsfpt && !dorochester){
+            if(selectedMuons.size()>0){
+              //cout << "MuPtSFHisto0 " << MuPtSFHisto0 << " pt " << selectedMuons[0].Pt() << endl;
+              if(selectedMuons[0].Pt() > (double) endbin_MuPtSFHisto_0) xbinmuonpt = ((TH1F*) MuPtSFHisto0)->FindBin(((double) endbin_MuPtSFHisto_0)-0.01);
+              else xbinmuonpt = ((TH1F*) MuPtSFHisto0)->FindBin(selectedMuons[0].Pt());
+              //cout << "xbin " << xbinmuonpt << endl;
+              muonptsf_0 = MuPtSFHisto0->GetBinContent(xbinmuonpt);
+            }
+            else muonptsf_0 = 1.;
+            if(selectedMuons.size()>1){
+              
+              if(selectedMuons[1].Pt() > (double) endbin_MuPtSFHisto_1) xbinmuonpt = ((TH1F*) MuPtSFHisto1)->FindBin(((double) endbin_MuPtSFHisto_1 )-0.01);
+              else xbinmuonpt = ((TH1F*) MuPtSFHisto0)->FindBin(selectedMuons[1].Pt());
+              
+              muonptsf_1 = MuPtSFHisto1->GetBinContent(xbinmuonpt);
+            }
+            else muonptsf_1 = 1.;
+            if(selectedMuons.size()>2){
+              if(selectedMuons[2].Pt() > (double) endbin_MuPtSFHisto_2) xbinmuonpt = ((TH1F*) MuPtSFHisto2)->FindBin(((double) endbin_MuPtSFHisto_2 )-0.01);
+              else xbinmuonpt = ((TH1F*) MuPtSFHisto2)->FindBin(selectedMuons[2].Pt());
+              
+              muonptsf_2 =MuPtSFHisto2->GetBinContent(xbinmuonpt);
+            }
+            else  muonptsf_2 = 1.;
+            
+            //cout << "scalefactor before " << scaleFactor << endl;
+            scaleFactor *= muonptsf_0 * muonptsf_1 * muonptsf_2;
+            //cout << "scalefactor after " << scaleFactor << endl;
+            muonSFtemp *= muonptsf_0 * muonptsf_1 * muonptsf_2;
+            if(scaleFactor < 0) cout << "error something went wrong" << endl;
+            
+          }
         }
         else muonSFtemp = 1.;
         
@@ -1791,30 +1843,6 @@ int main(int argc, char* argv[]){
             }
             scaleFactor_electronSF_up *= ElectronSF_up[iEl] ;
             scaleFactor_electronSF_down *= ElectronSF_down[iEl] ;
-            
-            
-            /*
-            scaleFactor_muonSF_down *=ElectronSF[iEl] ;
-            scaleFactor_muonSF_up *=ElectronSF[iEl] ;
-            scaleFactor_puSF_down *= ElectronSF[iEl] ;
-            scaleFactor_puSF_up *= ElectronSF[iEl] ;
-            scaleFactor_btagSF_lfstats2_up *= ElectronSF[iEl] ;
-            scaleFactor_btagSF_lfstats2_down *= ElectronSF[iEl] ;
-            scaleFactor_btagSF_lfstats1_up *= ElectronSF[iEl] ;
-            scaleFactor_btagSF_lfstats1_down *= ElectronSF[iEl] ;
-            scaleFactor_btagSF_lf_up *= ElectronSF[iEl] ;
-            scaleFactor_btagSF_lf_down *= ElectronSF[iEl] ;
-            scaleFactor_btagSF_hfstats2_up *= ElectronSF[iEl] ;
-            scaleFactor_btagSF_hfstats2_down *= ElectronSF[iEl] ;
-            scaleFactor_btagSF_hfstats1_up *= ElectronSF[iEl] ;
-            scaleFactor_btagSF_hfstats1_down *= ElectronSF[iEl] ;
-            scaleFactor_btagSF_hf_up *= ElectronSF[iEl] ;
-            scaleFactor_btagSF_hf_down *= ElectronSF[iEl] ;
-            scaleFactor_btagSF_cferr2_up *= ElectronSF[iEl] ;
-            scaleFactor_btagSF_cferr2_down *= ElectronSF[iEl] ;
-            scaleFactor_btagSF_cferr1_up *= ElectronSF[iEl] ;
-            scaleFactor_btagSF_cferr1_down *= ElectronSF[iEl] ;*/
-            
           }
           
         }
@@ -1830,27 +1858,7 @@ int main(int argc, char* argv[]){
           
           
           
-          scaleFactor_muonSF_down *=puSF ;
-          scaleFactor_muonSF_up *=puSF ;
-          
-          scaleFactor_electronSF_down *= puSF ;
-          scaleFactor_electronSF_up *= puSF ;
-          scaleFactor_btagSF_lfstats2_up *= puSF ;
-          scaleFactor_btagSF_lfstats2_down *= puSF ;
-          scaleFactor_btagSF_lfstats1_up *= puSF ;
-          scaleFactor_btagSF_lfstats1_down *= puSF ;
-          scaleFactor_btagSF_lf_up *= puSF ;
-          scaleFactor_btagSF_lf_down *= puSF ;
-          scaleFactor_btagSF_hfstats2_up *= puSF ;
-          scaleFactor_btagSF_hfstats2_down *= puSF ;
-          scaleFactor_btagSF_hfstats1_up *= puSF ;
-          scaleFactor_btagSF_hfstats1_down *= puSF ;
-          scaleFactor_btagSF_hf_up *= puSF ;
-          scaleFactor_btagSF_hf_down *= puSF ;
-          scaleFactor_btagSF_cferr2_up *= puSF ;
-          scaleFactor_btagSF_cferr2_down *= puSF ;
-          scaleFactor_btagSF_cferr1_up *= puSF ;
-          scaleFactor_btagSF_cferr1_down *= puSF ;
+
           
           //if(ievt == 2)cout << "                - applying pu factors " << endl;
         }
@@ -1875,48 +1883,13 @@ int main(int argc, char* argv[]){
           scaleFactor_btagSF_lfstats1_up*= btagSFshape_up_lfstats1  ;
           scaleFactor_btagSF_lfstats2_down*= btagSFshape_down_lfstats2  ;
           scaleFactor_btagSF_lfstats2_up*= btagSFshape_up_lfstats2  ;
-          // if(ievt == 2)cout << "                - applying btag factors " << endl;
-          
-          
-          /*scaleFactor_muonSF_down *=btagSFshape ;
-          scaleFactor_muonSF_up *=btagSFshape ;
-          scaleFactor_electronSF_down *= btagSFshape ;
-          scaleFactor_electronSF_up *= btagSFshape ;
-          scaleFactor_puSF_down *= btagSFshape ;
-          scaleFactor_puSF_up *= btagSFshape ;*/
+
 
         }
         else btagSFshape = 1.;
         
         if (applyNloSF && isAMC) {
           scaleFactor *= nloWeight * nloSF;
-          
-          /*
-          scaleFactor_muonSF_down *=nloweight * nloSF ;
-          scaleFactor_muonSF_up *=nloweight * nloSF ;
-          scaleFactor_puSF_down *= nloweight * nloSF;
-          scaleFactor_puSF_up *= nloweight * nloSF;
-          scaleFactor_electronSF_down *= nloweight * nloSF ;
-          scaleFactor_electronSF_up *= nloweight * nloSF ;
-          scaleFactor_btagSF_lfstats2_up *= nloweight * nloSF ;
-          scaleFactor_btagSF_lfstats2_down *= nloweight * nloSF ;
-          scaleFactor_btagSF_lfstats1_up *= nloweight * nloSF ;
-          scaleFactor_btagSF_lfstats1_down *= nloweight * nloSF ;
-          scaleFactor_btagSF_lf_up *= nloweight * nloSF ;
-          scaleFactor_btagSF_lf_down *= nloweight * nloSF ;
-          scaleFactor_btagSF_hfstats2_up *= nloweight * nloSF ;
-          scaleFactor_btagSF_hfstats2_down *= nloweight * nloSF ;
-          scaleFactor_btagSF_hfstats1_up *= nloweight * nloSF ;
-          scaleFactor_btagSF_hfstats1_down *= nloweight * nloSF ;
-          scaleFactor_btagSF_hf_up *= nloweight * nloSF ;
-          scaleFactor_btagSF_hf_down *= nloweight * nloSF ;
-          scaleFactor_btagSF_cferr2_up *= nloweight * nloSF ;
-          scaleFactor_btagSF_cferr2_down *= nloweight * nloSF ;
-          scaleFactor_btagSF_cferr1_up *= nloweight * nloSF ;
-          scaleFactor_btagSF_cferr1_down *= nloweight * nloSF ;*/
-          
-          
-          // if(ievt == 2) cout << "                - applying nlo factors " << endl;
         }  // additional SF due to number of events with neg weight!!
         
         scaleFactor_bfBT = scaleFactor/btagSFshape;
@@ -1992,73 +1965,82 @@ int main(int argc, char* argv[]){
       
       
      // cout << "twolepregion" << " " << twolepregion << " " << "threelepregion" << " " <<  threelepregion << endl;
-      if (makePlots)
+      if (makePlots && !domuonsfpt)
       {
         //cout << "ievt " << ievt << endl;
         //FillGeneralPlots(d, "control_afterAtLeast1Jet", decayChannels, isData, isfakes, threelepregion, twolepregion);
         //if(dataSetName.find("WZTo3LNu")!=std::string::npos) Fill1DPlots(dataSetName);
-        if(dataSetName.find("WZJTo3LNu")!=std::string::npos && twolepregion ) Fill1DPlots(dataSetName, eventweight_, threelepregion,twolepregion);
+        //if(threelepregion &&dataSetName.find("WZJTo3LNu")!=std::string::npos  ) Fill1DPlots(dataSetName, eventweight_, threelepregion,twolepregion);
         
         //if(dataSetName.find("tZq")!=std::string::npos){ Fill1DPlots(dataSetName);}
         
       }
       //cout << "zmass" << endl;
       if(Zboson.M() < 76 || Zboson.M() > 106) continue;
+
       
-      
-      if( domuonsfpt && twolepregion){
-        if(selectedMuons.size()>0) MuPtSFHisto_mu0 -> Fill(selectedMuons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
-        if(selectedMuons.size()>1) MuPtSFHisto_mu1 -> Fill(selectedMuons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
-        if(selectedMuons.size()>2) MuPtSFHisto_mu2 -> Fill(selectedMuons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
-        if(!isData){
+      if( domuonsfpt && (selectedElectrons.size()+selectedMuons.size()) > 0){
+        if(isData){
+          if(selectedMuons.size()>0) MuPtSFHisto_mu0_data -> Fill(selectedMuons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
+          if(selectedMuons.size()>1) MuPtSFHisto_mu1_data -> Fill(selectedMuons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
+          if(selectedMuons.size()>2) MuPtSFHisto_mu2_data -> Fill(selectedMuons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
+        }
+        if(!isData && dataSetName.find("NP_overlay")==std::string::npos){
          if(selectedMuons.size()>0) MuPtSFHisto_mu0_sum -> Fill(selectedMuons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
          if(selectedMuons.size()>1) MuPtSFHisto_mu1_sum -> Fill(selectedMuons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
          if(selectedMuons.size()>2) MuPtSFHisto_mu2_sum -> Fill(selectedMuons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
         }
       }
       
-      if (makePlots)
+      if(domuonsfpt) continue;
+      
+      if (makePlots && !domuonsfpt)
       {
         FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow", decayChannels,isData, isfakes, threelepregion, twolepregion);
         
         
       }
       
-      if(selectednonCSVLJetID.size()>0 && makePlots){
+      if(selectednonCSVLJetID.size()>0 && makePlots ){
        // FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels,isData, isfakes, threelepregion, twolepregion);
         
       }
       
       // from here only 3lep analysis !!!!
-      
+      if(twolepregion){ nSelectedEntriesDilep++; nSelectedEntriesDilepweighted += scaleFactor*Luminosity/EquilumiSF;}
       if((selectedMuons.size()+selectedElectrons.size())!= 3) continue;
+      if(!threelepregion) cout << "WARNING something went wrong with threelep region" << endl; 
       bool matcher = false;
       if(check_matching) matcher = MatchingFunction(dataSetName, selectedLeptons, selectedMuons, selectedElectrons, selectedJets,makeMatchingPlots, debugmatching);
       if(matcher && debugmatching) cout << " done with matching " << endl;
       
       // Signal regions and background region
-      
-      if(selectedJets.size() == 1 && selectedCSVLJetID.size() > 0){ Region = 0; nSelectedEntriesST++; } // ST region
-      else if(selectedJets.size() > 1 && selectedCSVLJetID.size() == 1){ Region = 1; nSelectedEntriesTT++;} // ttbar region
-      else if(selectedJets.size() >0 && selectedCSVLJetID.size() == 0){ Region = 2; nSelectedEntriesWZ++;}// WZ control region
-      else if(selectedJets.size() >1 && selectedCSVLJetID.size() > 1){ Region = 3; nSelectedEntriesTTZ++;}// ttZ control region
-      else {continue; }
+      bool selected = false;
+      if(selectedJets.size() == 1 && selectedCSVLJetID.size() > 0){ Region = 0; nSelectedEntriesST++; selected = true;} // ST region
+      if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0){ Region = 1; nSelectedEntriesTT++; selected = true;} // ttbar region
+      if(selectedJets.size() >0 && selectedCSVLJetID.size() == 0){ Region = 2; nSelectedEntriesWZ++; selected = true;}// WZ control region
+      if(selectedJets.size() >1 && selectedCSVLJetID.size() > 1){ Region = 3; nSelectedEntriesTTZ++; selected = true;}// ttZ control region
+      if(!selected){continue; }
       
       
       //if(Region == 2 && (isData || dataSetName.find("WZ")!=std::string::npos)){
-       if( (isData || dataSetName.find("WZ")!=std::string::npos) && checktrigger){
+      if( (isData || dataSetName.find("WZ")!=std::string::npos) && checktrigger ){
         if(selectedElectrons.size()>0) histPt_el0_noTrig -> Fill(selectedElectrons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
         if(selectedElectrons.size()>1) histPt_el1_noTrig -> Fill(selectedElectrons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
         if(selectedElectrons.size()>2) histPt_el2_noTrig -> Fill(selectedElectrons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
         if(selectedMuons.size()>0) histPt_mu0_noTrig -> Fill(selectedMuons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
         if(selectedMuons.size()>1) histPt_mu1_noTrig -> Fill(selectedMuons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
         if(selectedMuons.size()>2) histPt_mu2_noTrig -> Fill(selectedMuons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
-         
-         for(int iLep = 0; iLep < selectedLeptons.size() ; iLep++) {
-           histPt_noTrig->Fill(selectedLeptons[iLep].Pt(), scaleFactor*Luminosity/EquilumiSF);
-           if(PassedTrigger) histPt->Fill(selectedLeptons[iLep].Pt(), scaleFactor*Luminosity/EquilumiSF);
-         }
-       
+        
+        for(int iLep = 0; iLep < selectedLeptons.size() ; iLep++) {
+          histPt_noTrig->Fill(selectedLeptons[iLep].Pt(), scaleFactor*Luminosity/EquilumiSF);
+          if(PassedTrigger) histPt->Fill(selectedLeptons[iLep].Pt(), scaleFactor*Luminosity/EquilumiSF);
+        }
+        
+        histPt_leadinglep_noTrig->Fill(selectedLeptons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
+        histPt_2ndleadinglep_noTrig->Fill(selectedLeptons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
+        histPt_3dleadinglep_noTrig->Fill(selectedLeptons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
+        
         if(PassedTrigger){
           if(selectedElectrons.size()>0) histPt_el0 -> Fill(selectedElectrons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
           if(selectedElectrons.size()>1) histPt_el1 -> Fill(selectedElectrons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
@@ -2066,6 +2048,10 @@ int main(int argc, char* argv[]){
           if(selectedMuons.size()>0) histPt_mu0 -> Fill(selectedMuons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
           if(selectedMuons.size()>1) histPt_mu1 -> Fill(selectedMuons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
           if(selectedMuons.size()>2) histPt_mu2 -> Fill(selectedMuons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
+          
+          histPt_leadinglep->Fill(selectedLeptons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
+          histPt_2ndleadinglep->Fill(selectedLeptons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
+          histPt_3dleadinglep->Fill(selectedLeptons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
           
         }
         
@@ -2087,7 +2073,7 @@ int main(int argc, char* argv[]){
         if(Region == 2 ) nSelectedEntriesWZweighted += scaleFactor*Luminosity/datasets[d]->EquivalentLumi();
         if(Region == 3 ) nSelectedEntriesTTZweighted += scaleFactor*Luminosity/datasets[d]->EquivalentLumi();
       }
-      if((isData || dataSetName.find("WZ")!=std::string::npos)  && checktrigger  ){
+      if((isData || dataSetName.find("WZ")!=std::string::npos)  && checktrigger ){
         myfile << evt_num << endl;
         if(PassedTrigger)  myfiletrigged << evt_num << endl;
         
@@ -2145,6 +2131,9 @@ int main(int argc, char* argv[]){
       histPt_mu0->Write();
       histPt_mu1->Write();
       histPt_mu2->Write();
+      histPt_2ndleadinglep->Write();
+      histPt_3dleadinglep->Write();
+      histPt_leadinglep->Write();
       
       histPt_ratio = (TH1F*) histPt->Clone(("histPt_ratio_"+dataSetName).c_str());
       histPt_ratio->Divide(histPt_noTrig);
@@ -2171,22 +2160,24 @@ int main(int argc, char* argv[]){
       histPt_mu2_ratio->Divide(histPt_mu2_noTrig);
       histPt_mu2_ratio->Write();
       
+      
+      histPt_leadinglep_ratio = (TH1F*) histPt_leadinglep->Clone(("histPt_leadinglep_ratio_"+dataSetName).c_str());
+      histPt_leadinglep_ratio->Divide(histPt_leadinglep_noTrig);
+      histPt_leadinglep_ratio->Write();
+      
+      histPt_2ndleadinglep_ratio = (TH1F*) histPt_2ndleadinglep->Clone(("histPt_2ndleadinglep_ratio_"+dataSetName).c_str());
+      histPt_2ndleadinglep_ratio->Divide(histPt_2ndleadinglep_noTrig);
+      histPt_2ndleadinglep_ratio->Write();
+      
+      histPt_3dleadinglep_ratio = (TH1F*) histPt_3dleadinglep->Clone(("histPt_3dleadinglep_ratio_"+dataSetName).c_str());
+      histPt_3dleadinglep_ratio->Divide(histPt_3dleadinglep_noTrig);
+      histPt_3dleadinglep_ratio->Write();
+      
       triggerEfffile->Write();
       triggerEfffile->Close();
     }
     
-    if(domuonsfpt){
-      if(d == 0) muonptscalefactorsfile = TFile::Open( muonptscalefactorsfilename.c_str(), "RECREATE" );
-      else muonptscalefactorsfile = TFile::Open( muonptscalefactorsfilename.c_str(), "UPDATE" );
-      
-      MuPtSFHisto_mu0->Write();
-      MuPtSFHisto_mu1->Write();
-      MuPtSFHisto_mu2->Write();
-      
-      muonptscalefactorsfile->Write();
-      muonptscalefactorsfile->Close();
-    }
-   
+    
     
     if((isData || dataSetName.find("WZ")!=std::string::npos)  && checktrigger){
       myfile.close();
@@ -2214,22 +2205,39 @@ int main(int argc, char* argv[]){
     cout << "                nSelectedEntries TT region: " << nSelectedEntriesTT << " weighted " << nSelectedEntriesTTweighted << endl;
     cout << "                nSelectedEntries WZ region: " << nSelectedEntriesWZ  << " weighted " << nSelectedEntriesWZweighted << endl;
     cout << "                nSelectedEntries TTZ region: " << nSelectedEntriesTTZ  << " weighted " << nSelectedEntriesTTZweighted << endl;
+    cout << "                nSelectedEntries dilep region: " << nSelectedEntriesDilep  << " weighted " << nSelectedEntriesDilepweighted << endl;
     cout << endl;
     if(check_matching) MatchingEfficiency();
   } // data
   
+ if(applymuonsfpt){
+   delete MuPtSFHisto0;
+   delete MuPtSFHisto1;
+   delete MuPtSFHisto2;
+   muonptscalefactorsfile->Close();
+   delete muonptscalefactorsfile;
+ 
+ }
   
+  TH1F* SumNormal0 =0 ;
+  TH1F* SumNormal1=0 ;
+  TH1F* SumNormal2 =0;
+  TH1F* dataNormal0 = 0;
+  TH1F* dataNormal1 =0 ;
+  TH1F* dataNormal2 =0;
+  TH1F* MuPtSFHisto_mu0_SF=0 ;
+  TH1F* MuPtSFHisto_mu1_SF=0 ;
+  TH1F* MuPtSFHisto_mu2_SF =0;
+
   if(domuonsfpt){
-    muonptscalefactorsfile = TFile::Open( muonptscalefactorsfilename.c_str(), "UPDATE" );
+    muonptscalefactorsfile = TFile::Open( muonptscalefactorsfilename.c_str(), "RECREATE" );
     
-    
-    
-    TH1F* SumNormal0 = (TH1F*) (MuPtSFHisto_mu0_sum)->Clone("SumNormal0");
-    TH1F* SumNormal1 = (TH1F*) (MuPtSFHisto_mu1_sum)->Clone("SumNormal1");
-    TH1F* SumNormal2 = (TH1F*) (MuPtSFHisto_mu2_sum)->Clone("SumNormal2");
-    TH1F* dataNormal0 = (TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu0_data"))->Clone("dataNormal0");
-    TH1F* dataNormal1 = (TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu1_data"))->Clone("dataNormal1");
-    TH1F* dataNormal2 = (TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu2_data"))->Clone("dataNormal2");
+    SumNormal0 = (TH1F*) (MuPtSFHisto_mu0_sum)->Clone("SumNormal0");
+    SumNormal1 = (TH1F*) (MuPtSFHisto_mu1_sum)->Clone("SumNormal1");
+    SumNormal2 = (TH1F*) (MuPtSFHisto_mu2_sum)->Clone("SumNormal2");
+    dataNormal0 = (TH1F*) (MuPtSFHisto_mu0_data)->Clone("dataNormal0");
+    dataNormal1 = (TH1F*) (MuPtSFHisto_mu1_data)->Clone("dataNormal1");
+    dataNormal2 = (TH1F*) (MuPtSFHisto_mu2_data)->Clone("dataNormal2");
    
     
     SumNormal0->Scale(1/SumNormal0->Integral());
@@ -2239,9 +2247,9 @@ int main(int argc, char* argv[]){
     dataNormal1->Scale(1/dataNormal1->Integral());
     dataNormal2->Scale(1/dataNormal2->Integral());
     
-    TH1F* MuPtSFHisto_mu0_SF = (TH1F*) dataNormal0->Clone("MuPtSFHisto_mu0_SF");
-    TH1F* MuPtSFHisto_mu1_SF = (TH1F*) dataNormal1->Clone("MuPtSFHisto_mu1_SF");
-    TH1F* MuPtSFHisto_mu2_SF = (TH1F*) dataNormal2->Clone("MuPtSFHisto_mu2_SF");
+    MuPtSFHisto_mu0_SF = (TH1F*) dataNormal0->Clone("MuPtSFHisto_mu0_SF");
+    MuPtSFHisto_mu1_SF = (TH1F*) dataNormal1->Clone("MuPtSFHisto_mu1_SF");
+    MuPtSFHisto_mu2_SF = (TH1F*) dataNormal2->Clone("MuPtSFHisto_mu2_SF");
     
     MuPtSFHisto_mu0_SF->Divide((TH1F*)SumNormal0);
     MuPtSFHisto_mu1_SF->Divide((TH1F*)SumNormal1);
@@ -2250,6 +2258,9 @@ int main(int argc, char* argv[]){
     muonptscalefactorsfile->cd();
     
     
+    MuPtSFHisto_mu0_data->Write();
+    MuPtSFHisto_mu1_data->Write();
+    MuPtSFHisto_mu2_data->Write();
     
     MuPtSFHisto_mu0_sum->Write();
     MuPtSFHisto_mu1_sum->Write();
@@ -2266,19 +2277,43 @@ int main(int argc, char* argv[]){
     
     muonptscalefactorsfile->Write();
     muonptscalefactorsfile->Close();
+    delete MuPtSFHisto_mu0_data;
+    delete MuPtSFHisto_mu1_data;
+    delete MuPtSFHisto_mu2_data;
+    delete MuPtSFHisto_mu0_sum;
+    delete MuPtSFHisto_mu1_sum;
+    delete MuPtSFHisto_mu2_sum;
+    delete muonptscalefactorsfile;
   }
   
+ // delete dataNormal0;
+  //delete dataNormal1;
+  //delete dataNormal2;
+  //delete MuPtSFHisto_mu0_SF;
+  //delete MuPtSFHisto_mu1_SF;
+  //delete MuPtSFHisto_mu2_SF;
+  //delete SumNormal0;
+  //delete SumNormal2;
+  //delete SumNormal1;
   
   
   if(checktrigger){
   triggerEfffile = TFile::Open( triggerEfffilename.c_str(), "UPDATE" );
   triggerEfffile->cd();
   
+    string tempstr = "all";
+    gStyle->SetOptStat(0);
   TH1F* histPt_MET_SF = (TH1F*) (triggerEfffile->Get("histPt_ratio_data_MET"))->Clone("histPt_MET_SF");
   histPt_MET_SF->Sumw2();
   histPt_MET_SF->Divide( (TH1F*) triggerEfffile->Get("histPt_ratio_WZJTo3LNu_amc_80X"));
+  histPt_MET_SF->SetTitle(("Trigger SF - "+ tempstr + " channel").c_str());
+  histPt_MET_SF->GetXaxis()->SetTitle("p_{T} all leptons");
+  histPt_MET_SF->GetYaxis()->SetTitle("#epsilon(data)/#epsilon(MC)");
+
   histPt_MET_SF->Write();
-  
+  TCanvas* tempC = TCanvasCreator(histPt_MET_SF, "histPt_MET_SF");
+  tempC->SaveAs(("histPt_MET_SF"+tempstr+".png").c_str() );
+    
   
   
   TH1F* histPt_el0_MET_SF = (TH1F*) (triggerEfffile->Get("histPt_el0_ratio_data_MET"))->Clone("histPt_el0_MET_SF");
@@ -2300,17 +2335,55 @@ int main(int argc, char* argv[]){
   histPt_mu0_MET_SF->Sumw2();
   histPt_mu0_MET_SF->Divide( (TH1F*) triggerEfffile->Get("histPt_mu0_ratio_WZJTo3LNu_amc_80X"));
   histPt_mu0_MET_SF->Write();
-  
-  TH1F* histPt_mu1_MET_SF = (TH1F*) (triggerEfffile->Get("histPt_mu1_ratio_data_MET"))->Clone("histPt_mu1_MET_SF");
-  histPt_mu1_MET_SF->Sumw2();
-  histPt_mu1_MET_SF->Divide( (TH1F*) triggerEfffile->Get("histPt_mu1_ratio_WZJTo3LNu_amc_80X"));
-  histPt_mu1_MET_SF->Write();
-  
-  TH1F* histPt_mu2_MET_SF = (TH1F*) (triggerEfffile->Get("histPt_mu2_ratio_data_MET"))->Clone("histPt_mu2_MET_SF");
-  histPt_mu2_MET_SF->Sumw2();
-  histPt_mu2_MET_SF->Divide( (TH1F*) triggerEfffile->Get("histPt_mu2_ratio_WZJTo3LNu_amc_80X"));
-  histPt_mu2_MET_SF->Write();
-  cout << "trigger SF " << histPt_MET_SF->GetBinContent(1) << endl;
+    
+    TH1F* histPt_mu1_MET_SF = (TH1F*) (triggerEfffile->Get("histPt_mu1_ratio_data_MET"))->Clone("histPt_mu1_MET_SF");
+    histPt_mu1_MET_SF->Sumw2();
+    histPt_mu1_MET_SF->Divide( (TH1F*) triggerEfffile->Get("histPt_mu1_ratio_WZJTo3LNu_amc_80X"));
+    histPt_mu1_MET_SF->Write();
+    
+    TH1F* histPt_mu2_MET_SF = (TH1F*) (triggerEfffile->Get("histPt_mu2_ratio_data_MET"))->Clone("histPt_mu2_MET_SF");
+    histPt_mu2_MET_SF->Sumw2();
+    histPt_mu2_MET_SF->Divide( (TH1F*) triggerEfffile->Get("histPt_mu2_ratio_WZJTo3LNu_amc_80X"));
+    histPt_mu2_MET_SF->Write();
+    
+    TH1F* histPt_leadinglep_MET_SF = (TH1F*) (triggerEfffile->Get("histPt_leadinglep_ratio_data_MET"))->Clone("histPt_leadinglep_MET_SF");
+    histPt_leadinglep_MET_SF->Sumw2();
+    histPt_leadinglep_MET_SF->Divide( (TH1F*) (triggerEfffile->Get("histPt_leadinglep_ratio_WZJTo3LNu_amc_80X")));
+    histPt_leadinglep_MET_SF->SetTitle(("Trigger SF - "+ tempstr + " channel").c_str());
+    histPt_leadinglep_MET_SF->GetXaxis()->SetTitle("p_{T} leading lepton");
+    histPt_leadinglep_MET_SF->GetYaxis()->SetTitle("#epsilon(data)/#epsilon(MC)");
+   
+    histPt_leadinglep_MET_SF->Write();
+    tempC = TCanvasCreator(histPt_leadinglep_MET_SF, "histPt_leadinglep_MET_SF");
+    tempC->SaveAs( ("histPt_leadinglep_MET_SF"+tempstr+".png").c_str() );
+    
+    
+    TH1F* histPt_2ndleadinglep_MET_SF = (TH1F*) (triggerEfffile->Get("histPt_2ndleadinglep_ratio_data_MET"))->Clone("histPt_2ndleadinglep_MET_SF");
+    histPt_2ndleadinglep_MET_SF->Sumw2();
+    histPt_2ndleadinglep_MET_SF->Divide( (TH1F*) (triggerEfffile->Get("histPt_2ndleadinglep_ratio_WZJTo3LNu_amc_80X")));
+    histPt_2ndleadinglep_MET_SF->SetTitle(("Trigger SF - "+ tempstr + " channel").c_str());
+    histPt_2ndleadinglep_MET_SF->GetXaxis()->SetTitle("p_{T} 2nd leading lepton");
+    histPt_2ndleadinglep_MET_SF->GetYaxis()->SetTitle("#epsilon(data)/#epsilon(MC)");
+
+    histPt_2ndleadinglep_MET_SF->Write();
+    tempC = TCanvasCreator(histPt_2ndleadinglep_MET_SF, "histPt_2ndleadinglep_MET_SF");
+    tempC->SaveAs( ("histPt_2ndleadinglep_MET_SF"+tempstr+".png").c_str() );
+    
+    
+    TH1F* histPt_3dleadinglep_MET_SF = (TH1F*) (triggerEfffile->Get("histPt_3dleadinglep_ratio_data_MET"))->Clone("histPt_3dleadinglep_MET_SF");
+    histPt_3dleadinglep_MET_SF->Sumw2();
+    histPt_3dleadinglep_MET_SF->Divide( (TH1F*) (triggerEfffile->Get("histPt_3dleadinglep_ratio_WZJTo3LNu_amc_80X")));
+    histPt_3dleadinglep_MET_SF->SetTitle(("Trigger SF - "+ tempstr + " channel").c_str());
+    histPt_3dleadinglep_MET_SF->GetXaxis()->SetTitle("p_{T} 3d leading lepton");
+    histPt_3dleadinglep_MET_SF->GetYaxis()->SetTitle("#epsilon(data)/#epsilon(MC)");
+   
+    histPt_3dleadinglep_MET_SF->Write();
+    tempC = TCanvasCreator(histPt_3dleadinglep_MET_SF, "histPt_3dleadinglep_MET_SF");
+    tempC->SaveAs( ("histPt_3dleadinglep_MET_SF"+tempstr+".png").c_str() );
+    
+    
+    
+    cout << "trigger SF " << histPt_MET_SF->GetBinContent(1) << endl;
   
   triggerEfffile->Write();
   triggerEfffile->Close();
@@ -4933,6 +5006,10 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
         MSPlot[(prefixregion+prefix+"_3dLeadingMuIso_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_3dLeadingMuIso_"+decaystring).c_str(), 10,0,1, "3d Leading muon Iso ");
         MSPlot[(prefixregion+prefix+"_3dLeadingMuPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_3dLeadingMuPhi_"+decaystring).c_str(), 30,-4,4, "3d Leading muon Phi ");
         MSPlot[(prefixregion+prefix+"_3dLeadingMuEta_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_3dLeadingMuEta_"+decaystring).c_str(), 30,-6,6, "3d Leading muon Eta ");
+        
+        MSPlot[(prefixregion+prefix+"_WlepMuEta_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_WlepMuEta_"+decaystring).c_str(), 30,-6,6, "Wlep (muon) Eta ");
+        MSPlot[(prefixregion+prefix+"_WlepMuPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_WlepMuPhi_"+decaystring).c_str(), 30,-4,4, "Wlep (muon) Phi ");
+        MSPlot[(prefixregion+prefix+"_WlepMuPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_WlepMuPt_"+decaystring).c_str(), 25,0,500, "Wlep (muon) Pt ");
       }
       if(decayChannels[iChan] == 0 || decayChannels[iChan] == 1 || decayChannels[iChan] == -9 || decayChannels[iChan] == 4 ){
         MSPlot[(prefixregion+prefix+"_2ndLeadingMuPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_2ndLeadingMuPt_"+decaystring).c_str(), 25, 0, 500, "2nd Leading muon Pt [GeV]");
@@ -4948,7 +5025,11 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
         
         MSPlot[(prefixregion+prefix+"_2ndLeadingMuPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_2ndLeadingMuPhi_"+decaystring).c_str(), 30,-4,4, "2nd Leading muon Phi ");
         
-        
+        if(decayChannels[iChan] == 1  ){
+          MSPlot[(prefixregion+prefix+"_WlepElEta_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_WlepElEta_"+decaystring).c_str(), 30,-6,6, "Wlep (electron) Eta ");
+          MSPlot[(prefixregion+prefix+"_WlepElPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_WlepElPhi_"+decaystring).c_str(), 30,-4,4, "Wlep (electron) Phi ");
+          MSPlot[(prefixregion+prefix+"_WlepElPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_WlepElPt_"+decaystring).c_str(), 25,0,500, "Wlep (electron) Pt ");
+        }
       }
       if(decayChannels[iChan] == 0 || decayChannels[iChan] == 1 || decayChannels[iChan] == 2 || decayChannels[iChan] == -9 || decayChannels[iChan] == 4){
         MSPlot[(prefixregion+prefix+"_LeadingMuPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_LeadingMuPt_"+decaystring).c_str(), 25, 0, 500, "Leading muon Pt [GeV]");
@@ -4967,6 +5048,12 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
         MSPlot[(prefixregion+prefix+"_3dLeadingElEta_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_3dLeadingElEta_"+decaystring).c_str(), 30,-6,6, "3d Leading electron Eta ");
         
         
+        MSPlot[(prefixregion+prefix+"_WlepElEta_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_WlepElEta_"+decaystring).c_str(), 30,-6,6, "Wlep (electron) Eta ");
+        MSPlot[(prefixregion+prefix+"_WlepElPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_WlepElPhi_"+decaystring).c_str(), 30,-4,4, "Wlep (electron) Phi ");
+        MSPlot[(prefixregion+prefix+"_WlepElPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_WlepElPt_"+decaystring).c_str(), 25,0,500, "Wlep (electron) Pt ");
+        
+        
+        
       }
       if(decayChannels[iChan] == 3 || decayChannels[iChan] == 2 || decayChannels[iChan] == -9 || decayChannels[iChan] == 5){
         MSPlot[(prefixregion+prefix+"_2ndLeadingElPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_2ndLeadingElPt_"+decaystring).c_str(), 25, 0, 500, "2nd Leading electron Pt [GeV]");
@@ -4981,6 +5068,12 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
         
         MSPlot[(prefixregion+prefix+"_2ndLeadingElPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_2ndLeadingElPhi_"+decaystring).c_str(), 30,-4,4, "2nd Leading electron Phi ");
         MSPlot[(prefixregion+prefix+"_ZbosonMassEl_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMassEl_"+decaystring).c_str(), 70, 60, 130, "Inv Mass Zboson (electron)");
+        
+        if(decayChannels[iChan] == 2  ){
+          MSPlot[(prefixregion+prefix+"_WlepMuEta_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_WlepMuEta_"+decaystring).c_str(), 30,-6,6, "Wlep (muon) Eta ");
+          MSPlot[(prefixregion+prefix+"_WlepMuPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_WlepMuPhi_"+decaystring).c_str(), 30,-4,4, "Wlep (muon) Phi ");
+          MSPlot[(prefixregion+prefix+"_WlepMuPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_WlepMuPt_"+decaystring).c_str(), 25,0,500, "Wlep (muon) Pt ");
+        }
         
       }
       if(decayChannels[iChan] == 3 || decayChannels[iChan] == 1 || decayChannels[iChan] == 2|| decayChannels[iChan] == -9 || decayChannels[iChan] == 5){
@@ -5418,6 +5511,7 @@ void InitTree(TTree* tree, bool isData, bool isfakes){
   tree->SetBranchAddress("badmueventmu", badmueventmu, &b_badmueventmu);
   tree->SetBranchAddress("badmueventclonemu", badmueventclonemu, &b_badmueventclonemu);
   tree->SetBranchAddress("pt_muon", pt_muon, &b_pt_muon);
+  tree->SetBranchAddress("TrackLayers_muon",TrackLayers_muon, &b_TrackLayers_muon);
   tree->SetBranchAddress("phi_muon", phi_muon, &b_phi_muon);
   tree->SetBranchAddress("eta_muon", eta_muon, &b_eta_muon);
   tree->SetBranchAddress("E_muon", E_muon, &b_E_muon);
@@ -5570,6 +5664,12 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
         //cout << "_3dLeadingElEta_" << eta_electron[electronID[2]] << endl;
         MSPlot[(prefixregion+prefix+"_3dLeadingElEta_"+decaystring).c_str()]->Fill(eta_electron[electronID[2]] , datasets[d], true,eventW*scaleFactor);
         
+        if(WelecIndiceF != -999){
+          MSPlot[(prefixregion+prefix+"_WlepElEta_"+decaystring).c_str()]->Fill(selectedElectrons[WelecIndiceF].Eta(), datasets[d], true,eventW*scaleFactor);
+          MSPlot[(prefixregion+prefix+"_WlepElPhi_"+decaystring).c_str()]->Fill(selectedElectrons[WelecIndiceF].Phi(), datasets[d], true,eventW*scaleFactor);
+          MSPlot[(prefixregion+prefix+"_WlepElPt_"+decaystring).c_str()]->Fill(selectedElectrons[WelecIndiceF].Pt(), datasets[d], true,eventW*scaleFactor);
+        }
+        
       }
       if(selectedElectrons.size()>1 && (decayChannels[iChan]==3 ||decayChannels[iChan]==2 || decayChannels[iChan]==5 || decayChannels[iChan] ==-9) ){
         //cout << "filling " << (prefixregion+prefix+"_2ndLeadingElEta_"+decaystring).c_str() << endl;
@@ -5586,13 +5686,20 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
           
         }
 
-        
+        if(selectedMuons.size()>0 && (decayChannels[iChan]==2 || decayChannels[iChan] ==-9)){
+          if(WmuIndiceF != -999){
+            MSPlot[(prefixregion+prefix+"_WlepMuEta_"+decaystring).c_str()]->Fill(selectedMuons[WmuIndiceF].Eta(), datasets[d], true,eventW*scaleFactor);
+            MSPlot[(prefixregion+prefix+"_WlepMuPhi_"+decaystring).c_str()]->Fill(selectedMuons[WmuIndiceF].Phi(), datasets[d], true,eventW*scaleFactor);
+            MSPlot[(prefixregion+prefix+"_WlepMuPt_"+decaystring).c_str()]->Fill(selectedMuons[WmuIndiceF].Pt(), datasets[d], true,eventW*scaleFactor);
+          }
+        }
       }
       if(selectedElectrons.size()>0 && (decayChannels[iChan]==3 ||decayChannels[iChan]==2 ||decayChannels[iChan]==1 || decayChannels[iChan]==5 || decayChannels[iChan] ==-9)){
         MSPlot[(prefixregion+prefix+"_LeadingElPt_"+decaystring).c_str()]->Fill(selectedElectrons[0].Pt() , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_LeadingElPhi_"+decaystring).c_str()]->Fill(selectedElectrons[0].Phi() , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_LeadingElIso_"+decaystring).c_str()]->Fill(pfIso_electron[electronID[0]] , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_LeadingElEta_"+decaystring).c_str()]->Fill(eta_electron[electronID[0]] , datasets[d], true,eventW*scaleFactor);
+        
       }
       for(int iter = 0; iter < selectedElectrons.size(); iter++){
         MSPlot[(prefixregion+prefix+"_ElPt_"+decaystring).c_str()]->Fill(selectedElectrons[iter].Pt() , datasets[d], true,eventW*scaleFactor);
@@ -5608,7 +5715,15 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
         MSPlot[(prefixregion+prefix+"_3dLeadingMuPhi_"+decaystring).c_str()]->Fill(selectedMuons[2].Phi() , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_3dLeadingMuIso_"+decaystring).c_str()]->Fill(pfIso_muon[muonID[2]] , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_3dLeadingMuPt_"+decaystring).c_str()]->Fill(selectedMuons[2].Pt() , datasets[d], true,eventW*scaleFactor);
-         MSPlot[(prefixregion+prefix+"_3dLeadingMuEta_"+decaystring).c_str()]->Fill(selectedMuons[2].Eta() , datasets[d], true,eventW*scaleFactor);
+        MSPlot[(prefixregion+prefix+"_3dLeadingMuEta_"+decaystring).c_str()]->Fill(selectedMuons[2].Eta() , datasets[d], true,eventW*scaleFactor);
+        
+        
+        if(WmuIndiceF != -999){
+          MSPlot[(prefixregion+prefix+"_WlepMuEta_"+decaystring).c_str()]->Fill(selectedMuons[WmuIndiceF].Eta(), datasets[d], true,eventW*scaleFactor);
+          MSPlot[(prefixregion+prefix+"_WlepMuPhi_"+decaystring).c_str()]->Fill(selectedMuons[WmuIndiceF].Phi(), datasets[d], true,eventW*scaleFactor);
+          MSPlot[(prefixregion+prefix+"_WlepMuPt_"+decaystring).c_str()]->Fill(selectedMuons[WmuIndiceF].Pt(), datasets[d], true,eventW*scaleFactor);
+        }
+       
       }
       if(selectedMuons.size()>1 && (decayChannels[iChan] == 0 || decayChannels[iChan] == 1 || decayChannels[iChan]==4 || decayChannels[iChan] ==-9)){
         MSPlot[(prefixregion+prefix+"_2ndLeadingMuPhi_"+decaystring).c_str()]->Fill(selectedMuons[1].Phi() , datasets[d], true,eventW*scaleFactor);
@@ -5622,6 +5737,11 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
           MSPlot[(prefixregion+prefix+"_ZbosonMudR_"+decaystring).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedMuons[ZmuIndiceF_0],selectedMuons[ZmuIndiceF_1]),datasets[d], true,eventW*scaleFactor) ;
           MSPlot[(prefixregion+prefix+"_ZbosonPtMu_"+decaystring).c_str()]->Fill(Zboson.Pt(),datasets[d], true,eventW*scaleFactor) ;
           MSPlot[(prefixregion+prefix+"_ZbosonMassMu_"+decaystring).c_str()]->Fill(Zboson.M(),datasets[d], true,eventW*scaleFactor) ;
+        }
+        if(WelecIndiceF != -999 && selectedElectrons.size() > 0 && (decayChannels[iChan]==1 || decayChannels[iChan] ==-9)){
+          MSPlot[(prefixregion+prefix+"_WlepElEta_"+decaystring).c_str()]->Fill(selectedElectrons[WelecIndiceF].Eta(), datasets[d], true,eventW*scaleFactor);
+          MSPlot[(prefixregion+prefix+"_WlepElPhi_"+decaystring).c_str()]->Fill(selectedElectrons[WelecIndiceF].Phi(), datasets[d], true,eventW*scaleFactor);
+          MSPlot[(prefixregion+prefix+"_WlepElPt_"+decaystring).c_str()]->Fill(selectedElectrons[WelecIndiceF].Pt(), datasets[d], true,eventW*scaleFactor);
         }
       }
       if(selectedMuons.size()>0 && ( decayChannels[iChan] == 0 || decayChannels[iChan] == 1 || decayChannels[iChan] == 2 || decayChannels[iChan]==4 || decayChannels[iChan] ==-9)){
@@ -6748,6 +6868,101 @@ void EventSearcher(vector < TLorentzVector> mcParticles, string dataSetName, boo
     cout << "foundSMb "<< foundSMb <<" foundSMel "<< foundSMel <<" foundSMmu "<< foundSMmu << endl;
     
   }
+  
+}
+Double_t RochLeptonMatching(TLorentzVector selectedlepton, vector <TLorentzVector> mcParticles, bool isData, double nbtracks, int chargelep, bool isNP, bool debug){
+  if(debug) cout << "in rochester " << endl;
+  
+  mcParticlesroch.clear();
+  if(!isData){
+    for (int iMC = 0; iMC < nMCParticles; iMC++)
+    {
+      mcpart.Clear();
+      mcpart.SetPtEtaPhiE(mc_pt[iMC], mc_eta[iMC],mc_phi[iMC],mc_E[iMC]);
+      mcParticlesroch.push_back(mcpart);
+    }
+    if(mcParticlesroch.size() != nMCParticles){cout << "ERROR mcP roch not filled correctly" << endl;  }
+    
+  }
+  
+  if(debug) cout << "nb of mc particles " << mcParticlesroch.size() << endl;
+  
+  
+  //vector <TLorentzVector> partonsrochester;
+  partonsrochester.clear();
+  double rocsf = 1.;
+  
+  
+  if(isData){
+    rocsf = rc.kScaleDT(chargelep, selectedlepton.Pt(), selectedlepton.Eta(), selectedlepton.Phi(), 0, 0);
+  }
+  else if(isNP){
+    rocsf = rc.kScaleAndSmearMC(chargelep,selectedlepton.Pt(),selectedlepton.Eta(), selectedlepton.Phi(), nbtracks, gRandom->Rndm(), gRandom->Rndm(), 0, 0);
+  }
+  else{
+    if(debug) cout << "loop over mc particles " << endl;
+    for (unsigned int iMC = 0; iMC < mcParticlesroch.size(); iMC++)
+    {
+      if ( (mc_status[iMC] > 1 && mc_status[iMC] <= 20) || mc_status[iMC] >= 30 ) continue;  /// Final state particle or particle from hardest process
+      if( abs(mc_pdgId[iMC]) ==  13  ){
+        partonsrochester.push_back(mcParticlesroch[iMC]);
+      } // muons
+    }
+    //vector <TLorentzVector> selectedleps;
+    selectedleps.clear();
+    selectedleps.push_back(selectedlepton);
+    
+    JetPartonMatching matchingToollep = JetPartonMatching(partonsrochester, selectedleps,2,true,true,0.1 );
+    
+    if(debug)  cout << "mu parton matching done " << endl;
+    if(debug)  cout << matchingToollep.getNumberOfAvailableCombinations() << endl;
+    
+    if (matchingToollep.getNumberOfAvailableCombinations() != 1)
+      cerr << "matching.getNumberOfAvailableCombinations() = " << matchingToollep.getNumberOfAvailableCombinations() << " .  This should be equal to 1 !!!" << endl;
+    
+    
+    /// Fill match in JetPartonPair;
+    vector< pair<unsigned int, unsigned int> > lepPartonPair; // First one is jet number, second one is mcParticle number
+    lepPartonPair.clear();
+    
+    
+    for (unsigned int i = 0; i < partonsrochester.size(); i++)
+    {
+      int matchedlepNumber = matchingToollep.getMatchForParton(i, 0);
+      //cout << "matchedlepnb " <<matchedlepNumber << endl;
+      if (matchedlepNumber > -1)
+        lepPartonPair.push_back( pair<unsigned int, unsigned int> (matchedlepNumber, i) );
+      // matched lep number is nb in selectedlep collection
+      // i is nb in partons
+      // partonID contains place in mcParticles vector
+    }
+    if(debug) cout << "pushing back partons" << endl;
+    if(debug) cout << "nb of leptonparton pairs " << lepPartonPair.size() << endl;
+    if(lepPartonPair.size()>0){
+      for (unsigned int i = 0; i < lepPartonPair.size(); i++)
+      {
+        unsigned int ipart = lepPartonPair[i].second; // place in mcParticles vector
+        // unsigned int particlenb = lepPartonPair[i].first;  // place in selectedLeptons vector
+        
+        double deltaR = sqrt(pow(selectedlepton.Eta()-partonsrochester[ipart].Eta(),2) + pow(selectedlepton.Phi()-partonsrochester[ipart].Phi(),2));
+        if(deltaR<0.1){
+          rocsf = rc.kScaleFromGenMC(chargelep,selectedlepton.Pt(),selectedlepton.Eta(), selectedlepton.Phi(), nbtracks, partonsrochester[ipart].Pt(), gRandom->Rndm(), 0, 0);
+        }
+        else {
+          rocsf = rc.kScaleAndSmearMC(chargelep,selectedlepton.Pt(),selectedlepton.Eta(), selectedlepton.Phi(), nbtracks, gRandom->Rndm(), gRandom->Rndm(), 0, 0);
+        }
+      }
+    }
+    else{
+      if(debug) cout << "didn't found match" << endl;
+      rocsf = rc.kScaleAndSmearMC(chargelep,selectedlepton.Pt(),selectedlepton.Eta(), selectedlepton.Phi(), nbtracks, gRandom->Rndm(), gRandom->Rndm(), 0, 0);
+    }
+  }
+  
+  
+  
+  if(debug) cout << "in rochester sf is: "  << rocsf << endl;
+  return rocsf;
   
 }
 
