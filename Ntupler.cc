@@ -30,7 +30,6 @@
 //user code
 
 #include "Math/PtEtaPhiE4D.h"
-#include "rochester/RoccoR.cc"
 #include "TopTreeProducer/interface/TRootRun.h"
 #include "TopTreeProducer/interface/TRootEvent.h"
 #include "TopTreeAnalysisBase/Selection/interface/Run2Selection.h"
@@ -137,7 +136,6 @@ double M_el = 0.000510999; // 0.510998910 Mev/c^2
 pair< vector< pair<unsigned int, unsigned int>>, vector <string> >   LeptonMatcherPair;
 pair< vector< pair<unsigned int, unsigned int>>, vector <string> >   JetMatcherPair;
 pair< vector< pair<unsigned int, unsigned int>>, vector <string> >   ObjectMatcherPair;
-
 int main (int argc, char *argv[])
 {
   
@@ -187,6 +185,7 @@ int main (int argc, char *argv[])
   
   bool doFakeLepton  =false;
   
+  bool only3lepsaved = false;
   
   //////////////////////////////////////////////
   /// Set up everything for local submission ////
@@ -223,11 +222,12 @@ int main (int argc, char *argv[])
   const float PreselEff 	  = strtod(argv[10], NULL);
   string fileName		  = argv[11];
   // if there only two arguments after the fileName, the jobNum will be set to 0 by default as an integer is expected and it will get a string (lastfile of the list)
-  const int JES                 =  strtol(argv[argc-8], NULL,10);
-  const int JER                 =  strtol(argv[argc-7], NULL,10);
-  const int doFakes	 =  strtol(argv[argc-6], NULL,10);
-  const int doJESJERshiftarg = strtol(argv[argc-5], NULL,10);
-  const int doFakeshiftarg = strtol(argv[argc-4], NULL,10);
+  const int JES                 =  strtol(argv[argc-9], NULL,10);
+  const int JER                 =  strtol(argv[argc-8], NULL,10);
+  const int doFakes	 =  strtol(argv[argc-7], NULL,10);
+  const int doJESJERshiftarg = strtol(argv[argc-6], NULL,10);
+  const int doFakeshiftarg = strtol(argv[argc-5], NULL,10);
+  const int doOnly3leps = strtol(argv[argc-4], NULL,10);
   const int JobNum		  = strtol(argv[argc-3], NULL, 10);
   const int startEvent  	  = strtol(argv[argc-2], NULL, 10);
   const int endEvent		  = strtol(argv[argc-1], NULL, 10);
@@ -237,6 +237,7 @@ int main (int argc, char *argv[])
   applyJES = JES;
   applyJER = JER;
   doFakeLepton= doFakes;
+  only3lepsaved = doOnly3leps;
   int doJESJERshift = doJESJERshiftarg;
   int doFakeshift = doFakeshiftarg;
   const int Usettbar = 1;
@@ -244,7 +245,7 @@ int main (int argc, char *argv[])
   // all the files are stored from arg 11 to argc-8
   vector<string> vecfileNames;
   
-  for(int args = 11; args < argc-8; args++)
+  for(int args = 11; args < argc-9; args++)
   {
    // cout << "pushing back " << argv[args] << endl;
     vecfileNames.push_back(argv[args]);
@@ -354,7 +355,7 @@ int main (int argc, char *argv[])
   Trigger* trigger_mu  = new Trigger(1, 0, 1, 0,0,0,0);
   Trigger* trigger_e  = new Trigger(0, 1, 1, 0,0,0,0);
   Trigger* trigger_met = new Trigger(0, 0, 0, 0,0,1,0);
-  Trigger* trigger_jet = new Trigger(0, 0, 0, 0,0,0,1);
+ // Trigger* trigger_jet = new Trigger(0, 0, 0, 0,0,0,1);
   
   ////////////////////////
   // intialize  Calibrations      //
@@ -429,7 +430,8 @@ int main (int argc, char *argv[])
   float el_iso_cone  = 0.3;
   // reliso cut fabs(eta supercluster) <= 1.479 --> 0.107587 // (fabs(eta supercluster) > 1.479 && fabs(eta supercluster) < 2.5) --> 0.113254
   // muon
-  float mu_pt_cut = 30.; // 40
+  float mu_pt_cut = 20.; // 40
+  float mu_pt_cut_loose = 20.;
   float mu_eta_cut = 2.4;
   float mu_iso_cut = 0.15;
   float mu_iso_cut_loose = 0.25;
@@ -793,7 +795,7 @@ int main (int argc, char *argv[])
     muonSFWeightIso_GH = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/20170413/IsoEfficienciesAndSF_GH.root", "TightISO_TightID_pt_eta/abseta_pt_ratio", true, false, false);  // Tight RelIso, Tight ID
     // muonSFWeightTrig_BCDEF = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/SingleMuonTrigger_EfficienciesAndSF_RunsBCDEF.root", "IsoMu24_OR_IsoTkMu24_PtEtaBins/abseta_pt_ratio", true, false, false);
     //  muonSFWeightTrig_GH = new MuonSFWeight("../TopTreeAnalysisBase/Calibrations/LeptonSF/MuonSF/SingleMuonTrigger_EfficienciesAndSF_RunsGH.root", "IsoMu24_OR_IsoTkMu24_PtEtaBins/abseta_pt_ratio", true, false, false);
-    RoccoR rc("rochester/rcdata.2016.v3");
+   
     
     
     
@@ -881,7 +883,7 @@ int main (int argc, char *argv[])
     ///////////////////////////////////////////////////////////
     if(!isData) doFakeLepton = false;
     
-    string channel_dir = "NtupleMakerOutput/Ntuples/" ;
+    string channel_dir = "NtupleMakerOutput/NtuplesTest/" ;
     if(doFakeLepton) channel_dir = "NtupleMakerOutput/Ntuples_fakes/" ;
     string date_dir = channel_dir+ "/Ntuples_" + dateString +"/";
     mkdir("NtupleMakerOutput",0777);
@@ -1358,7 +1360,7 @@ int main (int argc, char *argv[])
     trigger_mu->bookTriggers(isData,dName);
     trigger_e->bookTriggers(isData, dName);
     trigger_met->bookTriggers(isData, dName);
-    trigger_jet->bookTriggers(isData, dName);
+    //trigger_jet->bookTriggers(isData, dName);
     
     
     
@@ -1627,6 +1629,7 @@ int main (int argc, char *argv[])
     vector<TRootElectron*>    selectedVetoElectrons;
     vector<TRootPFJet*>       selectedJets;
     vector<TRootPFJet*>       PreselectedJets;
+
     vector<TRootMuon*>        selectedMuons;
     vector<TRootMuon*>        selectedLooseMuons;
     vector<TRootMuon*>        selectedFakeMuons;
@@ -1759,6 +1762,13 @@ int main (int argc, char *argv[])
         cout << "Met px / py loaded: "<< mets[0]->Px() << " / " << mets[0]->Py() << endl;
       }
       
+      /// For MC Information
+      mcParticles.clear();
+      if(!isData) treeLoader.LoadMCEvent(ievt, 0,  mcParticles, false);
+      if(!isData) sort(mcParticles.begin(),mcParticles.end(),HighestPt());
+      
+      
+      
       
       nIniRecoLeptons=0;
       nIniRecoElectrons = 0;
@@ -1766,12 +1776,15 @@ int main (int argc, char *argv[])
       double dataMuPTSF = 1.;
       double mcMuPTSF = 1.;
       init_muons_corrected = init_muons;
+      
+     
       for(int iMu = 0 ; iMu < init_muons.size(); iMu++){
         if(init_muons[iMu]->Pt() > 10.0) nIniRecoMuons++;
         if(init_muons[iMu]->isBad80X()) rejecteventBadPFmuon = 1;
         if(init_muons[iMu]->isClone80X()) rejecteventBadPFmuon = 1;
        // if(!init_muons[iMu]->isPFMuon()) { cout << "rejected muon " << endl; rejecteventBadPFmuon = 1;}
        // PFmuon =   init_muons[0]->isPFMuon();
+        
         
         
       }
@@ -1960,8 +1973,8 @@ int main (int argc, char *argv[])
         trigged_e =  trigger_e->checkIfFired();
         trigger_met->checkAvail(currentRun, datasets, d, &treeLoader, event, printTrigger);
         trigged_met =  trigger_met->checkIfFired();
-        trigger_jet->checkAvail(currentRun, datasets, d, &treeLoader, event, printTrigger);
-        trigged_jet =  trigger_jet->checkIfFired();
+      //  trigger_jet->checkAvail(currentRun, datasets, d, &treeLoader, event, printTrigger);
+       // trigged_jet =  trigger_jet->checkIfFired();
         
         bool emdataset = dName.find("MuonEG")!=string::npos;
         bool mmdataset = dName.find("DoubleM")!=string::npos;
@@ -2096,9 +2109,12 @@ int main (int argc, char *argv[])
       
       
       selectedMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut, "Tight", "Summer16");   // spring 15 still counts for 2016
-      selectedLooseMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut_loose, "Loose", "Summer16"); // spring 15 still counts for 2016
+      selectedLooseMuons = selection.GetSelectedMuons(mu_pt_cut_loose, mu_eta_cut, mu_iso_cut_loose, "Loose", "Summer16"); // spring 15 still counts for 2016
       selectedFakeTightMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut_faketight, "Fake", "Summer16");
       selectedFakeLooseMuons = selection.GetSelectedMuons(mu_pt_cut, mu_eta_cut, mu_iso_cut_fakeloose, "Fake", "Summer16");
+      
+      
+      
       
       if(!doFakeshift) selectedFakeMuons = selectedFakeTightMuons;
       else if(doFakeshift) selectedFakeMuons = selectedFakeLooseMuons;
@@ -2115,11 +2131,6 @@ int main (int argc, char *argv[])
       
       if(!doFakeshift) selectedFakeElectrons = selectedFakeTightElectrons;
       else if(doFakeshift) selectedFakeElectrons = selectedFakeLooseElectrons;
-      
-      /// For MC Information
-      mcParticles.clear();
-      if(!isData) treeLoader.LoadMCEvent(ievt, 0,  mcParticles, false);
-      if(!isData) sort(mcParticles.begin(),mcParticles.end(),HighestPt());
       
       
       
@@ -2328,12 +2339,14 @@ int main (int argc, char *argv[])
         if(((selectedMuons.size() + selectedElectrons.size()) < 2)){
           selections.push_back(0);
           continueFlow = false;
+          lep3 = false;
         }
         else if((selectedMuons.size() + selectedElectrons.size()) >1){
           selections.push_back(1);
           
-          if(selectedMuons.size() + selectedElectrons.size() ==3 ){ lep3 = true; nbSelectedEvents_3L++;}
-         
+          if((selectedMuons.size() + selectedElectrons.size()) == 3 ){ lep3 = true; nbSelectedEvents_3L++;}
+          else lep3 = false;
+          
           if(selectedMuons.size() == 3) {channelInt = 0; i_channel = 0;}
           else if(selectedElectrons.size() == 3) {channelInt = 3; i_channel = 3;}
           else if(selectedElectrons.size() == 2 && selectedMuons.size() == 1) {channelInt = 2; i_channel = 2; }
@@ -2348,22 +2361,36 @@ int main (int argc, char *argv[])
         
       }
       else  if(doFakeLepton){
-        if((selectedMuons.size() + selectedElectrons.size()) == 2 && (selectedFakeMuons.size() + selectedFakeElectrons.size()) == 1 ){
-          selections.push_back(1);
-          nbSelectedEvents_3L++;
-          lep3 = true;
+        if ((selectedMuons.size() > 0 || selectedElectrons.size() > 0) && (selectedFakeMuons.size() + selectedFakeElectrons.size()) == 1 ){
           if(selectedMuons.size() == 2 && selectedFakeMuons.size() == 1) {channelInt = 0; i_channel = 0;}
           else if(selectedElectrons.size() == 2 && selectedFakeElectrons.size() == 1) {channelInt = 3; i_channel = 3;}
           else if(selectedElectrons.size() == 1 && selectedMuons.size() == 1 && selectedFakeElectrons.size() == 1 ) {channelInt = 2; i_channel = 2; }
           else if(selectedElectrons.size() == 2 && selectedFakeMuons.size() == 1  ) {channelInt = 2; i_channel = 2; }
           else if(selectedMuons.size() == 2 && selectedFakeElectrons.size() == 1){channelInt = 1; i_channel = 1; }
           else if(selectedMuons.size() == 1 && selectedElectrons.size() == 1  && selectedFakeMuons.size() == 1){channelInt = 1; i_channel = 1; }
-          //else {cout << "ERROR no channel selected" << endl; break; }
+          else if(selectedMuons.size() == 1 && selectedFakeMuons.size() == 1){channelInt = 4; i_channel = 4; }
+          else if(selectedElectrons.size() == 1  && selectedFakeElectrons.size() == 1){channelInt = 5; i_channel = 5; }
         }
-        else{
-          selections.push_back(0);
-          continueFlow = false;
-        }
+        else{ continueFlow = false; }
+       
+          if((selectedMuons.size() + selectedElectrons.size()) == 2 && (selectedFakeMuons.size() + selectedFakeElectrons.size()) == 1 ){
+            selections.push_back(1);
+            nbSelectedEvents_3L++;
+            lep3 = true;
+            if(selectedMuons.size() == 2 && selectedFakeMuons.size() == 1) {channelInt = 0; i_channel = 0;}
+            else if(selectedElectrons.size() == 2 && selectedFakeElectrons.size() == 1) {channelInt = 3; i_channel = 3;}
+            else if(selectedElectrons.size() == 1 && selectedMuons.size() == 1 && selectedFakeElectrons.size() == 1 ) {channelInt = 2; i_channel = 2; }
+            else if(selectedElectrons.size() == 2 && selectedFakeMuons.size() == 1  ) {channelInt = 2; i_channel = 2; }
+            else if(selectedMuons.size() == 2 && selectedFakeElectrons.size() == 1){channelInt = 1; i_channel = 1; }
+            else if(selectedMuons.size() == 1 && selectedElectrons.size() == 1  && selectedFakeMuons.size() == 1){channelInt = 1; i_channel = 1; }
+            //else {cout << "ERROR no channel selected" << endl; break; }
+          }
+          else{
+            lep3 = false;
+            selections.push_back(0);
+            continueFlow = false;
+          }
+        
         
       }
       
@@ -2454,7 +2481,11 @@ int main (int argc, char *argv[])
       /////////////////////////////////////
       // fill the tree
       
-      if(eventSelected){
+      bool saveevent = false;
+      if(eventSelected  && !only3lepsaved ) saveevent = true;
+      if(only3lepsaved && lep3 && eventSelected) saveevent = true;
+      
+      if(saveevent) {
         eventweight = 1.;
         eventweight *= puSF;
         eventweight *= btagWeightShape;
@@ -2502,11 +2533,8 @@ int main (int argc, char *argv[])
           phi_muon[nMuons]=selectedMuons[selmu]->Phi();
           eta_muon[nMuons]=selectedMuons[selmu]->Eta();
           E_muon[nMuons]=selectedMuons[selmu]->E();
-          TrackLayers_muon[nMuons] = selectedMuons[selmu]->nofTrackerLayersWithMeasurement();
-          if(isData) ptSF_muon[nMuons] = rc.kScaleDT(selectedMuons[selmu]->charge(), selectedMuons[selmu]->Pt(), selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Phi(), 0, 0);
-          else ptSF_muon[nMuons] = rc.kScaleAndSmearMC(selectedMuons[selmu]->charge(), selectedMuons[selmu]->Pt(), selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Phi(), selectedMuons[selmu]->nofTrackerLayersWithMeasurement(),gRandom->Rndm(),gRandom->Rndm(),0, 0);
-          
-          pt_muon_corrected[nMuons]=selectedMuons[selmu]->Pt()*ptSF_muon[nMuons];
+          if(!isData) TrackLayers_muon[nMuons] = selectedMuons[selmu]->nofTrackerLayersWithMeasurement();
+           else TrackLayers_muon[nMuons] = -1;
           
          
           
@@ -2564,7 +2592,7 @@ int main (int argc, char *argv[])
           }
           if(MuonIDSF[nMuons]*MuonIsoSF[nMuons] == 0 ) cout << "  MuonIDSF[nMuons] " <<  MuonIDSF[nMuons] << " MuonIsoSF[nMuons] " << MuonIsoSF[nMuons] << "  MuonIDSF[nMuons]*MuonIsoSF[nMuons] " <<    MuonIDSF[nMuons]*MuonIsoSF[nMuons]     << endl;
           if(muonSFtemp == 0) cout << " muon SF " << muonSFtemp * MuonIDSF[nMuons]*MuonIsoSF[nMuons] << endl;
-          charge_muon[nMuons]=selectedMuons[selmu]->charge();
+          charge_muon[nMuons]= selectedMuons[selmu]->charge();
           nMuons++;
         }
         if(doFakeLepton){
@@ -2576,9 +2604,10 @@ int main (int argc, char *argv[])
             E_muon[nMuons]=selectedFakeMuons[selmu]->E();
             badmueventmu[nMuons] = selectedFakeMuons[selmu]->isBad80X();
             badmueventclonemu[nMuons] = selectedFakeMuons[selmu]->isClone80X();
-            TrackLayers_muon[nMuons] = selectedFakeMuons[selmu]->nofTrackerLayersWithMeasurement();
-            if(isData) ptSF_muon[nMuons] = rc.kScaleDT(selectedFakeMuons[selmu]->charge(), selectedFakeMuons[selmu]->Pt(), selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Phi(), 0, 0);
-            else ptSF_muon[nMuons] = rc.kScaleAndSmearMC(selectedFakeMuons[selmu]->charge(), selectedFakeMuons[selmu]->Pt(), selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Phi(), selectedFakeMuons[selmu]->nofTrackerLayersWithMeasurement(),gRandom->Rndm(),gRandom->Rndm(),0, 0);
+            if(!isData) TrackLayers_muon[nMuons] = selectedFakeMuons[selmu]->nofTrackerLayersWithMeasurement();
+            else TrackLayers_muon[nMuons] = -1;
+            //if(isData) ptSF_muon[nMuons] = rc.kScaleDT(selectedFakeMuons[selmu]->charge(), selectedFakeMuons[selmu]->Pt(), selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Phi(), 0, 0);
+            //else ptSF_muon[nMuons] = rc.kScaleAndSmearMC(selectedFakeMuons[selmu]->charge(), selectedFakeMuons[selmu]->Pt(), selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Phi(), selectedFakeMuons[selmu]->nofTrackerLayersWithMeasurement(),gRandom->Rndm(),gRandom->Rndm(),0, 0);
             
             pt_muon_corrected[nMuons]=selectedFakeMuons[selmu]->Pt()*ptSF_muon[nMuons];
             
@@ -2742,8 +2771,6 @@ int main (int argc, char *argv[])
               mc_fromHardProcessFinalState[iMC] = mcParticles[iMC]->fromHardProcessFinalState();
             }
           }
-      }
-      if(eventSelected){
         nJets = 0;
         for(Int_t seljet = 0; seljet < selectedJets.size(); seljet++)
         {
@@ -2761,12 +2788,7 @@ int main (int argc, char *argv[])
           nJets++;
         }
         
-      }
-      
-      
-      
-      if(eventSelected){
-        nbSelectedEvents++;
+          nbSelectedEvents++;
         if(!isData) wnbSelectedEvents += eventweight;
         myTree->Fill();
       }
@@ -2890,6 +2912,11 @@ string MakeTimeStamp(){
   string date_str = year_str + month_str + day_str; //+ "_" + hour_str + min_str;
   return date_str;
 };
+
+
+
+
+
 
 
 

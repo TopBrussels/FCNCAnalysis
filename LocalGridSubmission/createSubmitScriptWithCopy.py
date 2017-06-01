@@ -28,9 +28,9 @@ channels = ["all"]
 doFakes = 0;
 JES = 1; 
 JER = 1; 
-doJESJER = 0;
+doJESJER = 4;
 doFakeshift = 0;
-
+dotrileponly = 1;
 #if(doJESJERshift == 1) postfix = "_JESdown" ;
 #    if(doJESJERshift == 2) postfix = "_JESup" ;
 #    if(doJESJERshift == 3) postfix = "_JERdown" ;
@@ -223,7 +223,7 @@ for chan in channels:
 
 
 
-                    print >> outfile, commandString, files_str, " ", JES, " " , JER, " " , doFakes, " ", doJESJER , " "  , doFakeshift , " ", str(N_job+1) , " 0" , " 2000000000000000000000000000"
+                    print >> outfile, commandString, files_str, " ", JES, " " , JER, " " , doFakes, " ", doJESJER , " "  , doFakeshift , " ", dotrileponly, " " ,str(N_job+1) , " 0" , " 2000000000000000000000000000"
 
                     # cleaning
                     listOfFiles=[]

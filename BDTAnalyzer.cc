@@ -477,9 +477,9 @@ int main(int argc, char* argv[]){
  
   
   TH1::SetDefaultSumw2();
-  TH1F* hist_WZ = new TH1F("MTW_WZ","MTW_WZ",           nbinMTW, 0., endMTW);
-  TH1F* hist_TT_FCNC = new TH1F("MTW_TT_FCNC","MTW_TT_FCNC",           nbinMTW, 0., endMTW);
-  TH1F* hist_fakes = new TH1F("MTW_fakes","MTW_fakes",           nbinMTW, 0., endMTW);
+  TH1F* hist_WZ = new TH1F("MTW_WZ","trans. mass W boson in WZ region: WZ (GeV)",           nbinMTW, 0., endMTW);
+  TH1F* hist_TT_FCNC = new TH1F("MTW_TT_FCNC","transv. mass W boson in TTSR (GeV)",           nbinMTW, 0., endMTW);
+  TH1F* hist_fakes = new TH1F("MTW_fakes","transv. mass W boson WZ region: fakes (GeV)",           nbinMTW, 0., endMTW);
   histo1DMTW["MTW_WZ"] = hist_WZ ;
   histo1DMTW["MTW_TT_FCNC"] = hist_TT_FCNC ;
   histo1DMTW["MTW_fakes"] = hist_fakes ;
@@ -949,6 +949,7 @@ int main(int argc, char* argv[]){
           cout << "no data found, setting lumi as " << Luminosity << endl;
           temp->setDataLumi(Luminosity);
         }
+        temp->SetPreliminary(false);
         temp->setDataLumi(Luminosity);
         if(name.find("all")!=std::string::npos) temp->setChannel(true, "all");
         if(name.find("eee")!=std::string::npos) temp->setChannel(true, "3e");
@@ -978,6 +979,7 @@ int main(int argc, char* argv[]){
         if(name.find("uue")!=std::string::npos) temp->setChannel(true, "1e2#mu");
         if(name.find("uuu")!=std::string::npos) temp->setChannel(true, "3#mu");
         if(name.find("Decay")!=std::string::npos) temp->setBins(vlabel_chan);
+        temp->SetPreliminary(false);
         temp->Draw(name, 1, false, false, false, 10);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
         cout << "writing to " << pathOutputdate+"MSPlot" << endl;
         cout << "plot " << name << endl;
@@ -1655,7 +1657,7 @@ void InitMSPlotsMTW(string prefix, vector <int> decayChannels){
     decaystring += prefix;
     
     //cout << "init msplots " << endl;
-    MSPlotMTW[("MTW_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("MTW_"+decaystring).c_str(), nbinMTW, 0,endMTW, "M_T(W)");
+    MSPlotMTW[("MTW_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("MTW_"+decaystring).c_str(), nbinMTW, 0,endMTW, "transv. mass W boson (GeV)","GeV");
   }
   decaystring = "";
 }
@@ -1680,41 +1682,41 @@ void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair, boo
     MSPlot[ (prefix+"weight_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"weight_"+decaystring).c_str(), 100,0, 0.3, "eventweight");
     
     if(!istoppair){
-      MSPlot[(prefix+"mlb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"mlb_"+decaystring).c_str(),10, 0, 500, "M(l_{W}b)");
-      MSPlot[(prefix+"dRWlepb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dRWlepb_"+decaystring).c_str(),10,0, 5, "dR(l_{W}b)");
-      MSPlot[(prefix+"dPhiWlepb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dPhiWlepb_"+decaystring).c_str(),10,-4, 4, "d#Phi (l_{W}b)");
-      MSPlot[(prefix+"Zboson_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"Zboson_pt_"+decaystring).c_str(), 20,0, 500, "p_{T} (Z)[GeV]");
-      MSPlot[(prefix+"dRZWlep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dRZWlep_"+decaystring).c_str(),30,0, 6, "dR(Z,l_{W})");
-      MSPlot[(prefix+"bdiscCSVv2_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"bdiscCSVv2_jet_0_"+decaystring).c_str(),20, 0.5, 1, "CSVv2 Highest pt jet");
-      MSPlot[(prefix+"cdiscCvsB_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"cdiscCvsB_jet_0_"+decaystring).c_str(),10, 0, 0.8, "Charm vs B disc of Highest pt jet");
+      MSPlot[(prefix+"mlb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"mlb_"+decaystring).c_str(),10, 0, 500, "inv. mass l_{W}b (GeV)","GeV");
+      MSPlot[(prefix+"dRWlepb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dRWlepb_"+decaystring).c_str(),10,0, 5, "#Delta R(l_{W},b)");
+      MSPlot[(prefix+"dPhiWlepb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dPhiWlepb_"+decaystring).c_str(),10,-4, 4, "#Delta #Phi (l_{W},b)");
+      MSPlot[(prefix+"Zboson_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"Zboson_pt_"+decaystring).c_str(), 20,0, 500, "Z boson p_{T} (GeV)", "GeV");
+      MSPlot[(prefix+"dRZWlep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dRZWlep_"+decaystring).c_str(),30,0, 6, "#Delta R(Z,l_{W})");
+      MSPlot[(prefix+"bdiscCSVv2_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"bdiscCSVv2_jet_0_"+decaystring).c_str(),20, 0.5, 1, "leading jet CSVv2");
+      MSPlot[(prefix+"cdiscCvsB_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"cdiscCvsB_jet_0_"+decaystring).c_str(),10, 0, 0.8, "leading jet charm vs b disc.");
       
       if(isZut){
-        MSPlot[(prefix+"charge_asym_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"charge_asym_"+decaystring).c_str(),10, -4, 4, "Q(l_{W})|#eta(W)|");
+        MSPlot[(prefix+"charge_asym_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"charge_asym_"+decaystring).c_str(),10, -4, 4, "charge l_{W} x|W boson #eta|");
         
       }
       else{
-        MSPlot[(prefix+"cdiscCvsL_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"cdiscCvsL_jet_0_"+decaystring).c_str(),25, 0, 1, "Charm vs Light disc of Highest pt jet");
+        MSPlot[(prefix+"cdiscCvsL_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"cdiscCvsL_jet_0_"+decaystring).c_str(),25, 0, 1, "leading jet charm vs light disc.");
         
       }
       
     }
     else if(istoppair ){
-      MSPlot[(prefix+"mlb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"mlb_"+decaystring).c_str(),25, 0, 500, "M(l_{W}b)");
-      MSPlot[(prefix+"FCNCtop_M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"FCNCtop_M_"+decaystring).c_str(),20, 100, 500, "M(Z+Ljet)");
-      MSPlot[(prefix+"dRWlepb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dRWlepb_"+decaystring).c_str(),20,0, 6, "dR(b,l_{W})");
-      MSPlot[(prefix+"nJets_CSVv2M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"nJets_CSVv2M_"+decaystring).c_str(),10,-0.5, 9.5, "Nb. of CSVv2 M jets");
-      MSPlot[(prefix+"nJets_CharmL_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"nJets_CharmL_"+decaystring).c_str(),10,-0.5, 9.5, "Nb. of charm L jets");
-      MSPlot[(prefix+"dRZWlep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dRZWlep_"+decaystring).c_str(),20,0, 6, "dR(Z,l_{W})");
-      MSPlot[(prefix+"dRZc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dRZc_"+decaystring).c_str(),30,0, 6, "dR(Z,light jet)");
+      MSPlot[(prefix+"mlb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"mlb_"+decaystring).c_str(),25, 0, 500, "inv mass l_{W}b (GeV)","GeV");
+      MSPlot[(prefix+"FCNCtop_M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"FCNCtop_M_"+decaystring).c_str(),20, 100, 500, "inv. mass Zq (GeV)","GeV");
+      MSPlot[(prefix+"dRWlepb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dRWlepb_"+decaystring).c_str(),20,0, 6, "#Delta R(b,l_{W})");
+      MSPlot[(prefix+"nJets_CSVv2M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"nJets_CSVv2M_"+decaystring).c_str(),10,-0.5, 9.5, "# CSVv2M jets");
+      MSPlot[(prefix+"nJets_CharmL_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"nJets_CharmL_"+decaystring).c_str(),10,-0.5, 9.5, "# charm loose jets");
+      MSPlot[(prefix+"dRZWlep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dRZWlep_"+decaystring).c_str(),20,0, 6, "#Delta R(Z,l_{W})");
+      MSPlot[(prefix+"dRZc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dRZc_"+decaystring).c_str(),30,0, 6, "#Delta R(Z,q)");
       
       if(isZut){
-        MSPlot[(prefix+"cdiscCvsB_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"cdiscCvsB_jet_0_"+decaystring).c_str(),20, 0, 0.8, "Charm vs B disc of Highest pt jet");
-        MSPlot[(prefix+"cdiscCvsB_jet_1_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"cdiscCvsB_jet_1_"+decaystring).c_str(),20, 0, 0.85, "Charm vs B disc of 2nd Highest pt jet");
+        MSPlot[(prefix+"cdiscCvsB_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"cdiscCvsB_jet_0_"+decaystring).c_str(),20, 0, 0.8, "leading jet vharm vs b disc.");
+        MSPlot[(prefix+"cdiscCvsB_jet_1_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"cdiscCvsB_jet_1_"+decaystring).c_str(),20, 0, 0.85, "2nd leading charm vs b disc. ");
         
       }
       else{
-        MSPlot[(prefix+"cdiscCvsL_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"cdiscCvsL_jet_0_"+decaystring).c_str(),20, 0, 1, "Charm vs Light disc of Highest pt jet");
-        MSPlot[(prefix+"cdiscCvsL_jet_1_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"cdiscCvsL_jet_1_"+decaystring).c_str(),20, 0, 1, "Charm vs Light disc of 2nd Highest pt jet");
+        MSPlot[(prefix+"cdiscCvsL_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"cdiscCvsL_jet_0_"+decaystring).c_str(),20, 0, 1, "leading jet charm vs light disc.");
+        MSPlot[(prefix+"cdiscCvsL_jet_1_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"cdiscCvsL_jet_1_"+decaystring).c_str(),20, 0, 1, "2nd leading jet charm vs light disc.");
         
         
       }
