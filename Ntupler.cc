@@ -809,7 +809,7 @@ int main (int argc, char *argv[])
     vCorrParam.clear();
     JetCorrectionUncertainty *jecUnc;
     
-    if(dName.find("Data_Run2016B")!=string::npos || dName.find("Data_Run2016C")!=string::npos || dName.find("Data_Run2016D")!=string::npos)
+    if(dName.find("Run_2016B")!=string::npos || dName.find("Run_2016C")!=string::npos || dName.find("Run_2016D")!=string::npos)
     {
       JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer16_23Sep2016V4_DATA/Summer16_23Sep2016BCDV4_DATA/Summer16_23Sep2016BCDV4_DATA_L1FastJet_AK4PFchs.txt");
       vCorrParam.push_back(*L1JetCorPar);
@@ -822,7 +822,7 @@ int main (int argc, char *argv[])
       isData = true;
       jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer16_23Sep2016V4_DATA/Summer16_23Sep2016BCDV4_DATA/Summer16_23Sep2016BCDV4_DATA_Uncertainty_AK4PFchs.txt");
     }
-    else if(dName.find("Data_Run2016E")!=string::npos || dName.find("Data_Run2016F")!=string::npos)
+    else if(dName.find("Run_2016E")!=string::npos || dName.find("Run_2016F")!=string::npos)
     {
       JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer16_23Sep2016V4_DATA/Summer16_23Sep2016EFV4_DATA/Summer16_23Sep2016EFV4_DATA_L1FastJet_AK4PFchs.txt");
       vCorrParam.push_back(*L1JetCorPar);
@@ -835,7 +835,7 @@ int main (int argc, char *argv[])
       isData = true;
       jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer16_23Sep2016V4_DATA/Summer16_23Sep2016EFV4_DATA/Summer16_23Sep2016EFV4_DATA_Uncertainty_AK4PFchs.txt");
     }
-    else if(dName.find("Data_Run2016G")!=string::npos)
+    else if(dName.find("Run_2016G")!=string::npos)
     {
       JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer16_23Sep2016V4_DATA/Summer16_23Sep2016GV4_DATA/Summer16_23Sep2016GV4_DATA_L1FastJet_AK4PFchs.txt");
       vCorrParam.push_back(*L1JetCorPar);
@@ -848,7 +848,7 @@ int main (int argc, char *argv[])
       isData = true;
       jecUnc = new JetCorrectionUncertainty("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer16_23Sep2016V4_DATA/Summer16_23Sep2016GV4_DATA/Summer16_23Sep2016GV4_DATA_Uncertainty_AK4PFchs.txt");
     }
-    else if(dName.find("Data_Run2016H")!=string::npos)
+    else if(dName.find("Run_2016H")!=string::npos)
     {
       JetCorrectorParameters *L1JetCorPar = new JetCorrectorParameters("../TopTreeAnalysisBase/Calibrations/JECFiles/Summer16_23Sep2016V4_DATA/Summer16_23Sep2016HV4_DATA/Summer16_23Sep2016HV4_DATA_L1FastJet_AK4PFchs.txt");
       vCorrParam.push_back(*L1JetCorPar);
@@ -2053,10 +2053,34 @@ int main (int argc, char *argv[])
       ////////////////////////////
       ///// JES - JER smearing     ////
       //////////////////////////
+      met_before_JES = mets[0]->Pt();
+      JESon = 0;
+      METon = 0;
+      for(int iJ = 0; iJ < init_jets_corrected.size(); iJ++){
+        jet_Pt_before_JES[iJ] = init_jets_corrected[iJ]->Pt();
+      }
+
+      if(applyJES)
+      {
+        // cout << "applying JES" << endl;
+        jetTools->correctJets(init_jets_corrected,event->fixedGridRhoFastjetAll(), isData);
+        jetTools->correctJetsMet(init_jets_corrected,mets[0],event->fixedGridRhoFastjetAll() ,isData);
+        
+        if(doJESJERshift == 1 && !isData)  jetTools->correctJetJESUnc(init_jets_corrected, mets[0], "minus",1);
+        else if(doJESJERshift == 2 && !isData)  jetTools->correctJetJESUnc(init_jets_corrected, mets[0], "plus",1);
+        
+        
+        
+        METon = 1;
+        JESon = 1;
+      }
+      met_after_JES = mets[0]->Pt();
+
       JERon = 0;
       
       for(int iJ = 0; iJ < init_jets_corrected.size(); iJ++){
         jet_Pt_before_JER[iJ] = init_jets_corrected[iJ]->Pt();
+         jet_Pt_after_JES[iJ] = init_jets_corrected[iJ]->Pt();
       }
       if(applyJER && !isData)
       {
@@ -2068,29 +2092,9 @@ int main (int argc, char *argv[])
       }
       for(int iJ = 0; iJ < init_jets_corrected.size(); iJ++){
         jet_Pt_after_JER[iJ] = init_jets_corrected[iJ]->Pt();
-        jet_Pt_before_JES[iJ] = init_jets_corrected[iJ]->Pt();
+       
       }
-      met_before_JES = mets[0]->Pt();
-      JESon = 0;
-      METon = 0;
-      if(applyJES)
-      {
-        // cout << "applying JES" << endl;
-        if(doJESJERshift == 1)  jetTools->correctJetJESUnc(init_jets_corrected, mets[0], "minus");
-        else if(doJESJERshift == 2)  jetTools->correctJetJESUnc(init_jets_corrected, mets[0], "plus");
-        
-        
-         jetTools->correctJetsMet(init_jets_corrected,mets[0],event->fixedGridRhoFastjetAll() ,isData);
-        
-        
-        METon = 1;
-        JESon = 1;
-      }
-      met_after_JES = mets[0]->Pt();
-      for(int iJ = 0; iJ < init_jets_corrected.size(); iJ++){
-        jet_Pt_after_JES[iJ] = init_jets_corrected[iJ]->Pt();
-        
-      }
+     
            ///////////////////////////////////////////////////////////
       // Event selection
       ///////////////////////////////////////////////////////////
