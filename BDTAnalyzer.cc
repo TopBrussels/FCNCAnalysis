@@ -116,7 +116,7 @@ string postfix = "";
 string output_histo_name = "";
 string ntupleFileName ="";
 int nbin = 50;
-int nbinMTW = 50;
+int nbinMTW = 20;
 double endMTW = 300.;
 int nEntries = -1;
 int scaleNP = 10;
@@ -137,6 +137,7 @@ Float_t         MVA_dRWlepb;
 Float_t         MVA_dRZWlep;
 Float_t         MVA_mlb;
 Float_t         MVA_mWt2;
+Float_t         MVA_mWt;
 Float_t         MVA_FCNCtop_M;
 Float_t           MVA_nJets_CharmL;
 Float_t           MVA_NJets_CSVv2M;
@@ -190,6 +191,7 @@ TBranch        *b_MVA_dRWlepb;   //!
 TBranch        *b_MVA_dRZWlep;   //!
 TBranch        *b_MVA_mlb;   //!
 TBranch        *b_MVA_mWt2;   //!
+TBranch        *b_MVA_mWt;   //!
 TBranch        *b_MVA_FCNCtop_M;   //!
 TBranch        *b_MVA_nJets_CharmL;   //!
 TBranch        *b_MVA_NJets_CSVv2M;   //!
@@ -263,7 +265,7 @@ int main(int argc, char* argv[]){
       std::cout << "   doPDFunc: calculate PDF unc" << endl;
       std::cout << "   PlotSystematics: make sys plots fo WZ" << endl;
       std::cout << "   PlotMVAvars: plot mva vars" << endl;
-      std::cout << "  doMTWtemplate plot mva vars" << endl;
+      std::cout << "  doMTWtemplate make mtw templates" << endl;
       return 0;
     }
     if(string(argv[i]).find("doMTWtemplate")!=std::string::npos){
@@ -629,8 +631,9 @@ int main(int argc, char* argv[]){
         
        // if(MVA_Luminosity != 0 && !isData) weight = (weight * Luminosity)/ MVA_Luminosity;
        // if(!datafound){ Luminosity = MVA_Luminosity; cout << "lumi set to " << Luminosity << endl; }
-        if(dataSetName.find("fake")!=std::string::npos){ weight *= 0.000001 ;}
-       
+         if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ weight *= 0.0802 * 0.0001 ;}
+         if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ weight *= 0.238 * 0.0001;}
+        
         if( isData){ weight = 1.;}
         if(!doMTWtemplate){
           if(MVA_channel== 0) 		{hist_uuu->Fill( MVA_BDT, weight);}
@@ -639,10 +642,10 @@ int main(int argc, char* argv[]){
           else if(MVA_channel == 3) {hist_eee->Fill( MVA_BDT, weight);}
         }
         else if(doMTWtemplate){
-          if(MVA_channel== 0) 		{hist_uuu->Fill( MVA_mWt2, weight);}
-          else if(MVA_channel== 1) {hist_uue->Fill( MVA_mWt2, weight);}
-          else if(MVA_channel== 2) {hist_eeu->Fill( MVA_mWt2, weight);}
-          else if(MVA_channel == 3) {hist_eee->Fill( MVA_mWt2, weight);}
+          if(MVA_channel== 0) 		{hist_uuu->Fill( MVA_mWt, weight);}
+          else if(MVA_channel== 1) {hist_uue->Fill( MVA_mWt, weight);}
+          else if(MVA_channel== 2) {hist_eeu->Fill( MVA_mWt, weight);}
+          else if(MVA_channel == 3) {hist_eee->Fill( MVA_mWt, weight);}
         }
         
         // for MS plots
@@ -949,7 +952,7 @@ int main(int argc, char* argv[]){
           cout << "no data found, setting lumi as " << Luminosity << endl;
           temp->setDataLumi(Luminosity);
         }
-        temp->SetPreliminary(false);
+        //temp->SetPreliminary(false);
         temp->setDataLumi(Luminosity);
         if(name.find("all")!=std::string::npos) temp->setChannel(true, "all");
         if(name.find("eee")!=std::string::npos) temp->setChannel(true, "3e");
@@ -979,7 +982,7 @@ int main(int argc, char* argv[]){
         if(name.find("uue")!=std::string::npos) temp->setChannel(true, "1e2#mu");
         if(name.find("uuu")!=std::string::npos) temp->setChannel(true, "3#mu");
         if(name.find("Decay")!=std::string::npos) temp->setBins(vlabel_chan);
-        temp->SetPreliminary(false);
+        //temp->SetPreliminary(false);
         temp->Draw(name, 1, false, false, false, 10);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
         cout << "writing to " << pathOutputdate+"MSPlot" << endl;
         cout << "plot " << name << endl;
@@ -1799,7 +1802,7 @@ void InitAnalyzerTree(TTree* tree){
   tree->SetBranchAddress("MVA_EqLumi", &MVA_EqLumi, &b_MVA_EqLumi);
   tree->SetBranchAddress("MVA_Luminosity", &MVA_Luminosity, &b_MVA_Luminosity);
   tree->SetBranchAddress("MVA_mWt2", &MVA_mWt2, &b_MVA_mWt2);
-  
+    tree->SetBranchAddress("MVA_mWt", &MVA_mWt, &b_MVA_mWt);
   
   tree->SetBranchAddress("MVA_x1", &MVA_x1, &b_MVA_x1);
   tree->SetBranchAddress("MVA_x2", &MVA_x2, &b_MVA_x2);

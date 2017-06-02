@@ -673,14 +673,14 @@ void InitMVAMSPlotsSingletop(string prefix,vector<int> decayChannels);
 void InitMSPlotsBDT(string prefix, vector<int> decayChannels);
 void InitMVAMSPlotsTopPair(string prefix, vector<int> decayChannels);
 void InitMVAMSPlotsWZ(string prefix, vector <int> decayChannels);
-void InitFakeValidation(string dataSetName);
+void InitFakeValidation(string dataSetName, vector <int> decayChannels);
 void Init1DPlots(string dataSetName);
 void Init2DPlots();
 void InitGenInfoPlots(string dataSetName);
 void FillGenInfoPlots(string dataSetName);
 void InitRecovsGenInfoPlots(string dataSetName);
 void FillRecovsGenInfoPlots(string dataSetName, vector<TLorentzVector> selectedElectrons, vector <TLorentzVector> selectedMuons , vector <TLorentzVector> selectedJets);
-void FillFakeValidation(string dataSetName, double eventW);
+void FillFakeValidation(string dataSetName, vector <int> decayChannels, bool isData, bool isfakes, bool threelepregion,bool twolepregion);
 void Fill1DPlots(string dataSetName, double eventW, bool threelepregion, bool twolepregion);
 void InitTree(TTree* tree, bool isData, bool isfakes);
 // data from global tree
@@ -1376,7 +1376,7 @@ int main(int argc, char* argv[]){
       }
     }
     if(( dataSetName.find("TT")!=std::string::npos || dataSetName.find("WWTo")!=std::string::npos||dataSetName.find("DY")!=std::string::npos || dataSetName.find("Zjets")!=std::string::npos  || dataSetName.find("data")!=std::string::npos || dataSetName.find("fake")!=std::string::npos ) && dofakevalidation  ){
-      InitFakeValidation(dataSetName);
+      InitFakeValidation(dataSetName, decayChannels);
     }
     //    if(dataSetName.find("TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut")!=std::string::npos){
     // if(dataSetName.find("WZTo3LNu")!=std::string::npos){
@@ -2018,6 +2018,9 @@ int main(int argc, char* argv[]){
         
       }
       
+      if(!doDilep && dataSetName.find("fake")!=std::string::npos && ( channelInt == 0 || channelInt == 2)){ scaleFactor *= 0.0802 * 0.0001 ;}
+      if(!doDilep && dataSetName.find("fake")!=std::string::npos && (channelInt== 1 || channelInt == 3)){ scaleFactor *= 0.238 * 0.0001;}
+      
       
       // cout << "twolepregion" << " " << twolepregion << " " << "threelepregion" << " " <<  threelepregion << endl;
       if (makePlots && !domuonsfpt)
@@ -2055,8 +2058,8 @@ int main(int argc, char* argv[]){
         
         
       }
-      if((dataSetName.find("DY")!=std::string::npos || dataSetName.find("TT")!=std::string::npos || dataSetName.find("WWTo")!=std::string::npos|| dataSetName.find("Zjets")!=std::string::npos  || dataSetName.find("fake")!=std::string::npos || dataSetName.find("data")!=std::string::npos) && dofakevalidation && selectedJetsID.size() > 0){
-        FillFakeValidation(dataSetName, eventweight_);
+      if((dataSetName.find("DY")!=std::string::npos || dataSetName.find("TT")!=std::string::npos || dataSetName.find("WWTo")!=std::string::npos|| dataSetName.find("Zjets")!=std::string::npos  || dataSetName.find("fake")!=std::string::npos || dataSetName.find("data")!=std::string::npos) && dofakevalidation && selectedJetsID.size() > 0 && selectedCSVLJetID.size()>0){
+        FillFakeValidation(dataSetName,decayChannels,isData, isfakes, threelepregion, twolepregion);
       }
       if(selectednonCSVLJetID.size()>0 && makePlots ){
         // FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels,isData, isfakes, threelepregion, twolepregion);
@@ -2073,10 +2076,10 @@ int main(int argc, char* argv[]){
       
       // Signal regions and background region
       bool selected = false;
-      if(selectedJets.size() == 1 && selectedCSVLJetID.size() > 0){ Region = 0; nSelectedEntriesST++; selected = true;} // ST region
-      if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0){ Region = 1; nSelectedEntriesTT++; selected = true;} // ttbar region
-      if(selectedJets.size() >0 && selectedCSVLJetID.size() == 0){ Region = 2; nSelectedEntriesWZ++; selected = true;}// WZ control region
-      if(selectedJets.size() >1 && selectedCSVLJetID.size() > 1){ Region = 3; nSelectedEntriesTTZ++; selected = true;}// ttZ control region
+      if(selectedJets.size() == 1 && selectedCSVLJetID.size() > 0 && threelepregion){ Region = 0; nSelectedEntriesST++; selected = true;} // ST region
+      if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && threelepregion){ Region = 1; nSelectedEntriesTT++; selected = true;} // ttbar region
+      if(selectedJets.size() >0 && selectedCSVLJetID.size() == 0 && threelepregion){ Region = 2; nSelectedEntriesWZ++; selected = true;}// WZ control region
+      if(selectedJets.size() >1 && selectedCSVLJetID.size() > 1 && threelepregion){ Region = 3; nSelectedEntriesTTZ++; selected = true;}// ttZ control region
       if(!selected){continue; }
       
       
@@ -2540,7 +2543,7 @@ int main(int argc, char* argv[]){
       {
         cout << "MSPlot: " << it->first << endl;
         MultiSamplePlot *temp = it->second;
-
+        
         //temp->showNumberEntries(showEntriesLegend);
         temp->setPreliminary(false);
         //temp->setErrorBandFile(errorbandfile, dosystfile);
@@ -2583,134 +2586,171 @@ int main(int argc, char* argv[]){
       th1dirfakes->cd();
       gStyle->SetOptStat(0);
       
-      string poststring = "all_2lep_jets";
-      string posttitle = "all channel - >= 2 lep, >0 j";
+      string poststring = "2lep_jets_bjets_zmasswindow";
+      string posttitle = " channel - >= 2 lep, >0 j, Zmass window";
       vector<string> plotnames = {"ZbosonPt_","ZbosonEta_","ZbosonPhi_","WlepPt_","WlepEta_","WlepPhi_","TrMassW_"};
-      vector<string> plottitles = {"p_{T} Z boson","#eta Z boson","#phi Z boson","p_{T} l_{W}","#eta l_{W}","#phi l_{W}","m_{T}(l_{W},#nu)"};
+      vector<string> plottitles = {"p_{T} Z boson (GeV)","#eta Z boson","#phi Z boson","p_{T} l_{W} (GeV)","#eta l_{W}","#phi l_{W}","transv. mass W boson (GeV)"};
       
-      for(int iv = 0; iv < plotnames.size() ; iv++){
+      /*vector<string> plotnames_u = {"ZbosonPtMu_","ZbosonEtaMu_","ZbosonPhiMu_","WlepPtMu_","WlepEtaMu_","WlepPhiMu_","TrMassWMu_"};
+      vector<string> plottitles_u = {"p_{T} Z_{#mu#mu} boson (GeV)","#eta Z_{#mu#mu} boson","#phi Z_{#mu#mu} boson","p_{T} #mu_{W} (GeV)","#eta #mu_{W}","#phi #mu_{W}","transv. mass W_{#mu} boson (GeV)"};
+      
+      vector<string> plotnames_e = {"ZbosonPtEl_","ZbosonEtaEl_","ZbosonPhiEl_","WlepPtEl_","WlepEtaEl_","WlepPhiEl_","TrMassWEl_"};
+      vector<string> plottitles_e = {"p_{T} Z_{ee} boson (GeV)","#eta Z_{ee} boson","#phi Z_{ee} boson","p_{T} e_{W} (GeV)","#eta e_{W}","#phi e_{W}","transv. mass W_{e} boson (GeV)"};
+      
+      vector<string> channames = {"all","eee","uuu","uue","eeu","ee","uu"};
+      vector<string> chantitle = {"all","3e","3#mu","1e2#mu","2e1#mu","2e","2#mu"};
+      
+      vector<string> regionname = {"2lep","3lep"};
+      
+      for(int iterv = 0; iterv < 7; iterv++){
+        plotnames.push_back(plotnames_u[iterv]);
+        plottitles.push_back(plottitles_u[iterv]);
+        plotnames.push_back(plotnames_e[iterv]);
+        plottitles.push_back(plottitles_e[iterv]);
+      }*/
+      
+      vector<string> channames = {"all","ee","uu"};
+      vector<string> chantitle = {"all","2e","2#mu"};
+      
+      
+      string channelst;
+      string channeltitle;
+      
+       vector<string> regionname = {"2lep","3lep"};
+      regionname = {"2lep"};
+      for(int reg = 0; reg < regionname.size(); reg++){
         
-        TH1F* tempDY(0);
-        TH1F* tempfake(0);
-        TH1F* tempdata(0);
-        for (std::map<std::string,TH1F*>::const_iterator it = histo1D_fakevvalidation.begin(); it != histo1D_fakevvalidation.end(); it++)
-        {
-          TH1F *temp = it->second;
-          string name = it->first;
-          if(name.find(plotnames[iv].c_str())==std::string::npos) continue;
-          
-          if(name.find("data")!=std::string::npos){
-            if(tempdata == 0) tempdata = (TH1F*) temp;
-            else tempdata->Add((TH1F*) temp);
+        for(int icha = 0; icha < channames.size(); icha++){
+          channelst = regionname[reg]+"_"+channames[icha];
+          channeltitle = chantitle[icha];
+          for(int iv = 0; iv < plotnames.size() ; iv++){
+            
+            TH1F* tempDY(0);
+            TH1F* tempfake(0);
+            TH1F* tempdata(0);
+            for (std::map<std::string,TH1F*>::const_iterator it = histo1D_fakevvalidation.begin(); it != histo1D_fakevvalidation.end(); it++)
+            {
+              TH1F *temp = it->second;
+              string name = it->first;
+              if(name.find(plotnames[iv].c_str())==std::string::npos) continue;
+              if(name.find(channelst.c_str())==std::string::npos) continue;
+              
+              if(name.find("data")!=std::string::npos){
+                if(tempdata == 0) tempdata = (TH1F*) temp;
+                else tempdata->Add((TH1F*) temp);
+              }
+              if(name.find("fake")!=std::string::npos){
+                if(tempfake == 0) tempfake = (TH1F*) temp;
+                else tempfake->Add((TH1F*) temp);
+              }
+              if(name.find("DY")!=std::string::npos || name.find("Zjets")!=std::string::npos || dataSetName.find("TT")!=std::string::npos || dataSetName.find("WW")!=std::string::npos ){
+                if(tempDY == 0) tempDY = (TH1F*) temp;
+                else tempDY->Add((TH1F*) temp);
+              }
+              
+            }
+            tempfake->Scale(1./tempfake->Integral());
+            tempdata->Scale(1./tempdata->Integral());
+            tempDY->Scale(1./tempDY->Integral());
+            
+            tempfake->SetLineColor(kRed);
+            tempDY->SetLineColor(kBlue);
+            tempdata->SetLineColor(kBlack);
+            tempdata->SetMarkerSize(3);
+            TCanvas* Canvasfakes = 0;
+            Double_t xl1=0.5, yl1=.7, xl2=xl1+.4, yl2=yl1+.2;
+            TLegend *legfakes = new TLegend(xl1,yl1,xl2,yl2);
+            
+            legfakes->AddEntry(tempdata,"Data","LPF");   // h1 and h2 are histogram pointers
+            legfakes->AddEntry(tempfake,"DD non prompt","L");
+            legfakes->AddEntry(tempDY,"MC non prompt","L");
+            
+            double maximum = TMath::Max(TMath::Max(tempfake->GetMaximum(), tempdata->GetMaximum()), tempDY->GetMaximum());
+            tempdata->SetMaximum(maximum*1.5);
+            
+            tempdata->SetTitle((channeltitle+ posttitle).c_str());
+            tempdata->GetXaxis()->SetTitle(plottitles[iv].c_str());
+            
+            Canvasfakes =  TCanvasCreator(tempdata, "tempdata" );//new TCanvas("Canvas_PU","Canvas_PU");
+            Canvasfakes->cd();
+            
+            tempdata->Draw("ep");
+            tempfake->Draw("SAME,h");
+            tempDY->Draw("SAME,h");
+            legfakes->Draw("");
+            Canvasfakes->Update();
+            Canvasfakes->SaveAs( ("fakevalidation_"+plotnames[iv]+poststring+channelst+".png").c_str());
+            Canvasfakes->SetLogy();
+            Canvasfakes->Update();
+            Canvasfakes->SaveAs( ("fakevalidation_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str() );
+            
+            TH1F* ratioFakeVsFake = (TH1F*) tempDY->Clone("ratioFakeVsFake");
+            ratioFakeVsFake->Divide((TH1F*) tempfake);
+            
+            
+            double xmaxfakesVsfake = ratioFakeVsFake->GetXaxis()->GetBinLowEdge(ratioFakeVsFake->GetNbinsX()+1);
+            double xminfakesVsfake = ratioFakeVsFake->GetXaxis()->GetBinLowEdge(1);
+            TLine *line = new TLine(xminfakesVsfake,1, xmaxfakesVsfake,1);
+            line->SetLineColor(kGray);
+            
+            ratioFakeVsFake->SetTitle((channeltitle+posttitle).c_str());
+            ratioFakeVsFake->GetYaxis()->SetTitle("MC non prompt/ DY non prompt");
+            ratioFakeVsFake->GetXaxis()->SetTitle(plottitles[iv].c_str());
+            ratioFakeVsFake->SetMaximum(ratioFakeVsFake->GetMaximum()*1.5);
+            Canvasfakes =  TCanvasCreator(ratioFakeVsFake, "ratioFakeVsFake" );//new TCanvas("Canvas_PU","Canvas_PU");
+            Canvasfakes->cd();
+            ratioFakeVsFake->Draw("h");
+            line->Draw("same");
+            Canvasfakes->Update();
+           // Canvasfakes->SaveAs( ("fakevalidation_ratiofakes_"+plotnames[iv]+poststring+channelst+".png").c_str());
+            Canvasfakes->SetLogy();
+            Canvasfakes->Update();
+           // Canvasfakes->SaveAs( ("fakevalidation_ratiofakes_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str());
+            
+            TH1F* ratioFakeVsData = (TH1F*) tempdata->Clone("ratioFakeVsData");
+            ratioFakeVsData->Divide((TH1F*) tempfake);
+            ratioFakeVsData->SetMaximum(ratioFakeVsData->GetMaximum()*1.5);
+            ratioFakeVsData->GetXaxis()->SetTitle(plottitles[iv].c_str());
+            ratioFakeVsData->SetLineColor(kBlue);
+            ratioFakeVsData->SetTitle((channeltitle+posttitle).c_str());
+            ratioFakeVsData->GetYaxis()->SetTitle("data/DD non prompt");
+            Canvasfakes =  TCanvasCreator(ratioFakeVsData, "ratioFakeVsData" );//new TCanvas("Canvas_PU","Canvas_PU");
+            Canvasfakes->cd();
+            ratioFakeVsData->Draw("h");
+            line->Draw("same");
+            Canvasfakes->Update();
+           // Canvasfakes->SaveAs( ("fakevalidation_ratiodata_"+plotnames[iv]+poststring+channelst+".png").c_str());
+            Canvasfakes->SetLogy();
+            Canvasfakes->Update();
+           // Canvasfakes->SaveAs( ("fakevalidation_ratiodata_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str());
+            
+            legfakes = new TLegend(xl1,yl1,xl2,yl2);
+            legfakes->AddEntry(ratioFakeVsData,"DD non prompt/Data","L");   // h1 and h2 are histogram pointers
+            legfakes->AddEntry(tempfake,"DD non prompt / MC non prompt","L");
+            
+            maximum = TMath::Max(ratioFakeVsFake->GetMaximum(),ratioFakeVsData->GetMaximum());
+            ratioFakeVsData->SetMaximum(maximum*1.5);
+            
+            Canvasfakes =  TCanvasCreator(ratioFakeVsData, "ratioFakeVsData" );//new TCanvas("Canvas_PU","Canvas_PU");
+            Canvasfakes->cd();
+            ratioFakeVsData->SetTitle((channeltitle+posttitle).c_str());
+            ratioFakeVsData->GetXaxis()->SetTitle(plottitles[iv].c_str());
+            ratioFakeVsData->GetYaxis()->SetTitle("");
+            ratioFakeVsData->SetLineColor(kBlue);
+            ratioFakeVsFake->SetLineColor(kRed);
+            ratioFakeVsData->Draw("h");
+            ratioFakeVsFake->Draw("SAME,h");
+            line->Draw("same");
+            legfakes->Draw("");
+            Canvasfakes->Update();
+            Canvasfakes->SaveAs( ("fakevalidation_ratio_"+plotnames[iv]+poststring+channelst+".png").c_str());
+            Canvasfakes->SetLogy();
+            Canvasfakes->Update();
+            Canvasfakes->SaveAs( ("fakevalidation_ratio_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str());
           }
-          if(name.find("fake")!=std::string::npos){
-            if(tempfake == 0) tempfake = (TH1F*) temp;
-            else tempfake->Add((TH1F*) temp);
-          }
-          if(name.find("DY")!=std::string::npos || name.find("Zjets")!=std::string::npos || dataSetName.find("TT")!=std::string::npos || dataSetName.find("WW")!=std::string::npos ){
-            if(tempDY == 0) tempDY = (TH1F*) temp;
-            else tempDY->Add((TH1F*) temp);
-          }
-          
         }
-        tempfake->Scale(1./tempfake->Integral());
-        tempdata->Scale(1./tempdata->Integral());
-        tempDY->Scale(1./tempDY->Integral());
         
-        tempfake->SetLineColor(kRed);
-        tempDY->SetLineColor(kBlue);
-        tempdata->SetLineColor(kBlack);
-        tempdata->SetMarkerSize(3);
-        TCanvas* Canvasfakes = 0;
-        Double_t xl1=0.5, yl1=.7, xl2=xl1+.4, yl2=yl1+.2;
-        TLegend *legfakes = new TLegend(xl1,yl1,xl2,yl2);
-        
-        legfakes->AddEntry(tempdata,"Data","LPF");   // h1 and h2 are histogram pointers
-        legfakes->AddEntry(tempfake,"DD non prompt","L");
-        legfakes->AddEntry(tempDY,"MC non prompt","L");
-        
-        double maximum = TMath::Max(TMath::Max(tempfake->GetMaximum(), tempdata->GetMaximum()), tempDY->GetMaximum());
-        tempdata->SetMaximum(maximum*1.2);
-        
-        tempdata->SetTitle(posttitle.c_str());
-        tempdata->GetXaxis()->SetTitle(plottitles[iv].c_str());
-        
-        Canvasfakes =  TCanvasCreator(tempdata, "tempdata" );//new TCanvas("Canvas_PU","Canvas_PU");
-        Canvasfakes->cd();
-        
-        tempdata->Draw("ep");
-        tempfake->Draw("SAME,h");
-        tempDY->Draw("SAME,h");
-        legfakes->Draw("");
-        Canvasfakes->Update();
-        Canvasfakes->SaveAs( ("fakevalidation_"+plotnames[iv]+poststring+".png").c_str());
-        Canvasfakes->SetLogy();
-        Canvasfakes->Update();
-        Canvasfakes->SaveAs( ("fakevalidation_"+plotnames[iv]+"LogY_"+poststring+".png").c_str() );
-        
-        TH1F* ratioFakeVsFake = (TH1F*) tempDY->Clone("ratioFakeVsFake");
-        ratioFakeVsFake->Divide((TH1F*) tempfake);
-        
-        
-        double xmaxfakesVsfake = ratioFakeVsFake->GetXaxis()->GetBinLowEdge(ratioFakeVsFake->GetNbinsX()+1);
-        double xminfakesVsfake = ratioFakeVsFake->GetXaxis()->GetBinLowEdge(1);
-        TLine *line = new TLine(xminfakesVsfake,1, xmaxfakesVsfake,1);
-        line->SetLineColor(kGray);
-        
-        ratioFakeVsFake->SetTitle(posttitle.c_str());
-        ratioFakeVsFake->GetYaxis()->SetTitle("MC non prompt/ DY non prompt");
-        ratioFakeVsFake->GetXaxis()->SetTitle(plottitles[iv].c_str());
-        Canvasfakes =  TCanvasCreator(ratioFakeVsFake, "ratioFakeVsFake" );//new TCanvas("Canvas_PU","Canvas_PU");
-        Canvasfakes->cd();
-        ratioFakeVsFake->Draw("h");
-        line->Draw("same");
-        Canvasfakes->Update();
-        Canvasfakes->SaveAs( ("fakevalidation_ratiofakes_"+plotnames[iv]+poststring+".png").c_str());
-        Canvasfakes->SetLogy();
-        Canvasfakes->Update();
-        Canvasfakes->SaveAs( ("fakevalidation_ratiofakes_"+plotnames[iv]+"LogY_"+poststring+".png").c_str());
-        
-        TH1F* ratioFakeVsData = (TH1F*) tempdata->Clone("ratioFakeVsData");
-        ratioFakeVsData->Divide((TH1F*) tempfake);
-        ratioFakeVsData->GetXaxis()->SetTitle(plottitles[iv].c_str());
-        ratioFakeVsData->SetLineColor(kBlue);
-        ratioFakeVsData->SetTitle(posttitle.c_str());
-        ratioFakeVsData->GetYaxis()->SetTitle("data/DD non prompt");
-        Canvasfakes =  TCanvasCreator(ratioFakeVsData, "ratioFakeVsData" );//new TCanvas("Canvas_PU","Canvas_PU");
-        Canvasfakes->cd();
-        ratioFakeVsData->Draw("h");
-        line->Draw("same");
-        Canvasfakes->Update();
-        Canvasfakes->SaveAs( ("fakevalidation_ratiodata_"+plotnames[iv]+poststring+".png").c_str());
-        Canvasfakes->SetLogy();
-        Canvasfakes->Update();
-        Canvasfakes->SaveAs( ("fakevalidation_ratiodata_"+plotnames[iv]+"LogY_"+poststring+".png").c_str());
-        
-        legfakes = new TLegend(xl1,yl1,xl2,yl2);
-        legfakes->AddEntry(ratioFakeVsData,"DD non prompt/Data","L");   // h1 and h2 are histogram pointers
-        legfakes->AddEntry(tempfake,"DD non prompt / MC non prompt","L");
-        
-        maximum = TMath::Max(ratioFakeVsFake->GetMaximum(),ratioFakeVsData->GetMaximum());
-        ratioFakeVsData->SetMaximum(maximum*1.2);
-        
-        Canvasfakes =  TCanvasCreator(ratioFakeVsData, "ratioFakeVsData" );//new TCanvas("Canvas_PU","Canvas_PU");
-        Canvasfakes->cd();
-        ratioFakeVsData->SetTitle(posttitle.c_str());
-        ratioFakeVsData->GetXaxis()->SetTitle(plottitles[iv].c_str());
-        ratioFakeVsData->GetYaxis()->SetTitle("");
-        ratioFakeVsData->SetLineColor(kBlue);
-        ratioFakeVsFake->SetLineColor(kRed);
-        ratioFakeVsData->Draw("h");
-        ratioFakeVsFake->Draw("SAME,h");
-        line->Draw("same");
-        legfakes->Draw("");
-        Canvasfakes->Update();
-        Canvasfakes->SaveAs( ("fakevalidation_ratio_"+plotnames[iv]+poststring+".png").c_str());
-        Canvasfakes->SetLogy();
-        Canvasfakes->Update();
-        Canvasfakes->SaveAs( ("fakevalidation_ratio_"+plotnames[iv]+"LogY_"+poststring+".png").c_str());
       }
-      
     }
     /*
      TDirectory* th1dirsys = fout->mkdir("1D_histograms_sys");
@@ -5096,16 +5136,58 @@ void ClearMatchingSampleVars(){
   CjetMatchedCvsLT = 0.;
 }
 ///////////////////////////////////// INIT PLOTS /////////////////////////////////////////
-void InitFakeValidation(string dataSetName){
+void InitFakeValidation(string dataSetName,  vector <int> decayChannels){
   TH1::SetDefaultSumw2();
-  histo1D_fakevvalidation[("ZbosonPt_"+dataSetName).c_str()] = new TH1F(("ZbosonPt_"+dataSetName).c_str(),"p_{T} Z boson",10,0,500);
-  histo1D_fakevvalidation[("ZbosonEta_"+dataSetName).c_str()] = new TH1F(("ZbosonEta_"+dataSetName).c_str(),"#eta Z boson",6,-3,3);
-  histo1D_fakevvalidation[("ZbosonPhi_"+dataSetName).c_str()] = new TH1F(("ZbosonPhi_"+dataSetName).c_str(),"#phi Z boson",9,-4,4);
+  string channelstr = "";
   
-  histo1D_fakevvalidation[("WlepPt_"+dataSetName).c_str()] = new TH1F(("WlepPt_"+dataSetName).c_str(),"p_{T} l_{W}",10,0,500);
-  histo1D_fakevvalidation[("WlepEta_"+dataSetName).c_str()] = new TH1F(("WlepEta_"+dataSetName).c_str(),"#eta l_{W}",6,-3,3);
-  histo1D_fakevvalidation[("WlepPhi_"+dataSetName).c_str()] = new TH1F(("WlepPhi_"+dataSetName).c_str(),"#phi l_{W}",8,-4,4);
-  histo1D_fakevvalidation[("TrMassW_"+dataSetName).c_str()] = new TH1F(("TrMassW_"+dataSetName).c_str(),"m_{T}(l_{W},#nu)",10,15,300);
+  vector<string> v_prefixregion = {"2lep", "3lep"};
+  if(!doDilep) v_prefixregion = {"3lep"};
+  string prefixregion = "";
+  for(int iReg = 0; iReg < v_prefixregion.size(); iReg++){
+    prefixregion = v_prefixregion[iReg];
+    
+    for(int iChan =0; iChan < decayChannels.size() ; iChan++){
+      
+      channelstr = prefixregion + "_";
+      if(decayChannels[iChan] == 0) channelstr += "uuu";
+      if(decayChannels[iChan] == 1) channelstr += "uue";
+      if(decayChannels[iChan] == 2) channelstr += "eeu";
+      if(decayChannels[iChan] == 3) channelstr += "eee";
+      if(decayChannels[iChan] == -9) channelstr += "all";
+      if(decayChannels[iChan] == 4) channelstr +="uu";
+      if(decayChannels[iChan] == 5) channelstr +="ee";
+      //MSPlot[plotname.c_str()]->setChannel(true, decayChan);
+      
+      if((decayChannels[iChan] == 4 || decayChannels[iChan] == 5) && prefixregion.find("3lep")!=std::string::npos) continue;
+      
+      histo1D_fakevvalidation[("ZbosonPt_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPt_"+channelstr+dataSetName).c_str(),"p_{T} Z boson (GeV)",5,0,500);
+      histo1D_fakevvalidation[("ZbosonEta_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonEta_"+channelstr+dataSetName).c_str(),"#eta Z boson",6,-3,3);
+      histo1D_fakevvalidation[("ZbosonPhi_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPhi_"+channelstr+dataSetName).c_str(),"#phi Z boson",9,-4,4);
+      
+      histo1D_fakevvalidation[("WlepPt_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPt_"+channelstr+dataSetName).c_str(),"p_{T} l_{W} (GeV)",10,0,450);
+      histo1D_fakevvalidation[("WlepEta_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepEta_"+channelstr+dataSetName).c_str(),"#eta l_{W}",6,-3,3);
+      histo1D_fakevvalidation[("WlepPhi_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPhi_"+channelstr+dataSetName).c_str(),"#phi l_{W}",8,-4,4);
+      histo1D_fakevvalidation[("TrMassW_"+channelstr+dataSetName).c_str()] = new TH1F(("TrMassW_"+channelstr+dataSetName).c_str(),"transv. mass W boson (GeV)",10,15,300);
+      
+      histo1D_fakevvalidation[("ZbosonPtMu_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPtMu_"+channelstr+dataSetName).c_str(),"p_{T} Z_{#mu #mu} boson (GeV)",10,0,500);
+      histo1D_fakevvalidation[("ZbosonEtaMu_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonEtaMu_"+channelstr+dataSetName).c_str(),"#eta Z_{#mu #mu} boson",6,-3,3);
+      histo1D_fakevvalidation[("ZbosonPhiMu_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPhiMu_"+channelstr+dataSetName).c_str(),"#phi Z_{#mu #mu} boson",9,-4,4);
+      
+      histo1D_fakevvalidation[("WlepPtMu_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPtu_"+channelstr+dataSetName).c_str(),"p_{T} #mu_{W} (GeV)",10,0,500);
+      histo1D_fakevvalidation[("WlepEtaMu_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepEtau_"+channelstr+dataSetName).c_str(),"#eta #mu_{W}",6,-3,3);
+      histo1D_fakevvalidation[("WlepPhiMu_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPhiu_"+channelstr+dataSetName).c_str(),"#phi #mu_{W}",8,-4,4);
+      histo1D_fakevvalidation[("TrMassWMu_"+channelstr+dataSetName).c_str()] = new TH1F(("TrMassWu_"+channelstr+dataSetName).c_str(),"transv. mass W_{#mu} boson (GeV)",10,15,300);
+      
+      histo1D_fakevvalidation[("ZbosonPtEl_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPtEl_"+channelstr+dataSetName).c_str(),"p_{T} Z_{ee} boson (GeV)",10,0,500);
+      histo1D_fakevvalidation[("ZbosonEtaEl_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonEtaEl_"+channelstr+dataSetName).c_str(),"#eta Z_{ee} boson",6,-3,3);
+      histo1D_fakevvalidation[("ZbosonPhiEl_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPhiEl_"+channelstr+dataSetName).c_str(),"#phi Z_{ee} boson",9,-4,4);
+      
+      histo1D_fakevvalidation[("WlepPtEl_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPtEl_"+channelstr+dataSetName).c_str(),"p_{T} e_{W} (GeV)",10,0,500);
+      histo1D_fakevvalidation[("WlepEtaEl_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepEtaEl_"+channelstr+dataSetName).c_str(),"#eta e_{W}",6,-3,3);
+      histo1D_fakevvalidation[("WlepPhiEl_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPhiEl_"+channelstr+dataSetName).c_str(),"#phi e_{W}",8,-4,4);
+      histo1D_fakevvalidation[("TrMassWEl_"+channelstr+dataSetName).c_str()] = new TH1F(("TrMassWEl_"+channelstr+dataSetName).c_str(),"transv. mass W_{e} boson (GeV)",10,15,300);
+    }
+  }
   
 }
 
@@ -5229,9 +5311,12 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
       
       //cout << "init " << (prefixregion+prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
       MSPlot[(prefixregion+prefix+"_bdisc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_bdisc_"+decaystring).c_str(), 23, 0., 1, "CSVv2 discriminant");
-      MSPlot[(prefixregion+prefix+"_bdisc_bfBT_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_bdisc_bfBT_"+decaystring).c_str(),30, 0., 1, "CSVv2 discriminant before Btag SF");
+      MSPlot[(prefixregion+prefix+"_bdisc_bfBT_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_bdisc_bfBT_"+decaystring).c_str(),23, 0., 1, "CSVv2 discriminant before Btag SF");
       MSPlot[(prefixregion+prefix+"_btagSF_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_btagSF_"+decaystring).c_str(), 80, 0.9, 1.3, "Btag SF");
       
+      
+      MSPlot[(prefixregion+prefix+"_cvsldisc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_cvsldisc_"+decaystring).c_str(), 23, -1., 1, "charm vs loose disc.");
+      MSPlot[(prefixregion+prefix+"_cvsbdisc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_cvsbdisc_"+decaystring).c_str(), 23, -1., 1, "charm vs b disc.");
       
       MSPlot[(prefixregion+prefix+"_nMu_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nMu_"+decaystring).c_str(), 10, -0.5, 9.5, "#  Muons");
       MSPlot[(prefixregion+prefix+"_nMu_bfMuSF_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nMu_bfMuSF_"+decaystring).c_str(), 10, -0.5, 9.5, "#  Muons before Muon SF");
@@ -5245,8 +5330,8 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
       MSPlot[(prefixregion+prefix+"_JetPt_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_JetPt_bfJES_"+decaystring).c_str(), 20, 0, 500, "Jet p_{T} before JES, after JER ", "GeV");
       MSPlot[(prefixregion+prefix+"_JetPt_afJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_JetPt_afJER_"+decaystring).c_str(), 20, 0, 500, "Jet p_{T} after JER ","GeV");
       MSPlot[(prefixregion+prefix+"_JetPt_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_JetPt_afJES_"+decaystring).c_str(), 20, 0, 500, "Jet p_{T} ", "GeV");
-      MSPlot[(prefixregion+prefix+"_met_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_bfJES_"+decaystring).c_str(), 25, 0, 500, "E_{T}^{miss} p_{T} before JES ","GeV");
-      MSPlot[(prefixregion+prefix+"_met_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_afJES_"+decaystring).c_str(), 25, 0, 500, "E_{T}^{miss} p_{T} after JES ","GeV");
+      MSPlot[(prefixregion+prefix+"_met_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_bfJES_"+decaystring).c_str(), 40, 0, 400, "E_{T}^{miss} p_{T} before JES ","GeV");
+      MSPlot[(prefixregion+prefix+"_met_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_afJES_"+decaystring).c_str(), 40, 0, 400, "E_{T}^{miss} p_{T}","GeV");
       MSPlot[(prefixregion+prefix+"_met_phi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_phi_"+decaystring).c_str(), 30, -4, 4, "E_{T}^{miss} #phi");
       MSPlot[(prefixregion+prefix+"_met_px_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_px_"+decaystring).c_str(), 25, 0, 50, "E_{T}^{miss} p_{x}");
       MSPlot[(prefixregion+prefix+"_met_py_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_py_"+decaystring).c_str(), 25, 0, 50, "E_{T}^{miss} p_{y}");
@@ -5275,9 +5360,9 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
       MSPlot[(prefixregion+prefix+"_nJetsCSVL_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nJetsCSVL_"+decaystring).c_str(), 10, -0.5, 9.5, "#  CSVL");
       MSPlot[(prefixregion+prefix+"_nJetsCSVM_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nJetsCSVM_"+decaystring).c_str(), 10, -0.5, 9.5, "#  CSVM");
       MSPlot[(prefixregion+prefix+"_nJetsCSVT_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nJetsCSVT_"+decaystring).c_str(), 10, -0.5, 9.5, "#  CSVT");
-      MSPlot[(prefixregion+prefix+"_nJetsCvsL_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nJetsCvsL_"+decaystring).c_str(), 10, -0.5, 9.5, "#  CvsL Jets");
-      MSPlot[(prefixregion+prefix+"_nJetsCvsB_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nJetsCvsB_"+decaystring).c_str(), 10, -0.5, 9.5, "#  CvsB Jets");
-      
+      MSPlot[(prefixregion+prefix+"_nJetsCharmL_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nJetsCharmL_"+decaystring).c_str(), 10, -0.5, 9.5, "#  charm loose jets");
+      MSPlot[(prefixregion+prefix+"_nJetsCharmM_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nJetsCharmM_"+decaystring).c_str(), 10, -0.5, 9.5, "#  charm medium jets");
+      MSPlot[(prefixregion+prefix+"_nJetsCharmT_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nJetsCharmT_"+decaystring).c_str(), 10, -0.5, 9.5, "#  charm tight jets");
       // finding Z boson
       
       if(decayChannels[iChan] == 0 || decayChannels[iChan] == -9){
@@ -5295,7 +5380,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
         MSPlot[(prefixregion+prefix+"_2ndLeadingMuIso_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_2ndLeadingMuIso_"+decaystring).c_str(), 10,0,1, "2nd leading muon rel. iso. ");
         MSPlot[(prefixregion+prefix+"_2ndLeadingMuEta_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_2ndLeadingMuEta_"+decaystring).c_str(), 30,-6,6, "2nd leading muon #eta ");
         
-        MSPlot[(prefixregion+prefix+"_ZbosonMuIso_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMuIso_"+decaystring).c_str(), 10,0,1, "rel. iso. of #mu_{Z}");
+        MSPlot[(prefixregion+prefix+"_ZbosonMuIso_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMuIso_"+decaystring).c_str(), 10,0,1, "#mu_{Z} rel. iso.");
         MSPlot[(prefixregion+prefix+"_ZbosonMudPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMudPhi_"+decaystring).c_str(), 20,-4,4, "#Delta #phi (#mu_{Z},#mu_{Z})");
         MSPlot[(prefixregion+prefix+"_ZbosonMudR_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMudR_"+decaystring).c_str(), 50,0,6, "#Delta R(#mu,#mu) ");
         MSPlot[(prefixregion+prefix+"_ZbosonMassMu_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMassMu_"+decaystring).c_str(), 70, 60, 130, "inv. mass Z_{#mu,#mu} boson ","GeV");
@@ -5509,7 +5594,8 @@ void InitMVAMSPlotsSingletop(string prefix, vector <int> decayChannels){
     MSPlot[(prefix+"_MVA_TotalInvMass_lep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalInvMass_lep_"+decaystring).c_str(),50, 0, 2000, "total lepton inv. mass ","GeV");
     
     
-    MSPlot[(prefix+"_MVA_bdiscCSVv2_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_bdiscCSVv2_jet_0_"+decaystring).c_str(),50, 0, 1, "CSVv2 leading jet");
+    MSPlot[(prefix+"_MVA_bdiscCSVv2_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_bdiscCSVv2_jet_0_"+decaystring).c_str(),50, 0, 1, " leading jet CSVv2 disc.");
+    
     // MSPlot[(prefix+"_MVA_CosTheta_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_CosTheta_"+decaystring).c_str(),25, -1, 1, "Cos(#theta *)");
     // MSPlot[(prefix+"_MVA_CosTheta_alt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_CosTheta_alt_"+decaystring).c_str(),25, -1, 1, "Cos(#theta *)");
     
@@ -5555,8 +5641,8 @@ void InitMVAMSPlotsTopPair(string prefix, vector <int> decayChannels){
     if(decayChannels[iChan] == -9) decaystring = "all";
     
     MSPlot[(prefix+"_MVA_bdiscCSVv2_jet_1_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_bdiscCSVv2_jet_1_"+decaystring).c_str(),100, 0, 1, "2nd leading jet CSVv2");
-    MSPlot[(prefix+"_MVA_cdiscCvsB_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_cdiscCvsB_jet_0_"+decaystring).c_str(),100, 0, 1, "leading jet CvsB");
-    MSPlot[(prefix+"_MVA_cdiscCvsL_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_cdiscCvsL_jet_0_"+decaystring).c_str(),100, 0, 1, "leading jet CvsL");
+    MSPlot[(prefix+"_MVA_cdiscCvsB_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_cdiscCvsB_jet_0_"+decaystring).c_str(),100, -1, 1, "leading jet CvsB");
+    MSPlot[(prefix+"_MVA_cdiscCvsL_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_cdiscCvsL_jet_0_"+decaystring).c_str(),100, -1, 1, "leading jet CvsL");
     
     
     MSPlot[(prefix+"_MVA_jet1_pt_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"_MVA_jet1_pt_"+decaystring).c_str(), 100,0, 500, "2nd leading jet p_{T} ","GeV");
@@ -5583,8 +5669,8 @@ void InitMVAMSPlotsTopPair(string prefix, vector <int> decayChannels){
     MSPlot[(prefix+"_MVA_dRZc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRZc_"+decaystring).c_str(),100,-10, 10, "#Delta R(Z,q)");
     MSPlot[(prefix+"_MVA_dPhiZc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dPhiZc_"+decaystring).c_str(),40,-4, 4, "#Delta #phi (Z,q)");
     
-    MSPlot[(prefix+"_MVA_cdiscCvsB_jet_1_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_cdiscCvsB_jet_1_"+decaystring).c_str(),100, 0, 1, "2nd leading jet CvsB");
-    MSPlot[(prefix+"_MVA_cdiscCvsL_jet_1_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_cdiscCvsL_jet_1_"+decaystring).c_str(),100, 0, 1, "2nd leading jet CvsL");
+    MSPlot[(prefix+"_MVA_cdiscCvsB_jet_1_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_cdiscCvsB_jet_1_"+decaystring).c_str(),100, -1, 1, "2nd leading jet CvsB");
+    MSPlot[(prefix+"_MVA_cdiscCvsL_jet_1_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_cdiscCvsL_jet_1_"+decaystring).c_str(),100, -1, 1, "2nd leading jet CvsL");
     
     // interplay
     MSPlot[(prefix+"_MVA_dRSMFCNCtop_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRSMFCNCtop_"+decaystring).c_str(),100,-10, 10, "#Delta R(SM top,FCNC top)");
@@ -5884,11 +5970,16 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
       MSPlot[(prefixregion+prefix+"_NbOfVertices_bfPU_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true, eventW*scaleFactor_bfPU);
       MSPlot[(prefixregion+prefix+"_puSF_"+decaystring).c_str()]->Fill(puSF , datasets[d], true, 1);
       
-      //cout << decayChannels[iChan] << " " << channelInt << " " << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
-      MSPlot[(prefixregion+prefix+"_bdisc_"+decaystring).c_str()]->Fill(bdisc_jet[0] , datasets[d], true,eventW*scaleFactor);
-      MSPlot[(prefixregion+prefix+"_bdisc_bfBT_"+decaystring).c_str()]->Fill(bdisc_jet[0] , datasets[d], true,eventW*scaleFactor_bfBT);
       MSPlot[(prefixregion+prefix+"_btagSF_"+decaystring).c_str()]->Fill(btagSFshape , datasets[d], true, 1);
       
+      //cout << decayChannels[iChan] << " " << channelInt << " " << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
+      for(int iterJ = 0 ; iterJ < selectedJets.size(); iterJ++){
+        MSPlot[(prefixregion+prefix+"_bdisc_"+decaystring).c_str()]->Fill(bdisc_jet[iterJ] , datasets[d], true,eventW*scaleFactor);
+        MSPlot[(prefixregion+prefix+"_bdisc_bfBT_"+decaystring).c_str()]->Fill(bdisc_jet[iterJ] , datasets[d], true,eventW*scaleFactor_bfBT);
+        
+        MSPlot[(prefixregion+prefix+"_cvsldisc_"+decaystring).c_str()]->Fill(cdiscCvsL_jet[iterJ], datasets[d], true,eventW*scaleFactor);
+        MSPlot[(prefixregion+prefix+"_cvsbdisc_"+decaystring).c_str()]->Fill(cdiscCvsB_jet[iterJ], datasets[d], true,eventW*scaleFactor);
+      }
       MSPlot[(prefixregion+prefix+"_nMu_"+decaystring).c_str()]->Fill(selectedMuons.size() , datasets[d], true,eventW*scaleFactor);
       MSPlot[(prefixregion+prefix+"_nMu_bfMuSF_"+decaystring).c_str()]->Fill(selectedMuons.size() , datasets[d], true, eventW*scaleFactor_bfMuSF);
       MSPlot[(prefixregion+prefix+"_muSF_"+decaystring).c_str()]->Fill(muonSFtemp , datasets[d], true, 1);
@@ -5932,6 +6023,9 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
       MSPlot[(prefixregion+prefix+"_nJetsCSVL_"+decaystring).c_str()]->Fill(selectedCSVLJetID.size() , datasets[d], true,eventW*scaleFactor);
       MSPlot[(prefixregion+prefix+"_nJetsCSVM_"+decaystring).c_str()]->Fill(selectedCSVMJetID.size() , datasets[d], true,eventW*scaleFactor);
       MSPlot[(prefixregion+prefix+"_nJetsCSVT_"+decaystring).c_str()]->Fill(selectedCSVTJetID.size() , datasets[d], true,eventW*scaleFactor);
+      MSPlot[(prefixregion+prefix+"_nJetsCharmL_"+decaystring).c_str()]->Fill(selectedCharmLJetsindex.size() , datasets[d], true,eventW*scaleFactor);
+      MSPlot[(prefixregion+prefix+"_nJetsCharmM_"+decaystring).c_str()]->Fill(selectedCharmMJetsindex.size(), datasets[d], true,eventW*scaleFactor);
+      MSPlot[(prefixregion+prefix+"_nJetsCharmT_"+decaystring).c_str()]->Fill(selectedCharmTJetsindex.size(), datasets[d], true,eventW*scaleFactor);
       
       
       
@@ -6189,21 +6283,78 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
   
   //cout << "end plot filling" << endl;
 }
-void FillFakeValidation(string dataSetName, double eventW){
-  histo1D_fakevvalidation[("ZbosonPt_"+dataSetName).c_str()] ->Fill(Zboson.Pt(), eventW*scaleFactor);
-  histo1D_fakevvalidation[("ZbosonEta_"+dataSetName).c_str()] ->Fill(Zboson.Eta(), eventW*scaleFactor);
-  histo1D_fakevvalidation[("ZbosonPhi_"+dataSetName).c_str()] ->Fill(Zboson.Phi(), eventW*scaleFactor);
-  if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){
-    histo1D_fakevvalidation[("WlepPt_"+dataSetName).c_str()] ->Fill(selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
-    histo1D_fakevvalidation[("WlepEta_"+dataSetName).c_str()]->Fill(selectedElectrons[WelecIndiceF].Eta(), eventW*scaleFactor);
-    histo1D_fakevvalidation[("WlepPhi_"+dataSetName).c_str()]->Fill(selectedElectrons[WelecIndiceF].Phi(), eventW*scaleFactor);
+void FillFakeValidation(string dataSetName, vector <int> decayChannels, bool isData, bool isfakes, bool threelepregion,bool twolepregion){
+  // cout << "fill plots" << endl;
+  string decaystr= "";
+  Double_t eventW = 1.;
+  // if(isData  ) scaleFactor = 1.;
+  eventW = Luminosity/EquilumiSF;
+  
+  vector<string> v_prefixregion = {"2lep", "3lep"};
+  if(!doDilep) v_prefixregion = {"3lep"};
+  string prefixregion = "";
+  for(int iReg = 0; iReg < v_prefixregion.size(); iReg++){
+    prefixregion = v_prefixregion[iReg];
+    if(prefixregion.find("3lep")!=std::string::npos && !threelepregion) continue;
+    if(prefixregion.find("2lep")!=std::string::npos && !twolepregion) continue;
+    for(int iChan =0; iChan < decayChannels.size() ; iChan++){
+      decaystr = prefixregion + "_";
+      //  cout << decayChannels[iChan] << " " << channelInt << " " <<  threelepregion << " " << twolepregion << endl;
+      // if(decayChannels[iChan] == -9) continue;;
+      //cout << decayChannels[iChan] << " " << channelInt << " " << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
+      if(decayChannels[iChan] != channelInt && decayChannels[iChan] != -9) continue;
+      //if(decayChannels[iChan] == -9)cout << decayChannels[iChan] << " " << channelInt << " passed " << endl;
+      if(decayChannels[iChan] == 0) decaystr += "uuu";
+      if(decayChannels[iChan] == 1) decaystr += "uue";
+      if(decayChannels[iChan] == 2) decaystr += "eeu";
+      if(decayChannels[iChan] == 3) decaystr += "eee";
+      if(decayChannels[iChan] == 4) decaystr += "uu";
+      if(decayChannels[iChan] == 5) decaystr += "ee";
+      if(decayChannels[iChan] == -9) decaystr += "all";
+      
+      if((decayChannels[iChan] == 4 || decayChannels[iChan] == 5) && prefixregion.find("3lep")!=std::string::npos) continue;
+      
+      histo1D_fakevvalidation[("ZbosonPt_"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Pt(), eventW*scaleFactor);
+      histo1D_fakevvalidation[("ZbosonEta_"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Eta(), eventW*scaleFactor);
+      histo1D_fakevvalidation[("ZbosonPhi_"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Phi(), eventW*scaleFactor);
+      if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){
+        histo1D_fakevvalidation[("WlepPt_"+decaystr+dataSetName).c_str()] ->Fill(selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakevvalidation[("WlepEta_"+decaystr+dataSetName).c_str()]->Fill(selectedElectrons[WelecIndiceF].Eta(), eventW*scaleFactor);
+        histo1D_fakevvalidation[("WlepPhi_"+decaystr+dataSetName).c_str()]->Fill(selectedElectrons[WelecIndiceF].Phi(), eventW*scaleFactor);
+      }
+      if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){
+        histo1D_fakevvalidation[("WlepPt_"+decaystr+dataSetName).c_str()] ->Fill(selectedMuons[WmuIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakevvalidation[("WlepEta_"+decaystr+dataSetName).c_str()]->Fill(selectedMuons[WmuIndiceF].Eta(), eventW*scaleFactor);
+        histo1D_fakevvalidation[("WlepPhi_"+decaystr+dataSetName).c_str()]->Fill(selectedMuons[WmuIndiceF].Phi(), eventW*scaleFactor);
+      }
+      histo1D_fakevvalidation[("TrMassW_"+decaystr+dataSetName).c_str()]->Fill(mWT, eventW*scaleFactor);
+      
+      if(ZmuIndiceF_0 != -999 && ZmuIndiceF_1 != -999 &&selectedMuons.size() > 1 ){
+        histo1D_fakevvalidation[("ZbosonPtMu_"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Pt(), eventW*scaleFactor);
+        histo1D_fakevvalidation[("ZbosonEtaMu_"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Eta(), eventW*scaleFactor);
+        histo1D_fakevvalidation[("ZbosonPhiMu_"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Phi(), eventW*scaleFactor);
+      }
+      if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){
+        histo1D_fakevvalidation[("WlepPtMu_"+decaystr+dataSetName).c_str()] ->Fill(selectedMuons[WmuIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakevvalidation[("WlepEtaMu_"+decaystr+dataSetName).c_str()]->Fill(selectedMuons[WmuIndiceF].Eta(), eventW*scaleFactor);
+        histo1D_fakevvalidation[("WlepPhiMu_"+decaystr+dataSetName).c_str()]->Fill(selectedMuons[WmuIndiceF].Phi(), eventW*scaleFactor);
+        histo1D_fakevvalidation[("TrMassWMu_"+decaystr+dataSetName).c_str()]->Fill(mWT, eventW*scaleFactor);
+      }
+      if(ZelecIndiceF_0 != -999 && ZelecIndiceF_1 != -999 && selectedElectrons.size() > 1 ){
+        histo1D_fakevvalidation[("ZbosonPtEl_"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Pt(), eventW*scaleFactor);
+        histo1D_fakevvalidation[("ZbosonEtaEl_"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Eta(), eventW*scaleFactor);
+        histo1D_fakevvalidation[("ZbosonPhiEl_"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Phi(), eventW*scaleFactor);
+      }
+      if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){
+        histo1D_fakevvalidation[("WlepPtEl_"+decaystr+dataSetName).c_str()] ->Fill(selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakevvalidation[("WlepEtaEl_"+decaystr+dataSetName).c_str()]->Fill(selectedElectrons[WelecIndiceF].Eta(), eventW*scaleFactor);
+        histo1D_fakevvalidation[("WlepPhiEl_"+decaystr+dataSetName).c_str()]->Fill(selectedElectrons[WelecIndiceF].Phi(), eventW*scaleFactor);
+        histo1D_fakevvalidation[("TrMassWEl_"+decaystr+dataSetName).c_str()]->Fill(mWT, eventW*scaleFactor);
+      }
+      
+      
+    }
   }
-  if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){
-    histo1D_fakevvalidation[("WlepPt_"+dataSetName).c_str()] ->Fill(selectedMuons[WmuIndiceF].Pt(), eventW*scaleFactor);
-    histo1D_fakevvalidation[("WlepEta_"+dataSetName).c_str()]->Fill(selectedMuons[WmuIndiceF].Eta(), eventW*scaleFactor);
-    histo1D_fakevvalidation[("WlepPhi_"+dataSetName).c_str()]->Fill(selectedMuons[WmuIndiceF].Phi(), eventW*scaleFactor);
-  }
-  histo1D_fakevvalidation[("TrMassW_"+dataSetName).c_str()]->Fill(mWT, eventW*scaleFactor);
 }
 void Fill1DPlots(string dataSetName, double eventW, bool twolepregion, bool threelepregion){
   //Double_t eventW = 1.;
