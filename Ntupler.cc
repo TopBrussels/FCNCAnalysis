@@ -431,7 +431,7 @@ int main (int argc, char *argv[])
   // reliso cut fabs(eta supercluster) <= 1.479 --> 0.107587 // (fabs(eta supercluster) > 1.479 && fabs(eta supercluster) < 2.5) --> 0.113254
   // muon
   float mu_pt_cut = 20.; // 40
-  float mu_pt_cut_loose = 20.;
+  float mu_pt_cut_loose = 30.;
   float mu_eta_cut = 2.4;
   float mu_iso_cut = 0.15;
   float mu_iso_cut_loose = 0.25;
@@ -935,6 +935,7 @@ int main (int argc, char *argv[])
     Double_t puSF;
     Double_t puSF_up;
     Double_t puSF_down;
+    Double_t weight0, weight1, weight2, weight3, weight4, weight5, weight6, weight7, weight8;
 
     Double_t btagSFshape = 1.;
     Double_t btagSFshape_down_cferr1 = 1.;
@@ -1165,6 +1166,15 @@ int main (int argc, char *argv[])
     myTree->Branch("hdamp_up",&hdamp_up,"hdamp_up/D");
     myTree->Branch("hdamp_down",&hdamp_down,"hdamp_down/D");
     myTree->Branch("rejecteventBadPFmuon", &rejecteventBadPFmuon, "rejecteventBadPFmuon/I");
+    myTree->Branch("weight0", &weight0," weight0/D");
+    myTree->Branch("weight1", &weight1," weight1/D");
+     myTree->Branch("weight2", &weight2," weight2/D");
+     myTree->Branch("weight3", &weight3," weight3/D");
+     myTree->Branch("weight4", &weight4," weight4/D");
+     myTree->Branch("weight5", &weight5," weight5/D");
+     myTree->Branch("weight6", &weight0," weight6/D");
+     myTree->Branch("weight7", &weight0," weight7/D");
+     myTree->Branch("weight8", &weight0," weight8/D");
     
     myTree->Branch("channelInt", &channelInt, "channelInt/I");
     myTree->Branch("nloWeight",&nloWeight,"nloWeight/D");
@@ -1887,7 +1897,7 @@ int main (int argc, char *argv[])
       //save variables for pdf uncertainties and factorisation scale calculation
       hdamp_down = 1.;
       hdamp_up = 1.;
-      Double_t weight0, weight1, weight2, weight3, weight4, weight5, weight6, weight7, weight8;
+      
       weight0 = weight1 = weight2 = weight3 = weight4 = weight5 = weight6 = weight7 = weight8 = 1.;
       if(!isData){
         if(event->getWeight(1)!= -9999)
@@ -2365,7 +2375,7 @@ int main (int argc, char *argv[])
         
       }
       else  if(doFakeLepton){
-        if ((selectedMuons.size() > 0 || selectedElectrons.size() > 0) && (selectedFakeMuons.size() + selectedFakeElectrons.size()) == 1 ){
+        if ((selectedMuons.size() > 0 || selectedElectrons.size() > 0) && (selectedFakeMuons.size() + selectedFakeElectrons.size()) >  0 ){
           if(selectedMuons.size() == 2 && selectedFakeMuons.size() == 1) {channelInt = 0; i_channel = 0;}
           else if(selectedElectrons.size() == 2 && selectedFakeElectrons.size() == 1) {channelInt = 3; i_channel = 3;}
           else if(selectedElectrons.size() == 1 && selectedMuons.size() == 1 && selectedFakeElectrons.size() == 1 ) {channelInt = 2; i_channel = 2; }
@@ -2392,7 +2402,7 @@ int main (int argc, char *argv[])
           else{
             lep3 = false;
             selections.push_back(0);
-            continueFlow = false;
+            //continueFlow = false;
           }
         
         
