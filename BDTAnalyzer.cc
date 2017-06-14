@@ -43,6 +43,7 @@ using namespace TopTree;
 ///////////////////////////////////// PLOT MAPPING /////////////////////////////////////////
 // Normal Plots (TH1F* and TH2F*)
 map<string,TH1F*> histo1D;
+map<string,TH1F*> histo1DBDTvars;
 map<string,TH1F*> histo1DPDF;
 map<string,TH1F*> histo1DSys;
 map<string,TH1F*> histo1DSysMTW;
@@ -59,30 +60,33 @@ vector < Dataset* > datasetsbf;
 ////////////////////////////////// functions ////////////////////////////////////////////
 // bookkeeping
 std::vector<std::string> split(const std::string &text,  char sep) ;
-string ConvertIntToString(int Number, int pad);
+string ConvertIntToString(Int_t Number, Int_t pad);
 string MakeTimeStamp();
-string intToStr (int number);
-double maximumValue(vector<double> array);
-double minimumValue(vector<double> array);
+string intToStr (Int_t number);
+Double_t maximumValue(vector<double> array);
+Double_t minimumValue(vector<double> array);
 // initialisations
 
 void InitMSPlotsMTW(string prefix, vector <int> decayChannels);
 void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair, bool isZut);
 void InitCalculatePDFWeightHisto(string dataSetName);
-void InitMTWShapeHisto(string dataSetName, string systematic, int isys,  vector <int> decayChannels);
-void InitSystematicHisto(string dataSetName, string systematic, int isys, bool doMTWtemplate);
+void InitMTWShapeHisto(string dataSetName, string systematic, Int_t isys,  vector <int> decayChannels);
+void InitSystematicHisto(string dataSetName, string systematic, Int_t isys, bool doMTWtemplate);
 void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut);
 void InitAnalyzerTree(TTree* tree);
 void Init1DHisto(string dataSetName, string systematic, bool istoppair, bool isZut, vector <int> decayChannels);
 // functions
 vector<double> BDTCUT(string region, string coupling);
-void CalculatePDFWeight(string dataSetName, double BDT, double MVA_weight_nom, int MVA_channel);
-void FillMTWPlots(int d, string postfix, vector <int> decayChannels, double weight_, int MVA_channel);
-void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isData, bool toppair, double weight_, int MVA_channel);
+void CalculatePDFWeight(string dataSetName, Double_t BDT, Double_t MVA_weight_nom, Int_t MVA_channel);
+void FillMTWPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel);
+void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool isData, bool toppair, Double_t weight_, Int_t MVA_channel);
 void GetPDFEnvelope(string dataSetName);
-void FillMTWShapeHisto(string dataSetName, string systematic, double weight_,int isys, int MVA_channel, vector <int> decayChannels);
-void FillSystematicHisto(string dataSetName, string systematic, double weight_, int isys, bool doMTWtemplate);
-void Fill1DHisto(string dataSetName,string systematic, bool istoppair, bool isZut, vector <int> decayChannels, double weight_, int MVA_channel);
+void Fill1DHisto(string dataSetName,string systematic, bool istoppair, bool isZut, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel);
+void FillMTWShapeHisto(string dataSetName, string systematic, Double_t weight_,Int_t isys, Int_t MVA_channel, vector <int> decayChannels);
+void FillSystematicHisto(string dataSetName, string systematic, Double_t weight_, Int_t isys, bool doMTWtemplate);
+
+//void Ini1DHistoBDTvariavles(bool istoppair, bool isZut, vector<int> decayChannels);
+
 
 //////////////////////////////// settings ////////////////////////////////
 bool makePlots = false;
@@ -90,7 +94,7 @@ bool doMTWtemplate = false;
 bool PlotSystematics = false;
 bool doPseudoData = false;
 bool doSystematics = false;
-int channel = -999;
+Int_t channel = -999;
 bool datafound = false;
 bool testing = false;
 bool doZut = false;
@@ -115,97 +119,149 @@ string tTreeName = "";
 string postfix = "";
 string output_histo_name = "";
 string ntupleFileName ="";
-int nbin = 50;
-int nbinMTW = 20;
-double endMTW = 300.;
-int nEntries = -1;
-int scaleNP = 10;
+Int_t nbin = 25;
+Int_t nbinMTW = 20;
+Double_t endMTW = 300.;
+Int_t nEntries = -1;
+Int_t scaleNP = 10;
 
 //////////////////////////// branches //////////////////////////////
 // Declaration of leaf types
-Float_t         MVA_Zboson_pt;
-Float_t         MVA_dPhiWlepb;
-Float_t         MVA_charge_asym;
-Float_t         MVA_bdiscCSVv2_jet_0;
-
-Float_t         MVA_cdiscCvsB_jet_1;
-Float_t         MVA_cdiscCvsB_jet_0;
-Float_t         MVA_cdiscCvsL_jet_1;
-Float_t         MVA_cdiscCvsL_jet_0;
-Float_t         MVA_dRZc;
-Float_t         MVA_dRWlepb;
-Float_t         MVA_dRZWlep;
-Float_t         MVA_mlb;
-Float_t         MVA_mWt2;
-Float_t         MVA_mWt;
-Float_t         MVA_FCNCtop_M;
-Float_t           MVA_nJets_CharmL;
-Float_t           MVA_NJets_CSVv2M;
+// Declaration of leaf types
+Double_t        MVA_BDT;
+Double_t        MVA_x1;
+Double_t        MVA_x2;
+Int_t           MVA_id1;
+Int_t           MVA_id2;
+Double_t        MVA_q;
+Int_t           MVA_channel;
+Float_t         MVA_weight;
+Double_t        MVA_weight_nom;
+Double_t        MVA_weight_puSF_up;
+Double_t        MVA_weight_puSF_down;
+Double_t        MVA_weight_electronSF_up;
+Double_t        MVA_weight_electronSF_down;
+Double_t        MVA_weight_muonSF_up;
+Double_t        MVA_weight_muonSF_down;
+Double_t        MVA_weight_btagSF_cferr1_up;
+Double_t        MVA_weight_btagSF_cferr1_down;
+Double_t        MVA_weight_btagSF_cferr2_up;
+Double_t        MVA_weight_btagSF_cferr2_down;
+Double_t        MVA_weight_btagSF_hf_up;
+Double_t        MVA_weight_btagSF_hf_down;
+Double_t        MVA_weight_btagSF_hfstats1_up;
+Double_t        MVA_weight_btagSF_hfstats1_down;
+Double_t        MVA_weight_btagSF_hfstats2_up;
+Double_t        MVA_weight_btagSF_hfstats2_down;
+Double_t        MVA_weight_btagSF_lf_up;
+Double_t        MVA_weight_btagSF_lf_down;
+Double_t        MVA_weight_btagSF_lfstats1_up;
+Double_t        MVA_weight_btagSF_lfstats1_down;
+Double_t        MVA_weight_btagSF_lfstats2_up;
+Double_t        MVA_weight_btagSF_lfstats2_down;
+Double_t MVA_weight_puSF = 1. ;
+Double_t MVA_weight_btagSF = 1.;
+Double_t MVA_weight_muonSF = 1.;
+Double_t MVA_weight_electronSF = 1.;
 Float_t         MVA_region;
-Double_t       MVA_x1;
-Double_t       MVA_x2;
-Int_t       MVA_id1;
-Int_t       MVA_id2;
-Double_t       MVA_q;
-//Float_t         MVA_weight;
-Double_t       MVA_weight_nom;
-Int_t         MVA_channel;
-Double_t       MVA_BDT;
 Double_t        MVA_EqLumi;
 Double_t        MVA_Luminosity;
-Double_t       MVA_weight_puSF_up;
-Double_t       MVA_weight_puSF_down;
-Double_t       MVA_weight_electronSF_up;
-Double_t       MVA_weight_electronSF_down;
-Double_t       MVA_weight_muonSF_up;
-Double_t       MVA_weight_muonSF_down;
-Double_t       MVA_weight_btagSF_cferr1_up;
-Double_t       MVA_weight_btagSF_cferr1_down;
-Double_t       MVA_weight_btagSF_cferr2_up;
-Double_t       MVA_weight_btagSF_cferr2_down;
-Double_t       MVA_weight_btagSF_hf_up;
-Double_t       MVA_weight_btagSF_hf_down;
-Double_t       MVA_weight_btagSF_hfstats1_up;
-Double_t       MVA_weight_btagSF_hfstats1_down;
-Double_t       MVA_weight_btagSF_hfstats2_up;
-Double_t       MVA_weight_btagSF_hfstats2_down;
-Double_t       MVA_weight_btagSF_lf_up;
-Double_t       MVA_weight_btagSF_lf_down;
-Double_t       MVA_weight_btagSF_lfstats1_up;
-Double_t       MVA_weight_btagSF_lfstats1_down;
-Double_t       MVA_weight_btagSF_lfstats2_up;
-Double_t       MVA_weight_btagSF_lfstats2_down;
+Float_t         MVA_lepton0_pt;
+Float_t         MVA_lepton1_pt;
+Float_t         MVA_lepton2_pt;
+Float_t         MVA_Wlep_pt;
+Float_t         MVA_Wboson_pt;
+Float_t         MVA_SMbjet_pt;
+Float_t         MVA_SMtop_pt;
+Float_t         MVA_Zboson_pt;
+Float_t         MVA_LightJet_pt;
+Float_t         MVA_FCNCtop_pt;
+Float_t         MVA_lepton0_eta;
+Float_t         MVA_lepton1_eta;
+Float_t         MVA_lepton2_eta;
+Float_t         MVA_Wlep_eta;
+Float_t         MVA_Wboson_eta;
+Float_t         MVA_SMbjet_eta;
+Float_t         MVA_SMtop_eta;
+Float_t         MVA_Zboson_eta;
+Float_t         MVA_LightJet_eta;
+Float_t         MVA_FCNCtop_eta;
+Float_t         MVA_lepton0_phi;
+Float_t         MVA_lepton1_phi;
+Float_t         MVA_lepton2_phi;
+Float_t         MVA_Wlep_phi;
+Float_t         MVA_Wboson_phi;
+Float_t         MVA_SMbjet_phi;
+Float_t         MVA_SMtop_phi;
+Float_t         MVA_Zboson_phi;
+Float_t         MVA_LightJet_phi;
+Float_t         MVA_FCNCtop_phi;
+Int_t           MVA_nElectrons;
+Float_t         MVA_nJets;
+Float_t         MVA_NJets_CSVv2L;
+Float_t         MVA_NJets_CSVv2M;
+Float_t         MVA_NJets_CSVv2T;
+Int_t           MVA_nMuons;
+Float_t         MVA_met;
+Float_t         MVA_mWt;
+Float_t         MVA_mWt2;
+Float_t         MVA_SMtop_M;
+Float_t         MVA_mlb;
+Float_t         MVA_Wboson_M;
+Float_t         MVA_dRWlepb;
+Float_t         MVA_dPhiWlepb;
+Float_t         MVA_Wlep_Charge;
+Float_t         MVA_charge_asym;
+Float_t         MVA_TotalPt;
+Float_t         MVA_TotalHt;
+Float_t         MVA_TotalInvMass;
+Float_t         MVA_TotalPt_jet;
+Float_t         MVA_TotalHt_jet;
+Float_t         MVA_TotalInvMass_jet;
+Float_t         MVA_TotalPt_lep;
+Float_t         MVA_TotalHt_lep;
+Float_t         MVA_TotalInvMass_lep;
+Float_t         MVA_bdiscCSVv2_jet_0;
+Float_t         MVA_bdiscCSVv2_jet_1;
+Float_t         MVA_CosTheta;
+Float_t         MVA_CosTheta_alt;
+Float_t         MVA_FCNCtop_M;
+Float_t         MVA_Zboson_M;
+Float_t         MVA_dRZc;
+Float_t         MVA_dPhiZc;
+Float_t         MVA_cdiscCvsB_jet_1;
+Float_t         MVA_cdiscCvsL_jet_1;
+Float_t         MVA_cdiscCvsB_jet_0;
+Float_t         MVA_cdiscCvsL_jet_0;
+Float_t         MVA_nJets_CharmL;
+Float_t         MVA_nJets_CharmM;
+Float_t         MVA_nJets_CharmT;
+Float_t         MVA_dRSMFCNCtop;
+Float_t         MVA_dRZb;
+Float_t         MVA_dRWlepc;
+Float_t         MVA_dRZWlep;
+Float_t         MVA_dRZSMtop;
+Float_t         MVA_dPhiSMFCNCtop;
+Float_t         MVA_dPhiZb;
+Float_t         MVA_dPhiWlepc;
+Float_t         MVA_dPhiZWlep;
+Float_t         MVA_dPhiZSMtop;
+Float_t         MVA_m3l;
 
 // List of branches
-TBranch        *b_MVA_Zboson_pt;   //!
-TBranch        *b_MVA_dPhiWlepb;   //!
-TBranch        *b_MVA_charge_asym;   //!
-TBranch        *b_MVA_bdiscCSVv2_jet_0;   //!
-
-TBranch        *b_MVA_cdiscCvsB_jet_1;   //!
-TBranch        *b_MVA_cdiscCvsB_jet_0;   //!
-TBranch        *b_MVA_cdiscCvsL_jet_1;   //!
-TBranch        *b_MVA_cdiscCvsL_jet_0;   //!
-TBranch        *b_MVA_dRZc;   //!
-TBranch        *b_MVA_dRWlepb;   //!
-TBranch        *b_MVA_dRZWlep;   //!
-TBranch        *b_MVA_mlb;   //!
-TBranch        *b_MVA_mWt2;   //!
-TBranch        *b_MVA_mWt;   //!
-TBranch        *b_MVA_FCNCtop_M;   //!
-TBranch        *b_MVA_nJets_CharmL;   //!
-TBranch        *b_MVA_NJets_CSVv2M;   //!
-TBranch        *b_MVA_region;   //!
+TBranch        *b_MVA_weight_puSF;
+TBranch        *b_MVA_weight_btagSF ;
+TBranch        *b_MVA_weight_muonSF ;
+TBranch        *b_MVA_weight_electronSF ;
+TBranch         *b_MVA_BDT;
 TBranch        *b_MVA_x1;   //!
 TBranch        *b_MVA_x2;   //!
 TBranch        *b_MVA_id1;   //!
 TBranch        *b_MVA_id2;   //!
 TBranch        *b_MVA_q;   //!
-TBranch        *b_MVA_weight;   //!
 TBranch        *b_MVA_channel;   //!
-TBranch        *b_MVA_BDT;   //!
-TBranch        *b_MVA_EqLumi;   //!
-TBranch        *b_MVA_Luminosity;   //!
+TBranch        *b_MVA_weight;   //!
+TBranch        *b_MVA_weight_nom;   //!
 TBranch        *b_MVA_weight_puSF_up;   //!
 TBranch        *b_MVA_weight_puSF_down;   //!
 TBranch        *b_MVA_weight_electronSF_up;   //!
@@ -228,12 +284,218 @@ TBranch        *b_MVA_weight_btagSF_lfstats1_up;   //!
 TBranch        *b_MVA_weight_btagSF_lfstats1_down;   //!
 TBranch        *b_MVA_weight_btagSF_lfstats2_up;   //!
 TBranch        *b_MVA_weight_btagSF_lfstats2_down;   //!
-TBranch        *b_MVA_weight_nom; //
+TBranch        *b_MVA_region;   //!
+TBranch        *b_MVA_EqLumi;   //!
+TBranch        *b_MVA_Luminosity;   //!
+TBranch        *b_MVA_lepton0_pt;   //!
+TBranch        *b_MVA_lepton1_pt;   //!
+TBranch        *b_MVA_lepton2_pt;   //!
+TBranch        *b_MVA_Wlep_pt;   //!
+TBranch        *b_MVA_Wboson_pt;   //!
+TBranch        *b_MVA_SMbjet_pt;   //!
+TBranch        *b_MVA_SMtop_pt;   //!
+TBranch        *b_MVA_Zboson_pt;   //!
+TBranch        *b_MVA_LightJet_pt;   //!
+TBranch        *b_MVA_FCNCtop_pt;   //!
+TBranch        *b_MVA_lepton0_eta;   //!
+TBranch        *b_MVA_lepton1_eta;   //!
+TBranch        *b_MVA_lepton2_eta;   //!
+TBranch        *b_MVA_Wlep_eta;   //!
+TBranch        *b_MVA_Wboson_eta;   //!
+TBranch        *b_MVA_SMbjet_eta;   //!
+TBranch        *b_MVA_SMtop_eta;   //!
+TBranch        *b_MVA_Zboson_eta;   //!
+TBranch        *b_MVA_LightJet_eta;   //!
+TBranch        *b_MVA_FCNCtop_eta;   //!
+TBranch        *b_MVA_lepton0_phi;   //!
+TBranch        *b_MVA_lepton1_phi;   //!
+TBranch        *b_MVA_lepton2_phi;   //!
+TBranch        *b_MVA_Wlep_phi;   //!
+TBranch        *b_MVA_Wboson_phi;   //!
+TBranch        *b_MVA_SMbjet_phi;   //!
+TBranch        *b_MVA_SMtop_phi;   //!
+TBranch        *b_MVA_Zboson_phi;   //!
+TBranch        *b_MVA_LightJet_phi;   //!
+TBranch        *b_MVA_FCNCtop_phi;   //!
+TBranch        *b_MVA_nElectrons;   //!
+TBranch        *b_MVA_nJets;   //!
+TBranch        *b_MVA_NJets_CSVv2L;   //!
+TBranch        *b_MVA_NJets_CSVv2M;   //!
+TBranch        *b_MVA_NJets_CSVv2T;   //!
+TBranch        *b_MVA_nMuons;   //!
+TBranch        *b_MVA_met;   //!
+TBranch        *b_MVA_mWt;   //!
+TBranch        *b_MVA_mWt2;   //!
+TBranch        *b_MVA_SMtop_M;   //!
+TBranch        *b_MVA_mlb;   //!
+TBranch        *b_MVA_Wboson_M;   //!
+TBranch        *b_MVA_dRWlepb;   //!
+TBranch        *b_MVA_dPhiWlepb;   //!
+TBranch        *b_MVA_Wlep_Charge;   //!
+TBranch        *b_MVA_charge_asym;   //!
+TBranch        *b_MVA_TotalPt;   //!
+TBranch        *b_MVA_TotalHt;   //!
+TBranch        *b_MVA_TotalInvMass;   //!
+TBranch        *b_MVA_TotalPt_jet;   //!
+TBranch        *b_MVA_TotalHt_jet;   //!
+TBranch        *b_MVA_TotalInvMass_jet;   //!
+TBranch        *b_MVA_TotalPt_lep;   //!
+TBranch        *b_MVA_TotalHt_lep;   //!
+TBranch        *b_MVA_TotalInvMass_lep;   //!
+TBranch        *b_MVA_bdiscCSVv2_jet_0;   //!
+TBranch        *b_MVA_bdiscCSVv2_jet_1;   //!
+TBranch        *b_MVA_CosTheta;   //!
+TBranch        *b_MVA_CosTheta_alt;   //!
+TBranch        *b_MVA_FCNCtop_M;   //!
+TBranch        *b_MVA_Zboson_M;   //!
+TBranch        *b_MVA_dRZc;   //!
+TBranch        *b_MVA_dPhiZc;   //!
+TBranch        *b_MVA_cdiscCvsB_jet_1;   //!
+TBranch        *b_MVA_cdiscCvsL_jet_1;   //!
+TBranch        *b_MVA_cdiscCvsB_jet_0;   //!
+TBranch        *b_MVA_cdiscCvsL_jet_0;   //!
+TBranch        *b_MVA_nJets_CharmL;   //!
+TBranch        *b_MVA_nJets_CharmM;   //!
+TBranch        *b_MVA_nJets_CharmT;   //!
+TBranch        *b_MVA_dRSMFCNCtop;   //!
+TBranch        *b_MVA_dRZb;   //!
+TBranch        *b_MVA_dRWlepc;   //!
+TBranch        *b_MVA_dRZWlep;   //!
+TBranch        *b_MVA_dRZSMtop;   //!
+TBranch        *b_MVA_dPhiSMFCNCtop;   //!
+TBranch        *b_MVA_dPhiZb;   //!
+TBranch        *b_MVA_dPhiWlepc;   //!
+TBranch        *b_MVA_dPhiZWlep;   //!
+TBranch        *b_MVA_dPhiZSMtop;   //!
+TBranch        *b_MVA_m3l;   //!
 
 
 map<string,TH1F*> histo1DMTW;
+TH1F*  hist_BDT_puSF_nom_sig = new TH1F("hist_BDT_puSF_nom_sig","Effect of pile up systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_puSF_nom_bkg = new TH1F("hist_BDT_puSF_nom_bkg","Effect of pile up systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_puSF_up_sig = new TH1F("hist_BDT_puSF_up_sig","Effect of pile up systematics on the BDT: Signal:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_puSF_up_bkg = new TH1F("hist_BDT_puSF_up_bkg","Effect of pile up systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_puSF_down_sig = new TH1F("hist_BDT_puSF_down_sig","Effect of pile up systematics on the BDT: Background:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_puSF_down_bkg = new TH1F("hist_BDT_puSF_down_bkg","Effect of pile up systematics on the BDT: Background:BDT:Nb. of evts", nbin,-1.,1.);
+
+TH1F*  hist_BDT_electronSF_nom_sig = new TH1F("hist_BDT_electronSF_nom_sig","Effect of electron SF systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_electronSF_nom_bkg = new TH1F("hist_BDT_electronSF_nom_bkg","Effect of electron SF systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_electronSF_up_sig = new TH1F("hist_BDT_electronSF_up_sig","Effect of electron SF systematics on the BDT: Signal:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_electronSF_up_bkg = new TH1F("hist_BDT_electronSF_up_bkg","Effect of electron SF systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_electronSF_down_sig = new TH1F("hist_BDT_electronSF_down_sig","Effect of electron SF systematics on the BDT: Background:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_electronSF_down_bkg = new TH1F("hist_BDT_electronSF_down_bkg","Effect of electron SF systematics on the BDT: Background:BDT:Nb. of evts", nbin,-1.,1.);
+
+
+TH1F*  hist_BDT_muonSF_nom_sig = new TH1F("hist_BDT_muonSF_nom_sig","Effect of muon SF systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_muonSF_nom_bkg = new TH1F("hist_BDT_muonSF_nom_bkg","Effect of muon SF systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_muonSF_up_sig = new TH1F("hist_BDT_muonSF_up_sig","Effect of muon SF systematics on the BDT: Signal:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_muonSF_up_bkg = new TH1F("hist_BDT_muonSF_up_bkg","Effect of muon SF systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_muonSF_down_sig = new TH1F("hist_BDT_muonSF_down_sig","Effect of muon SF systematics on the BDT: Background:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_muonSF_down_bkg = new TH1F("hist_BDT_muonSF_down_bkg","Effect of muon SF systematics on the BDT: Background:BDT:Nb. of evts", nbin,-1.,1.);
+
+
+TH1F*  hist_mWt_puSF_nom_sig = new TH1F("hist_mWt_puSF_nom_sig","Effect of pile up systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_puSF_nom_bkg = new TH1F("hist_mWt_puSF_nom_bkg","Effect of pile up systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_puSF_up_sig = new TH1F("hist_mWt_puSF_up_sig","Effect of pile up systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_puSF_up_bkg = new TH1F("hist_mWt_puSF_up_bkg","Effect of pile up systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_puSF_down_sig = new TH1F("hist_mWt_puSF_down_sig","Effect of pile up systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_puSF_down_bkg = new TH1F("hist_mWt_puSF_down_bkg","Effect of pile up systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+
+TH1F*  hist_mWt_electronSF_nom_sig = new TH1F("hist_mWt_electronSF_nom_sig","Effect of electron SF systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_electronSF_nom_bkg = new TH1F("hist_mWt_electronSF_nom_bkg","Effect of electron SF systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_electronSF_up_sig = new TH1F("hist_mWt_electronSF_up_sig","Effect of electron SF systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_electronSF_up_bkg = new TH1F("hist_mWt_electronSF_up_bkg","Effect of electron SF systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_electronSF_down_sig = new TH1F("hist_mWt_electronSF_down_sig","Effect of electron SF systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_electronSF_down_bkg = new TH1F("hist_mWt_electronSF_down_bkg","Effect of electron SF systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+
+
+TH1F*  hist_mWt_muonSF_nom_sig = new TH1F("hist_mWt_muonSF_nom_sig","Effect of muon SF systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_muonSF_nom_bkg = new TH1F("hist_mWt_muonSF_nom_bkg","Effect of muon SF systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_muonSF_up_sig = new TH1F("hist_mWt_muonSF_up_sig","Effect of muon SF systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_muonSF_up_bkg = new TH1F("hist_mWt_muonSF_up_bkg","Effect of muon SF systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_muonSF_down_sig = new TH1F("hist_mWt_muonSF_down_sig","Effect of muon SF systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_muonSF_down_bkg = new TH1F("hist_mWt_muonSF_down_bkg","Effect of muon SF systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+
+
+TH1F*  hist_mWt_btagSF_cferr1_nom_sig = new TH1F("hist_mWt_btagSF_cferr1_nom_sig","Effect of btag SF cferr1 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr1_nom_bkg = new TH1F("hist_mWt_btagSF_cferr1_nom_bkg","Effect of btag SF cferr1 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr1_up_sig = new TH1F("hist_mWt_btagSF_cferr1_up_sig","Effect of btag SF cferr1 systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr1_up_bkg = new TH1F("hist_mWt_btagSF_cferr1_up_bkg","Effect of btag SF cferr1 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr1_down_sig = new TH1F("hist_mWt_cferr1_btagSF_down_sig","Effect of btag SF cferr1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr1_down_bkg = new TH1F("hist_mWt_cferr1_btagSF_down_bkg","Effect of btag SF cferr1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+
+TH1F*  hist_mWt_btagSF_cferr2_nom_sig = new TH1F("hist_mWt_btagSF_cferr2_nom_sig","Effect of btag SF cferr2 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr2_nom_bkg = new TH1F("hist_mWt_btagSF_cferr2_nom_bkg","Effect of btag SF cferr2 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr2_up_sig = new TH1F("hist_mWt_btagSF_cferr2_up_sig","Effect of btag SF cferr2 systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr2_up_bkg = new TH1F("hist_mWt_btagSF_cferr2_up_bkg","Effect of btag SF cferr2 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr2_down_sig = new TH1F("hist_mWt_cferr2_btagSF_down_sig","Effect of btag SF cferr2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr2_down_bkg = new TH1F("hist_mWt_cferr2_btagSF_down_bkg","Effect of btag SF cferr2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+
+
+TH1F*  hist_mWt_btagSF_hf_nom_sig = new TH1F("hist_mWt_btagSF_hf_nom_sig","Effect of btag SF hf systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hf_nom_bkg = new TH1F("hist_mWt_btagSF_hf_nom_bkg","Effect of btag SF hf systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hf_up_sig = new TH1F("hist_mWt_btagSF_hf_up_sig","Effect of btag SF hf systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hf_up_bkg = new TH1F("hist_mWt_btagSF_hf_up_bkg","Effect of btag SF hf systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hf_down_sig = new TH1F("hist_mWt_hf_btagSF_down_sig","Effect of btag SF hf systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hf_down_bkg = new TH1F("hist_mWt_hf_btagSF_down_bkg","Effect of btag SF hf systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+
+TH1F*  hist_mWt_btagSF_hfstats1_nom_sig = new TH1F("hist_mWt_btagSF_hfstats1_nom_sig","Effect of btag SF hfstats1 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats1_nom_bkg = new TH1F("hist_mWt_btagSF_hfstats1_nom_bkg","Effect of btag SF hfstats1 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats1_up_sig = new TH1F("hist_mWt_btagSF_hfstats1_up_sig","Effect of btag SF hfstats1 systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats1_up_bkg = new TH1F("hist_mWt_btagSF_hfstats1_up_bkg","Effect of btag SF hfstats1 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats1_down_sig = new TH1F("hist_mWt_hfstats1_btagSF_down_sig","Effect of btag SF hfstats1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats1_down_bkg = new TH1F("hist_mWt_hfstats1_btagSF_down_bkg","Effect of btag SF hfstats1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+
+
+TH1F*  hist_mWt_btagSF_hfstats2_nom_sig = new TH1F("hist_mWt_btagSF_hfstats2_nom_sig","Effect of btag SF hfstats2 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats2_nom_bkg = new TH1F("hist_mWt_btagSF_hfstats2_nom_bkg","Effect of btag SF hfstats2 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats2_up_sig = new TH1F("hist_mWt_btagSF_hfstats2_up_sig","Effect of btag SF hfstats2 systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats2_up_bkg = new TH1F("hist_mWt_btagSF_hfstats2_up_bkg","Effect of btag SF hfstats2 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats2_down_sig = new TH1F("hist_mWt_hfstats2_btagSF_down_sig","Effect of btag SF hfstats2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats2_down_bkg = new TH1F("hist_mWt_hfstats2_btagSF_down_bkg","Effect of btag SF hfstats2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+
+
+TH1F*  hist_mWt_btagSF_lf_nom_sig = new TH1F("hist_mWt_btagSF_lf_nom_sig","Effect of btag SF lf systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lf_nom_bkg = new TH1F("hist_mWt_btagSF_lf_nom_bkg","Effect of btag SF lf systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lf_up_sig = new TH1F("hist_mWt_btagSF_lf_up_sig","Effect of btag SF lf systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lf_up_bkg = new TH1F("hist_mWt_btagSF_lf_up_bkg","Effect of btag SF lf systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lf_down_sig = new TH1F("hist_mWt_lf_btagSF_down_sig","Effect of btag SF lf systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lf_down_bkg = new TH1F("hist_mWt_lf_btagSF_down_bkg","Effect of btag SF lf systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+
+TH1F*  hist_mWt_btagSF_lfstats1_nom_sig = new TH1F("hist_mWt_btagSF_lfstats1_nom_sig","Effect of btag SF lfstats1 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats1_nom_bkg = new TH1F("hist_mWt_btagSF_lfstats1_nom_bkg","Effect of btag SF lfstats1 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats1_up_sig = new TH1F("hist_mWt_btagSF_lfstats1_up_sig","Effect of btag SF lfstats1 systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats1_up_bkg = new TH1F("hist_mWt_btagSF_lfstats1_up_bkg","Effect of btag SF lfstats1 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats1_down_sig = new TH1F("hist_mWt_lfstats1_btagSF_down_sig","Effect of btag SF lfstats1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats1_down_bkg = new TH1F("hist_mWt_lfstats1_btagSF_down_bkg","Effect of btag SF lfstats1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+
+
+TH1F*  hist_mWt_btagSF_lfstats2_nom_sig = new TH1F("hist_mWt_btagSF_lfstats2_nom_sig","Effect of btag SF lfstats2 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats2_nom_bkg = new TH1F("hist_mWt_btagSF_lfstats2_nom_bkg","Effect of btag SF lfstats2 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats2_up_sig = new TH1F("hist_mWt_btagSF_lfstats2_up_sig","Effect of btag SF lfstats2 systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats2_up_bkg = new TH1F("hist_mWt_btagSF_lfstats2_up_bkg","Effect of btag SF lfstats2 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats2_down_sig = new TH1F("hist_mWt_lfstats2_btagSF_down_sig","Effect of btag SF lfstats2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats2_down_bkg = new TH1F("hist_mWt_lfstats2_btagSF_down_bkg","Effect of btag SF lfstats2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+
+
+
+
+/*
+
+thesystlist.push_back("btagSF_cferr1Down");
+thesystlist.push_back("btagSF_cferr2Down");
+thesystlist.push_back("btagSF_hfDown");
+thesystlist.push_back("btagSF_hfstats1Down");
+thesystlist.push_back("btagSF_hfstats2Down");
+thesystlist.push_back("btagSF_lfDown");
+thesystlist.push_back("btagSF_lfstats1Down");
+thesystlist.push_back("btagSF_lfstats2Down");
+*/
+
+
+
 ///////////////////////////////////// MAIN CODE /////////////////////////////////////////
-int main(int argc, char* argv[]){
+Int_t main(Int_t argc, char* argv[]){
   string dateString = MakeTimeStamp();
   cout << "*********************************************" << endl;
   cout << "***         Beginning of program          ***" << endl;
@@ -247,9 +509,9 @@ int main(int argc, char* argv[]){
   //setMyStyle(); // TO FIX stat box title
   
   
-  int testnr = -1;
+  Int_t testnr = -1;
   //////////// Settings of the analysis //////////////////
-  for(int i = 0; i <argc; i++){
+  for(Int_t i = 0; i <argc; i++){
     if(string(argv[i]).find("help")!=string::npos) {
       std::cout << "****** help ******" << endl;
       std::cout << " run code with ./AnalyzerBDT [options]" << endl;
@@ -261,7 +523,7 @@ int main(int argc, char* argv[]){
       std::cout << "   Test nb: loop over nb events" << endl;
       std::cout << "   Data: add CRcut" << endl;
       std::cout << "   PSdata: generate pseudo data" << endl;
-      std::cout << "   Systematics: loop over systematics" << endl;
+      std::cout << "   doSystematics: loop over systematics" << endl;
       std::cout << "   doPDFunc: calculate PDF unc" << endl;
       std::cout << "   PlotSystematics: make sys plots fo WZ" << endl;
       std::cout << "   PlotMVAvars: plot mva vars" << endl;
@@ -276,7 +538,7 @@ int main(int argc, char* argv[]){
       doPDFunc = true;
       cout << "******* calculating pdf uncertainties *********" << endl;
     }
-    if(string(argv[i]).find("Systematics")!=std::string::npos) {
+    if(string(argv[i]).find("doSystematics")!=std::string::npos) {
       doSystematics= true;
     }
     if(string(argv[i]).find("PlotSystematics")!=std::string::npos) {
@@ -353,7 +615,7 @@ int main(int argc, char* argv[]){
     cout << "pushing back systematics" << endl;
     thesystlist.push_back("puSFDown");
     thesystlist.push_back("electronSFDown");
-    thesystlist.push_back("muonSFDown");
+    thesystlist.push_back("btagSFDown");
     thesystlist.push_back("btagSF_cferr1Down");
     thesystlist.push_back("btagSF_cferr2Down");
     thesystlist.push_back("btagSF_hfDown");
@@ -362,8 +624,8 @@ int main(int argc, char* argv[]){
     thesystlist.push_back("btagSF_lfDown");
     thesystlist.push_back("btagSF_lfstats1Down");
     thesystlist.push_back("btagSF_lfstats2Down");
-    thesystlist.push_back("JERUp");
-    thesystlist.push_back("JESUp");
+  //  thesystlist.push_back("JERUp");
+  //  thesystlist.push_back("JESUp");
     
     thesystlist.push_back("puSFUp");
     thesystlist.push_back("electronSFUp");
@@ -378,9 +640,9 @@ int main(int argc, char* argv[]){
     thesystlist.push_back("btagSF_lfstats2Up");
     
     
-    thesystlist.push_back("JERDown");
+ //   thesystlist.push_back("JERDown");
     
-    thesystlist.push_back("JESDown");
+  //  thesystlist.push_back("JESDown");
   }
   cout << "Number of systematics " << thesystlist.size() << endl;
   //for plotting
@@ -395,8 +657,8 @@ int main(int argc, char* argv[]){
   thesystlistnames.push_back("btagSF_lf");
   thesystlistnames.push_back("btagSF_lfstats1");
   thesystlistnames.push_back("btagSF_lfstats2");
-  thesystlistnames.push_back("JES");
-  thesystlistnames.push_back("JER");
+ // thesystlistnames.push_back("JES");
+ // thesystlistnames.push_back("JER");
   
   
   ///////////////:  load datasets
@@ -406,7 +668,7 @@ int main(int argc, char* argv[]){
   cout << "loading " << endl;
   treeLoader.LoadDatasets(datasetsbf, xmlFile);
   cout << "datasets loaded " << datasetsbf.size() << " samples" <<  endl;
-  for (int d = 0; d < datasetsbf.size(); d++){   //Loop through datasets to get lumi setting
+  for (Int_t d = 0; d < datasetsbf.size(); d++){   //Loop through datasets to get lumi setting
     
     dataSetName = datasetsbf[d]->Name();
    // cout << "sample " << dataSetName << endl;
@@ -445,7 +707,7 @@ int main(int argc, char* argv[]){
 
   //if(toppair) nbin = 50;
   if(makePlots && !doMTWtemplate){
-    for(int isys = 0; isys < thesystlist.size() ; isys++){
+    for(Int_t isys = 0; isys < thesystlist.size() ; isys++){
       systematic = thesystlist[isys];
       tempstring = region + "_"+coupling;
       if(isys != 0 ) tempstring += "_"+ systematic;
@@ -454,7 +716,7 @@ int main(int argc, char* argv[]){
   }
   
   if(makePlots && doMTWtemplate){
-    for(int isys = 0; isys < thesystlist.size() ; isys++){
+    for(Int_t isys = 0; isys < thesystlist.size() ; isys++){
       systematic = thesystlist[isys];
       if(isys != 0 ) tempstring = "_" + systematic;
       InitMSPlotsMTW(tempstring, decayChannels);
@@ -475,22 +737,26 @@ int main(int argc, char* argv[]){
   ntupleFileName = placeNtup;
   if(!doMTWtemplate) fin = new TFile((ntupleFileName).c_str(),"READ");
   bool onlynomforsys = false;
-  int WZregionEntries = 0;
+  Int_t WZregionEntries = 0;
  
   
   TH1::SetDefaultSumw2();
   TH1F* hist_WZ = new TH1F("MTW_WZ","trans. mass W boson in WZ region: WZ (GeV)",           nbinMTW, 0., endMTW);
   TH1F* hist_TT_FCNC = new TH1F("MTW_TT_FCNC","transv. mass W boson in TTSR (GeV)",           nbinMTW, 0., endMTW);
   TH1F* hist_fakes = new TH1F("MTW_fakes","transv. mass W boson WZ region: fakes (GeV)",           nbinMTW, 0., endMTW);
+  
+  
+  
+  
   histo1DMTW["MTW_WZ"] = hist_WZ ;
   histo1DMTW["MTW_TT_FCNC"] = hist_TT_FCNC ;
   histo1DMTW["MTW_fakes"] = hist_fakes ;
   
-  for(int isys = 0; isys < thesystlist.size() ; isys++){
+  for(Int_t isys = 0; isys < thesystlist.size() ; isys++){
     systematic = thesystlist[isys];
     cout << "looking at " << systematic << " systematics " << endl;
 
-    for (int d = 0; d < datasets.size(); d++)   //Loop through datasets
+    for (Int_t d = 0; d < datasets.size(); d++)   //Loop through datasets
     {
       cout << "   Dataset " << d << ": " << datasets[d]->Name() << " / title : " << datasets[d]->Title() << endl;
       // settings
@@ -538,8 +804,7 @@ int main(int argc, char* argv[]){
       
       // Initialise plots
       if(!doMTWtemplate && PlotMVAvars && isys == 0){
-        if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TT_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && toppair ) Init1DHisto(dataSetName, systematic, toppair, doZut, decayChannels);
-        else if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("ST_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && !toppair ) Init1DHisto(dataSetName, systematic, toppair, doZut, decayChannels);
+         Init1DHisto(dataSetName, systematic, toppair, doZut, decayChannels);
       }
       // initialise combine output histograms
       TH1::SetDefaultSumw2();
@@ -561,9 +826,7 @@ int main(int argc, char* argv[]){
       if((dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos) && doPDFunc && !doMTWtemplate){
         InitCalculatePDFWeightHisto(dataSetName);
       }
-      if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos) && PlotSystematics ){
-        InitSystematicHisto(dataSetName, systematic, isys, doMTWtemplate);
-      }
+      
       
      
     
@@ -574,15 +837,15 @@ int main(int argc, char* argv[]){
       
       // safeties
       if(!doSystematics && isys != 0) continue;
-      int endEvent =nEntries;
+      Int_t endEvent =nEntries;
       if(testing){
         if(endEvent > testnr) endEvent = testnr;
       }
       /// loop on events
-      double weight = 1.;
+      Double_t weight = 1.;
       WZregionEntries = 0;
-      int WZregionEntriesuuu = 0;
-      for (int ievt = 0; ievt < endEvent; ievt++)
+      Int_t WZregionEntriesuuu = 0;
+      for (Int_t ievt = 0; ievt < endEvent; ievt++)
       {
         if (ievt%100 == 0)
           std::cout << "Processing the " << ievt << "th event (" << ((double)ievt/(double)nEntries)*100  << "%)" << flush << "\r";
@@ -590,51 +853,55 @@ int main(int argc, char* argv[]){
         
         /// Load event
         tTree[(dataSetName).c_str()]->GetEntry(ievt);
-        if(datafound && MVA_BDT > -0.68 && !doMTWtemplate && !toppair && doZut){ continue;}
+        /*if(datafound && MVA_BDT > -0.68 && !doMTWtemplate && !toppair && doZut){ continue;}
         else if(datafound && MVA_BDT > -0.6 && !doMTWtemplate && !toppair && !doZut){ continue;}
         else if(datafound && MVA_BDT > -0.12 && !doMTWtemplate && toppair && !doZut){ continue;}
-        else if(datafound && MVA_BDT > -0.2 && !doMTWtemplate && toppair && doZut){ continue;}
-        //if(isData) cout << "region " << MVA_region << endl;
+        else if(datafound && MVA_BDT > -0.2 && !doMTWtemplate && toppair && doZut){ continue;}*/
+       // cout << "region " <<MVA_region << endl;
         
-        if(doMTWtemplate && MVA_region != 2){ continue ;} // only in WZ control region}
+        if(doMTWtemplate &&MVA_region != 2 ){ continue ;} // only in WZ control region}
         else if(doMTWtemplate) { WZregionEntries++; }
         
-        if(doMTWtemplate && MVA_region == 2 && MVA_channel == 0) { WZregionEntriesuuu++;}
+        if(doMTWtemplate &&MVA_region == 2 && MVA_channel == 0) { WZregionEntriesuuu++;}
         
-        
+        weight = 1.;
         if(!isData && !onlynomforsys && isys != 0){
           //cout <<  "getting weight for " << systematic << endl;
-          if(systematic.find("puSFUp")) weight = MVA_weight_puSF_up;
-          else if(systematic.find("puSFDown")) weight = MVA_weight_puSF_down;
-          else if(systematic.find("electronSFUp")) weight = MVA_weight_electronSF_up;
-          else if(systematic.find("electronSFDown")) weight = MVA_weight_electronSF_down;
-          else if(systematic.find("muonSFUp")) weight = MVA_weight_muonSF_up;
-          else if(systematic.find("muonSFDown")) weight = MVA_weight_muonSF_down;
-          else if(systematic.find("btagSF_cferr1Up")) weight = MVA_weight_btagSF_cferr1_up;
-          else if(systematic.find("btagSF_cferr1Down")) weight = MVA_weight_btagSF_cferr1_down;
-          else if(systematic.find("btagSF_cferr2Up")) weight = MVA_weight_btagSF_cferr2_up;
-          else if(systematic.find("btagSF_cferr2Down")) weight = MVA_weight_btagSF_cferr2_down;
-          else if(systematic.find("btagSF_lfUp")) weight = MVA_weight_btagSF_lf_up;
-          else if(systematic.find("btagSF_lfDown")) weight = MVA_weight_btagSF_lf_down;
-          else if(systematic.find("btagSF_hfUp")) weight = MVA_weight_btagSF_hf_up;
-          else if(systematic.find("btagSF_hfDown")) weight = MVA_weight_btagSF_hf_down;
-          else if(systematic.find("btagSF_hfstats1Up")) weight = MVA_weight_btagSF_hfstats1_up;
-          else if(systematic.find("btagSF_hfstats1Down")) weight = MVA_weight_btagSF_hfstats1_down;
-          else if(systematic.find("btagSF_hfstats2Up")) weight = MVA_weight_btagSF_hfstats2_up;
-          else if(systematic.find("btagSF_hfstats2Down")) weight = MVA_weight_btagSF_hfstats2_down;
-          else if(systematic.find("btagSF_lfstats2Up")) weight = MVA_weight_btagSF_lfstats2_up;
-          else if(systematic.find("btagSF_lfstats2Down")) weight = MVA_weight_btagSF_lfstats2_down;
+          if(systematic.find("puSFUp")) weight =MVA_weight_puSF_up *MVA_weight_nom /MVA_weight_puSF;
+          else if(systematic.find("puSFDown")) weight =MVA_weight_puSF_down  *MVA_weight_nom /MVA_weight_puSF;
+          else if(systematic.find("electronSFUp")) weight =MVA_weight_electronSF_up  *MVA_weight_nom /MVA_weight_electronSF;
+          else if(systematic.find("electronSFDown")) weight =MVA_weight_electronSF_down  *MVA_weight_nom /MVA_weight_electronSF;
+          else if(systematic.find("muonSFUp")) weight =MVA_weight_muonSF_up  *MVA_weight_nom /MVA_weight_muonSF;
+          else if(systematic.find("muonSFDown")) weight =MVA_weight_muonSF_down  *MVA_weight_nom /MVA_weight_muonSF;
+          else if(systematic.find("btagSF_cferr1Up")) weight =MVA_weight_btagSF_cferr1_up  *MVA_weight_nom /MVA_weight_btagSF;
+          else if(systematic.find("btagSF_cferr1Down")) weight =MVA_weight_btagSF_cferr1_down *MVA_weight_nom /MVA_weight_btagSF;
+          else if(systematic.find("btagSF_cferr2Up")) weight =MVA_weight_btagSF_cferr2_up *MVA_weight_nom /MVA_weight_btagSF;
+          else if(systematic.find("btagSF_cferr2Down")) weight =MVA_weight_btagSF_cferr2_down *MVA_weight_nom /MVA_weight_btagSF;
+          else if(systematic.find("btagSF_lfUp")) weight =MVA_weight_btagSF_lf_up *MVA_weight_nom /MVA_weight_btagSF;
+          else if(systematic.find("btagSF_lfDown")) weight =MVA_weight_btagSF_lf_down*MVA_weight_nom /MVA_weight_btagSF;
+          else if(systematic.find("btagSF_hfUp")) weight =MVA_weight_btagSF_hf_up*MVA_weight_nom /MVA_weight_btagSF;
+          else if(systematic.find("btagSF_hfDown")) weight =MVA_weight_btagSF_hf_down*MVA_weight_nom /MVA_weight_btagSF;
+          else if(systematic.find("btagSF_hfstats1Up")) weight =MVA_weight_btagSF_hfstats1_up*MVA_weight_nom /MVA_weight_btagSF;
+          else if(systematic.find("btagSF_hfstats1Down")) weight =MVA_weight_btagSF_hfstats1_down*MVA_weight_nom /MVA_weight_btagSF;
+          else if(systematic.find("btagSF_hfstats2Up")) weight =MVA_weight_btagSF_hfstats2_up *MVA_weight_nom /MVA_weight_btagSF;
+          else if(systematic.find("btagSF_hfstats2Down")) weight =MVA_weight_btagSF_hfstats2_down *MVA_weight_nom /MVA_weight_btagSF;
+          else if(systematic.find("btagSF_lfstats2Up")) weight =MVA_weight_btagSF_lfstats2_up *MVA_weight_nom /MVA_weight_btagSF;
+          else if(systematic.find("btagSF_lfstats2Down")) weight =MVA_weight_btagSF_lfstats2_down*MVA_weight_nom /MVA_weight_btagSF;
           
         }
-        else if(!isData && !onlynomforsys ){ weight = MVA_weight_nom; }
-        //if(Luminosity/MVA_Luminosity != 1. ) cout << "lumi "  << Luminosity << " while tuples are made with " << MVA_Luminosity << endl;
+        else if((isys == 0 && !isData) || dataSetName.find("fake")!=std::string::npos ){ weight =MVA_weight_nom; } //CHECK ME
+       else  if( isData){ weight = 1.;}
         
-       // if(MVA_Luminosity != 0 && !isData) weight = (weight * Luminosity)/ MVA_Luminosity;
-       // if(!datafound){ Luminosity = MVA_Luminosity; cout << "lumi set to " << Luminosity << endl; }
-         if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ weight *= 0.0802 * 0.0001 ;}
-         if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ weight *= 0.238 * 0.0001;}
+        if(!isData) weight *=MVA_Luminosity /MVA_EqLumi;
+       // if(dataSetName.find("fake")!=std::string::npos) weight =MVA_weight_nom;
+        //if(Luminosity/MVA_Luminosity != 1. ) cout << "lumi "  << Luminosity << " while tuples are made with " <<MVA_Luminosity << endl;
         
-        if( isData){ weight = 1.;}
+       // if(MVA_Luminosity != 0 && !isData) weight = (weight * Luminosity)/MVA_Luminosity;
+       // if(!datafound){ Luminosity =MVA_Luminosity; cout << "lumi set to " << Luminosity << endl; }
+        // if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ weight *= 0.0802 * 0.0001 ;}
+        // if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ weight *= 0.238 * 0.0001;}
+        
+       
         if(!doMTWtemplate){
           if(MVA_channel== 0) 		{hist_uuu->Fill( MVA_BDT, weight);}
           else if(MVA_channel== 1) {hist_uue->Fill( MVA_BDT, weight);}
@@ -649,16 +916,151 @@ int main(int argc, char* argv[]){
         }
         
         // for MS plots
-        double weightMSPlot = weight;
+        Double_t weightMSPlot = weight;
         if(isData) weightMSPlot = Luminosity;
         /// Fill plots
         if(doPDFunc && !doMTWtemplate){
-          if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos) CalculatePDFWeight(dataSetName, MVA_BDT, MVA_weight_nom, MVA_channel);
+          if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos) CalculatePDFWeight(dataSetName, MVA_BDT,MVA_weight_nom, MVA_channel);
         }
         if(PlotMVAvars  && isys == 0 && !doMTWtemplate){
-          if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos || dataSetName.find("TT_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos )&& toppair) Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
-          else  if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos || dataSetName.find("ST_FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && !toppair) Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
+          Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
+       }
+        
+        //cout << "booleans " <<  PlotSystematics << " "<< !isData << " " <<  !doMTWtemplate << endl;
+        if(PlotSystematics && !isData && dataSetName.find("fake")==std::string::npos && !doMTWtemplate && !doSystematics){
+          if(dataSetName.find("FCNC")!=std::string::npos){
+            hist_BDT_puSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_puSF_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_puSF_up/MVA_weight_puSF);
+            hist_BDT_puSF_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_puSF_down/MVA_weight_puSF);
+            
+            
+            hist_BDT_electronSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_electronSF_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_electronSF_up/MVA_weight_electronSF);
+            hist_BDT_electronSF_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_electronSF_down/MVA_weight_electronSF);
+            
+            hist_BDT_muonSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_muonSF_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_muonSF_up/MVA_weight_muonSF);
+            hist_BDT_muonSF_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_muonSF_down/MVA_weight_muonSF);
+          }
+          else{
+            
+            hist_BDT_puSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
+            hist_BDT_puSF_up_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_puSF_up/MVA_weight_puSF);
+            hist_BDT_puSF_down_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_puSF_down/MVA_weight_puSF);
+            
+            hist_BDT_electronSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
+            hist_BDT_electronSF_up_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_electronSF_up/MVA_weight_electronSF);
+            hist_BDT_electronSF_down_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_electronSF_down/MVA_weight_electronSF);
+            
+            hist_BDT_muonSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
+            hist_BDT_muonSF_up_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_muonSF_up/MVA_weight_muonSF);
+            hist_BDT_muonSF_down_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_muonSF_down/MVA_weight_muonSF);
+          }
+          
+          
         }
+        else if(PlotSystematics && !isData && dataSetName.find("FCNC")==std::string::npos && doMTWtemplate && !doSystematics){
+          
+           if(dataSetName.find("fake")!=std::string::npos){
+            hist_mWt_puSF_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
+            hist_mWt_puSF_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_puSF_up/MVA_weight_puSF);
+            hist_mWt_puSF_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_puSF_down/MVA_weight_puSF);
+            
+            
+            hist_mWt_electronSF_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
+            hist_mWt_electronSF_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_electronSF_up/MVA_weight_electronSF);
+            hist_mWt_electronSF_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_electronSF_down/MVA_weight_electronSF);
+            
+            hist_mWt_muonSF_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
+            hist_mWt_muonSF_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_muonSF_up/MVA_weight_muonSF);
+            hist_mWt_muonSF_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_muonSF_down/MVA_weight_muonSF);
+             
+             hist_mWt_btagSF_cferr1_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
+             hist_mWt_btagSF_cferr1_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_cferr1_up/MVA_weight_btagSF);
+             hist_mWt_btagSF_cferr1_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_cferr1_down/MVA_weight_btagSF);
+             
+             hist_mWt_btagSF_cferr2_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
+             hist_mWt_btagSF_cferr2_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_cferr2_up/MVA_weight_btagSF);
+             hist_mWt_btagSF_cferr2_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_cferr2_down/MVA_weight_btagSF);
+           
+             hist_mWt_btagSF_hf_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
+             hist_mWt_btagSF_hf_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hf_up/MVA_weight_btagSF);
+             hist_mWt_btagSF_hf_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hf_down/MVA_weight_btagSF);
+           
+             hist_mWt_btagSF_hfstats1_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
+             hist_mWt_btagSF_hfstats1_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hfstats1_up/MVA_weight_btagSF);
+             hist_mWt_btagSF_hfstats1_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hfstats1_down/MVA_weight_btagSF);
+           
+             hist_mWt_btagSF_hfstats2_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
+             hist_mWt_btagSF_hfstats2_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hfstats2_up/MVA_weight_btagSF);
+             hist_mWt_btagSF_hfstats2_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hfstats2_down/MVA_weight_btagSF);
+             
+             hist_mWt_btagSF_lf_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
+             hist_mWt_btagSF_lf_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lf_up/MVA_weight_btagSF);
+             hist_mWt_btagSF_lf_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lf_down/MVA_weight_btagSF);
+             
+             hist_mWt_btagSF_lfstats1_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
+             hist_mWt_btagSF_lfstats1_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats1_up/MVA_weight_btagSF);
+             hist_mWt_btagSF_lfstats1_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats1_down/MVA_weight_btagSF);
+             
+             hist_mWt_btagSF_lfstats2_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
+             hist_mWt_btagSF_lfstats2_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF);
+             hist_mWt_btagSF_lfstats2_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats2_down/MVA_weight_btagSF);
+             
+            // cout << "filling" <<endl;
+          }
+          else{
+            hist_mWt_puSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
+            hist_mWt_puSF_up_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_puSF_up/MVA_weight_puSF);
+            hist_mWt_puSF_down_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_puSF_down/MVA_weight_puSF);
+            
+            hist_mWt_electronSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
+            hist_mWt_electronSF_up_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_electronSF_up/MVA_weight_electronSF);
+            hist_mWt_electronSF_down_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_electronSF_down/MVA_weight_electronSF);
+            
+            hist_mWt_muonSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
+            hist_mWt_muonSF_up_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_muonSF_up/MVA_weight_muonSF);
+            hist_mWt_muonSF_down_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_muonSF_down/MVA_weight_muonSF);
+            
+            
+            hist_mWt_btagSF_cferr1_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
+            hist_mWt_btagSF_cferr1_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_cferr1_up/MVA_weight_btagSF);
+            hist_mWt_btagSF_cferr1_down_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_cferr1_down/MVA_weight_btagSF);
+            
+            hist_mWt_btagSF_cferr2_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
+            hist_mWt_btagSF_cferr2_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_cferr2_up/MVA_weight_btagSF);
+            hist_mWt_btagSF_cferr2_down_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_cferr2_down/MVA_weight_btagSF);
+            
+            hist_mWt_btagSF_hf_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
+            hist_mWt_btagSF_hf_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hf_up/MVA_weight_btagSF);
+            hist_mWt_btagSF_hf_down_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hf_down/MVA_weight_btagSF);
+            
+            hist_mWt_btagSF_hfstats1_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
+            hist_mWt_btagSF_hfstats1_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hfstats1_up/MVA_weight_btagSF);
+            hist_mWt_btagSF_hfstats1_down_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hfstats1_down/MVA_weight_btagSF);
+            
+            hist_mWt_btagSF_hfstats2_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
+            hist_mWt_btagSF_hfstats2_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hfstats2_up/MVA_weight_btagSF);
+            hist_mWt_btagSF_hfstats2_down_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hfstats2_down/MVA_weight_btagSF);
+            
+            hist_mWt_btagSF_lf_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
+            hist_mWt_btagSF_lf_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lf_up/MVA_weight_btagSF);
+            hist_mWt_btagSF_lf_down_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lf_down/MVA_weight_btagSF);
+            
+            hist_mWt_btagSF_lfstats1_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
+            hist_mWt_btagSF_lfstats1_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats1_up/MVA_weight_btagSF);
+            hist_mWt_btagSF_lfstats1_down_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats1_down/MVA_weight_btagSF);
+            
+            hist_mWt_btagSF_lfstats2_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
+            hist_mWt_btagSF_lfstats2_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF);
+            hist_mWt_btagSF_lfstats2_down_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats2_down/MVA_weight_btagSF);
+            
+            // cout << "filling" <<endl;
+          }
+          
+          
+        }
+        
         
         
         if (makePlots && !doMTWtemplate)
@@ -674,19 +1076,13 @@ int main(int argc, char* argv[]){
          // if(isData) cout << "fill data " << endl;
           FillMTWPlots(d, tempstring, decayChannels, weightMSPlot, MVA_channel);
         }
-        if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos) && PlotSystematics ){
-          FillSystematicHisto(dataSetName, systematic, weight, isys, doMTWtemplate);
-        }
+        
        
         if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos)&& isys == 0 && doMTWtemplate) histo1DMTW["MTW_WZ"]->Fill(MVA_mWt2, weight);
         if(dataSetName.find("fake")!=std::string::npos && isys == 0 && doMTWtemplate) histo1DMTW["MTW_fakes"]->Fill(MVA_mWt2, weight);
         if(dataSetName.find("TT_FCNC")!=std::string::npos && isys == 0 && doMTWtemplate) histo1DMTW["MTW_TT_FCNC"]->Fill(MVA_mWt2, weight);
         
-        
-        if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos || dataSetName.find("FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && doMTWtemplate){
-          //cout << "filling FillMTWShapeHisto" << endl;
-          //FillMTWShapeHisto(dataSetName, systematic, weight, isys, MVA_channel,decayChannels);
-        }
+
         
       } // events
       
@@ -844,7 +1240,7 @@ int main(int argc, char* argv[]){
     channel_list.push_back("uue");
     channel_list.push_back("eeu");
     channel_list.push_back("uuu");
-    for(int ichan=0; ichan<channel_list.size(); ichan++)
+    for(Int_t ichan=0; ichan<channel_list.size(); ichan++)
     {
       h_sum = 0;
       histo_name = "";
@@ -854,7 +1250,7 @@ int main(int argc, char* argv[]){
       
       
       
-      for(int isample = 0; isample < datasets.size(); isample++)
+      for(Int_t isample = 0; isample < datasets.size(); isample++)
       {
         string dataSetName = datasets[isample]->Name();
         // cout << dataSetName << endl;
@@ -889,12 +1285,12 @@ int main(int argc, char* argv[]){
       }
       
       if(h_sum == 0) {cout<<endl<<"--- Empty histogram (Reader empty ?) ! Exit !"<<endl<<endl; }
-      int nofbins = h_sum->GetNbinsX();
+      Int_t nofbins = h_sum->GetNbinsX();
       
-      for(int i=0; i<nofbins; i++)
+      for(Int_t i=0; i<nofbins; i++)
       {
-        double bin_content = h_sum->GetBinContent(i+1); //cout<<"bin "<<i+1<<endl; cout<<"initial content = "<<bin_content<<endl;
-        double new_bin_content = therand.Poisson(bin_content);// cout<<"new content = "<<new_bin_content<<endl;
+        Double_t bin_content = h_sum->GetBinContent(i+1); //cout<<"bin "<<i+1<<endl; cout<<"initial content = "<<bin_content<<endl;
+        Double_t new_bin_content = therand.Poisson(bin_content);// cout<<"new content = "<<new_bin_content<<endl;
         h_sum->SetBinContent(i+1, new_bin_content);
         h_sum->SetBinError(i+1, sqrt(new_bin_content)); //Poissonian error
       }
@@ -920,7 +1316,7 @@ int main(int argc, char* argv[]){
   ///   Write plots   ///
   ///*****************///
   
-  if((makePlots || doPDFunc || PlotMVAvars || PlotSystematics) ){
+  if((makePlots || doPDFunc || PlotMVAvars || PlotSystematics ) ){
     string pathOutput = "OutputPlots/";
     mkdir(pathOutput.c_str(),0777);
     string pathOutputdate = pathOutput + dateString + "/"  ;
@@ -960,7 +1356,7 @@ int main(int argc, char* argv[]){
         if(name.find("uue")!=std::string::npos) temp->setChannel(true, "1e2#mu");
         if(name.find("uuu")!=std::string::npos) temp->setChannel(true, "3#mu");
         if(name.find("Decay")!=std::string::npos) temp->setBins(vlabel_chan);
-        temp->Draw(name, 1, false, false, false, 1);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
+        temp->Draw(name, 1, false, false, false, 1);  // string label, unsigned Int_t RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, Int_t scaleNPSignal
         cout << "writing to " << pathOutputdate+"MSPlotMTW" << endl;
         cout << "plot " << name << endl;
         cout << "temp " << temp << endl;
@@ -968,7 +1364,6 @@ int main(int argc, char* argv[]){
       }
       
     }
-    
    if(makePlots && !doMTWtemplate){
       for (map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
       {
@@ -983,7 +1378,7 @@ int main(int argc, char* argv[]){
         if(name.find("uuu")!=std::string::npos) temp->setChannel(true, "3#mu");
         if(name.find("Decay")!=std::string::npos) temp->setBins(vlabel_chan);
         //temp->SetPreliminary(false);
-        temp->Draw(name, 1, false, false, false, 10);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
+        temp->Draw(name, 1, false, false, false, 10);  // string label, unsigned Int_t RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, Int_t scaleNPSignal
         cout << "writing to " << pathOutputdate+"MSPlot" << endl;
         cout << "plot " << name << endl;
         cout << "temp " << temp << endl;
@@ -998,7 +1393,7 @@ int main(int argc, char* argv[]){
       for (std::map<std::string,TH1F*>::const_iterator it = histo1DPDF.begin(); it != histo1DPDF.end(); it++)
       {
         TH1F *temp = it->second;
-        int N = temp->GetNbinsX();
+        Int_t N = temp->GetNbinsX();
         temp->SetBinContent(N,temp->GetBinContent(N)+temp->GetBinContent(N+1));
         temp->SetBinContent(N+1,0);
         temp->SetEntries(temp->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
@@ -1009,6 +1404,781 @@ int main(int argc, char* argv[]){
         }
       }
     }
+     if(PlotSystematics && !doMTWtemplate){
+       hist_BDT_puSF_nom_sig->SetLineColor(kRed);
+       hist_BDT_puSF_up_sig->SetLineColor(kBlue);
+       hist_BDT_puSF_down_sig->SetLineColor(kGreen+2);
+       hist_BDT_puSF_nom_bkg->SetLineColor(kRed);
+       hist_BDT_puSF_up_bkg->SetLineColor(kBlue);
+       hist_BDT_puSF_down_bkg->SetLineColor(kGreen+2);
+       hist_BDT_puSF_nom_sig->SetLineWidth(2);
+       hist_BDT_puSF_up_sig->SetLineWidth(2);
+       hist_BDT_puSF_down_sig->SetLineWidth(2);
+       hist_BDT_puSF_nom_bkg->SetLineWidth(2);
+       hist_BDT_puSF_up_bkg->SetLineWidth(2);
+       hist_BDT_puSF_down_bkg->SetLineWidth(2);
+       
+       
+       hist_BDT_electronSF_nom_sig->SetLineColor(kRed);
+       hist_BDT_electronSF_up_sig->SetLineColor(kBlue);
+       hist_BDT_electronSF_down_sig->SetLineColor(kGreen+2);
+       hist_BDT_electronSF_nom_bkg->SetLineColor(kRed);
+       hist_BDT_electronSF_up_bkg->SetLineColor(kBlue);
+       hist_BDT_electronSF_down_bkg->SetLineColor(kGreen+2);
+       hist_BDT_electronSF_nom_sig->SetLineWidth(2);
+       hist_BDT_electronSF_up_sig->SetLineWidth(2);
+       hist_BDT_electronSF_down_sig->SetLineWidth(2);
+       hist_BDT_electronSF_nom_bkg->SetLineWidth(2);
+       hist_BDT_electronSF_up_bkg->SetLineWidth(2);
+       hist_BDT_electronSF_down_bkg->SetLineWidth(2);
+       
+       hist_BDT_muonSF_nom_sig->SetLineColor(kRed);
+       hist_BDT_muonSF_up_sig->SetLineColor(kBlue);
+       hist_BDT_muonSF_down_sig->SetLineColor(kGreen+2);
+       hist_BDT_muonSF_nom_bkg->SetLineColor(kRed);
+       hist_BDT_muonSF_up_bkg->SetLineColor(kBlue);
+       hist_BDT_muonSF_down_bkg->SetLineColor(kGreen+2);
+       hist_BDT_muonSF_nom_sig->SetLineWidth(2);
+       hist_BDT_muonSF_up_sig->SetLineWidth(2);
+       hist_BDT_muonSF_down_sig->SetLineWidth(2);
+       hist_BDT_muonSF_nom_bkg->SetLineWidth(2);
+       hist_BDT_muonSF_up_bkg->SetLineWidth(2);
+       hist_BDT_muonSF_down_bkg->SetLineWidth(2);
+       
+       
+       
+       hist_BDT_btagSF_cferr1_nom_sig->SetLineColor(kRed);
+       hist_BDT_btagSF_cferr1_up_sig->SetLineColor(kBlue);
+       hist_BDT_btagSF_cferr1_down_sig->SetLineColor(kGreen+2);
+       hist_BDT_btagSF_cferr1_nom_bkg->SetLineColor(kRed);
+       hist_BDT_btagSF_cferr1_up_bkg->SetLineColor(kBlue);
+       hist_BDT_btagSF_cferr1_down_bkg->SetLineColor(kGreen+2);
+       hist_BDT_btagSF_cferr1_nom_sig->SetLineWidth(2);
+       hist_BDT_btagSF_cferr1_up_sig->SetLineWidth(2);
+       hist_BDT_btagSF_cferr1_down_sig->SetLineWidth(2);
+       hist_BDT_btagSF_cferr1_nom_bkg->SetLineWidth(2);
+       hist_BDT_btagSF_cferr1_up_bkg->SetLineWidth(2);
+       hist_BDT_btagSF_cferr1_down_bkg->SetLineWidth(2);
+       
+       
+       hist_BDT_btagSF_cferr2_nom_sig->SetLineColor(kRed);
+       hist_BDT_btagSF_cferr2_up_sig->SetLineColor(kBlue);
+       hist_BDT_btagSF_cferr2_down_sig->SetLineColor(kGreen+2);
+       hist_BDT_btagSF_cferr2_nom_bkg->SetLineColor(kRed);
+       hist_BDT_btagSF_cferr2_up_bkg->SetLineColor(kBlue);
+       hist_BDT_btagSF_cferr2_down_bkg->SetLineColor(kGreen+2);
+       hist_BDT_btagSF_cferr2_nom_sig->SetLineWidth(2);
+       hist_BDT_btagSF_cferr2_up_sig->SetLineWidth(2);
+       hist_BDT_btagSF_cferr2_down_sig->SetLineWidth(2);
+       hist_BDT_btagSF_cferr2_nom_bkg->SetLineWidth(2);
+       hist_BDT_btagSF_cferr2_up_bkg->SetLineWidth(2);
+       hist_BDT_btagSF_cferr2_down_bkg->SetLineWidth(2);
+       
+       hist_BDT_btagSF_hf_nom_sig->SetLineColor(kRed);
+       hist_BDT_btagSF_hf_up_sig->SetLineColor(kBlue);
+       hist_BDT_btagSF_hf_down_sig->SetLineColor(kGreen+2);
+       hist_BDT_btagSF_hf_nom_bkg->SetLineColor(kRed);
+       hist_BDT_btagSF_hf_up_bkg->SetLineColor(kBlue);
+       hist_BDT_btagSF_hf_down_bkg->SetLineColor(kGreen+2);
+       hist_BDT_btagSF_hf_nom_sig->SetLineWidth(2);
+       hist_BDT_btagSF_hf_up_sig->SetLineWidth(2);
+       hist_BDT_btagSF_hf_down_sig->SetLineWidth(2);
+       hist_BDT_btagSF_hf_nom_bkg->SetLineWidth(2);
+       hist_BDT_btagSF_hf_up_bkg->SetLineWidth(2);
+       hist_BDT_btagSF_hf_down_bkg->SetLineWidth(2);
+       
+       hist_BDT_btagSF_hfstats1_nom_sig->SetLineColor(kRed);
+       hist_BDT_btagSF_hfstats1_up_sig->SetLineColor(kBlue);
+       hist_BDT_btagSF_hfstats1_down_sig->SetLineColor(kGreen+2);
+       hist_BDT_btagSF_hfstats1_nom_bkg->SetLineColor(kRed);
+       hist_BDT_btagSF_hfstats1_up_bkg->SetLineColor(kBlue);
+       hist_BDT_btagSF_hfstats1_down_bkg->SetLineColor(kGreen+2);
+       hist_BDT_btagSF_hfstats1_nom_sig->SetLineWidth(2);
+       hist_BDT_btagSF_hfstats1_up_sig->SetLineWidth(2);
+       hist_BDT_btagSF_hfstats1_down_sig->SetLineWidth(2);
+       hist_BDT_btagSF_hfstats1_nom_bkg->SetLineWidth(2);
+       hist_BDT_btagSF_hfstats1_up_bkg->SetLineWidth(2);
+       hist_BDT_btagSF_hfstats1_down_bkg->SetLineWidth(2);
+       
+       
+       hist_BDT_btagSF_hfstats2_nom_sig->SetLineColor(kRed);
+       hist_BDT_btagSF_hfstats2_up_sig->SetLineColor(kBlue);
+       hist_BDT_btagSF_hfstats2_down_sig->SetLineColor(kGreen+2);
+       hist_BDT_btagSF_hfstats2_nom_bkg->SetLineColor(kRed);
+       hist_BDT_btagSF_hfstats2_up_bkg->SetLineColor(kBlue);
+       hist_BDT_btagSF_hfstats2_down_bkg->SetLineColor(kGreen+2);
+       hist_BDT_btagSF_hfstats2_nom_sig->SetLineWidth(2);
+       hist_BDT_btagSF_hfstats2_up_sig->SetLineWidth(2);
+       hist_BDT_btagSF_hfstats2_down_sig->SetLineWidth(2);
+       hist_BDT_btagSF_hfstats2_nom_bkg->SetLineWidth(2);
+       hist_BDT_btagSF_hfstats2_up_bkg->SetLineWidth(2);
+       hist_BDT_btagSF_hfstats2_down_bkg->SetLineWidth(2);
+       
+       hist_BDT_btagSF_lf_nom_sig->SetLineColor(kRed);
+       hist_BDT_btagSF_lf_up_sig->SetLineColor(kBlue);
+       hist_BDT_btagSF_lf_down_sig->SetLineColor(kGreen+2);
+       hist_BDT_btagSF_lf_nom_bkg->SetLineColor(kRed);
+       hist_BDT_btagSF_lf_up_bkg->SetLineColor(kBlue);
+       hist_BDT_btagSF_lf_down_bkg->SetLineColor(kGreen+2);
+       hist_BDT_btagSF_lf_nom_sig->SetLineWidth(2);
+       hist_BDT_btagSF_lf_up_sig->SetLineWidth(2);
+       hist_BDT_btagSF_lf_down_sig->SetLineWidth(2);
+       hist_BDT_btagSF_lf_nom_bkg->SetLineWidth(2);
+       hist_BDT_btagSF_lf_up_bkg->SetLineWidth(2);
+       hist_BDT_btagSF_lf_down_bkg->SetLineWidth(2);
+       
+       hist_BDT_btagSF_lfstats1_nom_sig->SetLineColor(kRed);
+       hist_BDT_btagSF_lfstats1_up_sig->SetLineColor(kBlue);
+       hist_BDT_btagSF_lfstats1_down_sig->SetLineColor(kGreen+2);
+       hist_BDT_btagSF_lfstats1_nom_bkg->SetLineColor(kRed);
+       hist_BDT_btagSF_lfstats1_up_bkg->SetLineColor(kBlue);
+       hist_BDT_btagSF_lfstats1_down_bkg->SetLineColor(kGreen+2);
+       hist_BDT_btagSF_lfstats1_nom_sig->SetLineWidth(2);
+       hist_BDT_btagSF_lfstats1_up_sig->SetLineWidth(2);
+       hist_BDT_btagSF_lfstats1_down_sig->SetLineWidth(2);
+       hist_BDT_btagSF_lfstats1_nom_bkg->SetLineWidth(2);
+       hist_BDT_btagSF_lfstats1_up_bkg->SetLineWidth(2);
+       hist_BDT_btagSF_lfstats1_down_bkg->SetLineWidth(2);
+       
+       
+       hist_BDT_btagSF_lfstats2_nom_sig->SetLineColor(kRed);
+       hist_BDT_btagSF_lfstats2_up_sig->SetLineColor(kBlue);
+       hist_BDT_btagSF_lfstats2_down_sig->SetLineColor(kGreen+2);
+       hist_BDT_btagSF_lfstats2_nom_bkg->SetLineColor(kRed);
+       hist_BDT_btagSF_lfstats2_up_bkg->SetLineColor(kBlue);
+       hist_BDT_btagSF_lfstats2_down_bkg->SetLineColor(kGreen+2);
+       hist_BDT_btagSF_lfstats2_nom_sig->SetLineWidth(2);
+       hist_BDT_btagSF_lfstats2_up_sig->SetLineWidth(2);
+       hist_BDT_btagSF_lfstats2_down_sig->SetLineWidth(2);
+       hist_BDT_btagSF_lfstats2_nom_bkg->SetLineWidth(2);
+       hist_BDT_btagSF_lfstats2_up_bkg->SetLineWidth(2);
+       hist_BDT_btagSF_lfstats2_down_bkg->SetLineWidth(2);
+       
+       
+       Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
+       TLegend *legsig = new TLegend(xl1,yl1,xl2,yl2);
+       legsig->AddEntry(hist_BDT_puSF_nom_sig,"nominal","L");   // h1 and h2 are histogram pointers
+       legsig->AddEntry(hist_BDT_puSF_up_sig,"unc +","L");
+       legsig->AddEntry(hist_BDT_puSF_down_sig,"unc -","L");
+       
+       gStyle->SetOptStat(0);
+       
+       TCanvas* tempCanvas = TCanvasCreator(hist_BDT_puSF_nom_sig, "");
+       hist_BDT_puSF_nom_sig->Draw("e histo");
+       hist_BDT_puSF_up_sig->Draw("e same histo");
+       hist_BDT_puSF_down_sig->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_puSF_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_puSF_nom_sig_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_BDT_puSF_nom_bkg, "");
+       hist_BDT_puSF_nom_bkg->Draw("e histo");
+       hist_BDT_puSF_up_bkg->Draw("e same histo");
+       hist_BDT_puSF_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_puSF_nom_bkg.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_puSF_nom_bkg_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_BDT_electronSF_nom_sig, "");
+       hist_BDT_electronSF_nom_sig->Draw("e histo");
+       hist_BDT_electronSF_up_sig->Draw("e same histo");
+       hist_BDT_electronSF_down_sig->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_electronSF_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_electronSF_nom_sig_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_BDT_electronSF_nom_bkg, "");
+       hist_BDT_electronSF_nom_bkg->Draw("e histo");
+       hist_BDT_electronSF_up_bkg->Draw("e same histo");
+       hist_BDT_electronSF_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_electronSF_nom_bkg.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_electronSF_nom_bkg_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_BDT_muonSF_nom_sig, "");
+       hist_BDT_muonSF_nom_sig->Draw("e histo");
+       hist_BDT_muonSF_up_sig->Draw("e same histo");
+       hist_BDT_muonSF_down_sig->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_muonSF_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_muonSF_nom_sig_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_BDT_muonSF_nom_bkg, "");
+       hist_BDT_muonSF_nom_bkg->Draw("e histo");
+       hist_BDT_muonSF_up_bkg->Draw("e same histo");
+       hist_BDT_muonSF_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_muonSF_nom_bkg.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_muonSF_nom_bkg_LogY.png");
+       
+       
+       tempCanvas = TCanvasCreator(hist_BDT_btagSF_cferr1_nom_sig, "");
+       hist_BDT_btagSF_cferr1_nom_sig->Draw("e histo");
+       hist_BDT_btagSF_cferr1_up_sig->Draw("e same histo");
+       hist_BDT_btagSF_cferr1_down_sig->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_cferr1_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_cferr1_nom_sig_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_BDT_btagSF_cferr1_nom_bkg, "");
+       hist_BDT_btagSF_cferr1_nom_bkg->Draw("e histo");
+       hist_BDT_btagSF_cferr1_up_bkg->Draw("e same histo");
+       hist_BDT_btagSF_cferr1_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_cferr1_nom_bkg.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_cferr1_nom_bkg_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_BDT_btagSF_cferr2_nom_sig, "");
+       hist_BDT_btagSF_cferr2_nom_sig->Draw("e histo");
+       hist_BDT_btagSF_cferr2_up_sig->Draw("e same histo");
+       hist_BDT_btagSF_cferr2_down_sig->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_cferr2_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_cferr2_nom_sig_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_BDT_btagSF_cferr2_nom_bkg, "");
+       hist_BDT_btagSF_cferr2_nom_bkg->Draw("e histo");
+       hist_BDT_btagSF_cferr2_up_bkg->Draw("e same histo");
+       hist_BDT_btagSF_cferr2_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_cferr2_nom_bkg.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_cferr2_nom_bkg_LogY.png");
+       
+       
+       tempCanvas = TCanvasCreator(hist_BDT_btagSF_lf_nom_sig, "");
+       hist_BDT_btagSF_lf_nom_sig->Draw("e histo");
+       hist_BDT_btagSF_lf_up_sig->Draw("e same histo");
+       hist_BDT_btagSF_lf_down_sig->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_lf_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_lf_nom_sig_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_BDT_btagSF_lf_nom_bkg, "");
+       hist_BDT_btagSF_lf_nom_bkg->Draw("e histo");
+       hist_BDT_btagSF_lf_up_bkg->Draw("e same histo");
+       hist_BDT_btagSF_lf_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_lf_nom_bkg.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_lf_nom_bkg_LogY.png");
+       
+       
+       tempCanvas = TCanvasCreator(hist_BDT_btagSF_lfstats1_nom_bkg, "");
+       hist_BDT_btagSF_lfstats1_nom_bkg->Draw("e histo");
+       hist_BDT_btagSF_lfstats1_up_bkg->Draw("e same histo");
+       hist_BDT_btagSF_lfstats1_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_sig_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_BDT_btagSF_lfstats2_nom_sig, "");
+       hist_BDT_btagSF_lfstats2_nom_sig->Draw("e histo");
+       hist_BDT_btagSF_lfstats2_up_sig->Draw("e same histo");
+       hist_BDT_btagSF_lfstats2_down_sig->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_bkg.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_bkg_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_BDT_btagSF_lfstats2_nom_bkg, "");
+       hist_BDT_btagSF_lfstats2_nom_bkg->Draw("e histo");
+       hist_BDT_btagSF_lfstats2_up_bkg->Draw("e same histo");
+       hist_BDT_btagSF_lfstats2_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats2_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats2_nom_sig_LogY.png");
+       
+       
+       tempCanvas = TCanvasCreator(hist_BDT_btagSF_hf_nom_sig, "");
+       hist_BDT_btagSF_hf_nom_sig->Draw("e histo");
+       hist_BDT_btagSF_hf_up_sig->Draw("e same histo");
+       hist_BDT_btagSF_hf_down_sig->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_hf_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_hf_nom_sig_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_BDT_btagSF_hf_nom_bkg, "");
+       hist_BDT_btagSF_hf_nom_bkg->Draw("e histo");
+       hist_BDT_btagSF_hf_up_bkg->Draw("e same histo");
+       hist_BDT_btagSF_hf_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_hf_nom_bkg.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_hf_nom_bkg_LogY.png");
+       
+       
+       tempCanvas = TCanvasCreator(hist_BDT_btagSF_hfstats1_nom_bkg, "");
+       hist_BDT_btagSF_hfstats1_nom_bkg->Draw("e histo");
+       hist_BDT_btagSF_hfstats1_up_bkg->Draw("e same histo");
+       hist_BDT_btagSF_hfstats1_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_sig_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_BDT_btagSF_hfstats2_nom_sig, "");
+       hist_BDT_btagSF_hfstats2_nom_sig->Draw("e histo");
+       hist_BDT_btagSF_hfstats2_up_sig->Draw("e same histo");
+       hist_BDT_btagSF_hfstats2_down_sig->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_bkg.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_bkg_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_BDT_btagSF_hfstats2_nom_bkg, "");
+       hist_BDT_btagSF_hfstats2_nom_bkg->Draw("e histo");
+       hist_BDT_btagSF_hfstats2_up_bkg->Draw("e same histo");
+       hist_BDT_btagSF_hfstats2_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats2_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats2_nom_sig_LogY.png");
+       tempCanvas->SaveAs( "electronbkg_LogY.png");
+
+     }
+     else if(PlotSystematics && doMTWtemplate){
+       hist_mWt_puSF_nom_sig->SetLineColor(kRed);
+       hist_mWt_puSF_up_sig->SetLineColor(kBlue);
+       hist_mWt_puSF_down_sig->SetLineColor(kGreen+2);
+       hist_mWt_puSF_nom_bkg->SetLineColor(kRed);
+       hist_mWt_puSF_up_bkg->SetLineColor(kBlue);
+       hist_mWt_puSF_down_bkg->SetLineColor(kGreen+2);
+       hist_mWt_puSF_nom_sig->SetLineWidth(2);
+       hist_mWt_puSF_up_sig->SetLineWidth(2);
+       hist_mWt_puSF_down_sig->SetLineWidth(2);
+       hist_mWt_puSF_nom_bkg->SetLineWidth(2);
+       hist_mWt_puSF_up_bkg->SetLineWidth(2);
+       hist_mWt_puSF_down_bkg->SetLineWidth(2);
+       
+       
+       hist_mWt_electronSF_nom_sig->SetLineColor(kRed);
+       hist_mWt_electronSF_up_sig->SetLineColor(kBlue);
+       hist_mWt_electronSF_down_sig->SetLineColor(kGreen+2);
+       hist_mWt_electronSF_nom_bkg->SetLineColor(kRed);
+       hist_mWt_electronSF_up_bkg->SetLineColor(kBlue);
+       hist_mWt_electronSF_down_bkg->SetLineColor(kGreen+2);
+       hist_mWt_electronSF_nom_sig->SetLineWidth(2);
+       hist_mWt_electronSF_up_sig->SetLineWidth(2);
+       hist_mWt_electronSF_down_sig->SetLineWidth(2);
+       hist_mWt_electronSF_nom_bkg->SetLineWidth(2);
+       hist_mWt_electronSF_up_bkg->SetLineWidth(2);
+       hist_mWt_electronSF_down_bkg->SetLineWidth(2);
+       
+       hist_mWt_muonSF_nom_sig->SetLineColor(kRed);
+       hist_mWt_muonSF_up_sig->SetLineColor(kBlue);
+       hist_mWt_muonSF_down_sig->SetLineColor(kGreen+2);
+       hist_mWt_muonSF_nom_bkg->SetLineColor(kRed);
+       hist_mWt_muonSF_up_bkg->SetLineColor(kBlue);
+       hist_mWt_muonSF_down_bkg->SetLineColor(kGreen+2);
+       hist_mWt_muonSF_nom_sig->SetLineWidth(2);
+       hist_mWt_muonSF_up_sig->SetLineWidth(2);
+       hist_mWt_muonSF_down_sig->SetLineWidth(2);
+       hist_mWt_muonSF_nom_bkg->SetLineWidth(2);
+       hist_mWt_muonSF_up_bkg->SetLineWidth(2);
+       hist_mWt_muonSF_down_bkg->SetLineWidth(2);
+       
+       
+       
+       hist_mWt_btagSF_cferr1_nom_sig->SetLineColor(kRed);
+       hist_mWt_btagSF_cferr1_up_sig->SetLineColor(kBlue);
+       hist_mWt_btagSF_cferr1_down_sig->SetLineColor(kGreen+2);
+       hist_mWt_btagSF_cferr1_nom_bkg->SetLineColor(kRed);
+       hist_mWt_btagSF_cferr1_up_bkg->SetLineColor(kBlue);
+       hist_mWt_btagSF_cferr1_down_bkg->SetLineColor(kGreen+2);
+       hist_mWt_btagSF_cferr1_nom_sig->SetLineWidth(2);
+       hist_mWt_btagSF_cferr1_up_sig->SetLineWidth(2);
+       hist_mWt_btagSF_cferr1_down_sig->SetLineWidth(2);
+       hist_mWt_btagSF_cferr1_nom_bkg->SetLineWidth(2);
+       hist_mWt_btagSF_cferr1_up_bkg->SetLineWidth(2);
+       hist_mWt_btagSF_cferr1_down_bkg->SetLineWidth(2);
+       
+       
+       hist_mWt_btagSF_cferr2_nom_sig->SetLineColor(kRed);
+       hist_mWt_btagSF_cferr2_up_sig->SetLineColor(kBlue);
+       hist_mWt_btagSF_cferr2_down_sig->SetLineColor(kGreen+2);
+       hist_mWt_btagSF_cferr2_nom_bkg->SetLineColor(kRed);
+       hist_mWt_btagSF_cferr2_up_bkg->SetLineColor(kBlue);
+       hist_mWt_btagSF_cferr2_down_bkg->SetLineColor(kGreen+2);
+       hist_mWt_btagSF_cferr2_nom_sig->SetLineWidth(2);
+       hist_mWt_btagSF_cferr2_up_sig->SetLineWidth(2);
+       hist_mWt_btagSF_cferr2_down_sig->SetLineWidth(2);
+       hist_mWt_btagSF_cferr2_nom_bkg->SetLineWidth(2);
+       hist_mWt_btagSF_cferr2_up_bkg->SetLineWidth(2);
+       hist_mWt_btagSF_cferr2_down_bkg->SetLineWidth(2);
+       
+       hist_mWt_btagSF_hf_nom_sig->SetLineColor(kRed);
+       hist_mWt_btagSF_hf_up_sig->SetLineColor(kBlue);
+       hist_mWt_btagSF_hf_down_sig->SetLineColor(kGreen+2);
+       hist_mWt_btagSF_hf_nom_bkg->SetLineColor(kRed);
+       hist_mWt_btagSF_hf_up_bkg->SetLineColor(kBlue);
+       hist_mWt_btagSF_hf_down_bkg->SetLineColor(kGreen+2);
+       hist_mWt_btagSF_hf_nom_sig->SetLineWidth(2);
+       hist_mWt_btagSF_hf_up_sig->SetLineWidth(2);
+       hist_mWt_btagSF_hf_down_sig->SetLineWidth(2);
+       hist_mWt_btagSF_hf_nom_bkg->SetLineWidth(2);
+       hist_mWt_btagSF_hf_up_bkg->SetLineWidth(2);
+       hist_mWt_btagSF_hf_down_bkg->SetLineWidth(2);
+       
+       hist_mWt_btagSF_hfstats1_nom_sig->SetLineColor(kRed);
+       hist_mWt_btagSF_hfstats1_up_sig->SetLineColor(kBlue);
+       hist_mWt_btagSF_hfstats1_down_sig->SetLineColor(kGreen+2);
+       hist_mWt_btagSF_hfstats1_nom_bkg->SetLineColor(kRed);
+       hist_mWt_btagSF_hfstats1_up_bkg->SetLineColor(kBlue);
+       hist_mWt_btagSF_hfstats1_down_bkg->SetLineColor(kGreen+2);
+       hist_mWt_btagSF_hfstats1_nom_sig->SetLineWidth(2);
+       hist_mWt_btagSF_hfstats1_up_sig->SetLineWidth(2);
+       hist_mWt_btagSF_hfstats1_down_sig->SetLineWidth(2);
+       hist_mWt_btagSF_hfstats1_nom_bkg->SetLineWidth(2);
+       hist_mWt_btagSF_hfstats1_up_bkg->SetLineWidth(2);
+       hist_mWt_btagSF_hfstats1_down_bkg->SetLineWidth(2);
+       
+       
+       hist_mWt_btagSF_hfstats2_nom_sig->SetLineColor(kRed);
+       hist_mWt_btagSF_hfstats2_up_sig->SetLineColor(kBlue);
+       hist_mWt_btagSF_hfstats2_down_sig->SetLineColor(kGreen+2);
+       hist_mWt_btagSF_hfstats2_nom_bkg->SetLineColor(kRed);
+       hist_mWt_btagSF_hfstats2_up_bkg->SetLineColor(kBlue);
+       hist_mWt_btagSF_hfstats2_down_bkg->SetLineColor(kGreen+2);
+       hist_mWt_btagSF_hfstats2_nom_sig->SetLineWidth(2);
+       hist_mWt_btagSF_hfstats2_up_sig->SetLineWidth(2);
+       hist_mWt_btagSF_hfstats2_down_sig->SetLineWidth(2);
+       hist_mWt_btagSF_hfstats2_nom_bkg->SetLineWidth(2);
+       hist_mWt_btagSF_hfstats2_up_bkg->SetLineWidth(2);
+       hist_mWt_btagSF_hfstats2_down_bkg->SetLineWidth(2);
+       
+       hist_mWt_btagSF_lf_nom_sig->SetLineColor(kRed);
+       hist_mWt_btagSF_lf_up_sig->SetLineColor(kBlue);
+       hist_mWt_btagSF_lf_down_sig->SetLineColor(kGreen+2);
+       hist_mWt_btagSF_lf_nom_bkg->SetLineColor(kRed);
+       hist_mWt_btagSF_lf_up_bkg->SetLineColor(kBlue);
+       hist_mWt_btagSF_lf_down_bkg->SetLineColor(kGreen+2);
+       hist_mWt_btagSF_lf_nom_sig->SetLineWidth(2);
+       hist_mWt_btagSF_lf_up_sig->SetLineWidth(2);
+       hist_mWt_btagSF_lf_down_sig->SetLineWidth(2);
+       hist_mWt_btagSF_lf_nom_bkg->SetLineWidth(2);
+       hist_mWt_btagSF_lf_up_bkg->SetLineWidth(2);
+       hist_mWt_btagSF_lf_down_bkg->SetLineWidth(2);
+       
+       hist_mWt_btagSF_lfstats1_nom_sig->SetLineColor(kRed);
+       hist_mWt_btagSF_lfstats1_up_sig->SetLineColor(kBlue);
+       hist_mWt_btagSF_lfstats1_down_sig->SetLineColor(kGreen+2);
+       hist_mWt_btagSF_lfstats1_nom_bkg->SetLineColor(kRed);
+       hist_mWt_btagSF_lfstats1_up_bkg->SetLineColor(kBlue);
+       hist_mWt_btagSF_lfstats1_down_bkg->SetLineColor(kGreen+2);
+       hist_mWt_btagSF_lfstats1_nom_sig->SetLineWidth(2);
+       hist_mWt_btagSF_lfstats1_up_sig->SetLineWidth(2);
+       hist_mWt_btagSF_lfstats1_down_sig->SetLineWidth(2);
+       hist_mWt_btagSF_lfstats1_nom_bkg->SetLineWidth(2);
+       hist_mWt_btagSF_lfstats1_up_bkg->SetLineWidth(2);
+       hist_mWt_btagSF_lfstats1_down_bkg->SetLineWidth(2);
+       
+       
+       hist_mWt_btagSF_lfstats2_nom_sig->SetLineColor(kRed);
+       hist_mWt_btagSF_lfstats2_up_sig->SetLineColor(kBlue);
+       hist_mWt_btagSF_lfstats2_down_sig->SetLineColor(kGreen+2);
+       hist_mWt_btagSF_lfstats2_nom_bkg->SetLineColor(kRed);
+       hist_mWt_btagSF_lfstats2_up_bkg->SetLineColor(kBlue);
+       hist_mWt_btagSF_lfstats2_down_bkg->SetLineColor(kGreen+2);
+       hist_mWt_btagSF_lfstats2_nom_sig->SetLineWidth(2);
+       hist_mWt_btagSF_lfstats2_up_sig->SetLineWidth(2);
+       hist_mWt_btagSF_lfstats2_down_sig->SetLineWidth(2);
+       hist_mWt_btagSF_lfstats2_nom_bkg->SetLineWidth(2);
+       hist_mWt_btagSF_lfstats2_up_bkg->SetLineWidth(2);
+       hist_mWt_btagSF_lfstats2_down_bkg->SetLineWidth(2);
+       
+       
+       Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
+       TLegend *legsig = new TLegend(xl1,yl1,xl2,yl2);
+       legsig->AddEntry(hist_mWt_puSF_nom_sig,"nominal","L");   // h1 and h2 are histogram pointers
+       legsig->AddEntry(hist_mWt_puSF_up_sig,"unc +","L");
+       legsig->AddEntry(hist_mWt_puSF_down_sig,"unc -","L");
+       
+       gStyle->SetOptStat(0);
+       
+       TCanvas* tempCanvas = TCanvasCreator(hist_mWt_puSF_nom_sig, "");
+       hist_mWt_puSF_nom_sig->Draw("e histo");
+       hist_mWt_puSF_up_sig->Draw("e same histo");
+       hist_mWt_puSF_down_sig->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_puSF_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_puSF_nom_sig_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_mWt_puSF_nom_bkg, "");
+       hist_mWt_puSF_nom_bkg->Draw("e histo");
+       hist_mWt_puSF_up_bkg->Draw("e same histo");
+       hist_mWt_puSF_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_puSF_nom_bkg.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_puSF_nom_bkg_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_mWt_electronSF_nom_sig, "");
+       hist_mWt_electronSF_nom_sig->Draw("e histo");
+       hist_mWt_electronSF_up_sig->Draw("e same histo");
+       hist_mWt_electronSF_down_sig->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_electronSF_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_electronSF_nom_sig_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_mWt_electronSF_nom_bkg, "");
+       hist_mWt_electronSF_nom_bkg->Draw("e histo");
+       hist_mWt_electronSF_up_bkg->Draw("e same histo");
+       hist_mWt_electronSF_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_electronSF_nom_bkg.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_electronSF_nom_bkg_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_mWt_muonSF_nom_sig, "");
+       hist_mWt_muonSF_nom_sig->Draw("e histo");
+       hist_mWt_muonSF_up_sig->Draw("e same histo");
+       hist_mWt_muonSF_down_sig->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_muonSF_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_muonSF_nom_sig_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_mWt_muonSF_nom_bkg, "");
+       hist_mWt_muonSF_nom_bkg->Draw("e histo");
+       hist_mWt_muonSF_up_bkg->Draw("e same histo");
+       hist_mWt_muonSF_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_muonSF_nom_bkg.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_muonSF_nom_bkg_LogY.png");
+       
+       
+       tempCanvas = TCanvasCreator(hist_mWt_btagSF_cferr1_nom_sig, "");
+       hist_mWt_btagSF_cferr1_nom_sig->Draw("e histo");
+       hist_mWt_btagSF_cferr1_up_sig->Draw("e same histo");
+       hist_mWt_btagSF_cferr1_down_sig->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_cferr1_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_cferr1_nom_sig_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_mWt_btagSF_cferr1_nom_bkg, "");
+       hist_mWt_btagSF_cferr1_nom_bkg->Draw("e histo");
+       hist_mWt_btagSF_cferr1_up_bkg->Draw("e same histo");
+       hist_mWt_btagSF_cferr1_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_cferr1_nom_bkg.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_cferr1_nom_bkg_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_mWt_btagSF_cferr2_nom_sig, "");
+       hist_mWt_btagSF_cferr2_nom_sig->Draw("e histo");
+       hist_mWt_btagSF_cferr2_up_sig->Draw("e same histo");
+       hist_mWt_btagSF_cferr2_down_sig->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_cferr2_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_cferr2_nom_sig_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_mWt_btagSF_cferr2_nom_bkg, "");
+       hist_mWt_btagSF_cferr2_nom_bkg->Draw("e histo");
+       hist_mWt_btagSF_cferr2_up_bkg->Draw("e same histo");
+       hist_mWt_btagSF_cferr2_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_cferr2_nom_bkg.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_cferr2_nom_bkg_LogY.png");
+       
+       
+       tempCanvas = TCanvasCreator(hist_mWt_btagSF_lf_nom_sig, "");
+       hist_mWt_btagSF_lf_nom_sig->Draw("e histo");
+       hist_mWt_btagSF_lf_up_sig->Draw("e same histo");
+       hist_mWt_btagSF_lf_down_sig->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_lf_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_lf_nom_sig_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_mWt_btagSF_lf_nom_bkg, "");
+       hist_mWt_btagSF_lf_nom_bkg->Draw("e histo");
+       hist_mWt_btagSF_lf_up_bkg->Draw("e same histo");
+       hist_mWt_btagSF_lf_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_lf_nom_bkg.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_lf_nom_bkg_LogY.png");
+       
+       
+       tempCanvas = TCanvasCreator(hist_mWt_btagSF_lfstats1_nom_bkg, "");
+       hist_mWt_btagSF_lfstats1_nom_bkg->Draw("e histo");
+       hist_mWt_btagSF_lfstats1_up_bkg->Draw("e same histo");
+       hist_mWt_btagSF_lfstats1_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats1_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats1_nom_sig_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_mWt_btagSF_lfstats2_nom_sig, "");
+       hist_mWt_btagSF_lfstats2_nom_sig->Draw("e histo");
+       hist_mWt_btagSF_lfstats2_up_sig->Draw("e same histo");
+       hist_mWt_btagSF_lfstats2_down_sig->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats1_nom_bkg.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats1_nom_bkg_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_mWt_btagSF_lfstats2_nom_bkg, "");
+       hist_mWt_btagSF_lfstats2_nom_bkg->Draw("e histo");
+       hist_mWt_btagSF_lfstats2_up_bkg->Draw("e same histo");
+       hist_mWt_btagSF_lfstats2_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats2_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats2_nom_sig_LogY.png");
+       
+       
+       tempCanvas = TCanvasCreator(hist_mWt_btagSF_hf_nom_sig, "");
+       hist_mWt_btagSF_hf_nom_sig->Draw("e histo");
+       hist_mWt_btagSF_hf_up_sig->Draw("e same histo");
+       hist_mWt_btagSF_hf_down_sig->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_hf_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_hf_nom_sig_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_mWt_btagSF_hf_nom_bkg, "");
+       hist_mWt_btagSF_hf_nom_bkg->Draw("e histo");
+       hist_mWt_btagSF_hf_up_bkg->Draw("e same histo");
+       hist_mWt_btagSF_hf_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_hf_nom_bkg.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_hf_nom_bkg_LogY.png");
+       
+       
+       tempCanvas = TCanvasCreator(hist_mWt_btagSF_hfstats1_nom_bkg, "");
+       hist_mWt_btagSF_hfstats1_nom_bkg->Draw("e histo");
+       hist_mWt_btagSF_hfstats1_up_bkg->Draw("e same histo");
+       hist_mWt_btagSF_hfstats1_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats1_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats1_nom_sig_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_mWt_btagSF_hfstats2_nom_sig, "");
+       hist_mWt_btagSF_hfstats2_nom_sig->Draw("e histo");
+       hist_mWt_btagSF_hfstats2_up_sig->Draw("e same histo");
+       hist_mWt_btagSF_hfstats2_down_sig->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats1_nom_bkg.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats1_nom_bkg_LogY.png");
+       
+       tempCanvas = TCanvasCreator(hist_mWt_btagSF_hfstats2_nom_bkg, "");
+       hist_mWt_btagSF_hfstats2_nom_bkg->Draw("e histo");
+       hist_mWt_btagSF_hfstats2_up_bkg->Draw("e same histo");
+       hist_mWt_btagSF_hfstats2_down_bkg->Draw("e same histo");
+       legsig->Draw("same");
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats2_nom_sig.png");
+       tempCanvas->SetLogy();
+       tempCanvas->Update();
+       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats2_nom_sig_LogY.png");
+       
+       
+       
+     }
+    
+    
     if(PlotMVAvars && !doMTWtemplate){
       // cout << "plot mva vars " << endl;
       TDirectory* th1dirmva = fout->mkdir("1D_MVA_histograms");
@@ -1039,47 +2209,51 @@ int main(int argc, char* argv[]){
         
         variables.push_back(splitname);
       }
-      for(int i = 0 ; i < variables.size(); i++){
+      for(Int_t i = 0 ; i < variables.size(); i++){
         splitname = variables[i];
         // cout << "name " << splitname << endl;
-        for(int iChan = 0; iChan < channellist.size(); iChan++){
+        for(Int_t iChan = 0; iChan < channellist.size(); iChan++){
           TH1F *tempBKG(0);
           TH1F *tempSignal(0);
-          TH1F *tempfake(0);
-          
+          TH1F *tempfakes = new TH1F();
+          string title = "";
           for (std::map<std::string,TH1F*>::const_iterator it = histo1D.begin(); it != histo1D.end(); it++)
           {
             if(it->first.find(channellist[iChan].c_str())==std::string::npos) continue;
             if(it->first.find(splitname.c_str())==std::string::npos) continue;
             
-            //cout << "looking at " << it->first << endl;
+        //    cout << "looking at " << it->first << endl;
             TH1F *temp = it->second;
-            if(it->first.find("WZTo3LNu")!=std::string::npos || it->first.find("WZJTo3LNu")!=std::string::npos) {
+           
+          /* if(it->first.find("fake")!=std::string::npos) {
+             // cout << "filling fake " << tempfake << " " << temp << endl;
+              tempfakes = (TH1F*) temp->Clone("");
+             
+            }
+            else*/ if(it->first.find("T_FCNC")!=std::string::npos) {
+              if(tempSignal == 0){ tempSignal = (TH1F*) temp->Clone(); title =  temp->GetTitle();}
+              else tempSignal->Add(temp);
+            }
+            else if(it->first.find("fake")==std::string::npos && it->first.find("T_FCNC")==std::string::npos){
               if(tempBKG == 0) tempBKG = (TH1F*) temp->Clone();
               else tempBKG->Add(temp);
-            }
-            if(it->first.find("fake")!=std::string::npos) {
-              cout << "filling fake " << tempfake << " " << temp << endl;
-              if(tempfake == 0) tempfake = (TH1F*) it->second->Clone();
-              else tempfake->Add(temp);
-              cout << "filling fake " << tempfake << endl;
-            }
-            if(it->first.find("T_FCNC")!=std::string::npos) {
-              if(tempSignal == 0) tempSignal = (TH1F*) temp->Clone();
-              else tempSignal->Add(temp);
             }
             //delete temp;
           }
           //cout << "filled histos " << endl;
           if(tempBKG == 0) cout << "ERROR tempBKG is null" << endl ;
-          if(tempfake == 0) cout << "ERROR tempfake is null" << endl ;
+//          if(tempfake == 0) cout << "ERROR tempfake is null" << endl ;
           if(tempSignal == 0) cout << "ERROR tempSignal is null" << endl ;
           
-          tempBKG->SetLineColor(kBlue);
-          tempSignal->SetLineColor(kRed);
           // tempfake->SetLineColor(kGreen);
           tempBKG->SetName(splitname.c_str());
-          tempBKG->SetTitle(("Shape comparison - " + channellist[iChan]).c_str());
+          if(doZut && !toppair) tempBKG->SetTitle(("Shape comparison ST tZu - " + channellist[iChan]).c_str());
+          if(!doZut && !toppair) tempBKG->SetTitle(("Shape comparison ST tZc - " + channellist[iChan]).c_str());
+          if(doZut && toppair) tempBKG->SetTitle(("Shape comparison TT tZu - " + channellist[iChan]).c_str());
+          if(!doZut && toppair) tempBKG->SetTitle(("Shape comparison TT tZc - " + channellist[iChan]).c_str());
+          
+          
+          
           
           Double_t scaleBKG = 1./tempBKG->Integral();
           tempBKG->Scale(scaleBKG);
@@ -1087,24 +2261,36 @@ int main(int argc, char* argv[]){
           tempSignal->Scale(scaleSig);
           // Double_t scalefake = 1./tempfake->Integral();
           // tempfake->Scale(scalefake);
-          double max = TMath::Max(tempSignal->GetMaximum(), tempBKG->GetMaximum());
-          // double max = TMath::Max(max0, tempfake->GetMaximum());
-          tempBKG->SetMaximum(max*1.2);
-          tempBKG->GetXaxis()->SetTitle(splitname.c_str());
-          tempBKG->GetYaxis()->SetTitle("Nb. Events");
+          Double_t max = TMath::Max(tempSignal->GetMaximum(), tempBKG->GetMaximum());
+          // Double_t max = TMath::Max(max0, tempfake->GetMaximum());
+         
           
-          
+         
+          tempBKG->SetLineColor(kBlue);
+          tempSignal->SetLineColor(kRed);
+          tempBKG->SetMarkerColor(kBlue);
+          tempSignal->SetMarkerColor(kRed);
+          tempBKG->SetLineWidth(2);
+          tempBKG->SetMarkerStyle(2);
+          tempSignal->SetLineWidth(2);
+          tempSignal->SetMarkerStyle(2);
+         // cout << "title " << title.c_str() << endl;
+          tempBKG->GetXaxis()->SetTitle(title.c_str());
+          tempBKG->GetYaxis()->SetTitle("Nb. Norm. Events");
+          tempBKG->SetMaximum(max*1.7);
           Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
           TLegend *leg = new TLegend(xl1,yl1,xl2,yl2);
-          leg->AddEntry(tempSignal,"Signal","L");   // h1 and h2 are histogram pointers
-          leg->AddEntry(tempBKG,"WZ background","L");
+          leg->AddEntry(tempSignal,"FCNC: ST + TT","P");   // h1 and h2 are histogram pointers
+          leg->AddEntry(tempBKG,"SM bkg (no fakes)","P");
           //leg->AddEntry(tempfake,"DD non prompt","L");
           
           TCanvas* tempCanvas = TCanvasCreator(tempBKG,"Normalised MVA distribution" );
-          tempBKG->Draw("h");
-          tempSignal->Draw("h,Sames");
+          tempBKG->Draw("e hist");
+          tempSignal->Draw("e hist same ");
           //tempfake->Draw("L,Sames");
+          tempCanvas->Update();
           leg->Draw("Same");
+          tempCanvas->Update();
           tempCanvas->SaveAs( (placeTH1F+splitname+"_"+channellist[iChan]+".png").c_str() );
           
           tempBKG->Write();
@@ -1117,151 +2303,8 @@ int main(int argc, char* argv[]){
         } // channellist
       }
     }
-    if(PlotSystematics && !doMTWtemplate){
-      //cout << "plot systematics" << endl;
-      TDirectory* th1dirsys = fout->mkdir("1D_Systematic_histograms");
-      th1dirsys->cd();
-      gStyle->SetOptStat(1110);
-      string systematic = "";
-      TH1F *temp_nom(0);
-      for (std::map<std::string,TH1F*>::const_iterator it = histo1DSys.begin(); it != histo1DSys.end(); it++)
-      {
-        if(it->first.find("nominal")!=std::string::npos){
-          if(temp_nom == 0) temp_nom = (TH1F*) it->second->Clone();
-          else temp_nom->Add(it->second);
-          //cout << "found nominal " << it->first << endl;
-        }
-      }
-      
-      for(int isys = 1; isys < thesystlistnames.size(); isys++){ // first value was nominal
-        systematic = thesystlistnames[isys];
-        //cout << "looking at " << systematic.c_str() << endl;
-        TH1F *temp_up(0);
-        TH1F *temp_down(0);
-        TCanvas* Canvas = 0;
-        string nameplot = systematic;
-        for (std::map<std::string,TH1F*>::const_iterator it = histo1DSys.begin(); it != histo1DSys.end(); it++)
-        {
-          if(it->first.find(systematic.c_str())!=std::string::npos){
-            if(it->first.find("Up")!=std::string::npos){
-              if(temp_up ==0) temp_up = (TH1F*) it->second->Clone();
-              else temp_up->Add(it->second);
-            }//cout << "found " << it->first << endl; }
-            else if(it->first.find("Down")!=std::string::npos){
-              if(temp_down == 0) temp_down = (TH1F*) it->second->Clone();
-              else temp_down->Add(it->second);
-            }// cout << "found " << it->first << endl;}
-            
-            
-          }
-        }
-        
-        if(temp_up == 0 || temp_down == 0 || temp_up == 0){ cout << "Error someting went wrong with " << systematic.c_str() << " ! Skipping..." << endl; continue;}
-        
-        temp_down->Write();
-        temp_nom->Write();
-        temp_up->Write();
-        temp_nom->SetLineColor(kRed);
-        temp_up->SetLineColor(kBlue);
-        temp_down->SetLineColor(kViolet);
-        temp_up->SetTitle(("Influence of "+systematic).c_str());
-        Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
-        TLegend *legend = new TLegend(xl1,yl1,xl2,yl2);
-        //TLegend *legend = new TLegend(0.1,0.7,0.48,0.9);//(0.55,0.65,0.76,0.82);
-        legend->AddEntry(temp_nom,"nominal","L");
-        legend->AddEntry(temp_down,(systematic+" down").c_str(),"L");
-        legend->AddEntry(temp_up,(systematic+" up").c_str(),"L");
-        
-        
-        Canvas =  TCanvasCreator(temp_up, systematic.c_str() );//new TCanvas("Canvas_PU","Canvas_PU");
-        Canvas->cd();
-        gStyle->SetOptStat(0);
-        temp_up->GetXaxis()->SetTitle("BDT");
-        
-        temp_up->Draw("h");
-        temp_nom->Draw("SAME,h");
-        temp_down->Draw("SAME,h");
-        legend->Draw("SAME");
-        Canvas->SaveAs( (placeTH1F+nameplot+".png").c_str() );
-        Canvas->SetLogy();
-        Canvas->Update();
-        Canvas->SaveAs( (placeTH1F+nameplot+"_LogY.png").c_str() );
-      }
-    }
-    if(PlotSystematics && doMTWtemplate){
-      cout << "plot systematics" << endl;
-      TDirectory* th1dirsys = fout->mkdir("1D_Systematic_histograms");
-      th1dirsys->cd();
-      gStyle->SetOptStat(1110);
-      string systematic = "";
-      TH1F *temp_nom(0);
-      for (std::map<std::string,TH1F*>::const_iterator it = histo1DSysMTW.begin(); it != histo1DSysMTW.end(); it++)
-      {
-        cout << "looking at " << it->first<<endl;
-        if(it->first.find("nominal")!=std::string::npos){
-          cout << "found nominal " << it->first << " " << it->second << " " << temp_nom <<  endl;
-          if(temp_nom == 0){ temp_nom = (TH1F*) (it->second); cout << "cloned" << endl;}
-          else temp_nom->Add(it->second);
-          cout << "added nominal " << it->first << endl;
-        }
-      }
-      
-      for(int isys = 1; isys < thesystlistnames.size(); isys++){ // first value was nominal
-        systematic = thesystlistnames[isys];
-        cout << "looking at " << systematic.c_str() << endl;
-        TH1F *temp_up(0);
-        TH1F *temp_down(0);
-        TCanvas* Canvas = 0;
-        string nameplot = systematic;
-        for (std::map<std::string,TH1F*>::const_iterator it = histo1DSysMTW.begin(); it != histo1DSysMTW.end(); it++)
-        {
-          if(it->first.find(systematic.c_str())!=std::string::npos){
-            if(it->first.find("Up")!=std::string::npos){
-              if(temp_up ==0){ temp_up = (TH1F*) (it->second);}
-              else temp_up->Add(it->second);
-              cout << "found " << it->first << endl; }
-            else if(it->first.find("Down")!=std::string::npos){
-              if(temp_down == 0){ temp_down = (TH1F*) (it->second);}
-              else temp_down->Add(it->second);
-              cout << "found " << it->first << endl;}
-            
-            
-          }
-        }
-        
-        if(temp_up == 0 || temp_down == 0 || temp_up == 0){ cout << "Error someting went wrong with " << systematic.c_str() << " ! Skipping..." << endl; continue;}
-        cout << "writing" << endl;
-        temp_down->Write();
-        temp_nom->Write();
-        temp_up->Write();
-        cout << "written" << endl;
-        temp_nom->SetLineColor(kRed);
-        temp_up->SetLineColor(kBlue);
-        temp_down->SetLineColor(kViolet);
-        temp_up->SetTitle(("Influence of "+systematic).c_str());
-        Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
-        TLegend *legend = new TLegend(xl1,yl1,xl2,yl2);
-        //TLegend *legend = new TLegend(0.1,0.7,0.48,0.9);//(0.55,0.65,0.76,0.82);
-        legend->AddEntry(temp_nom,"nominal","L");
-        legend->AddEntry(temp_down,(systematic+" down").c_str(),"L");
-        legend->AddEntry(temp_up,(systematic+" up").c_str(),"L");
-        
-        
-        Canvas =  TCanvasCreator(temp_up, systematic.c_str() );//new TCanvas("Canvas_PU","Canvas_PU");
-        Canvas->cd();
-        gStyle->SetOptStat(0);
-        temp_up->GetXaxis()->SetTitle("M_T(W)");
-        
-        temp_up->Draw("h");
-        temp_nom->Draw("SAME,h");
-        temp_down->Draw("SAME,h");
-        legend->Draw("SAME");
-        Canvas->SaveAs( (placeTH1F+nameplot+".png").c_str() );
-        Canvas->SetLogy();
-        Canvas->Update();
-        Canvas->SaveAs( (placeTH1F+nameplot+"_LogY.png").c_str() );
-      }
-    }
+
+  
  // if(false){ // TO FIX
     if(makePlots && doMTWtemplate){
       hist_WZ->SetLineColor(kBlue);
@@ -1280,9 +2323,9 @@ int main(int argc, char* argv[]){
       Double_t scalefake_nom = 1./hist_fakes->Integral();
       cout << "scale fakes " << scalefake_nom << endl;
       hist_fakes->Scale(scalefake_nom);
-      double max0 = TMath::Max(hist_fakes->GetMaximum(), hist_TT_FCNC->GetMaximum());
-      double max1 = TMath::Max(hist_TT_FCNC->GetMaximum(), hist_WZ->GetMaximum());
-      double maximum = TMath::Max(max0, max1);
+      Double_t max0 = TMath::Max(hist_fakes->GetMaximum(), hist_TT_FCNC->GetMaximum());
+      Double_t max1 = TMath::Max(hist_TT_FCNC->GetMaximum(), hist_WZ->GetMaximum());
+      Double_t maximum = TMath::Max(max0, max1);
       hist_WZ->SetMaximum(maximum*1.2);
       hist_WZ->GetXaxis()->SetTitle("M_T(W)");
       hist_WZ->GetYaxis()->SetTitle("Nb. Norm. Events");
@@ -1315,7 +2358,7 @@ int main(int argc, char* argv[]){
       channellist.push_back("eeu");
       channellist.push_back("uuu");
 
-      for(int iChan = 0; iChan < channellist.size(); iChan++){
+      for(Int_t iChan = 0; iChan < channellist.size(); iChan++){
         TH1F *tempBKG_nom(0);
         TH1F *tempSignalST_nom(0);
         TH1F *tempfake_nom(0);
@@ -1429,23 +2472,23 @@ int main(int argc, char* argv[]){
         tempSignalTT_up->Scale(scaleSigTT_up);
         Double_t scalefake_nom = 1./tempfake_nom->Integral();
         tempfake_nom->Scale(scalefake_nom);
-        double max0 = TMath::Max(tempSignalST_nom->GetMaximum(), tempBKG_nom->GetMaximum());
-        double max1 = TMath::Max(tempSignalST_nom->GetMaximum(), tempfake_nom->GetMaximum());
-        double max2 = TMath::Max(tempSignalST_nom->GetMaximum(), tempSignalTT_nom->GetMaximum());
-        double max00 = TMath::Max(tempSignalST_up->GetMaximum(), tempBKG_up->GetMaximum());
-        double max10 = TMath::Max(tempSignalST_up->GetMaximum(), tempfake_nom->GetMaximum());
-        double max20 = TMath::Max(tempSignalST_up->GetMaximum(), tempSignalTT_up->GetMaximum());
-        double max01 = TMath::Max(tempSignalST_down->GetMaximum(), tempBKG_down->GetMaximum());
-        double max11 = TMath::Max(tempSignalST_down->GetMaximum(), tempfake_nom->GetMaximum());
-        double max21 = TMath::Max(tempSignalST_down->GetMaximum(), tempSignalTT_down->GetMaximum());
-        double maxA = TMath::Max(max0, max1);
-        double maxB = TMath::Max(max2,max00);
-        double maxC = TMath::Max(max10,max20);
-        double maxD = TMath::Max(max01,max11);
-        double maxX = TMath::Max(max21,maxA);
-        double maxY = TMath::Max(maxB,maxC);
-        double maxi = TMath::Max(maxD,maxX);
-        double maximum = TMath::Max(maxi, maxY);
+        Double_t max0 = TMath::Max(tempSignalST_nom->GetMaximum(), tempBKG_nom->GetMaximum());
+        Double_t max1 = TMath::Max(tempSignalST_nom->GetMaximum(), tempfake_nom->GetMaximum());
+        Double_t max2 = TMath::Max(tempSignalST_nom->GetMaximum(), tempSignalTT_nom->GetMaximum());
+        Double_t max00 = TMath::Max(tempSignalST_up->GetMaximum(), tempBKG_up->GetMaximum());
+        Double_t max10 = TMath::Max(tempSignalST_up->GetMaximum(), tempfake_nom->GetMaximum());
+        Double_t max20 = TMath::Max(tempSignalST_up->GetMaximum(), tempSignalTT_up->GetMaximum());
+        Double_t max01 = TMath::Max(tempSignalST_down->GetMaximum(), tempBKG_down->GetMaximum());
+        Double_t max11 = TMath::Max(tempSignalST_down->GetMaximum(), tempfake_nom->GetMaximum());
+        Double_t max21 = TMath::Max(tempSignalST_down->GetMaximum(), tempSignalTT_down->GetMaximum());
+        Double_t maxA = TMath::Max(max0, max1);
+        Double_t maxB = TMath::Max(max2,max00);
+        Double_t maxC = TMath::Max(max10,max20);
+        Double_t maxD = TMath::Max(max01,max11);
+        Double_t maxX = TMath::Max(max21,maxA);
+        Double_t maxY = TMath::Max(maxB,maxC);
+        Double_t maxi = TMath::Max(maxD,maxX);
+        Double_t maximum = TMath::Max(maxi, maxY);
         tempBKG_nom->SetMaximum(maximum*1.2);
         tempBKG_nom->GetXaxis()->SetTitle("M_T(W)");
         tempBKG_nom->GetYaxis()->SetTitle("Nb. Events");
@@ -1525,7 +2568,7 @@ int main(int argc, char* argv[]){
     output_histo_name = "";
     vector<string> v_sys = {"PDFup", "PDFdown"};
     dataSetName  = "WZTo3LNu_3Jets_MLL50_80X";
-    for(int isys = 0; isys < v_sys.size() ; isys++)
+    for(Int_t isys = 0; isys < v_sys.size() ; isys++)
     {
       systematic = v_sys[isys];
       output_histo_name = coupling + "_" + region+"_uuu_"  + dataSetName + "_" + systematic ;
@@ -1550,16 +2593,16 @@ int main(int argc, char* argv[]){
   
   
   
-  double time = ((double)clock() - start) / CLOCKS_PER_SEC;
+  Double_t time = ((double)clock() - start) / CLOCKS_PER_SEC;
   cout << "It took us " << time << " s to run the program" << endl;
   if ( time >= 60 )
   {
-    int mins = time/60;
+    Int_t mins = time/60;
     float secs = time - mins*60;
     
     if (mins >= 60 )
     {
-      int hours = mins/60;
+      Int_t hours = mins/60;
       mins = mins - hours*60;
       cout << "(This corresponds to " << hours << " hours, " << mins << " min and " << secs << " s)" << endl;
     }
@@ -1591,7 +2634,7 @@ std::vector<std::string> split(const std::string &text, char sep) {
   }
   return tokens;
 }
-string ConvertIntToString(int Number, int pad){
+string ConvertIntToString(Int_t Number, Int_t pad){
   ostringstream convert;
   convert.clear();  // clear bits
   convert.str(std::string());  // clear content
@@ -1603,12 +2646,12 @@ string MakeTimeStamp(){
   time_t t = time(0);   // get time now
   struct tm * now = localtime( & t );
   
-  int year = now->tm_year - 100;  /// + 1900 to get current year
-  int month = now->tm_mon + 1;
-  int day = now->tm_mday;
-  int hour = now->tm_hour;
-  int min = now->tm_min;
-  //int sec = now->tm_sec;
+  Int_t year = now->tm_year - 100;  /// + 1900 to get current year
+  Int_t month = now->tm_mon + 1;
+  Int_t day = now->tm_mday;
+  Int_t hour = now->tm_hour;
+  Int_t min = now->tm_min;
+  //Int_t sec = now->tm_sec;
   
   string year_str = ConvertIntToString(year, 2);
   string month_str = ConvertIntToString(month, 2);
@@ -1620,27 +2663,27 @@ string MakeTimeStamp(){
   string date_str = year_str + month_str + day_str + "_" + hour_str + min_str;
   return date_str;
 }
-string intToStr (int number){
+string intToStr (Int_t number){
   ostringstream buff;
   buff<<number;
   return buff.str();
 }
-double maximumValue(vector<double> array){
-  int length = array.size();  // establish size of array
-  double max = array[0];       // start with max = first element
+Double_t maximumValue(vector<double> array){
+  Int_t length = array.size();  // establish size of array
+  Double_t max = array[0];       // start with max = first element
   
-  for(int i = 1; i<length; i++)
+  for(Int_t i = 1; i<length; i++)
   {
     if(array[i] > max)
       max = array[i];
   }
   return max;                // return highest value in array
 }
-double minimumValue(vector<double> array){
-  int length = array.size();  // establish size of array
-  double max = array[0];       // start with max = first element
+Double_t minimumValue(vector<double> array){
+  Int_t length = array.size();  // establish size of array
+  Double_t max = array[0];       // start with max = first element
   
-  for(int i = 1; i<length; i++)
+  for(Int_t i = 1; i<length; i++)
   {
     if(array[i] < max)
       max = array[i];
@@ -1650,7 +2693,7 @@ double minimumValue(vector<double> array){
 
 //// INITIALISATIONS
 void InitMSPlotsMTW(string prefix, vector <int> decayChannels){
-  for(int iChan =0; iChan < decayChannels.size() ; iChan++){
+  for(Int_t iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
     if(decayChannels[iChan] == 0) decaystring = "uuu";
     if(decayChannels[iChan] == 1) decaystring = "uue";
@@ -1670,7 +2713,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair, boo
   prefix = prefix + "_";
   
   // control plots
-  for(int iChan =0; iChan < decayChannels.size() ; iChan++){
+  for(Int_t iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
     if(decayChannels[iChan] == 0) decaystring = "uuu";
     if(decayChannels[iChan] == 1) decaystring = "uue";
@@ -1740,9 +2783,9 @@ void InitCalculatePDFWeightHisto(string dataSetName){
   channel_list.push_back("eeu");
   channel_list.push_back("uuu");
   string channel = "";
-  for(int iChan = 0; iChan < channel_list.size(); iChan++){
+  for(Int_t iChan = 0; iChan < channel_list.size(); iChan++){
     channel = channel_list[iChan];
-    for ( int i=0; i<101; i++)
+    for ( Int_t i=0; i<101; i++)
     {
       output_histo_name = dataSetName+"_BDT_"+channel+"_"+intToStr(i);
       histo1DPDF[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,-1.,1.);
@@ -1757,10 +2800,10 @@ void InitCalculatePDFWeightHisto(string dataSetName){
     output_histo_name = "";
   }
 }
-void InitMTWShapeHisto(string dataSetName, string systematic, int isys,  vector <int> decayChannels){
+void InitMTWShapeHisto(string dataSetName, string systematic, Int_t isys,  vector <int> decayChannels){
   TH1::SetDefaultSumw2();
   //histo1DMTW.clear();
-  for(int iChan =0; iChan < decayChannels.size() ; iChan++){
+  for(Int_t iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
     if(decayChannels[iChan] == 0) decaystring = "uuu";
     if(decayChannels[iChan] == 1) decaystring = "uue";
@@ -1779,7 +2822,7 @@ void InitMTWShapeHisto(string dataSetName, string systematic, int isys,  vector 
   }
   decaystring = "";
 }
-void InitSystematicHisto(string dataSetName, string systematic, int isys, bool doMTWtemplate){
+void InitSystematicHisto(string dataSetName, string systematic, Int_t isys, bool doMTWtemplate){
   TH1::SetDefaultSumw2();
   
   if(isys == 0 && !doMTWtemplate) output_histo_name = dataSetName+"_BDT_nominal";
@@ -1796,13 +2839,14 @@ void InitAnalyzerTree(TTree* tree){
   // Set branch addresses and branch pointers
   if (!tree) return;
   tree->SetMakeClass(1);
-  tree->SetBranchAddress("MVA_region", &MVA_region, &b_MVA_region);
-  tree->SetBranchAddress("MVA_weight_nom", &MVA_weight_nom, &b_MVA_weight_nom);
+  tree->SetBranchAddress("MVA_channel", &MVA_channel, &b_MVA_region);
+  tree->SetBranchAddress( "MVA_weight_nom", &MVA_weight_nom, &b_MVA_weight_nom);
   tree->SetBranchAddress("MVA_channel", &MVA_channel, &b_MVA_channel);
   tree->SetBranchAddress("MVA_EqLumi", &MVA_EqLumi, &b_MVA_EqLumi);
   tree->SetBranchAddress("MVA_Luminosity", &MVA_Luminosity, &b_MVA_Luminosity);
   tree->SetBranchAddress("MVA_mWt2", &MVA_mWt2, &b_MVA_mWt2);
-    tree->SetBranchAddress("MVA_mWt", &MVA_mWt, &b_MVA_mWt);
+  tree->SetBranchAddress("MVA_mWt", &MVA_mWt, &b_MVA_mWt);
+  tree->SetBranchAddress("MVA_region", &MVA_region, &b_MVA_region);
   
   tree->SetBranchAddress("MVA_x1", &MVA_x1, &b_MVA_x1);
   tree->SetBranchAddress("MVA_x2", &MVA_x2, &b_MVA_x2);
@@ -1810,28 +2854,35 @@ void InitAnalyzerTree(TTree* tree){
   tree->SetBranchAddress("MVA_id2", &MVA_id2, &b_MVA_id2);
   tree->SetBranchAddress("MVA_q", &MVA_q, &b_MVA_q);
   
-  tree->SetBranchAddress("MVA_weight_puSF_up", &MVA_weight_puSF_up, &b_MVA_weight_puSF_up);
-  tree->SetBranchAddress("MVA_weight_puSF_down", &MVA_weight_puSF_down, &b_MVA_weight_puSF_down);
-  tree->SetBranchAddress("MVA_weight_electronSF_up", &MVA_weight_electronSF_up, &b_MVA_weight_electronSF_up);
-  tree->SetBranchAddress("MVA_weight_electronSF_down", &MVA_weight_electronSF_down, &b_MVA_weight_electronSF_down);
-  tree->SetBranchAddress("MVA_weight_muonSF_up", &MVA_weight_muonSF_up, &b_MVA_weight_muonSF_up);
-  tree->SetBranchAddress("MVA_weight_muonSF_down", &MVA_weight_muonSF_down, &b_MVA_weight_muonSF_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_cferr1_up", &MVA_weight_btagSF_cferr1_up, &b_MVA_weight_btagSF_cferr1_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_cferr1_down", &MVA_weight_btagSF_cferr1_down, &b_MVA_weight_btagSF_cferr1_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_cferr2_up", &MVA_weight_btagSF_cferr2_up, &b_MVA_weight_btagSF_cferr2_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_cferr2_down", &MVA_weight_btagSF_cferr2_down, &b_MVA_weight_btagSF_cferr2_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_hf_up", &MVA_weight_btagSF_hf_up, &b_MVA_weight_btagSF_hf_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_hf_down", &MVA_weight_btagSF_hf_down, &b_MVA_weight_btagSF_hf_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_hfstats1_up", &MVA_weight_btagSF_hfstats1_up, &b_MVA_weight_btagSF_hfstats1_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_hfstats1_down", &MVA_weight_btagSF_hfstats1_down, &b_MVA_weight_btagSF_hfstats1_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_hfstats2_up", &MVA_weight_btagSF_hfstats2_up, &b_MVA_weight_btagSF_hfstats2_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_hfstats2_down", &MVA_weight_btagSF_hfstats2_down, &b_MVA_weight_btagSF_hfstats2_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_lf_up", &MVA_weight_btagSF_lf_up, &b_MVA_weight_btagSF_lf_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_lf_down", &MVA_weight_btagSF_lf_down, &b_MVA_weight_btagSF_lf_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_lfstats1_up", &MVA_weight_btagSF_lfstats1_up, &b_MVA_weight_btagSF_lfstats1_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_lfstats1_down", &MVA_weight_btagSF_lfstats1_down, &b_MVA_weight_btagSF_lfstats1_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_lfstats2_up", &MVA_weight_btagSF_lfstats2_up, &b_MVA_weight_btagSF_lfstats2_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_lfstats2_down", &MVA_weight_btagSF_lfstats2_down, &b_MVA_weight_btagSF_lfstats2_down);
+  tree->SetBranchAddress( "MVA_weight_puSF_up", &MVA_weight_puSF_up, &b_MVA_weight_puSF_up);
+  tree->SetBranchAddress( "MVA_weight_puSF_down", &MVA_weight_puSF_down, &b_MVA_weight_puSF_down);
+  tree->SetBranchAddress( "MVA_weight_electronSF_up", &MVA_weight_electronSF_up, &b_MVA_weight_electronSF_up);
+  tree->SetBranchAddress( "MVA_weight_electronSF_down", &MVA_weight_electronSF_down, &b_MVA_weight_electronSF_down);
+  tree->SetBranchAddress( "MVA_weight_muonSF_up", &MVA_weight_muonSF_up, &b_MVA_weight_muonSF_up);
+  tree->SetBranchAddress( "MVA_weight_muonSF_down", &MVA_weight_muonSF_down, &b_MVA_weight_muonSF_down);
+  tree->SetBranchAddress( "MVA_weight_btagSF_cferr1_up", &MVA_weight_btagSF_cferr1_up, &b_MVA_weight_btagSF_cferr1_up);
+  tree->SetBranchAddress( "MVA_weight_btagSF_cferr1_down", &MVA_weight_btagSF_cferr1_down, &b_MVA_weight_btagSF_cferr1_down);
+  tree->SetBranchAddress( "MVA_weight_btagSF_cferr2_up", &MVA_weight_btagSF_cferr2_up, &b_MVA_weight_btagSF_cferr2_up);
+  tree->SetBranchAddress( "MVA_weight_btagSF_cferr2_down", &MVA_weight_btagSF_cferr2_down, &b_MVA_weight_btagSF_cferr2_down);
+  tree->SetBranchAddress( "MVA_weight_btagSF_hf_up", &MVA_weight_btagSF_hf_up, &b_MVA_weight_btagSF_hf_up);
+  tree->SetBranchAddress( "MVA_weight_btagSF_hf_down", &MVA_weight_btagSF_hf_down, &b_MVA_weight_btagSF_hf_down);
+  tree->SetBranchAddress( "MVA_weight_btagSF_hfstats1_up", &MVA_weight_btagSF_hfstats1_up, &b_MVA_weight_btagSF_hfstats1_up);
+  tree->SetBranchAddress( "MVA_weight_btagSF_hfstats1_down", &MVA_weight_btagSF_hfstats1_down, &b_MVA_weight_btagSF_hfstats1_down);
+  tree->SetBranchAddress( "MVA_weight_btagSF_hfstats2_up", &MVA_weight_btagSF_hfstats2_up, &b_MVA_weight_btagSF_hfstats2_up);
+  tree->SetBranchAddress( "MVA_weight_btagSF_hfstats2_down", &MVA_weight_btagSF_hfstats2_down, &b_MVA_weight_btagSF_hfstats2_down);
+  tree->SetBranchAddress( "MVA_weight_btagSF_lf_up", &MVA_weight_btagSF_lf_up, &b_MVA_weight_btagSF_lf_up);
+  tree->SetBranchAddress( "MVA_weight_btagSF_lf_down", &MVA_weight_btagSF_lf_down, &b_MVA_weight_btagSF_lf_down);
+  tree->SetBranchAddress( "MVA_weight_btagSF_lfstats1_up", &MVA_weight_btagSF_lfstats1_up, &b_MVA_weight_btagSF_lfstats1_up);
+  tree->SetBranchAddress( "MVA_weight_btagSF_lfstats1_down", &MVA_weight_btagSF_lfstats1_down, &b_MVA_weight_btagSF_lfstats1_down);
+  tree->SetBranchAddress( "MVA_weight_btagSF_lfstats2_up", &MVA_weight_btagSF_lfstats2_up, &b_MVA_weight_btagSF_lfstats2_up);
+  tree->SetBranchAddress( "MVA_weight_btagSF_lfstats2_down", &MVA_weight_btagSF_lfstats2_down, &b_MVA_weight_btagSF_lfstats2_down);
+  
+  
+  tree->SetBranchAddress( "MVA_weight_puSF",&MVA_weight_puSF, &b_MVA_weight_puSF);
+  tree->SetBranchAddress( "MVA_weight_muonSF",&MVA_weight_muonSF, &b_MVA_weight_muonSF);
+  tree->SetBranchAddress( "MVA_weight_eletcronSF",&MVA_weight_electronSF, &b_MVA_weight_electronSF);
+  tree->SetBranchAddress( "MVA_weight_btagSF",&MVA_weight_btagSF, &b_MVA_weight_btagSF);
+  
   
   
 }
@@ -1839,89 +2890,91 @@ void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut){
   // Set branch addresses and branch pointers
   if (!tree) return;
   tree->SetMakeClass(1);
-  if(istoppair && doZut){
-    tree->SetBranchAddress("MVA_cdiscCvsB_jet_1", &MVA_cdiscCvsB_jet_1, &b_MVA_cdiscCvsB_jet_1);
-    tree->SetBranchAddress("MVA_cdiscCvsB_jet_0", &MVA_cdiscCvsB_jet_0, &b_MVA_cdiscCvsB_jet_0);
-    tree->SetBranchAddress("MVA_dRZc", &MVA_dRZc, &b_MVA_dRZc);
-    tree->SetBranchAddress("MVA_dRWlepb", &MVA_dRWlepb, &b_MVA_dRWlepb);
-    tree->SetBranchAddress("MVA_dRZWlep", &MVA_dRZWlep, &b_MVA_dRZWlep);
-    tree->SetBranchAddress("MVA_mlb", &MVA_mlb, &b_MVA_mlb);
-    tree->SetBranchAddress("MVA_FCNCtop_M", &MVA_FCNCtop_M, &b_MVA_FCNCtop_M);
-    tree->SetBranchAddress("MVA_nJets_CharmL", &MVA_nJets_CharmL, &b_MVA_nJets_CharmL);
-    tree->SetBranchAddress("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, &b_MVA_NJets_CSVv2M);
-  }
-  else  if(istoppair && !doZut){
-    //tree->SetBranchAddress("MVA_cdiscCvsB_jet_0", &MVA_cdiscCvsB_jet_0, &b_MVA_cdiscCvsB_jet_0);
-    tree->SetBranchAddress("MVA_cdiscCvsL_jet_1", &MVA_cdiscCvsL_jet_1, &b_MVA_cdiscCvsL_jet_1);
-    tree->SetBranchAddress("MVA_cdiscCvsL_jet_0", &MVA_cdiscCvsL_jet_0, &b_MVA_cdiscCvsL_jet_0);
-    tree->SetBranchAddress("MVA_dRZc", &MVA_dRZc, &b_MVA_dRZc);
-    tree->SetBranchAddress("MVA_dRWlepb", &MVA_dRWlepb, &b_MVA_dRWlepb);
-    tree->SetBranchAddress("MVA_dRZWlep", &MVA_dRZWlep, &b_MVA_dRZWlep);
-    tree->SetBranchAddress("MVA_mlb", &MVA_mlb, &b_MVA_mlb);
-    tree->SetBranchAddress("MVA_FCNCtop_M", &MVA_FCNCtop_M, &b_MVA_FCNCtop_M);
-    tree->SetBranchAddress("MVA_nJets_CharmL", &MVA_nJets_CharmL, &b_MVA_nJets_CharmL);
-    tree->SetBranchAddress("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, &b_MVA_NJets_CSVv2M);
-  }
-  else if(!istoppair && doZut){
-    
-    tree->SetBranchAddress("MVA_Zboson_pt", &MVA_Zboson_pt, &b_MVA_Zboson_pt);
-    tree->SetBranchAddress("MVA_dRWlepb", &MVA_dRWlepb, &b_MVA_dRWlepb);
-    tree->SetBranchAddress("MVA_dPhiWlepb", &MVA_dPhiWlepb, &b_MVA_dPhiWlepb);
-    tree->SetBranchAddress("MVA_charge_asym", &MVA_charge_asym, &b_MVA_charge_asym);
-    tree->SetBranchAddress("MVA_dRZWlep", &MVA_dRZWlep, &b_MVA_dRZWlep);
-    tree->SetBranchAddress("MVA_bdiscCSVv2_jet_0", &MVA_bdiscCSVv2_jet_0, &b_MVA_bdiscCSVv2_jet_0);
-    tree->SetBranchAddress("MVA_cdiscCvsB_jet_0", &MVA_cdiscCvsB_jet_0, &b_MVA_cdiscCvsB_jet_0);
-    tree->SetBranchAddress("MVA_mlb", &MVA_mlb, &b_MVA_mlb);
-    
-  }
-  else if(!istoppair && !doZut){
-    
-    tree->SetBranchAddress("MVA_Zboson_pt", &MVA_Zboson_pt, &b_MVA_Zboson_pt);
-    tree->SetBranchAddress("MVA_dRWlepb", &MVA_dRWlepb, &b_MVA_dRWlepb);
-    tree->SetBranchAddress("MVA_dPhiWlepb", &MVA_dPhiWlepb, &b_MVA_dPhiWlepb);
-    tree->SetBranchAddress("MVA_dRZWlep", &MVA_dRZWlep, &b_MVA_dRZWlep);
-    tree->SetBranchAddress("MVA_bdiscCSVv2_jet_0", &MVA_bdiscCSVv2_jet_0, &b_MVA_bdiscCSVv2_jet_0);
-    tree->SetBranchAddress("MVA_cdiscCvsL_jet_0", &MVA_cdiscCvsL_jet_0, &b_MVA_cdiscCvsL_jet_0);
-    tree->SetBranchAddress("MVA_mlb", &MVA_mlb, &b_MVA_mlb);
-    tree->SetBranchAddress("MVA_cdiscCvsB_jet_0", &MVA_cdiscCvsB_jet_0, &b_MVA_cdiscCvsB_jet_0);
-  }
+  InitAnalyzerTree(tree);
   
-  tree->SetBranchAddress("MVA_region", &MVA_region, &b_MVA_region);
-  tree->SetBranchAddress("MVA_weight_nom", &MVA_weight_nom, &b_MVA_weight_nom);
-  tree->SetBranchAddress("MVA_channel", &MVA_channel, &b_MVA_channel);
+  
   tree->SetBranchAddress("MVA_BDT", &MVA_BDT, &b_MVA_BDT);
-  tree->SetBranchAddress("MVA_EqLumi", &MVA_EqLumi, &b_MVA_EqLumi);
-  tree->SetBranchAddress("MVA_Luminosity", &MVA_Luminosity, &b_MVA_Luminosity);
-  
-  tree->SetBranchAddress("MVA_x1", &MVA_x1, &b_MVA_x1);
-  tree->SetBranchAddress("MVA_x2", &MVA_x2, &b_MVA_x2);
-  tree->SetBranchAddress("MVA_id1", &MVA_id1, &b_MVA_id1);
-  tree->SetBranchAddress("MVA_id2", &MVA_id2, &b_MVA_id2);
-  tree->SetBranchAddress("MVA_q", &MVA_q, &b_MVA_q);
-  
-  
-  tree->SetBranchAddress("MVA_weight_puSF_up", &MVA_weight_puSF_up, &b_MVA_weight_puSF_up);
-  tree->SetBranchAddress("MVA_weight_puSF_down", &MVA_weight_puSF_down, &b_MVA_weight_puSF_down);
-  tree->SetBranchAddress("MVA_weight_electronSF_up", &MVA_weight_electronSF_up, &b_MVA_weight_electronSF_up);
-  tree->SetBranchAddress("MVA_weight_electronSF_down", &MVA_weight_electronSF_down, &b_MVA_weight_electronSF_down);
-  tree->SetBranchAddress("MVA_weight_muonSF_up", &MVA_weight_muonSF_up, &b_MVA_weight_muonSF_up);
-  tree->SetBranchAddress("MVA_weight_muonSF_down", &MVA_weight_muonSF_down, &b_MVA_weight_muonSF_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_cferr1_up", &MVA_weight_btagSF_cferr1_up, &b_MVA_weight_btagSF_cferr1_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_cferr1_down", &MVA_weight_btagSF_cferr1_down, &b_MVA_weight_btagSF_cferr1_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_cferr2_up", &MVA_weight_btagSF_cferr2_up, &b_MVA_weight_btagSF_cferr2_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_cferr2_down", &MVA_weight_btagSF_cferr2_down, &b_MVA_weight_btagSF_cferr2_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_hf_up", &MVA_weight_btagSF_hf_up, &b_MVA_weight_btagSF_hf_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_hf_down", &MVA_weight_btagSF_hf_down, &b_MVA_weight_btagSF_hf_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_hfstats1_up", &MVA_weight_btagSF_hfstats1_up, &b_MVA_weight_btagSF_hfstats1_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_hfstats1_down", &MVA_weight_btagSF_hfstats1_down, &b_MVA_weight_btagSF_hfstats1_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_hfstats2_up", &MVA_weight_btagSF_hfstats2_up, &b_MVA_weight_btagSF_hfstats2_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_hfstats2_down", &MVA_weight_btagSF_hfstats2_down, &b_MVA_weight_btagSF_hfstats2_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_lf_up", &MVA_weight_btagSF_lf_up, &b_MVA_weight_btagSF_lf_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_lf_down", &MVA_weight_btagSF_lf_down, &b_MVA_weight_btagSF_lf_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_lfstats1_up", &MVA_weight_btagSF_lfstats1_up, &b_MVA_weight_btagSF_lfstats1_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_lfstats1_down", &MVA_weight_btagSF_lfstats1_down, &b_MVA_weight_btagSF_lfstats1_down);
-  tree->SetBranchAddress("MVA_weight_btagSF_lfstats2_up", &MVA_weight_btagSF_lfstats2_up, &b_MVA_weight_btagSF_lfstats2_up);
-  tree->SetBranchAddress("MVA_weight_btagSF_lfstats2_down", &MVA_weight_btagSF_lfstats2_down, &b_MVA_weight_btagSF_lfstats2_down);
+  /* tree->SetBranchAddress("MVA_lepton0_pt", &MVA_lepton0_pt, &b_MVA_lepton0_pt);
+  tree->SetBranchAddress("MVA_lepton1_pt", &MVA_lepton1_pt, &b_MVA_lepton1_pt);
+  tree->SetBranchAddress("MVA_lepton2_pt", &MVA_lepton2_pt, &b_MVA_lepton2_pt);
+  tree->SetBranchAddress("MVA_Wlep_pt", &MVA_Wlep_pt, &b_MVA_Wlep_pt);
+  tree->SetBranchAddress("MVA_Wboson_pt", &MVA_Wboson_pt, &b_MVA_Wboson_pt);
+  tree->SetBranchAddress("MVA_SMbjet_pt", &MVA_SMbjet_pt, &b_MVA_SMbjet_pt);
+  tree->SetBranchAddress("MVA_SMtop_pt", &MVA_SMtop_pt, &b_MVA_SMtop_pt);*/
+  if(!toppair) tree->SetBranchAddress("MVA_Zboson_pt", &MVA_Zboson_pt, &b_MVA_Zboson_pt);
+  /*tree->SetBranchAddress("MVA_LightJet_pt", &MVA_LightJet_pt, &b_MVA_LightJet_pt);
+  tree->SetBranchAddress("MVA_FCNCtop_pt", &MVA_FCNCtop_pt, &b_MVA_FCNCtop_pt);
+  tree->SetBranchAddress("MVA_lepton0_eta", &MVA_lepton0_eta, &b_MVA_lepton0_eta);
+  tree->SetBranchAddress("MVA_lepton1_eta", &MVA_lepton1_eta, &b_MVA_lepton1_eta);
+  tree->SetBranchAddress("MVA_lepton2_eta", &MVA_lepton2_eta, &b_MVA_lepton2_eta);
+  tree->SetBranchAddress("MVA_Wlep_eta", &MVA_Wlep_eta, &b_MVA_Wlep_eta);
+  tree->SetBranchAddress("MVA_Wboson_eta", &MVA_Wboson_eta, &b_MVA_Wboson_eta);
+  tree->SetBranchAddress("MVA_SMbjet_eta", &MVA_SMbjet_eta, &b_MVA_SMbjet_eta);
+  tree->SetBranchAddress("MVA_SMtop_eta", &MVA_SMtop_eta, &b_MVA_SMtop_eta);
+  tree->SetBranchAddress("MVA_Zboson_eta", &MVA_Zboson_eta, &b_MVA_Zboson_eta);
+  tree->SetBranchAddress("MVA_LightJet_eta", &MVA_LightJet_eta, &b_MVA_LightJet_eta);
+  tree->SetBranchAddress("MVA_FCNCtop_eta", &MVA_FCNCtop_eta, &b_MVA_FCNCtop_eta);
+  tree->SetBranchAddress("MVA_lepton0_phi", &MVA_lepton0_phi, &b_MVA_lepton0_phi);
+  tree->SetBranchAddress("MVA_lepton1_phi", &MVA_lepton1_phi, &b_MVA_lepton1_phi);
+  tree->SetBranchAddress("MVA_lepton2_phi", &MVA_lepton2_phi, &b_MVA_lepton2_phi);
+  tree->SetBranchAddress("MVA_Wlep_phi", &MVA_Wlep_phi, &b_MVA_Wlep_phi);
+  tree->SetBranchAddress("MVA_Wboson_phi", &MVA_Wboson_phi, &b_MVA_Wboson_phi);
+  tree->SetBranchAddress("MVA_SMbjet_phi", &MVA_SMbjet_phi, &b_MVA_SMbjet_phi);
+  tree->SetBranchAddress("MVA_SMtop_phi", &MVA_SMtop_phi, &b_MVA_SMtop_phi);
+  tree->SetBranchAddress("MVA_Zboson_phi", &MVA_Zboson_phi, &b_MVA_Zboson_phi);
+  tree->SetBranchAddress("MVA_LightJet_phi", &MVA_LightJet_phi, &b_MVA_LightJet_phi);
+  tree->SetBranchAddress("MVA_FCNCtop_phi", &MVA_FCNCtop_phi, &b_MVA_FCNCtop_phi);
+  tree->SetBranchAddress("MVA_nElectrons", &MVA_nElectrons, &b_MVA_nElectrons);
+  tree->SetBranchAddress("MVA_nJets", &MVA_nJets, &b_MVA_nJets);
+  tree->SetBranchAddress("MVA_NJets_CSVv2L", &MVA_NJets_CSVv2L, &b_MVA_NJets_CSVv2L);
+  tree->SetBranchAddress("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, &b_MVA_NJets_CSVv2M);
+  tree->SetBranchAddress("MVA_NJets_CSVv2T", &MVA_NJets_CSVv2T, &b_MVA_NJets_CSVv2T);
+  tree->SetBranchAddress("MVA_nMuons", &MVA_nMuons, &b_MVA_nMuons);
+  tree->SetBranchAddress("MVA_met", &MVA_met, &b_MVA_met);
+  if(doMTWtemplate) tree->SetBranchAddress("MVA_mWt", &MVA_mWt, &b_MVA_mWt);
+  tree->SetBranchAddress("MVA_mWt2", &MVA_mWt2, &b_MVA_mWt2);*/
+  tree->SetBranchAddress("MVA_SMtop_M", &MVA_SMtop_M, &b_MVA_SMtop_M);
+  tree->SetBranchAddress("MVA_mlb", &MVA_mlb, &b_MVA_mlb);
+ // tree->SetBranchAddress("MVA_Wboson_M", &MVA_Wboson_M, &b_MVA_Wboson_M);
+  tree->SetBranchAddress("MVA_dRWlepb", &MVA_dRWlepb, &b_MVA_dRWlepb);
+  if(!toppair)tree->SetBranchAddress("MVA_dPhiWlepb", &MVA_dPhiWlepb, &b_MVA_dPhiWlepb);
+  tree->SetBranchAddress("MVA_Wlep_Charge", &MVA_Wlep_Charge, &b_MVA_Wlep_Charge);
+  tree->SetBranchAddress("MVA_charge_asym", &MVA_charge_asym, &b_MVA_charge_asym);
+  tree->SetBranchAddress("MVA_TotalPt", &MVA_TotalPt, &b_MVA_TotalPt);
+  tree->SetBranchAddress("MVA_TotalHt", &MVA_TotalHt, &b_MVA_TotalHt);
+  tree->SetBranchAddress("MVA_TotalInvMass", &MVA_TotalInvMass, &b_MVA_TotalInvMass);
+  tree->SetBranchAddress("MVA_TotalPt_jet", &MVA_TotalPt_jet, &b_MVA_TotalPt_jet);
+  tree->SetBranchAddress("MVA_TotalHt_jet", &MVA_TotalHt_jet, &b_MVA_TotalHt_jet);
+  tree->SetBranchAddress("MVA_TotalInvMass_jet", &MVA_TotalInvMass_jet, &b_MVA_TotalInvMass_jet);
+  tree->SetBranchAddress("MVA_TotalPt_lep", &MVA_TotalPt_lep, &b_MVA_TotalPt_lep);
+  tree->SetBranchAddress("MVA_TotalHt_lep", &MVA_TotalHt_lep, &b_MVA_TotalHt_lep);
+  tree->SetBranchAddress("MVA_TotalInvMass_lep", &MVA_TotalInvMass_lep, &b_MVA_TotalInvMass_lep);
+  tree->SetBranchAddress("MVA_bdiscCSVv2_jet_0", &MVA_bdiscCSVv2_jet_0, &b_MVA_bdiscCSVv2_jet_0);
+  tree->SetBranchAddress("MVA_bdiscCSVv2_jet_1", &MVA_bdiscCSVv2_jet_1, &b_MVA_bdiscCSVv2_jet_1);
+  tree->SetBranchAddress("MVA_CosTheta", &MVA_CosTheta, &b_MVA_CosTheta);
+  tree->SetBranchAddress("MVA_CosTheta_alt", &MVA_CosTheta_alt, &b_MVA_CosTheta_alt);
+  tree->SetBranchAddress("MVA_FCNCtop_M", &MVA_FCNCtop_M, &b_MVA_FCNCtop_M);
+  tree->SetBranchAddress("MVA_Zboson_M", &MVA_Zboson_M, &b_MVA_Zboson_M);
+  tree->SetBranchAddress("MVA_dRZc", &MVA_dRZc, &b_MVA_dRZc);
+  tree->SetBranchAddress("MVA_dPhiZc", &MVA_dPhiZc, &b_MVA_dPhiZc);
+  tree->SetBranchAddress("MVA_cdiscCvsB_jet_1", &MVA_cdiscCvsB_jet_1, &b_MVA_cdiscCvsB_jet_1);
+  tree->SetBranchAddress("MVA_cdiscCvsL_jet_1", &MVA_cdiscCvsL_jet_1, &b_MVA_cdiscCvsL_jet_1);
+  tree->SetBranchAddress("MVA_cdiscCvsB_jet_0", &MVA_cdiscCvsB_jet_0, &b_MVA_cdiscCvsB_jet_0);
+  tree->SetBranchAddress("MVA_cdiscCvsL_jet_0", &MVA_cdiscCvsL_jet_0, &b_MVA_cdiscCvsL_jet_0);
+  tree->SetBranchAddress("MVA_nJets_CharmL", &MVA_nJets_CharmL, &b_MVA_nJets_CharmL);
+  tree->SetBranchAddress("MVA_nJets_CharmM", &MVA_nJets_CharmM, &b_MVA_nJets_CharmM);
+  tree->SetBranchAddress("MVA_nJets_CharmT", &MVA_nJets_CharmT, &b_MVA_nJets_CharmT);
+  tree->SetBranchAddress("MVA_dRSMFCNCtop", &MVA_dRSMFCNCtop, &b_MVA_dRSMFCNCtop);
+  tree->SetBranchAddress("MVA_dRZb", &MVA_dRZb, &b_MVA_dRZb);
+  tree->SetBranchAddress("MVA_dRWlepc", &MVA_dRWlepc, &b_MVA_dRWlepc);
+  tree->SetBranchAddress("MVA_dRZWlep", &MVA_dRZWlep, &b_MVA_dRZWlep);
+  tree->SetBranchAddress("MVA_dRZSMtop", &MVA_dRZSMtop, &b_MVA_dRZSMtop);
+  tree->SetBranchAddress("MVA_dPhiSMFCNCtop", &MVA_dPhiSMFCNCtop, &b_MVA_dPhiSMFCNCtop);
+  tree->SetBranchAddress("MVA_dPhiZb", &MVA_dPhiZb, &b_MVA_dPhiZb);
+  tree->SetBranchAddress("MVA_dPhiWlepc", &MVA_dPhiWlepc, &b_MVA_dPhiWlepc);
+  tree->SetBranchAddress("MVA_dPhiZWlep", &MVA_dPhiZWlep, &b_MVA_dPhiZWlep);
+  tree->SetBranchAddress("MVA_dPhiZSMtop", &MVA_dPhiZSMtop, &b_MVA_dPhiZSMtop);
+  tree->SetBranchAddress("MVA_m3l", &MVA_m3l, &b_MVA_m3l);
   
   
 }
@@ -1929,7 +2982,7 @@ void Init1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
   TH1::SetDefaultSumw2();
   cout << "initialising MVA var histo" << endl;
   // control plots
-  for(int iChan =0; iChan < decayChannels.size() ; iChan++){
+  for(Int_t iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
     if(decayChannels[iChan] == 0) decaystring = "uuu";
     if(decayChannels[iChan] == 1) decaystring = "uue";
@@ -1942,61 +2995,67 @@ void Init1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
     
     if(!istoppair){
       output_histo_name = "mlb_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),10,0,500);
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Inv. Mass l_{W}b (GeV)",10,0,400);
       output_histo_name = "dRWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),10,0,5);
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "#Delta R(l_{W},b)",10,0,5);
       output_histo_name = "dPhiWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),10,-4,4);
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "#Delta #phi(l_{W},b)",10,-4,4);
       output_histo_name = "ZbosonPt_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Z boson p_{T} (GeV)",12,0,400);
       output_histo_name = "dRZWlep_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),30,0,6);
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "#Delta R(l_{W},Z)",15,0,6);
       output_histo_name = "bdiscCSVv2jet0_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0.5,1);
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "CSVv2 disc. highest p_{T} jet",20,0.5,1);
       output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Charm vs b disc. highest p_{T} jet",20,-1,1);
+      output_histo_name = "cdiscCvsLjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(),"Charm vs light disc. highest p_{T} jet",15,-1,1);
+      output_histo_name = "SMtop_eta_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "SM top #eta",10,-6,6);
       if(isZut){
         output_histo_name = "chargeAsym_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),10,-4,4);
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Q(l_{W}|#eta of l_{W}|",6,-3,3);
+        output_histo_name = "TotalInvMass_lep_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Inv. Mass of the leptons (GeV)",20,100,500);
         
       }
-      else
-      {
-        output_histo_name = "cdiscCvsLjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),25,0,1);
-        
-      }
+    
       
       
     }
     else if(istoppair ){
+      output_histo_name = "dPhiZWlep_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "#Delta #phi(l_{W},Z)",10,-4,4);
+      
       output_histo_name = "mlb_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),25,0,500);
-      output_histo_name = "FCNCtopM_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
-      output_histo_name = "dRWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,6);
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Inv. Mass l_{W}b (GeV)",25,0,500);
+       output_histo_name = "dRWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "#Delta R (l_{W},b)",20,0,6);
       output_histo_name = "dRZWlep_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,6);
-      output_histo_name = "dRZc_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),30,0,6);
-      output_histo_name = "nJetsCSVv2M_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),10,-0.5,9.5);
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(),"#Delta R (l_{W},Z)",20,0,6);
+     // output_histo_name = "dRZc_"+dataSetName + "_" +decaystring+"_"+systematic;
+     // histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),30,0,6);
+     //output_histo_name = "nJetsCSVv2M_"+dataSetName + "_" +decaystring+"_"+systematic;
+     //histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "#Delta R (l_{W},b)",10,-0.5,9.5);
       output_histo_name = "nJetsCharmL_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),10,-0.5,9.5);
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Nb. Charm Loose ID jets",10,-0.5,9.5);
       
       if(isZut){
-        output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
+     /*   output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
         histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
         output_histo_name = "cdiscCvsBjet1_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);*/
         
       }
       else{
+        output_histo_name = "FCNCtopM_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Inv. Mass FCNC top (GeV)",10,0,450);
         output_histo_name = "cdiscCvsLjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
-        output_histo_name = "cdiscCvsLjet1_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Charm vs light disc.",15,-1,1);
+        output_histo_name = "TotalInvMass_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Total inv. mass (GeV)",20,0,1500);
+      /*  output_histo_name = "cdiscCvsLjet1_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);*/
       }
     }
     
@@ -2028,9 +3087,9 @@ vector<double> BDTCUT(string region, string coupling){
   channel_list.push_back("eeu");
   channel_list.push_back("uuu");
   
-  double cut_eee, cut_eeu, cut_uuu, cut_uue;
+  Double_t cut_eee, cut_eeu, cut_uuu, cut_uue;
   cut_eee = cut_uue = cut_eeu = cut_uuu = -1.;
-  for(int ichan=0; ichan<channel_list.size(); ichan++)
+  for(Int_t ichan=0; ichan<channel_list.size(); ichan++)
   {
     string channel = channel_list[ichan];
     TH1F *h_sum_bkg(0), *h_sum_sig(0), *h_tmp(0);
@@ -2039,7 +3098,7 @@ vector<double> BDTCUT(string region, string coupling){
     else {template_fake_name = "FakeEl";}
     
     
-    for(int isample = 0; isample < datasets.size(); isample++)
+    for(Int_t isample = 0; isample < datasets.size(); isample++)
     {
       string dataSetName = datasets[isample]->Name();
       //cout << dataSetName << endl;
@@ -2098,11 +3157,11 @@ vector<double> BDTCUT(string region, string coupling){
     h_sum_bkg->Scale(1/h_sum_bkg->Integral());
     h_sum_sig->Scale(1/h_sum_sig->Integral());
     
-    double sig_over_total = 100; //initialize to unreasonable value
-    int bin_cut = -1; //initialize to false value
-    int nofbins = h_total->GetNbinsX();
+    Double_t sig_over_total = 100; //initialize to unreasonable value
+    Int_t bin_cut = -1; //initialize to false value
+    Int_t nofbins = h_total->GetNbinsX();
     
-    for(int ibin=nofbins; ibin>0; ibin--)
+    for(Int_t ibin=nofbins; ibin>0; ibin--)
     {
       //Search the bin w/ lowest sig/total, while keeping enough bkg events (criterion needs to be optimized/tuned)
       if( (h_sum_sig->Integral(1, ibin) / h_total->Integral(1, ibin)) < sig_over_total && (h_sum_bkg->Integral(1, ibin) / h_sum_bkg->Integral()) >= 0.6 )
@@ -2112,9 +3171,9 @@ vector<double> BDTCUT(string region, string coupling){
       }
     }
     
-    double cut = h_total->GetBinLowEdge(bin_cut+1); //Get the BDT cut value to apply to create a BDT CR control tree
-    double min = TMath::Min(h_sum_bkg->GetMinimum(), h_sum_sig->GetMinimum());
-    double max = TMath::Max(h_sum_bkg->GetMaximum(), h_sum_sig->GetMaximum());
+    Double_t cut = h_total->GetBinLowEdge(bin_cut+1); //Get the BDT cut value to apply to create a BDT CR control tree
+    Double_t min = TMath::Min(h_sum_bkg->GetMinimum(), h_sum_sig->GetMinimum());
+    Double_t max = TMath::Max(h_sum_bkg->GetMaximum(), h_sum_sig->GetMaximum());
     //Create plot to represent the cut on BDT
     TCanvas* c = new TCanvas("c", "Signal vs Background");
     gStyle->SetOptStat(0);
@@ -2154,7 +3213,7 @@ vector<double> BDTCUT(string region, string coupling){
     cout<<"Bkg(CR) / Bkg(Total) = "<<h_sum_bkg->Integral(1,bin_cut) / h_sum_bkg->Integral()<<endl;
     cout<<"---------------------------------------"<<endl<<endl;
     
-    //for(int i=0; i<h_sig->GetNbinsX(); i++) {cout<<"bin content "<<i+1<<" = "<<h_sig->GetBinContent(i+1)<<endl;} //If want to verify that the signal is computed correctly
+    //for(Int_t i=0; i<h_sig->GetNbinsX(); i++) {cout<<"bin content "<<i+1<<" = "<<h_sig->GetBinContent(i+1)<<endl;} //If want to verify that the signal is computed correctly
     delete c; delete leg; delete l;
     if(channel.find("uuu") != std::string::npos) cut_uuu = cut;
     else if(channel.find("eeu") != std::string::npos) cut_eeu = cut;
@@ -2174,7 +3233,7 @@ vector<double> BDTCUT(string region, string coupling){
   return v_return;
   
 }
-void CalculatePDFWeight(string dataSetName, double BDT, double MVA_weight_nom, int MVA_channel){
+void CalculatePDFWeight(string dataSetName, Double_t BDT, Double_t MVA_weight_nom, Int_t MVA_channel){
   // cout << "calculate pdf" << endl;
   //std::vector<double> pdfweights;
   //cout << "MVA channel " << MVA_channel << endl;
@@ -2204,10 +3263,10 @@ void CalculatePDFWeight(string dataSetName, double BDT, double MVA_weight_nom, i
    {
    const LHAPDF::PDF* newpdf = newpdfSet.mkPDF(i);
    
-   double weightpdf = LHAPDF::weightxxQ(MVA_id1, MVA_id2, MVA_x1, MVA_x2, MVA_q, *basepdf, *newpdf);
+   Double_t weightpdf = LHAPDF::weightxxQ(MVA_id1, MVA_id2, MVA_x1, MVA_x2, MVA_q, *basepdf, *newpdf);
    output_histo_name = dataSetName+"_BDT_"+channel+"_"+intToStr(i);
-   histo1DPDF[output_histo_name]->Fill(MVA_BDT, MVA_weight_nom*weightpdf);
-   // cout << "fill " << (dataSetName+"_BDT"+"_"+intToStr(i)).c_str() << " with " << BDT << " " <<  weightpdf << endl;
+   histo1DPDF[output_histo_name]->Fill(MVA_BDT,MVA_weight_nom*weightpdf);
+   // cout << "fill " << (dataSetName+"_BDT"+"_"+intToStr(i)).c_str() << " with " << MVA_BDT << " " <<  weightpdf << endl;
    //cout << "pdf weight " << weight << endl;
    //pdfweights.push_back(weight);
    
@@ -2215,19 +3274,19 @@ void CalculatePDFWeight(string dataSetName, double BDT, double MVA_weight_nom, i
    
    }
    output_histo_name = dataSetName+"_BDT_"+channel+"_nominal";
-   histo1DPDF[output_histo_name]->Fill(MVA_BDT, MVA_weight_nom);
+   histo1DPDF[output_histo_name]->Fill(MVA_BDT,MVA_weight_nom);
    output_histo_name = "";
    delete basepdf;
    */
   
 }
-void FillMTWPlots(int d, string postfix, vector <int> decayChannels, double weight_, int MVA_channel){
+void FillMTWPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel){
   decaystring = "";
   Double_t eventW = 1.;
   eventW = weight_;
   
 
-  for(int iChan =0; iChan < decayChannels.size() ; iChan++){
+  for(Int_t iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
     
     if((decayChannels[iChan] != -9) && (decayChannels[iChan] != MVA_channel)) continue;
@@ -2244,7 +3303,7 @@ void FillMTWPlots(int d, string postfix, vector <int> decayChannels, double weig
   }
   decaystring = "";
 }
-void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isZut , bool istoppair, double weight_, int MVA_channel){
+void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool isZut , bool istoppair, Double_t weight_, Int_t MVA_channel){
   
   //cout << "fill plots" << endl;
   decaystring = "";
@@ -2253,7 +3312,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isZ
   
   
   
-  for(int iChan =0; iChan < decayChannels.size() ; iChan++){
+  for(Int_t iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
     
     if((decayChannels[iChan] != -9) && (decayChannels[iChan] != MVA_channel)) continue;
@@ -2314,8 +3373,8 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isZ
 }
 
 void GetPDFEnvelope(string dataSetName){
-  double binContentMax = -1.;
-  double binContentMin = 1000000000000000.;
+  Double_t binContentMax = -1.;
+  Double_t binContentMin = 1000000000000000.;
   vector<double> bincontents;
   
   std::vector<string> channel_list;
@@ -2325,20 +3384,20 @@ void GetPDFEnvelope(string dataSetName){
   channel_list.push_back("uuu");
   string channel = "";
   // loop over channels
-  for(int iChan = 0; iChan < channel_list.size(); iChan++){
+  for(Int_t iChan = 0; iChan < channel_list.size(); iChan++){
     channel = channel_list[iChan];
     output_histo_name = dataSetName+"_BDT_" + channel + "_nominal";
     // get nominal th1F
     TH1F* histo_nom = (TH1F*) histo1DPDF[output_histo_name]->Clone();
     
     // loop over bins
-    for( int ibin = 1; ibin <histo_nom->GetNbinsX(); ibin++)
+    for( Int_t ibin = 1; ibin <histo_nom->GetNbinsX(); ibin++)
     {
       binContentMax = -1.;
       binContentMin = 1000000000000000.;
       bincontents.clear();
       // get bincontents of each histo for this bin
-      for(int iCount = 0; iCount < 101; iCount++)
+      for(Int_t iCount = 0; iCount < 101; iCount++)
       {
         output_histo_name = dataSetName+"_BDT_"+channel + "_" +intToStr(iCount);
         bincontents.push_back(histo1DPDF[output_histo_name]->GetBinContent(ibin));
@@ -2357,10 +3416,10 @@ void GetPDFEnvelope(string dataSetName){
   }//channels
   
 }
-void Fill1DHisto(string dataSetName, string systematic, bool istoppair, bool isZut, vector <int> decayChannels, double weight_, int MVA_channel){
+void Fill1DHisto(string dataSetName, string systematic, bool istoppair, bool isZut, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel){
   
   
-  for(int iChan =0; iChan < decayChannels.size() ; iChan++){
+  for(Int_t iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
     
     
@@ -2375,6 +3434,9 @@ void Fill1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
     
     output_histo_name = "BDT_"+dataSetName +"_"+decaystring+"_"+systematic;
     histo1D[output_histo_name] ->Fill(  MVA_BDT        ,weight_);
+    
+
+    
     
     if(!istoppair){
       output_histo_name = "mlb_"+dataSetName + "_" +decaystring+"_"+systematic;
@@ -2391,48 +3453,47 @@ void Fill1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
       histo1D[output_histo_name] ->Fill(    MVA_bdiscCSVv2_jet_0      ,weight_);
       output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
       histo1D[output_histo_name] ->Fill(   MVA_cdiscCvsB_jet_0       ,weight_);
+      output_histo_name = "cdiscCvsLjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(   MVA_cdiscCvsL_jet_0       ,weight_);
+      output_histo_name = "SMtop_eta_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(   MVA_SMtop_eta      ,weight_);
       if(isZut){
         output_histo_name = "chargeAsym_"+dataSetName + "_" +decaystring+"_"+systematic;
         histo1D[output_histo_name] ->Fill( MVA_charge_asym         ,weight_);
-        
-      }
-      else
-      {
-        output_histo_name = "cdiscCvsLjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] ->Fill(   MVA_cdiscCvsL_jet_0       ,weight_);
-        
+        output_histo_name = "TotalInvMass_lep_"+dataSetName + "_" +decaystring+"_"+systematic;
+         histo1D[output_histo_name] ->Fill( MVA_TotalInvMass_lep         ,weight_);
       }
       
       
     }
     else if(istoppair ){
+      output_histo_name = "dPhiZWlep_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name]->Fill(MVA_dPhiZWlep,weight_);
+
       output_histo_name = "mlb_"+dataSetName + "_" +decaystring+"_"+systematic;
       histo1D[output_histo_name] ->Fill(   MVA_mlb       ,weight_);
-      output_histo_name = "FCNCtopM_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] ->Fill(   MVA_FCNCtop_M       ,weight_);
-      output_histo_name = "dRWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
+        output_histo_name = "dRWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
       histo1D[output_histo_name] ->Fill(    MVA_dRWlepb      ,weight_);
       output_histo_name = "dRZWlep_"+dataSetName + "_" +decaystring+"_"+systematic;
       histo1D[output_histo_name] ->Fill(   MVA_dRZWlep       ,weight_);
-      output_histo_name = "dRZc_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] ->Fill(   MVA_dRZc       ,weight_);
-      output_histo_name = "nJetsCSVv2M_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] ->Fill(   MVA_NJets_CSVv2M       ,weight_);
-      output_histo_name = "nJetsCharmL_"+dataSetName + "_" +decaystring+"_"+systematic;
+       output_histo_name = "nJetsCharmL_"+dataSetName + "_" +decaystring+"_"+systematic;
       histo1D[output_histo_name] ->Fill( MVA_nJets_CharmL        ,weight_);
       
       if(isZut){
-        output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
+      /*  output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
         histo1D[output_histo_name] ->Fill(  MVA_cdiscCvsB_jet_0        ,weight_);
         output_histo_name = "cdiscCvsBjet1_"+dataSetName + "_" +decaystring+"_"+systematic;
         histo1D[output_histo_name] ->Fill(   MVA_cdiscCvsB_jet_1       ,weight_);
-        
+        */
       }
       else{
+        output_histo_name = "FCNCtopM_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] ->Fill(   MVA_FCNCtop_M       ,weight_);
+        
         output_histo_name = "cdiscCvsLjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
         histo1D[output_histo_name] ->Fill(   MVA_cdiscCvsL_jet_0       ,weight_);
-        output_histo_name = "cdiscCvsLjet1_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] ->Fill(   MVA_cdiscCvsL_jet_1       ,weight_);
+        output_histo_name = "TotalInvMass_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] ->Fill(   MVA_TotalInvMass      ,weight_);
       }
     }
     
@@ -2442,9 +3503,9 @@ void Fill1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
   decaystring = "";
   
 }
-void FillMTWShapeHisto(string dataSetName, string systematic, double weight_,int isys, int MVA_channel, vector <int> decayChannels){
+void FillMTWShapeHisto(string dataSetName, string systematic, Double_t weight_,Int_t isys, Int_t MVA_channel, vector <int> decayChannels){
   
-  for(int iChan =0; iChan < decayChannels.size() ; iChan++){
+  for(Int_t iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
 
     if((decayChannels[iChan] != -9) && (decayChannels[iChan] != MVA_channel)) continue;
@@ -2465,7 +3526,7 @@ void FillMTWShapeHisto(string dataSetName, string systematic, double weight_,int
   decaystring = "";
 }
 
-void FillSystematicHisto(string dataSetName, string systematic, double weight_, int isys, bool doMTWtemplate ){
+void FillSystematicHisto(string dataSetName, string systematic, Double_t weight_, Int_t isys, bool doMTWtemplate ){
 
   if(isys == 0 && !doMTWtemplate) output_histo_name = dataSetName+"_BDT_nominal";
   else if(isys == 0 && doMTWtemplate) output_histo_name = dataSetName+"_MTW_nominal";
@@ -2474,10 +3535,17 @@ void FillSystematicHisto(string dataSetName, string systematic, double weight_, 
   
   
   if(!doMTWtemplate) histo1DSys[output_histo_name]->Fill(MVA_BDT, weight_);
-  else histo1DSysMTW[output_histo_name]->Fill(MVA_mWt2, weight_);
+  else histo1DSysMTW[output_histo_name]->Fill(MVA_mWt, weight_);
   
   
   output_histo_name = "";
   
 }
+
+
+void Ini1DHistoBDTvariavles(bool istoppair, bool isZut, vector<int> decayChannels){
+  
+}
+
+
 
