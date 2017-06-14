@@ -140,13 +140,19 @@ Double_t MVA_weight_btagSF_lfstats1_up =1.;
 Double_t MVA_weight_btagSF_lfstats1_down = 1.;
 Double_t MVA_weight_btagSF_lfstats2_up = 1.;
 Double_t MVA_weight_btagSF_lfstats2_down = 1.;
+Double_t MVA_weight_puSF = 1. ;
+Double_t MVA_weight_btagSF = 1.;
+Double_t MVA_weight_muonSF = 1.;
+Double_t MVA_weight_electronSF = 1.;
 
 Int_t         MVA_id1;
 Int_t         MVA_id2;
 Double_t         MVA_x1;
 Double_t         MVA_x2;
 Double_t         MVA_q;
-
+Double_t        MVA_weight0, MVA_weight1, MVA_weight2, MVA_weight3, MVA_weight4, MVA_weight5, MVA_weight6, MVA_weight7, MVA_weight8;
+Double_t        MVA_hdamp_up;
+Double_t        MVA_hdamp_down;
 
 Float_t MVA_region = -999.;
 Double_t MVA_EqLumi = -999.;
@@ -395,6 +401,7 @@ Int_t           id2;
 Double_t        q;
 Double_t        hdamp_up;
 Double_t        hdamp_down;
+
 Double_t        btagSFshape;
 Double_t        btagSFshape_down_cferr1;
 Double_t        btagSFshape_down_cferr2;
@@ -413,6 +420,9 @@ Double_t        btagSFshape_up_hfstats2;
 Double_t        btagSFshape_up_lf;
 Double_t        btagSFshape_up_lfstats1;
 Double_t        btagSFshape_up_lfstats2;
+
+Double_t weight0, weight1, weight2, weight3, weight4, weight5, weight6, weight7, weight8;
+
 
 Int_t           channelInt;
 Double_t        nloWeight;
@@ -525,6 +535,7 @@ Double_t        met_before_JES;
 Double_t        met_after_JES;
 
 // List of branches
+TBranch         *b_weight0, *b_weight1, *b_weight2, *b_weight3, *b_weight4, *b_weight5, *b_weight6, *b_weight7, *b_weight8; 
 TBranch        *b_x1;   //!
 TBranch        *b_x2;   //!
 TBranch        *b_id1;   //!
@@ -868,7 +879,10 @@ Double_t scaleFactor_btagSF_lfstats1_down;
 Double_t scaleFactor_btagSF_lfstats1_up;
 Double_t scaleFactor_btagSF_lfstats2_down;
 Double_t scaleFactor_btagSF_lfstats2_up;
-
+Double_t scaleFactor_puSF = 1. ;
+Double_t scaleFactor_btagSF = 1.;
+Double_t scaleFactor_muonSF = 1.;
+Double_t scaleFactor_electronSF = 1.;
 
 Double_t muonSFtemp;
 Double_t electronSFtemp;
@@ -1160,13 +1174,8 @@ int main(int argc, char* argv[]){
     if(string(argv[i]).find("debug")!=std::string::npos) {
       verbose = 4;
     }
-    if(string(argv[i]).find("applyPUSF")!=std::string::npos) {
-      applyPUSF =true;
-      i++;
-      if(string(argv[i]).find("UP")!=string::npos) applyPUSF_up = true;
-      else if(string(argv[i]).find("DOWN")!=string::npos) applyPUSF_down= true;
-      else if(string(argv[i]).find("NOM")!=string::npos) applyPUSF_up = applyPUSF_down = false;
-      else { cout << "argument missing for puSF" << endl; break; }
+    if(string(argv[i]).find("noPUSF")!=std::string::npos) {
+      applyPUSF =false;
     }
     if(string(argv[i]).find("applySF")!=string::npos) {
       applyElectronSF =true;
@@ -1177,28 +1186,19 @@ int main(int argc, char* argv[]){
       applyBTagSF = true;
       cout << "                applying scalefactors " << endl;
     }
-    if(string(argv[i]).find("applyElectronSF")!=string::npos) {
-      applyElectronSF =true;
-      i++;
-      if(string(argv[i]).find("UP")!=string::npos) applyElectronSFup = true;
-      else if(string(argv[i]).find("DOWN")!=string::npos) applyElectronSFdown = true;
-      else if(string(argv[i]).find("NOM")!=string::npos) applyElectronSFup = applyElectronSFdown = false;
-      else { cout << "argument missing for electronSF" << endl; break; }
-    }
-    if(string(argv[i]).find("applyMuonSF")!=string::npos) {
-      applyMuonSF =true;
-      i++;
-      if(string(argv[i]).find("UP")!=string::npos) applyMuonSF_up = true;
-      else if(string(argv[i]).find("DOWN")!=string::npos) applyMuonSF_down = true;
-      else if(string(argv[i]).find("NOM")!=string::npos) applyMuonSF_up = applyMuonSF_down = false;
-      else { cout << "argument missing for muonSF" << endl; break; }
+    if(string(argv[i]).find("noElectronSF")!=string::npos) {
+      applyElectronSF =false;
+         }
+    if(string(argv[i]).find("noMuonSF")!=string::npos) {
+      applyMuonSF =false;
+     
       
     }
-    if(string(argv[i]).find("applyMET")!=string::npos) {
-      applyMETfilter =true;
+    if(string(argv[i]).find("noMET")!=string::npos) {
+      applyMETfilter =false;
     }
-    if(string(argv[i]).find("applyBtagSF")!=string::npos) {
-      applyBTagSF =true;
+    if(string(argv[i]).find("noBtagSF")!=string::npos) {
+      applyBTagSF =false;
     }
     if(string(argv[i]).find("applyAMC")!=string::npos) {
       applyNloSF =true;
@@ -1213,6 +1213,9 @@ int main(int argc, char* argv[]){
       makeMVAPlots = true;
     }
   }
+  
+  
+  if(!applyNloSF || !applyBTagSF ||! applyElectronSF || !applyMETfilter ||  !applyMuonSF || !dorochester) cout << " WARNING not all booleans set for reweighing" << endl;
   
   if(domuonsfpt && doDilep) muonptscalefactorsfilename = muonptscalefactorsfilename + "_" + dateString + "_dilep" ;
   if(domuonsfpt && !doDilep) muonptscalefactorsfilename = muonptscalefactorsfilename + "_" + dateString  ;
@@ -1366,7 +1369,7 @@ int main(int argc, char* argv[]){
   // cout << " nbins " << MuPtSFHisto0->GetNbinsX() << endl;
   int xbinmuonpt=-5;
   double muonptsf_1, muonptsf_2, muonptsf_0;
-  double eventweight_ = 1.;
+
   int endEvent = -5;
   
   
@@ -1428,7 +1431,7 @@ int main(int argc, char* argv[]){
     //    if(dataSetName.find("TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut")!=std::string::npos){
     // if(dataSetName.find("WZTo3LNu")!=std::string::npos){
     // if(dataSetName.find("tZq")!=std::string::npos){
-    if(dataSetName.find("WZJTo3LNu")!=std::string::npos && systematicplots){
+    if(dataSetName.find("WZTo3LNu")!=std::string::npos && systematicplots){
       //cout << "init 1D plots" << endl;
       Init1DPlots(dataSetName);
     }
@@ -1439,6 +1442,7 @@ int main(int argc, char* argv[]){
     string tTreeName = "tree";
     string tStatsTreeName = "globaltree";
     string postfix = "";
+    if(dataSetName.find("fakeshift")!=std::string::npos) postfix ="_FakeShift";
     if(isData || isfakes) postfix = "";
     if(applyJEC_down) postfix = "_JESdown";
     if(applyJEC_up) postfix = "_JESup";
@@ -1851,14 +1855,18 @@ int main(int argc, char* argv[]){
       scaleFactor_btagSF_lfstats1_up=1.;
       scaleFactor_btagSF_lfstats2_down=1.;
       scaleFactor_btagSF_lfstats2_up=1.;
+      scaleFactor_puSF = 1. ;
+      scaleFactor_btagSF = 1.;
+      scaleFactor_muonSF = 1.;
+      scaleFactor_electronSF = 1.;
       muonSFtemp = 1.;
       electronSFtemp = 1.;
       puSF = 1.;
-      eventweight_ = 1.;
+      
       
       if (! isData && !isfakes)
       {
-        eventweight_ = Luminosity/EquilumiSF;
+        
         if(applyTrigSF){
           if(channelInt == 0) scaleFactor *= 1.;
           if(channelInt == 2) scaleFactor *= 1.0006003602;
@@ -1885,39 +1893,9 @@ int main(int argc, char* argv[]){
             }
             scaleFactor_muonSF_up *= MuonIDSF_up[iMu] * MuonIsoSF_up[iMu];// * (MuonTrackSF[iMu]*1.01 );
             scaleFactor_muonSF_down *= MuonIDSF_down[iMu] * MuonIsoSF_down[iMu];// * (MuonTrackSF[iMu]*0.99 ) ;
+            scaleFactor_muonSF *= MuonIDSF[iMu] * MuonIsoSF[iMu];
           }
-          if(applymuonsfpt && !dorochester){
-            if(selectedMuons.size()>0){
-              //cout << "MuPtSFHisto0 " << MuPtSFHisto0 << " pt " << selectedMuons[0].Pt() << endl;
-              if(selectedMuons[0].Pt() > (double) endbin_MuPtSFHisto_0) xbinmuonpt = ((TH1F*) MuPtSFHisto0)->FindBin(((double) endbin_MuPtSFHisto_0)-0.01);
-              else xbinmuonpt = ((TH1F*) MuPtSFHisto0)->FindBin(selectedMuons[0].Pt());
-              //cout << "xbin " << xbinmuonpt << endl;
-              muonptsf_0 = MuPtSFHisto0->GetBinContent(xbinmuonpt);
-            }
-            else muonptsf_0 = 1.;
-            if(selectedMuons.size()>1){
-              
-              if(selectedMuons[1].Pt() > (double) endbin_MuPtSFHisto_1) xbinmuonpt = ((TH1F*) MuPtSFHisto1)->FindBin(((double) endbin_MuPtSFHisto_1 )-0.01);
-              else xbinmuonpt = ((TH1F*) MuPtSFHisto0)->FindBin(selectedMuons[1].Pt());
-              
-              muonptsf_1 = MuPtSFHisto1->GetBinContent(xbinmuonpt);
-            }
-            else muonptsf_1 = 1.;
-            if(selectedMuons.size()>2){
-              if(selectedMuons[2].Pt() > (double) endbin_MuPtSFHisto_2) xbinmuonpt = ((TH1F*) MuPtSFHisto2)->FindBin(((double) endbin_MuPtSFHisto_2 )-0.01);
-              else xbinmuonpt = ((TH1F*) MuPtSFHisto2)->FindBin(selectedMuons[2].Pt());
-              
-              muonptsf_2 =MuPtSFHisto2->GetBinContent(xbinmuonpt);
-            }
-            else  muonptsf_2 = 1.;
-            
-            //cout << "scalefactor before " << scaleFactor << endl;
-            scaleFactor *= muonptsf_0 * muonptsf_1 * muonptsf_2;
-            //cout << "scalefactor after " << scaleFactor << endl;
-            muonSFtemp *= muonptsf_0 * muonptsf_1 * muonptsf_2;
-            if(scaleFactor < 0) cout << "error something went wrong" << endl;
-            
-          }
+          
         }
         else muonSFtemp = 1.;
         
@@ -1940,19 +1918,18 @@ int main(int argc, char* argv[]){
             }
             scaleFactor_electronSF_up *= ElectronSF_up[iEl] ;
             scaleFactor_electronSF_down *= ElectronSF_down[iEl] ;
+            scaleFactor_electronSF  *= ElectronSF[iEl];
           }
           
         }
         else electronSFtemp = 1.;
         
         if (applyPUSF) {
-          if(applyPUSF_up) scaleFactor *= puSF_up;
-          else if(applyPUSF_down) scaleFactor *= puSF_down;
-          else scaleFactor *= puSF;
+          scaleFactor *= puSF;
           
           scaleFactor_puSF_up *= puSF_up;
           scaleFactor_puSF_down *= puSF_down;
-          
+          scaleFactor_puSF = puSF;
           
           
           
@@ -1980,7 +1957,7 @@ int main(int argc, char* argv[]){
           scaleFactor_btagSF_lfstats1_up*= btagSFshape_up_lfstats1  ;
           scaleFactor_btagSF_lfstats2_down*= btagSFshape_down_lfstats2  ;
           scaleFactor_btagSF_lfstats2_up*= btagSFshape_up_lfstats2  ;
-          
+          scaleFactor_btagSF = btagSFshape;
           
         }
         else btagSFshape = 1.;
@@ -1989,6 +1966,7 @@ int main(int argc, char* argv[]){
           scaleFactor *= nloWeight * nloSF;
         }  // additional SF due to number of events with neg weight!!
         
+        /*
         scaleFactor_bfBT = scaleFactor/btagSFshape;
         scaleFactor_bfELSF = scaleFactor / electronSFtemp;
         scaleFactor_bfMuSF = scaleFactor / muonSFtemp;
@@ -2022,7 +2000,7 @@ int main(int argc, char* argv[]){
         scaleFactor_btagSF_lfstats1_down= ( btagSFshape_down_lfstats1 *scaleFactor)/btagSFshape ;
         scaleFactor_btagSF_lfstats1_up= ( btagSFshape_up_lfstats1 *scaleFactor)/btagSFshape ;
         scaleFactor_btagSF_lfstats2_down= ( btagSFshape_down_lfstats2 *scaleFactor)/btagSFshape ;
-        scaleFactor_btagSF_lfstats2_up= ( btagSFshape_up_lfstats2*scaleFactor)/btagSFshape ;
+        scaleFactor_btagSF_lfstats2_up= ( btagSFshape_up_lfstats2*scaleFactor)/btagSFshape ;*/
         
       }
       else if(isData || isfakes ){
@@ -2098,8 +2076,8 @@ int main(int argc, char* argv[]){
         if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(1. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
         if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(1. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
       }
-      if(selectedElectrons.size() != nbOfLooseElectrons && !domuonsfpt ) continue;
-      if(selectedMuons.size() != nbOfLooseMuons && !domuonsfpt ) continue;
+      if(selectedElectrons.size() != nbOfLooseElectrons && !domuonsfpt && threelepregion ) continue;
+      if(selectedMuons.size() != nbOfLooseMuons && !domuonsfpt && threelepregion ) continue;
       if(doCutflow){
         MSPlot["cutflow"] ->Fill(2. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
         if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(2. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
@@ -2122,6 +2100,7 @@ int main(int argc, char* argv[]){
       //cout << "WmuIndiceF " << WmuIndiceF <<" WelecIndiceF "<< WelecIndiceF <<" ZmuIndiceF_1 "<< ZmuIndiceF_1 <<" ZmuIndiceF_0 "<< ZmuIndiceF_0 <<" ZelecIndiceF_0 "<< ZelecIndiceF_0 <<" ZelecIndiceF_1 "<< ZelecIndiceF_1 << endl;
       if(!Assigned ) continue;
       //cout << "in reco" << endl;
+      
       ReconstructObjects(selectedJetsID, selectedMuons, selectedElectrons, selectedJets, Region, threelepregion);
       
       
@@ -2202,7 +2181,7 @@ int main(int argc, char* argv[]){
       }
       if(!threelepregion) cout << "WARNING something went wrong with threelep region" << endl;
       
-       if(threelepregion &&dataSetName.find("WZJTo3LNu")!=std::string::npos && systematicplots ) Fill1DPlots(dataSetName, eventweight_, threelepregion,twolepregion); // FIX EVENTWEIGHT
+       if(threelepregion &&dataSetName.find("WZTo3LNu")!=std::string::npos && systematicplots ) Fill1DPlots(dataSetName, Luminosity/EquilumiSF, threelepregion,twolepregion); // FIX EVENTWEIGHT
       
       bool matcher = false;
       if(check_matching) matcher = MatchingFunction(dataSetName, selectedLeptons, selectedMuons, selectedElectrons, selectedJets,makeMatchingPlots, debugmatching);
@@ -2622,7 +2601,7 @@ int main(int argc, char* argv[]){
         TGraphAsymmErrors* effPt_MC_Graph = new TGraphAsymmErrors();
         
         effPt_data_Graph->Divide(((TH1F*)triggerEfffile->Get((plotter[iplot]+"_"+tempstri+"data_MET").c_str())),((TH1F*)triggerEfffile->Get((plotter[iplot]+"_noTrig_"+tempstri+"data_MET").c_str())),"cl=0.683 b(1,1) mode ");
-        effPt_MC_Graph->Divide(((TH1F*)triggerEfffile->Get((plotter[iplot]+"_"+tempstri+"WZJTo3LNu_amc_80X").c_str())),((TH1F*)triggerEfffile->Get((plotter[iplot]+"_noTrig_"+tempstri+"WZJTo3LNu_amc_80X").c_str())),"cl=0.683 b(1,1) mode " );
+        effPt_MC_Graph->Divide(((TH1F*)triggerEfffile->Get((plotter[iplot]+"_"+tempstri+"WZTo3LNu_amc_80X").c_str())),((TH1F*)triggerEfffile->Get((plotter[iplot]+"_noTrig_"+tempstri+"WZTo3LNu_amc_80X").c_str())),"cl=0.683 b(1,1) mode " );
         effPt_data_Graph->SetName("effPt_data_Graph");
         effPt_data_Graph->SetMarkerColor(kBlue);
         effPt_data_Graph->SetLineColor(kBlue);
@@ -2893,8 +2872,8 @@ int main(int argc, char* argv[]){
             Canvasfakes->cd();
             
             tempdata->Draw("ep");
-            tempfake->Draw("SAME,h");
-            tempDY->Draw("SAME,h");
+            tempfake->Draw("same histo e");
+            tempDY->Draw("same histo e");
             legfakes->Draw("");
             Canvasfakes->Update();
             Canvasfakes->SaveAs( ("fakevalidation_"+plotnames[iv]+poststring+channelst+".png").c_str());
@@ -2917,7 +2896,7 @@ int main(int argc, char* argv[]){
             ratioFakeVsFake->SetMaximum(ratioFakeVsFake->GetMaximum()*1.5);
             Canvasfakes =  TCanvasCreator(ratioFakeVsFake, "ratioFakeVsFake" );//new TCanvas("Canvas_PU","Canvas_PU");
             Canvasfakes->cd();
-            ratioFakeVsFake->Draw("h");
+            ratioFakeVsFake->Draw("histo e");
             line->Draw("same");
             Canvasfakes->Update();
             // Canvasfakes->SaveAs( ("fakevalidation_ratiofakes_"+plotnames[iv]+poststring+channelst+".png").c_str());
@@ -2934,7 +2913,7 @@ int main(int argc, char* argv[]){
             ratioFakeVsData->GetYaxis()->SetTitle("data/DD non prompt");
             Canvasfakes =  TCanvasCreator(ratioFakeVsData, "ratioFakeVsData" );//new TCanvas("Canvas_PU","Canvas_PU");
             Canvasfakes->cd();
-            ratioFakeVsData->Draw("h");
+            ratioFakeVsData->Draw("histo e");
             line->Draw("same");
             Canvasfakes->Update();
             // Canvasfakes->SaveAs( ("fakevalidation_ratiodata_"+plotnames[iv]+poststring+channelst+".png").c_str());
@@ -2956,8 +2935,8 @@ int main(int argc, char* argv[]){
             ratioFakeVsData->GetYaxis()->SetTitle("");
             ratioFakeVsData->SetLineColor(kBlue);
             ratioFakeVsFake->SetLineColor(kRed);
-            ratioFakeVsData->Draw("h");
-            ratioFakeVsFake->Draw("SAME,h");
+            ratioFakeVsData->Draw("histo e");
+            ratioFakeVsFake->Draw("same histo e");
             line->Draw("same");
             legfakes->Draw("");
             Canvasfakes->Update();
@@ -3027,7 +3006,7 @@ int main(int argc, char* argv[]){
      tempdown->Write();
      tempnom->SetLineColor(kRed);
      tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kViolet);
+     tempdown->SetLineColor(kGreen+3);
      
      leg->AddEntry(tempnom,"Nominal","L");   // h1 and h2 are histogram pointers
      leg->AddEntry(tempup,"Up","L");
@@ -3042,9 +3021,9 @@ int main(int argc, char* argv[]){
      tempnom->SetTitle("Nb Of vertices: PU SF");
      Canvas =  TCanvasCreator(tempnom, "Nb Of vertices: PU SF" );//new TCanvas("Canvas_PU","Canvas_PU");
      Canvas->cd();
-     tempnom->Draw("h");
-     tempup->Draw("SAME,h");
-     tempdown->Draw("SAME,h");
+     tempnom->Draw("h e");
+     tempup->Draw("SAME,h e");
+     tempdown->Draw("SAME,h e");
      leg->Draw("sames");
      Canvas->SaveAs( (placeTH1F+"PUSF_nvtx.png").c_str() );
      Canvas->SetLogy();
@@ -3094,17 +3073,17 @@ int main(int argc, char* argv[]){
      tempdown->Write();
      tempnom->SetLineColor(kRed);
      tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kViolet);
+     tempdown->SetLineColor(kGreen+3);
      
      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
      max = TMath::Max(max1, tempdown->GetMaximum());
      tempnom->SetMaximum(max*1.2);
      tempnom->SetTitle("Pt electrons: El SF");
-     Canvas =  TCanvasCreator(tempnom, "Pt electrons: El SF" );//new TCanvas("Canvas_PU","Canvas_PU");
+     Canvas =  TCanvasCreator(tempnom, "Pt leading electron: El SF" );//new TCanvas("Canvas_PU","Canvas_PU");
      Canvas->cd();
-     tempnom->Draw("h");
-     tempup->Draw("SAME,h");
-     tempdown->Draw("SAME,h");
+     tempnom->Draw("histo e");
+     tempup->Draw("same histo e");
+     tempdown->Draw("same histo e");
      leg->Draw("sames");
      Canvas->SaveAs( (placeTH1F+"ELSF_ptelectron.png").c_str() );
      Canvas->SetLogy();
@@ -3153,17 +3132,17 @@ int main(int argc, char* argv[]){
      tempdown->Write();
      tempnom->SetLineColor(kRed);
      tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kViolet);
+     tempdown->SetLineColor(kGreen+3);
      
      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
      max = TMath::Max(max1, tempdown->GetMaximum());
      tempnom->SetMaximum(max*1.2);
      tempnom->SetTitle("Pt muons: Mu SF");
-     Canvas =  TCanvasCreator(tempnom, "Pt muons: Mu SF" );//new TCanvas("Canvas_PU","Canvas_PU");
+     Canvas =  TCanvasCreator(tempnom, "Pt leading muon: Mu SF" );//new TCanvas("Canvas_PU","Canvas_PU");
      Canvas->cd();
-     tempnom->Draw("h");
-     tempup->Draw("SAME,h");
-     tempdown->Draw("SAME,h");
+     tempnom->Draw("histo e");
+     tempup->Draw("same histo e");
+     tempdown->Draw("same histo e");
      leg->Draw("sames");
      Canvas->SaveAs( (placeTH1F+"MUSF_ptmuon.png").c_str() );
      Canvas->SetLogy();
@@ -3212,17 +3191,17 @@ int main(int argc, char* argv[]){
      tempdown->Write();
      tempnom->SetLineColor(kRed);
      tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kViolet);
+     tempdown->SetLineColor(kGreen+3);
      
      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
      max = TMath::Max(max1, tempdown->GetMaximum());
      tempnom->SetMaximum(max*1.2);
-     tempnom->SetTitle("CSVv2: btag SF cferr1");
+     tempnom->SetTitle("CSVv2 leading jet: btag SF cferr1");
      Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF cferr1" );//new TCanvas("Canvas_PU","Canvas_PU");
      Canvas->cd();
-     tempnom->Draw("h");
-     tempup->Draw("SAME,h");
-     tempdown->Draw("SAME,h");
+     tempnom->Draw("histo e");
+     tempup->Draw("same histo e");
+     tempdown->Draw("same histo e");
      leg->Draw("sames");
      Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr1.png").c_str() );
      Canvas->SetLogy();
@@ -3271,17 +3250,17 @@ int main(int argc, char* argv[]){
      tempdown->Write();
      tempnom->SetLineColor(kRed);
      tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kViolet);
+     tempdown->SetLineColor(kGreen+3);
      
      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
      max = TMath::Max(max1, tempdown->GetMaximum());
      tempnom->SetMaximum(max*1.2);
-     tempnom->SetTitle("CSVv2: btag SF cferr2");
+     tempnom->SetTitle("CSVv2 leading jet: btag SF cferr2");
      Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF cferr2" );//new TCanvas("Canvas_PU","Canvas_PU");
      Canvas->cd();
-     tempnom->Draw("h");
-     tempup->Draw("SAME,h");
-     tempdown->Draw("SAME,h");
+     tempnom->Draw("histo e");
+     tempup->Draw("same histo e");
+     tempdown->Draw("same histo e");
      leg->Draw("sames");
      Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr2.png").c_str() );
      Canvas->SetLogy();
@@ -3330,17 +3309,17 @@ int main(int argc, char* argv[]){
      tempdown->Write();
      tempnom->SetLineColor(kRed);
      tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kViolet);
+     tempdown->SetLineColor(kGreen+3);
      
      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
      max = TMath::Max(max1, tempdown->GetMaximum());
      tempnom->SetMaximum(max*1.2);
-     tempnom->SetTitle("CSVv2: btag SF hfstats1");
+     tempnom->SetTitle("CSVv2 leading jet: btag SF hfstats1");
      Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF hfstats1" );//new TCanvas("Canvas_PU","Canvas_PU");
      Canvas->cd();
-     tempnom->Draw("h");
-     tempup->Draw("SAME,h");
-     tempdown->Draw("SAME,h");
+     tempnom->Draw("histo e");
+     tempup->Draw("same histo e");
+     tempdown->Draw("same histo e");
      leg->Draw("sames");
      Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats1.png").c_str() );
      Canvas->SetLogy();
@@ -3389,17 +3368,17 @@ int main(int argc, char* argv[]){
      tempdown->Write();
      tempnom->SetLineColor(kRed);
      tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kViolet);
+     tempdown->SetLineColor(kGreen+3);
      
      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
      max = TMath::Max(max1, tempdown->GetMaximum());
      tempnom->SetMaximum(max*1.2);
-     tempnom->SetTitle("CSVv2: btag SF hfstats2");
+     tempnom->SetTitle("CSVv2 leading jet: btag SF hfstats2");
      Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF hfstats2" );//new TCanvas("Canvas_PU","Canvas_PU");
      Canvas->cd();
-     tempnom->Draw("h");
-     tempup->Draw("SAME,h");
-     tempdown->Draw("SAME,h");
+     tempnom->Draw("histo e");
+     tempup->Draw("same histo e");
+     tempdown->Draw("same histo e");
      leg->Draw("sames");
      Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats2.png").c_str() );
      Canvas->SetLogy();
@@ -3450,17 +3429,17 @@ int main(int argc, char* argv[]){
      tempdown->Write();
      tempnom->SetLineColor(kRed);
      tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kViolet);
+     tempdown->SetLineColor(kGreen+3);
      
      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
      max = TMath::Max(max1, tempdown->GetMaximum());
      tempnom->SetMaximum(max*1.2);
-     tempnom->SetTitle("CSVv2: btag SF lfstats1");
+     tempnom->SetTitle("CSVv2 leading jet: btag SF lfstats1");
      Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF lfstats1" );//new TCanvas("Canvas_PU","Canvas_PU");
      Canvas->cd();
-     tempnom->Draw("h");
-     tempup->Draw("SAME,h");
-     tempdown->Draw("SAME,h");
+     tempnom->Draw("histo e");
+     tempup->Draw("same histo e");
+     tempdown->Draw("same histo e");
      leg->Draw("sames");
      Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats1.png").c_str() );
      Canvas->SetLogy();
@@ -3509,17 +3488,17 @@ int main(int argc, char* argv[]){
      tempdown->Write();
      tempnom->SetLineColor(kRed);
      tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kViolet);
+     tempdown->SetLineColor(kGreen+3);
      
      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
      max = TMath::Max(max1, tempdown->GetMaximum());
      tempnom->SetMaximum(max*1.2);
-     tempnom->SetTitle("CSVv2: btag SF lfstats2");
+     tempnom->SetTitle("CSVv2 leading jet: btag SF lfstats2");
      Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF lfstats2" );//new TCanvas("Canvas_PU","Canvas_PU");
      Canvas->cd();
-     tempnom->Draw("h");
-     tempup->Draw("SAME,h");
-     tempdown->Draw("SAME,h");
+     tempnom->Draw("histo e");
+     tempup->Draw("same histo e");
+     tempdown->Draw("same histo e");
      leg->Draw("sames");
      Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats2.png").c_str() );
      Canvas->SetLogy();
@@ -3569,17 +3548,17 @@ int main(int argc, char* argv[]){
      tempdown->Write();
      tempnom->SetLineColor(kRed);
      tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kViolet);
+     tempdown->SetLineColor(kGreen+3);
      
      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
      max = TMath::Max(max1, tempdown->GetMaximum());
      tempnom->SetMaximum(max*1.2);
-     tempnom->SetTitle("CSVv2: btag SF hf");
+     tempnom->SetTitle("CSVv2 leading jet: btag SF hf");
      Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF hf" );//new TCanvas("Canvas_PU","Canvas_PU");
      Canvas->cd();
-     tempnom->Draw("h");
-     tempup->Draw("SAME,h");
-     tempdown->Draw("SAME,h");
+     tempnom->Draw("histo e");
+     tempup->Draw("same histo e");
+     tempdown->Draw("same histo e");
      leg->Draw("sames");
      Canvas->SaveAs( (placeTH1F+"BSF_bdishf.png").c_str() );
      Canvas->SetLogy();
@@ -3628,17 +3607,17 @@ int main(int argc, char* argv[]){
      tempdown->Write();
      tempnom->SetLineColor(kRed);
      tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kViolet);
+     tempdown->SetLineColor(kGreen+3);
      
      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
      max = TMath::Max(max1, tempdown->GetMaximum());
      tempnom->SetMaximum(max*1.2);
-     tempnom->SetTitle("CSVv2: btag SF lf");
+     tempnom->SetTitle("CSVv2 leading jet: btag SF lf");
      Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF lf" );//new TCanvas("Canvas_PU","Canvas_PU");
      Canvas->cd();
-     tempnom->Draw("h");
-     tempup->Draw("SAME,h");
-     tempdown->Draw("SAME,h");
+     tempnom->Draw("histo e");
+     tempup->Draw("same histo e");
+     tempdown->Draw("same histo e");
      leg->Draw("sames");
      Canvas->SaveAs( (placeTH1F+"BSF_bdislf.png").c_str() );
      Canvas->SetLogy();
@@ -3705,7 +3684,17 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
   MVA_q = q;
   MVA_id1 = id1;
   MVA_id2 = id2;
-  
+  MVA_weight0 = weight0;
+  MVA_weight1 = weight1;
+  MVA_weight2 = weight2;
+  MVA_weight3 = weight3;
+  MVA_weight4 = weight4;
+  MVA_weight5 = weight5;
+  MVA_weight6 = weight6;
+  MVA_weight7 = weight7;
+  MVA_weight8 = weight8;
+  MVA_hdamp_down = hdamp_down;
+  MVA_hdamp_up = hdamp_up;
   
   
   
@@ -3713,29 +3702,33 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
   MVA_Luminosity = Luminosity;
   MVA_EqLumi = EquilumiSF;
   MVA_weight = static_cast<float>( scaleFactor * Luminosity /EquilumiSF );
-  MVA_weight_nom =  scaleFactor * Luminosity /EquilumiSF ;
-  MVA_weight_puSF_up =  scaleFactor_puSF_up * Luminosity /EquilumiSF ;
-  MVA_weight_puSF_down =  scaleFactor_puSF_down * Luminosity /EquilumiSF ;
-  MVA_weight_electronSF_up =  scaleFactor_electronSF_up * Luminosity /EquilumiSF ;
-  MVA_weight_electronSF_down =  scaleFactor_electronSF_down * Luminosity /EquilumiSF ;
-  MVA_weight_muonSF_up =  scaleFactor_muonSF_up * Luminosity /EquilumiSF ;
-  MVA_weight_muonSF_down =  scaleFactor_muonSF_down * Luminosity /EquilumiSF ;
-  MVA_weight_btagSF_cferr1_up =  scaleFactor_btagSF_cferr1_up * Luminosity /EquilumiSF ;
-  MVA_weight_btagSF_cferr1_down =  scaleFactor_btagSF_cferr1_down * Luminosity /EquilumiSF ;
-  MVA_weight_btagSF_cferr2_up =  scaleFactor_btagSF_cferr2_up * Luminosity /EquilumiSF ;
-  MVA_weight_btagSF_cferr2_down =  scaleFactor_btagSF_cferr2_down * Luminosity /EquilumiSF ;
-  MVA_weight_btagSF_hf_up =  scaleFactor_btagSF_hf_up * Luminosity /EquilumiSF ;
-  MVA_weight_btagSF_hf_down =  scaleFactor_btagSF_hf_down * Luminosity /EquilumiSF ;
-  MVA_weight_btagSF_hfstats1_up =  scaleFactor_btagSF_hfstats1_up * Luminosity /EquilumiSF ;
-  MVA_weight_btagSF_hfstats1_down =  scaleFactor_btagSF_hfstats1_down * Luminosity /EquilumiSF ;
-  MVA_weight_btagSF_hfstats2_up =  scaleFactor_btagSF_hfstats2_up * Luminosity /EquilumiSF ;
-  MVA_weight_btagSF_hfstats2_down =  scaleFactor_btagSF_hfstats2_down * Luminosity /EquilumiSF ;
-  MVA_weight_btagSF_lf_up =  scaleFactor_btagSF_lf_up * Luminosity /EquilumiSF ;
-  MVA_weight_btagSF_lf_down =  scaleFactor_btagSF_lf_down * Luminosity /EquilumiSF ;
-  MVA_weight_btagSF_lfstats1_up =  scaleFactor_btagSF_lfstats1_up * Luminosity /EquilumiSF ;
-  MVA_weight_btagSF_lfstats1_down =  scaleFactor_btagSF_lfstats1_down * Luminosity /EquilumiSF ;
-  MVA_weight_btagSF_lfstats2_up =  scaleFactor_btagSF_lfstats2_up * Luminosity /EquilumiSF ;
-  MVA_weight_btagSF_lfstats2_down =  scaleFactor_btagSF_lfstats2_down * Luminosity /EquilumiSF ;
+  MVA_weight_nom =  scaleFactor ;
+  MVA_weight_puSF = scaleFactor_puSF;
+  MVA_weight_muonSF = scaleFactor_muonSF;
+  MVA_weight_electronSF = scaleFactor_electronSF;
+  MVA_weight_btagSF = scaleFactor_btagSF;
+  MVA_weight_puSF_up =  scaleFactor_puSF_up ;
+  MVA_weight_puSF_down =  scaleFactor_puSF_down ;
+  MVA_weight_electronSF_up =  scaleFactor_electronSF_up ;
+  MVA_weight_electronSF_down =  scaleFactor_electronSF_down ;
+  MVA_weight_muonSF_up =  scaleFactor_muonSF_up ;
+  MVA_weight_muonSF_down =  scaleFactor_muonSF_down ;
+  MVA_weight_btagSF_cferr1_up =  scaleFactor_btagSF_cferr1_up ;
+  MVA_weight_btagSF_cferr1_down =  scaleFactor_btagSF_cferr1_down ;
+  MVA_weight_btagSF_cferr2_up =  scaleFactor_btagSF_cferr2_up ;
+  MVA_weight_btagSF_cferr2_down =  scaleFactor_btagSF_cferr2_down ;
+  MVA_weight_btagSF_hf_up =  scaleFactor_btagSF_hf_up ;
+  MVA_weight_btagSF_hf_down =  scaleFactor_btagSF_hf_down ;
+  MVA_weight_btagSF_hfstats1_up =  scaleFactor_btagSF_hfstats1_up ;
+  MVA_weight_btagSF_hfstats1_down =  scaleFactor_btagSF_hfstats1_down ;
+  MVA_weight_btagSF_hfstats2_up =  scaleFactor_btagSF_hfstats2_up ;
+  MVA_weight_btagSF_hfstats2_down =  scaleFactor_btagSF_hfstats2_down ;
+  MVA_weight_btagSF_lf_up =  scaleFactor_btagSF_lf_up ;
+  MVA_weight_btagSF_lf_down =  scaleFactor_btagSF_lf_down ;
+  MVA_weight_btagSF_lfstats1_up =  scaleFactor_btagSF_lfstats1_up ;
+  MVA_weight_btagSF_lfstats1_down =  scaleFactor_btagSF_lfstats1_down ;
+  MVA_weight_btagSF_lfstats2_up =  scaleFactor_btagSF_lfstats2_up ;
+  MVA_weight_btagSF_lfstats2_down =  scaleFactor_btagSF_lfstats2_down ;
   
   MVA_region = static_cast<float>( Region);
   
@@ -3905,6 +3898,17 @@ void createMVAtree(string dataSetName){
   mvatree->Branch("MVA_id1", &MVA_id1, "MVA_id1/I");
   mvatree->Branch("MVA_id2", &MVA_id2, "MVA_id2/I");
   mvatree->Branch("MVA_q", &MVA_q, "MVA_q/D");
+  mvatree->Branch("MVA_weight0", &MVA_weight0," MVA_weight0/D");
+  mvatree->Branch("MVA_weight1", &MVA_weight1," MVA_weight1/D");
+  mvatree->Branch("MVA_weight2", &MVA_weight2," MVA_weight2/D");
+  mvatree->Branch("MVA_weight3", &MVA_weight3," MVA_weight3/D");
+  mvatree->Branch("MVA_weight4", &MVA_weight4," MVA_weight4/D");
+  mvatree->Branch("MVA_weight5", &MVA_weight5," MVA_weight5/D");
+  mvatree->Branch("MVA_weight6", &MVA_weight6," MVA_weight6/D");
+  mvatree->Branch("MVA_weight7", &MVA_weight7," MVA_weight7/D");
+  mvatree->Branch("MVA_weight8", &MVA_weight8," MVA_weight8/D");
+  mvatree->Branch("MVA_hdamp_up",&MVA_hdamp_up,"MVA_hdamp_up/D");
+  mvatree->Branch("MVA_hdamp_down",&MVA_hdamp_down,"MVA_hdamp_down/D");
   
   mvatree->Branch("MVA_channel", &MVA_channel , "MVA_channel/I");
   mvatree->Branch("MVA_weight", &MVA_weight, "MVA_weight/F");
@@ -3913,6 +3917,10 @@ void createMVAtree(string dataSetName){
   mvatree->Branch("MVA_weight_puSF_down", &MVA_weight_puSF_down, "MVA_weight_puSF_down/D");
   mvatree->Branch("MVA_weight_electronSF_up", &MVA_weight_electronSF_up, "MVA_weight_electronSF_up/D");
   mvatree->Branch("MVA_weight_electronSF_down", &MVA_weight_electronSF_down, "MVA_weight_electronSF_down/D");
+  mvatree->Branch("MVA_weight_puSF",&MVA_weight_puSF, "MVA_weight_puSF/D");
+  mvatree->Branch("MVA_weight_muonSF",&MVA_weight_muonSF, "MVA_weight_muonSF/D");
+  mvatree->Branch("MVA_weight_eletcronSF",&MVA_weight_electronSF, "MVA_weight_electronSF/D");
+  mvatree->Branch("MVA_weight_btagSF",&MVA_weight_btagSF, "MVA_weight_btagSF/D");
   
   mvatree->Branch("MVA_weight_muonSF_up", &MVA_weight_muonSF_up, "MVA_weight_muonSF_up/D");
   mvatree->Branch("MVA_weight_muonSF_down", &MVA_weight_muonSF_down, "MVA_weight_muonSF_down/D");
@@ -6024,8 +6032,19 @@ void InitTree(TTree* tree, bool isData, bool isfakes){
   tree->SetBranchAddress("id1", &id1, &b_id1);
   tree->SetBranchAddress("id2", &id2, &b_id2);
   tree->SetBranchAddress("q", &q, &b_q);
-  tree->SetBranchAddress("hdamp_up", &hdamp_up, &b_hdamp_up);
-  tree->SetBranchAddress("hdamp_down", &hdamp_down, &b_hdamp_down);
+ 
+    tree->SetBranchAddress("hdamp_up", &hdamp_up, &b_hdamp_up);
+    tree->SetBranchAddress("hdamp_down", &hdamp_down, &b_hdamp_down);
+  if(!isData && !isfakes){
+    tree->SetBranchAddress("weight0", &weight0, &b_weight0);
+    tree->SetBranchAddress("weight1", &weight1, &b_weight1);
+    tree->SetBranchAddress("weight2", &weight2, &b_weight2);
+    tree->SetBranchAddress("weight3", &weight3, &b_weight3);
+    tree->SetBranchAddress("weight4", &weight4, &b_weight4);
+    tree->SetBranchAddress("weight5", &weight5, &b_weight5);
+    tree->SetBranchAddress("weight6", &weight6, &b_weight6);
+    tree->SetBranchAddress("weight7", &weight7, &b_weight7);
+    tree->SetBranchAddress("weight8", &weight8, &b_weight8);}
   tree->SetBranchAddress("btagSFshape", &btagSFshape, &b_btagSFshape);
   tree->SetBranchAddress("btagSFshape_down_cferr1", &btagSFshape_down_cferr1, &b_btagSFshape_down_cferr1);
   tree->SetBranchAddress("btagSFshape_down_cferr2", &btagSFshape_down_cferr2, &b_btagSFshape_down_cferr2);
@@ -6593,15 +6612,9 @@ void Fill1DPlots(string dataSetName, double eventW, bool twolepregion, bool thre
   
   // cout << "muonSF nom : " << eventW*scaleFactor << " up " << eventW*scaleFactor_muonSF_up << " down " << eventW*scaleFactor_puSF_down << endl;
   
-  //cout << " nvtx " << nvtx << " eventw " << eventW << endl;
-  //cout << "puSF_up" << puSF_up << endl;
-  //cout << eventW << " " << (eventW/puSF)*puSF_up<< " " << (eventW/puSF)*puSF_down << endl;
   histo1D_PUSystematics[(prefix+"NbVertices_nom_"+dataSetName).c_str()]->Fill(nvtx, eventW*scaleFactor);
-  // histo1D_ElSystematics[(prefix+"Pt_electron_nom_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt(), eventW*scaleFactor);
-  // if(selectedElectrons.size()>2) histo1D_ElSystematics[(prefix+"Pt_electron_nom_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt()+selectedElectrons[1].Pt()+selectedElectrons[2].Pt(), eventW*scaleFactor);
-  // else if(selectedElectrons.size()>1) histo1D_ElSystematics[(prefix+"Pt_electron_nom_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt()+selectedElectrons[1].Pt(), eventW*scaleFactor);
   if(selectedElectrons.size()>0) histo1D_ElSystematics[(prefix+"Pt_electron_nom_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt(), eventW*scaleFactor);
-  histo1D_MuSystematics[(prefix+"Pt_muon_nom_"+dataSetName).c_str()] ->Fill(selectedMuons[0].Pt(), eventW*scaleFactor);
+  if(selectedMuons.size()>0) histo1D_MuSystematics[(prefix+"Pt_muon_nom_"+dataSetName).c_str()] ->Fill(selectedMuons[0].Pt(), eventW*scaleFactor);
   histo1D_Bcferr1Systematics[(prefix+"Bdis_cferr1_nom_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor);
   histo1D_Bcferr2Systematics[(prefix+"Bdis_cferr2_nom_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor);
   histo1D_Bhfstats1Systematics[(prefix+"Bdis_hfstats1_nom_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor);
@@ -6614,37 +6627,31 @@ void Fill1DPlots(string dataSetName, double eventW, bool twolepregion, bool thre
   
   
   
-  histo1D_PUSystematics[(prefix+"NbVertices_up_"+dataSetName).c_str()]->Fill(nvtx, eventW*scaleFactor_puSF_up);
-  //if(selectedElectrons.size()>2) histo1D_ElSystematics[(prefix+"Pt_electron_up_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt()+selectedElectrons[1].Pt()+selectedElectrons[2].Pt(), eventW*scaleFactor_electronSF_up);
-  // else if(selectedElectrons.size()>1) histo1D_ElSystematics[(prefix+"Pt_electron_up_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt()+selectedElectrons[1].Pt(), eventW*scaleFactor_electronSF_up);
-  if(selectedElectrons.size()>0) histo1D_ElSystematics[(prefix+"Pt_electron_up_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt(), eventW*scaleFactor_electronSF_up);
-  
-  histo1D_MuSystematics[(prefix+"Pt_muon_up_"+dataSetName).c_str()]->Fill(selectedMuons[0].Pt(), eventW*scaleFactor_muonSF_up);
-  histo1D_Bcferr1Systematics[(prefix+"Bdis_cferr1_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_cferr1_up);
-  histo1D_Bcferr2Systematics[(prefix+"Bdis_cferr2_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_cferr2_up);
-  histo1D_Bhfstats1Systematics[(prefix+"Bdis_hfstats1_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_hfstats1_up);
-  histo1D_Bhfstats2Systematics[(prefix+"Bdis_hfstats2_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_hfstats2_up);
-  histo1D_Blfstats1Systematics[(prefix+"Bdis_lfstats1_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_lfstats1_up);
-  histo1D_Blfstats2Systematics[(prefix+"Bdis_lfstats2_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_lfstats2_up);
-  histo1D_BhfSystematics[(prefix+"Bdis_hf_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_hf_up);
-  histo1D_BlfSystematics[(prefix+"Bdis_lf_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_lf_up);
+  histo1D_PUSystematics[(prefix+"NbVertices_up_"+dataSetName).c_str()]->Fill(nvtx, eventW*scaleFactor*scaleFactor_puSF_up/scaleFactor_puSF);
+  if(selectedElectrons.size()>0) histo1D_ElSystematics[(prefix+"Pt_electron_up_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt(), eventW*scaleFactor_electronSF_up*scaleFactor/scaleFactor_electronSF);
+  if(selectedMuons.size()>0) histo1D_MuSystematics[(prefix+"Pt_muon_up_"+dataSetName).c_str()]->Fill(selectedMuons[0].Pt(), eventW*scaleFactor_muonSF_up*scaleFactor/scaleFactor_muonSF);
+  histo1D_Bcferr1Systematics[(prefix+"Bdis_cferr1_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_cferr1_up*scaleFactor/scaleFactor_btagSF);
+  histo1D_Bcferr2Systematics[(prefix+"Bdis_cferr2_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_cferr2_up*scaleFactor/scaleFactor_btagSF);
+  histo1D_Bhfstats1Systematics[(prefix+"Bdis_hfstats1_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_hfstats1_up*scaleFactor/scaleFactor_btagSF);
+  histo1D_Bhfstats2Systematics[(prefix+"Bdis_hfstats2_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_hfstats2_up*scaleFactor/scaleFactor_btagSF);
+  histo1D_Blfstats1Systematics[(prefix+"Bdis_lfstats1_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_lfstats1_up*scaleFactor/scaleFactor_btagSF);
+  histo1D_Blfstats2Systematics[(prefix+"Bdis_lfstats2_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_lfstats2_up*scaleFactor/scaleFactor_btagSF);
+  histo1D_BhfSystematics[(prefix+"Bdis_hf_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_hf_up*scaleFactor/scaleFactor_btagSF);
+  histo1D_BlfSystematics[(prefix+"Bdis_lf_up_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_lf_up*scaleFactor/scaleFactor_btagSF);
   
   
-  histo1D_PUSystematics[(prefix+"NbVertices_down_"+dataSetName).c_str()]->Fill(nvtx, eventW*scaleFactor_puSF_down);
-  // histo1D_ElSystematics[(prefix+"Pt_electron_down_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt(), eventW*scaleFactor_electronSF_down);
-  // if(selectedElectrons.size()>2) histo1D_ElSystematics[(prefix+"Pt_electron_down_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt()+selectedElectrons[1].Pt()+selectedElectrons[2].Pt(), eventW*scaleFactor_electronSF_down);
-  // else if(selectedElectrons.size()>1) histo1D_ElSystematics[(prefix+"Pt_electron_down_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt()+selectedElectrons[1].Pt(), eventW*scaleFactor_electronSF_down);
-  if(selectedElectrons.size()>0) histo1D_ElSystematics[(prefix+"Pt_electron_down_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt(), eventW*scaleFactor_electronSF_down);
+  histo1D_PUSystematics[(prefix+"NbVertices_down_"+dataSetName).c_str()]->Fill(nvtx, eventW*scaleFactor*scaleFactor_puSF_down/scaleFactor_puSF);
+  if(selectedElectrons.size()>0) histo1D_ElSystematics[(prefix+"Pt_electron_down_"+dataSetName).c_str()]->Fill(selectedElectrons[0].Pt(), eventW*scaleFactor_electronSF_down*scaleFactor/scaleFactor_electronSF);
+  if(selectedMuons.size()>0) histo1D_MuSystematics[(prefix+"Pt_muon_down_"+dataSetName).c_str()]->Fill(selectedMuons[0].Pt(), eventW*scaleFactor_muonSF_down*scaleFactor/scaleFactor_muonSF);
+  histo1D_Bcferr1Systematics[(prefix+"Bdis_cferr1_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_cferr1_down*scaleFactor/scaleFactor_btagSF);
+  histo1D_Bcferr2Systematics[(prefix+"Bdis_cferr2_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_cferr2_down*scaleFactor/scaleFactor_btagSF);
+  histo1D_Bhfstats1Systematics[(prefix+"Bdis_hfstats1_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_hfstats1_down*scaleFactor/scaleFactor_btagSF);
+  histo1D_Bhfstats2Systematics[(prefix+"Bdis_hfstats2_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_hfstats2_down*scaleFactor/scaleFactor_btagSF);
+  histo1D_Blfstats1Systematics[(prefix+"Bdis_lfstats1_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_lfstats1_down*scaleFactor/scaleFactor_btagSF);
+  histo1D_Blfstats2Systematics[(prefix+"Bdis_lfstats2_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_lfstats2_down*scaleFactor/scaleFactor_btagSF);
+  histo1D_BhfSystematics[(prefix+"Bdis_hf_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_hf_down*scaleFactor/scaleFactor_btagSF);
+  histo1D_BlfSystematics[(prefix+"Bdis_lf_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_lf_down*scaleFactor/scaleFactor_btagSF);
   
-  histo1D_MuSystematics[(prefix+"Pt_muon_down_"+dataSetName).c_str()]->Fill(selectedMuons[0].Pt(), eventW*scaleFactor_muonSF_down);
-  histo1D_Bcferr1Systematics[(prefix+"Bdis_cferr1_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_cferr1_down);
-  histo1D_Bcferr2Systematics[(prefix+"Bdis_cferr2_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_cferr2_down);
-  histo1D_Bhfstats1Systematics[(prefix+"Bdis_hfstats1_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_hfstats1_down);
-  histo1D_Bhfstats2Systematics[(prefix+"Bdis_hfstats2_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_hfstats2_down);
-  histo1D_Blfstats1Systematics[(prefix+"Bdis_lfstats1_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_lfstats1_down);
-  histo1D_Blfstats2Systematics[(prefix+"Bdis_lfstats2_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_lfstats2_down);
-  histo1D_BhfSystematics[(prefix+"Bdis_hf_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_hf_down);
-  histo1D_BlfSystematics[(prefix+"Bdis_lf_down_"+dataSetName).c_str()]->Fill(bdisc_jet[0],eventW*scaleFactor_btagSF_lf_down);
 }
 
 
