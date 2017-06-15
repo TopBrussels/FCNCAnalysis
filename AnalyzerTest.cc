@@ -92,6 +92,10 @@ string triggerEfffilename = "triggerefficiencies.root";
 TFile* muonptscalefactorsfile = 0;
 string muonptscalefactorsfilename = "muonptefficiencies";
 
+
+TFile* charmscalefactorsfile = 0;
+string charmscalefactorsfilename = "charmtagefficiencies";
+
 int nbin_Pt_lep0 = 4;
 int nbin_Pt_lep1 = 2;
 int nbin_Pt_lep2 = 1;
@@ -879,10 +883,10 @@ Double_t scaleFactor_btagSF_lfstats1_down;
 Double_t scaleFactor_btagSF_lfstats1_up;
 Double_t scaleFactor_btagSF_lfstats2_down;
 Double_t scaleFactor_btagSF_lfstats2_up;
-Double_t scaleFactor_puSF = 1. ;
-Double_t scaleFactor_btagSF = 1.;
-Double_t scaleFactor_muonSF = 1.;
-Double_t scaleFactor_electronSF = 1.;
+Double_t scaleFactor_puSF ;
+Double_t scaleFactor_btagSF ;
+Double_t scaleFactor_muonSF;
+Double_t scaleFactor_electronSF;
 
 Double_t muonSFtemp;
 Double_t electronSFtemp;
@@ -1174,9 +1178,7 @@ int main(int argc, char* argv[]){
     if(string(argv[i]).find("debug")!=std::string::npos) {
       verbose = 4;
     }
-    if(string(argv[i]).find("noPUSF")!=std::string::npos) {
-      applyPUSF =false;
-    }
+   
     if(string(argv[i]).find("applySF")!=string::npos) {
       applyElectronSF =true;
       applyNloSF = true;
@@ -1193,6 +1195,9 @@ int main(int argc, char* argv[]){
       applyMuonSF =false;
      
       
+    }
+    if(string(argv[i]).find("noPUSF")!=std::string::npos) {
+      applyPUSF =false;
     }
     if(string(argv[i]).find("noMET")!=string::npos) {
       applyMETfilter =false;
@@ -1218,6 +1223,7 @@ int main(int argc, char* argv[]){
   if(!applyNloSF || !applyBTagSF ||! applyElectronSF || !applyMETfilter ||  !applyMuonSF || !dorochester) cout << " WARNING not all booleans set for reweighing" << endl;
   
   if(domuonsfpt && doDilep) muonptscalefactorsfilename = muonptscalefactorsfilename + "_" + dateString + "_dilep" ;
+  if(docharmsf && doDilep) charmscalefactorsfilename = charmscalefactorsfilename + "_" + dateString + "_dilep" ;
   if(domuonsfpt && !doDilep) muonptscalefactorsfilename = muonptscalefactorsfilename + "_" + dateString  ;
   if(domuonsfpt) muonptscalefactorsfilename = muonptscalefactorsfilename + ".root";
   else muonptscalefactorsfilename = muonptscalefactorsfilename + "_170524_1136_dilep.root";
@@ -1861,7 +1867,7 @@ int main(int argc, char* argv[]){
       scaleFactor_electronSF = 1.;
       muonSFtemp = 1.;
       electronSFtemp = 1.;
-      puSF = 1.;
+      //puSF = 1.;
       
       
       if (! isData && !isfakes)
