@@ -89,8 +89,7 @@ bool firstevent = false;
 TFile* triggerEfffile = 0;
 string triggerEfffilename = "triggerefficiencies.root";
 
-TFile* muonptscalefactorsfile = 0;
-string muonptscalefactorsfilename = "muonptefficiencies";
+
 
 
 TFile* charmscalefactorsfile = 0;
@@ -102,12 +101,9 @@ int nbin_Pt_lep2 = 1;
 int endbin_Pt_lep0 = 500;
 int endbin_Pt_lep1 = 250;
 int endbin_Pt_lep2 = 150;
-int nbin_MuPtSFHisto_0 = 25;
-int endbin_MuPtSFHisto_0 = 250;
-int nbin_MuPtSFHisto_1 = 20;
-int endbin_MuPtSFHisto_1 = 200;
-int nbin_MuPtSFHisto_2 = 10;
-int endbin_MuPtSFHisto_2 = 150;
+int nbin_charmVSb = 21;
+int nbin_charmVSl= 16;
+
 
 ///////////////////////////////////// MVA VARS /////////////////////////////////////////
 // Decleration of MVA variables
@@ -1023,8 +1019,8 @@ int main(int argc, char* argv[]){
   int channel = -999;
   datafound = false;
   bool applytrigger = true;
-  bool domuonsfpt = false;
-  bool applymuonsfpt = false;
+  bool docharmsf = false;
+  bool applycharmsf = false;
   bool checktrigger = false;
   bool applytriggerNoLogic = false;
   bool applytriggerNoLogic2 = false;
@@ -1064,8 +1060,8 @@ int main(int argc, char* argv[]){
       std::cout << "   RunGH / RunBF " << endl;
       std::cout << "   doDilep: include dilep plots " << endl;
       std::cout << "   noTrlep: exclude trilep plots " << endl;
-      std::cout << "   domuonsfpt: make muon eff " << endl;
-      std::cout << "   applymuonsfpt: apply muon eff " << endl;
+      std::cout << "   docharmSF: make charm SF " << endl;
+      std::cout << "   applycharmSF: apply charm SF " << endl;
       std::cout << "   rochester: apply rochester" << endl;
       std::cout << "   fakeval: apply fakevalidation" << endl;
       std::cout << "   applyTrigSF" << endl;
@@ -1098,13 +1094,13 @@ int main(int argc, char* argv[]){
       dorochester = true;
       
     }
-    if(string(argv[i]).find("applymuonsfpt")!=std::string::npos) {
-      applymuonsfpt = true;
-      domuonsfpt = false;
+    if(string(argv[i]).find("applyCharmSF")!=std::string::npos) {
+      applycharmsf = true;
+      docharmsf = false;
     }
-    if(string(argv[i]).find("domuonsfpt")!=std::string::npos) {
-      domuonsfpt = true;
-      applymuonsfpt = false;
+    if(string(argv[i]).find("doCharmSF")!=std::string::npos) {
+      docharmsf = true;
+      applycharmsf = false;
     }
     if(string(argv[i]).find("noTrilep")!=std::string::npos) {
       noTrilep = true;
@@ -1222,11 +1218,9 @@ int main(int argc, char* argv[]){
   
   if(!applyNloSF || !applyBTagSF ||! applyElectronSF || !applyMETfilter ||  !applyMuonSF || !dorochester) cout << " WARNING not all booleans set for reweighing" << endl;
   
-  if(domuonsfpt && doDilep) muonptscalefactorsfilename = muonptscalefactorsfilename + "_" + dateString + "_dilep" ;
-  if(docharmsf && doDilep) charmscalefactorsfilename = charmscalefactorsfilename + "_" + dateString + "_dilep" ;
-  if(domuonsfpt && !doDilep) muonptscalefactorsfilename = muonptscalefactorsfilename + "_" + dateString  ;
-  if(domuonsfpt) muonptscalefactorsfilename = muonptscalefactorsfilename + ".root";
-  else muonptscalefactorsfilename = muonptscalefactorsfilename + "_170524_1136_dilep.root";
+   if(docharmsf && doDilep) charmscalefactorsfilename = charmscalefactorsfilename + "_" + dateString + "_dilep" ;
+  else if(applycharmsf && doDilep) charmscalefactorsfilename = charmscalefactorsfilename + "_170615_1405_dilep" ;
+   charmscalefactorsfilename = charmscalefactorsfilename + ".root";
   if(!makePlots) doCutflow = false;
   for (int d = 0; d < datasetsbefore.size(); d++)   //Loop through datasets
   {
@@ -1343,38 +1337,39 @@ int main(int argc, char* argv[]){
   
   
   TH1::SetDefaultSumw2();
-  TH1F* MuPtSFHisto_mu0_sum = 0;
-  TH1F* MuPtSFHisto_mu1_sum = 0;
-  TH1F* MuPtSFHisto_mu2_sum = 0;
-  TH1F* MuPtSFHisto_mu0_data = 0;
-  TH1F* MuPtSFHisto_mu1_data = 0;
-  TH1F* MuPtSFHisto_mu2_data = 0;
-  if(domuonsfpt){
-    MuPtSFHisto_mu0_sum = new TH1F("MuPtSFHisto_mu0_sum", "MuPtSFHisto_mu0_sum" , nbin_MuPtSFHisto_0, 0., endbin_MuPtSFHisto_0);
-    MuPtSFHisto_mu1_sum = new TH1F("MuPtSFHisto_mu1_sum", "MuPtSFHisto_mu1_sum" , nbin_MuPtSFHisto_1, 0., endbin_MuPtSFHisto_1);
-    MuPtSFHisto_mu2_sum = new TH1F("MuPtSFHisto_mu2_sum", "MuPtSFHisto_mu2_sum" , nbin_MuPtSFHisto_2, 0., endbin_MuPtSFHisto_2);
+  TH1F* CvsB_Histo_sum = 0;
+  TH1F* CvsL_Histo_sum = 0;
+  TH1F* CvsB_Histo_data = 0;
+  TH1F* CvsL_Histo_data = 0;
+  TH1F* SumNormal_cvsb =0 ;
+  TH1F* SumNormal_cvsl=0 ;
+  TH1F* dataNormal_cvsb = 0;
+  TH1F* dataNormal_cvsl =0 ;
+  TH1F* charm_SFHisto_cvsb =0 ;
+  TH1F* charm_SFHisto_cvsl=0 ;
+  TH1F* charm_SFHisto_cvsb_up =0 ;
+  TH1F* charm_SFHisto_cvsl_up=0 ;
+  TH1F* charm_SFHisto_cvsb_down =0 ;
+  TH1F* charm_SFHisto_cvsl_down =0 ;
+  
+  if(docharmsf){
+    CvsB_Histo_sum  = new TH1F("CvsB_Histo_sum", "CvsB_Histo_sum" , nbin_charmVSb,-1, 1);
+    CvsL_Histo_sum  = new TH1F("CvsL_Histo_sum", "CvsL_Histo_sum" , nbin_charmVSl,-0.6, 1);
     
-    MuPtSFHisto_mu0_data = new TH1F("MuPtSFHisto_mu0_data", "MuPtSFHisto_mu0_data" , nbin_MuPtSFHisto_0, 0., endbin_MuPtSFHisto_0);
-    MuPtSFHisto_mu1_data = new TH1F("MuPtSFHisto_mu1_data", "MuPtSFHisto_mu1_data" , nbin_MuPtSFHisto_1, 0., endbin_MuPtSFHisto_1);
-    MuPtSFHisto_mu2_data = new TH1F("MuPtSFHisto_mu2_data", "MuPtSFHisto_mu2_data", nbin_MuPtSFHisto_2, 0., endbin_MuPtSFHisto_2);
+    CvsB_Histo_data  = new TH1F("CvsB_Histo_data", "CvsB_Histo_data" , nbin_charmVSb,-1, 1);
+    CvsL_Histo_data = new TH1F("CvsL_Histo_data", "CvsL_Histo_data" , nbin_charmVSl,-0.6, 1);
   }
   
-  TH1F* MuPtSFHisto0 = 0;
-  TH1F* MuPtSFHisto1= 0;
-  TH1F* MuPtSFHisto2 = 0;
-  if(applymuonsfpt){
-    muonptscalefactorsfile = TFile::Open( muonptscalefactorsfilename.c_str(), "READ" );
-    // cout << " nbins " << ((TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu0_SF")))->GetNbinsX() << endl;
-    MuPtSFHisto0 = (TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu0_SF"))->Clone("MuPtSFHisto0");
-    MuPtSFHisto1 = (TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu1_SF"))->Clone("MuPtSFHisto1");
-    MuPtSFHisto2 = (TH1F*) (muonptscalefactorsfile->Get("MuPtSFHisto_mu2_SF"))->Clone("MuPtSFHisto2");
-    
-    //cout << MuPtSFHisto0 << " " << MuPtSFHisto1 << " " << MuPtSFHisto2 << endl;
+  if(applycharmsf){
+    charmscalefactorsfile = TFile::Open( charmscalefactorsfilename.c_str(), "READ" );
+    charm_SFHisto_cvsb = (TH1F*) (charmscalefactorsfile->Get("charm_SFHisto_cvsb"))->Clone("charm_SFHisto_cvsb");
+    charm_SFHisto_cvsl = (TH1F*) (charmscalefactorsfile->Get("charm_SFHisto_cvsl"))->Clone("charm_SFHisto_cvsl");
+   
     
   }
   // cout << " nbins " << MuPtSFHisto0->GetNbinsX() << endl;
-  int xbinmuonpt=-5;
-  double muonptsf_1, muonptsf_2, muonptsf_0;
+  int xbinmcharm=-21;
+
 
   int endEvent = -5;
   
@@ -1740,6 +1735,21 @@ int main(int argc, char* argv[]){
         cbdiscrim = cdiscCvsB_jet[iJet];
         cldiscrim = cdiscCvsL_jet[iJet];
         
+        if(applycharmsf && !isData){
+          int binSF = charm_SFHisto_cvsb->GetXaxis()->FindBin(cbdiscrim);
+          double charmSF = charm_SFHisto_cvsb->GetBinContent(binSF);
+          cdiscCvsB_jet[iJet] = cdiscCvsB_jet[iJet]*charmSF;
+          cbdiscrim = cdiscCvsB_jet[iJet];
+          
+          binSF = charm_SFHisto_cvsl->GetXaxis()->FindBin(cldiscrim);
+          charmSF = charm_SFHisto_cvsl->GetBinContent(binSF);
+          cdiscCvsL_jet[iJet] = cdiscCvsL_jet[iJet]*charmSF;
+          cldiscrim = cdiscCvsL_jet[iJet];
+          
+        }
+        
+        
+        
         PushBack = true;
         for(int iM = 0; iM < selectedMuons.size(); iM++){
           if(jet.DeltaR(selectedMuons[iM]) < 0.4) {
@@ -2067,7 +2077,7 @@ int main(int argc, char* argv[]){
       bool twolepregion = false;
       if(selectedLeptons.size() == 3)  threelepregion = true;
       if(selectedElectrons.size() > 1 || selectedMuons.size() > 1) twolepregion = true;
-      if(! threelepregion && ! twolepregion && !domuonsfpt ) continue;
+      if(! threelepregion && ! twolepregion && !docharmsf ) continue;
       if(MakeSelectionTable) {
         CutflowTable->Fill(d,1,scaleFactor*Luminosity/EquilumiSF);
         if(channelInt == 3) CutflowTable_eee->Fill(d,1,scaleFactor*Luminosity/EquilumiSF);
@@ -2082,8 +2092,8 @@ int main(int argc, char* argv[]){
         if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(1. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
         if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(1. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
       }
-      if(selectedElectrons.size() != nbOfLooseElectrons && !domuonsfpt && threelepregion ) continue;
-      if(selectedMuons.size() != nbOfLooseMuons && !domuonsfpt && threelepregion ) continue;
+      if(selectedElectrons.size() != nbOfLooseElectrons && !docharmsf && threelepregion ) continue;
+      if(selectedMuons.size() != nbOfLooseMuons && !docharmsf && threelepregion ) continue;
       if(doCutflow){
         MSPlot["cutflow"] ->Fill(2. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
         if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(2. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
@@ -2112,7 +2122,7 @@ int main(int argc, char* argv[]){
       
       
       // cout << "twolepregion" << " " << twolepregion << " " << "threelepregion" << " " <<  threelepregion << endl;
-      if (makePlots && !domuonsfpt)
+      if (makePlots)
       {
         //cout << "ievt " << ievt << endl;
         //FillGeneralPlots(d, "control_afterAtLeast1Jet", decayChannels, isData, isfakes, threelepregion, twolepregion);
@@ -2138,22 +2148,24 @@ int main(int argc, char* argv[]){
         if(channelInt == 1) CutflowTable_uue->Fill(d,3,scaleFactor*Luminosity/EquilumiSF);
         if(channelInt == 0) CutflowTable_uuu->Fill(d,3,scaleFactor*Luminosity/EquilumiSF);
       }
-      if( domuonsfpt && (selectedElectrons.size()+selectedMuons.size()) > 0){
+      if( docharmsf && (selectedElectrons.size()+selectedMuons.size()) > 0){
         if(isData){
-          if(selectedMuons.size()>0) MuPtSFHisto_mu0_data -> Fill(selectedMuons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
-          if(selectedMuons.size()>1) MuPtSFHisto_mu1_data -> Fill(selectedMuons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
-          if(selectedMuons.size()>2) MuPtSFHisto_mu2_data -> Fill(selectedMuons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
-        }
+          for(int iterJet = 0; iterJet< selectedJetsID.size(); iterJet++){
+          CvsB_Histo_data-> Fill(cdiscCvsB_jet[selectedJetsID[iterJet]], scaleFactor*Luminosity/EquilumiSF);
+          CvsL_Histo_data-> Fill(cdiscCvsL_jet[selectedJetsID[iterJet]], scaleFactor*Luminosity/EquilumiSF);
+          }
+                }
         if(!isData && dataSetName.find("NP_overlay")==std::string::npos){
-          if(selectedMuons.size()>0) MuPtSFHisto_mu0_sum -> Fill(selectedMuons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
-          if(selectedMuons.size()>1) MuPtSFHisto_mu1_sum -> Fill(selectedMuons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
-          if(selectedMuons.size()>2) MuPtSFHisto_mu2_sum -> Fill(selectedMuons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
+          for(int iterJet = 0; iterJet< selectedJetsID.size(); iterJet++){
+            CvsB_Histo_sum-> Fill(cdiscCvsB_jet[selectedJetsID[iterJet]], scaleFactor*Luminosity/EquilumiSF);
+            CvsL_Histo_sum-> Fill(cdiscCvsL_jet[selectedJetsID[iterJet]], scaleFactor*Luminosity/EquilumiSF);
+          }
         }
       }
       
-      if(domuonsfpt) continue;
       
-      if (makePlots && !domuonsfpt)
+      
+      if (makePlots )
       {
         FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow", decayChannels,isData, isfakes, threelepregion, twolepregion);
         
@@ -2491,91 +2503,94 @@ int main(int argc, char* argv[]){
     if(check_matching) MatchingEfficiency();
   } // data
   
-  if(applymuonsfpt){
-    delete MuPtSFHisto0;
-    delete MuPtSFHisto1;
-    delete MuPtSFHisto2;
-    muonptscalefactorsfile->Close();
-    delete muonptscalefactorsfile;
+  if(applycharmsf){
+    delete charm_SFHisto_cvsb;
+    delete charm_SFHisto_cvsl;
+    delete charm_SFHisto_cvsb_up;
+    delete charm_SFHisto_cvsl_up;
+    delete charm_SFHisto_cvsb_down;
+    delete charm_SFHisto_cvsl_down;
+    charmscalefactorsfile->Close();
+    delete charmscalefactorsfile;
     
   }
   
-  TH1F* SumNormal0 =0 ;
-  TH1F* SumNormal1=0 ;
-  TH1F* SumNormal2 =0;
-  TH1F* dataNormal0 = 0;
-  TH1F* dataNormal1 =0 ;
-  TH1F* dataNormal2 =0;
-  TH1F* MuPtSFHisto_mu0_SF=0 ;
-  TH1F* MuPtSFHisto_mu1_SF=0 ;
-  TH1F* MuPtSFHisto_mu2_SF =0;
   
-  if(domuonsfpt){
-    muonptscalefactorsfile = TFile::Open( muonptscalefactorsfilename.c_str(), "RECREATE" );
-    
-    SumNormal0 = (TH1F*) (MuPtSFHisto_mu0_sum)->Clone("SumNormal0");
-    SumNormal1 = (TH1F*) (MuPtSFHisto_mu1_sum)->Clone("SumNormal1");
-    SumNormal2 = (TH1F*) (MuPtSFHisto_mu2_sum)->Clone("SumNormal2");
-    dataNormal0 = (TH1F*) (MuPtSFHisto_mu0_data)->Clone("dataNormal0");
-    dataNormal1 = (TH1F*) (MuPtSFHisto_mu1_data)->Clone("dataNormal1");
-    dataNormal2 = (TH1F*) (MuPtSFHisto_mu2_data)->Clone("dataNormal2");
+  
+  if(docharmsf){
+   
     
     
-    SumNormal0->Scale(1/SumNormal0->Integral());
-    SumNormal1->Scale(1/SumNormal1->Integral());
-    SumNormal2->Scale(1/SumNormal2->Integral());
-    dataNormal0->Scale(1/dataNormal0->Integral());
-    dataNormal1->Scale(1/dataNormal1->Integral());
-    dataNormal2->Scale(1/dataNormal2->Integral());
+    charmscalefactorsfile = TFile::Open( charmscalefactorsfilename.c_str(), "RECREATE" );
     
-    MuPtSFHisto_mu0_SF = (TH1F*) dataNormal0->Clone("MuPtSFHisto_mu0_SF");
-    MuPtSFHisto_mu1_SF = (TH1F*) dataNormal1->Clone("MuPtSFHisto_mu1_SF");
-    MuPtSFHisto_mu2_SF = (TH1F*) dataNormal2->Clone("MuPtSFHisto_mu2_SF");
+    SumNormal_cvsb = (TH1F*) (CvsB_Histo_sum)->Clone("SumNormal_cvsb");
+    SumNormal_cvsl = (TH1F*) (CvsL_Histo_sum)->Clone("SumNormal_cvsl");
+    dataNormal_cvsb = (TH1F*) (CvsB_Histo_data)->Clone("dataNormal_cvsb");
+    dataNormal_cvsl = (TH1F*) (CvsL_Histo_data)->Clone("dataNormal_cvsl");
     
-    MuPtSFHisto_mu0_SF->Divide((TH1F*)SumNormal0);
-    MuPtSFHisto_mu1_SF->Divide((TH1F*)SumNormal1);
-    MuPtSFHisto_mu2_SF->Divide((TH1F*)SumNormal2);
+    SumNormal_cvsb->Scale(1/SumNormal_cvsb->Integral());
+    SumNormal_cvsl->Scale(1/SumNormal_cvsl->Integral());
+    dataNormal_cvsb->Scale(1/SumNormal_cvsb->Integral());
+    dataNormal_cvsl->Scale(1/SumNormal_cvsl->Integral());
     
-    muonptscalefactorsfile->cd();
+    charm_SFHisto_cvsb = (TH1F*) dataNormal_cvsb->Clone("charm_SFHisto_cvsb");
+    charm_SFHisto_cvsl = (TH1F*) dataNormal_cvsl->Clone("charm_SFHisto_cvsl");
+    
+    charm_SFHisto_cvsb->Divide((TH1F*)SumNormal_cvsb);
+    charm_SFHisto_cvsl->Divide((TH1F*)SumNormal_cvsl);
+    
+    charmscalefactorsfile->cd();
     
     
-    MuPtSFHisto_mu0_data->Write();
-    MuPtSFHisto_mu1_data->Write();
-    MuPtSFHisto_mu2_data->Write();
+    CvsB_Histo_data->Write();
+    CvsB_Histo_sum->Write();
+    CvsL_Histo_data->Write();
+    CvsL_Histo_sum->Write();
+    SumNormal_cvsb->Write();
+    SumNormal_cvsl->Write();
+    dataNormal_cvsb->Write();
+    dataNormal_cvsl->Write();
+    charm_SFHisto_cvsl->Write();
+    charm_SFHisto_cvsb->Write();
     
-    MuPtSFHisto_mu0_sum->Write();
-    MuPtSFHisto_mu1_sum->Write();
-    MuPtSFHisto_mu2_sum->Write();
-    SumNormal0->Write();
-    SumNormal1->Write();
-    SumNormal2->Write();
-    dataNormal0->Write();
-    dataNormal1->Write();
-    dataNormal2->Write();
-    MuPtSFHisto_mu0_SF->Write();
-    MuPtSFHisto_mu1_SF->Write();
-    MuPtSFHisto_mu2_SF->Write();
     
-    muonptscalefactorsfile->Write();
-    muonptscalefactorsfile->Close();
-    delete MuPtSFHisto_mu0_data;
-    delete MuPtSFHisto_mu1_data;
-    delete MuPtSFHisto_mu2_data;
-    delete MuPtSFHisto_mu0_sum;
-    delete MuPtSFHisto_mu1_sum;
-    delete MuPtSFHisto_mu2_sum;
-    delete muonptscalefactorsfile;
+    charm_SFHisto_cvsb_up = (TH1F*) charm_SFHisto_cvsb->Clone("charm_SFHisto_cvsb_up");
+    charm_SFHisto_cvsl_up = (TH1F*) charm_SFHisto_cvsl->Clone("charm_SFHisto_cvsl_up");
+    charm_SFHisto_cvsb_down = (TH1F*) charm_SFHisto_cvsb->Clone("charm_SFHisto_cvsb_down");
+    charm_SFHisto_cvsl_down = (TH1F*) charm_SFHisto_cvsl->Clone("charm_SFHisto_cvsl_down");
+    double binerror;
+    double bincontent;
+    for(int ibin = 1; ibin < charm_SFHisto_cvsb->GetNbinsX(); ibin++){
+      binerror = charm_SFHisto_cvsb->GetBinError(ibin);
+      bincontent = charm_SFHisto_cvsb->GetBinContent(ibin);
+      charm_SFHisto_cvsb_up->SetBinContent(ibin,bincontent + binerror);
+      charm_SFHisto_cvsb_down->SetBinContent(ibin,bincontent - binerror);
+     
+      binerror = charm_SFHisto_cvsl->GetBinError(ibin);
+      bincontent = charm_SFHisto_cvsl->GetBinContent(ibin);
+      charm_SFHisto_cvsl_up->SetBinContent(ibin,bincontent + binerror);
+      charm_SFHisto_cvsl_down->SetBinContent(ibin,bincontent - binerror);
+    }
+    
+    charm_SFHisto_cvsl_up->Write();
+    charm_SFHisto_cvsb_up->Write();
+    charm_SFHisto_cvsl_down->Write();
+    charm_SFHisto_cvsb_down->Write();
+    
+    
+    
+    
+    charmscalefactorsfile->Write();
+    charmscalefactorsfile->Close();
+    delete CvsB_Histo_sum;
+    delete CvsB_Histo_data;
+    delete CvsL_Histo_data;
+    delete CvsL_Histo_sum;
+    
+    delete charmscalefactorsfile;
   }
   
-  // delete dataNormal0;
-  //delete dataNormal1;
-  //delete dataNormal2;
-  //delete MuPtSFHisto_mu0_SF;
-  //delete MuPtSFHisto_mu1_SF;
-  //delete MuPtSFHisto_mu2_SF;
-  //delete SumNormal0;
-  //delete SumNormal2;
-  //delete SumNormal1;
+
   
   
   if(checktrigger){
@@ -5552,7 +5567,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
       MSPlot[(prefixregion+prefix+"_btagSF_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_btagSF_"+decaystring).c_str(), 80, 0.9, 1.3, "Btag SF");
       
       
-      MSPlot[(prefixregion+prefix+"_cvsldisc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_cvsldisc_"+decaystring).c_str(), 21, -1., 1, "charm vs loose disc.");
+      MSPlot[(prefixregion+prefix+"_cvsldisc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_cvsldisc_"+decaystring).c_str(), 16, -0.6., 1, "charm vs loose disc.");
       MSPlot[(prefixregion+prefix+"_cvsbdisc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_cvsbdisc_"+decaystring).c_str(), 21, -1., 1, "charm vs b disc.");
       
       MSPlot[(prefixregion+prefix+"_nMu_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nMu_"+decaystring).c_str(), 10, -0.5, 9.5, "#  Muons");
