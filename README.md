@@ -10,7 +10,7 @@ git clone https://github.com/TopBrussels/TopTreeProducer TopBrussels/TopTreeProd
 
 cd TopBrussels/TopTreeProducer/
 
-git checkout CMSSW_80X_v9 #latest Version which work with reMINIAOD
+git checkout CMSSW_80X_v10 #latest Version which work with reMINIAOD
 
 scram b clean
 
