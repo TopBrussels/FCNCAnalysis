@@ -56,6 +56,7 @@ using namespace TopTree;
 // Normal Plots (TH1F* and TH2F*)
 map<string,TH1F*> histo1D;
 map<string,TH1F*> histo1D_fakevvalidation;
+map<string,TH1F*> histo1D_fakedisc;
 map<string,TH1F*> histo1D_PUSystematics;
 map<string,TH1F*> histo1D_ElSystematics;
 map<string,TH1F*> histo1D_MuSystematics;
@@ -93,7 +94,11 @@ string triggerEfffilename = "triggerefficiencies.root";
 
 
 TFile* charmscalefactorsfile = 0;
-string charmscalefactorsfilename = "charmtagefficiencies";
+string charmscalefactorsfilename = "charmtagefficiencies/charmtagefficiencies";
+
+
+TFile* fakescalefactorsfile = 0;
+string fakescalefactorsfilename = "fakezptefficiencies";
 
 int nbin_Pt_lep0 = 4;
 int nbin_Pt_lep1 = 2;
@@ -101,8 +106,8 @@ int nbin_Pt_lep2 = 1;
 int endbin_Pt_lep0 = 500;
 int endbin_Pt_lep1 = 250;
 int endbin_Pt_lep2 = 150;
-int nbin_charmVSb = 21;
-int nbin_charmVSl= 16;
+int nbin_charmVSb = 9;
+int nbin_charmVSl= 4;
 
 
 ///////////////////////////////////// MVA VARS /////////////////////////////////////////
@@ -277,6 +282,12 @@ Float_t MVA_dPhiZMET = -999.;
 Float_t MVA_dPhiZSMtop = -999.;
 
 Float_t MVA_m3l = -999.;
+
+
+Float_t MVA_cdiscCvsB_highestdisjet = -999.;
+Float_t MVA_cdiscCvsB_cjet = -999.;
+Float_t MVA_cdiscCvsL_highestdisjet = -999.;
+Float_t MVA_cdiscCvsL_cjet = -999.;
 
 // Declaration of leaf types
 
@@ -466,7 +477,7 @@ Int_t           missingHits_electron[3];   //[nElectrons]
 Bool_t          passConversion_electron[3];   //[nElectrons]
 Bool_t          isId_electron[3];   //[nElectrons]
 Bool_t          isIso_electron[3];   //[nElectrons]
-Bool_t          isEBEEGap[3];   //[nElectrons]
+Double_t          ioEmIoP_electron[3];   //[nElectrons]
 Int_t           nMuons;
 Int_t           nbOfLooseMuons;
 Int_t           badmueventmu[3];
@@ -604,7 +615,7 @@ TBranch        *b_missingHits_electron;   //!
 TBranch        *b_passConversion_electron;   //!
 TBranch        *b_isId_electron;   //!
 TBranch        *b_isIso_electron;   //!
-TBranch        *b_isEBEEGap;   //!
+TBranch        *b_ioEmIoP_electron;   //!
 TBranch        *b_nbOfLooseMuons;
 TBranch        *b_nMuons;   //!
 TBranch        *b_MuonIDSF;   //!
@@ -677,7 +688,7 @@ TBranch        *b_met_after_JES;   //!
 Double_t met_Pz;
 int verbose = 2;
 
-
+std::vector<std::string> split(const std::string &text, char sep) ;
 string MakeTimeStamp();
 void InitMSPlots(string prefix, vector<int> decayChannels);
 void InitMVAMSPlotsSingletop(string prefix,vector<int> decayChannels);
@@ -685,6 +696,7 @@ void InitMSPlotsBDT(string prefix, vector<int> decayChannels);
 void InitMVAMSPlotsTopPair(string prefix, vector<int> decayChannels);
 void InitMVAMSPlotsWZ(string prefix, vector <int> decayChannels);
 void InitFakeValidation(string dataSetName, vector <int> decayChannels);
+void InitFakeDiscriminator(string dataSetName,  vector <int> decayChannels);
 void Init1DPlots(string dataSetName);
 void Init2DPlots();
 void InitGenInfoPlots(string dataSetName);
@@ -692,6 +704,7 @@ void FillGenInfoPlots(string dataSetName);
 void InitRecovsGenInfoPlots(string dataSetName);
 void FillRecovsGenInfoPlots(string dataSetName, vector<TLorentzVector> selectedElectrons, vector <TLorentzVector> selectedMuons , vector <TLorentzVector> selectedJets);
 void FillFakeValidation(string dataSetName, vector <int> decayChannels, bool isData, bool isfakes, bool threelepregion,bool twolepregion);
+void FillFakeDiscriminator(string dataSetName, vector <int> decayChannels, bool isData, bool isfakes, bool threelepregion,bool twolepregion);
 void Fill1DPlots(string dataSetName, double eventW, bool threelepregion, bool twolepregion);
 void InitTree(TTree* tree, bool isData, bool isfakes);
 // data from global tree
@@ -727,6 +740,9 @@ pair< vector< pair<unsigned int, unsigned int>>, vector <string> > LeptonMatchin
 pair< vector< pair<unsigned int, unsigned int>>, vector <string> > JetMatching(vector < TLorentzVector> selectedJets, vector <TLorentzVector> mcParticles, string dataSetName, bool debug);
 void MatchingEfficiency();
 Double_t RochLeptonMatching(TLorentzVector selectedlepton, vector <TLorentzVector> mcParticles, bool isData, double nbtracks, int chargelep, bool isNP, bool debug);
+double DeltaEta(TLorentzVector vec1, TLorentzVector vec2);
+double DeltaTheta(TLorentzVector vec1, TLorentzVector vec2);
+double DeltaRTheta(TLorentzVector vec1, TLorentzVector vec2);
 vector<TLorentzVector> selectedMuons;
 vector<TLorentzVector> selectedElectrons;
 vector<TLorentzVector> selectedLeptons;
@@ -902,6 +918,9 @@ int cjetindex_Cloose ;
 int cjetindex_Cmedium;
 int cjetindex_Ctight ;
 
+double cdiscCvsB_highestdisjet;
+double cdiscCvsL_highestdisjet;
+
 Int_t           WmuIndiceF;
 Int_t           WelecIndiceF;
 Int_t           ZelecIndiceF_0;
@@ -1020,18 +1039,23 @@ int main(int argc, char* argv[]){
   datafound = false;
   bool applytrigger = true;
   bool docharmsf = false;
+  bool applyfakesf = false;
+  bool dofakesf = false;
   bool applycharmsf = false;
   bool checktrigger = false;
   bool applytriggerNoLogic = false;
   bool applytriggerNoLogic2 = false;
   bool testing = false;
   int testevent = 100;
-  bool dorochester = false;
+  bool dorochester = true;
   bool dofakevalidation = false;
+  bool findFakeDisc = false;
+  bool findCjetDisc = false;
   bool applyTrigSF = false;
   bool doCutflow = false;
   bool MakeSelectionTable = false;
   bool systematicplots = false;
+  bool checkcuts = false;
   doDilep = false;
   for(int i = 0; i <argc; i++){
     if(string(argv[i]).find("help")!=string::npos) {
@@ -1062,13 +1086,26 @@ int main(int argc, char* argv[]){
       std::cout << "   noTrlep: exclude trilep plots " << endl;
       std::cout << "   docharmSF: make charm SF " << endl;
       std::cout << "   applycharmSF: apply charm SF " << endl;
-      std::cout << "   rochester: apply rochester" << endl;
+      std::cout << "   norochester: don't apply rochester" << endl;
       std::cout << "   fakeval: apply fakevalidation" << endl;
       std::cout << "   applyTrigSF" << endl;
       std::cout << "   doCutFlow" << endl;
       std::cout << "   doCutTable" << endl;
        std::cout << "   doSys" << endl;
+      std::cout  << "   findFakeDisc" << endl;
       return 0;
+    }
+    if(string(argv[i]).find("checkcuts")!=std::string::npos) {
+      checkcuts= true;
+      
+    }
+    if(string(argv[i]).find("findFakeDisc")!=std::string::npos) {
+      findFakeDisc= true;
+      
+    }
+    if(string(argv[i]).find("findCjetDisc")!=std::string::npos) {
+      findCjetDisc= true;
+      
     }
     if(string(argv[i]).find("doSys")!=std::string::npos) {
       systematicplots= true;
@@ -1090,8 +1127,8 @@ int main(int argc, char* argv[]){
       dofakevalidation = true;
       
     }
-    if(string(argv[i]).find("rochester")!=std::string::npos) {
-      dorochester = true;
+    if(string(argv[i]).find("norochester")!=std::string::npos) {
+      dorochester = false;
       
     }
     if(string(argv[i]).find("applyCharmSF")!=std::string::npos) {
@@ -1101,6 +1138,14 @@ int main(int argc, char* argv[]){
     if(string(argv[i]).find("doCharmSF")!=std::string::npos) {
       docharmsf = true;
       applycharmsf = false;
+    }
+    if(string(argv[i]).find("applyFakeSF")!=std::string::npos) {
+      applyfakesf = true;
+      dofakesf = false;
+    }
+    if(string(argv[i]).find("doFakeSF")!=std::string::npos) {
+      dofakesf = true;
+      applyfakesf = false;
     }
     if(string(argv[i]).find("noTrilep")!=std::string::npos) {
       noTrilep = true;
@@ -1219,8 +1264,13 @@ int main(int argc, char* argv[]){
   if(!applyNloSF || !applyBTagSF ||! applyElectronSF || !applyMETfilter ||  !applyMuonSF || !dorochester) cout << " WARNING not all booleans set for reweighing" << endl;
   
    if(docharmsf && doDilep) charmscalefactorsfilename = charmscalefactorsfilename + "_" + dateString + "_dilep" ;
-  else if(applycharmsf && doDilep) charmscalefactorsfilename = charmscalefactorsfilename + "_170615_1405_dilep" ;
+  else if(applycharmsf ) charmscalefactorsfilename = charmscalefactorsfilename + "_170619_1349_dilep" ;
    charmscalefactorsfilename = charmscalefactorsfilename + ".root";
+  
+  if(dofakesf && doDilep) fakescalefactorsfilename = fakescalefactorsfilename + "_" + dateString + "_dilep" ;
+  else if(applyfakesf) fakescalefactorsfilename = fakescalefactorsfilename +"_170620_1107_dilep" ; // "_170619_1426_dilep" ;
+  fakescalefactorsfilename = fakescalefactorsfilename + ".root";
+  
   if(!makePlots) doCutflow = false;
   for (int d = 0; d < datasetsbefore.size(); d++)   //Loop through datasets
   {
@@ -1317,11 +1367,48 @@ int main(int argc, char* argv[]){
   int nSelectedEntriesWZ = 0;
   int nSelectedEntriesTTZ = 0;
   int nSelectedEntriesDilep = 0;
+  Double_t eventsafter_d0muon = 0.;
+  Double_t eventsafter_DeltaEtaWlepSMtop = 0.;
+  Double_t eventsafter_DeltaEtaWlepW = 0.;
+  Double_t eventsafter_DeltaRWlepSMb = 0.;
+  Double_t eventsafter_DeltaRWlepSMtop = 0.;
+  Double_t eventsafter_Btight = 0;
+  Double_t eventsafter_BtightCtight = 0;
+  Double_t eventsbeforeBtight = 0;
+  Double_t feventsbeforeBtight = 0;
+  Double_t eventsbeforeBloose = 0;
+  Double_t feventsbeforeBloose = 0;
+  Double_t eventsafter_BlooseCloose = 0;
+  Double_t eventsafter_Bloose = 0;
+  Double_t feventsafter_Btight = 0;
+  Double_t feventsafter_BtightCtight = 0;
+  Double_t feventsafter_BlooseCloose = 0;
+  Double_t feventsafter_Bloose = 0;
+  Double_t eventsbefore = 0.;
+  Double_t feventsafter_d0muon = 0.;
+  Double_t feventsafter_DeltaEtaWlepSMtop = 0.;
+  Double_t feventsafter_DeltaEtaWlepW = 0.;
+  Double_t feventsafter_DeltaEtaWlepZ = 0.;
+  Double_t eventsafter_DeltaEtaWlepZ = 0.;
+  Double_t feventsafter_DeltaRWlepSMb = 0.;
+  Double_t feventsafter_DeltaRWlepSMtop = 0.;
+  Double_t feventsbefore = 0.;
   Double_t nSelectedEntriesDilepweighted = 0;
   Double_t nSelectedEntriesSTweighted = 0.;
   Double_t nSelectedEntriesTTweighted = 0.;
   Double_t nSelectedEntriesWZweighted = 0.;
   Double_t nSelectedEntriesTTZweighted = 0.;
+  Double_t pnSelectedEntriesSTweighted = 0.;
+  Double_t pnSelectedEntriesTTweighted = 0.;
+  Double_t BnSelectedEntriesSTweighted = 0.;
+  Double_t BnSelectedEntriesTTweighted = 0.;
+  Double_t SnSelectedEntriesSTweighted = 0.;
+  Double_t SnSelectedEntriesTTweighted = 0.;
+  Double_t BpnSelectedEntriesSTweighted = 0.;
+  Double_t BpnSelectedEntriesTTweighted = 0.;
+  Double_t SpnSelectedEntriesSTweighted = 0.;
+  Double_t SpnSelectedEntriesTTweighted = 0.;
+  
   Long64_t evtID ;
   ofstream myfile;
   ofstream myfiletrigged;
@@ -1337,6 +1424,8 @@ int main(int argc, char* argv[]){
   
   
   TH1::SetDefaultSumw2();
+  TH2F* Charm_Histo_data= 0;
+  TH2F* Charm_Histo_sum = 0;
   TH1F* CvsB_Histo_sum = 0;
   TH1F* CvsL_Histo_sum = 0;
   TH1F* CvsB_Histo_data = 0;
@@ -1345,6 +1434,11 @@ int main(int argc, char* argv[]){
   TH1F* SumNormal_cvsl=0 ;
   TH1F* dataNormal_cvsb = 0;
   TH1F* dataNormal_cvsl =0 ;
+  TH2F* SumNormal_charm=0 ;
+  TH2F* dataNormal_charm = 0;
+  TH2F* charm_SFHisto=0 ;
+  TH2F* charm_SFHisto_up=0 ;
+  TH2F* charm_SFHisto_down=0 ;
   TH1F* charm_SFHisto_cvsb =0 ;
   TH1F* charm_SFHisto_cvsl=0 ;
   TH1F* charm_SFHisto_cvsb_up =0 ;
@@ -1353,21 +1447,152 @@ int main(int argc, char* argv[]){
   TH1F* charm_SFHisto_cvsl_down =0 ;
   
   if(docharmsf){
-    CvsB_Histo_sum  = new TH1F("CvsB_Histo_sum", "CvsB_Histo_sum" , nbin_charmVSb,-1, 1);
-    CvsL_Histo_sum  = new TH1F("CvsL_Histo_sum", "CvsL_Histo_sum" , nbin_charmVSl,-0.6, 1);
+    Charm_Histo_sum  = new TH2F("Charm_Histo_sum", "Charm_Histo_sum" , nbin_charmVSb,-1, 1, nbin_charmVSl,-0.6, 1);
+    Charm_Histo_data  = new TH2F("Charm_Histo_data", "Charm_Histo_data" , nbin_charmVSb,-1, 1, nbin_charmVSl,-0.6, 1);
     
+    CvsB_Histo_sum  = new TH1F("CvsB_Histo_sum", "CvsB_Histo_sum" , nbin_charmVSb,-1, 1);
     CvsB_Histo_data  = new TH1F("CvsB_Histo_data", "CvsB_Histo_data" , nbin_charmVSb,-1, 1);
-    CvsL_Histo_data = new TH1F("CvsL_Histo_data", "CvsL_Histo_data" , nbin_charmVSl,-0.6, 1);
+    CvsL_Histo_sum  = new TH1F("CvsL_Histo_sum", "CvsL_Histo_sum" , nbin_charmVSl,-0.6, 1);
+    CvsL_Histo_data  = new TH1F("CvsL_Histo_data", "CvsL_Histo_data" , nbin_charmVSl,-0.6, 1);
   }
   
   if(applycharmsf){
     charmscalefactorsfile = TFile::Open( charmscalefactorsfilename.c_str(), "READ" );
+   
     charm_SFHisto_cvsb = (TH1F*) (charmscalefactorsfile->Get("charm_SFHisto_cvsb"))->Clone("charm_SFHisto_cvsb");
     charm_SFHisto_cvsl = (TH1F*) (charmscalefactorsfile->Get("charm_SFHisto_cvsl"))->Clone("charm_SFHisto_cvsl");
+    charm_SFHisto = (TH2F*) (charmscalefactorsfile->Get("charm_SFHisto"))->Clone("charm_SFHisto");
    
     
   }
-  // cout << " nbins " << MuPtSFHisto0->GetNbinsX() << endl;
+
+  TH1F* fake_Histo_sum = 0;
+  TH1F* fake_Histo_data = 0;
+  TH1F* SumNormal_fake = 0 ;
+  TH1F* dataNormal_fake = 0;
+  TH1F* fake_SFHisto =0 ;
+  
+  if(dofakesf){
+    fake_Histo_sum  = new TH1F("fake_Histo_sum", "fake_Histo_sum" , 10,0,300);
+    fake_Histo_data = new TH1F("fake_Histo_data", "fake_Histo_data" , 10,0,300);
+  }
+  
+  if(applyfakesf){
+    cout << "opening " << fakescalefactorsfilename.c_str() << endl; 
+    fakescalefactorsfile = TFile::Open( fakescalefactorsfilename.c_str(), "READ" );
+    fake_SFHisto = (TH1F*) (fakescalefactorsfile->Get("fake_SFHisto"))->Clone("fake_SFHisto");
+    
+    
+  }
+  
+  
+  
+  TH1F* NbOfCharmLoose_FCNC = new TH1F("NbOfCharmLoose_FCNC", "Nb. of charm Loose" , 10, 0,10);
+  TH1F* NbOfCharmMedium_FCNC = new TH1F("NbOfCharmMedium_FCNC", "Nb. of charm Medium" , 10, 0,10);
+  TH1F* NbOfCharmTight_FCNC = new TH1F("NbOfCharmTight_FCNC", "Nb. of charm Tight" , 10, 0,10);
+  TH2F* NbOfCharmLoosevsB_FCNC = new TH2F("NbOfCharmLoosevsB_FCNC", "Nb. of charm Loose vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmMediumvsB_FCNC = new TH2F("NbOfCharmMediumvsB_FCNC", "Nb. of charm Medium vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmTightvsB_FCNC = new TH2F("NbOfCharmTightvsB_FCNC", "Nb. of charm Tight vs B" , 10, 0,10, 10, 0,10);
+  TH1F* NbOfCharmLoose_WZ = new TH1F("NbOfCharmLoose_WZ", "Nb. of charm Loose" , 10, 0,10);
+  TH1F* NbOfCharmMedium_WZ = new TH1F("NbOfCharmMedium_WZ", "Nb. of charm Medium" , 10, 0,10);
+  TH1F* NbOfCharmTight_WZ = new TH1F("NbOfCharmTight_WZ", "Nb. of charm Tight" , 10, 0,10);
+  TH2F* NbOfCharmLoosevsB_WZ = new TH2F("NbOfCharmLoosevsB_WZ", "Nb. of charm Loose vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmMediumvsB_WZ = new TH2F("NbOfCharmMediumvsB_WZ", "Nb. of charm Medium vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmTightvsB_WZ = new TH2F("NbOfCharmTightvsB_WZ", "Nb. of charm Tight vs B" , 10, 0,10, 10, 0,10);
+  TH1F* NbOfCharmLoose_STtZu = new TH1F("NbOfCharmLoose_STtZu", "Nb. of charm Loose" , 10, 0,10);
+  TH1F* NbOfCharmMedium_STtZu = new TH1F("NbOfCharmMedium_STtZu", "Nb. of charm Medium" , 10, 0,10);
+  TH1F* NbOfCharmTight_STtZu = new TH1F("NbOfCharmTight_STtZu", "Nb. of charm Tight" , 10, 0,10);
+  TH1F* NbOfCharmLoose_STtZc = new TH1F("NbOfCharmLoose_STtZc", "Nb. of charm Loose" , 10, 0,10);
+  TH1F* NbOfCharmMedium_STtZc = new TH1F("NbOfCharmMedium_STtZc", "Nb. of charm Medium" , 10, 0,10);
+  TH1F* NbOfCharmTight_STtZc = new TH1F("NbOfCharmTight_STtZc", "Nb. of charm Tight" , 10, 0,10);
+  TH1F* NbOfCharmLoose_TTtZc = new TH1F("NbOfCharmLoose_TTtZc", "Nb. of charm Loose" , 10, 0,10);
+  TH1F* NbOfCharmMedium_TTtZc = new TH1F("NbOfCharmMedium_TTtZc", "Nb. of charm Medium" , 10, 0,10);
+  TH1F* NbOfCharmTight_TTtZc = new TH1F("NbOfCharmTight_TTtZc", "Nb. of charm Tight" , 10, 0,10);
+  TH1F* NbOfCharmLoose_TTtZu = new TH1F("NbOfCharmLoose_TTtZu", "Nb. of charm Loose" , 10, 0,10);
+  TH1F* NbOfCharmMedium_TTtZu = new TH1F("NbOfCharmMedium_TTtZu", "Nb. of charm Medium" , 10, 0,10);
+  TH1F* NbOfCharmTight_TTtZu = new TH1F("NbOfCharmTight_TTtZu", "Nb. of charm Tight" , 10, 0,10);
+  TH1F* NbOfCharmLoose_WZ_STSR = new TH1F("NbOfCharmLoose_WZ_STSR", "Nb. of charm Loose" , 10, 0,10);
+  TH1F* NbOfCharmMedium_WZ_STSR = new TH1F("NbOfCharmMedium_WZ_STSR", "Nb. of charm Medium" , 10, 0,10);
+  TH1F* NbOfCharmTight_WZ_STSR = new TH1F("NbOfCharmTight_WZ_STSR", "Nb. of charm Tight" , 10, 0,10);
+  TH1F* NbOfCharmLoose_WZ_TTSR = new TH1F("NbOfCharmLoose_WZ_TTSR", "Nb. of charm Loose" , 10, 0,10);
+  TH1F* NbOfCharmMedium_WZ_TTSR = new TH1F("NbOfCharmMedium_WZ_TTSR", "Nb. of charm Medium" , 10, 0,10);
+  TH1F* NbOfCharmTight_WZ_TTSR = new TH1F("NbOfCharmTight_WZ_TTSR", "Nb. of charm Tight" , 10, 0,10);
+  
+  TH2F* NbOfCharmLoosevsB_WZ_TTSR = new TH2F("NbOfCharmLoosevsB_WZ_TTSR", "Nb. of charm Loose vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmMediumvsB_WZ_TTSR = new TH2F("NbOfCharmMediumvsB_WZ_TTSR", "Nb. of charm Medium vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmTightvsB_WZ_TTSR = new TH2F("NbOfCharmTightvsB_WZ_TTSR", "Nb. of charm Tight vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmLoosevsB_WZ_STSR = new TH2F("NbOfCharmLoosevsB_WZ_STSR", "Nb. of charm Loose vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmMediumvsB_WZ_STSR = new TH2F("NbOfCharmMediumvsB_WZ_STSR", "Nb. of charm Medium vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmTightvsB_WZ_STSR = new TH2F("NbOfCharmTightvsB_WZ_STSR", "Nb. of charm Tight vs B" , 10, 0,10, 10, 0,10);
+  
+  TH2F* NbOfCharmLoosevsB_STtZu = new TH2F("NbOfCharmLoosevsB_STtZu", "Nb. of charm Loose vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmMediumvsB_STtZu = new TH2F("NbOfCharmMediumvsB_STtZu", "Nb. of charm Medium vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmTightvsB_STtZu = new TH2F("NbOfCharmTightvsB_STtZu", "Nb. of charm Tight vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmLoosevsB_STtZc = new TH2F("NbOfCharmLoosevsB_STtZc", "Nb. of charm Loose vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmMediumvsB_STtZc = new TH2F("NbOfCharmMediumvsB_STtZc", "Nb. of charm Medium vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmTightvsB_STtZc = new TH2F("NbOfCharmTightvsB_STtZc", "Nb. of charm Tight vs B" , 10, 0,10, 10, 0,10);
+  
+  TH2F* NbOfCharmLoosevsB_TTtZu = new TH2F("NbOfCharmLoosevsB_TTtZu", "Nb. of charm Loose vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmMediumvsB_TTtZu = new TH2F("NbOfCharmMediumvsB_TTtZu", "Nb. of charm Medium vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmTightvsB_TTtZu = new TH2F("NbOfCharmTightvsB_TTtZu", "Nb. of charm Tight vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmLoosevsB_TTtZc = new TH2F("NbOfCharmLoosevsB_TTtZc", "Nb. of charm Loose vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmMediumvsB_TTtZc = new TH2F("NbOfCharmMediumvsB_TTtZc", "Nb. of charm Medium vs B" , 10, 0,10, 10, 0,10);
+  TH2F* NbOfCharmTightvsB_TTtZc = new TH2F("NbOfCharmTightvsB_TTtZc", "Nb. of charm Tight vs B" , 10, 0,10, 10, 0,10);
+  
+  
+  TH2F* NbOfCharmLoosevsBdis_WZ_TTSR = new TH2F("NbOfCharmLoosevsBdis_WZ_TTSR", "Nb. of charm Loose vs B" , 12,0.4,1,6,0,6);
+  TH2F* NbOfCharmMediumvsBdis_WZ_TTSR = new TH2F("NbOfCharmMediumvsBdis_WZ_TTSR", "Nb. of charm Medium vs B" , 12,0.4,1,6,0,6);
+  TH2F* NbOfCharmTightvsBdis_WZ_TTSR = new TH2F("NbOfCharmTightvsBdis_WZ_TTSR", "Nb. of charm Tight vs B" , 12,0.4,1,6,0,6);
+  TH2F* NbOfCharmLoosevsBdis_WZ_STSR = new TH2F("NbOfCharmLoosevsBdis_WZ_STSR", "Nb. of charm Loose vs B" , 12,0.4,1,6,0,6);
+  TH2F* NbOfCharmMediumvsBdis_WZ_STSR = new TH2F("NbOfCharmMediumvsBdis_WZ_STSR", "Nb. of charm Medium vs B" , 12,0.4,1,6,0,6);
+  TH2F* NbOfCharmTightvsBdis_WZ_STSR = new TH2F("NbOfCharmTightvsBdis_WZ_STSR", "Nb. of charm Tight vs B" , 12,0.4,1,6,0,6);
+  
+  TH2F* NbOfCharmLoosevsBdis_STtZu = new TH2F("NbOfCharmLoosevsBdis_STtZu", "Nb. of charm Loose vs B" , 12,0.4,1,6,0,6);
+  TH2F* NbOfCharmMediumvsBdis_STtZu = new TH2F("NbOfCharmMediumvsBdis_STtZu", "Nb. of charm Medium vs B" , 12,0.4,1,6,0,6);
+  TH2F* NbOfCharmTightvsBdis_STtZu = new TH2F("NbOfCharmTightvsBdis_STtZu", "Nb. of charm Tight vs B" , 12,0.4,1,6,0,6);
+  TH2F* NbOfCharmLoosevsBdis_STtZc = new TH2F("NbOfCharmLoosevsBdis_STtZc", "Nb. of charm Loose vs B" , 12,0.4,1,6,0,6);
+  TH2F* NbOfCharmMediumvsBdis_STtZc = new TH2F("NbOfCharmMediumvsBdis_STtZc", "Nb. of charm Medium vs B" , 12,0.4,1,6,0,6);
+  TH2F* NbOfCharmTightvsBdis_STtZc = new TH2F("NbOfCharmTightvsBdis_STtZc", "Nb. of charm Tight vs B" , 12,0.4,1,6,0,6);
+  
+  TH2F* NbOfCharmLoosevsBdis_TTtZu = new TH2F("NbOfCharmLoosevsBdis_TTtZu", "Nb. of charm Loose vs B" , 12,0.4,1,6,0,6);
+  TH2F* NbOfCharmMediumvsBdis_TTtZu = new TH2F("NbOfCharmMediumvsBdis_TTtZu", "Nb. of charm Medium vs B" , 12,0.4,1,6,0,6);
+  TH2F* NbOfCharmTightvsBdis_TTtZu = new TH2F("NbOfCharmTightvsBdis_TTtZu", "Nb. of charm Tight vs B" , 12,0.4,1,6,0,6);
+  TH2F* NbOfCharmLoosevsBdis_TTtZc = new TH2F("NbOfCharmLoosevsBdis_TTtZc", "Nb. of charm Loose vs B" , 12,0.4,1,6,0,6);
+  TH2F* NbOfCharmMediumvsBdis_TTtZc = new TH2F("NbOfCharmMediumvsBdis_TTtZc", "Nb. of charm Medium vs B" , 12,0.4,1,6,0,6);
+  TH2F* NbOfCharmTightvsBdis_TTtZc = new TH2F("NbOfCharmTightvsBdis_TTtZc", "Nb. of charm Tight vs B" , 12,0.4,1,6,0,6);
+  
+  TH2F* CharmIDvsBdis_TTtZc = new TH2F("CharmIDvsBdis_TTtZc", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDvsBdis_TTtZu = new TH2F("CharmIDvsBdis_TTtZu", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDvsBdis_STtZc = new TH2F("CharmIDvsBdis_STtZc", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDvsBdis_STtZu = new TH2F("CharmIDvsBdis_STtZu", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDvsBdis_WZ_STSR = new TH2F("CharmIDvsBdis_WZ_STSR", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDvsBdis_WZ_TTSR= new TH2F("CharmIDvsBdis_WZ_TTSR", "charm Id" , 20,0,1,4,0,4);
+  
+  TH2F* CharmIDvsjBdis_TTtZc = new TH2F("CharmIDvsjBdis_TTtZc", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDvsjBdis_TTtZu = new TH2F("CharmIDvsjBdis_TTtZu", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDvsjBdis_STtZc = new TH2F("CharmIDvsjBdis_STtZc", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDvsjBdis_STtZu = new TH2F("CharmIDvsjBdis_STtZu", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDvsjBdis_WZ_STSR = new TH2F("CharmIDvsjBdis_WZ_STSR", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDvsjBdis_WZ_TTSR= new TH2F("CharmIDvsjBdis_WZ_TTSR", "charm Id" , 20,0,1,4,0,4);
+  
+  TH2F* CharmIDnotvsjBdis_TTtZc = new TH2F("CharmIDnotvsjBdis_TTtZc", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDnotvsjBdis_TTtZu = new TH2F("CharmIDnotvsjBdis_TTtZu", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDnotvsjBdis_STtZc = new TH2F("CharmIDnotvsjBdis_STtZc", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDnotvsjBdis_STtZu = new TH2F("CharmIDnotvsjBdis_STtZu", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDnotvsjBdis_WZ_STSR = new TH2F("CharmIDnotvsjBdis_WZ_STSR", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDnotvsjBdis_WZ_TTSR= new TH2F("CharmIDnotvsjBdis_WZ_TTSR", "charm Id" , 20,0,1,4,0,4);
+ 
+  TH2F* CharmIDnotvsBdis_TTtZc = new TH2F("CharmIDnotvsBdis_TTtZc", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDnotvsBdis_TTtZu = new TH2F("CharmIDnotvsBdis_TTtZu", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDnotvsBdis_STtZc = new TH2F("CharmIDnotvsBdis_STtZc", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDnotvsBdis_STtZu = new TH2F("CharmIDnotvsBdis_STtZu", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDnotvsBdis_WZ_STSR = new TH2F("CharmIDnotvsBdis_WZ_STSR", "charm Id" , 20,0,1,4,0,4);
+  TH2F* CharmIDnotvsBdis_WZ_TTSR= new TH2F("CharmIDnotvsBdis_WZ_TTSR", "charm Id" , 20,0,1,4,0,4);
+
+  
+  
+  
+  
   int xbinmcharm=-21;
 
 
@@ -1426,9 +1651,16 @@ int main(int argc, char* argv[]){
         InitRecovsGenInfoPlots(dataSetName);
       }
     }
-    if(( dataSetName.find("TT")!=std::string::npos || dataSetName.find("WWTo")!=std::string::npos||dataSetName.find("DY")!=std::string::npos || dataSetName.find("Zjets")!=std::string::npos  || dataSetName.find("data")!=std::string::npos || dataSetName.find("fake")!=std::string::npos ) && dofakevalidation  ){
+    if(( dataSetName.find("TTJets")!=std::string::npos || dataSetName.find("WWTo")!=std::string::npos||dataSetName.find("DY")!=std::string::npos || dataSetName.find("Zjets")!=std::string::npos  || dataSetName.find("data")!=std::string::npos || dataSetName.find("fake")!=std::string::npos ) && dofakevalidation  ){
       InitFakeValidation(dataSetName, decayChannels);
     }
+    if(( dataSetName.find("TTJets")!=std::string::npos || dataSetName.find("WWTo")!=std::string::npos||dataSetName.find("DY")!=std::string::npos || dataSetName.find("fake")!=std::string::npos || dataSetName.find("Zjets")!=std::string::npos  || dataSetName.find("FCNC")!=std::string::npos ) && findFakeDisc  ){
+      InitFakeDiscriminator(dataSetName, decayChannels);
+    }
+    
+    
+    
+    
     //    if(dataSetName.find("TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut")!=std::string::npos){
     // if(dataSetName.find("WZTo3LNu")!=std::string::npos){
     // if(dataSetName.find("tZq")!=std::string::npos){
@@ -1443,7 +1675,7 @@ int main(int argc, char* argv[]){
     string tTreeName = "tree";
     string tStatsTreeName = "globaltree";
     string postfix = "";
-    if(dataSetName.find("fakeshift")!=std::string::npos) postfix ="_FakeShift";
+    if(dataSetName.find("fakeshift")!=std::string::npos){ postfix ="_FakeShift";}
     if(isData || isfakes) postfix = "";
     if(applyJEC_down) postfix = "_JESdown";
     if(applyJEC_up) postfix = "_JESup";
@@ -1452,7 +1684,7 @@ int main(int argc, char* argv[]){
     
     tTreeName += postfix;
     tStatsTreeName +=  postfix;
-    //cout << "looking at " << tStatsTreeName << " and " << tTreeName << endl;
+    cout << "looking at " << tStatsTreeName << " and " << tTreeName << endl;
     /// Get meta data
     tStatsTree[dataSetName.c_str()] = (TTree*)tFileMap[dataSetName.c_str()]->Get(tStatsTreeName.c_str());
     globalnEntries = (int) tStatsTree[dataSetName.c_str()]->GetEntries();
@@ -1510,6 +1742,8 @@ int main(int argc, char* argv[]){
     nSelectedEntriesWZ = 0;
     nSelectedEntriesSTweighted = 0.;
     nSelectedEntriesTTweighted = 0.;
+    pnSelectedEntriesSTweighted = 0.;
+    pnSelectedEntriesTTweighted = 0.;
     nSelectedEntriesWZweighted = 0.;
     nSelectedEntriesDilep = 0;
     nSelectedEntriesTTZ = 0;
@@ -1671,7 +1905,7 @@ int main(int argc, char* argv[]){
         if( fabs(eta_muon[iMu]) >= 2.4) {continue; }
         
         muon.Clear();
-        
+      
         muon.SetPtEtaPhiE(pt_muon[iMu], eta_muon[iMu], phi_muon[iMu], E_muon[iMu]);
         if(dorochester){
           double ptmu = pt_muon[iMu];
@@ -1726,6 +1960,8 @@ int main(int argc, char* argv[]){
       cbdiscrim = -5.;
       cldiscrim = -5.;
       
+      
+      
       for(unsigned int iJet = 0; iJet < nJets ; iJet++){
         if(pt_jet[iJet] < 30. ) continue;
         if(fabs(eta_jet[iJet]) >= 2.4){ continue;}
@@ -1735,18 +1971,7 @@ int main(int argc, char* argv[]){
         cbdiscrim = cdiscCvsB_jet[iJet];
         cldiscrim = cdiscCvsL_jet[iJet];
         
-        if(applycharmsf && !isData){
-          int binSF = charm_SFHisto_cvsb->GetXaxis()->FindBin(cbdiscrim);
-          double charmSF = charm_SFHisto_cvsb->GetBinContent(binSF);
-          cdiscCvsB_jet[iJet] = cdiscCvsB_jet[iJet]*charmSF;
-          cbdiscrim = cdiscCvsB_jet[iJet];
-          
-          binSF = charm_SFHisto_cvsl->GetXaxis()->FindBin(cldiscrim);
-          charmSF = charm_SFHisto_cvsl->GetBinContent(binSF);
-          cdiscCvsL_jet[iJet] = cdiscCvsL_jet[iJet]*charmSF;
-          cldiscrim = cdiscCvsL_jet[iJet];
-          
-        }
+       
         
         
         
@@ -1880,8 +2105,28 @@ int main(int argc, char* argv[]){
       //puSF = 1.;
       
       
+      
       if (! isData && !isfakes)
       {
+        
+        if(applycharmsf ){
+          int binSFx = -1;
+          int binSFy = -1;
+          double charmSF = 1.;
+          int bin = -1;
+          
+          for(int iJ = 0; iJ < selectedJetsID.size() ; iJ++){
+            binSFx = charm_SFHisto->GetXaxis()->FindBin(cdiscCvsB_jet[selectedJetsID[iJ]]);
+            if(cdiscCvsL_jet[selectedJetsID[iJ]] < -0.6){binSFy = charm_SFHisto->GetYaxis()->FindBin(-0.059);}
+            else binSFy = charm_SFHisto->GetYaxis()->FindBin(cdiscCvsL_jet[selectedJetsID[iJ]]);
+            bin = charm_SFHisto->GetBin(binSFx,binSFy);
+            charmSF *= charm_SFHisto->GetBinContent(bin)  ;
+            if(charmSF < 0) charmSF = 1.;
+            scaleFactor *= charmSF;
+          }
+        }
+        
+        
         
         if(applyTrigSF){
           if(channelInt == 0) scaleFactor *= 1.;
@@ -2054,59 +2299,65 @@ int main(int argc, char* argv[]){
         
       }
       
-      if(isfakes && ( channelInt == 0 || channelInt == 2)){ scaleFactor *= 0.0237522 * 0.0001 ; }
-      if(isfakes && (channelInt== 1 || channelInt == 3)){ scaleFactor *= 0.20771 * 0.0001;  }
+      if(isfakes && ( channelInt == 0 || channelInt == 2) ){ scaleFactor *= 0.0237522 * 0.0001 ; }
+      if(isfakes && (channelInt== 1 || channelInt == 3) ){ scaleFactor *= 0.20771 * 0.0001;  }
+      
+      
+      double eventweightForplots = 1.;
+      if(!isData && !isfakes) eventweightForplots = scaleFactor*Luminosity/EquilumiSF;
+      else if(isfakes) eventweightForplots = scaleFactor;
+      
       
       
       
       if(doCutflow){
-        MSPlot["cutflow"] ->Fill(0. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(0. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(0. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(0. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(0. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
+        MSPlot["cutflow"] ->Fill(0. , datasets[d], true,eventweightForplots);
+        if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(0. , datasets[d], true,eventweightForplots);
+        if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(0. , datasets[d], true,eventweightForplots);
+        if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(0. , datasets[d], true,eventweightForplots);
+        if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(0. , datasets[d], true,eventweightForplots);
       }
       if(MakeSelectionTable) {
-        CutflowTable->Fill(d,0,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 3) CutflowTable_eee->Fill(d,0,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 2) CutflowTable_eeu->Fill(d,0,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 1) CutflowTable_uue->Fill(d,0,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 0) CutflowTable_uuu->Fill(d,0,scaleFactor*Luminosity/EquilumiSF);
+        CutflowTable->Fill(d,0,eventweightForplots);
+        if(channelInt == 3) CutflowTable_eee->Fill(d,0,eventweightForplots);
+        if(channelInt == 2) CutflowTable_eeu->Fill(d,0,eventweightForplots);
+        if(channelInt == 1) CutflowTable_uue->Fill(d,0,eventweightForplots);
+        if(channelInt == 0) CutflowTable_uuu->Fill(d,0,eventweightForplots);
       }
       bool threelepregion = false;
       bool twolepregion = false;
       if(selectedLeptons.size() == 3)  threelepregion = true;
       if(selectedElectrons.size() > 1 || selectedMuons.size() > 1) twolepregion = true;
-      if(! threelepregion && ! twolepregion && !docharmsf ) continue;
+      if(! threelepregion && ! twolepregion ) continue;
       if(MakeSelectionTable) {
-        CutflowTable->Fill(d,1,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 3) CutflowTable_eee->Fill(d,1,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 2) CutflowTable_eeu->Fill(d,1,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 1) CutflowTable_uue->Fill(d,1,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 0) CutflowTable_uuu->Fill(d,1,scaleFactor*Luminosity/EquilumiSF);
+        CutflowTable->Fill(d,1,eventweightForplots);
+        if(channelInt == 3) CutflowTable_eee->Fill(d,1,eventweightForplots);
+        if(channelInt == 2) CutflowTable_eeu->Fill(d,1,eventweightForplots);
+        if(channelInt == 1) CutflowTable_uue->Fill(d,1,eventweightForplots);
+        if(channelInt == 0) CutflowTable_uuu->Fill(d,1,eventweightForplots);
       }
       if(doCutflow){
-        MSPlot["cutflow"] ->Fill(1. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(1. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(1. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(1. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(1. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
+        MSPlot["cutflow"] ->Fill(1. , datasets[d], true,eventweightForplots);
+        if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(1. , datasets[d], true,eventweightForplots);
+        if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(1. , datasets[d], true,eventweightForplots);
+        if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(1. , datasets[d], true,eventweightForplots);
+        if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(1. , datasets[d], true,eventweightForplots);
       }
-      if(selectedElectrons.size() != nbOfLooseElectrons && !docharmsf && threelepregion ) continue;
-      if(selectedMuons.size() != nbOfLooseMuons && !docharmsf && threelepregion ) continue;
+      if(selectedElectrons.size() != nbOfLooseElectrons  && threelepregion ) continue;
+      if(selectedMuons.size() != nbOfLooseMuons && threelepregion ) continue;
       if(doCutflow){
-        MSPlot["cutflow"] ->Fill(2. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(2. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(2. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(2. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(2. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
+        MSPlot["cutflow"] ->Fill(2. , datasets[d], true,eventweightForplots);
+        if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(2. , datasets[d], true,eventweightForplots);
+        if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(2. , datasets[d], true,eventweightForplots);
+        if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(2. , datasets[d], true,eventweightForplots);
+        if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(2. , datasets[d], true,eventweightForplots);
       }
       if(MakeSelectionTable) {
-        CutflowTable->Fill(d,2,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 3) CutflowTable_eee->Fill(d,2,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 2) CutflowTable_eeu->Fill(d,2,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 1) CutflowTable_uue->Fill(d,2,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 0) CutflowTable_uuu->Fill(d,2,scaleFactor*Luminosity/EquilumiSF);
+        CutflowTable->Fill(d,2,eventweightForplots);
+        if(channelInt == 3) CutflowTable_eee->Fill(d,2,eventweightForplots);
+        if(channelInt == 2) CutflowTable_eeu->Fill(d,2,eventweightForplots);
+        if(channelInt == 1) CutflowTable_uue->Fill(d,2,eventweightForplots);
+        if(channelInt == 0) CutflowTable_uuu->Fill(d,2,eventweightForplots);
       }
       // cout << "in assigner" <<endl;
       
@@ -2119,6 +2370,20 @@ int main(int argc, char* argv[]){
       
       ReconstructObjects(selectedJetsID, selectedMuons, selectedElectrons, selectedJets, Region, threelepregion);
       
+      
+      if(isfakes && applyfakesf && !isData){
+        int binSF = -1;
+        double fakeSF = 1.;
+        if(Zboson.Pt() > 300.){ binSF = fake_SFHisto->GetXaxis()->FindBin(299.);}
+        else binSF = fake_SFHisto->GetXaxis()->FindBin(Zboson.Pt());
+        fakeSF = 1/fake_SFHisto->GetBinContent(binSF);
+        scaleFactor *= fakeSF;
+        //cout << " bin " << binSF << " fake SF " << fakeSF << " SF " << scaleFactor << " weight " ;
+        eventweightForplots *= fakeSF;  
+       // cout << eventweightForplots << endl;
+      }
+      
+     
       
       
       // cout << "twolepregion" << " " << twolepregion << " " << "threelepregion" << " " <<  threelepregion << endl;
@@ -2135,34 +2400,55 @@ int main(int argc, char* argv[]){
       //cout << "zmass" << endl;
       if(Zboson.M() < 76 || Zboson.M() > 106) continue;
       if(doCutflow){
-        MSPlot["cutflow"] ->Fill(3. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(3. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(3. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(3. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(3. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
+        MSPlot["cutflow"] ->Fill(3. , datasets[d], true,eventweightForplots);
+        if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(3. , datasets[d], true,eventweightForplots);
+        if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(3. , datasets[d], true,eventweightForplots);
+        if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(3. , datasets[d], true,eventweightForplots);
+        if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(3. , datasets[d], true,eventweightForplots);
       }
       if(MakeSelectionTable) {
-        CutflowTable->Fill(d,3,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 3) CutflowTable_eee->Fill(d,3,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 2) CutflowTable_eeu->Fill(d,3,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 1) CutflowTable_uue->Fill(d,3,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 0) CutflowTable_uuu->Fill(d,3,scaleFactor*Luminosity/EquilumiSF);
+        CutflowTable->Fill(d,3,eventweightForplots);
+        if(channelInt == 3) CutflowTable_eee->Fill(d,3,eventweightForplots);
+        if(channelInt == 2) CutflowTable_eeu->Fill(d,3,eventweightForplots);
+        if(channelInt == 1) CutflowTable_uue->Fill(d,3,eventweightForplots);
+        if(channelInt == 0) CutflowTable_uuu->Fill(d,3,eventweightForplots);
       }
-      if( docharmsf && (selectedElectrons.size()+selectedMuons.size()) > 0){
+      bool passedcuts = false;
+      double deltaR  = 10000;
+      if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){deltaR =  ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],SMbjet);}
+      else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){deltaR=  ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],SMbjet);}
+      if(deltaR <= 2.5 ){ passedcuts = true; }
+     
+      if(!passedcuts) continue;
+      
+      if( docharmsf && (selectedElectrons.size() + selectedMuons.size()) > 1 && selectedJetsID.size() > 0){
         if(isData){
           for(int iterJet = 0; iterJet< selectedJetsID.size(); iterJet++){
-          CvsB_Histo_data-> Fill(cdiscCvsB_jet[selectedJetsID[iterJet]], scaleFactor*Luminosity/EquilumiSF);
-          CvsL_Histo_data-> Fill(cdiscCvsL_jet[selectedJetsID[iterJet]], scaleFactor*Luminosity/EquilumiSF);
+            Charm_Histo_data-> Fill(cdiscCvsB_jet[selectedJetsID[iterJet]],cdiscCvsL_jet[selectedJetsID[iterJet]], eventweightForplots);
+            CvsB_Histo_data-> Fill(cdiscCvsB_jet[selectedJetsID[iterJet]], eventweightForplots);
+            CvsL_Histo_data-> Fill(cdiscCvsL_jet[selectedJetsID[iterJet]], eventweightForplots);
           }
-                }
+        }
         if(!isData && dataSetName.find("NP_overlay")==std::string::npos){
           for(int iterJet = 0; iterJet< selectedJetsID.size(); iterJet++){
-            CvsB_Histo_sum-> Fill(cdiscCvsB_jet[selectedJetsID[iterJet]], scaleFactor*Luminosity/EquilumiSF);
-            CvsL_Histo_sum-> Fill(cdiscCvsL_jet[selectedJetsID[iterJet]], scaleFactor*Luminosity/EquilumiSF);
+            Charm_Histo_sum-> Fill(cdiscCvsB_jet[selectedJetsID[iterJet]],cdiscCvsL_jet[selectedJetsID[iterJet]], eventweightForplots);
+            CvsB_Histo_sum-> Fill(cdiscCvsB_jet[selectedJetsID[iterJet]], eventweightForplots);
+            CvsL_Histo_sum-> Fill(cdiscCvsL_jet[selectedJetsID[iterJet]], eventweightForplots);
+            
           }
         }
       }
       
+      if( dofakesf && twolepregion){
+        if(isfakes){
+          fake_Histo_data->Fill(Zboson.Pt(), scaleFactor);
+        }
+        if(dataSetName.find("TT")!=std::string::npos || dataSetName.find("DY")!=std::string::npos ||  dataSetName.find("WW")!=std::string::npos){
+          
+            fake_Histo_sum-> Fill(Zboson.Pt(), eventweightForplots);
+         
+        }
+      }
       
       
       if (makePlots )
@@ -2171,7 +2457,8 @@ int main(int argc, char* argv[]){
         
         
       }
-      if((dataSetName.find("DY")!=std::string::npos || dataSetName.find("TT")!=std::string::npos || dataSetName.find("WWTo")!=std::string::npos|| dataSetName.find("Zjets")!=std::string::npos  || dataSetName.find("fake")!=std::string::npos || dataSetName.find("data")!=std::string::npos) && dofakevalidation && selectedJetsID.size() > 0 && selectedCSVLJetID.size()>0){
+      if((dataSetName.find("DY")!=std::string::npos || dataSetName.find("TTJets")!=std::string::npos || dataSetName.find("WWTo")!=std::string::npos|| dataSetName.find("Zjets")!=std::string::npos  || dataSetName.find("fake")!=std::string::npos || dataSetName.find("data")!=std::string::npos) && dofakevalidation && selectedJetsID.size() > 0 && selectedCSVLJetID.size()>0){
+        //cout << "filling" << endl;
         FillFakeValidation(dataSetName,decayChannels,isData, isfakes, threelepregion, twolepregion);
       }
       if(selectednonCSVLJetID.size()>0 && makePlots ){
@@ -2181,25 +2468,102 @@ int main(int argc, char* argv[]){
       
       
       // from here only 3lep analysis !!!!
-      if(twolepregion && doDilep){ nSelectedEntriesDilep++; nSelectedEntriesDilepweighted += scaleFactor*Luminosity/EquilumiSF;}
+      if(twolepregion && doDilep){ nSelectedEntriesDilep++; nSelectedEntriesDilepweighted += eventweightForplots;}
       if((selectedMuons.size()+selectedElectrons.size())!= 3) continue;
+      
+      
+      
+      if(checkcuts){
+        if(dataSetName.find("FCNC")!=std::string::npos){
+          eventsbefore += eventweightForplots;
+          double etacut = -2;
+          if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){etacut =  DeltaEta(selectedElectrons[WelecIndiceF],Wboson);}
+          else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){etacut =  DeltaEta(selectedMuons[WmuIndiceF],Wboson);}
+          
+          if(etacut <= 3 ) eventsafter_DeltaEtaWlepW += eventweightForplots;
+          
+          if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){etacut =  DeltaRTheta(selectedElectrons[WelecIndiceF],SMtop);}
+          else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){etacut =  DeltaRTheta(selectedMuons[WmuIndiceF],SMtop);}
+          if(etacut<= 2 ) eventsafter_DeltaEtaWlepSMtop += eventweightForplots;
+          
+          if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){etacut =  DeltaEta(selectedElectrons[WelecIndiceF],SMbjet);}
+          else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){etacut =  DeltaEta(selectedMuons[WmuIndiceF],SMbjet);}
+          if(etacut <= 2.5 ) eventsafter_DeltaEtaWlepZ += eventweightForplots;
+          
+          if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){etacut =  ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],SMtop);}
+          else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){etacut = ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],SMtop);}
+          if(etacut <= 4 ) eventsafter_DeltaRWlepSMtop += eventweightForplots;
+          
+          if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){etacut =  ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],SMbjet);}
+          else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){etacut =  ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],SMbjet);}
+          if(etacut <= 2.5 ){ eventsafter_DeltaRWlepSMb += eventweightForplots; }
+          
+          
+          
+          
+          
+          
+          double d0 = 0;
+          for(int iMu = 0; iMu < selectedMuons.size(); iMu ++){
+            d0 += d0_muon[muonID[iMu]];
+          }
+          if(abs(d0) <= 0.012) eventsafter_d0muon += eventweightForplots;
+        }
+        if(dataSetName.find("fake")!=std::string::npos){
+          feventsbefore += eventweightForplots;
+          double etacut = -2;
+          if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){etacut =  DeltaEta(selectedElectrons[WelecIndiceF],Wboson);}
+          else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){etacut =  DeltaEta(selectedMuons[WmuIndiceF],Wboson);}
+          
+          if(etacut <= 3 ) feventsafter_DeltaEtaWlepW += eventweightForplots;
+          
+          if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){etacut =  DeltaRTheta(selectedElectrons[WelecIndiceF],SMtop);}
+          else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){etacut =  DeltaRTheta(selectedMuons[WmuIndiceF],SMtop);}
+          if(etacut <= 2 ) feventsafter_DeltaEtaWlepSMtop += eventweightForplots;
+          
+          if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){etacut =  DeltaEta(selectedElectrons[WelecIndiceF],SMbjet);}
+          else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){etacut =  DeltaEta(selectedMuons[WmuIndiceF],SMbjet);}
+          if(etacut <= 2.5 ) feventsafter_DeltaEtaWlepZ += eventweightForplots;
+          
+          if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){etacut =  ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],SMtop);}
+          else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){etacut =  ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],SMtop);}
+          if(etacut <= 4 ) feventsafter_DeltaRWlepSMtop += eventweightForplots;
+          
+          if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){etacut =  ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],SMbjet);}
+          else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){etacut =  ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],SMbjet);}
+          if(etacut <= 2.5 ){ feventsafter_DeltaRWlepSMb += eventweightForplots; }
+          
+          double d0 = 0;
+          for(int iMu = 0; iMu < selectedMuons.size(); iMu ++){
+            d0 += d0_muon[muonID[iMu]];
+          }
+          if(abs(d0) <= 0.012) feventsafter_d0muon += eventweightForplots;
+        }
+      }
+      
       if(doCutflow){
-        MSPlot["cutflow"] ->Fill(4. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(4. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(4. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(4. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(4. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
+        MSPlot["cutflow"] ->Fill(4. , datasets[d], true,eventweightForplots);
+        if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(4. , datasets[d], true,eventweightForplots);
+        if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(4. , datasets[d], true,eventweightForplots);
+        if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(4. , datasets[d], true,eventweightForplots);
+        if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(4. , datasets[d], true,eventweightForplots);
       }
       if(MakeSelectionTable) {
-        CutflowTable->Fill(d,4,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 3) CutflowTable_eee->Fill(d,4,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 2) CutflowTable_eeu->Fill(d,4,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 1) CutflowTable_uue->Fill(d,4,scaleFactor*Luminosity/EquilumiSF);
-        if(channelInt == 0) CutflowTable_uuu->Fill(d,4,scaleFactor*Luminosity/EquilumiSF);
+        CutflowTable->Fill(d,4,eventweightForplots);
+        if(channelInt == 3) CutflowTable_eee->Fill(d,4,eventweightForplots);
+        if(channelInt == 2) CutflowTable_eeu->Fill(d,4,eventweightForplots);
+        if(channelInt == 1) CutflowTable_uue->Fill(d,4,eventweightForplots);
+        if(channelInt == 0) CutflowTable_uuu->Fill(d,4,eventweightForplots);
       }
       if(!threelepregion) cout << "WARNING something went wrong with threelep region" << endl;
       
        if(threelepregion &&dataSetName.find("WZTo3LNu")!=std::string::npos && systematicplots ) Fill1DPlots(dataSetName, Luminosity/EquilumiSF, threelepregion,twolepregion); // FIX EVENTWEIGHT
+      
+      if((dataSetName.find("DY")!=std::string::npos || dataSetName.find("TTJets")!=std::string::npos || dataSetName.find("WWTo")!=std::string::npos|| dataSetName.find("Zjets")!=std::string::npos ||  dataSetName.find("FCNC")!=std::string::npos ||dataSetName.find("fake")!=std::string::npos) &&  findFakeDisc  && selectedJetsID.size() > 0 && selectedCSVLJetID.size()>0){
+        //cout << "filling" << endl;
+        FillFakeDiscriminator(dataSetName,decayChannels,isData, isfakes, threelepregion, twolepregion);
+      }
+      
       
       bool matcher = false;
       if(check_matching) matcher = MatchingFunction(dataSetName, selectedLeptons, selectedMuons, selectedElectrons, selectedJets,makeMatchingPlots, debugmatching);
@@ -2207,62 +2571,278 @@ int main(int argc, char* argv[]){
       
       // Signal regions and background region
       bool selected = false;
+      
+ 
+      vector <int> selectednoBCharmLJetsindex;
+      for(int i = 0; i < selectedCharmLJetsindex.size() ; i++){
+        if(selectedCharmLJetsindex[i] != selectedJetsID[SMjetIndex]) selectednoBCharmLJetsindex.push_back(selectedCharmLJetsindex[i]);
+      }
+      vector <int> selectednoBCharmMJetsindex;
+      for(int i = 0; i < selectedCharmMJetsindex.size() ; i++){
+        if(selectedCharmMJetsindex[i] != selectedJetsID[SMjetIndex]) selectednoBCharmMJetsindex.push_back(selectedCharmMJetsindex[i]);
+      }
+      vector <int> selectednoBCharmTJetsindex;
+      for(int i = 0; i < selectedCharmTJetsindex.size() ; i++){
+        if(selectedCharmTJetsindex[i] != selectedJetsID[SMjetIndex]) selectednoBCharmTJetsindex.push_back(selectedCharmTJetsindex[i]);
+      }
+      
+      double bdiscriminant= 0.;
+      double bdiscriminantjet = 0.;
+      for(int i = 0; i < selectedJetsID.size() ; i++){
+        if(selectedJetsID[SMjetIndex] != selectedJetsID[i]) bdiscriminantjet += bdisc_jet[selectedJetsID[i]];
+      }
+      bdiscriminant = bdisc_jet[selectedJetsID[SMjetIndex]];
+      
+      
+      
+      
       if(selectedJets.size() == 1 && selectedCSVLJetID.size() > 0 && threelepregion){
         Region = 0;
         nSelectedEntriesST++;
         selected = true;
       /*  if(doCutflow){
-          MSPlot["cutflow"] ->Fill(5. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(5. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(5. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(5. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(5. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
+          MSPlot["cutflow"] ->Fill(5. , datasets[d], true,eventweightForplots);
+          if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(5. , datasets[d], true,eventweightForplots);
+          if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(5. , datasets[d], true,eventweightForplots);
+          if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(5. , datasets[d], true,eventweightForplots);
+          if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(5. , datasets[d], true,eventweightForplots);
         }*/
         if(MakeSelectionTable) {
-          CutflowTable->Fill(d,5,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 3) CutflowTable_eee->Fill(d,5,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 2) CutflowTable_eeu->Fill(d,5,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 1) CutflowTable_uue->Fill(d,5,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 0) CutflowTable_uuu->Fill(d,5,scaleFactor*Luminosity/EquilumiSF);
+          CutflowTable->Fill(d,5,eventweightForplots);
+          if(channelInt == 3) CutflowTable_eee->Fill(d,5,eventweightForplots);
+          if(channelInt == 2) CutflowTable_eeu->Fill(d,5,eventweightForplots);
+          if(channelInt == 1) CutflowTable_uue->Fill(d,5,eventweightForplots);
+          if(channelInt == 0) CutflowTable_uuu->Fill(d,5,eventweightForplots);
         }
+        if(dataSetName.find("FCNC")==std::string::npos){
+          NbOfCharmLoose_WZ_STSR->Fill(selectednoBCharmLJetsindex.size(), eventweightForplots);
+          NbOfCharmMedium_WZ_STSR->Fill(selectednoBCharmMJetsindex.size(), eventweightForplots);
+          NbOfCharmTight_WZ_STSR->Fill(selectednoBCharmTJetsindex.size(), eventweightForplots);
+          NbOfCharmLoosevsB_WZ_STSR->Fill(selectednoBCharmLJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmMediumvsB_WZ_STSR->Fill(selectednoBCharmLJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmTightvsB_WZ_STSR->Fill(selectednoBCharmLJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          //CharmIDvsBdis_WZ_STSR ->Fill(bdiscriminantcharm, charmID,eventweightForplots);
+          
+        }
+        if(dataSetName.find("zut")!=std::string::npos){
+          NbOfCharmLoose_STtZu->Fill(selectednoBCharmLJetsindex.size(), eventweightForplots);
+          NbOfCharmMedium_STtZu->Fill(selectednoBCharmMJetsindex.size(), eventweightForplots);
+          NbOfCharmTight_STtZu->Fill(selectednoBCharmTJetsindex.size(), eventweightForplots);
+          NbOfCharmLoosevsB_STtZu->Fill(selectednoBCharmLJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmMediumvsB_STtZu->Fill(selectednoBCharmMJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmTightvsB_STtZu->Fill(selectednoBCharmTJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+           //CharmIDvsBdis_STtZu->Fill(bdiscriminantcharm, charmID,eventweightForplots);
+          
+        }
+        
+        if(dataSetName.find("zct")!=std::string::npos){
+          NbOfCharmLoose_STtZc->Fill(selectednoBCharmLJetsindex.size(), eventweightForplots);
+          NbOfCharmMedium_STtZc->Fill(selectednoBCharmMJetsindex.size(), eventweightForplots);
+          NbOfCharmTight_STtZc->Fill(selectednoBCharmTJetsindex.size(), eventweightForplots);
+          NbOfCharmLoosevsB_STtZc->Fill(selectednoBCharmLJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmMediumvsB_STtZc->Fill(selectednoBCharmMJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmTightvsB_STtZc->Fill(selectednoBCharmTJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+         // CharmIDvsBdis_STtZc->Fill(bdiscriminantcharm, charmID,eventweightForplots);
+          
+        }
+        
+        
+        if(dataSetName.find("FCNC")==std::string::npos){
+          NbOfCharmLoosevsBdis_WZ_STSR->Fill(bdiscriminant,  selectednoBCharmLJetsindex.size(), eventweightForplots);
+          NbOfCharmMediumvsBdis_WZ_STSR->Fill(bdiscriminant,  selectednoBCharmMJetsindex.size(), eventweightForplots);
+          NbOfCharmTightvsBdis_WZ_STSR->Fill(bdiscriminant,  selectednoBCharmTJetsindex.size(), eventweightForplots);
+        }
+        if(dataSetName.find("zut")!=std::string::npos){
+          NbOfCharmLoosevsBdis_STtZu->Fill(bdiscriminant,  selectednoBCharmLJetsindex.size(), eventweightForplots);
+          NbOfCharmMediumvsBdis_STtZu->Fill(bdiscriminant,  selectednoBCharmMJetsindex.size(), eventweightForplots);
+          NbOfCharmTightvsBdis_STtZu->Fill(bdiscriminant,  selectednoBCharmTJetsindex.size(), eventweightForplots);
+        }
+        if(dataSetName.find("zct")!=std::string::npos){
+          NbOfCharmLoosevsBdis_STtZc->Fill(bdiscriminant,  selectednoBCharmLJetsindex.size(), eventweightForplots);
+          NbOfCharmMediumvsBdis_STtZc->Fill(bdiscriminant,  selectednoBCharmMJetsindex.size(), eventweightForplots);
+          NbOfCharmTightvsBdis_STtZc->Fill(bdiscriminant,  selectednoBCharmTJetsindex.size(), eventweightForplots);
+        }
+        
+        
+        
+        if(dataSetName.find("FCNC")==std::string::npos){
+          NbOfCharmLoose_WZ->Fill(selectednoBCharmLJetsindex.size(), eventweightForplots);
+          NbOfCharmMedium_WZ->Fill(selectednoBCharmMJetsindex.size(), eventweightForplots);
+          NbOfCharmTight_WZ->Fill(selectednoBCharmTJetsindex.size(), eventweightForplots);
+          NbOfCharmLoosevsB_WZ->Fill(selectednoBCharmLJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmMediumvsB_WZ->Fill(selectednoBCharmLJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmTightvsB_WZ->Fill(selectednoBCharmLJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+        }
+        if(dataSetName.find("FCNC")!=std::string::npos){
+          NbOfCharmLoose_FCNC->Fill(selectednoBCharmLJetsindex.size(), eventweightForplots);
+          NbOfCharmMedium_FCNC->Fill(selectednoBCharmMJetsindex.size(), eventweightForplots);
+          NbOfCharmTight_FCNC->Fill(selectednoBCharmTJetsindex.size(), eventweightForplots);
+          NbOfCharmLoosevsB_FCNC->Fill(selectednoBCharmLJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmMediumvsB_FCNC->Fill(selectednoBCharmMJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmTightvsB_FCNC->Fill(selectednoBCharmTJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+        }
+        
       } // ST region
       if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && threelepregion){
         Region = 1;
         nSelectedEntriesTT++;
         selected = true;
        /* if(doCutflow){
-          MSPlot["cutflow"] ->Fill(6. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(6. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(6. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(6. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(6. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
+          MSPlot["cutflow"] ->Fill(6. , datasets[d], true,eventweightForplots);
+          if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(6. , datasets[d], true,eventweightForplots);
+          if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(6. , datasets[d], true,eventweightForplots);
+          if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(6. , datasets[d], true,eventweightForplots);
+          if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(6. , datasets[d], true,eventweightForplots);
         }*/
         if(MakeSelectionTable) {
-          CutflowTable->Fill(d,6,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 3) CutflowTable_eee->Fill(d,6,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 2) CutflowTable_eeu->Fill(d,6,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 1) CutflowTable_uue->Fill(d,6,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 0) CutflowTable_uuu->Fill(d,6,scaleFactor*Luminosity/EquilumiSF);
+          CutflowTable->Fill(d,6,eventweightForplots);
+          if(channelInt == 3) CutflowTable_eee->Fill(d,6,eventweightForplots);
+          if(channelInt == 2) CutflowTable_eeu->Fill(d,6,eventweightForplots);
+          if(channelInt == 1) CutflowTable_uue->Fill(d,6,eventweightForplots);
+          if(channelInt == 0) CutflowTable_uuu->Fill(d,6,eventweightForplots);
         }
+        
+        int charmID = 0;
+        int charmIDnot = 0;
+        
+        if(cdiscCvsB_jet[selectedJetsID[cjetindex]] > -0.45 && cdiscCvsL_jet[selectedJetsID[cjetindex]] > 0.69 && cjetindex > -1){
+          charmID =3 ;
+        }
+        else if(cdiscCvsB_jet[selectedJetsID[cjetindex]]> 0.08  && cdiscCvsL_jet[selectedJetsID[cjetindex]] > -0.1 && cjetindex > -1){
+          charmID = 2;
+        }
+        else if(cdiscCvsB_jet[selectedJetsID[cjetindex]]> -0.17  && cdiscCvsL_jet[selectedJetsID[cjetindex]] > -0.48 && cjetindex > -1){
+          charmID = 1;
+        }
+        else charmID = 0;
+        
+        if(cdiscCvsB_jet[selectedJetsID[cjetindex]]<= -0.17  || cdiscCvsL_jet[selectedJetsID[cjetindex]] <= -0.48 && cjetindex > -1){
+          charmIDnot = 1;
+        }
+        else if(cdiscCvsB_jet[selectedJetsID[cjetindex]]<= 0.08  || cdiscCvsL_jet[selectedJetsID[cjetindex]] <= -0.1 && cjetindex > -1){
+          charmIDnot = 2;
+        }
+        else if(cdiscCvsB_jet[selectedJetsID[cjetindex]] <= -0.45 || cdiscCvsL_jet[selectedJetsID[cjetindex]] <= 0.69 && cjetindex > -1){
+          charmIDnot = 3 ;
+        }
+        else charmIDnot = 0;
+        double bdiscriminantcharm = bdisc_jet[selectedJetsID[cjetindex]];
+        
+        if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos) eventsbeforeBtight += eventweightForplots;
+        else feventsbeforeBtight += eventweightForplots;
+        
+        
+        if(bdiscriminantcharm <= WPb_T && dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos) eventsafter_Btight+=eventweightForplots;
+        else if(bdiscriminantcharm <= WPb_T) feventsafter_Btight+= eventweightForplots;
+        
+        if(bdiscriminantcharm <= WPb_T && selectednoBCharmTJetsindex.size()>0 && dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos) eventsafter_BtightCtight+=eventweightForplots;
+        else if(bdiscriminantcharm <= WPb_T && selectednoBCharmTJetsindex.size()>0 ) feventsafter_BtightCtight+= eventweightForplots;
+        
+        
+        if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos) eventsbeforeBloose += eventweightForplots;
+        else feventsbeforeBloose += eventweightForplots;
+        
+        if(bdiscriminantcharm <= WPb_L && dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos) eventsafter_Bloose+=eventweightForplots;
+        else if(bdiscriminantcharm <= WPb_L) feventsafter_Bloose+= eventweightForplots;
+        
+        
+        if(bdiscriminantcharm <= WPb_L && selectednoBCharmTJetsindex.size()==0 && dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos) eventsafter_BlooseCloose+=eventweightForplots;
+        else if(bdiscriminantcharm <= WPb_L && selectednoBCharmTJetsindex.size()==0 ) feventsafter_BlooseCloose+= eventweightForplots;
+        
+        
+        
+        if(dataSetName.find("FCNC")==std::string::npos){
+          NbOfCharmLoose_WZ_TTSR->Fill(selectednoBCharmLJetsindex.size(), eventweightForplots);
+          NbOfCharmMedium_WZ_TTSR->Fill(selectednoBCharmMJetsindex.size(), eventweightForplots);
+          NbOfCharmTight_WZ_TTSR->Fill(selectednoBCharmTJetsindex.size(), eventweightForplots);
+          NbOfCharmLoosevsB_WZ_TTSR->Fill(selectednoBCharmLJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmMediumvsB_WZ_TTSR->Fill(selectednoBCharmMJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmTightvsB_WZ_TTSR->Fill(selectednoBCharmTJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          CharmIDvsBdis_WZ_TTSR->Fill(bdiscriminantcharm, charmID,eventweightForplots);
+          CharmIDvsjBdis_WZ_TTSR ->Fill(bdiscriminantjet, charmID,eventweightForplots);
+          CharmIDnotvsBdis_WZ_TTSR->Fill(bdiscriminantcharm, charmIDnot,eventweightForplots);
+          CharmIDnotvsjBdis_WZ_TTSR ->Fill(bdiscriminantjet, charmIDnot,eventweightForplots);
+        }
+        if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
+          NbOfCharmLoose_TTtZu->Fill(selectednoBCharmLJetsindex.size(), eventweightForplots);
+          NbOfCharmMedium_TTtZu->Fill(selectednoBCharmMJetsindex.size(), eventweightForplots);
+          NbOfCharmTight_TTtZu->Fill(selectednoBCharmTJetsindex.size(), eventweightForplots);
+          NbOfCharmLoosevsB_TTtZu->Fill(selectednoBCharmLJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmMediumvsB_TTtZu->Fill(selectednoBCharmMJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmTightvsB_TTtZu->Fill(selectednoBCharmTJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+        }
+        if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
+          NbOfCharmLoose_TTtZc->Fill(selectednoBCharmLJetsindex.size(), eventweightForplots);
+          NbOfCharmMedium_TTtZc->Fill(selectednoBCharmMJetsindex.size(), eventweightForplots);
+          NbOfCharmTight_TTtZc->Fill(selectednoBCharmTJetsindex.size(), eventweightForplots);
+          NbOfCharmLoosevsB_TTtZc->Fill(selectednoBCharmLJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmMediumvsB_TTtZc->Fill(selectednoBCharmMJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmTightvsB_TTtZc->Fill(selectednoBCharmTJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+        }
+        if(dataSetName.find("FCNC")==std::string::npos){
+          NbOfCharmLoose_WZ->Fill(selectednoBCharmLJetsindex.size(), eventweightForplots);
+          NbOfCharmMedium_WZ->Fill(selectednoBCharmMJetsindex.size(), eventweightForplots);
+          NbOfCharmTight_WZ->Fill(selectednoBCharmTJetsindex.size(), eventweightForplots);
+          NbOfCharmLoosevsB_WZ->Fill(selectednoBCharmLJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmMediumvsB_WZ->Fill(selectednoBCharmLJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmTightvsB_WZ->Fill(selectednoBCharmLJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+        }
+        if(dataSetName.find("FCNC")!=std::string::npos){
+          NbOfCharmLoose_FCNC->Fill(selectednoBCharmLJetsindex.size(), eventweightForplots);
+          NbOfCharmMedium_FCNC->Fill(selectednoBCharmMJetsindex.size(), eventweightForplots);
+          NbOfCharmTight_FCNC->Fill(selectednoBCharmTJetsindex.size(), eventweightForplots);
+          NbOfCharmLoosevsB_FCNC->Fill(selectednoBCharmLJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmMediumvsB_FCNC->Fill(selectednoBCharmMJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+          NbOfCharmTightvsB_FCNC->Fill(selectednoBCharmTJetsindex.size(), selectedCSVLJetID.size(),eventweightForplots);
+        }
+        
+        
+        if(dataSetName.find("FCNC")==std::string::npos){
+          NbOfCharmLoosevsBdis_WZ_TTSR->Fill(bdiscriminant,  selectednoBCharmLJetsindex.size(), eventweightForplots); //bdisc_jet[selectedJetsID[SMjetIndex]]
+          NbOfCharmMediumvsBdis_WZ_TTSR->Fill(bdiscriminant,  selectednoBCharmMJetsindex.size(), eventweightForplots);
+          NbOfCharmTightvsBdis_WZ_TTSR->Fill(bdiscriminant,  selectednoBCharmTJetsindex.size(), eventweightForplots);
+        }
+        if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
+          NbOfCharmLoosevsBdis_TTtZu->Fill(bdiscriminant,  selectednoBCharmLJetsindex.size(), eventweightForplots);
+          NbOfCharmMediumvsBdis_TTtZu->Fill(bdiscriminant,  selectednoBCharmMJetsindex.size(), eventweightForplots);
+          NbOfCharmTightvsBdis_TTtZu->Fill(bdiscriminant,  selectednoBCharmTJetsindex.size(), eventweightForplots);
+          CharmIDvsBdis_TTtZu ->Fill(bdiscriminantcharm, charmID,eventweightForplots);
+          CharmIDvsjBdis_TTtZu ->Fill(bdiscriminantjet, charmID,eventweightForplots);
+          CharmIDnotvsBdis_TTtZu->Fill(bdiscriminantcharm, charmIDnot,eventweightForplots);
+          CharmIDnotvsjBdis_TTtZu ->Fill(bdiscriminantjet, charmIDnot,eventweightForplots);
+        }
+        if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
+          NbOfCharmLoosevsBdis_TTtZc->Fill(bdiscriminant,  selectednoBCharmLJetsindex.size(), eventweightForplots);
+          NbOfCharmMediumvsBdis_TTtZc->Fill(bdiscriminant,  selectednoBCharmMJetsindex.size(), eventweightForplots);
+          NbOfCharmTightvsBdis_TTtZc->Fill(bdiscriminant,  selectednoBCharmTJetsindex.size(), eventweightForplots);
+          CharmIDvsBdis_TTtZc ->Fill(bdiscriminantcharm, charmID,eventweightForplots);
+          CharmIDvsjBdis_TTtZc ->Fill(bdiscriminantjet, charmID,eventweightForplots);
+          CharmIDnotvsBdis_TTtZc->Fill(bdiscriminantcharm, charmIDnot,eventweightForplots);
+          CharmIDnotvsjBdis_TTtZc ->Fill(bdiscriminantjet, charmIDnot,eventweightForplots);
+        }
+
+        
       } // ttbar region
       if(selectedJets.size() >0 && selectedCSVLJetID.size() == 0 && threelepregion){
         Region = 2;
         nSelectedEntriesWZ++;
         selected = true;
         if(doCutflow){
-          MSPlot["cutflow"] ->Fill(7. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(7. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(7. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(7. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(7. , datasets[d], true,scaleFactor*Luminosity/EquilumiSF);
+          MSPlot["cutflow"] ->Fill(7. , datasets[d], true,eventweightForplots);
+          if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(7. , datasets[d], true,eventweightForplots);
+          if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(7. , datasets[d], true,eventweightForplots);
+          if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(7. , datasets[d], true,eventweightForplots);
+          if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(7. , datasets[d], true,eventweightForplots);
         }
         if(MakeSelectionTable) {
-          CutflowTable->Fill(d,7,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 3) CutflowTable_eee->Fill(d,7,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 2) CutflowTable_eeu->Fill(d,7,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 1) CutflowTable_uue->Fill(d,7,scaleFactor*Luminosity/EquilumiSF);
-          if(channelInt == 0) CutflowTable_uuu->Fill(d,7,scaleFactor*Luminosity/EquilumiSF);
+          CutflowTable->Fill(d,7,eventweightForplots);
+          if(channelInt == 3) CutflowTable_eee->Fill(d,7,eventweightForplots);
+          if(channelInt == 2) CutflowTable_eeu->Fill(d,7,eventweightForplots);
+          if(channelInt == 1) CutflowTable_uue->Fill(d,7,eventweightForplots);
+          if(channelInt == 0) CutflowTable_uuu->Fill(d,7,eventweightForplots);
         }
+       
+        
       }// WZ control region
       if(selectedJets.size() >1 && selectedCSVLJetID.size() > 1 && threelepregion){
         Region = 3;
@@ -2277,85 +2857,85 @@ int main(int argc, char* argv[]){
       if( (isData || dataSetName.find("WZ")!=std::string::npos) && checktrigger ){
         
         for(int iLep = 0; iLep < selectedLeptons.size() ; iLep++) {
-          histPt_noTrig_all->Fill(selectedLeptons[iLep].Pt(), scaleFactor*Luminosity/EquilumiSF);
-          if(PassedTrigger) histPt_all->Fill(selectedLeptons[iLep].Pt(), scaleFactor*Luminosity/EquilumiSF);
+          histPt_noTrig_all->Fill(selectedLeptons[iLep].Pt(), eventweightForplots);
+          if(PassedTrigger) histPt_all->Fill(selectedLeptons[iLep].Pt(), eventweightForplots);
         }
         
-        histPt_leadinglep_noTrig_all->Fill(selectedLeptons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
-        histPt_2ndleadinglep_noTrig_all->Fill(selectedLeptons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
-        histPt_3dleadinglep_noTrig_all->Fill(selectedLeptons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
+        histPt_leadinglep_noTrig_all->Fill(selectedLeptons[0].Pt(), eventweightForplots);
+        histPt_2ndleadinglep_noTrig_all->Fill(selectedLeptons[1].Pt(), eventweightForplots);
+        histPt_3dleadinglep_noTrig_all->Fill(selectedLeptons[2].Pt(), eventweightForplots);
         
         if(PassedTrigger){
-          histPt_leadinglep_all->Fill(selectedLeptons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
-          histPt_2ndleadinglep_all->Fill(selectedLeptons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
-          histPt_3dleadinglep_all->Fill(selectedLeptons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
+          histPt_leadinglep_all->Fill(selectedLeptons[0].Pt(), eventweightForplots);
+          histPt_2ndleadinglep_all->Fill(selectedLeptons[1].Pt(), eventweightForplots);
+          histPt_3dleadinglep_all->Fill(selectedLeptons[2].Pt(), eventweightForplots);
           
         }
         if(channelInt == 0){
           for(int iLep = 0; iLep < selectedLeptons.size() ; iLep++) {
-            histPt_noTrig_3mu->Fill(selectedLeptons[iLep].Pt(), scaleFactor*Luminosity/EquilumiSF);
-            if(PassedTrigger) histPt_3mu->Fill(selectedLeptons[iLep].Pt(), scaleFactor*Luminosity/EquilumiSF);
+            histPt_noTrig_3mu->Fill(selectedLeptons[iLep].Pt(), eventweightForplots);
+            if(PassedTrigger) histPt_3mu->Fill(selectedLeptons[iLep].Pt(), eventweightForplots);
           }
           
-          histPt_leadinglep_noTrig_3mu->Fill(selectedLeptons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
-          histPt_2ndleadinglep_noTrig_3mu->Fill(selectedLeptons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
-          histPt_3dleadinglep_noTrig_3mu->Fill(selectedLeptons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
+          histPt_leadinglep_noTrig_3mu->Fill(selectedLeptons[0].Pt(), eventweightForplots);
+          histPt_2ndleadinglep_noTrig_3mu->Fill(selectedLeptons[1].Pt(), eventweightForplots);
+          histPt_3dleadinglep_noTrig_3mu->Fill(selectedLeptons[2].Pt(), eventweightForplots);
           
           if(PassedTrigger){
-            histPt_leadinglep_3mu->Fill(selectedLeptons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
-            histPt_2ndleadinglep_3mu->Fill(selectedLeptons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
-            histPt_3dleadinglep_3mu->Fill(selectedLeptons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
+            histPt_leadinglep_3mu->Fill(selectedLeptons[0].Pt(), eventweightForplots);
+            histPt_2ndleadinglep_3mu->Fill(selectedLeptons[1].Pt(), eventweightForplots);
+            histPt_3dleadinglep_3mu->Fill(selectedLeptons[2].Pt(), eventweightForplots);
             
           }
         }
         else if(channelInt == 1){
           for(int iLep = 0; iLep < selectedLeptons.size() ; iLep++) {
-            histPt_noTrig_1e2mu->Fill(selectedLeptons[iLep].Pt(), scaleFactor*Luminosity/EquilumiSF);
-            if(PassedTrigger) histPt_1e2mu->Fill(selectedLeptons[iLep].Pt(), scaleFactor*Luminosity/EquilumiSF);
+            histPt_noTrig_1e2mu->Fill(selectedLeptons[iLep].Pt(), eventweightForplots);
+            if(PassedTrigger) histPt_1e2mu->Fill(selectedLeptons[iLep].Pt(), eventweightForplots);
           }
           
-          histPt_leadinglep_noTrig_1e2mu->Fill(selectedLeptons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
-          histPt_2ndleadinglep_noTrig_1e2mu->Fill(selectedLeptons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
-          histPt_3dleadinglep_noTrig_1e2mu->Fill(selectedLeptons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
+          histPt_leadinglep_noTrig_1e2mu->Fill(selectedLeptons[0].Pt(), eventweightForplots);
+          histPt_2ndleadinglep_noTrig_1e2mu->Fill(selectedLeptons[1].Pt(), eventweightForplots);
+          histPt_3dleadinglep_noTrig_1e2mu->Fill(selectedLeptons[2].Pt(), eventweightForplots);
           
           if(PassedTrigger){
-            histPt_leadinglep_1e2mu->Fill(selectedLeptons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
-            histPt_2ndleadinglep_1e2mu->Fill(selectedLeptons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
-            histPt_3dleadinglep_1e2mu->Fill(selectedLeptons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
+            histPt_leadinglep_1e2mu->Fill(selectedLeptons[0].Pt(), eventweightForplots);
+            histPt_2ndleadinglep_1e2mu->Fill(selectedLeptons[1].Pt(), eventweightForplots);
+            histPt_3dleadinglep_1e2mu->Fill(selectedLeptons[2].Pt(), eventweightForplots);
             
           }
         }
         else if(channelInt == 2){
           for(int iLep = 0; iLep < selectedLeptons.size() ; iLep++) {
-            histPt_noTrig_2e1mu->Fill(selectedLeptons[iLep].Pt(), scaleFactor*Luminosity/EquilumiSF);
-            if(PassedTrigger) histPt_2e1mu->Fill(selectedLeptons[iLep].Pt(), scaleFactor*Luminosity/EquilumiSF);
+            histPt_noTrig_2e1mu->Fill(selectedLeptons[iLep].Pt(), eventweightForplots);
+            if(PassedTrigger) histPt_2e1mu->Fill(selectedLeptons[iLep].Pt(), eventweightForplots);
           }
           
-          histPt_leadinglep_noTrig_2e1mu->Fill(selectedLeptons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
-          histPt_2ndleadinglep_noTrig_2e1mu->Fill(selectedLeptons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
-          histPt_3dleadinglep_noTrig_2e1mu->Fill(selectedLeptons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
+          histPt_leadinglep_noTrig_2e1mu->Fill(selectedLeptons[0].Pt(), eventweightForplots);
+          histPt_2ndleadinglep_noTrig_2e1mu->Fill(selectedLeptons[1].Pt(), eventweightForplots);
+          histPt_3dleadinglep_noTrig_2e1mu->Fill(selectedLeptons[2].Pt(), eventweightForplots);
           
           if(PassedTrigger){
-            histPt_leadinglep_2e1mu->Fill(selectedLeptons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
-            histPt_2ndleadinglep_2e1mu->Fill(selectedLeptons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
-            histPt_3dleadinglep_2e1mu->Fill(selectedLeptons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
+            histPt_leadinglep_2e1mu->Fill(selectedLeptons[0].Pt(), eventweightForplots);
+            histPt_2ndleadinglep_2e1mu->Fill(selectedLeptons[1].Pt(), eventweightForplots);
+            histPt_3dleadinglep_2e1mu->Fill(selectedLeptons[2].Pt(), eventweightForplots);
             
           }
         }
         else if(channelInt == 3){
           for(int iLep = 0; iLep < selectedLeptons.size() ; iLep++) {
-            histPt_noTrig_3e->Fill(selectedLeptons[iLep].Pt(), scaleFactor*Luminosity/EquilumiSF);
-            if(PassedTrigger) histPt_3e->Fill(selectedLeptons[iLep].Pt(), scaleFactor*Luminosity/EquilumiSF);
+            histPt_noTrig_3e->Fill(selectedLeptons[iLep].Pt(), eventweightForplots);
+            if(PassedTrigger) histPt_3e->Fill(selectedLeptons[iLep].Pt(), eventweightForplots);
           }
           
-          histPt_leadinglep_noTrig_3e->Fill(selectedLeptons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
-          histPt_2ndleadinglep_noTrig_3e->Fill(selectedLeptons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
-          histPt_3dleadinglep_noTrig_3e->Fill(selectedLeptons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
+          histPt_leadinglep_noTrig_3e->Fill(selectedLeptons[0].Pt(), eventweightForplots);
+          histPt_2ndleadinglep_noTrig_3e->Fill(selectedLeptons[1].Pt(), eventweightForplots);
+          histPt_3dleadinglep_noTrig_3e->Fill(selectedLeptons[2].Pt(), eventweightForplots);
           
           if(PassedTrigger){
-            histPt_leadinglep_3e->Fill(selectedLeptons[0].Pt(), scaleFactor*Luminosity/EquilumiSF);
-            histPt_2ndleadinglep_3e->Fill(selectedLeptons[1].Pt(), scaleFactor*Luminosity/EquilumiSF);
-            histPt_3dleadinglep_3e->Fill(selectedLeptons[2].Pt(), scaleFactor*Luminosity/EquilumiSF);
+            histPt_leadinglep_3e->Fill(selectedLeptons[0].Pt(), eventweightForplots);
+            histPt_2ndleadinglep_3e->Fill(selectedLeptons[1].Pt(), eventweightForplots);
+            histPt_3dleadinglep_3e->Fill(selectedLeptons[2].Pt(), eventweightForplots);
             
           }
         }
@@ -2366,16 +2946,27 @@ int main(int argc, char* argv[]){
       // in MSPlot automatically there is divided by eqlumi, for MC this is 1. but for data this is equal to the lumi
       // for MC: equilumiSF is calculated to fix this factor 1.
       if(!isfakes &&  !isData){
-        if(Region == 0 ) nSelectedEntriesSTweighted += scaleFactor*Luminosity/EquilumiSF; //
-        if(Region == 1 ) nSelectedEntriesTTweighted += scaleFactor*Luminosity/EquilumiSF;
-        if(Region == 2 ) nSelectedEntriesWZweighted += scaleFactor*Luminosity/EquilumiSF;
-        if(Region == 3 ) nSelectedEntriesTTZweighted += scaleFactor*Luminosity/EquilumiSF;
+        if(Region == 0 ) nSelectedEntriesSTweighted += eventweightForplots; //
+        if(Region == 1 ) nSelectedEntriesTTweighted += eventweightForplots;
+        if(Region == 2 ) nSelectedEntriesWZweighted += eventweightForplots;
+        if(Region == 3 ) nSelectedEntriesTTZweighted += eventweightForplots;
       }
       else if(isfakes || isData) {
         if(Region == 0 ) nSelectedEntriesSTweighted += scaleFactor*Luminosity/datasets[d]->EquivalentLumi();
         if(Region == 1 ) nSelectedEntriesTTweighted += scaleFactor*Luminosity/datasets[d]->EquivalentLumi();
         if(Region == 2 ) nSelectedEntriesWZweighted += scaleFactor*Luminosity/datasets[d]->EquivalentLumi();
         if(Region == 3 ) nSelectedEntriesTTZweighted += scaleFactor*Luminosity/datasets[d]->EquivalentLumi();
+      }
+      
+      if(!isfakes &&  !isData && passedcuts){
+        if(Region == 0 ) pnSelectedEntriesSTweighted += eventweightForplots; //
+        if(Region == 1 ) pnSelectedEntriesTTweighted += eventweightForplots;
+        
+      }
+      else if((isfakes || isData) && passedcuts) {
+        if(Region == 0 ) pnSelectedEntriesSTweighted += scaleFactor*Luminosity/datasets[d]->EquivalentLumi();
+        if(Region == 1 ) pnSelectedEntriesTTweighted += scaleFactor*Luminosity/datasets[d]->EquivalentLumi();
+        
       }
       if((isData || dataSetName.find("WZ")!=std::string::npos)  && checktrigger ){
         myfile << evt_num << endl;
@@ -2494,26 +3085,2171 @@ int main(int argc, char* argv[]){
      nSelectedEntriesTTweighted = nSelectedEntriesTT;
      nSelectedEntriesWZweighted = nSelectedEntriesWZ;
      }*/
+    
+    if(dataSetName.find("FCNC")!=std::string::npos ){
+      SnSelectedEntriesSTweighted  += nSelectedEntriesSTweighted;
+      SnSelectedEntriesTTweighted += nSelectedEntriesTTweighted;
+      SpnSelectedEntriesSTweighted  += pnSelectedEntriesSTweighted;
+      SpnSelectedEntriesTTweighted += pnSelectedEntriesTTweighted;
+      
+    }
+    else if(!isData ){
+      BnSelectedEntriesSTweighted  += nSelectedEntriesSTweighted;
+      BnSelectedEntriesTTweighted += nSelectedEntriesTTweighted;
+      BpnSelectedEntriesSTweighted  += pnSelectedEntriesSTweighted;
+      BpnSelectedEntriesTTweighted += pnSelectedEntriesTTweighted;
+      
+    }
+    
+    
     cout << "                nSelectedEntries ST region: " << nSelectedEntriesST << " weighted " << nSelectedEntriesSTweighted << endl;
     cout << "                nSelectedEntries TT region: " << nSelectedEntriesTT << " weighted " << nSelectedEntriesTTweighted << endl;
     cout << "                nSelectedEntries WZ region: " << nSelectedEntriesWZ  << " weighted " << nSelectedEntriesWZweighted << endl;
     cout << "                nSelectedEntries TTZ region: " << nSelectedEntriesTTZ  << " weighted " << nSelectedEntriesTTZweighted << endl;
     if(doDilep) cout << "                nSelectedEntries dilep region: " << nSelectedEntriesDilep  << " weighted " << nSelectedEntriesDilepweighted << endl;
-    cout << endl;
+      cout << endl;
     if(check_matching) MatchingEfficiency();
   } // data
   
-  if(applycharmsf){
-    delete charm_SFHisto_cvsb;
-    delete charm_SFHisto_cvsl;
-    delete charm_SFHisto_cvsb_up;
-    delete charm_SFHisto_cvsl_up;
-    delete charm_SFHisto_cvsb_down;
-    delete charm_SFHisto_cvsl_down;
-    charmscalefactorsfile->Close();
-    delete charmscalefactorsfile;
+
+  cout << "                nSelectedEntries FCNC d0 muon: " << eventsafter_d0muon << " / " << eventsbefore << " = " << eventsafter_d0muon/eventsbefore << endl;
+  cout << "                nSelectedEntries FCNC Delta Eta (Wlep,W) : " << eventsafter_DeltaEtaWlepW<< " / " << eventsbefore << " = " << eventsafter_DeltaEtaWlepW/eventsbefore << endl;
+  cout << "                nSelectedEntries FCNC Delta RTheEta (Wlep,SM top) : " << eventsafter_DeltaEtaWlepSMtop<< " / " << eventsbefore << " = " << eventsafter_DeltaEtaWlepSMtop/eventsbefore << endl;
+  cout << "                nSelectedEntries FCNC Delta R (Wlep,SM top) : " << eventsafter_DeltaRWlepSMtop<< " / " << eventsbefore << " = " << eventsafter_DeltaRWlepSMtop/eventsbefore << endl;
+  cout << "                nSelectedEntries FCNC Delta R (Wlep,SM b) : " << eventsafter_DeltaRWlepSMb<< " / " << eventsbefore << " = " << eventsafter_DeltaRWlepSMb/eventsbefore << endl;
+  cout << "                nSelectedEntries FCNC Delta Eta (Wlep,SMb) : " << eventsafter_DeltaEtaWlepZ << " / " << eventsbefore << " = " << eventsafter_DeltaEtaWlepZ/eventsbefore << endl;
+  cout << "                nSelectedEntries Fake d0 muon: " << feventsafter_d0muon << " / " << feventsbefore << " = " << feventsafter_d0muon/feventsbefore << endl;
+  cout << "                nSelectedEntries Fake Delta Eta (Wlep,W) : " << feventsafter_DeltaEtaWlepW<< " / " << feventsbefore << " = " << feventsafter_DeltaEtaWlepW/feventsbefore << endl;
+  cout << "                nSelectedEntries Fake Delta R (Wlep,SM top) : " << feventsafter_DeltaRWlepSMtop<< " / " << feventsbefore << " = " << feventsafter_DeltaRWlepSMtop/feventsbefore << endl;
+   cout << "                nSelectedEntries Fake Delta R (Wlep,SM b) : " << feventsafter_DeltaRWlepSMb<< " / " << feventsbefore << " = " << feventsafter_DeltaRWlepSMb/feventsbefore << endl;
+  cout << "                nSelectedEntries Fake Delta R ThEta (Wlep,SM top) : " << feventsafter_DeltaEtaWlepSMtop<< " / " << feventsbefore << " = " << feventsafter_DeltaEtaWlepSMtop/feventsbefore << endl;
+  cout << "                nSelectedEntries Fake Delta Eta (Wlep,SM b) : " << feventsafter_DeltaEtaWlepZ << " / " << feventsbefore << " = " << feventsafter_DeltaEtaWlepZ/feventsbefore << endl;
+  cout << endl;
+  cout << "                d0 muon: " << eventsafter_d0muon << " / " << sqrt(feventsafter_d0muon) << " = " << eventsafter_d0muon/sqrt(feventsafter_d0muon) << endl;
+  cout << "                Delta Eta (Wlep,W) : " << eventsafter_DeltaEtaWlepW<< " / " << sqrt(feventsafter_DeltaEtaWlepW) << " = " << eventsafter_DeltaEtaWlepW/sqrt(feventsafter_DeltaEtaWlepW) << endl;
+  cout << "                Delta R ThEta (Wlep,SM top) : " << eventsafter_DeltaEtaWlepSMtop<< " / " << sqrt(feventsafter_DeltaEtaWlepSMtop) << " = " << eventsafter_DeltaEtaWlepSMtop/sqrt(feventsafter_DeltaEtaWlepSMtop)<< endl;
+  cout << "                Delta R (Wlep,SM top) : " << eventsafter_DeltaRWlepSMtop<< " / " << sqrt(feventsafter_DeltaRWlepSMtop) << " = " << eventsafter_DeltaRWlepSMtop/sqrt(feventsafter_DeltaRWlepSMtop) << endl;
+  cout << "                Delta R (Wlep,SM b) : " << eventsafter_DeltaRWlepSMb<< " / " << sqrt(feventsafter_DeltaRWlepSMb) << " = " << eventsafter_DeltaRWlepSMb/sqrt(feventsafter_DeltaRWlepSMb) << endl;
+  cout << "                Delta Eta (Wlep,SM b) : " << eventsafter_DeltaEtaWlepZ << " / " << sqrt(feventsafter_DeltaEtaWlepZ) << " = " << eventsafter_DeltaEtaWlepZ/sqrt(feventsafter_DeltaEtaWlepZ) << endl;
+  cout << endl;
+  cout << "                 ST region: " << SnSelectedEntriesSTweighted / sqrt(BnSelectedEntriesSTweighted) << " vs " << SpnSelectedEntriesSTweighted / sqrt(BpnSelectedEntriesSTweighted) << endl;
+  cout << "                 TT region: " << SnSelectedEntriesTTweighted / sqrt(BnSelectedEntriesTTweighted) << " vs " << SpnSelectedEntriesTTweighted / sqrt(BpnSelectedEntriesTTweighted) << endl;
+  cout << endl;
+  cout << "                Zct:  " << eventsbeforeBtight<< " / " << sqrt(feventsbeforeBtight) << " = " << eventsbeforeBtight/sqrt(feventsbeforeBtight) << endl;
+  cout << "                Zct: no b tight : " << eventsafter_Btight<< " / " << sqrt(feventsafter_Btight) << " = " << eventsafter_Btight/sqrt(feventsafter_Btight) << endl;
+  cout << "                Zct: no b tight , one c tight : " << eventsafter_BtightCtight << " / " << sqrt(feventsafter_BtightCtight) << " = " << eventsafter_BtightCtight/sqrt(feventsafter_BtightCtight) << endl;
+  cout << "                Zut:  " << eventsbeforeBloose<< " / " << sqrt(feventsbeforeBloose) << " = " << eventsbeforeBloose/sqrt(feventsbeforeBloose) << endl;
+  cout << "                Zut: no b loose : " << eventsafter_Bloose<< " / " << sqrt(feventsafter_Bloose) << " = " << eventsafter_Bloose/sqrt(feventsafter_Bloose) << endl;
+  cout << "                Zct: no b loose, one c loose : " << eventsafter_BlooseCloose << " / " << sqrt(feventsafter_BlooseCloose) << " = " << eventsafter_BlooseCloose/sqrt(feventsafter_BlooseCloose) << endl;
+  
+  
+  
+  
+  if(findCjetDisc){
+    //cout << HistoSignal << endl;
+    int end = NbOfCharmLoose_FCNC->GetNbinsX();
+  // cout << "HERE 3" << endl;
+    //Efficiencies calculating as #events_passing_cut/#Total_events
+    double Total_signal = 0;
+    double Total_background = 0;
+    Total_signal = NbOfCharmLoose_FCNC->Integral();
+    Total_background = NbOfCharmLoose_WZ->Integral();
+    
+    double * Signal_Integral_PerBin_lessthan = new double [end];
+    double * Background_Integral_PerBin_lessthan = new double [end];
+    double * Eff_Signal_lessthan = new double [end];
+    double * RejectionEff_Background_lessThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmLoose_FCNC->Integral(1 , i));
+      b = (NbOfCharmLoose_WZ->Integral(1,i));
+      
+      Signal_Integral_PerBin_lessthan[i] = s;
+      Background_Integral_PerBin_lessthan[i] = b;
+      Eff_Signal_lessthan[i] = s/Total_signal;
+      RejectionEff_Background_lessThan[i] = (1- b/Total_background);
+    }
+    double * Signal_Integral_PerBin_greaterthan = new double [end];
+    double * Background_Integral_PerBin_greaterthan = new double [end];
+    double * Eff_Signal_greaterthan = new double [end];
+    double * RejectionEff_Background_greaterThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmLoose_FCNC->Integral(i , end));
+      b = (NbOfCharmLoose_WZ->Integral(i, end));
+      
+      Signal_Integral_PerBin_greaterthan[i] = s;
+      Background_Integral_PerBin_greaterthan[i] = b;
+      Eff_Signal_greaterthan[i] = s/Total_signal;
+      RejectionEff_Background_greaterThan[i] = (1- b/Total_background);
+    }
+    
+    TFile *filecjets = new TFile ("PlotsCjets.root", "RECREATE");
+    TDirectory* th1dir = filecjets->mkdir("1D_histograms_NbOfCharmLoose_FCNCvsWZ");
+    th1dir->cd();
+
+  
+    //Determine the optimal cut-value for a cut-and-count experiment
+    string optcutName = "Opt_cut_lessthan_NbOfCharmLoose_FCNCvsWZ";
+    TH1F *Opt_cut_lessthan_NbOfCharmLoose_FCNCvsWZ = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmLoose_FCNC->GetXaxis()->GetXmin(), NbOfCharmLoose_FCNC->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_lessthan[i]/sqrt(Background_Integral_PerBin_lessthan[i]);
+      if(Background_Integral_PerBin_lessthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_lessthan_NbOfCharmLoose_FCNCvsWZ->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_lessthan_NbOfCharmLoose_FCNCvsWZ->GetXaxis()->SetTitle("Nb. of charm loose");
+    Opt_cut_lessthan_NbOfCharmLoose_FCNCvsWZ->GetYaxis()->SetTitle("Signif.");
+    
+    string signaleeffName = "NbOfCharmLooseFCNC_lessthan_eff";
+    TH1F *Signal_eff_lessthan_NbOfCharmLoose_FCNCvsWZ = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmLoose_FCNC->GetXaxis()->GetXmin(), NbOfCharmLoose_FCNC->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_lessthan_NbOfCharmLoose_FCNCvsWZ->SetBinContent(i, Eff_Signal_lessthan[i]);
+    }
+    Signal_eff_lessthan_NbOfCharmLoose_FCNCvsWZ->GetXaxis()->SetTitle("Nb. of charm loose");
+    Signal_eff_lessthan_NbOfCharmLoose_FCNCvsWZ->GetYaxis()->SetTitle("Eff.");
+    
+    string brejName = "NbOfCharmLoose_WZ_lessthan_rej";
+    TH1F *B_rej_lessthan_NbOfCharmLoose_FCNCvsWZ = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmLoose_WZ->GetXaxis()->GetXmin(), NbOfCharmLoose_WZ->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_lessthan_NbOfCharmLoose_FCNCvsWZ->SetBinContent(i, RejectionEff_Background_lessThan[i]);
+    }
+    B_rej_lessthan_NbOfCharmLoose_FCNCvsWZ->GetXaxis()->SetTitle("Nb. of charm loose");
+    B_rej_lessthan_NbOfCharmLoose_FCNCvsWZ->GetYaxis()->SetTitle("Rejection eff.");
+    
+    optcutName = "Opt_cut_greaterthan_NbOfCharmLoose_FCNCvsWZ";
+    TH1F *Opt_cut_greaterthan_NbOfCharmLoose_FCNCvsWZ = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmLoose_FCNC->GetXaxis()->GetXmin(), NbOfCharmLoose_FCNC->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_greaterthan[i]/sqrt(Background_Integral_PerBin_greaterthan[i]);
+      if(Background_Integral_PerBin_greaterthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_greaterthan_NbOfCharmLoose_FCNCvsWZ->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_greaterthan_NbOfCharmLoose_FCNCvsWZ->GetXaxis()->SetTitle("Nb. of charm loose");
+    Opt_cut_greaterthan_NbOfCharmLoose_FCNCvsWZ->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmLoose_lessthan_eff";
+    TH1F *Signal_eff_greaterthan_NbOfCharmLoose_FCNCvsWZ = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmLoose_FCNC->GetXaxis()->GetXmin(), NbOfCharmLoose_FCNC->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_greaterthan_NbOfCharmLoose_FCNCvsWZ->SetBinContent(i, Eff_Signal_greaterthan[i]);
+    }
+    Signal_eff_greaterthan_NbOfCharmLoose_FCNCvsWZ->GetXaxis()->SetTitle("Nb. of charm loose");
+    Signal_eff_greaterthan_NbOfCharmLoose_FCNCvsWZ->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmLoose_WZ_greaterthan_rej";
+    TH1F *B_rej_greaterthan_NbOfCharmLoose_FCNCvsWZ = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmLoose_WZ->GetXaxis()->GetXmin(), NbOfCharmLoose_WZ->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_greaterthan_NbOfCharmLoose_FCNCvsWZ->SetBinContent(i, RejectionEff_Background_greaterThan[i]);
+    }
+    B_rej_greaterthan_NbOfCharmLoose_FCNCvsWZ->GetXaxis()->SetTitle("Nb. of charm loose");
+    B_rej_greaterthan_NbOfCharmLoose_FCNCvsWZ->GetYaxis()->SetTitle("Rejection eff.");
+    
+    
+    /////////////////:
+        // MEDIUM
+    ////////////////
+    th1dir = filecjets->mkdir("1D_histograms_NbOfCharmMedium_FCNCvsWZ");
+    th1dir->cd();
+
+    
+    end = NbOfCharmMedium_FCNC->GetNbinsX();
+    //cout << "HERE 3" << endl;
+    //Efficiencies calculating as #events_passing_cut/#Total_events
+    Total_signal = 0;
+    Total_background = 0;
+    Total_signal = NbOfCharmMedium_FCNC->Integral();
+    Total_background = NbOfCharmMedium_WZ->Integral();
+    
+    Signal_Integral_PerBin_lessthan = new double [end];
+   Background_Integral_PerBin_lessthan = new double [end];
+    Eff_Signal_lessthan = new double [end];
+    RejectionEff_Background_lessThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmMedium_FCNC->Integral(1 , i));
+      b = (NbOfCharmMedium_WZ->Integral(1,i));
+      
+      Signal_Integral_PerBin_lessthan[i] = s;
+      Background_Integral_PerBin_lessthan[i] = b;
+      Eff_Signal_lessthan[i] = s/Total_signal;
+      RejectionEff_Background_lessThan[i] = (1- b/Total_background);
+    }
+    Signal_Integral_PerBin_greaterthan = new double [end];
+    Background_Integral_PerBin_greaterthan = new double [end];
+    Eff_Signal_greaterthan = new double [end];
+    RejectionEff_Background_greaterThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmMedium_FCNC->Integral(i , end));
+      b = (NbOfCharmMedium_WZ->Integral(i, end));
+      
+      Signal_Integral_PerBin_greaterthan[i] = s;
+      Background_Integral_PerBin_greaterthan[i] = b;
+      Eff_Signal_greaterthan[i] = s/Total_signal;
+      RejectionEff_Background_greaterThan[i] = (1- b/Total_background);
+    }
+    
+    
+    //Determine the optimal cut-value for a cut-and-count experiment
+    optcutName = "Opt_cut_lessthan_NbOfCharmMedium_FCNCvsWZ";
+    TH1F *Opt_cut_lessthan_NbOfCharmMedium_FCNCvsWZ = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmMedium_FCNC->GetXaxis()->GetXmin(), NbOfCharmMedium_FCNC->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_lessthan[i]/sqrt(Background_Integral_PerBin_lessthan[i]);
+      if(Background_Integral_PerBin_lessthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_lessthan_NbOfCharmMedium_FCNCvsWZ->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_lessthan_NbOfCharmMedium_FCNCvsWZ->GetXaxis()->SetTitle("Nb. of charm medium");
+    Opt_cut_lessthan_NbOfCharmMedium_FCNCvsWZ->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmMediumFCNC_lessthan_eff";
+    TH1F *Signal_eff_lessthan_NbOfCharmMedium_FCNCvsWZ = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmMedium_FCNC->GetXaxis()->GetXmin(), NbOfCharmMedium_FCNC->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_lessthan_NbOfCharmMedium_FCNCvsWZ->SetBinContent(i, Eff_Signal_lessthan[i]);
+    }
+    Signal_eff_lessthan_NbOfCharmMedium_FCNCvsWZ->GetXaxis()->SetTitle("Nb. of charm medium");
+    Signal_eff_lessthan_NbOfCharmMedium_FCNCvsWZ->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmMedium_WZ_lessthan_rej";
+    TH1F *B_rej_lessthan_NbOfCharmMedium_FCNCvsWZ = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmMedium_WZ->GetXaxis()->GetXmin(), NbOfCharmMedium_WZ->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_lessthan_NbOfCharmMedium_FCNCvsWZ->SetBinContent(i, RejectionEff_Background_lessThan[i]);
+    }
+    B_rej_lessthan_NbOfCharmMedium_FCNCvsWZ->GetXaxis()->SetTitle("Nb. of charm medium");
+    B_rej_lessthan_NbOfCharmMedium_FCNCvsWZ->GetYaxis()->SetTitle("Rejection eff.");
+    
+    optcutName = "Opt_cut_greaterthan_NbOfCharmMedium_FCNCvsWZ";
+    TH1F *Opt_cut_greaterthan_NbOfCharmMedium_FCNCvsWZ = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmMedium_FCNC->GetXaxis()->GetXmin(), NbOfCharmMedium_FCNC->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_greaterthan[i]/sqrt(Background_Integral_PerBin_greaterthan[i]);
+      if(Background_Integral_PerBin_greaterthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_greaterthan_NbOfCharmMedium_FCNCvsWZ->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_greaterthan_NbOfCharmMedium_FCNCvsWZ->GetXaxis()->SetTitle("Nb. of charm medium");
+    Opt_cut_greaterthan_NbOfCharmMedium_FCNCvsWZ->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmMedium_FCNC_greaterthan_eff";
+    TH1F *Signal_eff_greaterthan_NbOfCharmMedium_FCNCvsWZ = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmMedium_FCNC->GetXaxis()->GetXmin(), NbOfCharmMedium_FCNC->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_greaterthan_NbOfCharmMedium_FCNCvsWZ->SetBinContent(i, Eff_Signal_greaterthan[i]);
+    }
+    Signal_eff_greaterthan_NbOfCharmMedium_FCNCvsWZ->GetXaxis()->SetTitle("Nb. of charm medium");
+    Signal_eff_greaterthan_NbOfCharmMedium_FCNCvsWZ->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmMedium_WZ_greaterthan_rej";
+    TH1F *B_rej_greaterthan_NbOfCharmMedium_FCNCvsWZ = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmMedium_WZ->GetXaxis()->GetXmin(), NbOfCharmMedium_WZ->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_greaterthan_NbOfCharmMedium_FCNCvsWZ->SetBinContent(i, RejectionEff_Background_greaterThan[i]);
+    }
+    B_rej_greaterthan_NbOfCharmMedium_FCNCvsWZ->GetXaxis()->SetTitle("Nb. of charm medium");
+    B_rej_greaterthan_NbOfCharmMedium_FCNCvsWZ->GetYaxis()->SetTitle("Rejection eff.");
+    
+    /////////////////:
+    // Tight
+    ////////////////
+    th1dir = filecjets->mkdir("1D_histograms_NbOfCharmTight_FCNCvsWZ");
+    th1dir->cd();
+    
+    
+    end = NbOfCharmTight_FCNC->GetNbinsX();
+    //cout << "HERE 3" << endl;
+    //Efficiencies calculating as #events_passing_cut/#Total_events
+    Total_signal = 0;
+    Total_background = 0;
+    Total_signal = NbOfCharmTight_FCNC->Integral();
+    Total_background = NbOfCharmTight_WZ->Integral();
+    
+    Signal_Integral_PerBin_lessthan = new double [end];
+    Background_Integral_PerBin_lessthan = new double [end];
+    Eff_Signal_lessthan = new double [end];
+    RejectionEff_Background_lessThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmTight_FCNC->Integral(1 , i));
+      b = (NbOfCharmTight_WZ->Integral(1,i));
+      
+      Signal_Integral_PerBin_lessthan[i] = s;
+      Background_Integral_PerBin_lessthan[i] = b;
+      Eff_Signal_lessthan[i] = s/Total_signal;
+      RejectionEff_Background_lessThan[i] = (1- b/Total_background);
+    }
+    Signal_Integral_PerBin_greaterthan = new double [end];
+    Background_Integral_PerBin_greaterthan = new double [end];
+    Eff_Signal_greaterthan = new double [end];
+    RejectionEff_Background_greaterThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmTight_FCNC->Integral(i , end));
+      b = (NbOfCharmTight_WZ->Integral(i, end));
+      
+      Signal_Integral_PerBin_greaterthan[i] = s;
+      Background_Integral_PerBin_greaterthan[i] = b;
+      Eff_Signal_greaterthan[i] = s/Total_signal;
+      RejectionEff_Background_greaterThan[i] = (1- b/Total_background);
+    }
+    
+    
+    //Determine the optimal cut-value for a cut-and-count experiment
+    optcutName = "Opt_cut_lessthan_NbOfCharmTight_FCNCvsWZ";
+    TH1F *Opt_cut_lessthan_NbOfCharmTight_FCNCvsWZ = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmTight_FCNC->GetXaxis()->GetXmin(), NbOfCharmTight_FCNC->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_lessthan[i]/sqrt(Background_Integral_PerBin_lessthan[i]);
+      if(Background_Integral_PerBin_lessthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_lessthan_NbOfCharmTight_FCNCvsWZ->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_lessthan_NbOfCharmTight_FCNCvsWZ->GetXaxis()->SetTitle("Nb. of charm tight");
+    Opt_cut_lessthan_NbOfCharmTight_FCNCvsWZ->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmTightFCNC_lessthan_eff";
+    TH1F *Signal_eff_lessthan_NbOfCharmTight_FCNCvsWZ = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmTight_FCNC->GetXaxis()->GetXmin(), NbOfCharmTight_FCNC->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_lessthan_NbOfCharmTight_FCNCvsWZ->SetBinContent(i, Eff_Signal_lessthan[i]);
+    }
+    Signal_eff_lessthan_NbOfCharmTight_FCNCvsWZ->GetXaxis()->SetTitle("Nb. of charm tight");
+    Signal_eff_lessthan_NbOfCharmTight_FCNCvsWZ->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmTight_WZ_lessthan_rej";
+    TH1F *B_rej_lessthan_NbOfCharmTight_FCNCvsWZ = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmTight_WZ->GetXaxis()->GetXmin(), NbOfCharmTight_WZ->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_lessthan_NbOfCharmTight_FCNCvsWZ->SetBinContent(i, RejectionEff_Background_lessThan[i]);
+    }
+    B_rej_lessthan_NbOfCharmTight_FCNCvsWZ->GetXaxis()->SetTitle("Nb. of charm tight");
+    B_rej_lessthan_NbOfCharmTight_FCNCvsWZ->GetYaxis()->SetTitle("Rejection eff.");
+    
+    optcutName = "Opt_cut_greaterthan_NbOfCharmTight_FCNCvsWZ";
+    TH1F *Opt_cut_greaterthan_NbOfCharmTight_FCNCvsWZ = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmTight_FCNC->GetXaxis()->GetXmin(), NbOfCharmTight_FCNC->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_greaterthan[i]/sqrt(Background_Integral_PerBin_greaterthan[i]);
+      if(Background_Integral_PerBin_greaterthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_greaterthan_NbOfCharmTight_FCNCvsWZ->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_greaterthan_NbOfCharmTight_FCNCvsWZ->GetXaxis()->SetTitle("Nb. of charm tight");
+    Opt_cut_greaterthan_NbOfCharmTight_FCNCvsWZ->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmTight_FCNC_greaterthan_eff";
+    TH1F *Signal_eff_greaterthan_NbOfCharmTight_FCNCvsWZ = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmTight_FCNC->GetXaxis()->GetXmin(), NbOfCharmTight_FCNC->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_greaterthan_NbOfCharmTight_FCNCvsWZ->SetBinContent(i, Eff_Signal_greaterthan[i]);
+    }
+    Signal_eff_greaterthan_NbOfCharmTight_FCNCvsWZ->GetXaxis()->SetTitle("Nb. of charm tight");
+    Signal_eff_greaterthan_NbOfCharmTight_FCNCvsWZ->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmTight_WZ_greaterthan_rej";
+    TH1F *B_rej_greaterthan_NbOfCharmTight_FCNCvsWZ = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmTight_WZ->GetXaxis()->GetXmin(), NbOfCharmTight_WZ->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_greaterthan_NbOfCharmTight_FCNCvsWZ->SetBinContent(i, RejectionEff_Background_greaterThan[i]);
+    }
+    B_rej_greaterthan_NbOfCharmTight_FCNCvsWZ->GetXaxis()->SetTitle("Nb. of charm tight");
+    B_rej_greaterthan_NbOfCharmTight_FCNCvsWZ->GetYaxis()->SetTitle("Rejection eff.");
+    
+    /////////////////:
+    // Loose ST tZu
+    ////////////////
+    th1dir = filecjets->mkdir("1D_histograms_NbOfCharmLoose_STtZuvsWZ_STSR");
+    th1dir->cd();
+    
+    
+    end = NbOfCharmLoose_STtZu->GetNbinsX();
+    //cout << "HERE 3" << endl;
+    //Efficiencies calculating as #events_passing_cut/#Total_events
+    Total_signal = 0;
+    Total_background = 0;
+    Total_signal = NbOfCharmLoose_STtZu->Integral();
+    Total_background = NbOfCharmLoose_WZ_STSR->Integral();
+    
+    Signal_Integral_PerBin_lessthan = new double [end];
+    Background_Integral_PerBin_lessthan = new double [end];
+    Eff_Signal_lessthan = new double [end];
+    RejectionEff_Background_lessThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmLoose_STtZu->Integral(1 , i));
+      b = (NbOfCharmLoose_WZ_STSR->Integral(1,i));
+      
+      Signal_Integral_PerBin_lessthan[i] = s;
+      Background_Integral_PerBin_lessthan[i] = b;
+      Eff_Signal_lessthan[i] = s/Total_signal;
+      RejectionEff_Background_lessThan[i] = (1- b/Total_background);
+    }
+    Signal_Integral_PerBin_greaterthan = new double [end];
+    Background_Integral_PerBin_greaterthan = new double [end];
+    Eff_Signal_greaterthan = new double [end];
+    RejectionEff_Background_greaterThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmLoose_STtZu->Integral(i , end));
+      b = (NbOfCharmLoose_WZ_STSR->Integral(i, end));
+      
+      Signal_Integral_PerBin_greaterthan[i] = s;
+      Background_Integral_PerBin_greaterthan[i] = b;
+      Eff_Signal_greaterthan[i] = s/Total_signal;
+      RejectionEff_Background_greaterThan[i] = (1- b/Total_background);
+    }
+    
+    
+    //Determine the optimal cut-value for a cut-and-count experiment
+    optcutName = "Opt_cut_lessthan_NbOfCharmLoose_STtZuvsWZ_STSR";
+    TH1F *Opt_cut_lessthan_NbOfCharmLoose_STtZuvsWZ_STSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmLoose_STtZu->GetXaxis()->GetXmin(), NbOfCharmLoose_STtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_lessthan[i]/sqrt(Background_Integral_PerBin_lessthan[i]);
+      if(Background_Integral_PerBin_lessthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_lessthan_NbOfCharmLoose_STtZuvsWZ_STSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_lessthan_NbOfCharmLoose_STtZuvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    Opt_cut_lessthan_NbOfCharmLoose_STtZuvsWZ_STSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmLooseSTtZu_lessthan_eff";
+    TH1F *Signal_eff_lessthan_NbOfCharmLoose_STtZuvsWZ_STSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmLoose_STtZu->GetXaxis()->GetXmin(), NbOfCharmLoose_STtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_lessthan_NbOfCharmLoose_STtZuvsWZ_STSR->SetBinContent(i, Eff_Signal_lessthan[i]);
+    }
+    Signal_eff_lessthan_NbOfCharmLoose_STtZuvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    Signal_eff_lessthan_NbOfCharmLoose_STtZuvsWZ_STSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmLoose_WZ_STSR_lessthan_rej";
+    TH1F *B_rej_lessthan_NbOfCharmLoose_STtZuvsWZ_STSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmLoose_WZ_STSR->GetXaxis()->GetXmin(), NbOfCharmLoose_WZ_STSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_lessthan_NbOfCharmLoose_STtZuvsWZ_STSR->SetBinContent(i, RejectionEff_Background_lessThan[i]);
+    }
+    B_rej_lessthan_NbOfCharmLoose_STtZuvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    B_rej_lessthan_NbOfCharmLoose_STtZuvsWZ_STSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    optcutName = "Opt_cut_greaterthan_NbOfCharmLoose_STtZuvsWZ_STSR";
+    TH1F *Opt_cut_greaterthan_NbOfCharmLoose_STtZuvsWZ_STSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmLoose_STtZu->GetXaxis()->GetXmin(), NbOfCharmLoose_STtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_greaterthan[i]/sqrt(Background_Integral_PerBin_greaterthan[i]);
+      if(Background_Integral_PerBin_greaterthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_greaterthan_NbOfCharmLoose_STtZuvsWZ_STSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_greaterthan_NbOfCharmLoose_STtZuvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    Opt_cut_greaterthan_NbOfCharmLoose_STtZuvsWZ_STSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmLoose_STtZu_greaterthan_eff";
+    TH1F *Signal_eff_greaterthan_NbOfCharmLoose_STtZuvsWZ_STSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmLoose_STtZu->GetXaxis()->GetXmin(), NbOfCharmLoose_STtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_greaterthan_NbOfCharmLoose_STtZuvsWZ_STSR->SetBinContent(i, Eff_Signal_greaterthan[i]);
+    }
+    Signal_eff_greaterthan_NbOfCharmLoose_STtZuvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    Signal_eff_greaterthan_NbOfCharmLoose_STtZuvsWZ_STSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmLoose_WZ_STSR_greaterthan_rej";
+    TH1F *B_rej_greaterthan_NbOfCharmLoose_STtZuvsWZ_STSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmLoose_WZ_STSR->GetXaxis()->GetXmin(), NbOfCharmLoose_WZ_STSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_greaterthan_NbOfCharmLoose_STtZuvsWZ_STSR->SetBinContent(i, RejectionEff_Background_greaterThan[i]);
+    }
+    B_rej_greaterthan_NbOfCharmLoose_STtZuvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    B_rej_greaterthan_NbOfCharmLoose_STtZuvsWZ_STSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    /////////////////:
+    // MEDIUM
+    ////////////////
+    th1dir = filecjets->mkdir("1D_histograms_NbOfCharmMedium_STtZuvsWZ_STSR");
+    th1dir->cd();
+    
+    
+    end = NbOfCharmMedium_STtZu->GetNbinsX();
+    //cout << "HERE 3" << endl;
+    //Efficiencies calculating as #events_passing_cut/#Total_events
+    Total_signal = 0;
+    Total_background = 0;
+    Total_signal = NbOfCharmMedium_STtZu->Integral();
+    Total_background = NbOfCharmMedium_WZ_STSR->Integral();
+    
+    Signal_Integral_PerBin_lessthan = new double [end];
+    Background_Integral_PerBin_lessthan = new double [end];
+    Eff_Signal_lessthan = new double [end];
+    RejectionEff_Background_lessThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmMedium_STtZu->Integral(1 , i));
+      b = (NbOfCharmMedium_WZ_STSR->Integral(1,i));
+      
+      Signal_Integral_PerBin_lessthan[i] = s;
+      Background_Integral_PerBin_lessthan[i] = b;
+      Eff_Signal_lessthan[i] = s/Total_signal;
+      RejectionEff_Background_lessThan[i] = (1- b/Total_background);
+    }
+    Signal_Integral_PerBin_greaterthan = new double [end];
+    Background_Integral_PerBin_greaterthan = new double [end];
+    Eff_Signal_greaterthan = new double [end];
+    RejectionEff_Background_greaterThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmMedium_STtZu->Integral(i , end));
+      b = (NbOfCharmMedium_WZ_STSR->Integral(i, end));
+      
+      Signal_Integral_PerBin_greaterthan[i] = s;
+      Background_Integral_PerBin_greaterthan[i] = b;
+      Eff_Signal_greaterthan[i] = s/Total_signal;
+      RejectionEff_Background_greaterThan[i] = (1- b/Total_background);
+    }
+    
+    
+    //Determine the optimal cut-value for a cut-and-count experiment
+    optcutName = "Opt_cut_lessthan_NbOfCharmMedium_STtZuvsWZ_STSR";
+    TH1F *Opt_cut_lessthan_NbOfCharmMedium_STtZuvsWZ_STSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmMedium_STtZu->GetXaxis()->GetXmin(), NbOfCharmMedium_STtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_lessthan[i]/sqrt(Background_Integral_PerBin_lessthan[i]);
+      if(Background_Integral_PerBin_lessthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_lessthan_NbOfCharmMedium_STtZuvsWZ_STSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_lessthan_NbOfCharmMedium_STtZuvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    Opt_cut_lessthan_NbOfCharmMedium_STtZuvsWZ_STSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmMediumSTtZu_lessthan_eff";
+    TH1F *Signal_eff_lessthan_NbOfCharmMedium_STtZuvsWZ_STSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmMedium_STtZu->GetXaxis()->GetXmin(), NbOfCharmMedium_STtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_lessthan_NbOfCharmMedium_STtZuvsWZ_STSR->SetBinContent(i, Eff_Signal_lessthan[i]);
+    }
+    Signal_eff_lessthan_NbOfCharmMedium_STtZuvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    Signal_eff_lessthan_NbOfCharmMedium_STtZuvsWZ_STSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmMedium_WZ_STSR_lessthan_rej";
+    TH1F *B_rej_lessthan_NbOfCharmMedium_STtZuvsWZ_STSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmMedium_WZ_STSR->GetXaxis()->GetXmin(), NbOfCharmMedium_WZ_STSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_lessthan_NbOfCharmMedium_STtZuvsWZ_STSR->SetBinContent(i, RejectionEff_Background_lessThan[i]);
+    }
+    B_rej_lessthan_NbOfCharmMedium_STtZuvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    B_rej_lessthan_NbOfCharmMedium_STtZuvsWZ_STSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    optcutName = "Opt_cut_greaterthan_NbOfCharmMedium_STtZuvsWZ_STSR";
+    TH1F *Opt_cut_greaterthan_NbOfCharmMedium_STtZuvsWZ_STSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmMedium_STtZu->GetXaxis()->GetXmin(), NbOfCharmMedium_STtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_greaterthan[i]/sqrt(Background_Integral_PerBin_greaterthan[i]);
+      if(Background_Integral_PerBin_greaterthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_greaterthan_NbOfCharmMedium_STtZuvsWZ_STSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_greaterthan_NbOfCharmMedium_STtZuvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    Opt_cut_greaterthan_NbOfCharmMedium_STtZuvsWZ_STSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmMedium_STtZu_greaterthan_eff";
+    TH1F *Signal_eff_greaterthan_NbOfCharmMedium_STtZuvsWZ_STSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmMedium_STtZu->GetXaxis()->GetXmin(), NbOfCharmMedium_STtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_greaterthan_NbOfCharmMedium_STtZuvsWZ_STSR->SetBinContent(i, Eff_Signal_greaterthan[i]);
+    }
+    Signal_eff_greaterthan_NbOfCharmMedium_STtZuvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    Signal_eff_greaterthan_NbOfCharmMedium_STtZuvsWZ_STSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmMedium_WZ_STSR_greaterthan_rej";
+    TH1F *B_rej_greaterthan_NbOfCharmMedium_STtZuvsWZ_STSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmMedium_WZ_STSR->GetXaxis()->GetXmin(), NbOfCharmMedium_WZ_STSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_greaterthan_NbOfCharmMedium_STtZuvsWZ_STSR->SetBinContent(i, RejectionEff_Background_greaterThan[i]);
+    }
+    B_rej_greaterthan_NbOfCharmMedium_STtZuvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    B_rej_greaterthan_NbOfCharmMedium_STtZuvsWZ_STSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    /////////////////:
+    // Tight
+    ////////////////
+    th1dir = filecjets->mkdir("1D_histograms_NbOfCharmTight_STtZuvsWZ_STSR");
+    th1dir->cd();
+    
+    
+    end = NbOfCharmTight_STtZu->GetNbinsX();
+    //cout << "HERE 3" << endl;
+    //Efficiencies calculating as #events_passing_cut/#Total_events
+    Total_signal = 0;
+    Total_background = 0;
+    Total_signal = NbOfCharmTight_STtZu->Integral();
+    Total_background = NbOfCharmTight_WZ_STSR->Integral();
+    
+    Signal_Integral_PerBin_lessthan = new double [end];
+    Background_Integral_PerBin_lessthan = new double [end];
+    Eff_Signal_lessthan = new double [end];
+    RejectionEff_Background_lessThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmTight_STtZu->Integral(1 , i));
+      b = (NbOfCharmTight_WZ_STSR->Integral(1,i));
+      
+      Signal_Integral_PerBin_lessthan[i] = s;
+      Background_Integral_PerBin_lessthan[i] = b;
+      Eff_Signal_lessthan[i] = s/Total_signal;
+      RejectionEff_Background_lessThan[i] = (1- b/Total_background);
+    }
+    Signal_Integral_PerBin_greaterthan = new double [end];
+    Background_Integral_PerBin_greaterthan = new double [end];
+    Eff_Signal_greaterthan = new double [end];
+    RejectionEff_Background_greaterThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmTight_STtZu->Integral(i , end));
+      b = (NbOfCharmTight_WZ_STSR->Integral(i, end));
+      
+      Signal_Integral_PerBin_greaterthan[i] = s;
+      Background_Integral_PerBin_greaterthan[i] = b;
+      Eff_Signal_greaterthan[i] = s/Total_signal;
+      RejectionEff_Background_greaterThan[i] = (1- b/Total_background);
+    }
+    
+    
+    //Determine the optimal cut-value for a cut-and-count experiment
+    optcutName = "Opt_cut_lessthan_NbOfCharmTight_STtZuvsWZ_STSR";
+    TH1F *Opt_cut_lessthan_NbOfCharmTight_STtZuvsWZ_STSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmTight_STtZu->GetXaxis()->GetXmin(), NbOfCharmTight_STtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_lessthan[i]/sqrt(Background_Integral_PerBin_lessthan[i]);
+      if(Background_Integral_PerBin_lessthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_lessthan_NbOfCharmTight_STtZuvsWZ_STSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_lessthan_NbOfCharmTight_STtZuvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    Opt_cut_lessthan_NbOfCharmTight_STtZuvsWZ_STSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmTightSTtZu_lessthan_eff";
+    TH1F *Signal_eff_lessthan_NbOfCharmTight_STtZuvsWZ_STSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmTight_STtZu->GetXaxis()->GetXmin(), NbOfCharmTight_STtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_lessthan_NbOfCharmTight_STtZuvsWZ_STSR->SetBinContent(i, Eff_Signal_lessthan[i]);
+    }
+    Signal_eff_lessthan_NbOfCharmTight_STtZuvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    Signal_eff_lessthan_NbOfCharmTight_STtZuvsWZ_STSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmTight_WZ_STSR_lessthan_rej";
+    TH1F *B_rej_lessthan_NbOfCharmTight_STtZuvsWZ_STSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmTight_WZ_STSR->GetXaxis()->GetXmin(), NbOfCharmTight_WZ_STSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_lessthan_NbOfCharmTight_STtZuvsWZ_STSR->SetBinContent(i, RejectionEff_Background_lessThan[i]);
+    }
+    B_rej_lessthan_NbOfCharmTight_STtZuvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    B_rej_lessthan_NbOfCharmTight_STtZuvsWZ_STSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    optcutName = "Opt_cut_greaterthan_NbOfCharmTight_STtZuvsWZ_STSR";
+    TH1F *Opt_cut_greaterthan_NbOfCharmTight_STtZuvsWZ_STSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmTight_STtZu->GetXaxis()->GetXmin(), NbOfCharmTight_STtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_greaterthan[i]/sqrt(Background_Integral_PerBin_greaterthan[i]);
+      if(Background_Integral_PerBin_greaterthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_greaterthan_NbOfCharmTight_STtZuvsWZ_STSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_greaterthan_NbOfCharmTight_STtZuvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    Opt_cut_greaterthan_NbOfCharmTight_STtZuvsWZ_STSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmTight_STtZu_greaterthan_eff";
+    TH1F *Signal_eff_greaterthan_NbOfCharmTight_STtZuvsWZ_STSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmTight_STtZu->GetXaxis()->GetXmin(), NbOfCharmTight_STtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_greaterthan_NbOfCharmTight_STtZuvsWZ_STSR->SetBinContent(i, Eff_Signal_greaterthan[i]);
+    }
+    Signal_eff_greaterthan_NbOfCharmTight_STtZuvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    Signal_eff_greaterthan_NbOfCharmTight_STtZuvsWZ_STSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmTight_WZ_STSR_greaterthan_rej";
+    TH1F *B_rej_greaterthan_NbOfCharmTight_STtZuvsWZ_STSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmTight_WZ_STSR->GetXaxis()->GetXmin(), NbOfCharmTight_WZ_STSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_greaterthan_NbOfCharmTight_STtZuvsWZ_STSR->SetBinContent(i, RejectionEff_Background_greaterThan[i]);
+    }
+    B_rej_greaterthan_NbOfCharmTight_STtZuvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    B_rej_greaterthan_NbOfCharmTight_STtZuvsWZ_STSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    
+    /////////////////:
+    // Loose ST tZc
+    ////////////////
+    th1dir = filecjets->mkdir("1D_histograms_NbOfCharmLoose_STtZcvsWZ_STSR");
+    th1dir->cd();
+    
+    
+    end = NbOfCharmLoose_STtZc->GetNbinsX();
+    //cout << "HERE 3" << endl;
+    //Efficiencies calculating as #events_passing_cut/#Total_events
+    Total_signal = 0;
+    Total_background = 0;
+    Total_signal = NbOfCharmLoose_STtZc->Integral();
+    Total_background = NbOfCharmLoose_WZ_STSR->Integral();
+    
+    Signal_Integral_PerBin_lessthan = new double [end];
+    Background_Integral_PerBin_lessthan = new double [end];
+    Eff_Signal_lessthan = new double [end];
+    RejectionEff_Background_lessThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmLoose_STtZc->Integral(1 , i));
+      b = (NbOfCharmLoose_WZ_STSR->Integral(1,i));
+      
+      Signal_Integral_PerBin_lessthan[i] = s;
+      Background_Integral_PerBin_lessthan[i] = b;
+      Eff_Signal_lessthan[i] = s/Total_signal;
+      RejectionEff_Background_lessThan[i] = (1- b/Total_background);
+    }
+    Signal_Integral_PerBin_greaterthan = new double [end];
+    Background_Integral_PerBin_greaterthan = new double [end];
+    Eff_Signal_greaterthan = new double [end];
+    RejectionEff_Background_greaterThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmLoose_STtZc->Integral(i , end));
+      b = (NbOfCharmLoose_WZ_STSR->Integral(i, end));
+      
+      Signal_Integral_PerBin_greaterthan[i] = s;
+      Background_Integral_PerBin_greaterthan[i] = b;
+      Eff_Signal_greaterthan[i] = s/Total_signal;
+      RejectionEff_Background_greaterThan[i] = (1- b/Total_background);
+    }
+    
+    
+    //Determine the optimal cut-value for a cut-and-count experiment
+    optcutName = "Opt_cut_lessthan_NbOfCharmLoose_STtZcvsWZ_STSR";
+    TH1F *Opt_cut_lessthan_NbOfCharmLoose_STtZcvsWZ_STSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmLoose_STtZc->GetXaxis()->GetXmin(), NbOfCharmLoose_STtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_lessthan[i]/sqrt(Background_Integral_PerBin_lessthan[i]);
+      if(Background_Integral_PerBin_lessthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_lessthan_NbOfCharmLoose_STtZcvsWZ_STSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_lessthan_NbOfCharmLoose_STtZcvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    Opt_cut_lessthan_NbOfCharmLoose_STtZcvsWZ_STSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmLooseSTtZc_lessthan_eff";
+    TH1F *Signal_eff_lessthan_NbOfCharmLoose_STtZcvsWZ_STSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmLoose_STtZc->GetXaxis()->GetXmin(), NbOfCharmLoose_STtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_lessthan_NbOfCharmLoose_STtZcvsWZ_STSR->SetBinContent(i, Eff_Signal_lessthan[i]);
+    }
+    Signal_eff_lessthan_NbOfCharmLoose_STtZcvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    Signal_eff_lessthan_NbOfCharmLoose_STtZcvsWZ_STSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmLoose_WZ_STSR_lessthan_rej";
+    TH1F *B_rej_lessthan_NbOfCharmLoose_STtZcvsWZ_STSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmLoose_WZ_STSR->GetXaxis()->GetXmin(), NbOfCharmLoose_WZ_STSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_lessthan_NbOfCharmLoose_STtZcvsWZ_STSR->SetBinContent(i, RejectionEff_Background_lessThan[i]);
+    }
+    B_rej_lessthan_NbOfCharmLoose_STtZcvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    B_rej_lessthan_NbOfCharmLoose_STtZcvsWZ_STSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    optcutName = "Opt_cut_greaterthan_NbOfCharmLoose_STtZcvsWZ_STSR";
+    TH1F *Opt_cut_greaterthan_NbOfCharmLoose_STtZcvsWZ_STSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmLoose_STtZc->GetXaxis()->GetXmin(), NbOfCharmLoose_STtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_greaterthan[i]/sqrt(Background_Integral_PerBin_greaterthan[i]);
+      if(Background_Integral_PerBin_greaterthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_greaterthan_NbOfCharmLoose_STtZcvsWZ_STSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_greaterthan_NbOfCharmLoose_STtZcvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    Opt_cut_greaterthan_NbOfCharmLoose_STtZcvsWZ_STSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmLoose_STtZc_greaterthan_eff";
+    TH1F *Signal_eff_greaterthan_NbOfCharmLoose_STtZcvsWZ_STSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmLoose_STtZc->GetXaxis()->GetXmin(), NbOfCharmLoose_STtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_greaterthan_NbOfCharmLoose_STtZcvsWZ_STSR->SetBinContent(i, Eff_Signal_greaterthan[i]);
+    }
+    Signal_eff_greaterthan_NbOfCharmLoose_STtZcvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    Signal_eff_greaterthan_NbOfCharmLoose_STtZcvsWZ_STSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmLoose_WZ_STSR_greaterthan_rej";
+    TH1F *B_rej_greaterthan_NbOfCharmLoose_STtZcvsWZ_STSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmLoose_WZ_STSR->GetXaxis()->GetXmin(), NbOfCharmLoose_WZ_STSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_greaterthan_NbOfCharmLoose_STtZcvsWZ_STSR->SetBinContent(i, RejectionEff_Background_greaterThan[i]);
+    }
+    B_rej_greaterthan_NbOfCharmLoose_STtZcvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    B_rej_greaterthan_NbOfCharmLoose_STtZcvsWZ_STSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    /////////////////:
+    // MEDIUM
+    ////////////////
+    th1dir = filecjets->mkdir("1D_histograms_NbOfCharmMedium_STtZcvsWZ_STSR");
+    th1dir->cd();
+    
+    
+    end = NbOfCharmMedium_STtZc->GetNbinsX();
+    //cout << "HERE 3" << endl;
+    //Efficiencies calculating as #events_passing_cut/#Total_events
+    Total_signal = 0;
+    Total_background = 0;
+    Total_signal = NbOfCharmMedium_STtZc->Integral();
+    Total_background = NbOfCharmMedium_WZ_STSR->Integral();
+    
+    Signal_Integral_PerBin_lessthan = new double [end];
+    Background_Integral_PerBin_lessthan = new double [end];
+    Eff_Signal_lessthan = new double [end];
+    RejectionEff_Background_lessThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmMedium_STtZc->Integral(1 , i));
+      b = (NbOfCharmMedium_WZ_STSR->Integral(1,i));
+      
+      Signal_Integral_PerBin_lessthan[i] = s;
+      Background_Integral_PerBin_lessthan[i] = b;
+      Eff_Signal_lessthan[i] = s/Total_signal;
+      RejectionEff_Background_lessThan[i] = (1- b/Total_background);
+    }
+    Signal_Integral_PerBin_greaterthan = new double [end];
+    Background_Integral_PerBin_greaterthan = new double [end];
+    Eff_Signal_greaterthan = new double [end];
+    RejectionEff_Background_greaterThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmMedium_STtZc->Integral(i , end));
+      b = (NbOfCharmMedium_WZ_STSR->Integral(i, end));
+      
+      Signal_Integral_PerBin_greaterthan[i] = s;
+      Background_Integral_PerBin_greaterthan[i] = b;
+      Eff_Signal_greaterthan[i] = s/Total_signal;
+      RejectionEff_Background_greaterThan[i] = (1- b/Total_background);
+    }
+    
+    
+    //Determine the optimal cut-value for a cut-and-count experiment
+    optcutName = "Opt_cut_lessthan_NbOfCharmMedium_STtZcvsWZ_STSR";
+    TH1F *Opt_cut_lessthan_NbOfCharmMedium_STtZcvsWZ_STSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmMedium_STtZc->GetXaxis()->GetXmin(), NbOfCharmMedium_STtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_lessthan[i]/sqrt(Background_Integral_PerBin_lessthan[i]);
+      if(Background_Integral_PerBin_lessthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_lessthan_NbOfCharmMedium_STtZcvsWZ_STSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_lessthan_NbOfCharmMedium_STtZcvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    Opt_cut_lessthan_NbOfCharmMedium_STtZcvsWZ_STSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmMediumSTtZc_lessthan_eff";
+    TH1F *Signal_eff_lessthan_NbOfCharmMedium_STtZcvsWZ_STSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmMedium_STtZc->GetXaxis()->GetXmin(), NbOfCharmMedium_STtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_lessthan_NbOfCharmMedium_STtZcvsWZ_STSR->SetBinContent(i, Eff_Signal_lessthan[i]);
+    }
+    Signal_eff_lessthan_NbOfCharmMedium_STtZcvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    Signal_eff_lessthan_NbOfCharmMedium_STtZcvsWZ_STSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmMedium_WZ_STSR_lessthan_rej";
+    TH1F *B_rej_lessthan_NbOfCharmMedium_STtZcvsWZ_STSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmMedium_WZ_STSR->GetXaxis()->GetXmin(), NbOfCharmMedium_WZ_STSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_lessthan_NbOfCharmMedium_STtZcvsWZ_STSR->SetBinContent(i, RejectionEff_Background_lessThan[i]);
+    }
+    B_rej_lessthan_NbOfCharmMedium_STtZcvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    B_rej_lessthan_NbOfCharmMedium_STtZcvsWZ_STSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    optcutName = "Opt_cut_greaterthan_NbOfCharmMedium_STtZcvsWZ_STSR";
+    TH1F *Opt_cut_greaterthan_NbOfCharmMedium_STtZcvsWZ_STSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmMedium_STtZc->GetXaxis()->GetXmin(), NbOfCharmMedium_STtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_greaterthan[i]/sqrt(Background_Integral_PerBin_greaterthan[i]);
+      if(Background_Integral_PerBin_greaterthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_greaterthan_NbOfCharmMedium_STtZcvsWZ_STSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_greaterthan_NbOfCharmMedium_STtZcvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    Opt_cut_greaterthan_NbOfCharmMedium_STtZcvsWZ_STSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmMedium_STtZc_greaterthan_eff";
+    TH1F *Signal_eff_greaterthan_NbOfCharmMedium_STtZcvsWZ_STSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmMedium_STtZc->GetXaxis()->GetXmin(), NbOfCharmMedium_STtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_greaterthan_NbOfCharmMedium_STtZcvsWZ_STSR->SetBinContent(i, Eff_Signal_greaterthan[i]);
+    }
+    Signal_eff_greaterthan_NbOfCharmMedium_STtZcvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    Signal_eff_greaterthan_NbOfCharmMedium_STtZcvsWZ_STSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmMedium_WZ_STSR_greaterthan_rej";
+    TH1F *B_rej_greaterthan_NbOfCharmMedium_STtZcvsWZ_STSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmMedium_WZ_STSR->GetXaxis()->GetXmin(), NbOfCharmMedium_WZ_STSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_greaterthan_NbOfCharmMedium_STtZcvsWZ_STSR->SetBinContent(i, RejectionEff_Background_greaterThan[i]);
+    }
+    B_rej_greaterthan_NbOfCharmMedium_STtZcvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    B_rej_greaterthan_NbOfCharmMedium_STtZcvsWZ_STSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    /////////////////:
+    // Tight
+    ////////////////
+    th1dir = filecjets->mkdir("1D_histograms_NbOfCharmTight_STtZcvsWZ_STSR");
+    th1dir->cd();
+    
+    
+    end = NbOfCharmTight_STtZc->GetNbinsX();
+    //cout << "HERE 3" << endl;
+    //Efficiencies calculating as #events_passing_cut/#Total_events
+    Total_signal = 0;
+    Total_background = 0;
+    Total_signal = NbOfCharmTight_STtZc->Integral();
+    Total_background = NbOfCharmTight_WZ_STSR->Integral();
+    
+    Signal_Integral_PerBin_lessthan = new double [end];
+    Background_Integral_PerBin_lessthan = new double [end];
+    Eff_Signal_lessthan = new double [end];
+    RejectionEff_Background_lessThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmTight_STtZc->Integral(1 , i));
+      b = (NbOfCharmTight_WZ_STSR->Integral(1,i));
+      
+      Signal_Integral_PerBin_lessthan[i] = s;
+      Background_Integral_PerBin_lessthan[i] = b;
+      Eff_Signal_lessthan[i] = s/Total_signal;
+      RejectionEff_Background_lessThan[i] = (1- b/Total_background);
+    }
+    Signal_Integral_PerBin_greaterthan = new double [end];
+    Background_Integral_PerBin_greaterthan = new double [end];
+    Eff_Signal_greaterthan = new double [end];
+    RejectionEff_Background_greaterThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmTight_STtZc->Integral(i , end));
+      b = (NbOfCharmTight_WZ_STSR->Integral(i, end));
+      
+      Signal_Integral_PerBin_greaterthan[i] = s;
+      Background_Integral_PerBin_greaterthan[i] = b;
+      Eff_Signal_greaterthan[i] = s/Total_signal;
+      RejectionEff_Background_greaterThan[i] = (1- b/Total_background);
+    }
+    
+    
+    //Determine the optimal cut-value for a cut-and-count experiment
+    optcutName = "Opt_cut_lessthan_NbOfCharmTight_STtZcvsWZ_STSR";
+    TH1F *Opt_cut_lessthan_NbOfCharmTight_STtZcvsWZ_STSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmTight_STtZc->GetXaxis()->GetXmin(), NbOfCharmTight_STtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_lessthan[i]/sqrt(Background_Integral_PerBin_lessthan[i]);
+      if(Background_Integral_PerBin_lessthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_lessthan_NbOfCharmTight_STtZcvsWZ_STSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_lessthan_NbOfCharmTight_STtZcvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    Opt_cut_lessthan_NbOfCharmTight_STtZcvsWZ_STSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmTightSTtZc_lessthan_eff";
+    TH1F *Signal_eff_lessthan_NbOfCharmTight_STtZcvsWZ_STSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmTight_STtZc->GetXaxis()->GetXmin(), NbOfCharmTight_STtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_lessthan_NbOfCharmTight_STtZcvsWZ_STSR->SetBinContent(i, Eff_Signal_lessthan[i]);
+    }
+    Signal_eff_lessthan_NbOfCharmTight_STtZcvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    Signal_eff_lessthan_NbOfCharmTight_STtZcvsWZ_STSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmTight_WZ_STSR_lessthan_rej";
+    TH1F *B_rej_lessthan_NbOfCharmTight_STtZcvsWZ_STSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmTight_WZ_STSR->GetXaxis()->GetXmin(), NbOfCharmTight_WZ_STSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_lessthan_NbOfCharmTight_STtZcvsWZ_STSR->SetBinContent(i, RejectionEff_Background_lessThan[i]);
+    }
+    B_rej_lessthan_NbOfCharmTight_STtZcvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    B_rej_lessthan_NbOfCharmTight_STtZcvsWZ_STSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    optcutName = "Opt_cut_greaterthan_NbOfCharmTight_STtZcvsWZ_STSR";
+    TH1F *Opt_cut_greaterthan_NbOfCharmTight_STtZcvsWZ_STSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmTight_STtZc->GetXaxis()->GetXmin(), NbOfCharmTight_STtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_greaterthan[i]/sqrt(Background_Integral_PerBin_greaterthan[i]);
+      if(Background_Integral_PerBin_greaterthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_greaterthan_NbOfCharmTight_STtZcvsWZ_STSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_greaterthan_NbOfCharmTight_STtZcvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    Opt_cut_greaterthan_NbOfCharmTight_STtZcvsWZ_STSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmTight_STtZc_greaterthan_eff";
+    TH1F *Signal_eff_greaterthan_NbOfCharmTight_STtZcvsWZ_STSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmTight_STtZc->GetXaxis()->GetXmin(), NbOfCharmTight_STtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_greaterthan_NbOfCharmTight_STtZcvsWZ_STSR->SetBinContent(i, Eff_Signal_greaterthan[i]);
+    }
+    Signal_eff_greaterthan_NbOfCharmTight_STtZcvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    Signal_eff_greaterthan_NbOfCharmTight_STtZcvsWZ_STSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmTight_WZ_STSR_greaterthan_rej";
+    TH1F *B_rej_greaterthan_NbOfCharmTight_STtZcvsWZ_STSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmTight_WZ_STSR->GetXaxis()->GetXmin(), NbOfCharmTight_WZ_STSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_greaterthan_NbOfCharmTight_STtZcvsWZ_STSR->SetBinContent(i, RejectionEff_Background_greaterThan[i]);
+    }
+    B_rej_greaterthan_NbOfCharmTight_STtZcvsWZ_STSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    B_rej_greaterthan_NbOfCharmTight_STtZcvsWZ_STSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    
+    /////////////////:
+    // Loose ST tZu
+    ////////////////
+    th1dir = filecjets->mkdir("1D_histograms_NbOfCharmLoose_TTtZuvsWZ_TTSR");
+    th1dir->cd();
+    
+    
+    end = NbOfCharmLoose_TTtZu->GetNbinsX();
+    //cout << "HERE 3" << endl;
+    //Efficiencies calculating as #events_passing_cut/#Total_events
+    Total_signal = 0;
+    Total_background = 0;
+    Total_signal = NbOfCharmLoose_TTtZu->Integral();
+    Total_background = NbOfCharmLoose_WZ_TTSR->Integral();
+    
+    Signal_Integral_PerBin_lessthan = new double [end];
+    Background_Integral_PerBin_lessthan = new double [end];
+    Eff_Signal_lessthan = new double [end];
+    RejectionEff_Background_lessThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmLoose_TTtZu->Integral(1 , i));
+      b = (NbOfCharmLoose_WZ_TTSR->Integral(1,i));
+      
+      Signal_Integral_PerBin_lessthan[i] = s;
+      Background_Integral_PerBin_lessthan[i] = b;
+      Eff_Signal_lessthan[i] = s/Total_signal;
+      RejectionEff_Background_lessThan[i] = (1- b/Total_background);
+    }
+    Signal_Integral_PerBin_greaterthan = new double [end];
+    Background_Integral_PerBin_greaterthan = new double [end];
+    Eff_Signal_greaterthan = new double [end];
+    RejectionEff_Background_greaterThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmLoose_TTtZu->Integral(i , end));
+      b = (NbOfCharmLoose_WZ_TTSR->Integral(i, end));
+      
+      Signal_Integral_PerBin_greaterthan[i] = s;
+      Background_Integral_PerBin_greaterthan[i] = b;
+      Eff_Signal_greaterthan[i] = s/Total_signal;
+      RejectionEff_Background_greaterThan[i] = (1- b/Total_background);
+    }
+    
+    
+    //Determine the optimal cut-value for a cut-and-count experiment
+    optcutName = "Opt_cut_lessthan_NbOfCharmLoose_TTtZuvsWZ_TTSR";
+    TH1F *Opt_cut_lessthan_NbOfCharmLoose_TTtZuvsWZ_TTSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmLoose_TTtZu->GetXaxis()->GetXmin(), NbOfCharmLoose_TTtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_lessthan[i]/sqrt(Background_Integral_PerBin_lessthan[i]);
+      if(Background_Integral_PerBin_lessthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_lessthan_NbOfCharmLoose_TTtZuvsWZ_TTSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_lessthan_NbOfCharmLoose_TTtZuvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    Opt_cut_lessthan_NbOfCharmLoose_TTtZuvsWZ_TTSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmLooseTTtZu_lessthan_eff";
+    TH1F *Signal_eff_lessthan_NbOfCharmLoose_TTtZuvsWZ_TTSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmLoose_TTtZu->GetXaxis()->GetXmin(), NbOfCharmLoose_TTtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_lessthan_NbOfCharmLoose_TTtZuvsWZ_TTSR->SetBinContent(i, Eff_Signal_lessthan[i]);
+    }
+    Signal_eff_lessthan_NbOfCharmLoose_TTtZuvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    Signal_eff_lessthan_NbOfCharmLoose_TTtZuvsWZ_TTSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmLoose_WZ_TTSR_lessthan_rej";
+    TH1F *B_rej_lessthan_NbOfCharmLoose_TTtZuvsWZ_TTSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmLoose_WZ_TTSR->GetXaxis()->GetXmin(), NbOfCharmLoose_WZ_TTSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_lessthan_NbOfCharmLoose_TTtZuvsWZ_TTSR->SetBinContent(i, RejectionEff_Background_lessThan[i]);
+    }
+    B_rej_lessthan_NbOfCharmLoose_TTtZuvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    B_rej_lessthan_NbOfCharmLoose_TTtZuvsWZ_TTSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    optcutName = "Opt_cut_greaterthan_NbOfCharmLoose_TTtZuvsWZ_TTSR";
+    TH1F *Opt_cut_greaterthan_NbOfCharmLoose_TTtZuvsWZ_TTSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmLoose_TTtZu->GetXaxis()->GetXmin(), NbOfCharmLoose_TTtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_greaterthan[i]/sqrt(Background_Integral_PerBin_greaterthan[i]);
+      if(Background_Integral_PerBin_greaterthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_greaterthan_NbOfCharmLoose_TTtZuvsWZ_TTSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_greaterthan_NbOfCharmLoose_TTtZuvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    Opt_cut_greaterthan_NbOfCharmLoose_TTtZuvsWZ_TTSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmLoose_TTtZu_greaterthan_eff";
+    TH1F *Signal_eff_greaterthan_NbOfCharmLoose_TTtZuvsWZ_TTSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmLoose_TTtZu->GetXaxis()->GetXmin(), NbOfCharmLoose_TTtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_greaterthan_NbOfCharmLoose_TTtZuvsWZ_TTSR->SetBinContent(i, Eff_Signal_greaterthan[i]);
+    }
+    Signal_eff_greaterthan_NbOfCharmLoose_TTtZuvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    Signal_eff_greaterthan_NbOfCharmLoose_TTtZuvsWZ_TTSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmLoose_WZ_TTSR_greaterthan_rej";
+    TH1F *B_rej_greaterthan_NbOfCharmLoose_TTtZuvsWZ_TTSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmLoose_WZ_TTSR->GetXaxis()->GetXmin(), NbOfCharmLoose_WZ_TTSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_greaterthan_NbOfCharmLoose_TTtZuvsWZ_TTSR->SetBinContent(i, RejectionEff_Background_greaterThan[i]);
+    }
+    B_rej_greaterthan_NbOfCharmLoose_TTtZuvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    B_rej_greaterthan_NbOfCharmLoose_TTtZuvsWZ_TTSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    /////////////////:
+    // MEDIUM
+    ////////////////
+    th1dir = filecjets->mkdir("1D_histograms_NbOfCharmMedium_TTtZuvsWZ_TTSR");
+    th1dir->cd();
+    
+    
+    end = NbOfCharmMedium_TTtZu->GetNbinsX();
+    //cout << "HERE 3" << endl;
+    //Efficiencies calculating as #events_passing_cut/#Total_events
+    Total_signal = 0;
+    Total_background = 0;
+    Total_signal = NbOfCharmMedium_TTtZu->Integral();
+    Total_background = NbOfCharmMedium_WZ_TTSR->Integral();
+    
+    Signal_Integral_PerBin_lessthan = new double [end];
+    Background_Integral_PerBin_lessthan = new double [end];
+    Eff_Signal_lessthan = new double [end];
+    RejectionEff_Background_lessThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmMedium_TTtZu->Integral(1 , i));
+      b = (NbOfCharmMedium_WZ_TTSR->Integral(1,i));
+      
+      Signal_Integral_PerBin_lessthan[i] = s;
+      Background_Integral_PerBin_lessthan[i] = b;
+      Eff_Signal_lessthan[i] = s/Total_signal;
+      RejectionEff_Background_lessThan[i] = (1- b/Total_background);
+    }
+    Signal_Integral_PerBin_greaterthan = new double [end];
+    Background_Integral_PerBin_greaterthan = new double [end];
+    Eff_Signal_greaterthan = new double [end];
+    RejectionEff_Background_greaterThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmMedium_TTtZu->Integral(i , end));
+      b = (NbOfCharmMedium_WZ_TTSR->Integral(i, end));
+      
+      Signal_Integral_PerBin_greaterthan[i] = s;
+      Background_Integral_PerBin_greaterthan[i] = b;
+      Eff_Signal_greaterthan[i] = s/Total_signal;
+      RejectionEff_Background_greaterThan[i] = (1- b/Total_background);
+    }
+    
+    
+    //Determine the optimal cut-value for a cut-and-count experiment
+    optcutName = "Opt_cut_lessthan_NbOfCharmMedium_TTtZuvsWZ_TTSR";
+    TH1F *Opt_cut_lessthan_NbOfCharmMedium_TTtZuvsWZ_TTSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmMedium_TTtZu->GetXaxis()->GetXmin(), NbOfCharmMedium_TTtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_lessthan[i]/sqrt(Background_Integral_PerBin_lessthan[i]);
+      if(Background_Integral_PerBin_lessthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_lessthan_NbOfCharmMedium_TTtZuvsWZ_TTSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_lessthan_NbOfCharmMedium_TTtZuvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    Opt_cut_lessthan_NbOfCharmMedium_TTtZuvsWZ_TTSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmMediumTTtZu_lessthan_eff";
+    TH1F *Signal_eff_lessthan_NbOfCharmMedium_TTtZuvsWZ_TTSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmMedium_TTtZu->GetXaxis()->GetXmin(), NbOfCharmMedium_TTtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_lessthan_NbOfCharmMedium_TTtZuvsWZ_TTSR->SetBinContent(i, Eff_Signal_lessthan[i]);
+    }
+    Signal_eff_lessthan_NbOfCharmMedium_TTtZuvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    Signal_eff_lessthan_NbOfCharmMedium_TTtZuvsWZ_TTSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmMedium_WZ_TTSR_lessthan_rej";
+    TH1F *B_rej_lessthan_NbOfCharmMedium_TTtZuvsWZ_TTSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmMedium_WZ_TTSR->GetXaxis()->GetXmin(), NbOfCharmMedium_WZ_TTSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_lessthan_NbOfCharmMedium_TTtZuvsWZ_TTSR->SetBinContent(i, RejectionEff_Background_lessThan[i]);
+    }
+    B_rej_lessthan_NbOfCharmMedium_TTtZuvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    B_rej_lessthan_NbOfCharmMedium_TTtZuvsWZ_TTSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    optcutName = "Opt_cut_greaterthan_NbOfCharmMedium_TTtZuvsWZ_TTSR";
+    TH1F *Opt_cut_greaterthan_NbOfCharmMedium_TTtZuvsWZ_TTSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmMedium_TTtZu->GetXaxis()->GetXmin(), NbOfCharmMedium_TTtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_greaterthan[i]/sqrt(Background_Integral_PerBin_greaterthan[i]);
+      if(Background_Integral_PerBin_greaterthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_greaterthan_NbOfCharmMedium_TTtZuvsWZ_TTSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_greaterthan_NbOfCharmMedium_TTtZuvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    Opt_cut_greaterthan_NbOfCharmMedium_TTtZuvsWZ_TTSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmMedium_TTtZu_greaterthan_eff";
+    TH1F *Signal_eff_greaterthan_NbOfCharmMedium_TTtZuvsWZ_TTSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmMedium_TTtZu->GetXaxis()->GetXmin(), NbOfCharmMedium_TTtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_greaterthan_NbOfCharmMedium_TTtZuvsWZ_TTSR->SetBinContent(i, Eff_Signal_greaterthan[i]);
+    }
+    Signal_eff_greaterthan_NbOfCharmMedium_TTtZuvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    Signal_eff_greaterthan_NbOfCharmMedium_TTtZuvsWZ_TTSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmMedium_WZ_TTSR_greaterthan_rej";
+    TH1F *B_rej_greaterthan_NbOfCharmMedium_TTtZuvsWZ_TTSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmMedium_WZ_TTSR->GetXaxis()->GetXmin(), NbOfCharmMedium_WZ_TTSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_greaterthan_NbOfCharmMedium_TTtZuvsWZ_TTSR->SetBinContent(i, RejectionEff_Background_greaterThan[i]);
+    }
+    B_rej_greaterthan_NbOfCharmMedium_TTtZuvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    B_rej_greaterthan_NbOfCharmMedium_TTtZuvsWZ_TTSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    /////////////////:
+    // Tight
+    ////////////////
+    th1dir = filecjets->mkdir("1D_histograms_NbOfCharmTight_TTtZuvsWZ_TTSR");
+    th1dir->cd();
+    
+    
+    end = NbOfCharmTight_TTtZu->GetNbinsX();
+    //cout << "HERE 3" << endl;
+    //Efficiencies calculating as #events_passing_cut/#Total_events
+    Total_signal = 0;
+    Total_background = 0;
+    Total_signal = NbOfCharmTight_TTtZu->Integral();
+    Total_background = NbOfCharmTight_WZ_TTSR->Integral();
+    
+    Signal_Integral_PerBin_lessthan = new double [end];
+    Background_Integral_PerBin_lessthan = new double [end];
+    Eff_Signal_lessthan = new double [end];
+    RejectionEff_Background_lessThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmTight_TTtZu->Integral(1 , i));
+      b = (NbOfCharmTight_WZ_TTSR->Integral(1,i));
+      
+      Signal_Integral_PerBin_lessthan[i] = s;
+      Background_Integral_PerBin_lessthan[i] = b;
+      Eff_Signal_lessthan[i] = s/Total_signal;
+      RejectionEff_Background_lessThan[i] = (1- b/Total_background);
+    }
+    Signal_Integral_PerBin_greaterthan = new double [end];
+    Background_Integral_PerBin_greaterthan = new double [end];
+    Eff_Signal_greaterthan = new double [end];
+    RejectionEff_Background_greaterThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmTight_TTtZu->Integral(i , end));
+      b = (NbOfCharmTight_WZ_TTSR->Integral(i, end));
+      
+      Signal_Integral_PerBin_greaterthan[i] = s;
+      Background_Integral_PerBin_greaterthan[i] = b;
+      Eff_Signal_greaterthan[i] = s/Total_signal;
+      RejectionEff_Background_greaterThan[i] = (1- b/Total_background);
+    }
+    
+    
+    //Determine the optimal cut-value for a cut-and-count experiment
+    optcutName = "Opt_cut_lessthan_NbOfCharmTight_TTtZuvsWZ_TTSR";
+    TH1F *Opt_cut_lessthan_NbOfCharmTight_TTtZuvsWZ_TTSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmTight_TTtZu->GetXaxis()->GetXmin(), NbOfCharmTight_TTtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_lessthan[i]/sqrt(Background_Integral_PerBin_lessthan[i]);
+      if(Background_Integral_PerBin_lessthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_lessthan_NbOfCharmTight_TTtZuvsWZ_TTSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_lessthan_NbOfCharmTight_TTtZuvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    Opt_cut_lessthan_NbOfCharmTight_TTtZuvsWZ_TTSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmTightTTtZu_lessthan_eff";
+    TH1F *Signal_eff_lessthan_NbOfCharmTight_TTtZuvsWZ_TTSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmTight_TTtZu->GetXaxis()->GetXmin(), NbOfCharmTight_TTtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_lessthan_NbOfCharmTight_TTtZuvsWZ_TTSR->SetBinContent(i, Eff_Signal_lessthan[i]);
+    }
+    Signal_eff_lessthan_NbOfCharmTight_TTtZuvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    Signal_eff_lessthan_NbOfCharmTight_TTtZuvsWZ_TTSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmTight_WZ_TTSR_lessthan_rej";
+    TH1F *B_rej_lessthan_NbOfCharmTight_TTtZuvsWZ_TTSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmTight_WZ_TTSR->GetXaxis()->GetXmin(), NbOfCharmTight_WZ_TTSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_lessthan_NbOfCharmTight_TTtZuvsWZ_TTSR->SetBinContent(i, RejectionEff_Background_lessThan[i]);
+    }
+    B_rej_lessthan_NbOfCharmTight_TTtZuvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    B_rej_lessthan_NbOfCharmTight_TTtZuvsWZ_TTSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    optcutName = "Opt_cut_greaterthan_NbOfCharmTight_TTtZuvsWZ_TTSR";
+    TH1F *Opt_cut_greaterthan_NbOfCharmTight_TTtZuvsWZ_TTSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmTight_TTtZu->GetXaxis()->GetXmin(), NbOfCharmTight_TTtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_greaterthan[i]/sqrt(Background_Integral_PerBin_greaterthan[i]);
+      if(Background_Integral_PerBin_greaterthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_greaterthan_NbOfCharmTight_TTtZuvsWZ_TTSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_greaterthan_NbOfCharmTight_TTtZuvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    Opt_cut_greaterthan_NbOfCharmTight_TTtZuvsWZ_TTSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmTight_TTtZu_greaterthan_eff";
+    TH1F *Signal_eff_greaterthan_NbOfCharmTight_TTtZuvsWZ_TTSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmTight_TTtZu->GetXaxis()->GetXmin(), NbOfCharmTight_TTtZu->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_greaterthan_NbOfCharmTight_TTtZuvsWZ_TTSR->SetBinContent(i, Eff_Signal_greaterthan[i]);
+    }
+    Signal_eff_greaterthan_NbOfCharmTight_TTtZuvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    Signal_eff_greaterthan_NbOfCharmTight_TTtZuvsWZ_TTSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmTight_WZ_TTSR_greaterthan_rej";
+    TH1F *B_rej_greaterthan_NbOfCharmTight_TTtZuvsWZ_TTSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmTight_WZ_TTSR->GetXaxis()->GetXmin(), NbOfCharmTight_WZ_TTSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_greaterthan_NbOfCharmTight_TTtZuvsWZ_TTSR->SetBinContent(i, RejectionEff_Background_greaterThan[i]);
+    }
+    B_rej_greaterthan_NbOfCharmTight_TTtZuvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    B_rej_greaterthan_NbOfCharmTight_TTtZuvsWZ_TTSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    
+    
+    /////////////////:
+    // Loose ST tZc
+    ////////////////
+    th1dir = filecjets->mkdir("1D_histograms_NbOfCharmLoose_TTtZcvsWZ_TTSR");
+    th1dir->cd();
+    
+    
+    end = NbOfCharmLoose_TTtZc->GetNbinsX();
+    //cout << "HERE 3" << endl;
+    //Efficiencies calculating as #events_passing_cut/#Total_events
+    Total_signal = 0;
+    Total_background = 0;
+    Total_signal = NbOfCharmLoose_TTtZc->Integral();
+    Total_background = NbOfCharmLoose_WZ_TTSR->Integral();
+    
+    Signal_Integral_PerBin_lessthan = new double [end];
+    Background_Integral_PerBin_lessthan = new double [end];
+    Eff_Signal_lessthan = new double [end];
+    RejectionEff_Background_lessThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmLoose_TTtZc->Integral(1 , i));
+      b = (NbOfCharmLoose_WZ_TTSR->Integral(1,i));
+      
+      Signal_Integral_PerBin_lessthan[i] = s;
+      Background_Integral_PerBin_lessthan[i] = b;
+      Eff_Signal_lessthan[i] = s/Total_signal;
+      RejectionEff_Background_lessThan[i] = (1- b/Total_background);
+    }
+    Signal_Integral_PerBin_greaterthan = new double [end];
+    Background_Integral_PerBin_greaterthan = new double [end];
+    Eff_Signal_greaterthan = new double [end];
+    RejectionEff_Background_greaterThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmLoose_TTtZc->Integral(i , end));
+      b = (NbOfCharmLoose_WZ_TTSR->Integral(i, end));
+      
+      Signal_Integral_PerBin_greaterthan[i] = s;
+      Background_Integral_PerBin_greaterthan[i] = b;
+      Eff_Signal_greaterthan[i] = s/Total_signal;
+      RejectionEff_Background_greaterThan[i] = (1- b/Total_background);
+    }
+    
+    
+    //Determine the optimal cut-value for a cut-and-count experiment
+    optcutName = "Opt_cut_lessthan_NbOfCharmLoose_TTtZcvsWZ_TTSR";
+    TH1F *Opt_cut_lessthan_NbOfCharmLoose_TTtZcvsWZ_TTSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmLoose_TTtZc->GetXaxis()->GetXmin(), NbOfCharmLoose_TTtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_lessthan[i]/sqrt(Background_Integral_PerBin_lessthan[i]);
+      if(Background_Integral_PerBin_lessthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_lessthan_NbOfCharmLoose_TTtZcvsWZ_TTSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_lessthan_NbOfCharmLoose_TTtZcvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    Opt_cut_lessthan_NbOfCharmLoose_TTtZcvsWZ_TTSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmLooseTTtZc_lessthan_eff";
+    TH1F *Signal_eff_lessthan_NbOfCharmLoose_TTtZcvsWZ_TTSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmLoose_TTtZc->GetXaxis()->GetXmin(), NbOfCharmLoose_TTtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_lessthan_NbOfCharmLoose_TTtZcvsWZ_TTSR->SetBinContent(i, Eff_Signal_lessthan[i]);
+    }
+    Signal_eff_lessthan_NbOfCharmLoose_TTtZcvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    Signal_eff_lessthan_NbOfCharmLoose_TTtZcvsWZ_TTSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmLoose_WZ_TTSR_lessthan_rej";
+    TH1F *B_rej_lessthan_NbOfCharmLoose_TTtZcvsWZ_TTSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmLoose_WZ_TTSR->GetXaxis()->GetXmin(), NbOfCharmLoose_WZ_TTSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_lessthan_NbOfCharmLoose_TTtZcvsWZ_TTSR->SetBinContent(i, RejectionEff_Background_lessThan[i]);
+    }
+    B_rej_lessthan_NbOfCharmLoose_TTtZcvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    B_rej_lessthan_NbOfCharmLoose_TTtZcvsWZ_TTSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    optcutName = "Opt_cut_greaterthan_NbOfCharmLoose_TTtZcvsWZ_TTSR";
+    TH1F *Opt_cut_greaterthan_NbOfCharmLoose_TTtZcvsWZ_TTSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmLoose_TTtZc->GetXaxis()->GetXmin(), NbOfCharmLoose_TTtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_greaterthan[i]/sqrt(Background_Integral_PerBin_greaterthan[i]);
+      if(Background_Integral_PerBin_greaterthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_greaterthan_NbOfCharmLoose_TTtZcvsWZ_TTSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_greaterthan_NbOfCharmLoose_TTtZcvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    Opt_cut_greaterthan_NbOfCharmLoose_TTtZcvsWZ_TTSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmLoose_TTtZc_greaterthan_eff";
+    TH1F *Signal_eff_greaterthan_NbOfCharmLoose_TTtZcvsWZ_TTSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmLoose_TTtZc->GetXaxis()->GetXmin(), NbOfCharmLoose_TTtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_greaterthan_NbOfCharmLoose_TTtZcvsWZ_TTSR->SetBinContent(i, Eff_Signal_greaterthan[i]);
+    }
+    Signal_eff_greaterthan_NbOfCharmLoose_TTtZcvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    Signal_eff_greaterthan_NbOfCharmLoose_TTtZcvsWZ_TTSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmLoose_WZ_TTSR_greaterthan_rej";
+    TH1F *B_rej_greaterthan_NbOfCharmLoose_TTtZcvsWZ_TTSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmLoose_WZ_TTSR->GetXaxis()->GetXmin(), NbOfCharmLoose_WZ_TTSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_greaterthan_NbOfCharmLoose_TTtZcvsWZ_TTSR->SetBinContent(i, RejectionEff_Background_greaterThan[i]);
+    }
+    B_rej_greaterthan_NbOfCharmLoose_TTtZcvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm loose");
+    B_rej_greaterthan_NbOfCharmLoose_TTtZcvsWZ_TTSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    /////////////////:
+    // MEDIUM
+    ////////////////
+    th1dir = filecjets->mkdir("1D_histograms_NbOfCharmMedium_TTtZcvsWZ_TTSR");
+    th1dir->cd();
+    
+    
+    end = NbOfCharmMedium_TTtZc->GetNbinsX();
+    //cout << "HERE 3" << endl;
+    //Efficiencies calculating as #events_passing_cut/#Total_events
+    Total_signal = 0;
+    Total_background = 0;
+    Total_signal = NbOfCharmMedium_TTtZc->Integral();
+    Total_background = NbOfCharmMedium_WZ_TTSR->Integral();
+    
+    Signal_Integral_PerBin_lessthan = new double [end];
+    Background_Integral_PerBin_lessthan = new double [end];
+    Eff_Signal_lessthan = new double [end];
+    RejectionEff_Background_lessThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmMedium_TTtZc->Integral(1 , i));
+      b = (NbOfCharmMedium_WZ_TTSR->Integral(1,i));
+      
+      Signal_Integral_PerBin_lessthan[i] = s;
+      Background_Integral_PerBin_lessthan[i] = b;
+      Eff_Signal_lessthan[i] = s/Total_signal;
+      RejectionEff_Background_lessThan[i] = (1- b/Total_background);
+    }
+    Signal_Integral_PerBin_greaterthan = new double [end];
+    Background_Integral_PerBin_greaterthan = new double [end];
+    Eff_Signal_greaterthan = new double [end];
+    RejectionEff_Background_greaterThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmMedium_TTtZc->Integral(i , end));
+      b = (NbOfCharmMedium_WZ_TTSR->Integral(i, end));
+      
+      Signal_Integral_PerBin_greaterthan[i] = s;
+      Background_Integral_PerBin_greaterthan[i] = b;
+      Eff_Signal_greaterthan[i] = s/Total_signal;
+      RejectionEff_Background_greaterThan[i] = (1- b/Total_background);
+    }
+    
+    
+    //Determine the optimal cut-value for a cut-and-count experiment
+    optcutName = "Opt_cut_lessthan_NbOfCharmMedium_TTtZcvsWZ_TTSR";
+    TH1F *Opt_cut_lessthan_NbOfCharmMedium_TTtZcvsWZ_TTSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmMedium_TTtZc->GetXaxis()->GetXmin(), NbOfCharmMedium_TTtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_lessthan[i]/sqrt(Background_Integral_PerBin_lessthan[i]);
+      if(Background_Integral_PerBin_lessthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_lessthan_NbOfCharmMedium_TTtZcvsWZ_TTSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_lessthan_NbOfCharmMedium_TTtZcvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    Opt_cut_lessthan_NbOfCharmMedium_TTtZcvsWZ_TTSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmMediumTTtZc_lessthan_eff";
+    TH1F *Signal_eff_lessthan_NbOfCharmMedium_TTtZcvsWZ_TTSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmMedium_TTtZc->GetXaxis()->GetXmin(), NbOfCharmMedium_TTtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_lessthan_NbOfCharmMedium_TTtZcvsWZ_TTSR->SetBinContent(i, Eff_Signal_lessthan[i]);
+    }
+    Signal_eff_lessthan_NbOfCharmMedium_TTtZcvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    Signal_eff_lessthan_NbOfCharmMedium_TTtZcvsWZ_TTSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmMedium_WZ_TTSR_lessthan_rej";
+    TH1F *B_rej_lessthan_NbOfCharmMedium_TTtZcvsWZ_TTSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmMedium_WZ_TTSR->GetXaxis()->GetXmin(), NbOfCharmMedium_WZ_TTSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_lessthan_NbOfCharmMedium_TTtZcvsWZ_TTSR->SetBinContent(i, RejectionEff_Background_lessThan[i]);
+    }
+    B_rej_lessthan_NbOfCharmMedium_TTtZcvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    B_rej_lessthan_NbOfCharmMedium_TTtZcvsWZ_TTSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    optcutName = "Opt_cut_greaterthan_NbOfCharmMedium_TTtZcvsWZ_TTSR";
+    TH1F *Opt_cut_greaterthan_NbOfCharmMedium_TTtZcvsWZ_TTSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmMedium_TTtZc->GetXaxis()->GetXmin(), NbOfCharmMedium_TTtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_greaterthan[i]/sqrt(Background_Integral_PerBin_greaterthan[i]);
+      if(Background_Integral_PerBin_greaterthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_greaterthan_NbOfCharmMedium_TTtZcvsWZ_TTSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_greaterthan_NbOfCharmMedium_TTtZcvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    Opt_cut_greaterthan_NbOfCharmMedium_TTtZcvsWZ_TTSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmMedium_TTtZc_greaterthan_eff";
+    TH1F *Signal_eff_greaterthan_NbOfCharmMedium_TTtZcvsWZ_TTSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmMedium_TTtZc->GetXaxis()->GetXmin(), NbOfCharmMedium_TTtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_greaterthan_NbOfCharmMedium_TTtZcvsWZ_TTSR->SetBinContent(i, Eff_Signal_greaterthan[i]);
+    }
+    Signal_eff_greaterthan_NbOfCharmMedium_TTtZcvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    Signal_eff_greaterthan_NbOfCharmMedium_TTtZcvsWZ_TTSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmMedium_WZ_TTSR_greaterthan_rej";
+    TH1F *B_rej_greaterthan_NbOfCharmMedium_TTtZcvsWZ_TTSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmMedium_WZ_TTSR->GetXaxis()->GetXmin(), NbOfCharmMedium_WZ_TTSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_greaterthan_NbOfCharmMedium_TTtZcvsWZ_TTSR->SetBinContent(i, RejectionEff_Background_greaterThan[i]);
+    }
+    B_rej_greaterthan_NbOfCharmMedium_TTtZcvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm medium");
+    B_rej_greaterthan_NbOfCharmMedium_TTtZcvsWZ_TTSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    /////////////////:
+    // Tight
+    ////////////////
+    th1dir = filecjets->mkdir("1D_histograms_NbOfCharmTight_TTtZcvsWZ_TTSR");
+    th1dir->cd();
+    
+    
+    end = NbOfCharmTight_TTtZc->GetNbinsX();
+    //cout << "HERE 3" << endl;
+    //Efficiencies calculating as #events_passing_cut/#Total_events
+    Total_signal = 0;
+    Total_background = 0;
+    Total_signal = NbOfCharmTight_TTtZc->Integral();
+    Total_background = NbOfCharmTight_WZ_TTSR->Integral();
+    
+    Signal_Integral_PerBin_lessthan = new double [end];
+    Background_Integral_PerBin_lessthan = new double [end];
+    Eff_Signal_lessthan = new double [end];
+    RejectionEff_Background_lessThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmTight_TTtZc->Integral(1 , i));
+      b = (NbOfCharmTight_WZ_TTSR->Integral(1,i));
+      
+      Signal_Integral_PerBin_lessthan[i] = s;
+      Background_Integral_PerBin_lessthan[i] = b;
+      Eff_Signal_lessthan[i] = s/Total_signal;
+      RejectionEff_Background_lessThan[i] = (1- b/Total_background);
+    }
+    Signal_Integral_PerBin_greaterthan = new double [end];
+    Background_Integral_PerBin_greaterthan = new double [end];
+    Eff_Signal_greaterthan = new double [end];
+    RejectionEff_Background_greaterThan = new double [end];
+    for(unsigned int i = 1; i< end; i++){
+      double s = 0;
+      double b = 0;
+      //cout << i << endl;
+      s = (NbOfCharmTight_TTtZc->Integral(i , end));
+      b = (NbOfCharmTight_WZ_TTSR->Integral(i, end));
+      
+      Signal_Integral_PerBin_greaterthan[i] = s;
+      Background_Integral_PerBin_greaterthan[i] = b;
+      Eff_Signal_greaterthan[i] = s/Total_signal;
+      RejectionEff_Background_greaterThan[i] = (1- b/Total_background);
+    }
+    
+    
+    //Determine the optimal cut-value for a cut-and-count experiment
+    optcutName = "Opt_cut_lessthan_NbOfCharmTight_TTtZcvsWZ_TTSR";
+    TH1F *Opt_cut_lessthan_NbOfCharmTight_TTtZcvsWZ_TTSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmTight_TTtZc->GetXaxis()->GetXmin(), NbOfCharmTight_TTtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_lessthan[i]/sqrt(Background_Integral_PerBin_lessthan[i]);
+      if(Background_Integral_PerBin_lessthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_lessthan_NbOfCharmTight_TTtZcvsWZ_TTSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_lessthan_NbOfCharmTight_TTtZcvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    Opt_cut_lessthan_NbOfCharmTight_TTtZcvsWZ_TTSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmTightTTtZc_lessthan_eff";
+    TH1F *Signal_eff_lessthan_NbOfCharmTight_TTtZcvsWZ_TTSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmTight_TTtZc->GetXaxis()->GetXmin(), NbOfCharmTight_TTtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_lessthan_NbOfCharmTight_TTtZcvsWZ_TTSR->SetBinContent(i, Eff_Signal_lessthan[i]);
+    }
+    Signal_eff_lessthan_NbOfCharmTight_TTtZcvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    Signal_eff_lessthan_NbOfCharmTight_TTtZcvsWZ_TTSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmTight_WZ_TTSR_lessthan_rej";
+    TH1F *B_rej_lessthan_NbOfCharmTight_TTtZcvsWZ_TTSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmTight_WZ_TTSR->GetXaxis()->GetXmin(), NbOfCharmTight_WZ_TTSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_lessthan_NbOfCharmTight_TTtZcvsWZ_TTSR->SetBinContent(i, RejectionEff_Background_lessThan[i]);
+    }
+    B_rej_lessthan_NbOfCharmTight_TTtZcvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    B_rej_lessthan_NbOfCharmTight_TTtZcvsWZ_TTSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    optcutName = "Opt_cut_greaterthan_NbOfCharmTight_TTtZcvsWZ_TTSR";
+    TH1F *Opt_cut_greaterthan_NbOfCharmTight_TTtZcvsWZ_TTSR = new TH1F(optcutName.c_str(),optcutName.c_str(), end, NbOfCharmTight_TTtZc->GetXaxis()->GetXmin(), NbOfCharmTight_TTtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      double signal_significance = Signal_Integral_PerBin_greaterthan[i]/sqrt(Background_Integral_PerBin_greaterthan[i]);
+      if(Background_Integral_PerBin_greaterthan[i] == 0) signal_significance = 1;
+      
+      Opt_cut_greaterthan_NbOfCharmTight_TTtZcvsWZ_TTSR->SetBinContent(i, signal_significance);
+    }
+    Opt_cut_greaterthan_NbOfCharmTight_TTtZcvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    Opt_cut_greaterthan_NbOfCharmTight_TTtZcvsWZ_TTSR->GetYaxis()->SetTitle("Signif.");
+    
+    signaleeffName = "NbOfCharmTight_TTtZc_greaterthan_eff";
+    TH1F *Signal_eff_greaterthan_NbOfCharmTight_TTtZcvsWZ_TTSR = new TH1F(signaleeffName.c_str(),signaleeffName.c_str(), end, NbOfCharmTight_TTtZc->GetXaxis()->GetXmin(), NbOfCharmTight_TTtZc->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      Signal_eff_greaterthan_NbOfCharmTight_TTtZcvsWZ_TTSR->SetBinContent(i, Eff_Signal_greaterthan[i]);
+    }
+    Signal_eff_greaterthan_NbOfCharmTight_TTtZcvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    Signal_eff_greaterthan_NbOfCharmTight_TTtZcvsWZ_TTSR->GetYaxis()->SetTitle("Eff.");
+    
+    brejName = "NbOfCharmTight_WZ_TTSR_greaterthan_rej";
+    TH1F *B_rej_greaterthan_NbOfCharmTight_TTtZcvsWZ_TTSR = new TH1F(brejName.c_str(),brejName.c_str(), end, NbOfCharmTight_WZ_TTSR->GetXaxis()->GetXmin(), NbOfCharmTight_WZ_TTSR->GetXaxis()->GetXmax());
+    for(unsigned int i = 0; i<end; i++){
+      B_rej_greaterthan_NbOfCharmTight_TTtZcvsWZ_TTSR->SetBinContent(i, RejectionEff_Background_greaterThan[i]);
+    }
+    B_rej_greaterthan_NbOfCharmTight_TTtZcvsWZ_TTSR->GetXaxis()->SetTitle("Nb. of charm tight");
+    B_rej_greaterthan_NbOfCharmTight_TTtZcvsWZ_TTSR->GetYaxis()->SetTitle("Rejection eff.");
+    
+    //// 2D histo's
+    th1dir = filecjets->mkdir("2D_histograms_NbOfCharmLoose_FCNCvsWZ");
+    th1dir->cd();
+    
+    TH2F* Signif_NbOfCharmLoosevsB_FCNC = new TH2F("Signif_NbOfCharmLoosevsB_FCNC","Significance;Nb c jets;Nb b jets",NbOfCharmLoosevsB_FCNC->GetNbinsX(), 0,10,10, 0,10 );
+    for(int iBinx = 1; iBinx < NbOfCharmLoosevsB_FCNC->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmLoosevsB_FCNC->GetNbinsY()+1; iBiny++){
+        
+        int bin = NbOfCharmLoosevsB_FCNC->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmLoosevsB_FCNC->GetBinContent(bin);
+        double bkg =  NbOfCharmLoosevsB_WZ->GetBinContent(bin);
+        
+        Signif_NbOfCharmLoosevsB_FCNC->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 )Signif_NbOfCharmLoosevsB_FCNC->SetBinContent(bin, 0);
+        else if(bkg == 0) Signif_NbOfCharmLoosevsB_FCNC->SetBinContent(bin, 1);
+      }
+    }
+    
+    th1dir = filecjets->mkdir("2D_histograms_NbOfCharmMedium_FCNCvsWZ");
+    th1dir->cd();
+    
+    TH2F* Signif_NbOfCharmMediumvsB_FCNC = new TH2F("Signif_NbOfCharmMediumvsB_FCNC","Significance;Nb c jets;Nb b jets",NbOfCharmMediumvsB_FCNC->GetNbinsX(), 0,10,10, 0,10 );
+    for(int iBinx = 1; iBinx < NbOfCharmMediumvsB_FCNC->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmMediumvsB_FCNC->GetNbinsY()+1; iBiny++){
+        
+        int bin = NbOfCharmMediumvsB_FCNC->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmMediumvsB_FCNC->GetBinContent(bin);
+        double bkg =  NbOfCharmMediumvsB_WZ->GetBinContent(bin);
+        
+        Signif_NbOfCharmMediumvsB_FCNC->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 )Signif_NbOfCharmMediumvsB_FCNC->SetBinContent(bin, 0);
+        else if(bkg == 0) Signif_NbOfCharmMediumvsB_FCNC->SetBinContent(bin, 1);
+      }
+    }
+    
+    th1dir = filecjets->mkdir("2D_histograms_NbOfCharmTight_FCNCvsWZ");
+    th1dir->cd();
+    
+    TH2F* Signif_NbOfCharmTightvsB_FCNC = new TH2F("Signif_NbOfCharmTightvsB_FCNC","Significance;Nb c jets;Nb b jets",NbOfCharmTightvsB_FCNC->GetNbinsX(), 0,10,10, 0,10 );
+    for(int iBinx = 1; iBinx < NbOfCharmTightvsB_FCNC->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmTightvsB_FCNC->GetNbinsY()+1; iBiny++){
+        
+        int bin = NbOfCharmTightvsB_FCNC->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmTightvsB_FCNC->GetBinContent(bin);
+        double bkg =  NbOfCharmTightvsB_WZ->GetBinContent(bin);
+        
+        Signif_NbOfCharmTightvsB_FCNC->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 )Signif_NbOfCharmTightvsB_FCNC->SetBinContent(bin, 0);
+        else if(bkg == 0) Signif_NbOfCharmTightvsB_FCNC->SetBinContent(bin, 1);
+      }
+    }
+    
+    th1dir = filecjets->mkdir("2D_histograms_NbOfCharmLoose_TTtZcvsWZ_TTSR");
+    th1dir->cd();
+    
+    TH2F* Signif_NbOfCharmLoosevsB_TTtZc = new TH2F("Signif_NbOfCharmLoosevsB_TTtZc","Significance;Nb L c jets;Nb L b jets",NbOfCharmLoosevsB_TTtZc->GetNbinsX(), 0,10,10, 0,10 );
+    for(int iBinx = 1; iBinx < NbOfCharmLoosevsB_TTtZc->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmLoosevsB_TTtZc->GetNbinsY()+1; iBiny++){
+        
+        int bin = NbOfCharmLoosevsB_TTtZc->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmLoosevsB_TTtZc->GetBinContent(bin);
+        double bkg =  NbOfCharmLoosevsB_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_NbOfCharmLoosevsB_TTtZc->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 )Signif_NbOfCharmLoosevsB_TTtZc->SetBinContent(bin, 0);
+        else if(bkg == 0) Signif_NbOfCharmLoosevsB_TTtZc->SetBinContent(bin, 1);
+      }
+    }
+    
+    th1dir = filecjets->mkdir("2D_histograms_NbOfCharmMedium_TTtZcvsWZ_TTSR");
+    th1dir->cd();
+    
+    TH2F* Signif_NbOfCharmMediumvsB_TTtZc = new TH2F("Signif_NbOfCharmMediumvsB_TTtZc","Significance;Nb M c jets;Nb L b jets",NbOfCharmMediumvsB_TTtZc->GetNbinsX(), 0,10,10, 0,10 );
+    for(int iBinx = 1; iBinx < NbOfCharmMediumvsB_TTtZc->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmMediumvsB_TTtZc->GetNbinsY()+1; iBiny++){
+        
+        int bin = NbOfCharmMediumvsB_TTtZc->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmMediumvsB_TTtZc->GetBinContent(bin);
+        double bkg =  NbOfCharmMediumvsB_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_NbOfCharmMediumvsB_TTtZc->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 )Signif_NbOfCharmMediumvsB_TTtZc->SetBinContent(bin, 0);
+        else if(bkg == 0) Signif_NbOfCharmMediumvsB_TTtZc->SetBinContent(bin, 1);
+      }
+    }
+    
+    th1dir = filecjets->mkdir("2D_histograms_NbOfCharmTight_TTtZcvsWZ_TTSR");
+    th1dir->cd();
+    
+    TH2F* Signif_NbOfCharmTightvsB_TTtZc = new TH2F("Signif_NbOfCharmTightvsB_TTtZc","Significance;Nb T c jets;Nb L b jets",NbOfCharmTightvsB_TTtZc->GetNbinsX(), 0,10,10, 0,10 );
+    for(int iBinx = 1; iBinx < NbOfCharmTightvsB_TTtZc->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmTightvsB_TTtZc->GetNbinsY()+1; iBiny++){
+        
+        int bin = NbOfCharmTightvsB_TTtZc->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmTightvsB_TTtZc->GetBinContent(bin);
+        double bkg =  NbOfCharmTightvsB_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_NbOfCharmTightvsB_TTtZc->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 )Signif_NbOfCharmTightvsB_TTtZc->SetBinContent(bin, 0);
+        else if(bkg == 0) Signif_NbOfCharmTightvsB_TTtZc->SetBinContent(bin, 1);
+      }
+    }
+    
+    
+    
+    th1dir = filecjets->mkdir("2D_histograms_NbOfCharmLoose_TTtZuvsWZ_TTSR");
+    th1dir->cd();
+    
+    TH2F* Signif_NbOfCharmLoosevsB_TTtZu = new TH2F("Signif_NbOfCharmLoosevsB_TTtZu","Significance;Nb L c jets;Nb L b jets",NbOfCharmLoosevsB_TTtZu->GetNbinsX(), 0,10,10, 0,10 );
+    for(int iBinx = 1; iBinx < NbOfCharmLoosevsB_TTtZu->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmLoosevsB_TTtZu->GetNbinsY()+1; iBiny++){
+        
+        int bin = NbOfCharmLoosevsB_TTtZu->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmLoosevsB_TTtZu->GetBinContent(bin);
+        double bkg =  NbOfCharmLoosevsB_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_NbOfCharmLoosevsB_TTtZu->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 )Signif_NbOfCharmLoosevsB_TTtZu->SetBinContent(bin, 0);
+        else if(bkg == 0) Signif_NbOfCharmLoosevsB_TTtZu->SetBinContent(bin, 1);
+      }
+    }
+    
+    th1dir = filecjets->mkdir("2D_histograms_NbOfCharmMedium_TTtZuvsWZ_TTSR");
+    th1dir->cd();
+    
+    TH2F* Signif_NbOfCharmMediumvsB_TTtZu = new TH2F("Signif_NbOfCharmMediumvsB_TTtZu","Significance;Nb M c jets;Nb L b jets",NbOfCharmMediumvsB_TTtZu->GetNbinsX(), 0,10,10, 0,10 );
+    for(int iBinx = 1; iBinx < NbOfCharmMediumvsB_TTtZu->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmMediumvsB_TTtZu->GetNbinsY()+1; iBiny++){
+        
+        int bin = NbOfCharmMediumvsB_TTtZu->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmMediumvsB_TTtZu->GetBinContent(bin);
+        double bkg =  NbOfCharmMediumvsB_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_NbOfCharmMediumvsB_TTtZu->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 )Signif_NbOfCharmMediumvsB_TTtZu->SetBinContent(bin, 0);
+        else if(bkg == 0) Signif_NbOfCharmMediumvsB_TTtZu->SetBinContent(bin, 1);
+      }
+    }
+    
+    th1dir = filecjets->mkdir("2D_histograms_NbOfCharmTight_TTtZuvsWZ_TTSR");
+    th1dir->cd();
+    
+    TH2F* Signif_NbOfCharmTightvsB_TTtZu = new TH2F("Signif_NbOfCharmTightvsB_TTtZu","Significance;Nb T c jets;Nb L b jets",NbOfCharmTightvsB_TTtZu->GetNbinsX(), 0,10,10, 0,10 );
+    for(int iBinx = 1; iBinx < NbOfCharmTightvsB_TTtZu->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmTightvsB_TTtZu->GetNbinsY()+1; iBiny++){
+        
+        
+        int bin = NbOfCharmTightvsB_TTtZu->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmTightvsB_TTtZu->GetBinContent(bin);
+        double bkg =  NbOfCharmTightvsB_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_NbOfCharmTightvsB_TTtZu->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 )Signif_NbOfCharmTightvsB_TTtZu->SetBinContent(bin, 0);
+        else if(bkg == 0) Signif_NbOfCharmTightvsB_TTtZu->SetBinContent(bin, 1);
+      }
+    }
+  
+    
+    
+    
+    
+    //// 2D histo's
+    
+    th1dir = filecjets->mkdir("2D_histograms_Bdis_NbOfCharm");
+    th1dir->cd();
+    
+    TH2F* Signif_NbOfCharmLoosevsBdis_TTtZc = new TH2F("Signif_NbOfCharmLoosevsBdis_TTtZc","Significance;CSVv2 of SMjet;Nb L c jets",NbOfCharmLoosevsBdis_TTtZc->GetNbinsX(),0.4,1,6,0,6 );
+    for(int iBinx = 1; iBinx < NbOfCharmLoosevsBdis_TTtZc->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmLoosevsBdis_TTtZc->GetNbinsY()+1; iBiny++){
+        
+        int bin = NbOfCharmLoosevsBdis_TTtZc->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmLoosevsBdis_TTtZc->GetBinContent(bin);
+        double bkg =  NbOfCharmLoosevsBdis_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_NbOfCharmLoosevsBdis_TTtZc->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 )Signif_NbOfCharmLoosevsBdis_TTtZc->SetBinContent(bin, 0);
+        else if(bkg == 0) Signif_NbOfCharmLoosevsBdis_TTtZc->SetBinContent(bin, 1);
+      }
+    }
+    
+     TH2F* Signif_NbOfCharmMediumvsBdis_TTtZc = new TH2F("Signif_NbOfCharmMediumvsBdis_TTtZc","Significance;CSVv2 of SMjet;Nb M c jets",NbOfCharmMediumvsBdis_TTtZc->GetNbinsX(),0.4,1,6,0,6 );
+    for(int iBinx = 1; iBinx < NbOfCharmMediumvsBdis_TTtZc->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmMediumvsBdis_TTtZc->GetNbinsY()+1; iBiny++){
+        
+        int bin = NbOfCharmMediumvsBdis_TTtZc->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmMediumvsBdis_TTtZc->GetBinContent(bin);
+        double bkg =  NbOfCharmMediumvsBdis_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_NbOfCharmMediumvsBdis_TTtZc->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 )Signif_NbOfCharmMediumvsBdis_TTtZc->SetBinContent(bin, 0);
+        else if(bkg == 0) Signif_NbOfCharmMediumvsBdis_TTtZc->SetBinContent(bin, 1);
+      }
+    }
+    
+    th1dir = filecjets->mkdir("2D_histograms_Bdis_NbOfCharmTight_TTtZcvsWZ_TTSR");
+    th1dir->cd();
+    
+    TH2F* Signif_NbOfCharmTightvsBdis_TTtZc = new TH2F("Signif_NbOfCharmTightvsBdis_TTtZc","Significance;CSVv2 of SMjet;Nb T c jets",NbOfCharmTightvsBdis_TTtZc->GetNbinsX(),0.4,1,6,0,6 );
+    for(int iBinx = 1; iBinx < NbOfCharmTightvsBdis_TTtZc->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmTightvsBdis_TTtZc->GetNbinsY()+1; iBiny++){
+        
+        int bin = NbOfCharmTightvsBdis_TTtZc->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmTightvsBdis_TTtZc->GetBinContent(bin);
+        double bkg =  NbOfCharmTightvsBdis_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_NbOfCharmTightvsBdis_TTtZc->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 && bkg != 0 )Signif_NbOfCharmTightvsBdis_TTtZc->SetBinContent(bin, 0);
+        else if(bkg == 0 && sig != 0 ) Signif_NbOfCharmTightvsBdis_TTtZc->SetBinContent(bin, 1);
+        else if( sig == 0 && bkg == 0 )Signif_NbOfCharmTightvsBdis_TTtZc->SetBinContent(bin, 0);
+      }
+    }
+    
+    
+    
+    TH2F* Signif_NbOfCharmLoosevsBdis_TTtZu = new TH2F("Signif_NbOfCharmLoosevsBdis_TTtZu","Significance;CSVv2 of SMjet;Nb L c jets",NbOfCharmLoosevsBdis_TTtZu->GetNbinsX(),0.4,1,6,0,6 );
+    for(int iBinx = 1; iBinx < NbOfCharmLoosevsBdis_TTtZu->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmLoosevsBdis_TTtZu->GetNbinsY()+1; iBiny++){
+        
+        int bin = NbOfCharmLoosevsBdis_TTtZu->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmLoosevsBdis_TTtZu->GetBinContent(bin);
+        double bkg =  NbOfCharmLoosevsBdis_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_NbOfCharmLoosevsBdis_TTtZu->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 && bkg != 0)Signif_NbOfCharmLoosevsBdis_TTtZu->SetBinContent(bin, 0);
+        else if(bkg == 0 && sig != 0 ) Signif_NbOfCharmLoosevsBdis_TTtZu->SetBinContent(bin, 1);
+        else if( sig == 0 && bkg == 0)Signif_NbOfCharmLoosevsBdis_TTtZu->SetBinContent(bin, 0);
+      }
+    }
+    
+    
+    TH2F* Signif_NbOfCharmMediumvsBdis_TTtZu = new TH2F("Signif_NbOfCharmMediumvsBdis_TTtZu","Significance;CSVv2 of SMjet;Nb M c jets",NbOfCharmMediumvsBdis_TTtZu->GetNbinsX(),0.4,1,6,0,6 );
+    for(int iBinx = 1; iBinx < NbOfCharmMediumvsBdis_TTtZu->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmMediumvsBdis_TTtZu->GetNbinsY()+1; iBiny++){
+        
+        int bin = NbOfCharmMediumvsBdis_TTtZu->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmMediumvsBdis_TTtZu->GetBinContent(bin);
+        double bkg =  NbOfCharmMediumvsBdis_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_NbOfCharmMediumvsBdis_TTtZu->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 && bkg != 0)Signif_NbOfCharmMediumvsBdis_TTtZu->SetBinContent(bin, 0);
+        else if(bkg == 0 && sig != 0) Signif_NbOfCharmMediumvsBdis_TTtZu->SetBinContent(bin, 1);
+        else if( sig == 0 && bkg == 0)Signif_NbOfCharmMediumvsBdis_TTtZu->SetBinContent(bin, 0);
+      }
+    }
+    
+    
+    TH2F* Signif_NbOfCharmTightvsBdis_TTtZu = new TH2F("Signif_NbOfCharmTightvsBdis_TTtZu","Significance;CSVv2 of SMjet;Nb T c jets",NbOfCharmTightvsBdis_TTtZu->GetNbinsX(),0.4,1,6,0,6 );
+    for(int iBinx = 1; iBinx < NbOfCharmTightvsBdis_TTtZu->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmTightvsBdis_TTtZu->GetNbinsY()+1; iBiny++){
+        
+        
+        int bin = NbOfCharmTightvsBdis_TTtZu->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmTightvsBdis_TTtZu->GetBinContent(bin);
+        double bkg =  NbOfCharmTightvsBdis_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_NbOfCharmTightvsBdis_TTtZu->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 && bkg != 0)Signif_NbOfCharmTightvsBdis_TTtZu->SetBinContent(bin, 0);
+        else if(bkg == 0 && sig != 0) Signif_NbOfCharmTightvsBdis_TTtZu->SetBinContent(bin, 1);
+        else if( sig == 0 && bkg == 0)Signif_NbOfCharmTightvsBdis_TTtZu->SetBinContent(bin, 0);
+      }
+    }
+    
+    
+    
+    
+    
+    //// 2D histo's
+    
+    
+    TH2F* Signif_NbOfCharmLoosevsBdis_STtZc = new TH2F("Signif_NbOfCharmLoosevsBdis_STtZc","Significance;CSVv2 of SMjet;Nb L c jets",NbOfCharmLoosevsBdis_STtZc->GetNbinsX(),0.4,1,6,0,6 );
+    for(int iBinx = 1; iBinx < NbOfCharmLoosevsBdis_STtZc->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmLoosevsBdis_STtZc->GetNbinsY()+1; iBiny++){
+        
+        int bin = NbOfCharmLoosevsBdis_STtZc->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmLoosevsBdis_STtZc->GetBinContent(bin);
+        double bkg =  NbOfCharmLoosevsBdis_WZ_STSR->GetBinContent(bin);
+        
+        Signif_NbOfCharmLoosevsBdis_STtZc->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 )Signif_NbOfCharmLoosevsBdis_STtZc->SetBinContent(bin, 0);
+        else if(bkg == 0) Signif_NbOfCharmLoosevsBdis_STtZc->SetBinContent(bin, 1);
+      }
+    }
+    
+    
+    TH2F* Signif_NbOfCharmMediumvsBdis_STtZc = new TH2F("Signif_NbOfCharmMediumvsBdis_STtZc","Significance;CSVv2 of SMjet;Nb M c jets",NbOfCharmMediumvsBdis_STtZc->GetNbinsX(),0.4,1,6,0,6 );
+    for(int iBinx = 1; iBinx < NbOfCharmMediumvsBdis_STtZc->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmMediumvsBdis_STtZc->GetNbinsY()+1; iBiny++){
+        
+        int bin = NbOfCharmMediumvsBdis_STtZc->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmMediumvsBdis_STtZc->GetBinContent(bin);
+        double bkg =  NbOfCharmMediumvsBdis_WZ_STSR->GetBinContent(bin);
+        
+        Signif_NbOfCharmMediumvsBdis_STtZc->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 )Signif_NbOfCharmMediumvsBdis_STtZc->SetBinContent(bin, 0);
+        else if(bkg == 0) Signif_NbOfCharmMediumvsBdis_STtZc->SetBinContent(bin, 1);
+      }
+    }
+    
+    
+    TH2F* Signif_NbOfCharmTightvsBdis_STtZc = new TH2F("Signif_NbOfCharmTightvsBdis_STtZc","Significance;CSVv2 of SM jet;Nb T c jets",NbOfCharmTightvsBdis_STtZc->GetNbinsX(),0.4,1,6,0,6 );
+    for(int iBinx = 1; iBinx < NbOfCharmTightvsBdis_STtZc->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmTightvsBdis_STtZc->GetNbinsY()+1; iBiny++){
+        
+        int bin = NbOfCharmTightvsBdis_STtZc->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmTightvsBdis_STtZc->GetBinContent(bin);
+        double bkg =  NbOfCharmTightvsBdis_WZ_STSR->GetBinContent(bin);
+        
+        Signif_NbOfCharmTightvsBdis_STtZc->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 && bkg != 0)Signif_NbOfCharmTightvsBdis_STtZc->SetBinContent(bin, 0);
+        else if(bkg == 0 && sig != 0) Signif_NbOfCharmTightvsBdis_STtZc->SetBinContent(bin, 1);
+        else if( sig == 0 && bkg == 0)Signif_NbOfCharmTightvsBdis_STtZc->SetBinContent(bin, 0);
+      }
+    }
+    
+    
+    
+     TH2F* Signif_NbOfCharmLoosevsBdis_STtZu = new TH2F("Signif_NbOfCharmLoosevsBdis_STtZu","Significance;CSVv2 of SMjet;Nb c L jets",NbOfCharmLoosevsBdis_STtZu->GetNbinsX(),0.4,1,6,0,6 );
+    for(int iBinx = 1; iBinx < NbOfCharmLoosevsBdis_STtZu->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmLoosevsBdis_STtZu->GetNbinsY()+1; iBiny++){
+        
+        int bin = NbOfCharmLoosevsBdis_STtZu->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmLoosevsBdis_STtZu->GetBinContent(bin);
+        double bkg =  NbOfCharmLoosevsBdis_WZ_STSR->GetBinContent(bin);
+        
+        Signif_NbOfCharmLoosevsBdis_STtZu->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 && bkg != 0)Signif_NbOfCharmLoosevsBdis_STtZu->SetBinContent(bin, 0);
+        else if(bkg == 0 && sig != 0) Signif_NbOfCharmLoosevsBdis_STtZu->SetBinContent(bin, 1);
+        else if( sig == 0 && bkg == 0)Signif_NbOfCharmLoosevsBdis_STtZu->SetBinContent(bin, 0);
+      }
+    }
+    
+    
+    TH2F* Signif_NbOfCharmMediumvsBdis_STtZu = new TH2F("Signif_NbOfCharmMediumvsBdis_STtZu","Significance;CSVv2 of SM jet;Nb M c jets",NbOfCharmMediumvsBdis_STtZu->GetNbinsX(),0.4,1,6,0,6 );
+    for(int iBinx = 1; iBinx < NbOfCharmMediumvsBdis_STtZu->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmMediumvsBdis_STtZu->GetNbinsY()+1; iBiny++){
+        
+        int bin = NbOfCharmMediumvsBdis_STtZu->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmMediumvsBdis_STtZu->GetBinContent(bin);
+        double bkg =  NbOfCharmMediumvsBdis_WZ_STSR->GetBinContent(bin);
+        
+        Signif_NbOfCharmMediumvsBdis_STtZu->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 && bkg != 0 )Signif_NbOfCharmMediumvsBdis_STtZu->SetBinContent(bin, 0);
+        else if(bkg == 0 && sig != 0) Signif_NbOfCharmMediumvsBdis_STtZu->SetBinContent(bin, 1);
+        else if( sig == 0 && bkg == 0 )Signif_NbOfCharmMediumvsBdis_STtZu->SetBinContent(bin, 0);
+      }
+    }
+    
+    
+    TH2F* Signif_NbOfCharmTightvsBdis_STtZu = new TH2F("Signif_NbOfCharmTightvsBdis_STtZu","Significance;CSVv2 of SM jet;Nb T c jets",NbOfCharmTightvsBdis_STtZu->GetNbinsX(),0.4,1,6,0,6 );
+    for(int iBinx = 1; iBinx < NbOfCharmTightvsBdis_STtZu->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < NbOfCharmTightvsBdis_STtZu->GetNbinsY()+1; iBiny++){
+        
+        
+        int bin = NbOfCharmTightvsBdis_STtZu->GetBin(iBinx,iBiny);
+        
+        double sig= NbOfCharmTightvsBdis_STtZu->GetBinContent(bin);
+        double bkg =  NbOfCharmTightvsBdis_WZ_STSR->GetBinContent(bin);
+        
+        Signif_NbOfCharmTightvsBdis_STtZu->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 && bkg != 0)Signif_NbOfCharmTightvsBdis_STtZu->SetBinContent(bin, 0);
+        else if(bkg == 0 && sig != 0) Signif_NbOfCharmTightvsBdis_STtZu->SetBinContent(bin, 1);
+        else if( sig == 0 && bkg == 0)Signif_NbOfCharmTightvsBdis_STtZu->SetBinContent(bin, 0);
+      }
+    }
+    
+    
+    
+    th1dir = filecjets->mkdir("2D_histograms_BdisLjet_CharmID_TTtZcvsWZ_TTSR");
+    th1dir->cd();
+    
+    TH2F* Signif_CharmIDvsBdis_TTtZc = new TH2F("Signif_CharmIDvsBdis_TTtZc","Significance;CSVv2 FCNC jet;ID c jet",CharmIDvsBdis_TTtZc->GetNbinsX(),0,1,4,0,4 );
+    for(int iBinx = 1; iBinx < CharmIDvsBdis_TTtZc->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < CharmIDvsBdis_TTtZc->GetNbinsY()+1; iBiny++){
+        
+        int bin = CharmIDvsBdis_TTtZc->GetBin(iBinx,iBiny);
+        
+        double sig= CharmIDvsBdis_TTtZc->GetBinContent(bin);
+        double bkg =  CharmIDvsBdis_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_CharmIDvsBdis_TTtZc->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 && bkg != 0 )Signif_CharmIDvsBdis_TTtZc->SetBinContent(bin, 0);
+        else if(bkg == 0 && sig != 0) Signif_CharmIDvsBdis_TTtZc->SetBinContent(bin, 1);
+        else if(bkg == 0 && sig == 0) Signif_CharmIDvsBdis_TTtZc->SetBinContent(bin, 0);
+      }
+    }
+    
+    
+    
+    TH2F* Signif_CharmIDvsBdis_TTtZu = new TH2F("Signif_CharmIDvsBdis_TTtZu","Significance;CSVv2  FCNC jet;ID cjet",CharmIDvsBdis_TTtZu->GetNbinsX(),0,1,4,0,4 );
+    for(int iBinx = 1; iBinx < CharmIDvsBdis_TTtZu->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < CharmIDvsBdis_TTtZu->GetNbinsY()+1; iBiny++){
+        
+        int bin = CharmIDvsBdis_TTtZu->GetBin(iBinx,iBiny);
+        
+        double sig= CharmIDvsBdis_TTtZu->GetBinContent(bin);
+        double bkg =  CharmIDvsBdis_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_CharmIDvsBdis_TTtZu->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 && bkg != 0)Signif_CharmIDvsBdis_TTtZu->SetBinContent(bin, 0);
+        else if(bkg == 0 && sig != 0) Signif_CharmIDvsBdis_TTtZu->SetBinContent(bin, 1);
+        else if( sig == 0 && bkg == 0)Signif_CharmIDvsBdis_TTtZu->SetBinContent(bin, 0);
+      }
+    }
+    
+  
+    th1dir = filecjets->mkdir("2D_histograms_BdisJets_CharmID");
+    th1dir->cd();
+    
+    TH2F* Signif_CharmIDvsjBdis_TTtZc = new TH2F("Signif_CharmIDvsjBdis_TTtZc","Significance;CSVv2 all jets (no SM b);ID cjet",CharmIDvsjBdis_TTtZc->GetNbinsX(),0,1,4,0,4 );
+    for(int iBinx = 1; iBinx < CharmIDvsjBdis_TTtZc->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < CharmIDvsjBdis_TTtZc->GetNbinsY()+1; iBiny++){
+        
+        int bin = CharmIDvsjBdis_TTtZc->GetBin(iBinx,iBiny);
+        
+        double sig= CharmIDvsjBdis_TTtZc->GetBinContent(bin);
+        double bkg =  CharmIDvsjBdis_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_CharmIDvsjBdis_TTtZc->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 && bkg!=0)Signif_CharmIDvsjBdis_TTtZc->SetBinContent(bin, 0);
+        else if(bkg == 0 && sig != 0) Signif_CharmIDvsjBdis_TTtZc->SetBinContent(bin, 1);
+        else if( sig == 0 && bkg==0) Signif_CharmIDvsjBdis_TTtZc->SetBinContent(bin, 0);
+      }
+    }
+    
+    
+    
+    TH2F* Signif_CharmIDvsjBdis_TTtZu = new TH2F("Signif_CharmIDvsjBdis_TTtZu","Significance;CSVv2 all jets (no SM b);ID cjet",CharmIDvsjBdis_TTtZu->GetNbinsX(),0,1,4,0,4 );
+    for(int iBinx = 1; iBinx < CharmIDvsjBdis_TTtZu->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < CharmIDvsjBdis_TTtZu->GetNbinsY()+1; iBiny++){
+        
+        int bin = CharmIDvsjBdis_TTtZu->GetBin(iBinx,iBiny);
+        
+        double sig= CharmIDvsjBdis_TTtZu->GetBinContent(bin);
+        double bkg =  CharmIDvsjBdis_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_CharmIDvsjBdis_TTtZu->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 )Signif_CharmIDvsjBdis_TTtZu->SetBinContent(bin, 0);
+        else if(bkg == 0) Signif_CharmIDvsjBdis_TTtZu->SetBinContent(bin, 1);
+        
+      }
+    }
+    th1dir = filecjets->mkdir("2D_histograms_Bdis_noCharmID");
+    th1dir->cd();
+    
+    TH2F* Signif_CharmIDnotvsBdis_TTtZc = new TH2F("Signif_CharmIDnotvsBdis_TTtZc","Significance;CSVv2 FCNC jet;not ID c jet",CharmIDnotvsBdis_TTtZc->GetNbinsX(),0,1,4,0,4 );
+    for(int iBinx = 1; iBinx < CharmIDnotvsBdis_TTtZc->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < CharmIDnotvsBdis_TTtZc->GetNbinsY()+1; iBiny++){
+        
+        int bin = CharmIDnotvsBdis_TTtZc->GetBin(iBinx,iBiny);
+        
+        double sig= CharmIDnotvsBdis_TTtZc->GetBinContent(bin);
+        double bkg =  CharmIDnotvsBdis_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_CharmIDnotvsBdis_TTtZc->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 && bkg != 0)Signif_CharmIDnotvsBdis_TTtZc->SetBinContent(bin, 0);
+        else if(bkg == 0 && sig != 0) Signif_CharmIDnotvsBdis_TTtZc->SetBinContent(bin, 1);
+        else if(sig == 0 && bkg == 0) Signif_CharmIDnotvsBdis_TTtZc->SetBinContent(bin, 0);
+      }
+    }
+    
+    
+    
+    TH2F* Signif_CharmIDnotvsBdis_TTtZu = new TH2F("Signif_CharmIDnotvsBdis_TTtZu","Significance;CSVv2  FCNC jet;not ID cjet",CharmIDnotvsBdis_TTtZu->GetNbinsX(),0,1,4,0,4 );
+    for(int iBinx = 1; iBinx < CharmIDnotvsBdis_TTtZu->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < CharmIDnotvsBdis_TTtZu->GetNbinsY()+1; iBiny++){
+        
+        int bin = CharmIDnotvsBdis_TTtZu->GetBin(iBinx,iBiny);
+        
+        double sig= CharmIDnotvsBdis_TTtZu->GetBinContent(bin);
+        double bkg =  CharmIDnotvsBdis_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_CharmIDnotvsBdis_TTtZu->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 && bkg != 0)Signif_CharmIDnotvsBdis_TTtZu->SetBinContent(bin, 0);
+        else if(bkg == 0 && sig != 0) Signif_CharmIDnotvsBdis_TTtZu->SetBinContent(bin, 1);
+        else if(sig == 0 && bkg == 0) Signif_CharmIDnotvsBdis_TTtZu->SetBinContent(bin, 0);
+      }
+    }
+    
+    
+    
+    TH2F* Signif_CharmIDnotvsjBdis_TTtZc = new TH2F("Signif_CharmIDnotvsjBdis_TTtZc","Significance;CSVv2 all jets (no SM b);not ID cjet",CharmIDnotvsjBdis_TTtZc->GetNbinsX(),0,1,4,0,4 );
+    for(int iBinx = 1; iBinx < CharmIDnotvsjBdis_TTtZc->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < CharmIDnotvsjBdis_TTtZc->GetNbinsY()+1; iBiny++){
+        
+        int bin = CharmIDnotvsjBdis_TTtZc->GetBin(iBinx,iBiny);
+        
+        double sig= CharmIDnotvsjBdis_TTtZc->GetBinContent(bin);
+        double bkg =  CharmIDnotvsjBdis_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_CharmIDnotvsjBdis_TTtZc->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 && bkg != 0 )Signif_CharmIDnotvsjBdis_TTtZc->SetBinContent(bin, 0);
+        else if(bkg == 0 && sig != 0) Signif_CharmIDnotvsjBdis_TTtZc->SetBinContent(bin, 1);
+        else if(sig == 0 && bkg == 0) Signif_CharmIDnotvsjBdis_TTtZc->SetBinContent(bin, 0);
+      }
+    }
+    
+    
+     TH2F* Signif_CharmIDnotvsjBdis_TTtZu = new TH2F("Signif_CharmIDnotvsjBdis_TTtZu","Significance;CSVv2 all jets (no SM b);not ID cjet",CharmIDnotvsjBdis_TTtZu->GetNbinsX(),0,1,4,0,4 );
+    for(int iBinx = 1; iBinx < CharmIDnotvsjBdis_TTtZu->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < CharmIDnotvsjBdis_TTtZu->GetNbinsY()+1; iBiny++){
+        
+        int bin = CharmIDnotvsjBdis_TTtZu->GetBin(iBinx,iBiny);
+        
+        double sig= CharmIDnotvsjBdis_TTtZu->GetBinContent(bin);
+        double bkg =  CharmIDnotvsjBdis_WZ_TTSR->GetBinContent(bin);
+        
+        Signif_CharmIDnotvsjBdis_TTtZu->SetBinContent(bin, sig/sqrt(bkg));
+        if( sig == 0 && bkg != 0 )Signif_CharmIDnotvsjBdis_TTtZu->SetBinContent(bin, 0);
+        else if(bkg == 0 && sig != 0) Signif_CharmIDnotvsjBdis_TTtZu->SetBinContent(bin, 1);
+        else if(sig == 0 && bkg == 0) Signif_CharmIDnotvsjBdis_TTtZu->SetBinContent(bin, 0);
+      }
+    }
+
+    
+    
+    filecjets->Write();
+    filecjets->Close();
     
   }
+  
+  
   
   
   
@@ -2523,74 +5259,168 @@ int main(int argc, char* argv[]){
     
     charmscalefactorsfile = TFile::Open( charmscalefactorsfilename.c_str(), "RECREATE" );
     
+    
+    SumNormal_charm = (TH2F*) (Charm_Histo_sum)->Clone("SumNormal_charm");
+    dataNormal_charm = (TH2F*) (Charm_Histo_data)->Clone("dataNormal_charm");
     SumNormal_cvsb = (TH1F*) (CvsB_Histo_sum)->Clone("SumNormal_cvsb");
-    SumNormal_cvsl = (TH1F*) (CvsL_Histo_sum)->Clone("SumNormal_cvsl");
     dataNormal_cvsb = (TH1F*) (CvsB_Histo_data)->Clone("dataNormal_cvsb");
+    SumNormal_cvsl = (TH1F*) (CvsL_Histo_sum)->Clone("SumNormal_cvsl");
     dataNormal_cvsl = (TH1F*) (CvsL_Histo_data)->Clone("dataNormal_cvsl");
     
+    SumNormal_charm->Scale(1/SumNormal_charm->Integral());
+    dataNormal_charm->Scale(1/dataNormal_charm->Integral());
     SumNormal_cvsb->Scale(1/SumNormal_cvsb->Integral());
+    dataNormal_cvsb->Scale(1/dataNormal_cvsb->Integral());
     SumNormal_cvsl->Scale(1/SumNormal_cvsl->Integral());
-    dataNormal_cvsb->Scale(1/SumNormal_cvsb->Integral());
-    dataNormal_cvsl->Scale(1/SumNormal_cvsl->Integral());
+    dataNormal_cvsl->Scale(1/dataNormal_cvsl->Integral());
     
+   // charm_SFHisto = (TH2F*) dataNormal_charm->Clone("charm_SFHisto");
     charm_SFHisto_cvsb = (TH1F*) dataNormal_cvsb->Clone("charm_SFHisto_cvsb");
     charm_SFHisto_cvsl = (TH1F*) dataNormal_cvsl->Clone("charm_SFHisto_cvsl");
     
+  //  charm_SFHisto->Divide((TH2F*)SumNormal_charm);
     charm_SFHisto_cvsb->Divide((TH1F*)SumNormal_cvsb);
     charm_SFHisto_cvsl->Divide((TH1F*)SumNormal_cvsl);
     
-    charmscalefactorsfile->cd();
     
+     charm_SFHisto  = new TH2F("charm_SFHisto", "charm_SFHisto" , nbin_charmVSb,-1, 1, nbin_charmVSl,-0.6, 1);
     
-    CvsB_Histo_data->Write();
-    CvsB_Histo_sum->Write();
-    CvsL_Histo_data->Write();
-    CvsL_Histo_sum->Write();
-    SumNormal_cvsb->Write();
-    SumNormal_cvsl->Write();
-    dataNormal_cvsb->Write();
-    dataNormal_cvsl->Write();
-    charm_SFHisto_cvsl->Write();
-    charm_SFHisto_cvsb->Write();
+    int bin = -1;
+    double bincontent = -1000;
+    double binerror = -1000;
+    double  binerror1 = -1000;
+    double  binerror2 = -1000;
+    for(int iBx = 1; iBx < dataNormal_charm->GetNbinsX()+1 ; iBx++){
+      for(int iBy = 1; iBy < dataNormal_charm->GetNbinsY()+1 ; iBy++){
+        bin = dataNormal_charm->GetBin(iBx,iBy );
+        bincontent = dataNormal_charm->GetBinContent(bin) / SumNormal_charm->GetBinContent(bin);
+        binerror1 = ((dataNormal_charm->GetBinError(bin)*dataNormal_charm->GetBinError(bin)) / (SumNormal_charm->GetBinContent(bin)*SumNormal_charm->GetBinContent(bin)));
+        binerror2 =  ((SumNormal_charm->GetBinContent(bin)*SumNormal_charm->GetBinContent(bin))* (dataNormal_charm->GetBinContent(bin)*dataNormal_charm->GetBinContent(bin))) /(SumNormal_charm->GetBinContent(bin)*SumNormal_charm->GetBinContent(bin));
+        binerror = sqrt(binerror1+binerror2);
+        //cout << bincontent << endl;
+        charm_SFHisto->SetBinContent(iBx,iBy, bincontent);
+        charm_SFHisto->SetBinError(iBx,iBy, binerror);
+      }
+    }
     
     
     charm_SFHisto_cvsb_up = (TH1F*) charm_SFHisto_cvsb->Clone("charm_SFHisto_cvsb_up");
-    charm_SFHisto_cvsl_up = (TH1F*) charm_SFHisto_cvsl->Clone("charm_SFHisto_cvsl_up");
     charm_SFHisto_cvsb_down = (TH1F*) charm_SFHisto_cvsb->Clone("charm_SFHisto_cvsb_down");
+    charm_SFHisto_cvsl_up = (TH1F*) charm_SFHisto_cvsl->Clone("charm_SFHisto_cvsl_up");
     charm_SFHisto_cvsl_down = (TH1F*) charm_SFHisto_cvsl->Clone("charm_SFHisto_cvsl_down");
-    double binerror;
-    double bincontent;
-    for(int ibin = 1; ibin < charm_SFHisto_cvsb->GetNbinsX(); ibin++){
-      binerror = charm_SFHisto_cvsb->GetBinError(ibin);
-      bincontent = charm_SFHisto_cvsb->GetBinContent(ibin);
-      charm_SFHisto_cvsb_up->SetBinContent(ibin,bincontent + binerror);
-      charm_SFHisto_cvsb_down->SetBinContent(ibin,bincontent - binerror);
-     
-      binerror = charm_SFHisto_cvsl->GetBinError(ibin);
-      bincontent = charm_SFHisto_cvsl->GetBinContent(ibin);
-      charm_SFHisto_cvsl_up->SetBinContent(ibin,bincontent + binerror);
-      charm_SFHisto_cvsl_down->SetBinContent(ibin,bincontent - binerror);
+    charm_SFHisto_up = (TH2F*) charm_SFHisto->Clone("charm_SFHisto_up");
+    charm_SFHisto_down = (TH2F*) charm_SFHisto->Clone("charm_SFHisto_down");
+    for(int iBx = 1; iBx < charm_SFHisto_cvsb->GetNbinsX() ; iBx++){
+      
+      bin = charm_SFHisto_cvsb->GetBin(iBx);
+      bincontent = charm_SFHisto_cvsb->GetBinContent(bin);
+      binerror = charm_SFHisto_cvsb->GetBinError(bin);
+      //cout << bincontent << endl;
+      charm_SFHisto_cvsb_up->SetBinContent(iBx, bincontent + binerror);
+      charm_SFHisto_cvsb_down->SetBinContent(iBx, bincontent - binerror);
+      
+      
     }
+    for(int iBx = 1; iBx < charm_SFHisto_cvsl->GetNbinsX() ; iBx++){
+      
+      bin = charm_SFHisto_cvsl->GetBin(iBx);
+      bincontent = charm_SFHisto_cvsl->GetBinContent(bin);
+      binerror = charm_SFHisto_cvsl->GetBinError(bin);
+      //cout << bincontent << endl;
+      charm_SFHisto_cvsl_up->SetBinContent(iBx, bincontent + binerror);
+      charm_SFHisto_cvsl_down->SetBinContent(iBx, bincontent - binerror);
+      
+    }
+    for(int iBx = 1; iBx < charm_SFHisto->GetNbinsX() ; iBx++){
+      for(int iBy = 1; iBy < charm_SFHisto->GetNbinsY() ; iBy++){
+        bin = charm_SFHisto->GetBin(iBx,iBy );
+        bincontent = charm_SFHisto->GetBinContent(bin) ;
+        binerror =charm_SFHisto->GetBinError(bin) ;
+        //cout << bincontent << endl;
+        charm_SFHisto_up->SetBinContent(iBx,iBy, bincontent  + binerror);
+        charm_SFHisto_down->SetBinContent(iBx,iBy, bincontent - binerror);
+      }
+    }
+
+
+
+
+    charmscalefactorsfile->cd();
     
-    charm_SFHisto_cvsl_up->Write();
+    Charm_Histo_data->Write();
+    Charm_Histo_sum->Write();
+    SumNormal_charm->Write();
+    dataNormal_charm->Write();
+    charm_SFHisto->Write();
+    
+    CvsB_Histo_data->Write();
+    CvsB_Histo_sum->Write();
+    SumNormal_cvsb->Write();
+    dataNormal_cvsb->Write();
+    charm_SFHisto_cvsb->Write();
+    
+    CvsL_Histo_data->Write();
+    CvsL_Histo_sum->Write();
+    SumNormal_cvsl->Write();
+    dataNormal_cvsl->Write();
+    charm_SFHisto_cvsl->Write();
+    
     charm_SFHisto_cvsb_up->Write();
-    charm_SFHisto_cvsl_down->Write();
     charm_SFHisto_cvsb_down->Write();
-    
-    
+    charm_SFHisto_cvsl_up->Write();
+    charm_SFHisto_cvsl_down->Write();
+    charm_SFHisto_up->Write();
+    charm_SFHisto_down->Write();
+  
     
     
     charmscalefactorsfile->Write();
     charmscalefactorsfile->Close();
-    delete CvsB_Histo_sum;
-    delete CvsB_Histo_data;
-    delete CvsL_Histo_data;
-    delete CvsL_Histo_sum;
+    
     
     delete charmscalefactorsfile;
   }
   
-
+  if(dofakesf){
+    
+    
+    
+    fakescalefactorsfile = TFile::Open( fakescalefactorsfilename.c_str(), "RECREATE" );
+    
+    SumNormal_fake = (TH1F*) (fake_Histo_sum)->Clone("SumNormal_fake");  // DY
+    dataNormal_fake = (TH1F*) (fake_Histo_data)->Clone("dataNormal_fake"); // DD fake
+    
+    SumNormal_fake->Scale(1/SumNormal_fake->Integral());
+    dataNormal_fake->Scale(1/dataNormal_fake->Integral());
+    
+    fake_SFHisto = new TH1F("fake_SFHisto", "fake_SFHisto" , 10,0,300);
+    double bincontent = -10000;
+    for(int iBin = 1; iBin < SumNormal_fake->GetNbinsX()+1; iBin++){
+      bincontent = SumNormal_fake->GetBinContent(iBin)/ dataNormal_fake->GetBinContent(iBin);
+      fake_SFHisto->SetBinContent(iBin, bincontent);
+      fake_SFHisto->SetBinError(iBin, bincontent);
+    }
+   
+    
+    fakescalefactorsfile->cd();
+    
+    
+    fake_Histo_data->Write();
+    fake_Histo_sum->Write();
+     SumNormal_fake->Write();
+     dataNormal_fake->Write();
+     fake_SFHisto->Write();
+    
+    
+    
+    
+    fakescalefactorsfile->Write();
+    fakescalefactorsfile->Close();
+    delete fake_Histo_sum;
+    delete fake_Histo_data;
+    
+    delete fakescalefactorsfile;
+  }
   
   
   if(checktrigger){
@@ -2736,7 +5566,7 @@ int main(int argc, char* argv[]){
   ///*****************///
   ///   Write plots   ///
   ///*****************///
-  if(makePlots || dofakevalidation || makeMatchingPlots || systematicplots){
+  if(makePlots || dofakevalidation || makeMatchingPlots || systematicplots || findFakeDisc){
     string rootFileName ="NtuplePlots.root";
     string place =pathOutputdate+"/MSPlot/";
     string placeTH1F = pathOutputdate+"/TH1F/";
@@ -2850,23 +5680,30 @@ int main(int argc, char* argv[]){
             {
               TH1F *temp = it->second;
               string name = it->first;
+              
               if(name.find(plotnames[iv].c_str())==std::string::npos) continue;
               if(name.find(channelst.c_str())==std::string::npos) continue;
-              
+             // if(name.find("uuu")!=std::string::npos || name.find("uue")!=std::string::npos || name.find("euu")!=std::string::npos || name.find("eee")!=std::string::npos) continue;
+              //cout << name << endl;
               if(name.find("data")!=std::string::npos){
+                //cout << "data" << endl;
                 if(tempdata == 0) tempdata = (TH1F*) temp;
                 else tempdata->Add((TH1F*) temp);
               }
-              if(name.find("fake")!=std::string::npos){
+              else if(name.find("fake")!=std::string::npos){
+              //  cout << "fake" << endl;
                 if(tempfake == 0) tempfake = (TH1F*) temp;
                 else tempfake->Add((TH1F*) temp);
               }
-              if(name.find("DY")!=std::string::npos || name.find("Zjets")!=std::string::npos || dataSetName.find("TT")!=std::string::npos || dataSetName.find("WW")!=std::string::npos ){
+              else if(name.find("DY")!=std::string::npos  || dataSetName.find("TT")!=std::string::npos || dataSetName.find("WW")!=std::string::npos ){
+             //   cout << "DY" << endl;
                 if(tempDY == 0) tempDY = (TH1F*) temp;
                 else tempDY->Add((TH1F*) temp);
               }
               
             }
+            
+            //cout << "scaling" <<endl;
             tempfake->Scale(1./tempfake->Integral());
             tempdata->Scale(1./tempdata->Integral());
             tempDY->Scale(1./tempDY->Integral());
@@ -2897,10 +5734,10 @@ int main(int argc, char* argv[]){
             tempDY->Draw("same histo e");
             legfakes->Draw("");
             Canvasfakes->Update();
-            Canvasfakes->SaveAs( ("fakevalidation_"+plotnames[iv]+poststring+channelst+".png").c_str());
+            Canvasfakes->SaveAs( ("fakevali/fakevalidation_"+plotnames[iv]+poststring+channelst+".png").c_str());
             Canvasfakes->SetLogy();
             Canvasfakes->Update();
-            Canvasfakes->SaveAs( ("fakevalidation_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str() );
+            Canvasfakes->SaveAs( ("fakevali/fakevalidation_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str() );
             
             TH1F* ratioFakeVsFake = (TH1F*) tempDY->Clone("ratioFakeVsFake");
             ratioFakeVsFake->Divide((TH1F*) tempfake);
@@ -2920,10 +5757,10 @@ int main(int argc, char* argv[]){
             ratioFakeVsFake->Draw("histo e");
             line->Draw("same");
             Canvasfakes->Update();
-            // Canvasfakes->SaveAs( ("fakevalidation_ratiofakes_"+plotnames[iv]+poststring+channelst+".png").c_str());
+             Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiofakes_"+plotnames[iv]+poststring+channelst+".png").c_str());
             Canvasfakes->SetLogy();
             Canvasfakes->Update();
-            // Canvasfakes->SaveAs( ("fakevalidation_ratiofakes_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str());
+           Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiofakes_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str());
             
             TH1F* ratioFakeVsData = (TH1F*) tempdata->Clone("ratioFakeVsData");
             ratioFakeVsData->Divide((TH1F*) tempfake);
@@ -2937,10 +5774,10 @@ int main(int argc, char* argv[]){
             ratioFakeVsData->Draw("histo e");
             line->Draw("same");
             Canvasfakes->Update();
-            // Canvasfakes->SaveAs( ("fakevalidation_ratiodata_"+plotnames[iv]+poststring+channelst+".png").c_str());
+             Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiodata_"+plotnames[iv]+poststring+channelst+".png").c_str());
             Canvasfakes->SetLogy();
             Canvasfakes->Update();
-            // Canvasfakes->SaveAs( ("fakevalidation_ratiodata_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str());
+             Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiodata_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str());
             
             legfakes = new TLegend(xl1,yl1,xl2,yl2);
             legfakes->AddEntry(ratioFakeVsData,"DD non prompt/Data","L");   // h1 and h2 are histogram pointers
@@ -2961,16 +5798,157 @@ int main(int argc, char* argv[]){
             line->Draw("same");
             legfakes->Draw("");
             Canvasfakes->Update();
-            Canvasfakes->SaveAs( ("fakevalidation_ratio_"+plotnames[iv]+poststring+channelst+".png").c_str());
+            Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratio_"+plotnames[iv]+poststring+channelst+".png").c_str());
             Canvasfakes->SetLogy();
             Canvasfakes->Update();
-            Canvasfakes->SaveAs( ("fakevalidation_ratio_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str());
+            Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratio_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str());
           }
         }
         
       }
     }
-    if(systematicplots){
+    if(findFakeDisc){
+      TDirectory* th1dirfakes = fout->mkdir("1D_histograms_fakedisc");
+      th1dirfakes->cd();
+      gStyle->SetOptStat(0);
+      
+      string poststring = "";
+      string posttitle = " channel";
+      
+      vector<string> channames = {"all","eee","uuu","uue","eeu"};
+      vector<string> chantitle = {"all","3e","3#mu","1e2#mu","2e1#mu"};
+      
+      
+      vector<string> plotnames ;
+      std::string splitname = "";
+      char seperator = '_';
+      vector<string> plottitles;
+      for (std::map<std::string,TH1F*>::const_iterator it = histo1D_fakedisc.begin(); it != histo1D_fakedisc.end(); it++)
+      {
+        TH1F *temp = it->second;
+        string name = it->first;
+        if(name.find("all")!=std::string::npos && name.find("fake")!=std::string::npos )
+        {
+          splitname = (split(it->first, seperator))[0];
+          plotnames.push_back(splitname);
+          plottitles.push_back(splitname);
+         // cout << "split " << splitname << endl;
+        }
+      }
+      //cout << "plotnames size " << plotnames.size();
+      
+      
+      string channelst;
+      string channeltitle;
+      
+      vector<string> regionname = {"2lep","3lep"};
+      regionname = {"3lep"};
+      
+      for(int reg = 0; reg < regionname.size(); reg++){
+        
+        for(int icha = 0; icha < channames.size(); icha++){
+          channelst = regionname[reg]+"_"+channames[icha];
+          channeltitle = chantitle[icha];
+          for(int iv = 0; iv < plotnames.size() ; iv++){
+            cout << "LOOKING AT " << plotnames[iv].c_str() << endl;
+            TH1F* tempDY(0);
+            TH1F* tempNP(0);
+            TH1F* tempdata(0);
+            for (std::map<std::string,TH1F*>::const_iterator it = histo1D_fakedisc.begin(); it != histo1D_fakedisc.end(); it++)
+            {
+              TH1F *temp = it->second;
+              string name = it->first;
+              
+              if(name.find(plotnames[iv].c_str())==std::string::npos) continue;
+              if(name.find(channelst.c_str())==std::string::npos) continue;
+              // if(name.find("uuu")!=std::string::npos || name.find("uue")!=std::string::npos || name.find("euu")!=std::string::npos || name.find("eee")!=std::string::npos) continue;
+              cout << name << endl;
+              if(name.find("fake")!=std::string::npos){
+                if(tempdata == 0) tempdata = (TH1F*) temp;
+                else tempdata->Add((TH1F*) temp);
+              }
+              else if(name.find("FCNC")!=std::string::npos){
+                if(tempNP == 0) tempNP = (TH1F*) temp;
+                else tempNP->Add((TH1F*) temp);
+              }
+              else if(name.find("DY")!=std::string::npos || name.find("Zjets")!=std::string::npos || dataSetName.find("TT")!=std::string::npos || dataSetName.find("WW")!=std::string::npos ){
+                if(tempDY == 0) tempDY = (TH1F*) temp;
+                else tempDY->Add((TH1F*) temp);
+              }
+              
+            }
+            tempNP->Write();
+            tempdata->Write();
+            tempDY->Write();
+            
+            tempNP->Scale(1./tempNP->Integral());
+            tempdata->Scale(1./tempdata->Integral());
+            tempDY->Scale(1./tempDY->Integral());
+            
+            tempNP->SetLineColor(kRed);
+            tempDY->SetLineColor(kBlue);
+            tempdata->SetLineColor(kBlack);
+            tempdata->SetMarkerSize(3);
+            TCanvas* Canvasfakes = 0;
+            Double_t xl1=0.5, yl1=.7, xl2=xl1+.4, yl2=yl1+.2;
+            TLegend *legfakes = new TLegend(xl1,yl1,xl2,yl2);
+            
+            legfakes->AddEntry(tempdata,"DD non prompt","L");   // h1 and h2 are histogram pointers
+            legfakes->AddEntry(tempNP,"FCNC","L");
+           // legfakes->AddEntry(tempDY,"MC non prompt","L");
+            
+            double maximum = TMath::Max(TMath::Max(tempNP->GetMaximum(), tempdata->GetMaximum()), tempDY->GetMaximum());
+            tempdata->SetMaximum(maximum*1.5);
+            tempNP->SetMaximum(maximum*1.5);
+            tempDY->SetMaximum(maximum*1.5);
+            
+            tempNP->SetTitle((channeltitle+ posttitle).c_str());
+            tempNP->GetXaxis()->SetTitle(plottitles[iv].c_str());
+            
+            
+            
+            Canvasfakes =  TCanvasCreator(tempNP, "tempNP" );//new TCanvas("Canvas_PU","Canvas_PU");
+            Canvasfakes->cd();
+            tempdata->Draw("histo e");
+            tempNP->Draw("e same histo");
+           // tempDY->Draw("same histo e");
+            legfakes->Draw("");
+            Canvasfakes->Update();
+            Canvasfakes->SaveAs( ("fakedisc/fakedisc_"+plotnames[iv]+poststring+channelst+".png").c_str());
+            Canvasfakes->SetLogy();
+            Canvasfakes->Update();
+            Canvasfakes->SaveAs( ("fakedisc/fakedisc_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str() );
+            
+            TH1F* ratioFakeVsFake = (TH1F*) tempdata->Clone("ratioFakeVsFake");
+            ratioFakeVsFake->Divide((TH1F*) tempNP);
+            
+            
+            double xmaxfakesVsfake = ratioFakeVsFake->GetXaxis()->GetBinLowEdge(ratioFakeVsFake->GetNbinsX()+1);
+            double xminfakesVsfake = ratioFakeVsFake->GetXaxis()->GetBinLowEdge(1);
+            TLine *line = new TLine(xminfakesVsfake,1, xmaxfakesVsfake,1);
+            line->SetLineColor(kGray);
+            
+            ratioFakeVsFake->SetTitle((channeltitle+posttitle).c_str());
+            ratioFakeVsFake->GetYaxis()->SetTitle("DD non prompt/ FCNC");
+            ratioFakeVsFake->GetXaxis()->SetTitle(plottitles[iv].c_str());
+            ratioFakeVsFake->SetMaximum(ratioFakeVsFake->GetMaximum()*1.5);
+            Canvasfakes =  TCanvasCreator(ratioFakeVsFake, "ratioFakeVsFake" );//new TCanvas("Canvas_PU","Canvas_PU");
+            Canvasfakes->cd();
+            ratioFakeVsFake->Draw("histo e");
+            line->Draw("same");
+            Canvasfakes->Update();
+            Canvasfakes->SaveAs( ("fakedisc/fakedisc_ratiofakes_"+plotnames[iv]+poststring+channelst+".png").c_str());
+            Canvasfakes->SetLogy();
+            Canvasfakes->Update();
+            Canvasfakes->SaveAs( ("fakedisc/fakedisc_ratiofakes_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str());
+            
+          }
+        }
+        
+      }
+    }
+    
+      if(systematicplots){
      TDirectory* th1dirsys = fout->mkdir("1D_histograms_sys");
      th1dirsys->cd();
      gStyle->SetOptStat(1110);
@@ -3670,6 +6648,20 @@ int main(int argc, char* argv[]){
     
   }
   
+  
+  if(applyfakesf){
+    delete fake_SFHisto;
+    fakescalefactorsfile->Close();
+    delete fakescalefactorsfile;
+    
+  }
+  if(applycharmsf){
+    delete charm_SFHisto_cvsb;
+    charmscalefactorsfile->Close();
+    delete charmscalefactorsfile;
+    
+  }
+  
   double time = ((double)clock() - start) / CLOCKS_PER_SEC;
   cout << "It took us " << time << " s to run the program" << endl;
   if ( time >= 60 )
@@ -3686,6 +6678,9 @@ int main(int argc, char* argv[]){
     else
       cout << "(This corresponds to " << mins << " min and " << secs << " s)" << endl;
   }
+  
+  
+  
   
   cout << "********************************************" << endl;
   cout << "           End of the program !!            " << endl;
@@ -3818,8 +6813,12 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
     MVA_FCNCtop_eta = static_cast<float>( FCNCtop.Eta());
     MVA_FCNCtop_phi =static_cast<float>( FCNCtop.Phi());
     
-    
+    MVA_cdiscCvsB_cjet = static_cast<float> ( cdiscCvsB_jet[selectedJetsID[cjetindex]]);
+    MVA_cdiscCvsL_cjet = static_cast<float> ( cdiscCvsL_jet[selectedJetsID[cjetindex]]);
   }
+  
+  MVA_cdiscCvsB_highestdisjet = static_cast<float>  ( cdiscCvsB_highestdisjet);
+  MVA_cdiscCvsL_highestdisjet = static_cast<float>  ( cdiscCvsL_highestdisjet);
   
   MVA_nJets_CharmL = static_cast<float>( selectedCharmLJetsindex.size());
   MVA_nJets_CharmM = static_cast<float>( selectedCharmMJetsindex.size());
@@ -4054,6 +7053,12 @@ void createMVAtree(string dataSetName){
   
   
   // FCNC kinematics
+  
+  mvatree->Branch("MVA_cdiscCvsB_cjet", &MVA_cdiscCvsB_cjet, "MVA_cdiscCvsB_cjet/F");
+  mvatree->Branch("MVA_cdiscCvsL_cjet", &MVA_cdiscCvsL_cjet, "MVA_cdiscCvsL_cjet/F");
+  mvatree->Branch("MVA_cdiscCvsB_highestdisjet", &MVA_cdiscCvsB_highestdisjet, "MVA_cdiscCvsB_highestdisjet/F");
+  mvatree->Branch("MVA_cdiscCvsL_highestdisjet", &MVA_cdiscCvsL_highestdisjet, "MVA_cdiscCvsL_highestdisjet/F");
+  
   
   mvatree->Branch("MVA_FCNCtop_M", &MVA_FCNCtop_M, "MVA_FCNCtop_M/F");
   mvatree->Branch("MVA_Zboson_M", &MVA_Zboson_M,"MVA_Zboson_M/F");
@@ -4330,16 +7335,25 @@ void ReconstructObjects(vector<int> selectedJetsID, vector<TLorentzVector> Muons
   else if(ZelecIndiceF_0 != -999 && ZelecIndiceF_1 != -999 ) Zboson = selectedElectrons[ZelecIndiceF_0] + selectedElectrons[ZelecIndiceF_1];
   else cout << "ERROR: Zboson not found " << endl;
   
+  
+  cdiscCvsB_highestdisjet = -100;
+  cdiscCvsL_highestdisjet = -100;
+  for(int itJ = 0 ; itJ < selectedJets.size(); itJ++){
+    if( cdiscCvsB_highestdisjet < cdiscCvsB_jet[selectedJetsID[itJ]]) cdiscCvsB_highestdisjet = cdiscCvsB_jet[selectedJetsID[itJ]];
+    if( cdiscCvsL_highestdisjet < cdiscCvsL_jet[selectedJetsID[itJ]]) cdiscCvsL_highestdisjet = cdiscCvsL_jet[selectedJetsID[itJ]];
+  }
+  
+  
   if(selectedJets.size()>1 )
   {
     //cout << "cjet" << endl;
     cjetindex = FCNCjetCalculator(selectedJets,Zboson ,SMjetIndex, 3);
-    cjetindex_CvsLtagger = FCNCjetCalculatorCvsLTagger(selectedJets,SMjetIndex, 3);
+   /* cjetindex_CvsLtagger = FCNCjetCalculatorCvsLTagger(selectedJets,SMjetIndex, 3);
     cjetindex_CvsBtagger = FCNCjetCalculatorCvsBTagger(selectedJets,SMjetIndex, 3);
     cjetindex_Cloose = FCNCjetCalculatorCwp(selectedJets, selectedCharmLJetsindex,  SMjetIndex, 3);
     cjetindex_Cmedium = FCNCjetCalculatorCwp(selectedJets, selectedCharmMJetsindex,  SMjetIndex, 3);
     cjetindex_Ctight = FCNCjetCalculatorCwp(selectedJets, selectedCharmTJetsindex,  SMjetIndex, 3);
-    
+    */
     if(cjetindex > selectedJets.size() || cjetindex == SMjetIndex) cout << "Warning wrong cjet index " << endl;
     LightJet.SetPxPyPzE(selectedJets[cjetindex].Px(),selectedJets[cjetindex].Py(),selectedJets[cjetindex].Pz(),selectedJets[cjetindex].Energy());
     
@@ -5389,7 +8403,7 @@ void InitFakeValidation(string dataSetName,  vector <int> decayChannels){
   TH1::SetDefaultSumw2();
   string channelstr = "";
   
-  vector<string> v_prefixregion = {"2lep", "3lep"};
+  vector<string> v_prefixregion = {"2lep"};
   if(!doDilep) v_prefixregion = {"3lep"};
   string prefixregion = "";
   for(int iReg = 0; iReg < v_prefixregion.size(); iReg++){
@@ -5409,32 +8423,172 @@ void InitFakeValidation(string dataSetName,  vector <int> decayChannels){
       
       if((decayChannels[iChan] == 4 || decayChannels[iChan] == 5) && prefixregion.find("3lep")!=std::string::npos) continue;
       
-      histo1D_fakevvalidation[("ZbosonPt_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPt_"+channelstr+dataSetName).c_str(),"p_{T} Z boson (GeV)",20,0,500);
-      histo1D_fakevvalidation[("ZbosonEta_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonEta_"+channelstr+dataSetName).c_str(),"#eta Z boson",6,-3,3);
-      histo1D_fakevvalidation[("ZbosonPhi_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPhi_"+channelstr+dataSetName).c_str(),"#phi Z boson",9,-4,4);
+      histo1D_fakevvalidation[("ZbosonPt_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPt_"+channelstr+dataSetName).c_str(),"p_{T} Z boson (GeV)",10,0,500);
+      histo1D_fakevvalidation[("ZbosonEta_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonEta_"+channelstr+dataSetName).c_str(),"#eta Z boson",3,-3,3);
+      histo1D_fakevvalidation[("ZbosonPhi_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPhi_"+channelstr+dataSetName).c_str(),"#phi Z boson",8,-4,4);
       
       histo1D_fakevvalidation[("WlepPt_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPt_"+channelstr+dataSetName).c_str(),"p_{T} l_{W} (GeV)",10,0,450);
-      histo1D_fakevvalidation[("WlepEta_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepEta_"+channelstr+dataSetName).c_str(),"#eta l_{W}",6,-3,3);
+      histo1D_fakevvalidation[("WlepEta_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepEta_"+channelstr+dataSetName).c_str(),"#eta l_{W}",3,-3,3);
       histo1D_fakevvalidation[("WlepPhi_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPhi_"+channelstr+dataSetName).c_str(),"#phi l_{W}",8,-4,4);
       histo1D_fakevvalidation[("TrMassW_"+channelstr+dataSetName).c_str()] = new TH1F(("TrMassW_"+channelstr+dataSetName).c_str(),"transv. mass W boson (GeV)",10,15,300);
       
       histo1D_fakevvalidation[("ZbosonPtMu_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPtMu_"+channelstr+dataSetName).c_str(),"p_{T} Z_{#mu #mu} boson (GeV)",10,0,500);
-      histo1D_fakevvalidation[("ZbosonEtaMu_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonEtaMu_"+channelstr+dataSetName).c_str(),"#eta Z_{#mu #mu} boson",6,-3,3);
-      histo1D_fakevvalidation[("ZbosonPhiMu_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPhiMu_"+channelstr+dataSetName).c_str(),"#phi Z_{#mu #mu} boson",9,-4,4);
+      histo1D_fakevvalidation[("ZbosonEtaMu_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonEtaMu_"+channelstr+dataSetName).c_str(),"#eta Z_{#mu #mu} boson",3,-3,3);
+      histo1D_fakevvalidation[("ZbosonPhiMu_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPhiMu_"+channelstr+dataSetName).c_str(),"#phi Z_{#mu #mu} boson",8,-4,4);
       
       histo1D_fakevvalidation[("WlepPtMu_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPtu_"+channelstr+dataSetName).c_str(),"p_{T} #mu_{W} (GeV)",10,0,500);
-      histo1D_fakevvalidation[("WlepEtaMu_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepEtau_"+channelstr+dataSetName).c_str(),"#eta #mu_{W}",6,-3,3);
+      histo1D_fakevvalidation[("WlepEtaMu_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepEtau_"+channelstr+dataSetName).c_str(),"#eta #mu_{W}",3,-3,3);
       histo1D_fakevvalidation[("WlepPhiMu_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPhiu_"+channelstr+dataSetName).c_str(),"#phi #mu_{W}",8,-4,4);
       histo1D_fakevvalidation[("TrMassWMu_"+channelstr+dataSetName).c_str()] = new TH1F(("TrMassWu_"+channelstr+dataSetName).c_str(),"transv. mass W_{#mu} boson (GeV)",10,15,300);
       
       histo1D_fakevvalidation[("ZbosonPtEl_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPtEl_"+channelstr+dataSetName).c_str(),"p_{T} Z_{ee} boson (GeV)",10,0,500);
-      histo1D_fakevvalidation[("ZbosonEtaEl_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonEtaEl_"+channelstr+dataSetName).c_str(),"#eta Z_{ee} boson",6,-3,3);
-      histo1D_fakevvalidation[("ZbosonPhiEl_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPhiEl_"+channelstr+dataSetName).c_str(),"#phi Z_{ee} boson",9,-4,4);
+      histo1D_fakevvalidation[("ZbosonEtaEl_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonEtaEl_"+channelstr+dataSetName).c_str(),"#eta Z_{ee} boson",3,-3,3);
+      histo1D_fakevvalidation[("ZbosonPhiEl_"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPhiEl_"+channelstr+dataSetName).c_str(),"#phi Z_{ee} boson",8,-4,4);
       
       histo1D_fakevvalidation[("WlepPtEl_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPtEl_"+channelstr+dataSetName).c_str(),"p_{T} e_{W} (GeV)",10,0,500);
-      histo1D_fakevvalidation[("WlepEtaEl_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepEtaEl_"+channelstr+dataSetName).c_str(),"#eta e_{W}",6,-3,3);
+      histo1D_fakevvalidation[("WlepEtaEl_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepEtaEl_"+channelstr+dataSetName).c_str(),"#eta e_{W}",3,-3,3);
       histo1D_fakevvalidation[("WlepPhiEl_"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPhiEl_"+channelstr+dataSetName).c_str(),"#phi e_{W}",8,-4,4);
       histo1D_fakevvalidation[("TrMassWEl_"+channelstr+dataSetName).c_str()] = new TH1F(("TrMassWEl_"+channelstr+dataSetName).c_str(),"transv. mass W_{e} boson (GeV)",10,15,300);
+    }
+  }
+  
+}
+
+void InitFakeDiscriminator(string dataSetName,  vector <int> decayChannels){
+  TH1::SetDefaultSumw2();
+  string channelstr = "";
+  
+  vector<string> v_prefixregion = {"2lep"};
+  if(!doDilep) v_prefixregion = {"3lep"};
+  string prefixregion = "";
+  for(int iReg = 0; iReg < v_prefixregion.size(); iReg++){
+    prefixregion = v_prefixregion[iReg];
+    
+    for(int iChan =0; iChan < decayChannels.size() ; iChan++){
+      
+      channelstr = prefixregion + "_";
+      if(decayChannels[iChan] == 0) channelstr += "uuu";
+      if(decayChannels[iChan] == 1) channelstr += "uue";
+      if(decayChannels[iChan] == 2) channelstr += "eeu";
+      if(decayChannels[iChan] == 3) channelstr += "eee";
+      if(decayChannels[iChan] == -9) channelstr += "all";
+      if(decayChannels[iChan] == 4) channelstr +="uu";
+      if(decayChannels[iChan] == 5) channelstr +="ee";
+      //MSPlot[plotname.c_str()]->setChannel(true, decayChan);
+      
+      if((decayChannels[iChan] == 4 || decayChannels[iChan] == 5) && prefixregion.find("3lep")!=std::string::npos) continue;
+     
+      histo1D_fakedisc[("ZbosonPt"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPt"+channelstr+dataSetName).c_str(),"p_{T} Z boson (GeV)",10,0,500);
+      histo1D_fakedisc[("ZbosonEta"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonEta"+channelstr+dataSetName).c_str(),"#eta Z boson",3,-3,3);
+      histo1D_fakedisc[("ZbosonPhi"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPhi"+channelstr+dataSetName).c_str(),"#phi Z boson",8,-4,4);
+      
+      histo1D_fakedisc[("WlepPt"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPt"+channelstr+dataSetName).c_str(),"p_{T} l_{W} (GeV)",10,0,450);
+      histo1D_fakedisc[("WlepEta"+channelstr+dataSetName).c_str()] = new TH1F(("WlepEta"+channelstr+dataSetName).c_str(),"#eta l_{W}",3,-3,3);
+      histo1D_fakedisc[("WlepPhi"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPhi"+channelstr+dataSetName).c_str(),"#phi l_{W}",8,-4,4);
+      histo1D_fakedisc[("TrMassW"+channelstr+dataSetName).c_str()] = new TH1F(("TrMassW"+channelstr+dataSetName).c_str(),"transv. mass W boson (GeV)",10,15,300);
+      /*
+      histo1D_fakedisc[("ZbosonPtMu"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPtMu"+channelstr+dataSetName).c_str(),"p_{T} Z_{#mu #mu} boson (GeV)",10,0,500);
+      histo1D_fakedisc[("ZbosonEtaMu"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonEtaMu"+channelstr+dataSetName).c_str(),"#eta Z_{#mu #mu} boson",3,-3,3);
+      histo1D_fakedisc[("ZbosonPhiMu"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPhiMu"+channelstr+dataSetName).c_str(),"#phi Z_{#mu #mu} boson",8,-4,4);
+      
+      histo1D_fakedisc[("WlepPtMu"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPtMu"+channelstr+dataSetName).c_str(),"p_{T} #mu_{W} (GeV)",10,0,500);
+      histo1D_fakedisc[("WlepEtaMu"+channelstr+dataSetName).c_str()] = new TH1F(("WlepEtaMu"+channelstr+dataSetName).c_str(),"#eta #mu_{W}",3,-3,3);
+      histo1D_fakedisc[("WlepPhiMu"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPhiMu"+channelstr+dataSetName).c_str(),"#phi #mu_{W}",8,-4,4);
+      histo1D_fakedisc[("TrMassWMu"+channelstr+dataSetName).c_str()] = new TH1F(("TrMassWMu"+channelstr+dataSetName).c_str(),"transv. mass W_{#mu} boson (GeV)",10,15,300);
+      
+      histo1D_fakedisc[("ZbosonPtEl"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPtEl"+channelstr+dataSetName).c_str(),"p_{T} Z_{ee} boson (GeV)",10,0,500);
+      histo1D_fakedisc[("ZbosonEtaEl"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonEtaEl"+channelstr+dataSetName).c_str(),"#eta Z_{ee} boson",3,-3,3);
+      histo1D_fakedisc[("ZbosonPhiEl"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPhiEl"+channelstr+dataSetName).c_str(),"#phi Z_{ee} boson",8,-4,4);
+      
+      histo1D_fakedisc[("WlepPtEl"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPtEl"+channelstr+dataSetName).c_str(),"p_{T} e_{W} (GeV)",10,0,500);
+      histo1D_fakedisc[("WlepEtaEl"+channelstr+dataSetName).c_str()] = new TH1F(("WlepEtaEl"+channelstr+dataSetName).c_str(),"#eta e_{W}",3,-3,3);
+      histo1D_fakedisc[("WlepPhiEl"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPhiEl"+channelstr+dataSetName).c_str(),"#phi e_{W}",8,-4,4);
+      histo1D_fakedisc[("TrMassWEl"+channelstr+dataSetName).c_str()] = new TH1F(("TrMassWEl"+channelstr+dataSetName).c_str(),"transv. mass W_{e} boson (GeV)",10,15,300);
+      histo1D_fakedisc[("Ptleadinglep"+channelstr+dataSetName).c_str()] = new TH1F(("Ptleadinglep"+channelstr+dataSetName).c_str(),"p_{T} leading lepton (GeV)",10,0,500);
+      histo1D_fakedisc[("Pt2ndleadinglep"+channelstr+dataSetName).c_str()] = new TH1F(("Pt2ndleadinglep"+channelstr+dataSetName).c_str(),"p_{T} 2nd leading lepton (GeV)",10,0,500);
+      histo1D_fakedisc[("Pt3dleadinglep"+channelstr+dataSetName).c_str()] = new TH1F(("Pt3dleadinglep"+channelstr+dataSetName).c_str(),"p_{T} 3d leading lepton (GeV)",10,0,500);
+      
+      
+      histo1D_fakedisc[("pfIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("pfIsoelectron"+channelstr+dataSetName).c_str(),"Rel. iso electron",10,0,0.2);
+     */ histo1D_fakedisc[("d0electron"+channelstr+dataSetName).c_str()] = new TH1F(("d0electron"+channelstr+dataSetName).c_str(),"d0 electron (cm)", 10,0,0.02);
+      /*histo1D_fakedisc[("sigmaIEtaIEtaelectron"+channelstr+dataSetName).c_str()] = new TH1F(("sigmaIEtaIEtaelectron"+channelstr+dataSetName).c_str(),"#sigma_{i#eta,i#eta} electron",10,0,0.03);
+      histo1D_fakedisc[("deltaEtaInelectron"+channelstr+dataSetName).c_str()] = new TH1F(("deltaEtaInelectron"+channelstr+dataSetName).c_str(),"#delta #eta_{in} electron",10,-0.015,0.015);
+      histo1D_fakedisc[("deltaPhiInelectron"+channelstr+dataSetName).c_str()] = new TH1F(("deltaPhiInelectron"+channelstr+dataSetName).c_str(),"#delta #phi_{in} electron",10,-0.04,0.04);
+      histo1D_fakedisc[("hadronicOverEmelectron"+channelstr+dataSetName).c_str()] = new TH1F(("hadronicOverEmelectron"+channelstr+dataSetName).c_str(),"H/E electron",10,0,0.03);
+      histo1D_fakedisc[("missingHitselectron"+channelstr+dataSetName).c_str()] = new TH1F(("missingHitselectron"+channelstr+dataSetName).c_str(),"missing hits electron", 2,0,2);
+      histo1D_fakedisc[("ioEmIoPelectron"+channelstr+dataSetName).c_str()] = new TH1F(("ioEmIoPelectron"+channelstr+dataSetName).c_str(),"1/E - 1/p electron (GeV^{-1})",10,0,0.014);
+      *///histo1D_fakedisc[("chargedHadronIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("chargedHadronIsoelectron"+channelstr+dataSetName).c_str(),"Charged Hadron Iso. electron",6,0,3);
+      /*histo1D_fakedisc[("neutralHadronIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("neutralHadronIsoelectron"+channelstr+dataSetName).c_str(),"Neutral Hadron Iso. electron",10,0,4);
+      histo1D_fakedisc[("photonIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("photonIsoelectron"+channelstr+dataSetName).c_str(),"Photon Iso. electron",10,0,4);
+     */
+       histo1D_fakedisc[("d0all"+channelstr+dataSetName).c_str()] = new TH1F(("d0all"+channelstr+dataSetName).c_str(),"d0 muon (cm)", 10,0,0.02);
+     /* histo1D_fakedisc[("pfIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("pfIsomuon"+channelstr+dataSetName).c_str(),"Rel. iso muon",10,0,0.4);
+     */ histo1D_fakedisc[("d0muon"+channelstr+dataSetName).c_str()] = new TH1F(("d0muon"+channelstr+dataSetName).c_str(),"d0 muon (cm)", 10,0,0.02);
+      histo1D_fakedisc[("chargedHadronIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("chargedHadronIsomuon"+channelstr+dataSetName).c_str(),"Charged Hadron Iso. muon",12,0,6);
+     /* histo1D_fakedisc[("neutralHadronIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("neutralHadronIsomuon"+channelstr+dataSetName).c_str(),"Neutral Hadron Iso. muon",10,0,6);
+      histo1D_fakedisc[("photonIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("photonIsomuon"+channelstr+dataSetName).c_str(),"Photon Iso. muon",10,0,7);
+      histo1D_fakedisc[("TrackLayersmuon"+channelstr+dataSetName).c_str()] = new TH1F(("Tracklayersmuon"+channelstr+dataSetName).c_str(),"Nb. Tracklayers muon",10,0,6);
+
+      histo1D_fakedisc[("WleppfIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WleppfIsoelectron"+channelstr+dataSetName).c_str(),"Rel. iso W electron",10,0,0.02);
+      *///histo1D_fakedisc[("Wlepd0electron"+channelstr+dataSetName).c_str()] = new TH1F(("Wlepd0electron"+channelstr+dataSetName).c_str(),"d0 W electron (cm)", 5,-0.01,0.01);
+      /*histo1D_fakedisc[("WlepsigmaIEtaIEtaelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepsigmaIEtaIEtaelectron"+channelstr+dataSetName).c_str(),"#sigma_{i#eta,i#eta} W electron",10,0,0.03);
+      histo1D_fakedisc[("WlepdeltaEtaInelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepdeltaEtaInelectron"+channelstr+dataSetName).c_str(),"#delta #eta_{in} W electron",10,-0.015,0.015);
+      histo1D_fakedisc[("WlepdeltaPhiInelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepdeltaPhiInelectron"+channelstr+dataSetName).c_str(),"#delta #phi_{in} W electron",10,-0.04,0.04);
+      histo1D_fakedisc[("WlephadronicOverEmelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlephadronicOverEmelectron"+channelstr+dataSetName).c_str(),"H/E W electron",10,0,0.03);
+      histo1D_fakedisc[("WlepmissingHitselectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepmissingHitselectron"+channelstr+dataSetName).c_str(),"missing hits W electron", 2,0,2);
+      histo1D_fakedisc[("WlepioEmIoPelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepioEmIoPelectron"+channelstr+dataSetName).c_str(),"1/E - 1/p W electron (GeV^{-1})",10,0,0.014);
+      *///histo1D_fakedisc[("WlepchargedHadronIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepchargedHadronIsoelectron"+channelstr+dataSetName).c_str(),"Charged Hadron Iso. W electron",6,0,3);
+      /*histo1D_fakedisc[("WlepneutralHadronIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepneutralHadronIsoelectron"+channelstr+dataSetName).c_str(),"Neutral Hadron Iso. W electron",10,0,4);
+      histo1D_fakedisc[("WlepphotonIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepphotonIsoelectron"+channelstr+dataSetName).c_str(),"Photon Iso. W electron",10,0,4);
+      
+      
+      histo1D_fakedisc[("WleppfIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("WleppfIsomuon"+channelstr+dataSetName).c_str(),"Rel. iso W muon",10,0,0.04);
+      *///histo1D_fakedisc[("Wlepd0muon"+channelstr+dataSetName).c_str()] = new TH1F(("Wlepd0muon"+channelstr+dataSetName).c_str(),"d0 W muon (cm)", 5,-0.02,0.02);
+     // histo1D_fakedisc[("WlepchargedHadronIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("WlepchargedHadronIsomuon"+channelstr+dataSetName).c_str(),"Charged Hadron Iso. W muon",12,0,6);
+      /*histo1D_fakedisc[("WlepneutralHadronIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("WlepneutralHadronIsomuon"+channelstr+dataSetName).c_str(),"Neutral Hadron Iso. W muon",10,0,6);
+      histo1D_fakedisc[("WlepphotonIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("WlepphotonIsomuon"+channelstr+dataSetName).c_str(),"Photon Iso. W muon",10,0,7);
+      histo1D_fakedisc[("WlepTrackLayersmuon"+channelstr+dataSetName).c_str()] = new TH1F(("WlepTracklayersmuon"+channelstr+dataSetName).c_str(),"Nb. Tracklayers W muon",10,0,6);
+      */
+      histo1D_fakedisc[("DeltaRWlepZ"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRWlepZ"+channelstr+dataSetName).c_str(), "#Delta R(l_{W},Z)", 12,0,6);
+      histo1D_fakedisc[("DeltaRWlepW"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRWlepW"+channelstr+dataSetName).c_str(), "#Delta R(l_{W},W)", 12,0,6);
+      histo1D_fakedisc[("DeltaRWlepB"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRWlepB"+channelstr+dataSetName).c_str(), "#Delta R(l_{W},b)", 12,0,6);
+      histo1D_fakedisc[("DeltaRWlepSMtop"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRWlepSMtop"+channelstr+dataSetName).c_str(), "#Delta R(l_{W},SM t)", 12,0,6);
+      
+      /*
+      histo1D_fakedisc[("DeltaPhiWlepZ"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaPhiWlepZ"+channelstr+dataSetName).c_str(), "#Delta#phi(l_{W},Z)", 10,0,6);
+      histo1D_fakedisc[("DeltaPhiWlepW"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaPhiWlepW"+channelstr+dataSetName).c_str(), "#Delta#phi(l_{W},b)", 10,0,6);
+      histo1D_fakedisc[("DeltaPhiWlepB"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaPhiWlepB"+channelstr+dataSetName).c_str(), "#Delta#phi(l_{W},W)", 10,0,6);
+      histo1D_fakedisc[("DeltaPhiWlepSMtop"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaPhiWlepSMtop"+channelstr+dataSetName).c_str(), "#Delta#phi(l_{W},SM t)", 10,0,6);
+   */
+      histo1D_fakedisc[("DeltaEtaWlepZ"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaEtaWlepZ"+channelstr+dataSetName).c_str(), "#Delta#eta(l_{W},Z)", 12,0,6);
+      histo1D_fakedisc[("DeltaEtaWlepW"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaEtaWlepW"+channelstr+dataSetName).c_str(), "#Delta#eta(l_{W},W)",12,0,6);
+      histo1D_fakedisc[("DeltaEtaWlepB"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaEtaWlepB"+channelstr+dataSetName).c_str(), "#Delta#eta(l_{W},b)", 12,0,6);
+      histo1D_fakedisc[("DeltaEtaWlepSMtop"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaEtaWlepSMtop"+channelstr+dataSetName).c_str(), "#Delta#eta(l_{W},SM t)", 12,0,6);
+     
+      histo1D_fakedisc[("DeltaROverPtWlepZ"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaROverPtWlepZ"+channelstr+dataSetName).c_str(), "#Delta R(l_{W},Z) / p_{T}(l_{W})", 20,0,0.2);
+      histo1D_fakedisc[("DeltaROverPtWlepW"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaROverPtWlepW"+channelstr+dataSetName).c_str(), "#Delta R(l_{W},W) / p_{T}(l_{W})", 20,0,0.2);
+      histo1D_fakedisc[("DeltaROverPtWlepB"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaROverPtWlepB"+channelstr+dataSetName).c_str(), "#Delta R(l_{W},b) / p_{T}(l_{W})", 20,0,0.2);
+      histo1D_fakedisc[("DeltaROverPtWlepSMtop"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaROverPtWlepSMtop"+channelstr+dataSetName).c_str(), "#Delta R(l_{W},SM t) / p_{T}(l_{W})", 20,0,0.2);
+      
+      histo1D_fakedisc[("DeltaThetaWlepZ"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaThetaWlepZ"+channelstr+dataSetName).c_str(), "#Delta#theta(l_{W},Z)", 12,-4,4);
+      histo1D_fakedisc[("DeltaThetaWlepW"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaThetaWlepW"+channelstr+dataSetName).c_str(), "#Delta#theta(l_{W},W)",12,-4,4);
+      histo1D_fakedisc[("DeltaThetaWlepB"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaThetaWlepB"+channelstr+dataSetName).c_str(), "#Delta#theta(l_{W},b)", 12,-4,4);
+      histo1D_fakedisc[("DeltaThetaWlepSMtop"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaThetaWlepSMtop"+channelstr+dataSetName).c_str(), "#Delta#theta(l_{W},SM t)", 12,-4,4);
+      
+      histo1D_fakedisc[("DeltaRThetaWlepZ"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRThetaWlepZ"+channelstr+dataSetName).c_str(), "#Delta R_{#theta}(l_{W},Z)", 12,0,4);
+      histo1D_fakedisc[("DeltaRThetaWlepW"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRThetaWlepW"+channelstr+dataSetName).c_str(), "#Delta R_{#theta}(l_{W},W)", 12,0,4);
+      histo1D_fakedisc[("DeltaRThetaWlepB"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRThetaWlepB"+channelstr+dataSetName).c_str(), "#Delta R_{#theta}(l_{W},b)", 12,0,4);
+      histo1D_fakedisc[("DeltaRThetaWlepSMtop"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRThetaWlepSMtop"+channelstr+dataSetName).c_str(), "#Delta R_{#theta}(l_{W},SM t)", 12,0,4);
+      
+      histo1D_fakedisc[("DeltaRThetaOverPtWlepZ"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRThetaOverPtWlepZ"+channelstr+dataSetName).c_str(), "#Delta R_{#theta}(l_{W},Z) / p_{T}(l_{W})", 100,0,0.1);
+      histo1D_fakedisc[("DeltaRThetaOverPtWlepW"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRThetaOverPtWlepW"+channelstr+dataSetName).c_str(), "#Delta R_{#theta}(l_{W},W) / p_{T}(l_{W})", 100,0,0.1);
+      histo1D_fakedisc[("DeltaRThetaOverPtWlepB"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRThetaOverPtWlepB"+channelstr+dataSetName).c_str(), "#Delta R_{#theta}(l_{W},b) / p_{T}(l_{W})", 100,0,0.1);
+      histo1D_fakedisc[("DeltaRThetaOverPtWlepSMtop"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRThetaOverPtWlepSMtop"+channelstr+dataSetName).c_str(), "#Delta R_{#theta}(l_{W},SM t) / p_{T}(l_{W})",100,0,0.1);
+
+      
+      
+      
+      
     }
   }
   
@@ -5567,7 +8721,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
       MSPlot[(prefixregion+prefix+"_btagSF_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_btagSF_"+decaystring).c_str(), 80, 0.9, 1.3, "Btag SF");
       
       
-      MSPlot[(prefixregion+prefix+"_cvsldisc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_cvsldisc_"+decaystring).c_str(), 16, -0.6., 1, "charm vs loose disc.");
+      MSPlot[(prefixregion+prefix+"_cvsldisc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_cvsldisc_"+decaystring).c_str(), 16, -0.6, 1, "charm vs loose disc.");
       MSPlot[(prefixregion+prefix+"_cvsbdisc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_cvsbdisc_"+decaystring).c_str(), 21, -1., 1, "charm vs b disc.");
       
       MSPlot[(prefixregion+prefix+"_nMu_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nMu_"+decaystring).c_str(), 10, -0.5, 9.5, "#  Muons");
@@ -6125,7 +9279,7 @@ void InitTree(TTree* tree, bool isData, bool isfakes){
   tree->SetBranchAddress("passConversion_electron", passConversion_electron, &b_passConversion_electron);
   tree->SetBranchAddress("isId_electron", isId_electron, &b_isId_electron);
   tree->SetBranchAddress("isIso_electron", isIso_electron, &b_isIso_electron);
-  tree->SetBranchAddress("isEBEEGap", isEBEEGap, &b_isEBEEGap);
+  tree->SetBranchAddress("ioEmIoP_electron", ioEmIoP_electron, &b_ioEmIoP_electron);
   tree->SetBranchAddress("nbOfLooseMuons", &nbOfLooseMuons, &b_nbOfLooseMuons);
   tree->SetBranchAddress("nMuons", &nMuons, &b_nMuons);
   tree->SetBranchAddress("MuonIDSF", MuonIDSF, &b_MuonIDSF);
@@ -6558,7 +9712,7 @@ void FillFakeValidation(string dataSetName, vector <int> decayChannels, bool isD
   // if(isData  ) scaleFactor = 1.;
   eventW = Luminosity/EquilumiSF;
   
-  vector<string> v_prefixregion = {"2lep", "3lep"};
+  vector<string> v_prefixregion = {"2lep"};
   if(!doDilep) v_prefixregion = {"3lep"};
   string prefixregion = "";
   for(int iReg = 0; iReg < v_prefixregion.size(); iReg++){
@@ -6624,6 +9778,222 @@ void FillFakeValidation(string dataSetName, vector <int> decayChannels, bool isD
     }
   }
 }
+void FillFakeDiscriminator(string dataSetName, vector <int> decayChannels, bool isData, bool isfakes, bool threelepregion,bool twolepregion){
+  string decaystr= "";
+  Double_t eventW = 1.;
+  // if(isData  ) scaleFactor = 1.;
+  eventW = Luminosity/EquilumiSF;
+  
+  vector<string> v_prefixregion = {"2lep"};
+  if(!doDilep) v_prefixregion = {"3lep"};
+  string prefixregion = "";
+  for(int iReg = 0; iReg < v_prefixregion.size(); iReg++){
+    prefixregion = v_prefixregion[iReg];
+    if(prefixregion.find("3lep")!=std::string::npos && !threelepregion) continue;
+    if(prefixregion.find("2lep")!=std::string::npos && !twolepregion) continue;
+    for(int iChan =0; iChan < decayChannels.size() ; iChan++){
+      decaystr = prefixregion + "_";
+      //  cout << decayChannels[iChan] << " " << channelInt << " " <<  threelepregion << " " << twolepregion << endl;
+      // if(decayChannels[iChan] == -9) continue;;
+      //cout << decayChannels[iChan] << " " << channelInt << " " << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
+      if(decayChannels[iChan] != channelInt && decayChannels[iChan] != -9) continue;
+      //if(decayChannels[iChan] == -9)cout << decayChannels[iChan] << " " << channelInt << " passed " << endl;
+      if(decayChannels[iChan] == 0) decaystr += "uuu";
+      if(decayChannels[iChan] == 1) decaystr += "uue";
+      if(decayChannels[iChan] == 2) decaystr += "eeu";
+      if(decayChannels[iChan] == 3) decaystr += "eee";
+      if(decayChannels[iChan] == 4) decaystr += "uu";
+      if(decayChannels[iChan] == 5) decaystr += "ee";
+      if(decayChannels[iChan] == -9) decaystr += "all";
+      
+      if((decayChannels[iChan] == 4 || decayChannels[iChan] == 5) && prefixregion.find("3lep")!=std::string::npos) continue;
+      
+      histo1D_fakedisc[("ZbosonPt"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Pt(), eventW*scaleFactor);
+      histo1D_fakedisc[("ZbosonEta"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Eta(), eventW*scaleFactor);
+      histo1D_fakedisc[("ZbosonPhi"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Phi(), eventW*scaleFactor);
+      
+      histo1D_fakedisc[("TrMassW"+decaystr+dataSetName).c_str()]->Fill(mWT, eventW*scaleFactor);
+      
+      /*
+      histo1D_fakedisc[("Ptleadinglep"+decaystr+dataSetName).c_str()]->Fill(selectedLeptons[0].Pt(), eventW*scaleFactor);
+      histo1D_fakedisc[("Pt2ndleadinglep"+decaystr+dataSetName).c_str()] ->Fill(selectedLeptons[1].Pt(), eventW*scaleFactor);
+      histo1D_fakedisc[("Pt3dleadinglep"+decaystr+dataSetName).c_str()]->Fill(selectedLeptons[2].Pt(), eventW*scaleFactor);
+      */
+      
+      for(int iEL = 0; iEL < selectedElectrons.size(); iEL++){
+       // histo1D_fakedisc[("pfIsoelectron"+decaystr+dataSetName).c_str()]->Fill(pfIso_electron[electronID[iEL]], eventW*scaleFactor);
+        histo1D_fakedisc[("d0electron"+decaystr+dataSetName).c_str()]->Fill(fabs(d0_electron[electronID[iEL]]), eventW*scaleFactor);
+        histo1D_fakedisc[("d0all"+decaystr+dataSetName).c_str()]->Fill(fabs(d0_electron[electronID[iEL]]), eventW*scaleFactor);
+       /* histo1D_fakedisc[("sigmaIEtaIEtaelectron"+decaystr+dataSetName).c_str()]->Fill(sigmaIEtaIEta_electron[electronID[iEL]], eventW*scaleFactor);
+        histo1D_fakedisc[("deltaEtaInelectron"+decaystr+dataSetName).c_str()]->Fill(deltaEtaIn_electron[electronID[iEL]], eventW*scaleFactor);
+        histo1D_fakedisc[("deltaPhiInelectron"+decaystr+dataSetName).c_str()]->Fill(deltaPhiIn_electron[electronID[iEL]], eventW*scaleFactor);
+        histo1D_fakedisc[("hadronicOverEmelectron"+decaystr+dataSetName).c_str()]->Fill(hadronicOverEm_electron[electronID[iEL]], eventW*scaleFactor);
+        //histo1D_fakedisc[("missingHitselectron"+decaystr+dataSetName).c_str()]->Fill(missinghits_electron[electronID[iEL]], eventW*scaleFactor);
+        histo1D_fakedisc[("ioEmIoPelectron"+decaystr+dataSetName).c_str()]->Fill(ioEmIoP_electron[electronID[iEL]], eventW*scaleFactor);
+       */// histo1D_fakedisc[("chargedHadronIsoelectron"+decaystr+dataSetName).c_str()]->Fill(chargedHadronIso_electron[electronID[iEL]], eventW*scaleFactor);
+        //histo1D_fakedisc[("neutralHadronIsoelectron"+decaystr+dataSetName).c_str()]->Fill(neutralHadronIso_electron[electronID[iEL]], eventW*scaleFactor);
+        //histo1D_fakedisc[("photonIsoelectron"+decaystr+dataSetName).c_str()]->Fill(photonIso_electron[electronID[iEL]], eventW*scaleFactor);
+        
+
+      }
+      
+      for(int iMu = 0; iMu < selectedMuons.size(); iMu ++){
+        //histo1D_fakedisc[("pfIsomuon"+decaystr+dataSetName).c_str()]->Fill(pfIso_muon[muonID[iMu]], eventW*scaleFactor);
+        histo1D_fakedisc[("d0muon"+decaystr+dataSetName).c_str()]->Fill(fabs(d0_muon[muonID[iMu]]), eventW*scaleFactor);
+        histo1D_fakedisc[("d0all"+decaystr+dataSetName).c_str()]->Fill(fabs(d0_muon[muonID[iMu]]), eventW*scaleFactor);
+       // histo1D_fakedisc[("chargedHadronIsomuon"+decaystr+dataSetName).c_str()]->Fill(chargedHadronIso_muon[muonID[iMu]], eventW*scaleFactor);
+        //histo1D_fakedisc[("neutralHadronIsomuon"+decaystr+dataSetName).c_str()]->Fill(neutralHadronIso_muon[muonID[iMu]], eventW*scaleFactor);
+        //histo1D_fakedisc[("photonIsomuon"+decaystr+dataSetName).c_str()]->Fill(photonIso_muon[muonID[iMu]], eventW*scaleFactor);
+       // histo1D_fakedisc[("TrackLayersmuon"+decaystr+dataSetName).c_str()]->Fill(TrackLayers_muon[muonID[iMu]], eventW*scaleFactor);
+        
+      }
+ 
+      if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){
+        histo1D_fakedisc[("WlepPt"+decaystr+dataSetName).c_str()] ->Fill(selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakedisc[("WlepEta"+decaystr+dataSetName).c_str()]->Fill(selectedElectrons[WelecIndiceF].Eta(), eventW*scaleFactor);
+        histo1D_fakedisc[("WlepPhi"+decaystr+dataSetName).c_str()]->Fill(selectedElectrons[WelecIndiceF].Phi(), eventW*scaleFactor);
+        /*
+        histo1D_fakedisc[("WlepPtEl"+decaystr+dataSetName).c_str()] ->Fill(selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakedisc[("WlepEtaEl"+decaystr+dataSetName).c_str()]->Fill(selectedElectrons[WelecIndiceF].Eta(), eventW*scaleFactor);
+        histo1D_fakedisc[("WlepPhiEl"+decaystr+dataSetName).c_str()]->Fill(selectedElectrons[WelecIndiceF].Phi(), eventW*scaleFactor);
+        histo1D_fakedisc[("TrMassWEl"+decaystr+dataSetName).c_str()]->Fill(mWT, eventW*scaleFactor);
+        */
+        histo1D_fakedisc[("DeltaRWlepZ"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],Zboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaRWlepW"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],Wboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaRWlepB"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],SMbjet), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaRWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],SMtop), eventW*scaleFactor);
+        
+       /* histo1D_fakedisc[("DeltaPhiWlepZ"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedElectrons[WelecIndiceF],Zboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaPhiWlepW"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedElectrons[WelecIndiceF],Wboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaPhiWlepB"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedElectrons[WelecIndiceF],SMbjet), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaPhiWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedElectrons[WelecIndiceF],SMtop), eventW*scaleFactor);
+        */
+        histo1D_fakedisc[("DeltaEtaWlepZ"+decaystr+dataSetName).c_str()]->Fill(DeltaEta(selectedElectrons[WelecIndiceF],Zboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaEtaWlepW"+decaystr+dataSetName).c_str()]->Fill(DeltaEta(selectedElectrons[WelecIndiceF],Wboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaEtaWlepB"+decaystr+dataSetName).c_str()]->Fill(DeltaEta(selectedElectrons[WelecIndiceF],SMbjet), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaEtaWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(DeltaEta(selectedElectrons[WelecIndiceF],SMtop), eventW*scaleFactor);
+        
+        histo1D_fakedisc[("DeltaROverPtWlepZ"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],Zboson)/selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaROverPtWlepW"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],Wboson)/selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaROverPtWlepB"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],SMbjet)/selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaROverPtWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],SMtop)/selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
+        
+        histo1D_fakedisc[("DeltaThetaWlepZ"+decaystr+dataSetName).c_str()]->Fill(DeltaTheta(selectedElectrons[WelecIndiceF],Zboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaThetaWlepW"+decaystr+dataSetName).c_str()]->Fill(DeltaTheta(selectedElectrons[WelecIndiceF],Wboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaThetaWlepB"+decaystr+dataSetName).c_str()]->Fill(DeltaTheta(selectedElectrons[WelecIndiceF],SMbjet), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaThetaWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(DeltaTheta(selectedElectrons[WelecIndiceF],SMtop), eventW*scaleFactor);
+      
+        histo1D_fakedisc[("DeltaRThetaWlepZ"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedElectrons[WelecIndiceF],Zboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaRThetaWlepW"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedElectrons[WelecIndiceF],Wboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaRThetaWlepB"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedElectrons[WelecIndiceF],SMbjet), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaRThetaWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedElectrons[WelecIndiceF],SMtop), eventW*scaleFactor);
+       
+        histo1D_fakedisc[("DeltaRThetaOverPtWlepZ"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedElectrons[WelecIndiceF],Zboson)/selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaRThetaOverPtWlepW"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedElectrons[WelecIndiceF],Wboson)/selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaRThetaOverPtWlepB"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedElectrons[WelecIndiceF],SMbjet)/selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaRThetaOverPtWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedElectrons[WelecIndiceF],SMtop)/selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
+      
+    
+        
+        
+      }
+      if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){
+        histo1D_fakedisc[("WlepPt"+decaystr+dataSetName).c_str()] ->Fill(selectedMuons[WmuIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakedisc[("WlepEta"+decaystr+dataSetName).c_str()]->Fill(selectedMuons[WmuIndiceF].Eta(), eventW*scaleFactor);
+        histo1D_fakedisc[("WlepPhi"+decaystr+dataSetName).c_str()]->Fill(selectedMuons[WmuIndiceF].Phi(), eventW*scaleFactor);
+        /*
+        histo1D_fakedisc[("WlepPtMu"+decaystr+dataSetName).c_str()] ->Fill(selectedMuons[WmuIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakedisc[("WlepEtaMu"+decaystr+dataSetName).c_str()]->Fill(selectedMuons[WmuIndiceF].Eta(), eventW*scaleFactor);
+        histo1D_fakedisc[("WlepPhiMu"+decaystr+dataSetName).c_str()]->Fill(selectedMuons[WmuIndiceF].Phi(), eventW*scaleFactor);
+        histo1D_fakedisc[("TrMassWMu"+decaystr+dataSetName).c_str()]->Fill(mWT, eventW*scaleFactor);
+        */
+        histo1D_fakedisc[("DeltaRWlepZ"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],Zboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaRWlepW"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],Wboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaRWlepB"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],SMbjet), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaRWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],SMtop), eventW*scaleFactor);
+        /*
+        histo1D_fakedisc[("DeltaPhiWlepZ"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedMuons[WmuIndiceF],Zboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaPhiWlepW"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedMuons[WmuIndiceF],Wboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaPhiWlepB"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedMuons[WmuIndiceF],SMbjet), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaPhiWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedMuons[WmuIndiceF],SMtop), eventW*scaleFactor);
+        */
+        histo1D_fakedisc[("DeltaEtaWlepZ"+decaystr+dataSetName).c_str()]->Fill(DeltaEta(selectedMuons[WmuIndiceF],Zboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaEtaWlepW"+decaystr+dataSetName).c_str()]->Fill(DeltaEta(selectedMuons[WmuIndiceF],Wboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaEtaWlepB"+decaystr+dataSetName).c_str()]->Fill(DeltaEta(selectedMuons[WmuIndiceF],SMbjet), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaEtaWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(DeltaEta(selectedMuons[WmuIndiceF],SMtop), eventW*scaleFactor);
+        
+        histo1D_fakedisc[("DeltaROverPtWlepZ"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],Zboson)/selectedMuons[WmuIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaROverPtWlepW"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],Wboson)/selectedMuons[WmuIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaROverPtWlepB"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],SMbjet)/selectedMuons[WmuIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaROverPtWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],SMtop)/selectedMuons[WmuIndiceF].Pt(), eventW*scaleFactor);
+        
+        histo1D_fakedisc[("DeltaThetaWlepZ"+decaystr+dataSetName).c_str()]->Fill(DeltaTheta(selectedMuons[WmuIndiceF],Zboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaThetaWlepW"+decaystr+dataSetName).c_str()]->Fill(DeltaTheta(selectedMuons[WmuIndiceF],Wboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaThetaWlepB"+decaystr+dataSetName).c_str()]->Fill(DeltaTheta(selectedMuons[WmuIndiceF],SMbjet), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaThetaWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(DeltaTheta(selectedMuons[WmuIndiceF],SMtop), eventW*scaleFactor);
+        
+        histo1D_fakedisc[("DeltaRThetaWlepZ"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedMuons[WmuIndiceF],Zboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaRThetaWlepW"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedMuons[WmuIndiceF],Wboson), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaRThetaWlepB"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedMuons[WmuIndiceF],SMbjet), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaRThetaWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedMuons[WmuIndiceF],SMtop), eventW*scaleFactor);
+        
+        histo1D_fakedisc[("DeltaRThetaOverPtWlepZ"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedMuons[WmuIndiceF],Zboson)/selectedMuons[WmuIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaRThetaOverPtWlepW"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedMuons[WmuIndiceF],Wboson)/selectedMuons[WmuIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaRThetaOverPtWlepB"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedMuons[WmuIndiceF],SMbjet)/selectedMuons[WmuIndiceF].Pt(), eventW*scaleFactor);
+        histo1D_fakedisc[("DeltaRThetaOverPtWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedMuons[WmuIndiceF],SMtop)/selectedMuons[WmuIndiceF].Pt(), eventW*scaleFactor);
+        
+      }
+     
+      /*
+      if(ZmuIndiceF_0 != -999 && ZmuIndiceF_1 != -999 &&selectedMuons.size() > 1 ){
+        histo1D_fakedisc[("ZbosonPtMu"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Pt(), eventW*scaleFactor);
+        histo1D_fakedisc[("ZbosonEtaMu"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Eta(), eventW*scaleFactor);
+        histo1D_fakedisc[("ZbosonPhiMu"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Phi(), eventW*scaleFactor);
+      }
+       if(ZelecIndiceF_0 != -999 && ZelecIndiceF_1 != -999 && selectedElectrons.size() > 1 ){
+        histo1D_fakedisc[("ZbosonPtEl"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Pt(), eventW*scaleFactor);
+        histo1D_fakedisc[("ZbosonEtaEl"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Eta(), eventW*scaleFactor);
+        histo1D_fakedisc[("ZbosonPhiEl"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Phi(), eventW*scaleFactor);
+      }
+      */
+      
+      if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){
+       // histo1D_fakedisc[("WleppfIsoelectron"+decaystr+dataSetName).c_str()]->Fill(pfIso_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+      //  histo1D_fakedisc[("Wlepd0electron"+decaystr+dataSetName).c_str()]->Fill(d0_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+       /* histo1D_fakedisc[("WlepsigmaIEtaIEtaelectron"+decaystr+dataSetName).c_str()]->Fill(sigmaIEtaIEta_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+        histo1D_fakedisc[("WlepdeltaEtaInelectron"+decaystr+dataSetName).c_str()]->Fill(deltaEtaIn_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+        histo1D_fakedisc[("WlepdeltaPhiInelectron"+decaystr+dataSetName).c_str()]->Fill(deltaPhiIn_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+        histo1D_fakedisc[("WlephadronicOverEmelectron"+decaystr+dataSetName).c_str()]->Fill(hadronicOverEm_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+      //  histo1D_fakedisc[("WlepmissingHitselectron"+decaystr+dataSetName).c_str()]->Fill(missinghits_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+        histo1D_fakedisc[("WlepioEmIoPelectron"+decaystr+dataSetName).c_str()]->Fill(ioEmIoP_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+        *///histo1D_fakedisc[("WlepchargedHadronIsoelectron"+decaystr+dataSetName).c_str()]->Fill(chargedHadronIso_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+        //histo1D_fakedisc[("WlepneutralHadronIsoelectron"+decaystr+dataSetName).c_str()]->Fill(neutralHadronIso_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+        //histo1D_fakedisc[("WlepphotonIsoelectron"+decaystr+dataSetName).c_str()]->Fill(photonIso_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+        
+        
+      }
+      
+      if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){
+      //  histo1D_fakedisc[("WleppfIsomuon"+decaystr+dataSetName).c_str()]->Fill(pfIso_muon[muonID[WmuIndiceF]], eventW*scaleFactor);
+       // histo1D_fakedisc[("Wlepd0muon"+decaystr+dataSetName).c_str()]->Fill(d0_muon[muonID[WmuIndiceF]], eventW*scaleFactor);
+       // histo1D_fakedisc[("WlepchargedHadronIsomuon"+decaystr+dataSetName).c_str()]->Fill(chargedHadronIso_muon[muonID[WmuIndiceF]], eventW*scaleFactor);
+        //histo1D_fakedisc[("WlepneutralHadronIsomuon"+decaystr+dataSetName).c_str()]->Fill(neutralHadronIso_muon[muonID[WmuIndiceF]], eventW*scaleFactor);
+        //histo1D_fakedisc[("WlepphotonIsomuon"+decaystr+dataSetName).c_str()]->Fill(photonIso_muon[muonID[WmuIndiceF]], eventW*scaleFactor);
+        // histo1D_fakedisc[("WlepTrackLayersmuon"+decaystr+dataSetName).c_str()]->Fill(TrackLayers_muon[muonID[WmuIndiceF]], eventW*scaleFactor);
+        
+      }
+      
+      
+      
+      
+      
+    }
+  }
+  
+}
+
+
+
 void Fill1DPlots(string dataSetName, double eventW, bool twolepregion, bool threelepregion){
   //Double_t eventW = 1.;
   //eventW = Luminosity/EquilumiSF;
@@ -7680,6 +11050,29 @@ Double_t RochLeptonMatching(TLorentzVector selectedlepton, vector <TLorentzVecto
   
 }
 
-
+double DeltaEta(TLorentzVector vec1, TLorentzVector vec2){
+  return vec1.Eta() - vec2.Eta();
+}
+double DeltaTheta(TLorentzVector vec1, TLorentzVector vec2){
+  return vec1.Theta() - vec2.Theta();
+}
+double DeltaRTheta(TLorentzVector vec1, TLorentzVector vec2){
+  
+  return sqrt(ROOT::Math::VectorUtil::DeltaPhi(vec1,vec2) + DeltaEta(vec1,vec2));
+}
+  std::vector<std::string> split(const std::string &text, char sep) {
+    std::vector<std::string> tokens;
+    std::size_t start = 0, end = 0;
+    while ((end = text.find(sep, start)) != std::string::npos) {
+      if (end != start) {
+        tokens.push_back(text.substr(start, end - start));
+      }
+      start = end + 1;
+    }
+    if (end != start) {
+      tokens.push_back(text.substr(start));
+    }
+    return tokens;
+  }
 
 
