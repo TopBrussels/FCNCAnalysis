@@ -372,14 +372,14 @@ TBranch        *b_MVA_m3l;   //!
 
 map<string,TH1F*> histo1DMTW;
 TH1F*  hist_BDT_puSF_nom_sig = new TH1F("hist_BDT_puSF_nom_sig","Effect of pile up systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
-TH1F*  hist_BDT_puSF_nom_bkg = new TH1F("hist_BDT_puSF_nom_bkg","Effect of pile up systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_puSF_nom_bkg = new TH1F("hist_BDT_puSF_nom_bkg","Effect of pile up systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
 TH1F*  hist_BDT_puSF_up_sig = new TH1F("hist_BDT_puSF_up_sig","Effect of pile up systematics on the BDT: Signal:BDT:Nb. of evts" ,nbin,-1.,1.);
 TH1F*  hist_BDT_puSF_up_bkg = new TH1F("hist_BDT_puSF_up_bkg","Effect of pile up systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
 TH1F*  hist_BDT_puSF_down_sig = new TH1F("hist_BDT_puSF_down_sig","Effect of pile up systematics on the BDT: Background:BDT:Nb. of evts" ,nbin,-1.,1.);
 TH1F*  hist_BDT_puSF_down_bkg = new TH1F("hist_BDT_puSF_down_bkg","Effect of pile up systematics on the BDT: Background:BDT:Nb. of evts", nbin,-1.,1.);
 
 TH1F*  hist_BDT_electronSF_nom_sig = new TH1F("hist_BDT_electronSF_nom_sig","Effect of electron SF systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
-TH1F*  hist_BDT_electronSF_nom_bkg = new TH1F("hist_BDT_electronSF_nom_bkg","Effect of electron SF systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_electronSF_nom_bkg = new TH1F("hist_BDT_electronSF_nom_bkg","Effect of electron SF systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
 TH1F*  hist_BDT_electronSF_up_sig = new TH1F("hist_BDT_electronSF_up_sig","Effect of electron SF systematics on the BDT: Signal:BDT:Nb. of evts" ,nbin,-1.,1.);
 TH1F*  hist_BDT_electronSF_up_bkg = new TH1F("hist_BDT_electronSF_up_bkg","Effect of electron SF systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
 TH1F*  hist_BDT_electronSF_down_sig = new TH1F("hist_BDT_electronSF_down_sig","Effect of electron SF systematics on the BDT: Background:BDT:Nb. of evts" ,nbin,-1.,1.);
@@ -387,92 +387,154 @@ TH1F*  hist_BDT_electronSF_down_bkg = new TH1F("hist_BDT_electronSF_down_bkg","E
 
 
 TH1F*  hist_BDT_muonSF_nom_sig = new TH1F("hist_BDT_muonSF_nom_sig","Effect of muon SF systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
-TH1F*  hist_BDT_muonSF_nom_bkg = new TH1F("hist_BDT_muonSF_nom_bkg","Effect of muon SF systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_muonSF_nom_bkg = new TH1F("hist_BDT_muonSF_nom_bkg","Effect of muon SF systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
 TH1F*  hist_BDT_muonSF_up_sig = new TH1F("hist_BDT_muonSF_up_sig","Effect of muon SF systematics on the BDT: Signal:BDT:Nb. of evts" ,nbin,-1.,1.);
 TH1F*  hist_BDT_muonSF_up_bkg = new TH1F("hist_BDT_muonSF_up_bkg","Effect of muon SF systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
 TH1F*  hist_BDT_muonSF_down_sig = new TH1F("hist_BDT_muonSF_down_sig","Effect of muon SF systematics on the BDT: Background:BDT:Nb. of evts" ,nbin,-1.,1.);
 TH1F*  hist_BDT_muonSF_down_bkg = new TH1F("hist_BDT_muonSF_down_bkg","Effect of muon SF systematics on the BDT: Background:BDT:Nb. of evts", nbin,-1.,1.);
 
+TH1F*  hist_BDT_btagSF_cferr1_nom_sig = new TH1F("hist_BDT_btagSF_cferr1_nom_sig","Effect of btag SF cferr1 systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_cferr1_nom_bkg = new TH1F("hist_BDT_btagSF_cferr1_nom_bkg","Effect of btag SF cferr1 systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_cferr1_up_sig = new TH1F("hist_BDT_btagSF_cferr1_up_sig","Effect of btag SF cferr1 systematics on the BDT: Signal:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_cferr1_up_bkg = new TH1F("hist_BDT_btagSF_cferr1_up_bkg","Effect of btag SF cferr1 systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_cferr1_down_sig = new TH1F("hist_BDT_cferr1_btagSF_down_sig","Effect of btag SF cferr1 systematics on the BDT: Background:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_cferr1_down_bkg = new TH1F("hist_BDT_cferr1_btagSF_down_bkg","Effect of btag SF cferr1 systematics on the BDT: Background:BDT:Nb. of evts", nbin,-1.,1.);
 
-TH1F*  hist_mWt_puSF_nom_sig = new TH1F("hist_mWt_puSF_nom_sig","Effect of pile up systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_BDT_btagSF_cferr2_nom_sig = new TH1F("hist_BDT_btagSF_cferr2_nom_sig","Effect of btag SF cferr2 systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_cferr2_nom_bkg = new TH1F("hist_BDT_btagSF_cferr2_nom_bkg","Effect of btag SF cferr2 systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_cferr2_up_sig = new TH1F("hist_BDT_btagSF_cferr2_up_sig","Effect of btag SF cferr2 systematics on the BDT: Signal:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_cferr2_up_bkg = new TH1F("hist_BDT_btagSF_cferr2_up_bkg","Effect of btag SF cferr2 systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_cferr2_down_sig = new TH1F("hist_BDT_cferr2_btagSF_down_sig","Effect of btag SF cferr2 systematics on the BDT: Background:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_cferr2_down_bkg = new TH1F("hist_BDT_cferr2_btagSF_down_bkg","Effect of btag SF cferr2 systematics on the BDT: Background:BDT:Nb. of evts", nbin,-1.,1.);
+
+
+TH1F*  hist_BDT_btagSF_hf_nom_sig = new TH1F("hist_BDT_btagSF_hf_nom_sig","Effect of btag SF hf systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_hf_nom_bkg = new TH1F("hist_BDT_btagSF_hf_nom_bkg","Effect of btag SF hf systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_hf_up_sig = new TH1F("hist_BDT_btagSF_hf_up_sig","Effect of btag SF hf systematics on the BDT: Signal:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_hf_up_bkg = new TH1F("hist_BDT_btagSF_hf_up_bkg","Effect of btag SF hf systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_hf_down_sig = new TH1F("hist_BDT_hf_btagSF_down_sig","Effect of btag SF hf systematics on the BDT: Background:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_hf_down_bkg = new TH1F("hist_BDT_hf_btagSF_down_bkg","Effect of btag SF hf systematics on the BDT: Background:BDT:Nb. of evts", nbin,-1.,1.);
+
+TH1F*  hist_BDT_btagSF_hfstats1_nom_sig = new TH1F("hist_BDT_btagSF_hfstats1_nom_sig","Effect of btag SF hfstats1 systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_hfstats1_nom_bkg = new TH1F("hist_BDT_btagSF_hfstats1_nom_bkg","Effect of btag SF hfstats1 systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_hfstats1_up_sig = new TH1F("hist_BDT_btagSF_hfstats1_up_sig","Effect of btag SF hfstats1 systematics on the BDT: Signal:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_hfstats1_up_bkg = new TH1F("hist_BDT_btagSF_hfstats1_up_bkg","Effect of btag SF hfstats1 systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_hfstats1_down_sig = new TH1F("hist_BDT_hfstats1_btagSF_down_sig","Effect of btag SF hfstats1 systematics on the BDT: Background:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_hfstats1_down_bkg = new TH1F("hist_BDT_hfstats1_btagSF_down_bkg","Effect of btag SF hfstats1 systematics on the BDT: Background:BDT:Nb. of evts", nbin,-1.,1.);
+
+
+TH1F*  hist_BDT_btagSF_hfstats2_nom_sig = new TH1F("hist_BDT_btagSF_hfstats2_nom_sig","Effect of btag SF hfstats2 systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_hfstats2_nom_bkg = new TH1F("hist_BDT_btagSF_hfstats2_nom_bkg","Effect of btag SF hfstats2 systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_hfstats2_up_sig = new TH1F("hist_BDT_btagSF_hfstats2_up_sig","Effect of btag SF hfstats2 systematics on the BDT: Signal:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_hfstats2_up_bkg = new TH1F("hist_BDT_btagSF_hfstats2_up_bkg","Effect of btag SF hfstats2 systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_hfstats2_down_sig = new TH1F("hist_BDT_hfstats2_btagSF_down_sig","Effect of btag SF hfstats2 systematics on the BDT: Background:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_hfstats2_down_bkg = new TH1F("hist_BDT_hfstats2_btagSF_down_bkg","Effect of btag SF hfstats2 systematics on the BDT: Background:BDT:Nb. of evts", nbin,-1.,1.);
+
+
+TH1F*  hist_BDT_btagSF_lf_nom_sig = new TH1F("hist_BDT_btagSF_lf_nom_sig","Effect of btag SF lf systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_lf_nom_bkg = new TH1F("hist_BDT_btagSF_lf_nom_bkg","Effect of btag SF lf systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_lf_up_sig = new TH1F("hist_BDT_btagSF_lf_up_sig","Effect of btag SF lf systematics on the BDT: Signal:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_lf_up_bkg = new TH1F("hist_BDT_btagSF_lf_up_bkg","Effect of btag SF lf systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_lf_down_sig = new TH1F("hist_BDT_lf_btagSF_down_sig","Effect of btag SF lf systematics on the BDT: Background:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_lf_down_bkg = new TH1F("hist_BDT_lf_btagSF_down_bkg","Effect of btag SF lf systematics on the BDT: Background:BDT:Nb. of evts", nbin,-1.,1.);
+
+TH1F*  hist_BDT_btagSF_lfstats1_nom_sig = new TH1F("hist_BDT_btagSF_lfstats1_nom_sig","Effect of btag SF lfstats1 systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_lfstats1_nom_bkg = new TH1F("hist_BDT_btagSF_lfstats1_nom_bkg","Effect of btag SF lfstats1 systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_lfstats1_up_sig = new TH1F("hist_BDT_btagSF_lfstats1_up_sig","Effect of btag SF lfstats1 systematics on the BDT: Signal:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_lfstats1_up_bkg = new TH1F("hist_BDT_btagSF_lfstats1_up_bkg","Effect of btag SF lfstats1 systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_lfstats1_down_sig = new TH1F("hist_BDT_lfstats1_btagSF_down_sig","Effect of btag SF lfstats1 systematics on the BDT: Background:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_lfstats1_down_bkg = new TH1F("hist_BDT_lfstats1_btagSF_down_bkg","Effect of btag SF lfstats1 systematics on the BDT: Background:BDT:Nb. of evts", nbin,-1.,1.);
+
+
+TH1F*  hist_BDT_btagSF_lfstats2_nom_sig = new TH1F("hist_BDT_btagSF_lfstats2_nom_sig","Effect of btag SF lfstats2 systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_lfstats2_nom_bkg = new TH1F("hist_BDT_btagSF_lfstats2_nom_bkg","Effect of btag SF lfstats2 systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_lfstats2_up_sig = new TH1F("hist_BDT_btagSF_lfstats2_up_sig","Effect of btag SF lfstats2 systematics on the BDT: Signal:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_lfstats2_up_bkg = new TH1F("hist_BDT_btagSF_lfstats2_up_bkg","Effect of btag SF lfstats2 systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_lfstats2_down_sig = new TH1F("hist_BDT_lfstats2_btagSF_down_sig","Effect of btag SF lfstats2 systematics on the BDT: Background:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_btagSF_lfstats2_down_bkg = new TH1F("hist_BDT_lfstats2_btagSF_down_bkg","Effect of btag SF lfstats2 systematics on the BDT: Background:BDT:Nb. of evts", nbin,-1.,1.);
+
+
+
+
+TH1F*  hist_mWt_puSF_nom_sig = new TH1F("hist_mWt_puSF_nom_sig","Effect of pile up systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_puSF_nom_bkg = new TH1F("hist_mWt_puSF_nom_bkg","Effect of pile up systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_puSF_up_sig = new TH1F("hist_mWt_puSF_up_sig","Effect of pile up systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_puSF_up_sig = new TH1F("hist_mWt_puSF_up_sig","Effect of pile up systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_puSF_up_bkg = new TH1F("hist_mWt_puSF_up_bkg","Effect of pile up systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_puSF_down_sig = new TH1F("hist_mWt_puSF_down_sig","Effect of pile up systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_puSF_down_bkg = new TH1F("hist_mWt_puSF_down_bkg","Effect of pile up systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
 
-TH1F*  hist_mWt_electronSF_nom_sig = new TH1F("hist_mWt_electronSF_nom_sig","Effect of electron SF systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_electronSF_nom_bkg = new TH1F("hist_mWt_electronSF_nom_bkg","Effect of electron SF systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_electronSF_up_sig = new TH1F("hist_mWt_electronSF_up_sig","Effect of electron SF systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_electronSF_nom_sig = new TH1F("hist_mWt_electronSF_nom_sig","Effect of electron SF systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_electronSF_nom_bkg = new TH1F("hist_mWt_electronSF_nom_bkg","Effect of electron SF systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_electronSF_up_sig = new TH1F("hist_mWt_electronSF_up_sig","Effect of electron SF systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_electronSF_up_bkg = new TH1F("hist_mWt_electronSF_up_bkg","Effect of electron SF systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_electronSF_down_sig = new TH1F("hist_mWt_electronSF_down_sig","Effect of electron SF systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_electronSF_down_bkg = new TH1F("hist_mWt_electronSF_down_bkg","Effect of electron SF systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
 
 
-TH1F*  hist_mWt_muonSF_nom_sig = new TH1F("hist_mWt_muonSF_nom_sig","Effect of muon SF systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_muonSF_nom_bkg = new TH1F("hist_mWt_muonSF_nom_bkg","Effect of muon SF systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_muonSF_up_sig = new TH1F("hist_mWt_muonSF_up_sig","Effect of muon SF systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_muonSF_nom_sig = new TH1F("hist_mWt_muonSF_nom_sig","Effect of muon SF systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_muonSF_nom_bkg = new TH1F("hist_mWt_muonSF_nom_bkg","Effect of muon SF systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_muonSF_up_sig = new TH1F("hist_mWt_muonSF_up_sig","Effect of muon SF systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_muonSF_up_bkg = new TH1F("hist_mWt_muonSF_up_bkg","Effect of muon SF systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_muonSF_down_sig = new TH1F("hist_mWt_muonSF_down_sig","Effect of muon SF systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_muonSF_down_bkg = new TH1F("hist_mWt_muonSF_down_bkg","Effect of muon SF systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
 
 
-TH1F*  hist_mWt_btagSF_cferr1_nom_sig = new TH1F("hist_mWt_btagSF_cferr1_nom_sig","Effect of btag SF cferr1 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_cferr1_nom_bkg = new TH1F("hist_mWt_btagSF_cferr1_nom_bkg","Effect of btag SF cferr1 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_cferr1_up_sig = new TH1F("hist_mWt_btagSF_cferr1_up_sig","Effect of btag SF cferr1 systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr1_nom_sig = new TH1F("hist_mWt_btagSF_cferr1_nom_sig","Effect of btag SF cferr1 systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr1_nom_bkg = new TH1F("hist_mWt_btagSF_cferr1_nom_bkg","Effect of btag SF cferr1 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr1_up_sig = new TH1F("hist_mWt_btagSF_cferr1_up_sig","Effect of btag SF cferr1 systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_cferr1_up_bkg = new TH1F("hist_mWt_btagSF_cferr1_up_bkg","Effect of btag SF cferr1 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_cferr1_down_sig = new TH1F("hist_mWt_cferr1_btagSF_down_sig","Effect of btag SF cferr1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_cferr1_down_bkg = new TH1F("hist_mWt_cferr1_btagSF_down_bkg","Effect of btag SF cferr1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
 
-TH1F*  hist_mWt_btagSF_cferr2_nom_sig = new TH1F("hist_mWt_btagSF_cferr2_nom_sig","Effect of btag SF cferr2 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_cferr2_nom_bkg = new TH1F("hist_mWt_btagSF_cferr2_nom_bkg","Effect of btag SF cferr2 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_cferr2_up_sig = new TH1F("hist_mWt_btagSF_cferr2_up_sig","Effect of btag SF cferr2 systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr2_nom_sig = new TH1F("hist_mWt_btagSF_cferr2_nom_sig","Effect of btag SF cferr2 systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr2_nom_bkg = new TH1F("hist_mWt_btagSF_cferr2_nom_bkg","Effect of btag SF cferr2 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr2_up_sig = new TH1F("hist_mWt_btagSF_cferr2_up_sig","Effect of btag SF cferr2 systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_cferr2_up_bkg = new TH1F("hist_mWt_btagSF_cferr2_up_bkg","Effect of btag SF cferr2 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_cferr2_down_sig = new TH1F("hist_mWt_cferr2_btagSF_down_sig","Effect of btag SF cferr2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_cferr2_down_bkg = new TH1F("hist_mWt_cferr2_btagSF_down_bkg","Effect of btag SF cferr2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
 
 
-TH1F*  hist_mWt_btagSF_hf_nom_sig = new TH1F("hist_mWt_btagSF_hf_nom_sig","Effect of btag SF hf systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_hf_nom_bkg = new TH1F("hist_mWt_btagSF_hf_nom_bkg","Effect of btag SF hf systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_hf_up_sig = new TH1F("hist_mWt_btagSF_hf_up_sig","Effect of btag SF hf systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hf_nom_sig = new TH1F("hist_mWt_btagSF_hf_nom_sig","Effect of btag SF hf systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hf_nom_bkg = new TH1F("hist_mWt_btagSF_hf_nom_bkg","Effect of btag SF hf systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hf_up_sig = new TH1F("hist_mWt_btagSF_hf_up_sig","Effect of btag SF hf systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_hf_up_bkg = new TH1F("hist_mWt_btagSF_hf_up_bkg","Effect of btag SF hf systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_hf_down_sig = new TH1F("hist_mWt_hf_btagSF_down_sig","Effect of btag SF hf systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_hf_down_bkg = new TH1F("hist_mWt_hf_btagSF_down_bkg","Effect of btag SF hf systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
 
-TH1F*  hist_mWt_btagSF_hfstats1_nom_sig = new TH1F("hist_mWt_btagSF_hfstats1_nom_sig","Effect of btag SF hfstats1 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_hfstats1_nom_bkg = new TH1F("hist_mWt_btagSF_hfstats1_nom_bkg","Effect of btag SF hfstats1 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_hfstats1_up_sig = new TH1F("hist_mWt_btagSF_hfstats1_up_sig","Effect of btag SF hfstats1 systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats1_nom_sig = new TH1F("hist_mWt_btagSF_hfstats1_nom_sig","Effect of btag SF hfstats1 systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats1_nom_bkg = new TH1F("hist_mWt_btagSF_hfstats1_nom_bkg","Effect of btag SF hfstats1 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats1_up_sig = new TH1F("hist_mWt_btagSF_hfstats1_up_sig","Effect of btag SF hfstats1 systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_hfstats1_up_bkg = new TH1F("hist_mWt_btagSF_hfstats1_up_bkg","Effect of btag SF hfstats1 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_hfstats1_down_sig = new TH1F("hist_mWt_hfstats1_btagSF_down_sig","Effect of btag SF hfstats1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_hfstats1_down_bkg = new TH1F("hist_mWt_hfstats1_btagSF_down_bkg","Effect of btag SF hfstats1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
 
 
-TH1F*  hist_mWt_btagSF_hfstats2_nom_sig = new TH1F("hist_mWt_btagSF_hfstats2_nom_sig","Effect of btag SF hfstats2 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_hfstats2_nom_bkg = new TH1F("hist_mWt_btagSF_hfstats2_nom_bkg","Effect of btag SF hfstats2 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_hfstats2_up_sig = new TH1F("hist_mWt_btagSF_hfstats2_up_sig","Effect of btag SF hfstats2 systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats2_nom_sig = new TH1F("hist_mWt_btagSF_hfstats2_nom_sig","Effect of btag SF hfstats2 systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats2_nom_bkg = new TH1F("hist_mWt_btagSF_hfstats2_nom_bkg","Effect of btag SF hfstats2 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats2_up_sig = new TH1F("hist_mWt_btagSF_hfstats2_up_sig","Effect of btag SF hfstats2 systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_hfstats2_up_bkg = new TH1F("hist_mWt_btagSF_hfstats2_up_bkg","Effect of btag SF hfstats2 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_hfstats2_down_sig = new TH1F("hist_mWt_hfstats2_btagSF_down_sig","Effect of btag SF hfstats2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_hfstats2_down_bkg = new TH1F("hist_mWt_hfstats2_btagSF_down_bkg","Effect of btag SF hfstats2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
 
 
-TH1F*  hist_mWt_btagSF_lf_nom_sig = new TH1F("hist_mWt_btagSF_lf_nom_sig","Effect of btag SF lf systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_lf_nom_bkg = new TH1F("hist_mWt_btagSF_lf_nom_bkg","Effect of btag SF lf systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_lf_up_sig = new TH1F("hist_mWt_btagSF_lf_up_sig","Effect of btag SF lf systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lf_nom_sig = new TH1F("hist_mWt_btagSF_lf_nom_sig","Effect of btag SF lf systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lf_nom_bkg = new TH1F("hist_mWt_btagSF_lf_nom_bkg","Effect of btag SF lf systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lf_up_sig = new TH1F("hist_mWt_btagSF_lf_up_sig","Effect of btag SF lf systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_lf_up_bkg = new TH1F("hist_mWt_btagSF_lf_up_bkg","Effect of btag SF lf systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_lf_down_sig = new TH1F("hist_mWt_lf_btagSF_down_sig","Effect of btag SF lf systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_lf_down_bkg = new TH1F("hist_mWt_lf_btagSF_down_bkg","Effect of btag SF lf systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
 
-TH1F*  hist_mWt_btagSF_lfstats1_nom_sig = new TH1F("hist_mWt_btagSF_lfstats1_nom_sig","Effect of btag SF lfstats1 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_lfstats1_nom_bkg = new TH1F("hist_mWt_btagSF_lfstats1_nom_bkg","Effect of btag SF lfstats1 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_lfstats1_up_sig = new TH1F("hist_mWt_btagSF_lfstats1_up_sig","Effect of btag SF lfstats1 systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats1_nom_sig = new TH1F("hist_mWt_btagSF_lfstats1_nom_sig","Effect of btag SF lfstats1 systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats1_nom_bkg = new TH1F("hist_mWt_btagSF_lfstats1_nom_bkg","Effect of btag SF lfstats1 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats1_up_sig = new TH1F("hist_mWt_btagSF_lfstats1_up_sig","Effect of btag SF lfstats1 systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_lfstats1_up_bkg = new TH1F("hist_mWt_btagSF_lfstats1_up_bkg","Effect of btag SF lfstats1 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_lfstats1_down_sig = new TH1F("hist_mWt_lfstats1_btagSF_down_sig","Effect of btag SF lfstats1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_lfstats1_down_bkg = new TH1F("hist_mWt_lfstats1_btagSF_down_bkg","Effect of btag SF lfstats1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
 
 
-TH1F*  hist_mWt_btagSF_lfstats2_nom_sig = new TH1F("hist_mWt_btagSF_lfstats2_nom_sig","Effect of btag SF lfstats2 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_lfstats2_nom_bkg = new TH1F("hist_mWt_btagSF_lfstats2_nom_bkg","Effect of btag SF lfstats2 systematics on the m_{T}(W): Signal;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_lfstats2_up_sig = new TH1F("hist_mWt_btagSF_lfstats2_up_sig","Effect of btag SF lfstats2 systematics on the m_{T}(W): Signal:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats2_nom_sig = new TH1F("hist_mWt_btagSF_lfstats2_nom_sig","Effect of btag SF lfstats2 systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats2_nom_bkg = new TH1F("hist_mWt_btagSF_lfstats2_nom_bkg","Effect of btag SF lfstats2 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats2_up_sig = new TH1F("hist_mWt_btagSF_lfstats2_up_sig","Effect of btag SF lfstats2 systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_lfstats2_up_bkg = new TH1F("hist_mWt_btagSF_lfstats2_up_bkg","Effect of btag SF lfstats2 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_lfstats2_down_sig = new TH1F("hist_mWt_lfstats2_btagSF_down_sig","Effect of btag SF lfstats2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_lfstats2_down_bkg = new TH1F("hist_mWt_lfstats2_btagSF_down_bkg","Effect of btag SF lfstats2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
@@ -898,10 +960,11 @@ Int_t main(Int_t argc, char* argv[]){
         
        // if(MVA_Luminosity != 0 && !isData) weight = (weight * Luminosity)/MVA_Luminosity;
        // if(!datafound){ Luminosity =MVA_Luminosity; cout << "lumi set to " << Luminosity << endl; }
-        // if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ weight *= 0.0802 * 0.0001 ;}
-        // if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ weight *= 0.238 * 0.0001;}
+         if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ weight *= 0.120 * 0.0001 ;}
+         if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ weight *= 0.265 * 0.0001;}
         
-       
+        //if(dataSetName.find("fake")!=std::string::npos) weight *= 0.0001;
+        
         if(!doMTWtemplate){
           if(MVA_channel== 0) 		{hist_uuu->Fill( MVA_BDT, weight);}
           else if(MVA_channel== 1) {hist_uue->Fill( MVA_BDT, weight);}
@@ -941,20 +1004,87 @@ Int_t main(Int_t argc, char* argv[]){
             hist_BDT_muonSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
             hist_BDT_muonSF_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_muonSF_up/MVA_weight_muonSF);
             hist_BDT_muonSF_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_muonSF_down/MVA_weight_muonSF);
+            
+            
+            hist_BDT_btagSF_cferr1_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_btagSF_cferr1_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_cferr1_up/MVA_weight_btagSF);
+            hist_BDT_btagSF_cferr1_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_cferr1_down/MVA_weight_btagSF);
+            
+            hist_BDT_btagSF_cferr2_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_btagSF_cferr2_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_cferr2_up/MVA_weight_btagSF);
+            hist_BDT_btagSF_cferr2_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_cferr2_down/MVA_weight_btagSF);
+            
+            hist_BDT_btagSF_hf_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_btagSF_hf_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hf_up/MVA_weight_btagSF);
+            hist_BDT_btagSF_hf_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hf_down/MVA_weight_btagSF);
+            
+            hist_BDT_btagSF_hfstats1_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_btagSF_hfstats1_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hfstats1_up/MVA_weight_btagSF);
+            hist_BDT_btagSF_hfstats1_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hfstats1_down/MVA_weight_btagSF);
+            
+            hist_BDT_btagSF_hfstats2_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_btagSF_hfstats2_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hfstats2_up/MVA_weight_btagSF);
+            hist_BDT_btagSF_hfstats2_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hfstats2_down/MVA_weight_btagSF);
+            
+            hist_BDT_btagSF_lf_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_btagSF_lf_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lf_up/MVA_weight_btagSF);
+            hist_BDT_btagSF_lf_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lf_down/MVA_weight_btagSF);
+            
+            hist_BDT_btagSF_lfstats1_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_btagSF_lfstats1_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats1_up/MVA_weight_btagSF);
+            hist_BDT_btagSF_lfstats1_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats1_down/MVA_weight_btagSF);
+            
+            hist_BDT_btagSF_lfstats2_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_btagSF_lfstats2_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF);
+            hist_BDT_btagSF_lfstats2_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats2_down/MVA_weight_btagSF);
           }
           else{
             
-            hist_BDT_puSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_BDT_puSF_up_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_puSF_up/MVA_weight_puSF);
-            hist_BDT_puSF_down_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_puSF_down/MVA_weight_puSF);
+            hist_BDT_puSF_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_puSF_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_puSF_up/MVA_weight_puSF);
+            hist_BDT_puSF_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_puSF_down/MVA_weight_puSF);
             
-            hist_BDT_electronSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_BDT_electronSF_up_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_electronSF_up/MVA_weight_electronSF);
-            hist_BDT_electronSF_down_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_electronSF_down/MVA_weight_electronSF);
             
-            hist_BDT_muonSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_BDT_muonSF_up_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_muonSF_up/MVA_weight_muonSF);
-            hist_BDT_muonSF_down_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_muonSF_down/MVA_weight_muonSF);
+            hist_BDT_electronSF_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_electronSF_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_electronSF_up/MVA_weight_electronSF);
+            hist_BDT_electronSF_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_electronSF_down/MVA_weight_electronSF);
+            
+            hist_BDT_muonSF_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_muonSF_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_muonSF_up/MVA_weight_muonSF);
+            hist_BDT_muonSF_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_muonSF_down/MVA_weight_muonSF);
+            
+            
+            hist_BDT_btagSF_cferr1_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_btagSF_cferr1_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_cferr1_up/MVA_weight_btagSF);
+            hist_BDT_btagSF_cferr1_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_cferr1_down/MVA_weight_btagSF);
+            
+            hist_BDT_btagSF_cferr2_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_btagSF_cferr2_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_cferr2_up/MVA_weight_btagSF);
+            hist_BDT_btagSF_cferr2_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_cferr2_down/MVA_weight_btagSF);
+            
+            hist_BDT_btagSF_hf_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_btagSF_hf_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hf_up/MVA_weight_btagSF);
+            hist_BDT_btagSF_hf_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hf_down/MVA_weight_btagSF);
+            
+            hist_BDT_btagSF_hfstats1_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_btagSF_hfstats1_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hfstats1_up/MVA_weight_btagSF);
+            hist_BDT_btagSF_hfstats1_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hfstats1_down/MVA_weight_btagSF);
+            
+            hist_BDT_btagSF_hfstats2_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_btagSF_hfstats2_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hfstats2_up/MVA_weight_btagSF);
+            hist_BDT_btagSF_hfstats2_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hfstats2_down/MVA_weight_btagSF);
+            
+            hist_BDT_btagSF_lf_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_btagSF_lf_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lf_up/MVA_weight_btagSF);
+            hist_BDT_btagSF_lf_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lf_down/MVA_weight_btagSF);
+            
+            hist_BDT_btagSF_lfstats1_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_btagSF_lfstats1_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats1_up/MVA_weight_btagSF);
+            hist_BDT_btagSF_lfstats1_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats1_down/MVA_weight_btagSF);
+            
+            hist_BDT_btagSF_lfstats2_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
+            hist_BDT_btagSF_lfstats2_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF);
+            hist_BDT_btagSF_lfstats2_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats2_down/MVA_weight_btagSF);
           }
           
           
@@ -1405,6 +1535,32 @@ Int_t main(Int_t argc, char* argv[]){
       }
     }
      if(PlotSystematics && !doMTWtemplate){
+       double maximum_sig = hist_BDT_puSF_nom_sig->GetMaximum()*1.5;
+       double maximum_bkg = hist_BDT_puSF_nom_bkg->GetMaximum()*1.5;
+       
+       hist_BDT_puSF_nom_bkg->SetMaximum(maximum_bkg);
+       hist_BDT_puSF_nom_sig->SetMaximum(maximum_sig);
+       hist_BDT_electronSF_nom_bkg->SetMaximum(maximum_bkg);
+       hist_BDT_electronSF_nom_sig->SetMaximum(maximum_sig);
+       hist_BDT_muonSF_nom_bkg->SetMaximum(maximum_bkg);
+       hist_BDT_muonSF_nom_sig->SetMaximum(maximum_sig);
+       hist_BDT_btagSF_cferr1_nom_bkg->SetMaximum(maximum_bkg);
+       hist_BDT_btagSF_cferr1_nom_sig->SetMaximum(maximum_sig);
+       hist_BDT_btagSF_cferr2_nom_bkg->SetMaximum(maximum_bkg);
+       hist_BDT_btagSF_cferr2_nom_sig->SetMaximum(maximum_sig);
+       hist_BDT_btagSF_hf_nom_bkg->SetMaximum(maximum_bkg);
+       hist_BDT_btagSF_hf_nom_sig->SetMaximum(maximum_sig);
+       hist_BDT_btagSF_hfstats1_nom_bkg->SetMaximum(maximum_bkg);
+       hist_BDT_btagSF_hfstats1_nom_sig->SetMaximum(maximum_sig);
+       hist_BDT_btagSF_hfstats2_nom_bkg->SetMaximum(maximum_bkg);
+       hist_BDT_btagSF_hfstats2_nom_sig->SetMaximum(maximum_sig);
+       hist_BDT_btagSF_lf_nom_bkg->SetMaximum(maximum_bkg);
+       hist_BDT_btagSF_lf_nom_sig->SetMaximum(maximum_sig);
+       hist_BDT_btagSF_lfstats1_nom_bkg->SetMaximum(maximum_bkg);
+       hist_BDT_btagSF_lfstats1_nom_sig->SetMaximum(maximum_sig);
+       hist_BDT_btagSF_lfstats2_nom_bkg->SetMaximum(maximum_bkg);
+       hist_BDT_btagSF_lfstats2_nom_sig->SetMaximum(maximum_sig);
+       
        hist_BDT_puSF_nom_sig->SetLineColor(kRed);
        hist_BDT_puSF_up_sig->SetLineColor(kBlue);
        hist_BDT_puSF_down_sig->SetLineColor(kGreen+2);
@@ -1787,10 +1943,38 @@ Int_t main(Int_t argc, char* argv[]){
        tempCanvas->SetLogy();
        tempCanvas->Update();
        tempCanvas->SaveAs("hist_BDT_btagSF_hfstats2_nom_sig_LogY.png");
-       tempCanvas->SaveAs( "electronbkg_LogY.png");
+       
 
      }
      else if(PlotSystematics && doMTWtemplate){
+       double maximum_sig = hist_mWt_puSF_nom_sig->GetMaximum()*1.5;
+       double maximum_bkg = hist_mWt_puSF_nom_bkg->GetMaximum()*1.5;
+       
+       hist_mWt_puSF_nom_bkg->SetMaximum(maximum_bkg);
+       hist_mWt_puSF_nom_sig->SetMaximum(maximum_sig);
+       hist_mWt_electronSF_nom_bkg->SetMaximum(maximum_bkg);
+       hist_mWt_electronSF_nom_sig->SetMaximum(maximum_sig);
+       hist_mWt_muonSF_nom_bkg->SetMaximum(maximum_bkg);
+       hist_mWt_muonSF_nom_sig->SetMaximum(maximum_sig);
+       hist_mWt_btagSF_cferr1_nom_bkg->SetMaximum(maximum_bkg);
+       hist_mWt_btagSF_cferr1_nom_sig->SetMaximum(maximum_sig);
+       hist_mWt_btagSF_cferr2_nom_bkg->SetMaximum(maximum_bkg);
+       hist_mWt_btagSF_cferr2_nom_sig->SetMaximum(maximum_sig);
+       hist_mWt_btagSF_hf_nom_bkg->SetMaximum(maximum_bkg);
+       hist_mWt_btagSF_hf_nom_sig->SetMaximum(maximum_sig);
+       hist_mWt_btagSF_hfstats1_nom_bkg->SetMaximum(maximum_bkg);
+       hist_mWt_btagSF_hfstats1_nom_sig->SetMaximum(maximum_sig);
+       hist_mWt_btagSF_hfstats2_nom_bkg->SetMaximum(maximum_bkg);
+       hist_mWt_btagSF_hfstats2_nom_sig->SetMaximum(maximum_sig);
+       hist_mWt_btagSF_lf_nom_bkg->SetMaximum(maximum_bkg);
+       hist_mWt_btagSF_lf_nom_sig->SetMaximum(maximum_sig);
+       hist_mWt_btagSF_lfstats1_nom_bkg->SetMaximum(maximum_bkg);
+       hist_mWt_btagSF_lfstats1_nom_sig->SetMaximum(maximum_sig);
+       hist_mWt_btagSF_lfstats2_nom_bkg->SetMaximum(maximum_bkg);
+       hist_mWt_btagSF_lfstats2_nom_sig->SetMaximum(maximum_sig);
+       
+       
+       
        hist_mWt_puSF_nom_sig->SetLineColor(kRed);
        hist_mWt_puSF_up_sig->SetLineColor(kBlue);
        hist_mWt_puSF_down_sig->SetLineColor(kGreen+2);
