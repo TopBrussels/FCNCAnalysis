@@ -142,6 +142,7 @@ Double_t        MVA_weight_puSF_down;
 Double_t        MVA_weight_electronSF_up;
 Double_t        MVA_weight_electronSF_down;
 Double_t        MVA_weight_muonSF_up;
+Double_t        MVA_weight_nloSF;
 Double_t        MVA_weight_muonSF_down;
 Double_t        MVA_weight_btagSF_cferr1_up;
 Double_t        MVA_weight_btagSF_cferr1_down;
@@ -250,6 +251,7 @@ Float_t         MVA_m3l;
 
 // List of branches
 TBranch        *b_MVA_weight_puSF;
+TBranch        *b_MVA_weight_nloSF;
 TBranch        *b_MVA_weight_btagSF ;
 TBranch        *b_MVA_weight_muonSF ;
 TBranch        *b_MVA_weight_electronSF ;
@@ -677,6 +679,7 @@ Int_t main(Int_t argc, char* argv[]){
     cout << "pushing back systematics" << endl;
     thesystlist.push_back("puSFDown");
     thesystlist.push_back("electronSFDown");
+     thesystlist.push_back("muonSFDown");
     thesystlist.push_back("btagSFDown");
     thesystlist.push_back("btagSF_cferr1Down");
     thesystlist.push_back("btagSF_cferr2Down");
@@ -686,8 +689,8 @@ Int_t main(Int_t argc, char* argv[]){
     thesystlist.push_back("btagSF_lfDown");
     thesystlist.push_back("btagSF_lfstats1Down");
     thesystlist.push_back("btagSF_lfstats2Down");
-  //  thesystlist.push_back("JERUp");
-  //  thesystlist.push_back("JESUp");
+    thesystlist.push_back("JERUp");
+    thesystlist.push_back("JESUp");
     
     thesystlist.push_back("puSFUp");
     thesystlist.push_back("electronSFUp");
@@ -702,9 +705,9 @@ Int_t main(Int_t argc, char* argv[]){
     thesystlist.push_back("btagSF_lfstats2Up");
     
     
- //   thesystlist.push_back("JERDown");
+    thesystlist.push_back("JERDown");
     
-  //  thesystlist.push_back("JESDown");
+    thesystlist.push_back("JESDown");
   }
   cout << "Number of systematics " << thesystlist.size() << endl;
   //for plotting
@@ -925,46 +928,53 @@ Int_t main(Int_t argc, char* argv[]){
         else if(doMTWtemplate) { WZregionEntries++; }
         
         if(doMTWtemplate &&MVA_region == 2 && MVA_channel == 0) { WZregionEntriesuuu++;}
-        
-        weight = 1.;
-        if(!isData && !onlynomforsys && isys != 0){
+       // MVA_weight_nloSF = 1.;
+        weight = MVA_Luminosity /MVA_EqLumi;
+        if(!isData && !onlynomforsys && isys != 0 && (systematic.find("JES")==std::string::npos) && (systematic.find("JER")==std::string::npos) ){
           //cout <<  "getting weight for " << systematic << endl;
-          if(systematic.find("puSFUp")) weight =MVA_weight_puSF_up *MVA_weight_nom /MVA_weight_puSF;
-          else if(systematic.find("puSFDown")) weight =MVA_weight_puSF_down  *MVA_weight_nom /MVA_weight_puSF;
-          else if(systematic.find("electronSFUp")) weight =MVA_weight_electronSF_up  *MVA_weight_nom /MVA_weight_electronSF;
-          else if(systematic.find("electronSFDown")) weight =MVA_weight_electronSF_down  *MVA_weight_nom /MVA_weight_electronSF;
-          else if(systematic.find("muonSFUp")) weight =MVA_weight_muonSF_up  *MVA_weight_nom /MVA_weight_muonSF;
-          else if(systematic.find("muonSFDown")) weight =MVA_weight_muonSF_down  *MVA_weight_nom /MVA_weight_muonSF;
-          else if(systematic.find("btagSF_cferr1Up")) weight =MVA_weight_btagSF_cferr1_up  *MVA_weight_nom /MVA_weight_btagSF;
-          else if(systematic.find("btagSF_cferr1Down")) weight =MVA_weight_btagSF_cferr1_down *MVA_weight_nom /MVA_weight_btagSF;
-          else if(systematic.find("btagSF_cferr2Up")) weight =MVA_weight_btagSF_cferr2_up *MVA_weight_nom /MVA_weight_btagSF;
-          else if(systematic.find("btagSF_cferr2Down")) weight =MVA_weight_btagSF_cferr2_down *MVA_weight_nom /MVA_weight_btagSF;
-          else if(systematic.find("btagSF_lfUp")) weight =MVA_weight_btagSF_lf_up *MVA_weight_nom /MVA_weight_btagSF;
-          else if(systematic.find("btagSF_lfDown")) weight =MVA_weight_btagSF_lf_down*MVA_weight_nom /MVA_weight_btagSF;
-          else if(systematic.find("btagSF_hfUp")) weight =MVA_weight_btagSF_hf_up*MVA_weight_nom /MVA_weight_btagSF;
-          else if(systematic.find("btagSF_hfDown")) weight =MVA_weight_btagSF_hf_down*MVA_weight_nom /MVA_weight_btagSF;
-          else if(systematic.find("btagSF_hfstats1Up")) weight =MVA_weight_btagSF_hfstats1_up*MVA_weight_nom /MVA_weight_btagSF;
-          else if(systematic.find("btagSF_hfstats1Down")) weight =MVA_weight_btagSF_hfstats1_down*MVA_weight_nom /MVA_weight_btagSF;
-          else if(systematic.find("btagSF_hfstats2Up")) weight =MVA_weight_btagSF_hfstats2_up *MVA_weight_nom /MVA_weight_btagSF;
-          else if(systematic.find("btagSF_hfstats2Down")) weight =MVA_weight_btagSF_hfstats2_down *MVA_weight_nom /MVA_weight_btagSF;
-          else if(systematic.find("btagSF_lfstats2Up")) weight =MVA_weight_btagSF_lfstats2_up *MVA_weight_nom /MVA_weight_btagSF;
-          else if(systematic.find("btagSF_lfstats2Down")) weight =MVA_weight_btagSF_lfstats2_down*MVA_weight_nom /MVA_weight_btagSF;
+          if(systematic.find("puSFUp")) weight *= MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("puSFDown")) weight *= MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("electronSFUp")) weight *= MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("electronSFDown")) weight *= MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("muonSFUp")) weight *= MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF;
+          else if(systematic.find("muonSFDown")) weight *= MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF;
+          else if(systematic.find("btagSF_cferr1Up")) weight *= MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("btagSF_cferr1Down")) weight *= MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("btagSF_cferr2Up")) weight *= MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("btagSF_cferr2Down")) weight *=MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("btagSF_lfUp")) weight *= MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("btagSF_lfDown")) weight *= MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("btagSF_hfUp")) weight *= MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("btagSF_hfDown")) weight *= MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("btagSF_hfstats1Up")) weight *= MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("btagSF_hfstats1Down")) weight *=MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("btagSF_hfstats2Up")) weight *=MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("btagSF_hfstats2Down")) weight *=MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("btagSF_lfstats2Up")) weight *= MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF_lfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("btagSF_lfstats2Down")) weight *=MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("btagSF_lfstats1Up")) weight *= MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF_lfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF;
+          else if(systematic.find("btagSF_lfstats1Down")) weight *=MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF;
           
         }
-        else if((isys == 0 && !isData) || dataSetName.find("fake")!=std::string::npos ){ weight =MVA_weight_nom; } //CHECK ME
-       else  if( isData){ weight = 1.;}
+        else  if(!isData && !onlynomforsys && isys != 0 && (systematic.find("JES")!=std::string::npos ||systematic.find("JER")!=std::string::npos) ) weight *= MVA_weight_nom;
+        else if(isData ) weight = 1.;
+        else if(dataSetName.find("fakes")!=std::string::npos) weight = MVA_weight_nom;
+        else weight *= MVA_weight_nom;
+        //else if((isys == 0 && !isData) || dataSetName.find("fake")!=std::string::npos ){ weight =MVA_weight_nom; } //CHECK ME
+      // else  if( isData){ weight = 1.;}
         
-        if(!isData) weight *=MVA_Luminosity /MVA_EqLumi;
+       // if(!isData &&   dataSetName.find("fake")==std::string::npos) weight *=MVA_Luminosity /MVA_EqLumi;
        // if(dataSetName.find("fake")!=std::string::npos) weight =MVA_weight_nom;
         //if(Luminosity/MVA_Luminosity != 1. ) cout << "lumi "  << Luminosity << " while tuples are made with " <<MVA_Luminosity << endl;
         
        // if(MVA_Luminosity != 0 && !isData) weight = (weight * Luminosity)/MVA_Luminosity;
        // if(!datafound){ Luminosity =MVA_Luminosity; cout << "lumi set to " << Luminosity << endl; }
-         if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ weight *= 0.120 * 0.0001 ;}
-         if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ weight *= 0.265 * 0.0001;}
+      //   if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ weight *= 0.120 * 0.0001 ;}
+       //  if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ weight *= 0.265 * 0.0001;}
         
         //if(dataSetName.find("fake")!=std::string::npos) weight *= 0.0001;
         
+       // cout << "weight " << weight << endl;
         if(!doMTWtemplate){
           if(MVA_channel== 0) 		{hist_uuu->Fill( MVA_BDT, weight);}
           else if(MVA_channel== 1) {hist_uue->Fill( MVA_BDT, weight);}
@@ -993,98 +1003,98 @@ Int_t main(Int_t argc, char* argv[]){
         if(PlotSystematics && !isData && dataSetName.find("fake")==std::string::npos && !doMTWtemplate && !doSystematics){
           if(dataSetName.find("FCNC")!=std::string::npos){
             hist_BDT_puSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_puSF_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_puSF_up/MVA_weight_puSF);
-            hist_BDT_puSF_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_puSF_down/MVA_weight_puSF);
+            hist_BDT_puSF_up_sig->Fill(MVA_BDT, MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_puSF_down_sig->Fill(MVA_BDT, MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
             
             
             hist_BDT_electronSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_electronSF_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_electronSF_up/MVA_weight_electronSF);
-            hist_BDT_electronSF_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_electronSF_down/MVA_weight_electronSF);
+            hist_BDT_electronSF_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_electronSF_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_BDT_muonSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_muonSF_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_muonSF_up/MVA_weight_muonSF);
-            hist_BDT_muonSF_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_muonSF_down/MVA_weight_muonSF);
+            hist_BDT_muonSF_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF);
+            hist_BDT_muonSF_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF);
             
             
             hist_BDT_btagSF_cferr1_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_cferr1_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_cferr1_up/MVA_weight_btagSF);
-            hist_BDT_btagSF_cferr1_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_cferr1_down/MVA_weight_btagSF);
+            hist_BDT_btagSF_cferr1_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_cferr1_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_BDT_btagSF_cferr2_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_cferr2_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_cferr2_up/MVA_weight_btagSF);
-            hist_BDT_btagSF_cferr2_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_cferr2_down/MVA_weight_btagSF);
+            hist_BDT_btagSF_cferr2_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_cferr2_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_BDT_btagSF_hf_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_hf_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hf_up/MVA_weight_btagSF);
-            hist_BDT_btagSF_hf_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hf_down/MVA_weight_btagSF);
+            hist_BDT_btagSF_hf_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_hf_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_BDT_btagSF_hfstats1_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_hfstats1_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hfstats1_up/MVA_weight_btagSF);
-            hist_BDT_btagSF_hfstats1_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hfstats1_down/MVA_weight_btagSF);
+            hist_BDT_btagSF_hfstats1_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_hfstats1_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_BDT_btagSF_hfstats2_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_hfstats2_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hfstats2_up/MVA_weight_btagSF);
-            hist_BDT_btagSF_hfstats2_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hfstats2_down/MVA_weight_btagSF);
+            hist_BDT_btagSF_hfstats2_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_hfstats2_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_BDT_btagSF_lf_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_lf_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lf_up/MVA_weight_btagSF);
-            hist_BDT_btagSF_lf_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lf_down/MVA_weight_btagSF);
+            hist_BDT_btagSF_lf_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_lf_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_BDT_btagSF_lfstats1_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_lfstats1_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats1_up/MVA_weight_btagSF);
-            hist_BDT_btagSF_lfstats1_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats1_down/MVA_weight_btagSF);
+            hist_BDT_btagSF_lfstats1_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_lfstats1_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_BDT_btagSF_lfstats2_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
             hist_BDT_btagSF_lfstats2_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF);
-            hist_BDT_btagSF_lfstats2_down_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats2_down/MVA_weight_btagSF);
+            hist_BDT_btagSF_lfstats2_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF);
           }
           else{
             
             hist_BDT_puSF_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_puSF_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_puSF_up/MVA_weight_puSF);
-            hist_BDT_puSF_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_puSF_down/MVA_weight_puSF);
+            hist_BDT_puSF_up_bkg->Fill(MVA_BDT, MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_puSF_down_bkg->Fill(MVA_BDT, MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
             
             
             hist_BDT_electronSF_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_electronSF_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_electronSF_up/MVA_weight_electronSF);
-            hist_BDT_electronSF_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_electronSF_down/MVA_weight_electronSF);
+            hist_BDT_electronSF_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_electronSF_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_BDT_muonSF_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_muonSF_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_muonSF_up/MVA_weight_muonSF);
-            hist_BDT_muonSF_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_muonSF_down/MVA_weight_muonSF);
+            hist_BDT_muonSF_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF);
+            hist_BDT_muonSF_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF);
             
             
             hist_BDT_btagSF_cferr1_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_cferr1_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_cferr1_up/MVA_weight_btagSF);
-            hist_BDT_btagSF_cferr1_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_cferr1_down/MVA_weight_btagSF);
+            hist_BDT_btagSF_cferr1_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_cferr1_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_BDT_btagSF_cferr2_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_cferr2_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_cferr2_up/MVA_weight_btagSF);
-            hist_BDT_btagSF_cferr2_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_cferr2_down/MVA_weight_btagSF);
+            hist_BDT_btagSF_cferr2_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_cferr2_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_BDT_btagSF_hf_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_hf_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hf_up/MVA_weight_btagSF);
-            hist_BDT_btagSF_hf_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hf_down/MVA_weight_btagSF);
+            hist_BDT_btagSF_hf_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_hf_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_BDT_btagSF_hfstats1_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_hfstats1_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hfstats1_up/MVA_weight_btagSF);
-            hist_BDT_btagSF_hfstats1_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hfstats1_down/MVA_weight_btagSF);
+            hist_BDT_btagSF_hfstats1_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_hfstats1_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_BDT_btagSF_hfstats2_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_hfstats2_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hfstats2_up/MVA_weight_btagSF);
-            hist_BDT_btagSF_hfstats2_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_hfstats2_down/MVA_weight_btagSF);
+            hist_BDT_btagSF_hfstats2_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_hfstats2_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_BDT_btagSF_lf_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_lf_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lf_up/MVA_weight_btagSF);
-            hist_BDT_btagSF_lf_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lf_down/MVA_weight_btagSF);
+            hist_BDT_btagSF_lf_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_lf_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_BDT_btagSF_lfstats1_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_lfstats1_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats1_up/MVA_weight_btagSF);
-            hist_BDT_btagSF_lfstats1_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats1_down/MVA_weight_btagSF);
+            hist_BDT_btagSF_lfstats1_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_lfstats1_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_BDT_btagSF_lfstats2_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
             hist_BDT_btagSF_lfstats2_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF);
-            hist_BDT_btagSF_lfstats2_down_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats2_down/MVA_weight_btagSF);
+            hist_BDT_btagSF_lfstats2_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF);
           }
           
           
@@ -1093,97 +1103,97 @@ Int_t main(Int_t argc, char* argv[]){
           
            if(dataSetName.find("fake")!=std::string::npos){
             hist_mWt_puSF_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_puSF_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_puSF_up/MVA_weight_puSF);
-            hist_mWt_puSF_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_puSF_down/MVA_weight_puSF);
+            hist_mWt_puSF_up_sig->Fill(MVA_mWt, MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_puSF_down_sig->Fill(MVA_mWt, MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
             
             
             hist_mWt_electronSF_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_electronSF_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_electronSF_up/MVA_weight_electronSF);
-            hist_mWt_electronSF_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_electronSF_down/MVA_weight_electronSF);
+            hist_mWt_electronSF_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_electronSF_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_mWt_muonSF_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_muonSF_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_muonSF_up/MVA_weight_muonSF);
-            hist_mWt_muonSF_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_muonSF_down/MVA_weight_muonSF);
+            hist_mWt_muonSF_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF);
+            hist_mWt_muonSF_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF);
              
              hist_mWt_btagSF_cferr1_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-             hist_mWt_btagSF_cferr1_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_cferr1_up/MVA_weight_btagSF);
-             hist_mWt_btagSF_cferr1_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_cferr1_down/MVA_weight_btagSF);
+             hist_mWt_btagSF_cferr1_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF);
+             hist_mWt_btagSF_cferr1_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF);
              
              hist_mWt_btagSF_cferr2_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-             hist_mWt_btagSF_cferr2_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_cferr2_up/MVA_weight_btagSF);
-             hist_mWt_btagSF_cferr2_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_cferr2_down/MVA_weight_btagSF);
+             hist_mWt_btagSF_cferr2_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF);
+             hist_mWt_btagSF_cferr2_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF);
            
              hist_mWt_btagSF_hf_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-             hist_mWt_btagSF_hf_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hf_up/MVA_weight_btagSF);
-             hist_mWt_btagSF_hf_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hf_down/MVA_weight_btagSF);
+             hist_mWt_btagSF_hf_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF);
+             hist_mWt_btagSF_hf_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF);
            
              hist_mWt_btagSF_hfstats1_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-             hist_mWt_btagSF_hfstats1_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hfstats1_up/MVA_weight_btagSF);
-             hist_mWt_btagSF_hfstats1_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hfstats1_down/MVA_weight_btagSF);
+             hist_mWt_btagSF_hfstats1_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF);
+             hist_mWt_btagSF_hfstats1_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF);
            
              hist_mWt_btagSF_hfstats2_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-             hist_mWt_btagSF_hfstats2_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hfstats2_up/MVA_weight_btagSF);
-             hist_mWt_btagSF_hfstats2_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hfstats2_down/MVA_weight_btagSF);
+             hist_mWt_btagSF_hfstats2_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF);
+             hist_mWt_btagSF_hfstats2_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF);
              
              hist_mWt_btagSF_lf_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-             hist_mWt_btagSF_lf_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lf_up/MVA_weight_btagSF);
-             hist_mWt_btagSF_lf_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lf_down/MVA_weight_btagSF);
+             hist_mWt_btagSF_lf_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF);
+             hist_mWt_btagSF_lf_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF);
              
              hist_mWt_btagSF_lfstats1_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-             hist_mWt_btagSF_lfstats1_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats1_up/MVA_weight_btagSF);
-             hist_mWt_btagSF_lfstats1_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats1_down/MVA_weight_btagSF);
+             hist_mWt_btagSF_lfstats1_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF);
+             hist_mWt_btagSF_lfstats1_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF);
              
              hist_mWt_btagSF_lfstats2_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
              hist_mWt_btagSF_lfstats2_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF);
-             hist_mWt_btagSF_lfstats2_down_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats2_down/MVA_weight_btagSF);
+             hist_mWt_btagSF_lfstats2_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF);
              
             // cout << "filling" <<endl;
           }
           else{
             hist_mWt_puSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_puSF_up_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_puSF_up/MVA_weight_puSF);
-            hist_mWt_puSF_down_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_puSF_down/MVA_weight_puSF);
+            hist_mWt_puSF_up_bkg->Fill(MVA_mWt,MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_puSF_down_bkg->Fill(MVA_mWt,MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_mWt_electronSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_electronSF_up_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_electronSF_up/MVA_weight_electronSF);
-            hist_mWt_electronSF_down_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_electronSF_down/MVA_weight_electronSF);
+            hist_mWt_electronSF_up_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_electronSF_down_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_mWt_muonSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_muonSF_up_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_muonSF_up/MVA_weight_muonSF);
-            hist_mWt_muonSF_down_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_weight_muonSF_down/MVA_weight_muonSF);
+            hist_mWt_muonSF_up_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF);
+            hist_mWt_muonSF_down_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF);
             
             
             hist_mWt_btagSF_cferr1_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_btagSF_cferr1_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_cferr1_up/MVA_weight_btagSF);
-            hist_mWt_btagSF_cferr1_down_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_cferr1_down/MVA_weight_btagSF);
+            hist_mWt_btagSF_cferr1_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_btagSF_cferr1_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_mWt_btagSF_cferr2_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_btagSF_cferr2_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_cferr2_up/MVA_weight_btagSF);
-            hist_mWt_btagSF_cferr2_down_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_cferr2_down/MVA_weight_btagSF);
+            hist_mWt_btagSF_cferr2_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_btagSF_cferr2_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_mWt_btagSF_hf_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_btagSF_hf_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hf_up/MVA_weight_btagSF);
-            hist_mWt_btagSF_hf_down_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hf_down/MVA_weight_btagSF);
+            hist_mWt_btagSF_hf_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_btagSF_hf_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_mWt_btagSF_hfstats1_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_btagSF_hfstats1_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hfstats1_up/MVA_weight_btagSF);
-            hist_mWt_btagSF_hfstats1_down_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hfstats1_down/MVA_weight_btagSF);
+            hist_mWt_btagSF_hfstats1_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_btagSF_hfstats1_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_mWt_btagSF_hfstats2_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_btagSF_hfstats2_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hfstats2_up/MVA_weight_btagSF);
-            hist_mWt_btagSF_hfstats2_down_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_hfstats2_down/MVA_weight_btagSF);
+            hist_mWt_btagSF_hfstats2_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_btagSF_hfstats2_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_mWt_btagSF_lf_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_btagSF_lf_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lf_up/MVA_weight_btagSF);
-            hist_mWt_btagSF_lf_down_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lf_down/MVA_weight_btagSF);
+            hist_mWt_btagSF_lf_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_btagSF_lf_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_mWt_btagSF_lfstats1_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_btagSF_lfstats1_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats1_up/MVA_weight_btagSF);
-            hist_mWt_btagSF_lfstats1_down_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats1_down/MVA_weight_btagSF);
+            hist_mWt_btagSF_lfstats1_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_btagSF_lfstats1_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             hist_mWt_btagSF_lfstats2_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
             hist_mWt_btagSF_lfstats2_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF);
-            hist_mWt_btagSF_lfstats2_down_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats2_down/MVA_weight_btagSF);
+            hist_mWt_btagSF_lfstats2_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF);
             
             // cout << "filling" <<endl;
           }
@@ -3038,6 +3048,7 @@ void InitAnalyzerTree(TTree* tree){
   tree->SetBranchAddress("MVA_id2", &MVA_id2, &b_MVA_id2);
   tree->SetBranchAddress("MVA_q", &MVA_q, &b_MVA_q);
   
+  tree->SetBranchAddress( "MVA_weight_nloSF", &MVA_weight_nloSF, &b_MVA_weight_nloSF);
   tree->SetBranchAddress( "MVA_weight_puSF_up", &MVA_weight_puSF_up, &b_MVA_weight_puSF_up);
   tree->SetBranchAddress( "MVA_weight_puSF_down", &MVA_weight_puSF_down, &b_MVA_weight_puSF_down);
   tree->SetBranchAddress( "MVA_weight_electronSF_up", &MVA_weight_electronSF_up, &b_MVA_weight_electronSF_up);
@@ -3064,7 +3075,7 @@ void InitAnalyzerTree(TTree* tree){
   
   tree->SetBranchAddress( "MVA_weight_puSF",&MVA_weight_puSF, &b_MVA_weight_puSF);
   tree->SetBranchAddress( "MVA_weight_muonSF",&MVA_weight_muonSF, &b_MVA_weight_muonSF);
-  tree->SetBranchAddress( "MVA_weight_eletcronSF",&MVA_weight_electronSF, &b_MVA_weight_electronSF);
+  tree->SetBranchAddress( "MVA_weight_electronSF",&MVA_weight_electronSF, &b_MVA_weight_electronSF);
   tree->SetBranchAddress( "MVA_weight_btagSF",&MVA_weight_btagSF, &b_MVA_weight_btagSF);
   
   
