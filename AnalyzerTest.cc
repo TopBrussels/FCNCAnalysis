@@ -2187,7 +2187,7 @@ int main(int argc, char* argv[]){
         double fakeSF = 1.;
         if(Zboson.Pt() > 300.){ binSF = fake_SFHisto->GetXaxis()->FindBin(299.);}
         else binSF = fake_SFHisto->GetXaxis()->FindBin(Zboson.Pt());
-        fakeSF = 1/fake_SFHisto->GetBinContent(binSF);
+        fakeSF = fake_SFHisto->GetBinContent(binSF);
         scaleFactor *= fakeSF;
         //cout << " bin " << binSF << " fake SF " << fakeSF << " SF " << scaleFactor << " weight " ;
         eventweightForplots *= fakeSF;
@@ -2727,10 +2727,12 @@ int main(int argc, char* argv[]){
     
     fake_SFHisto = new TH1F("fake_SFHisto", "fake_SFHisto" , 10,0,300);
     double bincontent = -10000;
+    double binerror = 0;
     for(int iBin = 1; iBin < SumNormal_fake->GetNbinsX()+1; iBin++){
       bincontent = SumNormal_fake->GetBinContent(iBin)/ dataNormal_fake->GetBinContent(iBin);
+      binerror = Sqrt((pow(SumNormal_fake->GetBinError(iBin),2) / pow(dataNormal_fake->GetBinContent(iBin),2)) + ((pow(dataNormal_fake->GetBinError(iBin),2)*pow(SumNormal_fake->GetBinContent(iBin),2))/pow(dataNormal_fake->GetBinContent(iBin),4)));
       fake_SFHisto->SetBinContent(iBin, bincontent);
-      fake_SFHisto->SetBinError(iBin, bincontent);
+      fake_SFHisto->SetBinError(iBin, binerror);
     }
    
     
