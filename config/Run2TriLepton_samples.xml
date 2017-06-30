@@ -11,6 +11,14 @@
      https://twiki.cern.ch/twiki/bin/view/CMS/SingleTopTZq2015
      https://twiki.cern.ch/twiki/bin/viewauth/CMS/HowToGenXSecAnalyzer
      -->
+
+    <d name="WZTo3LNu_amc_80X" title="WZTo3LNu_amc" add="1" color="38"  ls="1"  lw="2" normf="1" EqLumi="1" xsection="3.057" PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v8/TTP-CMSSW_80X_v8--GT-80X_mcRun2_asymptotic_2016_TrancheIV_v8/WZTo3LNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_13TeVamcatnloFXFXpythia8RunIISummer16MiniAODv2PUMoriond1780XmcRun2asymptotic2016TrancheIVv6v1crab125/170415_200516/0000/*.root"/>
+
+   <d name="WZTo3LNu_80X" title="WZTo3LNu" add="0" color="38"  ls="1"  lw="2" normf="1" EqLumi="1" xsection="4.43" PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v8/TTP-CMSSW_80X_v8--GT-80X_mcRun2_asymptotic_2016_TrancheIV_v8/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/crab_ETP8M113TeVpowhegpythia8RunIISummer16MiniAODv2PUMoriond1780XmcRun2asymptotic2016TrancheIVv6v1crab126/170415_202438/0000/TOPTREE*.root"/>
+
+
+<d name="WZTo3LNu_80X" title="WZTo3LNu" add="1" color="38"  ls="1"  lw="2" normf="1" EqLumi="1" xsection="4.43" PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v10/TTP-CMSSW_80X_v10--GT-80X_mcRun2_asymptotic_2016_TrancheIV_v8/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/crab_ETP8M113TeVpowhegpythia8RunIISummer16MiniAODv2PUMoriond1780XmcRun2asymptotic2016TrancheIVv6v1crab127/170510_065837/0000/TOPTREE_*.root"/>
+
     <!-- FCNC -->
     <d name="NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80X" title="TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80X" add="1" color="5" ls="1" lw="2" normf="1" EqLumi="1" xsection="0.0107876287355590" PreselEff="0.0" filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v8/TTP-CMSSW_80X_v8--GT-80X_mcRun2_asymptotic_2016_TrancheIV_v8/TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct-MadGraph5-pythia8/crab_kappazctMadGraph5pythia8RunIISummer16MiniAODv2PUMoriond1780XmcRun2asymptotic2016TrancheIVv6v1crab9/170603_101705/0000/*.root"/>
 
@@ -173,7 +181,6 @@
     
     
     <d name="WZTo3LNu_amc_80X" title="WZTo3LNu_amc" add="1" color="38"  ls="1"  lw="2" normf="1" EqLumi="1" xsection="5.26" PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v8/TTP-CMSSW_80X_v8--GT-80X_mcRun2_asymptotic_2016_TrancheIV_v8/WZTo3LNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_13TeVamcatnloFXFXpythia8RunIISummer16MiniAODv2PUMoriond1780XmcRun2asymptotic2016TrancheIVv6v1crab125/170415_200516/0000/*.root"/>
-    
     
     
     <!--- VVV   -->
