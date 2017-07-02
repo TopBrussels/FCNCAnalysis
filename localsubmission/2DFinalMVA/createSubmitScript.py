@@ -21,7 +21,7 @@ date = dd+"_"+mm+"_"+yyyy
 
 categories = [" 2 3 "," 2 4 "," 3 3 "," 3 4 "," 4 4 "]
 catnames = ["b2j3","b2j4","b3j3","b3j4","b4j4"]
-couplingVals = [" 0 "," 3 "," 6 "," 9 "," 12 "," 15 ", " 18 ", " 21 ", " 24 "]
+couplingVals = [" 0 "," 3 "," 6 "," 9 "," 12 "," 15 ", " 18 ", " 21 ", " 24 ", " 27 "]
 
 for i in range(0,len(categories)):
 

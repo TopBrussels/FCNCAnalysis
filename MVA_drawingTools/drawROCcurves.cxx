@@ -48,20 +48,24 @@ int main(int argc, char *argv[])
     SetPlotStyle();
    
     std::string category = "b"+intToStr(baseline_bjets)+"j"+intToStr(baseline_jets);
-    std::string TrainingName = "Training_" + SignalSample + channel + "_" +  category;//Example: Training_SThut_El_b3j3
+    std::string TrainingName = SignalSample + channel + "_" +  category;//Example: Training_SThut_El_b3j3
     std::string outputpics = "pics/"+TrainingName+"/";
     mkdir("pics",0777);
     mkdir(outputpics.c_str(),0777);
 
-   TFile f1(("../weights_CSVv2M/"+TrainingName+".root").c_str());
-   std::string label1 = "Normal";
-   TFile f2(("../weights___reducedvariables/"+TrainingName+".root").c_str());
-   std::string label2 = "Reduced vars";
+   TFile f1(("../weights/Training_ST"+TrainingName+".root").c_str());
+   std::string label1 = "ST "+SignalSample;
+   TFile f2(("../weights/Training_TT"+TrainingName+".root").c_str());
+   std::string label2 = "TT "+SignalSample;
+   TFile f3(("../weights/CombTraining_"+TrainingName+".root").c_str());
+   std::string label3 = "Combined signal "+SignalSample;
 
         TH1F *HistoNorm_S = 0;
         TH1F *HistoNorm_B = 0;
+        TH1F *HistoNorm_C = 0;
 	      TH1F *histo_S( (TH1F*) f1.Get("Method_BDT/BDT/MVA_BDT_rejBvsS"));
 	      TH1F *histo_B( (TH1F*) f2.Get("Method_BDT/BDT/MVA_BDT_rejBvsS"));
+	      TH1F *histo_C( (TH1F*) f3.Get("Method_BDT/BDT/MVA_BDT_rejBvsS"));
 
         if(histo_S)
         {
@@ -76,6 +80,16 @@ int main(int argc, char *argv[])
           HistoNorm_B = new TH1F(*histo_B);
         }
         else std::cout << "Input histo doesn't exist" << std::endl;
+        if(histo_C)
+        {
+          HistoNorm_C = new TH1F(*histo_C);
+        }
+        else std::cout << "Input histo doesn't exist" << std::endl;
+
+cout <<  label1 << " " << HistoNorm_S->Integral() << endl;
+cout <<  label2 << " " << HistoNorm_B->Integral() << endl;
+cout <<  label3 << " " << HistoNorm_C->Integral() << endl;
+
 
         Double_t norm_S = 1;
         Double_t scale_S = norm_S/(HistoNorm_S->Integral());
@@ -83,12 +97,19 @@ int main(int argc, char *argv[])
         Double_t norm_B = 1;
         Double_t scale_B = norm_B/(HistoNorm_B->Integral());
         HistoNorm_B->Scale(scale_B);
+        Double_t norm_C = 1;
+        Double_t scale_C = norm_C/(HistoNorm_C->Integral());
+        HistoNorm_C->Scale(scale_C);
+
+
         
 //        HistoNorm_S->GetXaxis()->SetTitle(MVAvars[i_vars].c_str());
         HistoNorm_S->SetLineColor(4);
         HistoNorm_B->SetLineColor(2);
+        HistoNorm_C->SetLineColor(7);
         HistoNorm_S->SetLineWidth(2);
         HistoNorm_B->SetLineWidth(2);
+        HistoNorm_C->SetLineWidth(2);
 //        HistoNorm_S->SetFillColor(4);
 //        HistoNorm_B->SetFillColor(2);
 //        HistoNorm_S->SetFillStyle(3004);
@@ -96,20 +117,24 @@ int main(int argc, char *argv[])
 
         float maxhist= HistoNorm_S->GetMaximum();
         if (HistoNorm_B->GetMaximum() > maxhist) maxhist = HistoNorm_B->GetMaximum();
+        if (HistoNorm_C->GetMaximum() > maxhist) maxhist = HistoNorm_C->GetMaximum();
         
         maxhist = maxhist*1.4;
        
         HistoNorm_S->SetMaximum(maxhist);
         HistoNorm_B->SetMaximum(maxhist);
+        HistoNorm_C->SetMaximum(maxhist);
 
         TCanvas *c1 = new TCanvas();
         c1->cd();
         HistoNorm_S->Draw("hist");
         HistoNorm_B->Draw("hist same");
+        HistoNorm_C->Draw("hist same");
 
         TLegend *leg = new TLegend(0.7,0.75,0.98,0.95);
          leg->AddEntry(HistoNorm_S,label1.c_str(),"f");
          leg->AddEntry(HistoNorm_B,label2.c_str(),"f");
+         leg->AddEntry(HistoNorm_C,label3.c_str(),"f");
          leg->Draw();
 
 

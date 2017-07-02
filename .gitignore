@@ -45,3 +45,13 @@ TreeMaker_sycnhEx
 TreeProcessor*
 config/FullMcBkgdSamples_*_TreeProcessor.xml
 weights*
+PostFit_histograms_old/
+localsubmission/ControlPlotting/El/
+localsubmission/ControlPlotting/Inclusive.sh
+localsubmission/ControlPlotting/Mu/
+localsubmission/ControlPlotting/Terminal_Output/Inclusive.stderr
+localsubmission/ControlPlotting/Terminal_Output/Inclusive.stdout
+localsubmission/FinalMVAPlotting_PostFit/Terminal_Output/
+scripts/ElAddScript.sh
+scripts/MuAddScript.sh
+

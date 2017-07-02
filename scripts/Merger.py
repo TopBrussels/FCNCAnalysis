@@ -9,7 +9,7 @@ import shutil
 
 # getting the appropriate xml file & defining channel and production date of TreeMakerTrees
 channel = "_El"
-date = "_30_1_2017"
+date = "_6_6_2017"
 
 
 if channel == "_Mu":
@@ -57,7 +57,8 @@ for n in datasetNames:
     filenames_ntuples = glob.glob(inputdir_Ntuples + "/*" + n + "*.root")
     commandString_ntuples = "hadd -f " + pathdir_ntuples + "/FCNC_1L3B__Run2_TopTree_Study_" + n + ".root"
     for ff in filenames_ntuples:
-       commandString_ntuples = commandString_ntuples + " " + ff
+       if 'JERPlus' not in ff and 'JERMinus' not in ff and 'JESPlus' not in ff and 'JESMinus' not in ff and 'fsrdown' not in ff and 'fsrup' not in ff and 'isrup' not in ff and 'isrdown' not in ff and 'UEdown' not in ff and 'UEup' not in ff and 'hdampdown' not in ff and 'hdampup' not in ff:
+          commandString_ntuples = commandString_ntuples + " " + ff
     #print "Merging control plots for " + str(d.attrib['name'])
     #os.system(commandString_ctrplots)
     print "Merging ntuples for " + str(d.attrib['name'])

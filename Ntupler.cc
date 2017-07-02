@@ -221,7 +221,7 @@ int main (int argc, char *argv[])
     bool printTriggers = false;
     bool applyTriggers = true;
     bool CSVv2nonshape = false;//Put to false if you don't want to use the regular CSVv2 SF's
-    bool applyMVAJetComb = true;
+    bool applyMVAJetComb = false;
     string channelpostfix = "";
 
     //Setting Lepton Channels
@@ -1985,7 +1985,7 @@ int main (int argc, char *argv[])
 				        if (debug)cout<<"Getting Jets"<<endl;
 				        selectedOrigJets                                        = r2selection.GetSelectedJets(30,2.4,true,"Loose"); // ApplyJetId
 				        if (debug)cout<<"Getting Tight Muons"<<endl;
-				        selectedMuons                                       = r2selection.GetSelectedMuons(27,2.1,0.15, "Tight", "Summer16"); //Selected - Trigger: HLT_Iso(Tk)Mu24_v*
+				        selectedMuons                                       = r2selection.GetSelectedMuons(30,2.1,0.15, "Tight", "Summer16"); //Selected - Trigger: HLT_Iso(Tk)Mu24_v*
 				        if (debug)cout<<"Getting Loose Electrons"<<endl;
 				        selectedElectrons                                   = r2selection.GetSelectedElectrons(10,2.5,"Loose", "Spring16_80X", true, true); //Vetoed  
 				        if (debug)cout<<"Getting Loose Muons"<<endl;

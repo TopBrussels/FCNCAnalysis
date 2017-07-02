@@ -504,7 +504,7 @@ int main(int argc, char *argv[])
 
 
 	         
-            if(TrainingName.find("SThut")!=string::npos && TrainingName.find("j3")!=string::npos)
+            if(TrainingName.find("hut")!=string::npos && TrainingName.find("j3")!=string::npos)
             {
 	               vars[0] = HiggsMass_TOPHLEPBB_hut;
 	               vars[1] = MVA_TOPHLEPBB_hut;
@@ -519,7 +519,7 @@ int main(int argc, char *argv[])
 	               vars[10] = HiggsBJet2CSVv2_TOPHLEPBB_hut;
 	               vars[11] = TopLepBJetCSVv2_TOPHLEPBB_hut;
 	          }
-            else if(TrainingName.find("SThct")!=string::npos && TrainingName.find("j3")!=string::npos)
+            else if(TrainingName.find("hct")!=string::npos && TrainingName.find("j3")!=string::npos)
             {
 	               vars[0] = HiggsMass_TOPHLEPBB_hct;
 	               vars[1] = MVA_TOPHLEPBB_hct;
@@ -533,29 +533,7 @@ int main(int argc, char *argv[])
 	               vars[9] = HiggsBJet2CSVv2_TOPHLEPBB_hct;
 	               vars[10] = TopLepBJetCSVv2_TOPHLEPBB_hct;
 	          }
-            else if(TrainingName.find("TThut")!=string::npos && TrainingName.find("j3")!=string::npos)
-            {
-	               vars[0] = HiggsMass_TOPHLEPBB_hut;
-	               vars[1] = MVA_TOPHLEPBB_hut;
-	               vars[2] = TopLepMass_TOPHLEPBB_hut;
-	               vars[3] = HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut;
-	               vars[4] = TopLepHiggsDr_TOPHLEPBB_hut;
-	               vars[5] = HiggsBJet1CSVv2_TOPHLEPBB_hut;
-	               vars[6] = HiggsBJet2CSVv2_TOPHLEPBB_hut;
-	               vars[7] = TopLepBJetCSVv2_TOPHLEPBB_hut;
-            }
-            else if(TrainingName.find("TThct")!=string::npos && TrainingName.find("j3")!=string::npos)
-            {
-	               vars[0] = HiggsMass_TOPHLEPBB_hct;
-	               vars[1] = MVA_TOPHLEPBB_hct;
-	               vars[2] = TopLepMass_TOPHLEPBB_hct;
-	               vars[3] = HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct;
-	               vars[4] = TopLepHiggsDr_TOPHLEPBB_hct;
-	               vars[5] = HiggsBJet1CSVv2_TOPHLEPBB_hct;
-	               vars[6] = HiggsBJet2CSVv2_TOPHLEPBB_hct;
-	               vars[7] = TopLepBJetCSVv2_TOPHLEPBB_hct;
-            }
-            else if(TrainingName.find("SThut")!=string::npos && TrainingName.find("j4")!=string::npos)
+            else if(TrainingName.find("hut")!=string::npos && TrainingName.find("j4")!=string::npos)
             {
 	               vars[0] = HiggsMass_TOPHLEPBB_hut;
 	               vars[1] = TopHadMass_TOPTOPLEPHAD;
@@ -563,89 +541,75 @@ int main(int argc, char *argv[])
 	               vars[3] = MVA_TOPTOPLEPHAD;
 	               vars[4] = LepCharge;
 	               vars[5] = HiggsEta_TOPHLEPBB_hut;
-	               vars[6] = TopLepMass_TOPHLEPBB_hut;
-	               vars[7] = TopLepMass_TOPTOPLEPHAD;
-	               vars[8] = TopLepPt_TOPHLEPBB_hut;
-	               vars[9] = TopLepEta_TOPHLEPBB_hut;
-	               vars[10] = HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut;
-	               vars[11] = TopLepHiggsDr_TOPHLEPBB_hut;
-	               vars[12] = TopLepTopHadDr_TOPTOPLEPHAD;
-	               vars[13] = HiggsBJet1CSVv2_TOPHLEPBB_hut;
-	               vars[14] = HiggsBJet2CSVv2_TOPHLEPBB_hut;
-	               vars[15] = TopLepBJetCSVv2_TOPHLEPBB_hut;
-	               vars[16] = TopLepBJetCSVv2_TOPTOPLEPHAD;
-	               vars[17] = TopHadBJetCSVv2_TOPTOPLEPHAD;
-	               vars[18] = TopHadWNonBJet1CSVv2_TOPTOPLEPHAD;
-	               vars[19] = TopHadWNonBJet2CSVv2_TOPTOPLEPHAD;
-	          }
-            else if(TrainingName.find("SThct")!=string::npos && TrainingName.find("j4")!=string::npos)
+//	               vars[6] = TopLepMass_TOPHLEPBB_hut;
+//	               vars[7] = TopLepMass_TOPTOPLEPHAD;
+//	               vars[8] = TopLepPt_TOPHLEPBB_hut;
+//	               vars[9] = TopLepEta_TOPHLEPBB_hut;
+	               vars[6] = HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut;
+//	               vars[11] = TopLepHiggsDr_TOPHLEPBB_hut;
+//	               vars[12] = TopLepTopHadDr_TOPTOPLEPHAD;
+	               vars[7] = HiggsBJet1CSVv2_TOPHLEPBB_hut;
+	               vars[8] = HiggsBJet2CSVv2_TOPHLEPBB_hut;
+	               vars[9] = TopLepBJetCSVv2_TOPHLEPBB_hut;
+//	               vars[16] = TopLepBJetCSVv2_TOPTOPLEPHAD;
+	               vars[10] = TopHadBJetCSVv2_TOPTOPLEPHAD;
+	               vars[11] = TopHadWNonBJet1CSVv2_TOPTOPLEPHAD;
+	               vars[12] = TopHadWNonBJet2CSVv2_TOPTOPLEPHAD;
+
+//	               vars[20] = HiggsMass_TOPTOPLEPHBB;
+//	               vars[21] = MVA_TOPTOPLEPHBB;
+//	               vars[22] = TopLepMass_TOPTOPLEPHBB;
+//	               vars[23] = HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB;
+//	               vars[24] = TopLepHiggsDr_TOPTOPLEPHBB;
+//	               vars[25] = HiggsBJet1CSVv2_TOPTOPLEPHBB;
+//	               vars[26] = HiggsBJet2CSVv2_TOPTOPLEPHBB;
+//	               vars[27] = TopLepBJetCSVv2_TOPTOPLEPHBB;
+//	               vars[28] = TopHadNonBJetCSVv2_TOPTOPLEPHBB;
+/*
+	               vars[29] = TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB;
+	               vars[30] = TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB;
+	               vars[31] = TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD;
+	               vars[32] = TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD;
+
+*/	          }
+            else if(TrainingName.find("hct")!=string::npos && TrainingName.find("j4")!=string::npos)
             {
 	               vars[0] = HiggsMass_TOPHLEPBB_hct;
 	               vars[1] = TopHadMass_TOPTOPLEPHAD;
 	               vars[2] = MVA_TOPHLEPBB_hct;
 	               vars[3] = MVA_TOPTOPLEPHAD;
 	               vars[4] = HiggsEta_TOPHLEPBB_hct;
-	               vars[5] = TopLepMass_TOPHLEPBB_hct;
-	               vars[6] = TopLepMass_TOPTOPLEPHAD;
-	               vars[7] = TopLepPt_TOPHLEPBB_hct;
-	               vars[8] = TopLepEta_TOPHLEPBB_hct;
-	               vars[9] = HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct;
-	               vars[10] = TopLepHiggsDr_TOPHLEPBB_hct;
-	               vars[11] = TopLepTopHadDr_TOPTOPLEPHAD;
-	               vars[12] = HiggsBJet1CSVv2_TOPHLEPBB_hct;
-	               vars[13] = HiggsBJet2CSVv2_TOPHLEPBB_hct;
-	               vars[14] = TopLepBJetCSVv2_TOPHLEPBB_hct;
-	               vars[15] = TopLepBJetCSVv2_TOPTOPLEPHAD;
-	               vars[16] = TopHadBJetCSVv2_TOPTOPLEPHAD;
-	               vars[17] = TopHadWNonBJet1CSVv2_TOPTOPLEPHAD;
-	               vars[18] = TopHadWNonBJet2CSVv2_TOPTOPLEPHAD;
-	          }
-            else if(TrainingName.find("TThut")!=string::npos && TrainingName.find("j4")!=string::npos)
-            {
-	               vars[0] = HiggsMass_TOPTOPLEPHBB;
-	               vars[1] = MVA_TOPTOPLEPHBB;
-	               vars[2] = MVA_TOPTOPLEPHAD;
-	               vars[3] = TopLepMass_TOPTOPLEPHBB;
-	               vars[4] = TopLepMass_TOPTOPLEPHAD;
-	               vars[5] = HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB;
-	               vars[6] = TopLepHiggsDr_TOPTOPLEPHBB;
-	               vars[7] = TopLepTopHadDr_TOPTOPLEPHAD;
-	               vars[8] = HiggsBJet1CSVv2_TOPTOPLEPHBB;
-	               vars[9] = HiggsBJet2CSVv2_TOPTOPLEPHBB;
-	               vars[10] = TopLepBJetCSVv2_TOPTOPLEPHBB;
-	               vars[11] = TopHadNonBJetCSVv2_TOPTOPLEPHBB;
-	               vars[12] = TopLepBJetCSVv2_TOPTOPLEPHAD;
-	               vars[13] = TopHadBJetCSVv2_TOPTOPLEPHAD;
-	               vars[14] = TopHadWNonBJet1CSVv2_TOPTOPLEPHAD;
-	               vars[15] = TopHadWNonBJet2CSVv2_TOPTOPLEPHAD;
-/*	               vars[16] = TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB;
-	               vars[17] = TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB;
-	               vars[18] = TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD;
-	               vars[19] = TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD;
-*/            }
-            else if(TrainingName.find("TThct")!=string::npos && TrainingName.find("j4")!=string::npos)
-            {
-	               vars[0] = HiggsMass_TOPTOPLEPHBB;
-	               vars[1] = MVA_TOPTOPLEPHBB;
-	               vars[2] = MVA_TOPTOPLEPHAD;
-	               vars[3] = TopLepMass_TOPTOPLEPHBB;
-	               vars[4] = TopLepMass_TOPTOPLEPHAD;
-	               vars[5] = HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB;
-	               vars[6] = TopLepHiggsDr_TOPTOPLEPHBB;
-	               vars[7] = TopLepTopHadDr_TOPTOPLEPHAD;
-	               vars[8] = HiggsBJet1CSVv2_TOPTOPLEPHBB;
-	               vars[9] = HiggsBJet2CSVv2_TOPTOPLEPHBB;
-	               vars[10] = TopLepBJetCSVv2_TOPTOPLEPHBB;
-	               vars[11] = TopHadNonBJetCSVv2_TOPTOPLEPHBB;
-	               vars[12] = TopLepBJetCSVv2_TOPTOPLEPHAD;
-	               vars[13] = TopHadBJetCSVv2_TOPTOPLEPHAD;
-	               vars[14] = TopHadWNonBJet1CSVv2_TOPTOPLEPHAD;
-	               vars[15] = TopHadWNonBJet2CSVv2_TOPTOPLEPHAD;
-/*	               vars[16] = TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB;
-	               vars[17] = TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB;
-	               vars[18] = TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD;
-	               vars[19] = TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD;
-*/            }
+//	               vars[5] = TopLepMass_TOPHLEPBB_hct;
+//	               vars[6] = TopLepMass_TOPTOPLEPHAD;
+//	               vars[7] = TopLepPt_TOPHLEPBB_hct;
+//	               vars[8] = TopLepEta_TOPHLEPBB_hct;
+	               vars[5] = HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct;
+//	               vars[10] = TopLepHiggsDr_TOPHLEPBB_hct;
+//	               vars[11] = TopLepTopHadDr_TOPTOPLEPHAD;
+	               vars[6] = HiggsBJet1CSVv2_TOPHLEPBB_hct;
+	               vars[7] = HiggsBJet2CSVv2_TOPHLEPBB_hct;
+	               vars[8] = TopLepBJetCSVv2_TOPHLEPBB_hct;
+//	               vars[15] = TopLepBJetCSVv2_TOPTOPLEPHAD;
+	               vars[9] = TopHadBJetCSVv2_TOPTOPLEPHAD;
+	               vars[10] = TopHadWNonBJet1CSVv2_TOPTOPLEPHAD;
+	               vars[11] = TopHadWNonBJet2CSVv2_TOPTOPLEPHAD;
+
+//	               vars[19] = HiggsMass_TOPTOPLEPHBB;
+//	               vars[20] = MVA_TOPTOPLEPHBB;
+//	               vars[21] = TopLepMass_TOPTOPLEPHBB;
+//	               vars[22] = HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB;
+//	               vars[23] = TopLepHiggsDr_TOPTOPLEPHBB;
+//	               vars[24] = HiggsBJet1CSVv2_TOPTOPLEPHBB;
+//	               vars[25] = HiggsBJet2CSVv2_TOPTOPLEPHBB;
+//	               vars[26] = TopLepBJetCSVv2_TOPTOPLEPHBB;
+//	               vars[27] = TopHadNonBJetCSVv2_TOPTOPLEPHBB;
+/*
+	               vars[28] = TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB;
+	               vars[29] = TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB;
+	               vars[30] = TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD;
+	               vars[31] = TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD;
+
+*/	          }
 
 
 
@@ -815,7 +779,7 @@ TMVA::Factory *TrainingFACTORY(string trName, TFile *outfile)
 {
 	TMVA::Factory *factory = new TMVA::Factory((trName).c_str(),outfile, "!V:!Silent:Color:DrawProgressBar:Transformations=I;D:AnalysisType=Classification" );
 
-  if(trName.find("SThut")!=string::npos && trName.find("j3")!=string::npos)
+  if(trName.find("hut")!=string::npos && trName.find("j3")!=string::npos)
   {
 	    factory->AddVariable("HiggsMass_TOPHLEPBB",'D');
 	    factory->AddVariable("MVA_TOPHLEPBB",'D');
@@ -831,7 +795,7 @@ TMVA::Factory *TrainingFACTORY(string trName, TFile *outfile)
 	    factory->AddVariable("TopLepBJetCSVv2_TOPHLEPBB",'D');
 	    nTrainingVars = 12;
   }
-  else if(trName.find("SThct")!=string::npos && trName.find("j3")!=string::npos)
+  else if(trName.find("hct")!=string::npos && trName.find("j3")!=string::npos)
   {
 	    factory->AddVariable("HiggsMass_TOPHLEPBB",'D');
 	    factory->AddVariable("MVA_TOPHLEPBB",'D');
@@ -845,32 +809,8 @@ TMVA::Factory *TrainingFACTORY(string trName, TFile *outfile)
 	    factory->AddVariable("HiggsBJet2CSVv2_TOPHLEPBB",'D');
 	    factory->AddVariable("TopLepBJetCSVv2_TOPHLEPBB",'D');
 	    nTrainingVars = 11;
-  }
-  else if(trName.find("TThut")!=string::npos && trName.find("j3")!=string::npos)
-  {
-	    factory->AddVariable("HiggsMass_TOPHLEPBB",'D');
-	    factory->AddVariable("MVA_TOPHLEPBB",'D');
-	    factory->AddVariable("TopLepMass_TOPHLEPBB",'D');
-	    factory->AddVariable("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB",'D');
-	    factory->AddVariable("TopLepHiggsDr_TOPHLEPBB",'D');
-	    factory->AddVariable("HiggsBJet1CSVv2_TOPHLEPBB",'D');
-	    factory->AddVariable("HiggsBJet2CSVv2_TOPHLEPBB",'D');
-	    factory->AddVariable("TopLepBJetCSVv2_TOPHLEPBB",'D');
-	    nTrainingVars = 8;
-  }
-  else if(trName.find("TThct")!=string::npos && trName.find("j3")!=string::npos)
-  {
-	    factory->AddVariable("HiggsMass_TOPHLEPBB",'D');
-	    factory->AddVariable("MVA_TOPHLEPBB",'D');
-	    factory->AddVariable("TopLepMass_TOPHLEPBB",'D');
-	    factory->AddVariable("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB",'D');
-	    factory->AddVariable("TopLepHiggsDr_TOPHLEPBB",'D');
-	    factory->AddVariable("HiggsBJet1CSVv2_TOPHLEPBB",'D');
-	    factory->AddVariable("HiggsBJet2CSVv2_TOPHLEPBB",'D');
-	    factory->AddVariable("TopLepBJetCSVv2_TOPHLEPBB",'D');
-	    nTrainingVars = 8;
   }  
-  else if(trName.find("SThut")!=string::npos && trName.find("j4")!=string::npos)
+  else if(trName.find("hut")!=string::npos && trName.find("j4")!=string::npos)
   {
 	    factory->AddVariable("HiggsMass_TOPHLEPBB",'D');
 	    factory->AddVariable("TopHadMass_TOPTOPLEPHAD",'D');
@@ -878,94 +818,76 @@ TMVA::Factory *TrainingFACTORY(string trName, TFile *outfile)
 	    factory->AddVariable("MVA_TOPTOPLEPHAD",'D');
 	    factory->AddVariable("LepCharge",'I');
 	    factory->AddVariable("HiggsEta_TOPHLEPBB",'D');
-	    factory->AddVariable("TopLepMass_TOPHLEPBB",'D');
-	    factory->AddVariable("TopLepMass_TOPTOPLEPHAD",'D');
-	    factory->AddVariable("TopLepPt_TOPHLEPBB",'D');
-	    factory->AddVariable("TopLepEta_TOPHLEPBB",'D');
+//	    factory->AddVariable("TopLepMass_TOPHLEPBB",'D');
+//	    factory->AddVariable("TopLepMass_TOPTOPLEPHAD",'D');
+//	    factory->AddVariable("TopLepPt_TOPHLEPBB",'D');
+//	    factory->AddVariable("TopLepEta_TOPHLEPBB",'D');
 	    factory->AddVariable("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB",'D');
-	    factory->AddVariable("TopLepHiggsDr_TOPHLEPBB",'D');
-	    factory->AddVariable("TopLepTopHadDr_TOPTOPLEPHAD",'D');
+//	    factory->AddVariable("TopLepHiggsDr_TOPHLEPBB",'D');
+//	    factory->AddVariable("TopLepTopHadDr_TOPTOPLEPHAD",'D');
 	    factory->AddVariable("HiggsBJet1CSVv2_TOPHLEPBB",'D');
 	    factory->AddVariable("HiggsBJet2CSVv2_TOPHLEPBB",'D');
 	    factory->AddVariable("TopLepBJetCSVv2_TOPHLEPBB",'D');
-	    factory->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHAD",'D');
+//	    factory->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHAD",'D');
 	    factory->AddVariable("TopHadBJetCSVv2_TOPTOPLEPHAD",'D');
 	    factory->AddVariable("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD",'D');
 	    factory->AddVariable("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD",'D');
-	    nTrainingVars = 20;
+
+//	    factory->AddVariable("HiggsMass_TOPTOPLEPHBB",'D');
+//	    factory->AddVariable("MVA_TOPTOPLEPHBB",'D');
+//	    factory->AddVariable("TopLepMass_TOPTOPLEPHBB",'D');
+//	    factory->AddVariable("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB",'D');
+//	    factory->AddVariable("TopLepHiggsDr_TOPTOPLEPHBB",'D');
+//	    factory->AddVariable("HiggsBJet1CSVv2_TOPTOPLEPHBB",'D');
+//	    factory->AddVariable("HiggsBJet2CSVv2_TOPTOPLEPHBB",'D');
+//	    factory->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHBB",'D');
+//	    factory->AddVariable("TopHadNonBJetCSVv2_TOPTOPLEPHBB",'D');
+
+/*	    factory->AddVariable("TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB",'D');
+	    factory->AddVariable("TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB",'D');
+	    factory->AddVariable("TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD",'D');
+	    factory->AddVariable("TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD",'D');
+*/
+	    nTrainingVars = 13;
   }
-  else if(trName.find("SThct")!=string::npos && trName.find("j4")!=string::npos)
+  else if(trName.find("hct")!=string::npos && trName.find("j4")!=string::npos)
   {
 	    factory->AddVariable("HiggsMass_TOPHLEPBB",'D');
 	    factory->AddVariable("TopHadMass_TOPTOPLEPHAD",'D');
 	    factory->AddVariable("MVA_TOPHLEPBB",'D');
 	    factory->AddVariable("MVA_TOPTOPLEPHAD",'D');
 	    factory->AddVariable("HiggsEta_TOPHLEPBB",'D');
-	    factory->AddVariable("TopLepMass_TOPHLEPBB",'D');
-	    factory->AddVariable("TopLepMass_TOPTOPLEPHAD",'D');
-	    factory->AddVariable("TopLepPt_TOPHLEPBB",'D');
-	    factory->AddVariable("TopLepEta_TOPHLEPBB",'D');
+//	    factory->AddVariable("TopLepMass_TOPHLEPBB",'D');
+//	    factory->AddVariable("TopLepMass_TOPTOPLEPHAD",'D');
+//	    factory->AddVariable("TopLepPt_TOPHLEPBB",'D');
+//	    factory->AddVariable("TopLepEta_TOPHLEPBB",'D');
 	    factory->AddVariable("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB",'D');
-	    factory->AddVariable("TopLepHiggsDr_TOPHLEPBB",'D');
-	    factory->AddVariable("TopLepTopHadDr_TOPTOPLEPHAD",'D');
+//	    factory->AddVariable("TopLepHiggsDr_TOPHLEPBB",'D');
+//	    factory->AddVariable("TopLepTopHadDr_TOPTOPLEPHAD",'D');
 	    factory->AddVariable("HiggsBJet1CSVv2_TOPHLEPBB",'D');
 	    factory->AddVariable("HiggsBJet2CSVv2_TOPHLEPBB",'D');
 	    factory->AddVariable("TopLepBJetCSVv2_TOPHLEPBB",'D');
-	    factory->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHAD",'D');
+//	    factory->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHAD",'D');
 	    factory->AddVariable("TopHadBJetCSVv2_TOPTOPLEPHAD",'D');
 	    factory->AddVariable("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD",'D');
 	    factory->AddVariable("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD",'D');
-	    nTrainingVars = 19;
-  }
-  else if(trName.find("TThut")!=string::npos && trName.find("j4")!=string::npos)
-  {
-	    factory->AddVariable("HiggsMass_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("MVA_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("MVA_TOPTOPLEPHAD",'D');
-	    factory->AddVariable("TopLepMass_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("TopLepMass_TOPTOPLEPHAD",'D');
-	    factory->AddVariable("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("TopLepHiggsDr_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("TopLepTopHadDr_TOPTOPLEPHAD",'D');
-	    factory->AddVariable("HiggsBJet1CSVv2_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("HiggsBJet2CSVv2_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("TopHadNonBJetCSVv2_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHAD",'D');
-	    factory->AddVariable("TopHadBJetCSVv2_TOPTOPLEPHAD",'D');
-	    factory->AddVariable("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD",'D');
-	    factory->AddVariable("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD",'D');
+
+//	    factory->AddVariable("HiggsMass_TOPTOPLEPHBB",'D');
+//	    factory->AddVariable("MVA_TOPTOPLEPHBB",'D');
+//	    factory->AddVariable("TopLepMass_TOPTOPLEPHBB",'D');
+//	    factory->AddVariable("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB",'D');
+//	    factory->AddVariable("TopLepHiggsDr_TOPTOPLEPHBB",'D');
+//	    factory->AddVariable("HiggsBJet1CSVv2_TOPTOPLEPHBB",'D');
+//	    factory->AddVariable("HiggsBJet2CSVv2_TOPTOPLEPHBB",'D');
+//	    factory->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHBB",'D');
+//	    factory->AddVariable("TopHadNonBJetCSVv2_TOPTOPLEPHBB",'D');
 
 /*	    factory->AddVariable("TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB",'D');
 	    factory->AddVariable("TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB",'D');
 	    factory->AddVariable("TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD",'D');
 	    factory->AddVariable("TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD",'D');
-*/	    nTrainingVars = 16;
-  }
-  else if(trName.find("TThct")!=string::npos && trName.find("j4")!=string::npos)
-  {
-	    factory->AddVariable("HiggsMass_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("MVA_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("MVA_TOPTOPLEPHAD",'D');
-	    factory->AddVariable("TopLepMass_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("TopLepMass_TOPTOPLEPHAD",'D');
-	    factory->AddVariable("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("TopLepHiggsDr_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("TopLepTopHadDr_TOPTOPLEPHAD",'D');
-	    factory->AddVariable("HiggsBJet1CSVv2_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("HiggsBJet2CSVv2_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("TopHadNonBJetCSVv2_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHAD",'D');
-	    factory->AddVariable("TopHadBJetCSVv2_TOPTOPLEPHAD",'D');
-	    factory->AddVariable("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD",'D');
-	    factory->AddVariable("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD",'D');
-
-/*	    factory->AddVariable("TopHadNonBJetTopLepBJet_SumInclCharge_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("TopHadNonBJetLep_SumInclCharge_TOPTOPLEPHBB",'D');
-	    factory->AddVariable("TopHadBJetTopLepBJet_SumInclCharge_TOPTOPLEPHAD",'D');
-	    factory->AddVariable("TopHadBJetLep_SumInclCharge_TOPTOPLEPHAD",'D');
-*/	    nTrainingVars = 16;
+*/
+	    nTrainingVars = 12;
   }
   else
   {
@@ -976,7 +898,6 @@ TMVA::Factory *TrainingFACTORY(string trName, TFile *outfile)
   return factory;
 
 }
-
 
 
 

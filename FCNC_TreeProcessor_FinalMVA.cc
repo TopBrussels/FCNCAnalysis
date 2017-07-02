@@ -244,9 +244,10 @@ int main(int argc, char *argv[])
 
 
     clock_t start = clock();
-
+/*
     cout << " ... Making the TreeProcessor .xml files " << endl;
     system("python scripts/MakeXMLforTreeProcessor.py");
+*/
     Double_t CorrectionForAllChannel = 1.; 
 
     string xmlNom;
@@ -366,11 +367,11 @@ int main(int argc, char *argv[])
     int nEvents_forStatisticalUnc_Signal_SThut = 0;
     int nEvents_forStatisticalUnc_Signal_TThut = 0;
 
-/*
+
     histo1D["maxSTandTT_data_obs"] = new TH1F("maxSTandTT_data_obs","maxSTandTT_data_obs",20,-1,1);
     histo1D["ST_data_obs"] = new TH1F("ST_data_obs","ST_data_obs",20,-1,1);
     histo1D["TT_data_obs"] = new TH1F("TT_data_obs","TT_data_obs",20,-1,1);
-*/
+
     histo1D["combSTandTT_data_obs"] = new TH1F("combSTandTT_data_obs","combSTandTT_data_obs",20,-1,1);
     histo1D["combSTandTT_cutCount_data_obs"] = new TH1F("combSTandTT_cutCount_data_obs","combSTandTT_cutCount_data_obs",1,-1,1);
     
@@ -381,9 +382,9 @@ int main(int argc, char *argv[])
     
     for(int iSyst = 0; iSyst<WhatSysts.size();iSyst++)
     {
-        MSPlot[("MVA_MaxTT-ST_"+TrainingName+WhatSysts[iSyst]).c_str()] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_MaxTT-ST_"+TrainingName+WhatSysts[iSyst]).c_str(), 20, -1., 1., ("BDT discriminator"+xaxislabelcoupling),"Events", "");
-        MSPlot[("MVA_CombTT-ST_"+TrainingName+WhatSysts[iSyst]).c_str()] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_CombTT-ST_"+TrainingName+WhatSysts[iSyst]).c_str(), 20, -1., 1., ("BDT discriminator"+xaxislabelcoupling),"Events", "");
-/*
+        MSPlot[("MVA_MaxTT-ST_"+TrainingName+WhatSysts[iSyst]).c_str()] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_MaxTT-ST_"+TrainingName+WhatSysts[iSyst]).c_str(), 20, -1., 1., ("BDT discriminator"+xaxislabelcoupling),"events", "");
+        MSPlot[("MVA_CombTT-ST_"+TrainingName+WhatSysts[iSyst]).c_str()] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_CombTT-ST_"+TrainingName+WhatSysts[iSyst]).c_str(), 20, -1., 1., ("BDT discriminator"+xaxislabelcoupling),"events", "");
+
         MSPlot[("MVA_ST"+TrainingName+WhatSysts[iSyst]).c_str()] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_ST"+TrainingName+WhatSysts[iSyst]).c_str(), 20, -1., 1., ("ST BDT disc."+xaxislabelcoupling),"Events", "");
         MSPlot[("MVA_TT"+TrainingName+WhatSysts[iSyst]).c_str()] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TT"+TrainingName+WhatSysts[iSyst]).c_str(), 20, -1., 1., ("TT BDT disc."+xaxislabelcoupling),"Events", "");
 
@@ -419,7 +420,7 @@ int main(int argc, char *argv[])
         histo1D[("TT_zjets"+namingConventionFit[WhatSysts[iSyst]]).c_str()] = new TH1F(("TT_zjets"+namingConventionFit[WhatSysts[iSyst]]).c_str(),("TT_zjets"+namingConventionFit[WhatSysts[iSyst]]).c_str(),20,-1,1);
         histo1D[("TT_wjets"+namingConventionFit[WhatSysts[iSyst]]).c_str()] = new TH1F(("TT_wjets"+namingConventionFit[WhatSysts[iSyst]]).c_str(),("TT_wjets"+namingConventionFit[WhatSysts[iSyst]]).c_str(),20,-1,1);
         histo1D[("TT_other"+namingConventionFit[WhatSysts[iSyst]]).c_str()] = new TH1F(("TT_other"+namingConventionFit[WhatSysts[iSyst]]).c_str(),("TT_other"+namingConventionFit[WhatSysts[iSyst]]).c_str(),20,-1,1);
-*/
+
         histo1D[("combSTandTT_sig"+namingConventionFit[WhatSysts[iSyst]]).c_str()] = new TH1F(("combSTandTT_sig"+namingConventionFit[WhatSysts[iSyst]]).c_str(),("combSTandTT_sig"+namingConventionFit[WhatSysts[iSyst]]).c_str(),20,-1,1);
         histo1D[("combSTandTT_sig_stop"+namingConventionFit[WhatSysts[iSyst]]).c_str()] = new TH1F(("combSTandTT_sig_stop"+namingConventionFit[WhatSysts[iSyst]]).c_str(),("combSTandTT_sig_stop"+namingConventionFit[WhatSysts[iSyst]]).c_str(),20,-1,1);
         histo1D[("combSTandTT_sig_ttbar"+namingConventionFit[WhatSysts[iSyst]]).c_str()] = new TH1F(("combSTandTT_sig_ttbar"+namingConventionFit[WhatSysts[iSyst]]).c_str(),("combSTandTT_sig_ttbar"+namingConventionFit[WhatSysts[iSyst]]).c_str(),20,-1,1);
@@ -537,13 +538,13 @@ int main(int argc, char *argv[])
             
 
             //********************INITIALIZING MVA READER********************************
-//	          TMVA::Reader* reader_ST = new TMVA::Reader("!Color:!Silent");
-//	          TMVA::Reader* reader_TT = new TMVA::Reader("!Color:!Silent");
+	          TMVA::Reader* reader_ST = new TMVA::Reader("!Color:!Silent");
+	          TMVA::Reader* reader_TT = new TMVA::Reader("!Color:!Silent");
 	          TMVA::Reader* reader_combSTandTT = new TMVA::Reader("!Color:!Silent");
 
             if(TrainingName.find("hut")!=string::npos && TrainingName.find("j3")!=string::npos)
             {
-/*	              reader_ST->AddVariable("HiggsMass_TOPHLEPBB",&HiggsMass_TOPHLEPBB_hut_);
+	              reader_ST->AddVariable("HiggsMass_TOPHLEPBB",&HiggsMass_TOPHLEPBB_hut_);
 	              reader_ST->AddVariable("MVA_TOPHLEPBB",&MVA_TOPHLEPBB_hut_);
 	              reader_ST->AddVariable("LepCharge",&LepCharge_);
 	              reader_ST->AddVariable("HiggsEta_TOPHLEPBB",&HiggsEta_TOPHLEPBB_hut_);
@@ -558,13 +559,17 @@ int main(int argc, char *argv[])
 
 	              reader_TT->AddVariable("HiggsMass_TOPHLEPBB",&HiggsMass_TOPHLEPBB_hut_);
 	              reader_TT->AddVariable("MVA_TOPHLEPBB",&MVA_TOPHLEPBB_hut_);
+	              reader_TT->AddVariable("LepCharge",&LepCharge_);
+	              reader_TT->AddVariable("HiggsEta_TOPHLEPBB",&HiggsEta_TOPHLEPBB_hut_);
 	              reader_TT->AddVariable("TopLepMass_TOPHLEPBB",&TopLepMass_TOPHLEPBB_hut_);
+	              reader_TT->AddVariable("TopLepPt_TOPHLEPBB",&TopLepPt_TOPHLEPBB_hut_);
+	              reader_TT->AddVariable("TopLepEta_TOPHLEPBB",&TopLepEta_TOPHLEPBB_hut_);
 	              reader_TT->AddVariable("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB",&HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut_);
 	              reader_TT->AddVariable("TopLepHiggsDr_TOPHLEPBB",&TopLepHiggsDr_TOPHLEPBB_hut_);
 	              reader_TT->AddVariable("HiggsBJet1CSVv2_TOPHLEPBB",&HiggsBJet1CSVv2_TOPHLEPBB_hut_);
 	              reader_TT->AddVariable("HiggsBJet2CSVv2_TOPHLEPBB",&HiggsBJet2CSVv2_TOPHLEPBB_hut_);
 	              reader_TT->AddVariable("TopLepBJetCSVv2_TOPHLEPBB",&TopLepBJetCSVv2_TOPHLEPBB_hut_);
-*/
+
 	              reader_combSTandTT->AddVariable("HiggsMass_TOPHLEPBB",&HiggsMass_TOPHLEPBB_hut_);
 	              reader_combSTandTT->AddVariable("MVA_TOPHLEPBB",&MVA_TOPHLEPBB_hut_);
 	              reader_combSTandTT->AddVariable("LepCharge",&LepCharge_);
@@ -580,7 +585,7 @@ int main(int argc, char *argv[])
             }
             else if(TrainingName.find("hct")!=string::npos && TrainingName.find("j3")!=string::npos)
             {
-/*	              reader_ST->AddVariable("HiggsMass_TOPHLEPBB",&HiggsMass_TOPHLEPBB_hct_);
+	              reader_ST->AddVariable("HiggsMass_TOPHLEPBB",&HiggsMass_TOPHLEPBB_hct_);
 	              reader_ST->AddVariable("MVA_TOPHLEPBB",&MVA_TOPHLEPBB_hct_);
 	              reader_ST->AddVariable("HiggsEta_TOPHLEPBB",&HiggsEta_TOPHLEPBB_hct_);
 	              reader_ST->AddVariable("TopLepMass_TOPHLEPBB",&TopLepMass_TOPHLEPBB_hct_);
@@ -595,13 +600,16 @@ int main(int argc, char *argv[])
 
 	              reader_TT->AddVariable("HiggsMass_TOPHLEPBB",&HiggsMass_TOPHLEPBB_hct_);
 	              reader_TT->AddVariable("MVA_TOPHLEPBB",&MVA_TOPHLEPBB_hct_);
+	              reader_TT->AddVariable("HiggsEta_TOPHLEPBB",&HiggsEta_TOPHLEPBB_hct_);
 	              reader_TT->AddVariable("TopLepMass_TOPHLEPBB",&TopLepMass_TOPHLEPBB_hct_);
+	              reader_TT->AddVariable("TopLepPt_TOPHLEPBB",&TopLepPt_TOPHLEPBB_hct_);
+	              reader_TT->AddVariable("TopLepEta_TOPHLEPBB",&TopLepEta_TOPHLEPBB_hct_);
 	              reader_TT->AddVariable("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB",&HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct_);
 	              reader_TT->AddVariable("TopLepHiggsDr_TOPHLEPBB",&TopLepHiggsDr_TOPHLEPBB_hct_);
 	              reader_TT->AddVariable("HiggsBJet1CSVv2_TOPHLEPBB",&HiggsBJet1CSVv2_TOPHLEPBB_hct_);
 	              reader_TT->AddVariable("HiggsBJet2CSVv2_TOPHLEPBB",&HiggsBJet2CSVv2_TOPHLEPBB_hct_);
 	              reader_TT->AddVariable("TopLepBJetCSVv2_TOPHLEPBB",&TopLepBJetCSVv2_TOPHLEPBB_hct_);
-*/
+
 	              reader_combSTandTT->AddVariable("HiggsMass_TOPHLEPBB",&HiggsMass_TOPHLEPBB_hct_);
 	              reader_combSTandTT->AddVariable("MVA_TOPHLEPBB",&MVA_TOPHLEPBB_hct_);
 	              reader_combSTandTT->AddVariable("HiggsEta_TOPHLEPBB",&HiggsEta_TOPHLEPBB_hct_);
@@ -616,44 +624,68 @@ int main(int argc, char *argv[])
             }  
             else if(TrainingName.find("hut")!=string::npos && TrainingName.find("j4")!=string::npos)
             {
-/*	              reader_ST->AddVariable("HiggsMass_TOPHLEPBB",&HiggsMass_TOPHLEPBB_hut_);
+	              reader_ST->AddVariable("HiggsMass_TOPHLEPBB",&HiggsMass_TOPHLEPBB_hut_);
 	              reader_ST->AddVariable("TopHadMass_TOPTOPLEPHAD",&TopHadMass_TOPTOPLEPHAD_);
 	              reader_ST->AddVariable("MVA_TOPHLEPBB",&MVA_TOPHLEPBB_hut_);
 	              reader_ST->AddVariable("MVA_TOPTOPLEPHAD",&MVA_TOPTOPLEPHAD_);
 	              reader_ST->AddVariable("LepCharge",&LepCharge_);
 	              reader_ST->AddVariable("HiggsEta_TOPHLEPBB",&HiggsEta_TOPHLEPBB_hut_);
-	              reader_ST->AddVariable("TopLepMass_TOPHLEPBB",&TopLepMass_TOPHLEPBB_hut_);
-	              reader_ST->AddVariable("TopLepMass_TOPTOPLEPHAD",&TopLepMass_TOPTOPLEPHAD_);
-	              reader_ST->AddVariable("TopLepPt_TOPHLEPBB",&TopLepPt_TOPHLEPBB_hut_);
-	              reader_ST->AddVariable("TopLepEta_TOPHLEPBB",&TopLepEta_TOPHLEPBB_hut_);
+//	              reader_ST->AddVariable("TopLepMass_TOPHLEPBB",&TopLepMass_TOPHLEPBB_hut_);
+//	              reader_ST->AddVariable("TopLepMass_TOPTOPLEPHAD",&TopLepMass_TOPTOPLEPHAD_);
+//	              reader_ST->AddVariable("TopLepPt_TOPHLEPBB",&TopLepPt_TOPHLEPBB_hut_);
+//	              reader_ST->AddVariable("TopLepEta_TOPHLEPBB",&TopLepEta_TOPHLEPBB_hut_);
 	              reader_ST->AddVariable("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB",&HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut_);
-	              reader_ST->AddVariable("TopLepHiggsDr_TOPHLEPBB",&TopLepHiggsDr_TOPHLEPBB_hut_);
-	              reader_ST->AddVariable("TopLepTopHadDr_TOPTOPLEPHAD",&TopLepTopHadDr_TOPTOPLEPHAD_);
+//	              reader_ST->AddVariable("TopLepHiggsDr_TOPHLEPBB",&TopLepHiggsDr_TOPHLEPBB_hut_);
+//	              reader_ST->AddVariable("TopLepTopHadDr_TOPTOPLEPHAD",&TopLepTopHadDr_TOPTOPLEPHAD_);
 	              reader_ST->AddVariable("HiggsBJet1CSVv2_TOPHLEPBB",&HiggsBJet1CSVv2_TOPHLEPBB_hut_);
 	              reader_ST->AddVariable("HiggsBJet2CSVv2_TOPHLEPBB",&HiggsBJet2CSVv2_TOPHLEPBB_hut_);
 	              reader_ST->AddVariable("TopLepBJetCSVv2_TOPHLEPBB",&TopLepBJetCSVv2_TOPHLEPBB_hut_);
-	              reader_ST->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHAD",&TopLepBJetCSVv2_TOPTOPLEPHAD_);
+//	              reader_ST->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHAD",&TopLepBJetCSVv2_TOPTOPLEPHAD_);
 	              reader_ST->AddVariable("TopHadBJetCSVv2_TOPTOPLEPHAD",&TopHadBJetCSVv2_TOPTOPLEPHAD_);
 	              reader_ST->AddVariable("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet1CSVv2_TOPTOPLEPHAD_);
 	              reader_ST->AddVariable("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet2CSVv2_TOPTOPLEPHAD_);
+/*	              reader_ST->AddVariable("HiggsMass_TOPTOPLEPHBB",&HiggsMass_TOPTOPLEPHBB_);
+	              reader_ST->AddVariable("MVA_TOPTOPLEPHBB",&MVA_TOPTOPLEPHBB_);
+	              reader_ST->AddVariable("TopLepMass_TOPTOPLEPHBB",&TopLepMass_TOPTOPLEPHBB_);
+	              reader_ST->AddVariable("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB",&HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB_);
+	              reader_ST->AddVariable("TopLepHiggsDr_TOPTOPLEPHBB",&TopLepHiggsDr_TOPTOPLEPHBB_);
+	              reader_ST->AddVariable("HiggsBJet1CSVv2_TOPTOPLEPHBB",&HiggsBJet1CSVv2_TOPTOPLEPHBB_);
+	              reader_ST->AddVariable("HiggsBJet2CSVv2_TOPTOPLEPHBB",&HiggsBJet2CSVv2_TOPTOPLEPHBB_);
+	              reader_ST->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHBB",&TopLepBJetCSVv2_TOPTOPLEPHBB_);
+	              reader_ST->AddVariable("TopHadNonBJetCSVv2_TOPTOPLEPHBB",&TopHadNonBJetCSVv2_TOPTOPLEPHBB_);
+*/
 
-	              reader_TT->AddVariable("HiggsMass_TOPTOPLEPHBB",&HiggsMass_TOPTOPLEPHBB_);
-	              reader_TT->AddVariable("MVA_TOPTOPLEPHBB",&MVA_TOPTOPLEPHBB_);
+	              reader_TT->AddVariable("HiggsMass_TOPHLEPBB",&HiggsMass_TOPHLEPBB_hut_);
+	              reader_TT->AddVariable("TopHadMass_TOPTOPLEPHAD",&TopHadMass_TOPTOPLEPHAD_);
+	              reader_TT->AddVariable("MVA_TOPHLEPBB",&MVA_TOPHLEPBB_hut_);
 	              reader_TT->AddVariable("MVA_TOPTOPLEPHAD",&MVA_TOPTOPLEPHAD_);
+	              reader_TT->AddVariable("LepCharge",&LepCharge_);
+	              reader_TT->AddVariable("HiggsEta_TOPHLEPBB",&HiggsEta_TOPHLEPBB_hut_);
+//	              reader_TT->AddVariable("TopLepMass_TOPHLEPBB",&TopLepMass_TOPHLEPBB_hut_);
+//	              reader_TT->AddVariable("TopLepMass_TOPTOPLEPHAD",&TopLepMass_TOPTOPLEPHAD_);
+//	              reader_TT->AddVariable("TopLepPt_TOPHLEPBB",&TopLepPt_TOPHLEPBB_hut_);
+//	              reader_TT->AddVariable("TopLepEta_TOPHLEPBB",&TopLepEta_TOPHLEPBB_hut_);
+	              reader_TT->AddVariable("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB",&HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hut_);
+//	              reader_TT->AddVariable("TopLepHiggsDr_TOPHLEPBB",&TopLepHiggsDr_TOPHLEPBB_hut_);
+//	              reader_TT->AddVariable("TopLepTopHadDr_TOPTOPLEPHAD",&TopLepTopHadDr_TOPTOPLEPHAD_);
+	              reader_TT->AddVariable("HiggsBJet1CSVv2_TOPHLEPBB",&HiggsBJet1CSVv2_TOPHLEPBB_hut_);
+	              reader_TT->AddVariable("HiggsBJet2CSVv2_TOPHLEPBB",&HiggsBJet2CSVv2_TOPHLEPBB_hut_);
+	              reader_TT->AddVariable("TopLepBJetCSVv2_TOPHLEPBB",&TopLepBJetCSVv2_TOPHLEPBB_hut_);
+//	              reader_TT->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHAD",&TopLepBJetCSVv2_TOPTOPLEPHAD_);
+	              reader_TT->AddVariable("TopHadBJetCSVv2_TOPTOPLEPHAD",&TopHadBJetCSVv2_TOPTOPLEPHAD_);
+	              reader_TT->AddVariable("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet1CSVv2_TOPTOPLEPHAD_);
+	              reader_TT->AddVariable("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet2CSVv2_TOPTOPLEPHAD_);
+/*	              reader_TT->AddVariable("HiggsMass_TOPTOPLEPHBB",&HiggsMass_TOPTOPLEPHBB_);
+	              reader_TT->AddVariable("MVA_TOPTOPLEPHBB",&MVA_TOPTOPLEPHBB_);
 	              reader_TT->AddVariable("TopLepMass_TOPTOPLEPHBB",&TopLepMass_TOPTOPLEPHBB_);
-	              reader_TT->AddVariable("TopLepMass_TOPTOPLEPHAD",&TopLepMass_TOPTOPLEPHAD_);
 	              reader_TT->AddVariable("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB",&HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB_);
 	              reader_TT->AddVariable("TopLepHiggsDr_TOPTOPLEPHBB",&TopLepHiggsDr_TOPTOPLEPHBB_);
-	              reader_TT->AddVariable("TopLepTopHadDr_TOPTOPLEPHAD",&TopLepTopHadDr_TOPTOPLEPHAD_);
 	              reader_TT->AddVariable("HiggsBJet1CSVv2_TOPTOPLEPHBB",&HiggsBJet1CSVv2_TOPTOPLEPHBB_);
 	              reader_TT->AddVariable("HiggsBJet2CSVv2_TOPTOPLEPHBB",&HiggsBJet2CSVv2_TOPTOPLEPHBB_);
 	              reader_TT->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHBB",&TopLepBJetCSVv2_TOPTOPLEPHBB_);
 	              reader_TT->AddVariable("TopHadNonBJetCSVv2_TOPTOPLEPHBB",&TopHadNonBJetCSVv2_TOPTOPLEPHBB_);
-	              reader_TT->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHAD",&TopLepBJetCSVv2_TOPTOPLEPHAD_);
-	              reader_TT->AddVariable("TopHadBJetCSVv2_TOPTOPLEPHAD",&TopHadBJetCSVv2_TOPTOPLEPHAD_);
-	              reader_TT->AddVariable("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet1CSVv2_TOPTOPLEPHAD_);
-	              reader_TT->AddVariable("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet2CSVv2_TOPTOPLEPHAD_);
 */
+
 
 	              reader_combSTandTT->AddVariable("HiggsMass_TOPHLEPBB",&HiggsMass_TOPHLEPBB_hut_);
 	              reader_combSTandTT->AddVariable("TopHadMass_TOPTOPLEPHAD",&TopHadMass_TOPTOPLEPHAD_);
@@ -688,43 +720,66 @@ int main(int argc, char *argv[])
             }
             else if(TrainingName.find("hct")!=string::npos && TrainingName.find("j4")!=string::npos)
             {
-/*	              reader_ST->AddVariable("HiggsMass_TOPHLEPBB",&HiggsMass_TOPHLEPBB_hct_);
+	              reader_ST->AddVariable("HiggsMass_TOPHLEPBB",&HiggsMass_TOPHLEPBB_hct_);
 	              reader_ST->AddVariable("TopHadMass_TOPTOPLEPHAD",&TopHadMass_TOPTOPLEPHAD_);
 	              reader_ST->AddVariable("MVA_TOPHLEPBB",&MVA_TOPHLEPBB_hct_);
 	              reader_ST->AddVariable("MVA_TOPTOPLEPHAD",&MVA_TOPTOPLEPHAD_);
 	              reader_ST->AddVariable("HiggsEta_TOPHLEPBB",&HiggsEta_TOPHLEPBB_hct_);
-	              reader_ST->AddVariable("TopLepMass_TOPHLEPBB",&TopLepMass_TOPHLEPBB_hct_);
-	              reader_ST->AddVariable("TopLepMass_TOPTOPLEPHAD",&TopLepMass_TOPTOPLEPHAD_);
-	              reader_ST->AddVariable("TopLepPt_TOPHLEPBB",&TopLepPt_TOPHLEPBB_hct_);
-	              reader_ST->AddVariable("TopLepEta_TOPHLEPBB",&TopLepEta_TOPHLEPBB_hct_);
+//	              reader_ST->AddVariable("TopLepMass_TOPHLEPBB",&TopLepMass_TOPHLEPBB_hct_);
+//	              reader_ST->AddVariable("TopLepMass_TOPTOPLEPHAD",&TopLepMass_TOPTOPLEPHAD_);
+//	              reader_ST->AddVariable("TopLepPt_TOPHLEPBB",&TopLepPt_TOPHLEPBB_hct_);
+//	              reader_ST->AddVariable("TopLepEta_TOPHLEPBB",&TopLepEta_TOPHLEPBB_hct_);
 	              reader_ST->AddVariable("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB",&HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct_);
-	              reader_ST->AddVariable("TopLepHiggsDr_TOPHLEPBB",&TopLepHiggsDr_TOPHLEPBB_hct_);
-	              reader_ST->AddVariable("TopLepTopHadDr_TOPTOPLEPHAD",&TopLepTopHadDr_TOPTOPLEPHAD_);
+//	              reader_ST->AddVariable("TopLepHiggsDr_TOPHLEPBB",&TopLepHiggsDr_TOPHLEPBB_hct_);
+//	              reader_ST->AddVariable("TopLepTopHadDr_TOPTOPLEPHAD",&TopLepTopHadDr_TOPTOPLEPHAD_);
 	              reader_ST->AddVariable("HiggsBJet1CSVv2_TOPHLEPBB",&HiggsBJet1CSVv2_TOPHLEPBB_hct_);
 	              reader_ST->AddVariable("HiggsBJet2CSVv2_TOPHLEPBB",&HiggsBJet2CSVv2_TOPHLEPBB_hct_);
 	              reader_ST->AddVariable("TopLepBJetCSVv2_TOPHLEPBB",&TopLepBJetCSVv2_TOPHLEPBB_hct_);
-	              reader_ST->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHAD",&TopLepBJetCSVv2_TOPTOPLEPHAD_);
+//	              reader_ST->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHAD",&TopLepBJetCSVv2_TOPTOPLEPHAD_);
 	              reader_ST->AddVariable("TopHadBJetCSVv2_TOPTOPLEPHAD",&TopHadBJetCSVv2_TOPTOPLEPHAD_);
 	              reader_ST->AddVariable("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet1CSVv2_TOPTOPLEPHAD_);
 	              reader_ST->AddVariable("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet2CSVv2_TOPTOPLEPHAD_);
+/*	              reader_ST->AddVariable("HiggsMass_TOPTOPLEPHBB",&HiggsMass_TOPTOPLEPHBB_);
+	              reader_ST->AddVariable("MVA_TOPTOPLEPHBB",&MVA_TOPTOPLEPHBB_);
+	              reader_ST->AddVariable("TopLepMass_TOPTOPLEPHBB",&TopLepMass_TOPTOPLEPHBB_);
+	              reader_ST->AddVariable("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB",&HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB_);
+	              reader_ST->AddVariable("TopLepHiggsDr_TOPTOPLEPHBB",&TopLepHiggsDr_TOPTOPLEPHBB_);
+	              reader_ST->AddVariable("HiggsBJet1CSVv2_TOPTOPLEPHBB",&HiggsBJet1CSVv2_TOPTOPLEPHBB_);
+	              reader_ST->AddVariable("HiggsBJet2CSVv2_TOPTOPLEPHBB",&HiggsBJet2CSVv2_TOPTOPLEPHBB_);
+	              reader_ST->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHBB",&TopLepBJetCSVv2_TOPTOPLEPHBB_);
+	              reader_ST->AddVariable("TopHadNonBJetCSVv2_TOPTOPLEPHBB",&TopHadNonBJetCSVv2_TOPTOPLEPHBB_);
+*/
 
-	              reader_TT->AddVariable("HiggsMass_TOPTOPLEPHBB",&HiggsMass_TOPTOPLEPHBB_);
-	              reader_TT->AddVariable("MVA_TOPTOPLEPHBB",&MVA_TOPTOPLEPHBB_);
+	              reader_TT->AddVariable("HiggsMass_TOPHLEPBB",&HiggsMass_TOPHLEPBB_hct_);
+	              reader_TT->AddVariable("TopHadMass_TOPTOPLEPHAD",&TopHadMass_TOPTOPLEPHAD_);
+	              reader_TT->AddVariable("MVA_TOPHLEPBB",&MVA_TOPHLEPBB_hct_);
 	              reader_TT->AddVariable("MVA_TOPTOPLEPHAD",&MVA_TOPTOPLEPHAD_);
+	              reader_TT->AddVariable("HiggsEta_TOPHLEPBB",&HiggsEta_TOPHLEPBB_hct_);
+//	              reader_TT->AddVariable("TopLepMass_TOPHLEPBB",&TopLepMass_TOPHLEPBB_hct_);
+//	              reader_TT->AddVariable("TopLepMass_TOPTOPLEPHAD",&TopLepMass_TOPTOPLEPHAD_);
+//	              reader_TT->AddVariable("TopLepPt_TOPHLEPBB",&TopLepPt_TOPHLEPBB_hct_);
+//	              reader_TT->AddVariable("TopLepEta_TOPHLEPBB",&TopLepEta_TOPHLEPBB_hct_);
+	              reader_TT->AddVariable("HiggsBJet1HiggsBJet2Dr_TOPHLEPBB",&HiggsBJet1HiggsBJet2Dr_TOPHLEPBB_hct_);
+//	              reader_TT->AddVariable("TopLepHiggsDr_TOPHLEPBB",&TopLepHiggsDr_TOPHLEPBB_hct_);
+//	              reader_TT->AddVariable("TopLepTopHadDr_TOPTOPLEPHAD",&TopLepTopHadDr_TOPTOPLEPHAD_);
+	              reader_TT->AddVariable("HiggsBJet1CSVv2_TOPHLEPBB",&HiggsBJet1CSVv2_TOPHLEPBB_hct_);
+	              reader_TT->AddVariable("HiggsBJet2CSVv2_TOPHLEPBB",&HiggsBJet2CSVv2_TOPHLEPBB_hct_);
+	              reader_TT->AddVariable("TopLepBJetCSVv2_TOPHLEPBB",&TopLepBJetCSVv2_TOPHLEPBB_hct_);
+//	              reader_TT->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHAD",&TopLepBJetCSVv2_TOPTOPLEPHAD_);
+	              reader_TT->AddVariable("TopHadBJetCSVv2_TOPTOPLEPHAD",&TopHadBJetCSVv2_TOPTOPLEPHAD_);
+	              reader_TT->AddVariable("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet1CSVv2_TOPTOPLEPHAD_);
+	              reader_TT->AddVariable("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet2CSVv2_TOPTOPLEPHAD_);
+/*	              reader_TT->AddVariable("HiggsMass_TOPTOPLEPHBB",&HiggsMass_TOPTOPLEPHBB_);
+	              reader_TT->AddVariable("MVA_TOPTOPLEPHBB",&MVA_TOPTOPLEPHBB_);
 	              reader_TT->AddVariable("TopLepMass_TOPTOPLEPHBB",&TopLepMass_TOPTOPLEPHBB_);
-	              reader_TT->AddVariable("TopLepMass_TOPTOPLEPHAD",&TopLepMass_TOPTOPLEPHAD_);
 	              reader_TT->AddVariable("HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB",&HiggsBJet1HiggsBJet2Dr_TOPTOPLEPHBB_);
 	              reader_TT->AddVariable("TopLepHiggsDr_TOPTOPLEPHBB",&TopLepHiggsDr_TOPTOPLEPHBB_);
-	              reader_TT->AddVariable("TopLepTopHadDr_TOPTOPLEPHAD",&TopLepTopHadDr_TOPTOPLEPHAD_);
 	              reader_TT->AddVariable("HiggsBJet1CSVv2_TOPTOPLEPHBB",&HiggsBJet1CSVv2_TOPTOPLEPHBB_);
 	              reader_TT->AddVariable("HiggsBJet2CSVv2_TOPTOPLEPHBB",&HiggsBJet2CSVv2_TOPTOPLEPHBB_);
 	              reader_TT->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHBB",&TopLepBJetCSVv2_TOPTOPLEPHBB_);
 	              reader_TT->AddVariable("TopHadNonBJetCSVv2_TOPTOPLEPHBB",&TopHadNonBJetCSVv2_TOPTOPLEPHBB_);
-	              reader_TT->AddVariable("TopLepBJetCSVv2_TOPTOPLEPHAD",&TopLepBJetCSVv2_TOPTOPLEPHAD_);
-	              reader_TT->AddVariable("TopHadBJetCSVv2_TOPTOPLEPHAD",&TopHadBJetCSVv2_TOPTOPLEPHAD_);
-	              reader_TT->AddVariable("TopHadWNonBJet1CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet1CSVv2_TOPTOPLEPHAD_);
-	              reader_TT->AddVariable("TopHadWNonBJet2CSVv2_TOPTOPLEPHAD",&TopHadWNonBJet2CSVv2_TOPTOPLEPHAD_);
 */
+
 	              reader_combSTandTT->AddVariable("HiggsMass_TOPHLEPBB",&HiggsMass_TOPHLEPBB_hct_);
 	              reader_combSTandTT->AddVariable("TopHadMass_TOPTOPLEPHAD",&TopHadMass_TOPTOPLEPHAD_);
 	              reader_combSTandTT->AddVariable("MVA_TOPHLEPBB",&MVA_TOPHLEPBB_hct_);
@@ -761,17 +816,18 @@ int main(int argc, char *argv[])
                 return 0;
             }
             
-//	          std::string weightsFile_ST= "weights/Training_ST" + SignalSample + channel + "_" +  category+"_BDT.weights.xml";
-//	          std::string weightsFile_TT= "weights/Training_TT" + SignalSample + channel + "_" +  category+"_BDT.weights.xml";
+	          std::string weightsFile_ST= "weights/Training_ST" + SignalSample + channel + "_" +  category+"_BDT.weights.xml";
+	          std::string weightsFile_TT= "weights/Training_TT" + SignalSample + channel + "_" +  category+"_BDT.weights.xml";
 	          std::string weightsFile_combSTandTT= "weights/Comb"+TrainingName+"_BDT.weights.xml";
 /*            if(SignalSample == "2D")
             {
                 weightsFile_ST = "weights/Training_SThut" + channel + "_" +  category+"_BDT.weights.xml";
                 weightsFile_TT= "weights/Training_TThut" + channel + "_" +  category+"_BDT.weights.xml";
             }
+*/
 	          reader_ST->BookMVA("BDTG method",weightsFile_ST.c_str());
 	          reader_TT->BookMVA("BDTG method",weightsFile_TT.c_str());
-*/	          reader_combSTandTT->BookMVA("BDTG method",weightsFile_combSTandTT.c_str());
+	          reader_combSTandTT->BookMVA("BDTG method",weightsFile_combSTandTT.c_str());
 
 
 
@@ -1252,9 +1308,9 @@ if(pt_lepton	< 30) continue;
                 TopLepBJetCSVv2_TOPTOPLEPHBB_ = (float) TopLepBJetCSVv2_TOPTOPLEPHBB;
 	              TopHadNonBJetCSVv2_TOPTOPLEPHBB_ = (float) TopHadNonBJetCSVv2_TOPTOPLEPHBB;
 
-//                double MVAvalue_ST = reader_ST->EvaluateMVA("BDTG method");
-//                double MVAvalue_TT = reader_TT->EvaluateMVA("BDTG method");
-//                double MVAvalue_maxSTandTT = max(MVAvalue_ST,MVAvalue_TT);
+                double MVAvalue_ST = reader_ST->EvaluateMVA("BDTG method");
+                double MVAvalue_TT = reader_TT->EvaluateMVA("BDTG method");
+                double MVAvalue_maxSTandTT = max(MVAvalue_ST,MVAvalue_TT);
                 double MVAvalue_combSTandTT = reader_combSTandTT->EvaluateMVA("BDTG method");
 /*
 cout << " " << endl;
@@ -1494,9 +1550,9 @@ cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
                         //-----------------------------------------------------------------------------------------------------------
                         // Fill Plots
                         //-----------------------------------------------------------------------------------------------------------
-//                        MSPlot[("MVA_MaxTT-ST_"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVAvalue_maxSTandTT, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling * PostFitSF); 
+                        MSPlot[("MVA_MaxTT-ST_"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVAvalue_maxSTandTT, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling * PostFitSF); 
                         MSPlot[("MVA_CombTT-ST_"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVAvalue_combSTandTT, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling * PostFitSF); 
-/*
+
                         MSPlot[("MVA_ST"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVAvalue_ST, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling * PostFitSF); 
                         MSPlot[("MVA_TT"+TrainingName+WhatSysts_noJECs[iSyst_]).c_str()]->Fill(MVAvalue_TT, Sample, ScalePlots, Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling * PostFitSF); 
                         
@@ -1532,7 +1588,7 @@ cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
                         else if(Sample->Name().find("DYJets") != string::npos) histo1D[("TT_zjets"+namingConventionFit[WhatSysts_noJECs[iSyst_]]).c_str()]->Fill(MVAvalue_TT,Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling * PostFitSF / EqLumi);
                         else if(Sample->Name().find("WJets") != string::npos) histo1D[("TT_wjets"+namingConventionFit[WhatSysts_noJECs[iSyst_]]).c_str()]->Fill(MVAvalue_TT,Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling * PostFitSF / EqLumi);
                         else if(Sample->Name().find("Data") == string::npos && Sample->Name().find("NP_overlay") == string::npos) histo1D[("TT_other"+namingConventionFit[WhatSysts_noJECs[iSyst_]]).c_str()]->Fill(MVAvalue_TT,Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling * PostFitSF / EqLumi);
-*/
+
                         if(Sample->Name().find("NP_") != string::npos) histo1D[("combSTandTT_sig"+namingConventionFit[WhatSysts_noJECs[iSyst_]]).c_str()]->Fill(MVAvalue_combSTandTT,Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling * PostFitSF / EqLumi * SignalWeight);
                         if(Sample->Name().find("NP_overlay_ST") != string::npos) histo1D[("combSTandTT_sig_stop"+namingConventionFit[WhatSysts_noJECs[iSyst_]]).c_str()]->Fill(MVAvalue_combSTandTT,Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling * PostFitSF / EqLumi * SignalWeight);
                         else if(Sample->Name().find("NP_overlay_TT") != string::npos) histo1D[("combSTandTT_sig_ttbar"+namingConventionFit[WhatSysts_noJECs[iSyst_]]).c_str()]->Fill(MVAvalue_combSTandTT,Luminosity * SystScaleFactor[WhatSysts_noJECs[iSyst_].c_str()] * Doubling * PostFitSF / EqLumi * SignalWeight);
@@ -1561,9 +1617,9 @@ cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
                }
                if(filepath.find("JESMinus") != string::npos || filepath.find("JESPlus") != string::npos  || filepath.find("JERMinus") != string::npos || filepath.find("JERPlus") != string::npos || isData || WhatSysts[JecCounter] == "")
                {
-//                        MSPlot[("MVA_MaxTT-ST_"+TrainingName+WhatSysts[JecCounter]).c_str()]->Fill(MVAvalue_maxSTandTT, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling * PostFitSF); //Factor 2 to compensate for the fact we're running over half the number of simulated events
+                        MSPlot[("MVA_MaxTT-ST_"+TrainingName+WhatSysts[JecCounter]).c_str()]->Fill(MVAvalue_maxSTandTT, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling * PostFitSF); //Factor 2 to compensate for the fact we're running over half the number of simulated events
                         MSPlot[("MVA_CombTT-ST_"+TrainingName+WhatSysts[JecCounter]).c_str()]->Fill(MVAvalue_combSTandTT, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling * PostFitSF); //Factor 2 to compensate for the fact we're running over half the number of simulated events
-/*
+
                         MSPlot[("MVA_ST"+TrainingName+WhatSysts[JecCounter]).c_str()]->Fill(MVAvalue_ST, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling * PostFitSF); //Factor 2 to compensate for the fact we're running over half the number of simulated events
                         MSPlot[("MVA_TT"+TrainingName+WhatSysts[JecCounter]).c_str()]->Fill(MVAvalue_TT, Sample, ScalePlots, Luminosity * ScaleFactor * Doubling * PostFitSF); //Factor 2 to compensate for the fact we're running over half the number of simulated events
 
@@ -1599,7 +1655,7 @@ cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
                         else if(Sample->Name().find("DYJets") != string::npos) histo1D[("TT_zjets"+namingConventionFit[WhatSysts[JecCounter]]).c_str()]->Fill(MVAvalue_TT,Luminosity * ScaleFactor * Doubling * PostFitSF / EqLumi);
                         else if(Sample->Name().find("WJets") != string::npos) histo1D[("TT_wjets"+namingConventionFit[WhatSysts[JecCounter]]).c_str()]->Fill(MVAvalue_TT,Luminosity * ScaleFactor * Doubling * PostFitSF / EqLumi);
                         else if(Sample->Name().find("Data") == string::npos && Sample->Name().find("NP_overlay") == string::npos) histo1D[("TT_other"+namingConventionFit[WhatSysts[JecCounter]]).c_str()]->Fill(MVAvalue_TT,Luminosity * ScaleFactor * Doubling * PostFitSF / EqLumi);
-*/
+
                         if(Sample->Name().find("NP_") != string::npos) histo1D[("combSTandTT_sig"+namingConventionFit[WhatSysts[JecCounter]]).c_str()]->Fill(MVAvalue_combSTandTT,Luminosity * ScaleFactor * Doubling * PostFitSF / EqLumi * SignalWeight);
                         if(Sample->Name().find("NP_overlay_ST") != string::npos) histo1D[("combSTandTT_sig_stop"+namingConventionFit[WhatSysts[JecCounter]]).c_str()]->Fill(MVAvalue_combSTandTT,Luminosity * ScaleFactor * Doubling * PostFitSF / EqLumi * SignalWeight);
                         else if(Sample->Name().find("NP_overlay_TT") != string::npos) histo1D[("combSTandTT_sig_ttbar"+namingConventionFit[WhatSysts[JecCounter]]).c_str()]->Fill(MVAvalue_combSTandTT,Luminosity * ScaleFactor * Doubling * PostFitSF / EqLumi * SignalWeight);
@@ -1625,11 +1681,11 @@ cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
                             else if(Sample->Name().find("Data") == string::npos && Sample->Name().find("NP_overlay") == string::npos) histo1D[("combSTandTT_cutCount_other"+namingConventionFit[WhatSysts[JecCounter]]).c_str()]->Fill(0.,Luminosity * ScaleFactor * Doubling * PostFitSF / EqLumi);
                         }
                }
-/*
+
                if(Sample->Name().find("Data") != string::npos) histo1D["maxSTandTT_data_obs"]->Fill(MVAvalue_maxSTandTT);
                if(Sample->Name().find("Data") != string::npos) histo1D["ST_data_obs"]->Fill(MVAvalue_ST);
                if(Sample->Name().find("Data") != string::npos) histo1D["TT_data_obs"]->Fill(MVAvalue_TT);
-*/
+
                if(Sample->Name().find("Data") != string::npos) histo1D["combSTandTT_data_obs"]->Fill(MVAvalue_combSTandTT);
                if(Sample->Name().find("Data") != string::npos && MVAvalue_combSTandTT > OptimalCut_CombTraining(category, SignalSample)) histo1D["combSTandTT_cutCount_data_obs"]->Fill(0.);
 			                
@@ -1827,7 +1883,7 @@ cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
 	    }
 	    outfile_errorbands->Write("kOverwrite");
   }
-/*
+
 
   //Now store histo's to be used for limit setting
   string outname_limitsetting_maxSTandTT = pathPNG+"/input_MVA";
@@ -1915,7 +1971,7 @@ cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
       temp->Write();
 	}
 	outfile_limitsetting_TT->Write("kOverwrite");
-*/
+
 
   cout << " ---------------------------------------- " << endl;
   cout << " Statistical unc. on MC " << endl;

@@ -5,6 +5,22 @@ Begin program
 used config file: config/FullMcBkgdSamples_ExtraSystematicSamples_TreeProcessor.xml
  - split TTBar dataset into ...TTJets_ll, TTJets_cc and TTJets_ll
 Dataset:  :TTJets_powhegweight1
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_SThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_SThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_TThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_TThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
 --- Reader                   : Booking "BDTG method" of type "BDT" from weights/CombTraining_hct_All_b2j4_BDT.weights.xml.
 --- MethodBase               : Reading weight file: weights/CombTraining_hct_All_b2j4_BDT.weights.xml
 --- BDT                      : Read method "BDT" of type "BDT"
@@ -14,3 +30,1086 @@ Dataset:  :TTJets_powhegweight1
 --- DataSetInfo              : Added class "Signal"	 with internal class number 1
 --- Reader                   : Booked classifier "BDT" of type: "BDT"
                  nEntries: 2602124
+Dataset:  :TTJets_powhegweight2
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_SThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_SThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_TThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_TThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/CombTraining_hct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/CombTraining_hct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+                 nEntries: 2602124
+Dataset:  :TTJets_powhegweight3
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_SThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_SThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_TThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_TThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/CombTraining_hct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/CombTraining_hct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+                 nEntries: 2602124
+Dataset:  :TTJets_powhegweight4
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_SThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_SThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_TThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_TThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/CombTraining_hct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/CombTraining_hct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+                 nEntries: 2602124
+Dataset:  :TTJets_powhegweight6
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_SThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_SThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_TThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_TThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/CombTraining_hct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/CombTraining_hct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+                 nEntries: 2602124
+Dataset:  :TTJets_powhegweight8
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_SThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_SThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_TThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_TThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/CombTraining_hct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/CombTraining_hct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+                 nEntries: 2602124
+Dataset:  :TTJets_powheg_isrup
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_SThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_SThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_TThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_TThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/CombTraining_hct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/CombTraining_hct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+                 nEntries: 1862043
+Dataset:  :TTJets_powheg_isrdown
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_SThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_SThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_TThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_TThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/CombTraining_hct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/CombTraining_hct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+                 nEntries: 674778
+Dataset:  :TTJets_powheg_fsrup
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_SThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_SThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_TThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_TThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/CombTraining_hct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/CombTraining_hct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+                 nEntries: 817056
+Dataset:  :TTJets_powheg_fsrdown
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_SThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_SThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_TThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_TThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/CombTraining_hct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/CombTraining_hct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+                 nEntries: 1063332
+Dataset:  :TTJets_powheg_hdampup
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_SThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_SThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_TThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_TThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/CombTraining_hct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/CombTraining_hct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+                 nEntries: 994539
+Dataset:  :TTJets_powheg_hdampdown
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_SThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_SThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_TThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_TThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/CombTraining_hct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/CombTraining_hct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+                 nEntries: 964848
+Dataset:  :TTJets_powheg_UEup
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_SThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_SThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_TThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_TThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/CombTraining_hct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/CombTraining_hct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+                 nEntries: 1007098
+Dataset:  :TTJets_powheg_UEdown
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_SThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_SThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_TThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_TThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/CombTraining_hct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/CombTraining_hct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+                 nEntries: 894569
+Dataset:  :TTJets_powheg
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_SThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_SThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/Training_TThct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/Training_TThct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+--- Reader                   : Booking "BDTG method" of type "BDT" from weights/CombTraining_hct_All_b2j4_BDT.weights.xml.
+--- MethodBase               : Reading weight file: weights/CombTraining_hct_All_b2j4_BDT.weights.xml
+--- BDT                      : Read method "BDT" of type "BDT"
+--- BDT                      : MVA method was trained with TMVA Version: 4.2.1
+--- BDT                      : MVA method was trained with ROOT Version: 6.06/01
+--- DataSetInfo              : Added class "Background"	 with internal class number 0
+--- DataSetInfo              : Added class "Signal"	 with internal class number 1
+--- Reader                   : Booked classifier "BDT" of type: "BDT"
+                 nEntries: 2602124
+Making directory :MSPlots/MSPlots_All/_12_5_2017/b2j4
+maxSTandTT_ttbb
+____________________
+ 
+1) binContentDown = 0
+1) binContentUp = 0
+ 
+2) binContentDown = 0
+2) binContentUp = 0
+ 
+3) binContentDown = 2.01493
+3) binContentUp = 2.06846
+ 
+4) binContentDown = 80.112
+4) binContentUp = 80.2437
+ 
+5) binContentDown = 324.355
+5) binContentUp = 326.141
+ 
+6) binContentDown = 735.515
+6) binContentUp = 737.73
+ 
+7) binContentDown = 1625.37
+7) binContentUp = 1630.23
+ 
+8) binContentDown = 2739.86
+8) binContentUp = 2747.8
+ 
+9) binContentDown = 3851.28
+9) binContentUp = 3865.08
+ 
+10) binContentDown = 4443.22
+10) binContentUp = 4458.47
+ 
+11) binContentDown = 4644.2
+11) binContentUp = 4659.6
+ 
+12) binContentDown = 4338.53
+12) binContentUp = 4354.15
+ 
+13) binContentDown = 3518.38
+13) binContentUp = 3529.95
+ 
+14) binContentDown = 2568.15
+14) binContentUp = 2576.93
+ 
+15) binContentDown = 1373.69
+15) binContentUp = 1378.9
+ 
+16) binContentDown = 638.205
+16) binContentUp = 640.444
+ 
+17) binContentDown = 221.831
+17) binContentUp = 222.646
+ 
+18) binContentDown = 70.435
+18) binContentUp = 70.9141
+ 
+19) binContentDown = 11.3078
+19) binContentUp = 11.4222
+ST_ttbb
+____________________
+ 
+1) binContentDown = 0
+1) binContentUp = 0
+ 
+2) binContentDown = 0.67196
+2) binContentUp = 0.67196
+ 
+3) binContentDown = 17.4852
+3) binContentUp = 17.5387
+ 
+4) binContentDown = 155.251
+4) binContentUp = 156.181
+ 
+5) binContentDown = 694.11
+5) binContentUp = 696.234
+ 
+6) binContentDown = 1613.31
+6) binContentUp = 1618.72
+ 
+7) binContentDown = 2883.74
+7) binContentUp = 2892.79
+ 
+8) binContentDown = 4169.1
+8) binContentUp = 4181.55
+ 
+9) binContentDown = 4857.48
+9) binContentUp = 4874.11
+ 
+10) binContentDown = 4667.16
+10) binContentUp = 4682.68
+ 
+11) binContentDown = 4193.25
+11) binContentUp = 4207.09
+ 
+12) binContentDown = 3277.2
+12) binContentUp = 3289.44
+ 
+13) binContentDown = 2164.87
+13) binContentUp = 2172.85
+ 
+14) binContentDown = 1348.55
+14) binContentUp = 1353.76
+ 
+15) binContentDown = 683.135
+15) binContentUp = 686.042
+ 
+16) binContentDown = 305.87
+16) binContentUp = 307.104
+ 
+17) binContentDown = 110.277
+17) binContentUp = 110.901
+ 
+18) binContentDown = 38.2355
+18) binContentUp = 38.5161
+ 
+19) binContentDown = 6.75375
+19) binContentUp = 6.75375
+TT_ttbb
+____________________
+ 
+1) binContentDown = 0
+1) binContentUp = 0
+ 
+2) binContentDown = 0
+2) binContentUp = 0
+ 
+3) binContentDown = 24.3719
+3) binContentUp = 24.4202
+ 
+4) binContentDown = 253.292
+4) binContentUp = 254.303
+ 
+5) binContentDown = 723.443
+5) binContentUp = 725.748
+ 
+6) binContentDown = 1292.05
+6) binContentUp = 1295.92
+ 
+7) binContentDown = 2215.09
+7) binContentUp = 2221.48
+ 
+8) binContentDown = 3330.81
+8) binContentUp = 3342.82
+ 
+9) binContentDown = 4116.32
+9) binContentUp = 4133.13
+ 
+10) binContentDown = 4149.22
+10) binContentUp = 4161.56
+ 
+11) binContentDown = 3966.68
+11) binContentUp = 3980.57
+ 
+12) binContentDown = 3788.81
+12) binContentUp = 3800.82
+ 
+13) binContentDown = 3116.69
+13) binContentUp = 3127.46
+ 
+14) binContentDown = 2267.37
+14) binContentUp = 2274.56
+ 
+15) binContentDown = 1181.39
+15) binContentUp = 1186.15
+ 
+16) binContentDown = 516.356
+16) binContentUp = 518.219
+ 
+17) binContentDown = 180.852
+17) binContentUp = 181.377
+ 
+18) binContentDown = 54.6654
+18) binContentUp = 54.9776
+ 
+19) binContentDown = 9.04884
+19) binContentUp = 9.16324
+combSTandTT_ttbb
+____________________
+ 
+1) binContentDown = 0
+1) binContentUp = 0
+ 
+2) binContentDown = 0
+2) binContentUp = 0
+ 
+3) binContentDown = 23.0598
+3) binContentUp = 23.2101
+ 
+4) binContentDown = 218.206
+4) binContentUp = 218.537
+ 
+5) binContentDown = 656.133
+5) binContentUp = 658.701
+ 
+6) binContentDown = 1319.87
+6) binContentUp = 1323.52
+ 
+7) binContentDown = 2338.82
+7) binContentUp = 2345.73
+ 
+8) binContentDown = 3501.16
+8) binContentUp = 3512.66
+ 
+9) binContentDown = 4015.74
+9) binContentUp = 4032.34
+ 
+10) binContentDown = 4209.35
+10) binContentUp = 4223.39
+ 
+11) binContentDown = 4094.48
+11) binContentUp = 4107.23
+ 
+12) binContentDown = 3737.48
+12) binContentUp = 3751.54
+ 
+13) binContentDown = 3057.32
+13) binContentUp = 3066.97
+ 
+14) binContentDown = 2205.65
+14) binContentUp = 2213
+ 
+15) binContentDown = 1156.1
+15) binContentUp = 1160.49
+ 
+16) binContentDown = 444.278
+16) binContentUp = 445.852
+ 
+17) binContentDown = 157.356
+17) binContentUp = 157.798
+ 
+18) binContentDown = 43.1166
+18) binContentUp = 43.3752
+ 
+19) binContentDown = 8.3301
+19) binContentUp = 8.44681
+combSTandTT_cutCount_ttbb
+____________________
+maxSTandTT_ttcc
+____________________
+ 
+1) binContentDown = 0
+1) binContentUp = 0
+ 
+2) binContentDown = 0
+2) binContentUp = 0
+ 
+3) binContentDown = 15.0377
+3) binContentUp = 15.1063
+ 
+4) binContentDown = 287.637
+4) binContentUp = 288.684
+ 
+5) binContentDown = 1246.1
+5) binContentUp = 1247.3
+ 
+6) binContentDown = 2711.78
+6) binContentUp = 2714.66
+ 
+7) binContentDown = 5064.81
+7) binContentUp = 5069.66
+ 
+8) binContentDown = 8533.33
+8) binContentUp = 8544.81
+ 
+9) binContentDown = 10303.8
+9) binContentUp = 10320
+ 
+10) binContentDown = 10884.7
+10) binContentUp = 10900.9
+ 
+11) binContentDown = 10616.1
+11) binContentUp = 10630.1
+ 
+12) binContentDown = 9171.07
+12) binContentUp = 9181.94
+ 
+13) binContentDown = 7359.35
+13) binContentUp = 7369.48
+ 
+14) binContentDown = 4986.82
+14) binContentUp = 4994.84
+ 
+15) binContentDown = 2619.57
+15) binContentUp = 2624.98
+ 
+16) binContentDown = 1043.36
+16) binContentUp = 1045.85
+ 
+17) binContentDown = 339.549
+17) binContentUp = 340.002
+ 
+18) binContentDown = 85.2099
+18) binContentUp = 85.3398
+ 
+19) binContentDown = 6.17575
+19) binContentUp = 6.18622
+ST_ttcc
+____________________
+ 
+1) binContentDown = 0
+1) binContentUp = 0
+ 
+2) binContentDown = 3.82154
+2) binContentUp = 3.82154
+ 
+3) binContentDown = 90.8877
+3) binContentUp = 91.0416
+ 
+4) binContentDown = 592.973
+4) binContentUp = 593.951
+ 
+5) binContentDown = 2337.85
+5) binContentUp = 2340.53
+ 
+6) binContentDown = 5248.16
+6) binContentUp = 5255.1
+ 
+7) binContentDown = 8162.66
+7) binContentUp = 8171.96
+ 
+8) binContentDown = 11191.2
+8) binContentUp = 11208.8
+ 
+9) binContentDown = 12205.7
+9) binContentUp = 12223.4
+ 
+10) binContentDown = 10834.1
+10) binContentUp = 10848.3
+ 
+11) binContentDown = 9141.58
+11) binContentUp = 9153.12
+ 
+12) binContentDown = 6577.77
+12) binContentUp = 6586.37
+ 
+13) binContentDown = 4285.35
+13) binContentUp = 4293.35
+ 
+14) binContentDown = 2543.17
+14) binContentUp = 2547.15
+ 
+15) binContentDown = 1341.11
+15) binContentUp = 1344.75
+ 
+16) binContentDown = 520.758
+16) binContentUp = 521.324
+ 
+17) binContentDown = 151.718
+17) binContentUp = 151.927
+ 
+18) binContentDown = 42.5878
+18) binContentUp = 42.685
+ 
+19) binContentDown = 3.33646
+19) binContentUp = 3.34693
+TT_ttcc
+____________________
+ 
+1) binContentDown = 0
+1) binContentUp = 0
+ 
+2) binContentDown = 0
+2) binContentUp = 0
+ 
+3) binContentDown = 68.3867
+3) binContentUp = 68.6575
+ 
+4) binContentDown = 943.345
+4) binContentUp = 944.605
+ 
+5) binContentDown = 2587.19
+5) binContentUp = 2589.66
+ 
+6) binContentDown = 4259.17
+6) binContentUp = 4263.91
+ 
+7) binContentDown = 6672.33
+7) binContentUp = 6681.64
+ 
+8) binContentDown = 9452.44
+8) binContentUp = 9464.12
+ 
+9) binContentDown = 10528.7
+9) binContentUp = 10543.9
+ 
+10) binContentDown = 9708.8
+10) binContentUp = 9723.46
+ 
+11) binContentDown = 8972.85
+11) binContentUp = 8985.96
+ 
+12) binContentDown = 7835.65
+12) binContentUp = 7845.45
+ 
+13) binContentDown = 6540.41
+13) binContentUp = 6548.18
+ 
+14) binContentDown = 4387.89
+14) binContentUp = 4396.13
+ 
+15) binContentDown = 2165.59
+15) binContentUp = 2169.46
+ 
+16) binContentDown = 805.201
+16) binContentUp = 807.525
+ 
+17) binContentDown = 275.258
+17) binContentUp = 275.594
+ 
+18) binContentDown = 66.5341
+18) binContentUp = 66.6698
+ 
+19) binContentDown = 4.61481
+19) binContentUp = 4.62528
+combSTandTT_ttcc
+____________________
+ 
+1) binContentDown = 0
+1) binContentUp = 0
+ 
+2) binContentDown = 0
+2) binContentUp = 0
+ 
+3) binContentDown = 91.6747
+3) binContentUp = 92.029
+ 
+4) binContentDown = 831.069
+4) binContentUp = 832.455
+ 
+5) binContentDown = 2372.56
+5) binContentUp = 2374.25
+ 
+6) binContentDown = 4301.49
+6) binContentUp = 4307.1
+ 
+7) binContentDown = 7182.23
+7) binContentUp = 7192.04
+ 
+8) binContentDown = 9608.63
+8) binContentUp = 9620.55
+ 
+9) binContentDown = 10204.9
+9) binContentUp = 10221.2
+ 
+10) binContentDown = 9953.83
+10) binContentUp = 9964.52
+ 
+11) binContentDown = 9303.65
+11) binContentUp = 9316.38
+ 
+12) binContentDown = 7982.26
+12) binContentUp = 7994.06
+ 
+13) binContentDown = 6277.64
+13) binContentUp = 6286.64
+ 
+14) binContentDown = 4124.1
+14) binContentUp = 4131.31
+ 
+15) binContentDown = 2047.46
+15) binContentUp = 2051.14
+ 
+16) binContentDown = 709.979
+16) binContentUp = 712.088
+ 
+17) binContentDown = 217.695
+17) binContentUp = 217.988
+ 
+18) binContentDown = 63.5914
+18) binContentUp = 63.7485
+ 
+19) binContentDown = 1.91117
+19) binContentUp = 1.91117
+combSTandTT_cutCount_ttcc
+____________________
+maxSTandTT_ttlf
+____________________
+ 
+1) binContentDown = 0
+1) binContentUp = 0
+ 
+2) binContentDown = 0
+2) binContentUp = 0
+ 
+3) binContentDown = 192.845
+3) binContentUp = 193.256
+ 
+4) binContentDown = 3322.65
+4) binContentUp = 3329.02
+ 
+5) binContentDown = 11709.7
+5) binContentUp = 11732.4
+ 
+6) binContentDown = 21581.5
+6) binContentUp = 21619.9
+ 
+7) binContentDown = 37316
+7) binContentUp = 37380.3
+ 
+8) binContentDown = 56157.4
+8) binContentUp = 56251.9
+ 
+9) binContentDown = 62900.1
+9) binContentUp = 63005.2
+ 
+10) binContentDown = 59484.7
+10) binContentUp = 59580.8
+ 
+11) binContentDown = 53784.6
+11) binContentUp = 53871.6
+ 
+12) binContentDown = 44170.1
+12) binContentUp = 44242.3
+ 
+13) binContentDown = 33290.6
+13) binContentUp = 33349.4
+ 
+14) binContentDown = 22080.4
+14) binContentUp = 22119.1
+ 
+15) binContentDown = 11511.1
+15) binContentUp = 11530.2
+ 
+16) binContentDown = 4586.63
+16) binContentUp = 4594.05
+ 
+17) binContentDown = 1501.62
+17) binContentUp = 1504.45
+ 
+18) binContentDown = 374.246
+18) binContentUp = 374.833
+ 
+19) binContentDown = 52.208
+19) binContentUp = 52.3444
+ST_ttlf
+____________________
+ 
+1) binContentDown = 0
+1) binContentUp = 0
+ 
+2) binContentDown = 26.0838
+2) binContentUp = 26.1792
+ 
+3) binContentDown = 820.685
+3) binContentUp = 822.419
+ 
+4) binContentDown = 5402.92
+4) binContentUp = 5412.65
+ 
+5) binContentDown = 17442.9
+5) binContentUp = 17479.6
+ 
+6) binContentDown = 33922.8
+6) binContentUp = 33982.8
+ 
+7) binContentDown = 50127.6
+7) binContentUp = 50211
+ 
+8) binContentDown = 66336.6
+8) binContentUp = 66447.6
+ 
+9) binContentDown = 68620
+9) binContentUp = 68735
+ 
+10) binContentDown = 58045.3
+10) binContentUp = 58138.6
+ 
+11) binContentDown = 46088.3
+11) binContentUp = 46163.9
+ 
+12) binContentDown = 33229.8
+12) binContentUp = 33285.3
+ 
+13) binContentDown = 21512.4
+13) binContentUp = 21549.5
+ 
+14) binContentDown = 12816.2
+14) binContentUp = 12836.2
+ 
+15) binContentDown = 6235.21
+15) binContentUp = 6244.13
+ 
+16) binContentDown = 2437.09
+16) binContentUp = 2441.49
+ 
+17) binContentDown = 731.766
+17) binContentUp = 733.448
+ 
+18) binContentDown = 196.68
+18) binContentUp = 197.077
+ 
+19) binContentDown = 25.5373
+19) binContentUp = 25.6049
+TT_ttlf
+____________________
+ 
+1) binContentDown = 0
+1) binContentUp = 0
+ 
+2) binContentDown = 0
+2) binContentUp = 0
+ 
+3) binContentDown = 850.387
+3) binContentUp = 852.262
+ 
+4) binContentDown = 9992.1
+4) binContentUp = 10009.7
+ 
+5) binContentDown = 23446.8
+5) binContentUp = 23486.5
+ 
+6) binContentDown = 32508.9
+6) binContentUp = 32566.6
+ 
+7) binContentDown = 46005.6
+7) binContentUp = 46085.4
+ 
+8) binContentDown = 59366.8
+8) binContentUp = 59464.1
+ 
+9) binContentDown = 59981.4
+9) binContentUp = 60080.5
+ 
+10) binContentDown = 50827.7
+10) binContentUp = 50909.2
+ 
+11) binContentDown = 43808.1
+11) binContentUp = 43878.9
+ 
+12) binContentDown = 36220.8
+12) binContentUp = 36281.9
+ 
+13) binContentDown = 28544.1
+13) binContentUp = 28594.4
+ 
+14) binContentDown = 18450.3
+14) binContentUp = 18484
+ 
+15) binContentDown = 9032.09
+15) binContentUp = 9047.62
+ 
+16) binContentDown = 3506.44
+16) binContentUp = 3512.53
+ 
+17) binContentDown = 1161.15
+17) binContentUp = 1163.03
+ 
+18) binContentDown = 276.256
+18) binContentUp = 276.89
+ 
+19) binContentDown = 37.466
+19) binContentUp = 37.5493
+combSTandTT_ttlf
+____________________
+ 
+1) binContentDown = 0
+1) binContentUp = 0
+ 
+2) binContentDown = 0.598649
+2) binContentUp = 0.598649
+ 
+3) binContentDown = 1137.42
+3) binContentUp = 1139.64
+ 
+4) binContentDown = 8857.61
+4) binContentUp = 8874.64
+ 
+5) binContentDown = 21859.1
+5) binContentUp = 21897.9
+ 
+6) binContentDown = 33703.7
+6) binContentUp = 33761.4
+ 
+7) binContentDown = 48697.9
+7) binContentUp = 48782.6
+ 
+8) binContentDown = 59443
+8) binContentUp = 59540.5
+ 
+9) binContentDown = 57445.2
+9) binContentUp = 57538.8
+ 
+10) binContentDown = 51976
+10) binContentUp = 52059.7
+ 
+11) binContentDown = 45439.4
+11) binContentUp = 45513
+ 
+12) binContentDown = 36819.1
+12) binContentUp = 36881.3
+ 
+13) binContentDown = 27956.6
+13) binContentUp = 28005.8
+ 
+14) binContentDown = 17801.6
+14) binContentUp = 17834.6
+ 
+15) binContentDown = 8519.46
+15) binContentUp = 8533.2
+ 
+16) binContentDown = 3168.63
+16) binContentUp = 3173.66
+ 
+17) binContentDown = 964.923
+17) binContentUp = 966.961
+ 
+18) binContentDown = 207.435
+18) binContentUp = 208.369
+ 
+19) binContentDown = 20.4941
+19) binContentUp = 20.5129
+combSTandTT_cutCount_ttlf
+____________________
+It took us 4630.28 to run the program
+********************************************
+           End of the program !!            
+********************************************

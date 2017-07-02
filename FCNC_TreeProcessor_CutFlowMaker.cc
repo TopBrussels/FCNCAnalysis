@@ -88,8 +88,8 @@ int main(int argc, char *argv[])
     ///////////////////////////////////////////////////////////////////////////////////
     // **************** Preparing samples ********************//
     ///////////////////////////////////////////////////////////////////////////////////
-    cout << " ... Making the TreeProcessor .xml files " << endl;
-    system("python scripts/MakeXMLforTreeProcessor.py");
+//    cout << " ... Making the TreeProcessor .xml files " << endl;
+//    system("python scripts/MakeXMLforTreeProcessor.py");
 
     string xmlNom;
     if(channel == "_El") xmlNom = "config/FullMcBkgdSamples_El_TreeProcessor.xml";
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
         CutsselecTable.push_back(string("Veto on Loose Electrons"));
         CutsselecTable.push_back(string("Veto on extra Loose Muons"));
         CutsselecTable.push_back(string("At least 3 Jets"));
-        CutsselecTable.push_back(string("At least 1 CSVv2M Jet"));
+        CutsselecTable.push_back(string("At least 2 CSVv2M Jet"));
     }
     else if(channel == "_El")
     {
@@ -133,11 +133,11 @@ int main(int argc, char *argv[])
         CutsselecTable.push_back(string("At least 1 PV"));
         CutsselecTable.push_back(string("Event cleaning"));
         CutsselecTable.push_back(string("Trigger"));
-        CutsselecTable.push_back(string("Exactly 1 Medium Electron"));
+        CutsselecTable.push_back(string("Exactly 1 Tight Electron"));
         CutsselecTable.push_back(string("Veto on Loose Muons"));
         CutsselecTable.push_back(string("Veto on extra Loose Electrons"));
         CutsselecTable.push_back(string("At least 3 Jets"));
-        CutsselecTable.push_back(string("At least 1 CSVv2M Jet"));
+        CutsselecTable.push_back(string("At least 2 CSVv2M Jet"));
     }
     else if(channel == "_All")
     {
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
         CutsselecTable.push_back(string("Veto on Loose opposite flavour leptons"));
         CutsselecTable.push_back(string("Veto on extra (loose) same flavour leptons"));
         CutsselecTable.push_back(string("At least 3 Jets"));
-        CutsselecTable.push_back(string("At least 1 CSVv2M Jet"));
+        CutsselecTable.push_back(string("At least 2 CSVv2M Jet"));
     }
     
     
@@ -288,7 +288,7 @@ int main(int argc, char *argv[])
     cutFlowPlot->Draw("Cut Flow", 0, false, true, false, 100);
     cutFlowPlot->Write(outfile, "CutFlow", true, pathPNG, "png");
     //(bool mergeTT, bool mergeQCD, bool mergeW, bool mergeZ, bool mergeST)
-    selecTable.TableCalculator(true, true, true, true, true);
+    selecTable.TableCalculator(true, true, true, true, true,true,true);
 
     // Options : WithError (false), writeMerged (true), useBookTabs (false), addRawsyNumbers (false), addEfficiencies
     // (false), addTotalEfficiencies (false), writeLandscape (false)

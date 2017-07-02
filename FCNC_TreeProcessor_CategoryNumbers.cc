@@ -965,8 +965,8 @@ void MakeTotalSystErrorBand_Distributions(string outfilename, vector< string > s
     //Define rate uncertainties
     Double_t LumiUncPlus = 0.026;
     Double_t LumiUncMinus = 0.026;
-    Double_t XSecTTJetPlus = 0.055;
-    Double_t XSecTTJetMinus = 0.055;
+    Double_t XSecTTJetPlus = 0.13;
+    Double_t XSecTTJetMinus = 0.13;
     Double_t XSecOtherPlus = 0.1;
     Double_t XSecOtherMinus = 0.1;
 
