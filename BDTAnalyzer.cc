@@ -373,6 +373,22 @@ TBranch        *b_MVA_m3l;   //!
 
 
 map<string,TH1F*> histo1DMTW;
+TH1F*  hist_BDT_JES_nom_sig = new TH1F("hist_BDT_JES_nom_sig","Effect of JES systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_JES_nom_bkg = new TH1F("hist_BDT_JES_nom_bkg","Effect of JES systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_JES_up_sig = new TH1F("hist_BDT_JES_up_sig","Effect of JES systematics on the BDT: Signal:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_JES_up_bkg = new TH1F("hist_BDT_JES_up_bkg","Effect of JES systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_JES_down_sig = new TH1F("hist_BDT_JES_down_sig","Effect of JES systematics on the BDT: Background:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_JES_down_bkg = new TH1F("hist_BDT_JES_down_bkg","Effect of JES systematics on the BDT: Background:BDT:Nb. of evts", nbin,-1.,1.);
+
+TH1F*  hist_BDT_JER_nom_sig = new TH1F("hist_BDT_JER_nom_sig","Effect of JER systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_JER_nom_bkg = new TH1F("hist_BDT_JER_nom_bkg","Effect of JER systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_JER_up_sig = new TH1F("hist_BDT_JER_up_sig","Effect of JER systematics on the BDT: Signal:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_JER_up_bkg = new TH1F("hist_BDT_JER_up_bkg","Effect of JER systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
+TH1F*  hist_BDT_JER_down_sig = new TH1F("hist_BDT_JER_down_sig","Effect of JER systematics on the BDT: Background:BDT:Nb. of evts" ,nbin,-1.,1.);
+TH1F*  hist_BDT_JER_down_bkg = new TH1F("hist_BDT_JER_down_bkg","Effect of JER systematics on the BDT: Background:BDT:Nb. of evts", nbin,-1.,1.);
+
+
+
 TH1F*  hist_BDT_puSF_nom_sig = new TH1F("hist_BDT_puSF_nom_sig","Effect of pile up systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
 TH1F*  hist_BDT_puSF_nom_bkg = new TH1F("hist_BDT_puSF_nom_bkg","Effect of pile up systematics on the BDT: Background;BDT;Nb. of evts", nbin,-1.,1.);
 TH1F*  hist_BDT_puSF_up_sig = new TH1F("hist_BDT_puSF_up_sig","Effect of pile up systematics on the BDT: Signal:BDT:Nb. of evts" ,nbin,-1.,1.);
@@ -485,61 +501,61 @@ TH1F*  hist_mWt_btagSF_cferr1_nom_sig = new TH1F("hist_mWt_btagSF_cferr1_nom_sig
 TH1F*  hist_mWt_btagSF_cferr1_nom_bkg = new TH1F("hist_mWt_btagSF_cferr1_nom_bkg","Effect of btag SF cferr1 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_cferr1_up_sig = new TH1F("hist_mWt_btagSF_cferr1_up_sig","Effect of btag SF cferr1 systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_cferr1_up_bkg = new TH1F("hist_mWt_btagSF_cferr1_up_bkg","Effect of btag SF cferr1 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_cferr1_down_sig = new TH1F("hist_mWt_cferr1_btagSF_down_sig","Effect of btag SF cferr1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_cferr1_down_bkg = new TH1F("hist_mWt_cferr1_btagSF_down_bkg","Effect of btag SF cferr1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr1_down_sig = new TH1F("hist_mWt_btagSF_cferr1_btagSF_down_sig","Effect of btag SF cferr1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr1_down_bkg = new TH1F("hist_mWt_btagSF_cferr1_btagSF_down_bkg","Effect of btag SF cferr1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
 
 TH1F*  hist_mWt_btagSF_cferr2_nom_sig = new TH1F("hist_mWt_btagSF_cferr2_nom_sig","Effect of btag SF cferr2 systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_cferr2_nom_bkg = new TH1F("hist_mWt_btagSF_cferr2_nom_bkg","Effect of btag SF cferr2 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_cferr2_up_sig = new TH1F("hist_mWt_btagSF_cferr2_up_sig","Effect of btag SF cferr2 systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_cferr2_up_bkg = new TH1F("hist_mWt_btagSF_cferr2_up_bkg","Effect of btag SF cferr2 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_cferr2_down_sig = new TH1F("hist_mWt_cferr2_btagSF_down_sig","Effect of btag SF cferr2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_cferr2_down_bkg = new TH1F("hist_mWt_cferr2_btagSF_down_bkg","Effect of btag SF cferr2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr2_down_sig = new TH1F("hist_mWt_btagSF_cferr2_btagSF_down_sig","Effect of btag SF cferr2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_cferr2_down_bkg = new TH1F("hist_mWt_btagSF_cferr2_btagSF_down_bkg","Effect of btag SF cferr2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
 
 
 TH1F*  hist_mWt_btagSF_hf_nom_sig = new TH1F("hist_mWt_btagSF_hf_nom_sig","Effect of btag SF hf systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_hf_nom_bkg = new TH1F("hist_mWt_btagSF_hf_nom_bkg","Effect of btag SF hf systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_hf_up_sig = new TH1F("hist_mWt_btagSF_hf_up_sig","Effect of btag SF hf systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_hf_up_bkg = new TH1F("hist_mWt_btagSF_hf_up_bkg","Effect of btag SF hf systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_hf_down_sig = new TH1F("hist_mWt_hf_btagSF_down_sig","Effect of btag SF hf systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_hf_down_bkg = new TH1F("hist_mWt_hf_btagSF_down_bkg","Effect of btag SF hf systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hf_down_sig = new TH1F("hist_mWt_btagSF_hf_btagSF_down_sig","Effect of btag SF hf systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hf_down_bkg = new TH1F("hist_mWt_btagSF_hf_down_bkg","Effect of btag SF hf systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
 
 TH1F*  hist_mWt_btagSF_hfstats1_nom_sig = new TH1F("hist_mWt_btagSF_hfstats1_nom_sig","Effect of btag SF hfstats1 systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_hfstats1_nom_bkg = new TH1F("hist_mWt_btagSF_hfstats1_nom_bkg","Effect of btag SF hfstats1 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_hfstats1_up_sig = new TH1F("hist_mWt_btagSF_hfstats1_up_sig","Effect of btag SF hfstats1 systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_hfstats1_up_bkg = new TH1F("hist_mWt_btagSF_hfstats1_up_bkg","Effect of btag SF hfstats1 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_hfstats1_down_sig = new TH1F("hist_mWt_hfstats1_btagSF_down_sig","Effect of btag SF hfstats1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_hfstats1_down_bkg = new TH1F("hist_mWt_hfstats1_btagSF_down_bkg","Effect of btag SF hfstats1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats1_down_sig = new TH1F("hist_mWt_btagSF_hfstats1_btagSF_down_sig","Effect of btag SF hfstats1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats1_down_bkg = new TH1F("hist_mWt_btagSF_hfstats1_btagSF_down_bkg","Effect of btag SF hfstats1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
 
 
 TH1F*  hist_mWt_btagSF_hfstats2_nom_sig = new TH1F("hist_mWt_btagSF_hfstats2_nom_sig","Effect of btag SF hfstats2 systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_hfstats2_nom_bkg = new TH1F("hist_mWt_btagSF_hfstats2_nom_bkg","Effect of btag SF hfstats2 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_hfstats2_up_sig = new TH1F("hist_mWt_btagSF_hfstats2_up_sig","Effect of btag SF hfstats2 systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_hfstats2_up_bkg = new TH1F("hist_mWt_btagSF_hfstats2_up_bkg","Effect of btag SF hfstats2 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_hfstats2_down_sig = new TH1F("hist_mWt_hfstats2_btagSF_down_sig","Effect of btag SF hfstats2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_hfstats2_down_bkg = new TH1F("hist_mWt_hfstats2_btagSF_down_bkg","Effect of btag SF hfstats2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats2_down_sig = new TH1F("hist_mWt_btagSF_hfstats2_btagSF_down_sig","Effect of btag SF hfstats2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_hfstats2_down_bkg = new TH1F("hist_mWt_btagSF_hfstats2_btagSF_down_bkg","Effect of btag SF hfstats2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
 
 
 TH1F*  hist_mWt_btagSF_lf_nom_sig = new TH1F("hist_mWt_btagSF_lf_nom_sig","Effect of btag SF lf systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_lf_nom_bkg = new TH1F("hist_mWt_btagSF_lf_nom_bkg","Effect of btag SF lf systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_lf_up_sig = new TH1F("hist_mWt_btagSF_lf_up_sig","Effect of btag SF lf systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_lf_up_bkg = new TH1F("hist_mWt_btagSF_lf_up_bkg","Effect of btag SF lf systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_lf_down_sig = new TH1F("hist_mWt_lf_btagSF_down_sig","Effect of btag SF lf systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_lf_down_bkg = new TH1F("hist_mWt_lf_btagSF_down_bkg","Effect of btag SF lf systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lf_down_sig = new TH1F("hist_mWt_btagSF_lf_down_sig","Effect of btag SF lf systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lf_down_bkg = new TH1F("hist_mWt_btagSF_lf_down_bkg","Effect of btag SF lf systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
 
 TH1F*  hist_mWt_btagSF_lfstats1_nom_sig = new TH1F("hist_mWt_btagSF_lfstats1_nom_sig","Effect of btag SF lfstats1 systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_lfstats1_nom_bkg = new TH1F("hist_mWt_btagSF_lfstats1_nom_bkg","Effect of btag SF lfstats1 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_lfstats1_up_sig = new TH1F("hist_mWt_btagSF_lfstats1_up_sig","Effect of btag SF lfstats1 systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_lfstats1_up_bkg = new TH1F("hist_mWt_btagSF_lfstats1_up_bkg","Effect of btag SF lfstats1 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_lfstats1_down_sig = new TH1F("hist_mWt_lfstats1_btagSF_down_sig","Effect of btag SF lfstats1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_lfstats1_down_bkg = new TH1F("hist_mWt_lfstats1_btagSF_down_bkg","Effect of btag SF lfstats1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats1_down_sig = new TH1F("hist_mWt_btagS_lfstats1_down_sig","Effect of btag SF lfstats1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats1_down_bkg = new TH1F("hist_mWt_btagS_lfstats1F_down_bkg","Effect of btag SF lfstats1 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
 
 
 TH1F*  hist_mWt_btagSF_lfstats2_nom_sig = new TH1F("hist_mWt_btagSF_lfstats2_nom_sig","Effect of btag SF lfstats2 systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_lfstats2_nom_bkg = new TH1F("hist_mWt_btagSF_lfstats2_nom_bkg","Effect of btag SF lfstats2 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_lfstats2_up_sig = new TH1F("hist_mWt_btagSF_lfstats2_up_sig","Effect of btag SF lfstats2 systematics on the m_{T}(W): DD non prompt lepton:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
 TH1F*  hist_mWt_btagSF_lfstats2_up_bkg = new TH1F("hist_mWt_btagSF_lfstats2_up_bkg","Effect of btag SF lfstats2 systematics on the m_{T}(W): Background;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_lfstats2_down_sig = new TH1F("hist_mWt_lfstats2_btagSF_down_sig","Effect of btag SF lfstats2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
-TH1F*  hist_mWt_btagSF_lfstats2_down_bkg = new TH1F("hist_mWt_lfstats2_btagSF_down_bkg","Effect of btag SF lfstats2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats2_down_sig = new TH1F("hist_mWt_btagS_lfstats2_btagSF_down_sig","Effect of btag SF lfstats2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_btagSF_lfstats2_down_bkg = new TH1F("hist_mWt_btagS_lfstats2_btagSF_down_bkg","Effect of btag SF lfstats2 systematics on the m_{T}(W): Background:m_{T}(W):Nb. of evts", nbinMTW,0, endMTW);
 
 
 
@@ -929,8 +945,9 @@ Int_t main(Int_t argc, char* argv[]){
         
         if(doMTWtemplate &&MVA_region == 2 && MVA_channel == 0) { WZregionEntriesuuu++;}
        // MVA_weight_nloSF = 1.;
-        weight = MVA_Luminosity /MVA_EqLumi;
-        if(!isData && !onlynomforsys && isys != 0 && (systematic.find("JES")==std::string::npos) && (systematic.find("JER")==std::string::npos) ){
+        weight = 1.;
+        if(!isData && dataSetName.find("fake")==std::string::npos)  weight = MVA_Luminosity /MVA_EqLumi;
+        if(!isData && dataSetName.find("fake")==std::string::npos && !onlynomforsys && isys != 0 && (systematic.find("JES")==std::string::npos) && (systematic.find("JER")==std::string::npos) ){
           //cout <<  "getting weight for " << systematic << endl;
           if(systematic.find("puSFUp")) weight *= MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF;
           else if(systematic.find("puSFDown")) weight *= MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF;
@@ -956,25 +973,15 @@ Int_t main(Int_t argc, char* argv[]){
           else if(systematic.find("btagSF_lfstats1Down")) weight *=MVA_weight_puSF * MVA_weight_electronSF * MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF;
           
         }
-        else  if(!isData && !onlynomforsys && isys != 0 && (systematic.find("JES")!=std::string::npos ||systematic.find("JER")!=std::string::npos) ) weight *= MVA_weight_nom;
         else if(isData ) weight = 1.;
-        else if(dataSetName.find("fakes")!=std::string::npos) weight = MVA_weight_nom;
         else weight *= MVA_weight_nom;
-        //else if((isys == 0 && !isData) || dataSetName.find("fake")!=std::string::npos ){ weight =MVA_weight_nom; } //CHECK ME
-      // else  if( isData){ weight = 1.;}
-        
-       // if(!isData &&   dataSetName.find("fake")==std::string::npos) weight *=MVA_Luminosity /MVA_EqLumi;
-       // if(dataSetName.find("fake")!=std::string::npos) weight =MVA_weight_nom;
-        //if(Luminosity/MVA_Luminosity != 1. ) cout << "lumi "  << Luminosity << " while tuples are made with " <<MVA_Luminosity << endl;
-        
-       // if(MVA_Luminosity != 0 && !isData) weight = (weight * Luminosity)/MVA_Luminosity;
-       // if(!datafound){ Luminosity =MVA_Luminosity; cout << "lumi set to " << Luminosity << endl; }
-      //   if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ weight *= 0.120 * 0.0001 ;}
-       //  if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ weight *= 0.265 * 0.0001;}
-        
+    
+
+       if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ weight *= 0.545 ;}
+       if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ weight *= 0.590;}
+       if(dataSetName.find("WZ")!=std::string::npos ){ weight *=0.841 ;}
         //if(dataSetName.find("fake")!=std::string::npos) weight *= 0.0001;
         
-       // cout << "weight " << weight << endl;
         if(!doMTWtemplate){
           if(MVA_channel== 0) 		{hist_uuu->Fill( MVA_BDT, weight);}
           else if(MVA_channel== 1) {hist_uue->Fill( MVA_BDT, weight);}
@@ -990,8 +997,8 @@ Int_t main(Int_t argc, char* argv[]){
         
         // for MS plots
         Double_t weightMSPlot = weight;
-        if(isData) weightMSPlot = Luminosity;
-        /// Fill plots
+        if(isData || dataSetName.find("fake")!=std::string::npos) weightMSPlot *= MVA_Luminosity;
+         /// Fill plots
         if(doPDFunc && !doMTWtemplate){
           if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos) CalculatePDFWeight(dataSetName, MVA_BDT,MVA_weight_nom, MVA_channel);
         }
@@ -999,102 +1006,117 @@ Int_t main(Int_t argc, char* argv[]){
           Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
        }
         
+        if(systematic.find("JESDown")!=std::string::npos && dataSetName.find("FCNC")!=std::string::npos) hist_BDT_JES_down_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+        if(systematic.find("JESUp")!=std::string::npos && dataSetName.find("FCNC")!=std::string::npos) hist_BDT_JES_up_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+        if(systematic.find("JERDown")!=std::string::npos && dataSetName.find("FCNC")!=std::string::npos) hist_BDT_JER_down_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+        if(systematic.find("JERUp")!=std::string::npos && dataSetName.find("FCNC")!=std::string::npos) hist_BDT_JER_up_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+        if(isys ==0 && dataSetName.find("FCNC")!=std::string::npos) hist_BDT_JES_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+        if(isys ==0 && dataSetName.find("FCNC")!=std::string::npos) hist_BDT_JER_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+        
+        if(systematic.find("JESDown")!=std::string::npos && dataSetName.find("FCNC")==std::string::npos) hist_BDT_JES_down_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+        if(systematic.find("JESUp")!=std::string::npos && dataSetName.find("FCNC")==std::string::npos) hist_BDT_JES_up_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+        if(systematic.find("JERDown")!=std::string::npos && dataSetName.find("FCNC")==std::string::npos) hist_BDT_JER_down_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+        if(systematic.find("JERUp")!=std::string::npos && dataSetName.find("FCNC")==std::string::npos) hist_BDT_JER_up_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+        if(isys ==0 && dataSetName.find("FCNC")==std::string::npos) hist_BDT_JES_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+        if(isys ==0 && dataSetName.find("FCNC")==std::string::npos) hist_BDT_JER_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+        
+        
         //cout << "booleans " <<  PlotSystematics << " "<< !isData << " " <<  !doMTWtemplate << endl;
         if(PlotSystematics && !isData && dataSetName.find("fake")==std::string::npos && !doMTWtemplate && !doSystematics){
           if(dataSetName.find("FCNC")!=std::string::npos){
-            hist_BDT_puSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_puSF_up_sig->Fill(MVA_BDT, MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_BDT_puSF_down_sig->Fill(MVA_BDT, MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_puSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_puSF_up_sig->Fill(MVA_BDT, MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_puSF_down_sig->Fill(MVA_BDT, MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
             
-            hist_BDT_electronSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_electronSF_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_BDT_electronSF_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_electronSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_electronSF_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_electronSF_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_BDT_muonSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_muonSF_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF);
-            hist_BDT_muonSF_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF);
+            hist_BDT_muonSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_muonSF_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_muonSF_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
             
-            hist_BDT_btagSF_cferr1_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_cferr1_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_BDT_btagSF_cferr1_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_cferr1_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_cferr1_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_cferr1_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_BDT_btagSF_cferr2_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_cferr2_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_BDT_btagSF_cferr2_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_cferr2_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_cferr2_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_cferr2_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_BDT_btagSF_hf_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_hf_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_BDT_btagSF_hf_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_hf_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_hf_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_hf_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_BDT_btagSF_hfstats1_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_hfstats1_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_BDT_btagSF_hfstats1_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_hfstats1_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_hfstats1_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_hfstats1_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_BDT_btagSF_hfstats2_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_hfstats2_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_BDT_btagSF_hfstats2_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_hfstats2_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_hfstats2_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_hfstats2_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_BDT_btagSF_lf_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_lf_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_BDT_btagSF_lf_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_lf_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_lf_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_lf_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_BDT_btagSF_lfstats1_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_lfstats1_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_BDT_btagSF_lfstats1_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_lfstats1_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_lfstats1_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_lfstats1_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_BDT_btagSF_lfstats2_nom_sig->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_lfstats2_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF);
-            hist_BDT_btagSF_lfstats2_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_lfstats2_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_lfstats2_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_lfstats2_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
           }
           else{
             
-            hist_BDT_puSF_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_puSF_up_bkg->Fill(MVA_BDT, MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_BDT_puSF_down_bkg->Fill(MVA_BDT, MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_puSF_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_puSF_up_bkg->Fill(MVA_BDT, MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_puSF_down_bkg->Fill(MVA_BDT, MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
             
-            hist_BDT_electronSF_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_electronSF_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_BDT_electronSF_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_electronSF_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_electronSF_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_electronSF_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_BDT_muonSF_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_muonSF_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF);
-            hist_BDT_muonSF_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF);
+            hist_BDT_muonSF_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_muonSF_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_muonSF_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
             
-            hist_BDT_btagSF_cferr1_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_cferr1_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_BDT_btagSF_cferr1_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_cferr1_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_cferr1_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_cferr1_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_BDT_btagSF_cferr2_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_cferr2_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_BDT_btagSF_cferr2_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_cferr2_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_cferr2_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_cferr2_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_BDT_btagSF_hf_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_hf_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_BDT_btagSF_hf_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_hf_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_hf_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_hf_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_BDT_btagSF_hfstats1_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_hfstats1_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_BDT_btagSF_hfstats1_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_hfstats1_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_hfstats1_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_hfstats1_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_BDT_btagSF_hfstats2_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_hfstats2_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_BDT_btagSF_hfstats2_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_hfstats2_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_hfstats2_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_hfstats2_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_BDT_btagSF_lf_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_lf_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_BDT_btagSF_lf_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_lf_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_lf_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_lf_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_BDT_btagSF_lfstats1_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_lfstats1_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_BDT_btagSF_lfstats1_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_lfstats1_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_lfstats1_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_lfstats1_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_BDT_btagSF_lfstats2_nom_bkg->Fill(MVA_BDT,MVA_weight_nom);
-            hist_BDT_btagSF_lfstats2_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF);
-            hist_BDT_btagSF_lfstats2_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_BDT_btagSF_lfstats2_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_lfstats2_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_lfstats2_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
           }
           
           
@@ -1102,98 +1124,98 @@ Int_t main(Int_t argc, char* argv[]){
         else if(PlotSystematics && !isData && dataSetName.find("FCNC")==std::string::npos && doMTWtemplate && !doSystematics){
           
            if(dataSetName.find("fake")!=std::string::npos){
-            hist_mWt_puSF_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_puSF_up_sig->Fill(MVA_mWt, MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_mWt_puSF_down_sig->Fill(MVA_mWt, MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_puSF_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_puSF_up_sig->Fill(MVA_mWt, MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_puSF_down_sig->Fill(MVA_mWt, MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
             
-            hist_mWt_electronSF_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_electronSF_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_mWt_electronSF_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_electronSF_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_electronSF_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_electronSF_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_mWt_muonSF_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_muonSF_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF);
-            hist_mWt_muonSF_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF);
+            hist_mWt_muonSF_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_muonSF_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_muonSF_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
              
-             hist_mWt_btagSF_cferr1_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-             hist_mWt_btagSF_cferr1_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF);
-             hist_mWt_btagSF_cferr1_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF);
+             hist_mWt_btagSF_cferr1_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+             hist_mWt_btagSF_cferr1_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+             hist_mWt_btagSF_cferr1_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
              
-             hist_mWt_btagSF_cferr2_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-             hist_mWt_btagSF_cferr2_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF);
-             hist_mWt_btagSF_cferr2_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF);
+             hist_mWt_btagSF_cferr2_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+             hist_mWt_btagSF_cferr2_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+             hist_mWt_btagSF_cferr2_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
            
-             hist_mWt_btagSF_hf_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-             hist_mWt_btagSF_hf_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF);
-             hist_mWt_btagSF_hf_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF);
+             hist_mWt_btagSF_hf_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+             hist_mWt_btagSF_hf_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+             hist_mWt_btagSF_hf_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
            
-             hist_mWt_btagSF_hfstats1_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-             hist_mWt_btagSF_hfstats1_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF);
-             hist_mWt_btagSF_hfstats1_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF);
+             hist_mWt_btagSF_hfstats1_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+             hist_mWt_btagSF_hfstats1_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+             hist_mWt_btagSF_hfstats1_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
            
-             hist_mWt_btagSF_hfstats2_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-             hist_mWt_btagSF_hfstats2_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF);
-             hist_mWt_btagSF_hfstats2_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF);
+             hist_mWt_btagSF_hfstats2_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+             hist_mWt_btagSF_hfstats2_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+             hist_mWt_btagSF_hfstats2_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
              
-             hist_mWt_btagSF_lf_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-             hist_mWt_btagSF_lf_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF);
-             hist_mWt_btagSF_lf_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF);
+             hist_mWt_btagSF_lf_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+             hist_mWt_btagSF_lf_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+             hist_mWt_btagSF_lf_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
              
-             hist_mWt_btagSF_lfstats1_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-             hist_mWt_btagSF_lfstats1_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF);
-             hist_mWt_btagSF_lfstats1_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF);
+             hist_mWt_btagSF_lfstats1_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+             hist_mWt_btagSF_lfstats1_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+             hist_mWt_btagSF_lfstats1_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
              
-             hist_mWt_btagSF_lfstats2_nom_sig->Fill(MVA_mWt,MVA_weight_nom);
-             hist_mWt_btagSF_lfstats2_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF);
-             hist_mWt_btagSF_lfstats2_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF);
+             hist_mWt_btagSF_lfstats2_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+             hist_mWt_btagSF_lfstats2_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF*MVA_Luminosity /MVA_EqLumi ); 
+             hist_mWt_btagSF_lfstats2_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
              
             // cout << "filling" <<endl;
           }
           else{
-            hist_mWt_puSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_puSF_up_bkg->Fill(MVA_mWt,MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_mWt_puSF_down_bkg->Fill(MVA_mWt,MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_puSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_puSF_up_bkg->Fill(MVA_mWt,MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_puSF_down_bkg->Fill(MVA_mWt,MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_mWt_electronSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_electronSF_up_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_mWt_electronSF_down_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_electronSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_electronSF_up_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_electronSF_down_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_mWt_muonSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_muonSF_up_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF);
-            hist_mWt_muonSF_down_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF);
+            hist_mWt_muonSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_muonSF_up_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_muonSF_down_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
             
-            hist_mWt_btagSF_cferr1_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_btagSF_cferr1_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_mWt_btagSF_cferr1_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_btagSF_cferr1_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_cferr1_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_cferr1_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_mWt_btagSF_cferr2_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_btagSF_cferr2_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_mWt_btagSF_cferr2_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_btagSF_cferr2_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_cferr2_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_cferr2_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_mWt_btagSF_hf_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_btagSF_hf_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_mWt_btagSF_hf_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_btagSF_hf_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_hf_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_hf_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_mWt_btagSF_hfstats1_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_btagSF_hfstats1_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_mWt_btagSF_hfstats1_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_btagSF_hfstats1_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_hfstats1_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_hfstats1_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_mWt_btagSF_hfstats2_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_btagSF_hfstats2_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_mWt_btagSF_hfstats2_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_btagSF_hfstats2_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_hfstats2_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_hfstats2_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_mWt_btagSF_lf_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_btagSF_lf_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_mWt_btagSF_lf_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_btagSF_lf_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_lf_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_lf_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_mWt_btagSF_lfstats1_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_btagSF_lfstats1_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF);
-            hist_mWt_btagSF_lfstats1_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_btagSF_lfstats1_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_lfstats1_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_lfstats1_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
-            hist_mWt_btagSF_lfstats2_nom_bkg->Fill(MVA_mWt,MVA_weight_nom);
-            hist_mWt_btagSF_lfstats2_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF);
-            hist_mWt_btagSF_lfstats2_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF);
+            hist_mWt_btagSF_lfstats2_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_lfstats2_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_lfstats2_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
             
             // cout << "filling" <<endl;
           }
@@ -1218,9 +1240,9 @@ Int_t main(Int_t argc, char* argv[]){
         }
         
        
-        if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos)&& isys == 0 && doMTWtemplate) histo1DMTW["MTW_WZ"]->Fill(MVA_mWt2, weight);
-        if(dataSetName.find("fake")!=std::string::npos && isys == 0 && doMTWtemplate) histo1DMTW["MTW_fakes"]->Fill(MVA_mWt2, weight);
-        if(dataSetName.find("TT_FCNC")!=std::string::npos && isys == 0 && doMTWtemplate) histo1DMTW["MTW_TT_FCNC"]->Fill(MVA_mWt2, weight);
+        if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos)&& isys == 0 && doMTWtemplate) histo1DMTW["MTW_WZ"]->Fill(MVA_mWt, weight);
+        if(dataSetName.find("fake")!=std::string::npos && isys == 0 && doMTWtemplate) histo1DMTW["MTW_fakes"]->Fill(MVA_mWt, weight);
+        if(dataSetName.find("TT_FCNC")!=std::string::npos && isys == 0 && doMTWtemplate) histo1DMTW["MTW_TT_FCNC"]->Fill(MVA_mWt, weight);
         
 
         
@@ -1870,10 +1892,10 @@ Int_t main(Int_t argc, char* argv[]){
        hist_BDT_btagSF_lfstats1_down_bkg->Draw("e same histo");
        legsig->Draw("same");
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_sig.png");
+       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_bkg.png");
        tempCanvas->SetLogy();
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_sig_LogY.png");
+       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_bkg_LogY.png");
        
        tempCanvas = TCanvasCreator(hist_BDT_btagSF_lfstats2_nom_sig, "");
        hist_BDT_btagSF_lfstats2_nom_sig->Draw("e histo");
@@ -1881,10 +1903,10 @@ Int_t main(Int_t argc, char* argv[]){
        hist_BDT_btagSF_lfstats2_down_sig->Draw("e same histo");
        legsig->Draw("same");
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_bkg.png");
+       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_sig.png");
        tempCanvas->SetLogy();
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_bkg_LogY.png");
+       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_sig_LogY.png");
        
        tempCanvas = TCanvasCreator(hist_BDT_btagSF_lfstats2_nom_bkg, "");
        hist_BDT_btagSF_lfstats2_nom_bkg->Draw("e histo");
@@ -1892,10 +1914,10 @@ Int_t main(Int_t argc, char* argv[]){
        hist_BDT_btagSF_lfstats2_down_bkg->Draw("e same histo");
        legsig->Draw("same");
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats2_nom_sig.png");
+       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats2_nom_bkg.png");
        tempCanvas->SetLogy();
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats2_nom_sig_LogY.png");
+       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats2_nom_bkg_LogY.png");
        
        
        tempCanvas = TCanvasCreator(hist_BDT_btagSF_hf_nom_sig, "");
@@ -1927,10 +1949,10 @@ Int_t main(Int_t argc, char* argv[]){
        hist_BDT_btagSF_hfstats1_down_bkg->Draw("e same histo");
        legsig->Draw("same");
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_sig.png");
+       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_bkg.png");
        tempCanvas->SetLogy();
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_sig_LogY.png");
+       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_bkg_LogY.png");
        
        tempCanvas = TCanvasCreator(hist_BDT_btagSF_hfstats2_nom_sig, "");
        hist_BDT_btagSF_hfstats2_nom_sig->Draw("e histo");
@@ -1938,10 +1960,10 @@ Int_t main(Int_t argc, char* argv[]){
        hist_BDT_btagSF_hfstats2_down_sig->Draw("e same histo");
        legsig->Draw("same");
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_bkg.png");
+       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_sig.png");
        tempCanvas->SetLogy();
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_bkg_LogY.png");
+       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_sig_LogY.png");
        
        tempCanvas = TCanvasCreator(hist_BDT_btagSF_hfstats2_nom_bkg, "");
        hist_BDT_btagSF_hfstats2_nom_bkg->Draw("e histo");
@@ -1949,10 +1971,10 @@ Int_t main(Int_t argc, char* argv[]){
        hist_BDT_btagSF_hfstats2_down_bkg->Draw("e same histo");
        legsig->Draw("same");
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats2_nom_sig.png");
+       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats2_nom_bkg.png");
        tempCanvas->SetLogy();
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats2_nom_sig_LogY.png");
+       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats2_nom_bkg_LogY.png");
        
 
      }
@@ -2284,10 +2306,10 @@ Int_t main(Int_t argc, char* argv[]){
        hist_mWt_btagSF_lfstats1_down_bkg->Draw("e same histo");
        legsig->Draw("same");
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats1_nom_sig.png");
+       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats1_nom_bkg.png");
        tempCanvas->SetLogy();
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats1_nom_sig_LogY.png");
+       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats1_nom_bkg_LogY.png");
        
        tempCanvas = TCanvasCreator(hist_mWt_btagSF_lfstats2_nom_sig, "");
        hist_mWt_btagSF_lfstats2_nom_sig->Draw("e histo");
@@ -2295,10 +2317,10 @@ Int_t main(Int_t argc, char* argv[]){
        hist_mWt_btagSF_lfstats2_down_sig->Draw("e same histo");
        legsig->Draw("same");
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats1_nom_bkg.png");
+       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats2_nom_sig.png");
        tempCanvas->SetLogy();
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats1_nom_bkg_LogY.png");
+       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats2_nom_sig_LogY.png");
        
        tempCanvas = TCanvasCreator(hist_mWt_btagSF_lfstats2_nom_bkg, "");
        hist_mWt_btagSF_lfstats2_nom_bkg->Draw("e histo");
@@ -2306,10 +2328,10 @@ Int_t main(Int_t argc, char* argv[]){
        hist_mWt_btagSF_lfstats2_down_bkg->Draw("e same histo");
        legsig->Draw("same");
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats2_nom_sig.png");
+       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats2_nom_bkg.png");
        tempCanvas->SetLogy();
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats2_nom_sig_LogY.png");
+       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats2_nom_bkg_LogY.png");
        
        
        tempCanvas = TCanvasCreator(hist_mWt_btagSF_hf_nom_sig, "");
@@ -2341,10 +2363,10 @@ Int_t main(Int_t argc, char* argv[]){
        hist_mWt_btagSF_hfstats1_down_bkg->Draw("e same histo");
        legsig->Draw("same");
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats1_nom_sig.png");
+       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats1_nom_bkg.png");
        tempCanvas->SetLogy();
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats1_nom_sig_LogY.png");
+       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats1_nom_bkg_LogY.png");
        
        tempCanvas = TCanvasCreator(hist_mWt_btagSF_hfstats2_nom_sig, "");
        hist_mWt_btagSF_hfstats2_nom_sig->Draw("e histo");
@@ -2352,10 +2374,10 @@ Int_t main(Int_t argc, char* argv[]){
        hist_mWt_btagSF_hfstats2_down_sig->Draw("e same histo");
        legsig->Draw("same");
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats1_nom_bkg.png");
+       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats2_nom_sig.png");
        tempCanvas->SetLogy();
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats1_nom_bkg_LogY.png");
+       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats2_nom_sig_LogY.png");
        
        tempCanvas = TCanvasCreator(hist_mWt_btagSF_hfstats2_nom_bkg, "");
        hist_mWt_btagSF_hfstats2_nom_bkg->Draw("e histo");
@@ -2363,10 +2385,10 @@ Int_t main(Int_t argc, char* argv[]){
        hist_mWt_btagSF_hfstats2_down_bkg->Draw("e same histo");
        legsig->Draw("same");
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats2_nom_sig.png");
+       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats2_nom_bkg.png");
        tempCanvas->SetLogy();
        tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats2_nom_sig_LogY.png");
+       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats2_nom_bkg_LogY.png");
        
        
        
@@ -2415,20 +2437,20 @@ Int_t main(Int_t argc, char* argv[]){
           {
             if(it->first.find(channellist[iChan].c_str())==std::string::npos) continue;
             if(it->first.find(splitname.c_str())==std::string::npos) continue;
-            
-        //    cout << "looking at " << it->first << endl;
+            if(it->first.find("data")!=std::string::npos) continue;
+           cout << "looking at " << it->first << endl;
             TH1F *temp = it->second;
            
-          /* if(it->first.find("fake")!=std::string::npos) {
+        /*  if(it->first.find("fake")!=std::string::npos) {
              // cout << "filling fake " << tempfake << " " << temp << endl;
               tempfakes = (TH1F*) temp->Clone("");
              
             }
-            else*/ if(it->first.find("T_FCNC")!=std::string::npos) {
+            else */if(it->first.find("T_FCNC")!=std::string::npos) {
               if(tempSignal == 0){ tempSignal = (TH1F*) temp->Clone(); title =  temp->GetTitle();}
               else tempSignal->Add(temp);
             }
-            else if(it->first.find("fake")==std::string::npos && it->first.find("T_FCNC")==std::string::npos){
+            else if(it->first.find("T_FCNC")==std::string::npos){
               if(tempBKG == 0) tempBKG = (TH1F*) temp->Clone();
               else tempBKG->Add(temp);
             }
@@ -2436,7 +2458,7 @@ Int_t main(Int_t argc, char* argv[]){
           }
           //cout << "filled histos " << endl;
           if(tempBKG == 0) cout << "ERROR tempBKG is null" << endl ;
-//          if(tempfake == 0) cout << "ERROR tempfake is null" << endl ;
+         // if(tempfakes == 0) cout << "ERROR tempfake is null" << endl ;
           if(tempSignal == 0) cout << "ERROR tempSignal is null" << endl ;
           
           // tempfake->SetLineColor(kGreen);
@@ -2475,7 +2497,7 @@ Int_t main(Int_t argc, char* argv[]){
           Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
           TLegend *leg = new TLegend(xl1,yl1,xl2,yl2);
           leg->AddEntry(tempSignal,"FCNC: ST + TT","P");   // h1 and h2 are histogram pointers
-          leg->AddEntry(tempBKG,"SM bkg (no fakes)","P");
+          leg->AddEntry(tempBKG,"SM bkg","P");
           //leg->AddEntry(tempfake,"DD non prompt","L");
           
           TCanvas* tempCanvas = TCanvasCreator(tempBKG,"Normalised MVA distribution" );
@@ -3187,7 +3209,7 @@ void Init1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
     
     output_histo_name = "BDT_"+dataSetName +"_"+decaystring+"_"+systematic;
     histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,-1.,1.);
-    
+    /*
     if(!istoppair){
       output_histo_name = "mlb_"+dataSetName + "_" +decaystring+"_"+systematic;
       histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Inv. Mass l_{W}b (GeV)",10,0,400);
@@ -3236,10 +3258,10 @@ void Init1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
       histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Nb. Charm Loose ID jets",10,-0.5,9.5);
       
       if(isZut){
-     /*   output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
+       output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
         histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
         output_histo_name = "cdiscCvsBjet1_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);*/
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
         
       }
       else{
@@ -3249,10 +3271,10 @@ void Init1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
         histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Charm vs light disc.",15,-1,1);
         output_histo_name = "TotalInvMass_"+dataSetName + "_" +decaystring+"_"+systematic;
         histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Total inv. mass (GeV)",20,0,1500);
-      /*  output_histo_name = "cdiscCvsLjet1_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);*/
+        output_histo_name = "cdiscCvsLjet1_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
       }
-    }
+    }*/
     
   }
   
@@ -3494,7 +3516,7 @@ void FillMTWPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t 
     decaystring += postfix;
     
     //if(datasets[d]->Name().find("data")!=std::string::npos) cout << "filling " << ("MTW_"+decaystring).c_str() << " with " << MVA_mWt2 << " " << weight_ << endl;
-    MSPlotMTW[("MTW_"+decaystring).c_str()]->Fill(MVA_mWt2 , datasets[d], true, weight_);
+    MSPlotMTW[("MTW_"+decaystring).c_str()]->Fill(MVA_mWt , datasets[d], true, weight_);
   }
   decaystring = "";
 }
@@ -3632,7 +3654,7 @@ void Fill1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
     
 
     
-    
+    /*
     if(!istoppair){
       output_histo_name = "mlb_"+dataSetName + "_" +decaystring+"_"+systematic;
       histo1D[output_histo_name] ->Fill( MVA_mlb         ,weight_);
@@ -3675,11 +3697,11 @@ void Fill1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
       histo1D[output_histo_name] ->Fill( MVA_nJets_CharmL        ,weight_);
       
       if(isZut){
-      /*  output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] ->Fill(  MVA_cdiscCvsB_jet_0        ,weight_);
+        output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
+        isto1D[output_histo_name] ->Fill(  MVA_cdiscCvsB_jet_0        ,weight_);
         output_histo_name = "cdiscCvsBjet1_"+dataSetName + "_" +decaystring+"_"+systematic;
         histo1D[output_histo_name] ->Fill(   MVA_cdiscCvsB_jet_1       ,weight_);
-        */
+     
       }
       else{
         output_histo_name = "FCNCtopM_"+dataSetName + "_" +decaystring+"_"+systematic;
@@ -3690,7 +3712,7 @@ void Fill1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
         output_histo_name = "TotalInvMass_"+dataSetName + "_" +decaystring+"_"+systematic;
         histo1D[output_histo_name] ->Fill(   MVA_TotalInvMass      ,weight_);
       }
-    }
+    }*/
     
   }
   
@@ -3730,7 +3752,7 @@ void FillSystematicHisto(string dataSetName, string systematic, Double_t weight_
   
   
   if(!doMTWtemplate) histo1DSys[output_histo_name]->Fill(MVA_BDT, weight_);
-  else histo1DSysMTW[output_histo_name]->Fill(MVA_mWt, weight_);
+  else histo1DSysMTW[output_histo_name]->Fill(MVA_mWt2, weight_);
   
   
   output_histo_name = "";
