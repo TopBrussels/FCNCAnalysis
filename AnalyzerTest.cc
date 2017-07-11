@@ -78,7 +78,6 @@ map<string,TFile*> tFileMap;
 map<string,TTree*> tTree;
 map<string,TTree*> tStatsTree;
 
-
 vector < Dataset* > datasets;
 vector < Dataset* > datasetsbefore;
 std::vector < int>  decayChannels = {0,1,2,3,-9,4,5}; // uuu uue eeu eee all
@@ -90,8 +89,9 @@ bool firstevent = false;
 TFile* triggerEfffile = 0;
 string triggerEfffilename = "triggerefficiencies.root";
 
-
-
+TFile* CutflowTableFile = 0;
+string CutflowTableFileName = "cutflowtables.root";
+vector<pair<string,string>> datasetNameTitle;
 
 
 TFile* fakescalefactorsfile = 0;
@@ -146,7 +146,7 @@ Double_t MVA_weight_puSF = 1. ;
 Double_t MVA_weight_btagSF = 1.;
 Double_t MVA_weight_muonSF = 1.;
 Double_t MVA_weight_electronSF = 1.;
-Double_t MVA_weight_nloSF= 1; 
+Double_t MVA_weight_nloSF= 1;
 
 Int_t         MVA_id1;
 Int_t         MVA_id2;
@@ -555,7 +555,7 @@ Double_t        met_before_JES;
 Double_t        met_after_JES;
 
 // List of branches
-TBranch         *b_weight0, *b_weight1, *b_weight2, *b_weight3, *b_weight4, *b_weight5, *b_weight6, *b_weight7, *b_weight8; 
+TBranch         *b_weight0, *b_weight1, *b_weight2, *b_weight3, *b_weight4, *b_weight5, *b_weight6, *b_weight7, *b_weight8;
 TBranch        *b_x1;   //!
 TBranch        *b_x2;   //!
 TBranch        *b_id1;   //!
@@ -1050,7 +1050,7 @@ int main(int argc, char* argv[]){
   int channel = -999;
   datafound = false;
   bool applytrigger = true;
-  bool applyfakesf = true;
+  bool applyfakesf = false;
   bool dofakesf = false;
   bool checktrigger = false;
   bool applytriggerNoLogic = false;
@@ -1060,7 +1060,7 @@ int main(int argc, char* argv[]){
   bool dorochester = true;
   bool dofakevalidation = false;
   bool findFakeDisc = false;
- 
+  
   bool applyTrigSF = false;
   bool doCutflow = false;
   bool MakeSelectionTable = false;
@@ -1099,7 +1099,7 @@ int main(int argc, char* argv[]){
       std::cout << "   applyTrigSF" << endl;
       std::cout << "   doCutFlow" << endl;
       std::cout << "   doCutTable" << endl;
-       std::cout << "   doSys" << endl;
+      std::cout << "   doSys" << endl;
       std::cout  << "   findFakeDisc" << endl;
       return 0;
     }
@@ -1111,7 +1111,7 @@ int main(int argc, char* argv[]){
       findFakeDisc= true;
       
     }
-      if(string(argv[i]).find("doSys")!=std::string::npos) {
+    if(string(argv[i]).find("doSys")!=std::string::npos) {
       systematicplots= true;
       
     }
@@ -1135,7 +1135,7 @@ int main(int argc, char* argv[]){
       dorochester = false;
       
     }
-     if(string(argv[i]).find("applyFakeSF")!=std::string::npos) {
+    if(string(argv[i]).find("applyFakeSF")!=std::string::npos) {
       applyfakesf = true;
       dofakesf = false;
     }
@@ -1215,7 +1215,7 @@ int main(int argc, char* argv[]){
     if(string(argv[i]).find("debug")!=std::string::npos) {
       verbose = 4;
     }
-   
+    
     if(string(argv[i]).find("applySF")!=string::npos) {
       applyElectronSF =true;
       applyNloSF = true;
@@ -1227,10 +1227,10 @@ int main(int argc, char* argv[]){
     }
     if(string(argv[i]).find("noElectronSF")!=string::npos) {
       applyElectronSF =false;
-         }
+    }
     if(string(argv[i]).find("noMuonSF")!=string::npos) {
       applyMuonSF =false;
-     
+      
       
     }
     if(string(argv[i]).find("noPUSF")!=std::string::npos) {
@@ -1299,30 +1299,10 @@ int main(int argc, char* argv[]){
     Init2DPlots();
   }
   vector < string > v_cutflow = {">1l,>0j, <6j, m_{T}^{W} < 300", "SF pair","lep veto","Z mass",">2l","#Delta R (l_{W},b) <= 2.5","STSR","TTSR","WZCR"};
-  SelectionTable *CutflowTable = new SelectionTable(v_cutflow,datasets);
-  SelectionTable *CutflowTable_eee = new SelectionTable(v_cutflow,datasets);
-  SelectionTable *CutflowTable_eeu = new SelectionTable(v_cutflow,datasets);
-  SelectionTable *CutflowTable_uue = new SelectionTable(v_cutflow,datasets);
-  SelectionTable *CutflowTable_uuu = new SelectionTable(v_cutflow,datasets);
-  if(MakeSelectionTable){
-    CutflowTable->SetLuminosity(Luminosity);
-    CutflowTable->SetPrecision(1);
-    
-    CutflowTable_eee->SetLuminosity(Luminosity);
-    CutflowTable_eee->SetPrecision(1);
-    
-    CutflowTable_eeu->SetLuminosity(Luminosity);
-    CutflowTable_eeu->SetPrecision(1);
-    
-    CutflowTable_uue->SetLuminosity(Luminosity);
-    CutflowTable_uue->SetPrecision(1);
-    
-    CutflowTable_uuu->SetLuminosity(Luminosity);
-    CutflowTable_uuu->SetPrecision(1);
-  }
+  
   
   if(makeMVAtree && makeMVAPlots) {
-   // InitMVAMSPlotsSingletop("singletop", decayChannels);
+    // InitMVAMSPlotsSingletop("singletop", decayChannels);
     InitMVAMSPlotsTopPair("wzcontrol", decayChannels);
     // InitMVAMSPlotsTopPair("ttzcontrol", decayChannels);
     //InitMVAMSPlotsTopPair("toppair", decayChannels);
@@ -1415,37 +1395,85 @@ int main(int argc, char* argv[]){
   ofstream myfileWZ;
   ofstream myfileWZtrigged;
   
-
-
-  TH1F* fake_Histo_sum = 0;
-  TH1F* fake_Histo_data = 0;
-  TH1F* SumNormal_fake = 0 ;
-  TH1F* dataNormal_fake = 0;
-  TH1F* fake_SFHisto =0 ;
+  
+  
+  TH2F* fake_Histo_sum = 0;
+  TH2F* fake_Histo_data = 0;
+  TH2F* SumNormal_fake = 0 ;
+  TH2F* dataNormal_fake = 0;
+  TH2F* fake_SFHisto =0 ;
   
   if(dofakesf){
-    fake_Histo_sum  = new TH1F("fake_Histo_sum", "fake_Histo_sum" , 20,0,300);
-    fake_Histo_data = new TH1F("fake_Histo_data", "fake_Histo_data" , 20,0,300);
+    fake_Histo_sum  = new TH2F("fake_Histo_sum", "fake_Histo_sum" , 20,0,300,5,0,200);
+    fake_Histo_data = new TH2F("fake_Histo_data", "fake_Histo_data" , 20,0,300,5,0,200);
   }
   
   if(applyfakesf){
-    cout << "opening " << fakescalefactorsfilename.c_str() << endl; 
+    cout << "opening " << fakescalefactorsfilename.c_str() << endl;
     fakescalefactorsfile = TFile::Open( fakescalefactorsfilename.c_str(), "READ" );
-    fake_SFHisto = (TH1F*) (fakescalefactorsfile->Get("fake_SFHisto"))->Clone("fake_SFHisto");
+    fake_SFHisto = (TH2F*) (fakescalefactorsfile->Get("fake_SFHisto"))->Clone("fake_SFHisto");
     
     
   }
   
   
   
- 
+  ///////// CUTFLOWS ///////////////
+  TH1F*  CutflowTableHisto__WZ = new TH1F("CutflowTableHisto__WZ", "CutflowTableHisto__WZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_eee__WZ = new TH1F("CutflowTableHisto_eee__WZ", "CutflowTableHisto_eee__WZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_eeu__WZ = new TH1F("CutflowTableHisto_eeu__WZ", "CutflowTableHisto_eeu__WZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_uue__WZ = new TH1F("CutflowTableHisto_uue__WZ", "CutflowTableHisto_uue__WZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_uuu__WZ = new TH1F("CutflowTableHisto_uuu__WZ", "CutflowTableHisto_uuu__WZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  
+  TH1F*  CutflowTableHisto__fake = new TH1F("CutflowTableHisto__fake", "CutflowTableHisto__fake" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_eee__fake = new TH1F("CutflowTableHisto_eee__fake", "CutflowTableHisto_eee__fake" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_eeu__fake = new TH1F("CutflowTableHisto_eeu__fake", "CutflowTableHisto_eeu__fake" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_uue__fake = new TH1F("CutflowTableHisto_uue__fake", "CutflowTableHisto_uue__fake" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_uuu__fake = new TH1F("CutflowTableHisto_uuu__fake", "CutflowTableHisto_uuu__fake" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  
+  TH1F*  CutflowTableHisto__data = new TH1F("CutflowTableHisto__data", "CutflowTableHisto__data" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_eee__data = new TH1F("CutflowTableHisto_eee__data", "CutflowTableHisto_eee__data" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_eeu__data = new TH1F("CutflowTableHisto_eeu__data", "CutflowTableHisto_eeu__data" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_uue__data = new TH1F("CutflowTableHisto_uue__data", "CutflowTableHisto_uue__data" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_uuu__data = new TH1F("CutflowTableHisto_uuu__data", "CutflowTableHisto_uuu__data" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
   
   
+  TH1F*  CutflowTableHisto__tZq = new TH1F("CutflowTableHisto__tZq", "CutflowTableHisto__tZq" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_eee__tZq = new TH1F("CutflowTableHisto_eee__tZq", "CutflowTableHisto_eee__tZq" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_eeu__tZq = new TH1F("CutflowTableHisto_eeu__tZq", "CutflowTableHisto_eeu__tZq" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_uue__tZq = new TH1F("CutflowTableHisto_uue__tZq", "CutflowTableHisto_uue__tZq" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_uuu__tZq = new TH1F("CutflowTableHisto_uuu__tZq", "CutflowTableHisto_uuu__tZq" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  
+  TH1F*  CutflowTableHisto__ttZ = new TH1F("CutflowTableHisto__ttZ", "CutflowTableHisto__ttZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_eee__ttZ = new TH1F("CutflowTableHisto_eee__ttZ", "CutflowTableHisto_eee__ttZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_eeu__ttZ = new TH1F("CutflowTableHisto_eeu__ttZ", "CutflowTableHisto_eeu__ttZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_uue__ttZ = new TH1F("CutflowTableHisto_uue__ttZ", "CutflowTableHisto_uue__ttZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_uuu__ttZ = new TH1F("CutflowTableHisto_uuu__ttZ", "CutflowTableHisto_uuu__ttZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  
+  TH1F*  CutflowTableHisto__FCNCZut = new TH1F("CutflowTableHisto__FCNCZut", "CutflowTableHisto__FCNCZut" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_eee__FCNCZut = new TH1F("CutflowTableHisto_eee__FCNCZut", "CutflowTableHisto_eee__FCNCZut" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_eeu__FCNCZut = new TH1F("CutflowTableHisto_eeu__FCNCZut", "CutflowTableHisto_eeu__FCNCZut" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_uue__FCNCZut = new TH1F("CutflowTableHisto_uue__FCNCZut", "CutflowTableHisto_uue__FCNCZut" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_uuu__FCNCZut = new TH1F("CutflowTableHisto_uuu__FCNCZut", "CutflowTableHisto_uuu__FCNCZut" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  
+  
+  TH1F*  CutflowTableHisto__FCNCZct = new TH1F("CutflowTableHisto__FCNCZct", "CutflowTableHisto__FCNCZct" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_eee__FCNCZct = new TH1F("CutflowTableHisto_eee__FCNCZct", "CutflowTableHisto_eee__FCNCZct" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_eeu__FCNCZct = new TH1F("CutflowTableHisto_eeu__FCNCZct", "CutflowTableHisto_eeu__FCNCZct" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_uue__FCNCZct = new TH1F("CutflowTableHisto_uue__FCNCZct", "CutflowTableHisto_uue__FCNCZct" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_uuu__FCNCZct = new TH1F("CutflowTableHisto_uuu__FCNCZct", "CutflowTableHisto_uuu__FCNCZct" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  
+  
+  TH1F*  CutflowTableHisto__other = new TH1F("CutflowTableHisto__other", "CutflowTableHisto__other" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_eee__other = new TH1F("CutflowTableHisto_eee__other", "CutflowTableHisto_eee__other" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_eeu__other = new TH1F("CutflowTableHisto_eeu__other", "CutflowTableHisto_eeu__other" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_uue__other = new TH1F("CutflowTableHisto_uue__other", "CutflowTableHisto_uue__other" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  TH1F*  CutflowTableHisto_uuu__other = new TH1F("CutflowTableHisto_uuu__other", "CutflowTableHisto_uuu__other" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
   
   
   int xbinmcharm=-21;
-
-
+  
+  
   int endEvent = -5;
   
   double fakebefore = 0;
@@ -1707,8 +1735,14 @@ int main(int argc, char* argv[]){
     double cbdiscrim = -5.;
     double cldiscrim = -5.;
     
+    // cutflow table plots
     
-    
+    TH1F*  CutflowTableHisto = new TH1F(("CutflowTableHisto_"+ dataSetName).c_str(), ("CutflowTableHisto_" + dataSetName).c_str() , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+    TH1F*  CutflowTableHisto_eee = new TH1F(("CutflowTableHisto_eee_"+ dataSetName).c_str(), ("CutflowTableHisto_eee_" + dataSetName).c_str() , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+    TH1F*  CutflowTableHisto_eeu = new TH1F(("CutflowTableHisto_eeu_"+ dataSetName).c_str(), ("CutflowTableHisto_eeu_" + dataSetName).c_str() , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+    TH1F*  CutflowTableHisto_uue = new TH1F(("CutflowTableHisto_uue_"+ dataSetName).c_str(), ("CutflowTableHisto_uue_" + dataSetName).c_str() , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+    TH1F*  CutflowTableHisto_uuu = new TH1F(("CutflowTableHisto_uuu_"+ dataSetName).c_str(), ("CutflowTableHisto_uuu_" + dataSetName).c_str() , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+    datasetNameTitle.push_back(pair<string,string>(datasets[d]->Name(), datasets[d]->Title()));
     for (int ievt = 0; ievt < endEvent; ievt++)
     {
       ClearObjects(); // put everything to default values
@@ -1756,7 +1790,7 @@ int main(int argc, char* argv[]){
         if( fabs(eta_muon[iMu]) >= 2.4) {continue; }
         
         muon.Clear();
-      
+        
         muon.SetPtEtaPhiE(pt_muon[iMu], eta_muon[iMu], phi_muon[iMu], E_muon[iMu]);
         if(dorochester){
           double ptmu = pt_muon[iMu];
@@ -1822,7 +1856,7 @@ int main(int argc, char* argv[]){
         cbdiscrim = cdiscCvsB_jet[iJet];
         cldiscrim = cdiscCvsL_jet[iJet];
         
-       
+        
         
         
         
@@ -1961,7 +1995,7 @@ int main(int argc, char* argv[]){
       if (! isData && !isfakes)
       {
         
-
+        
         
         
         
@@ -2103,11 +2137,11 @@ int main(int argc, char* argv[]){
         
       }
       /*
-      if(isfakes && ( channelInt == 0 || channelInt == 2) ){ scaleFactor *= 0.0237522 * 0.0001 ; }
-      if(isfakes && (channelInt== 1 || channelInt == 3) ){ scaleFactor *= 0.20771 * 0.0001;  }
-      */
+       if(isfakes && ( channelInt == 0 || channelInt == 2) ){ scaleFactor *= 0.0237522 * 0.0001 ; }
+       if(isfakes && (channelInt== 1 || channelInt == 3) ){ scaleFactor *= 0.20771 * 0.0001;  }
+       */
       //if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ scaleFactor *= 0.120 * 0.0001 ;}
-     // if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ scaleFactor *= 0.265 * 0.0001;}
+      // if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ scaleFactor *= 0.265 * 0.0001;}
       
       
       double eventweightForNotMSplots = 1.;
@@ -2115,9 +2149,15 @@ int main(int argc, char* argv[]){
       if(!isData) eventweightForNotMSplots*= scaleFactor;
       //else if(isData) eventweightForplots =  Luminosity/EquilumiSF;;
       
+      
       double eventweightForplots = 1.; /// MSPlot divides by eqlumi, for data and fakes this is the lumi, for MC this is set to one
       eventweightForplots = Luminosity/EquilumiSF; // equilumi SF is the eqlumi (not one) for MC and one for data/fakes
       if(!isData) eventweightForplots*= scaleFactor;
+      
+      
+      //  if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ eventweightForNotMSplots *= 0.545 ; eventweightForplots *= 0.545 ; scaleFactor *= 0.545 ;}
+      // if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ eventweightForNotMSplots *= 0.590; eventweightForplots *= 0.590; scaleFactor  *= 0.590;}
+      // if(dataSetName.find("WZ")!=std::string::npos ){ eventweightForNotMSplots *=0.841 ; eventweightForNotMSplots *=0.841 ; scaleFactor*=0.841 ;}
       
       
       // {">1l,>0j", "SF pair","lep veto","Z mass","#Delta R (l_{W},b) <= 2.5",">2l","STSR","TTSR","WZCR"};
@@ -2129,11 +2169,68 @@ int main(int argc, char* argv[]){
         if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(0. , datasets[d], true,eventweightForplots);
       }
       if(MakeSelectionTable) {
-        CutflowTable->Fill(d,0,eventweightForplots);
-        if(channelInt == 3) CutflowTable_eee->Fill(d,0,eventweightForplots);
-        if(channelInt == 2) CutflowTable_eeu->Fill(d,0,eventweightForplots);
-        if(channelInt == 1) CutflowTable_uue->Fill(d,0,eventweightForplots);
-        if(channelInt == 0) CutflowTable_uuu->Fill(d,0,eventweightForplots);
+        CutflowTableHisto->Fill(0.,eventweightForplots);
+        if(channelInt == 3) CutflowTableHisto_eee->Fill(0.,eventweightForplots);
+        if(channelInt == 2) CutflowTableHisto_eeu->Fill(0.,eventweightForplots);
+        if(channelInt == 1) CutflowTableHisto_uue->Fill(0.,eventweightForplots);
+        if(channelInt == 0) CutflowTableHisto_uuu->Fill(0.,eventweightForplots);
+        
+        if(dataSetName.find("WZT")!=std::string::npos){
+          CutflowTableHisto__WZ->Fill(0.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(0.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(0.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(0.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(0.,eventweightForplots);
+        }
+        else if(dataSetName.find("fake")!=std::string::npos){
+          CutflowTableHisto__fake->Fill(0.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(0.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(0.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(0.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(0.,eventweightForplots);
+        }
+        else if(dataSetName.find("tZq")!=std::string::npos){
+          CutflowTableHisto__tZq->Fill(0.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(0.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(0.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(0.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(0.,eventweightForplots);
+        }
+        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
+          CutflowTableHisto__FCNCZut->Fill(0.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(0.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(0.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(0.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(0.,eventweightForplots);
+        }
+        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
+          CutflowTableHisto__FCNCZct->Fill(0.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(0.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(0.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(0.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(0.,eventweightForplots);
+        }
+        else if(dataSetName.find("TTZ")!=std::string::npos ){
+          CutflowTableHisto__ttZ->Fill(0.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(0.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(0.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(0.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(0.,eventweightForplots);
+        }
+        else if(isData){
+          CutflowTableHisto__data->Fill(0.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__data->Fill(0.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(0.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__data->Fill(0.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(0.,eventweightForplots);
+        }
+        else {
+          CutflowTableHisto__other->Fill(0.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__other->Fill(0.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(0.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__other->Fill(0.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(0.,eventweightForplots);
+        }
       }
       bool threelepregion = false;
       bool twolepregion = false;
@@ -2141,11 +2238,69 @@ int main(int argc, char* argv[]){
       if(selectedElectrons.size() > 1 || selectedMuons.size() > 1) twolepregion = true;
       if(! threelepregion && ! twolepregion ) continue;
       if(MakeSelectionTable) {
-        CutflowTable->Fill(d,1,eventweightForplots);
-        if(channelInt == 3) CutflowTable_eee->Fill(d,1,eventweightForplots);
-        if(channelInt == 2) CutflowTable_eeu->Fill(d,1,eventweightForplots);
-        if(channelInt == 1) CutflowTable_uue->Fill(d,1,eventweightForplots);
-        if(channelInt == 0) CutflowTable_uuu->Fill(d,1,eventweightForplots);
+        CutflowTableHisto->Fill(1.,eventweightForplots);
+        if(channelInt == 3) CutflowTableHisto_eee->Fill(1.,eventweightForplots);
+        if(channelInt == 2) CutflowTableHisto_eeu->Fill(1.,eventweightForplots);
+        if(channelInt == 1) CutflowTableHisto_uue->Fill(1.,eventweightForplots);
+        if(channelInt == 0) CutflowTableHisto_uuu->Fill(1.,eventweightForplots);
+        
+        
+        if(dataSetName.find("WZT")!=std::string::npos){
+          CutflowTableHisto__WZ->Fill(1.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(1.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(1.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(1.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(1.,eventweightForplots);
+        }
+        else if(dataSetName.find("fake")!=std::string::npos){
+          CutflowTableHisto__fake->Fill(1.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(1.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(1.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(1.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(1.,eventweightForplots);
+        }
+        else if(dataSetName.find("tZq")!=std::string::npos){
+          CutflowTableHisto__tZq->Fill(1.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(1.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(1.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(1.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(1.,eventweightForplots);
+        }
+        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
+          CutflowTableHisto__FCNCZut->Fill(1.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(1.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(1.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(1.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(1.,eventweightForplots);
+        }
+        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
+          CutflowTableHisto__FCNCZct->Fill(1.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(1.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(1.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(1.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(1.,eventweightForplots);
+        }
+        else if(dataSetName.find("TTZ")!=std::string::npos ){
+          CutflowTableHisto__ttZ->Fill(1.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(1.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(1.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(1.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(1.,eventweightForplots);
+        }
+        else if(isData){
+          CutflowTableHisto__data->Fill(1.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__data->Fill(1.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(1.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__data->Fill(1.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(1.,eventweightForplots);
+        }
+        else {
+          CutflowTableHisto__other->Fill(1.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__other->Fill(1.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(1.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__other->Fill(1.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(1.,eventweightForplots);
+        }
       }
       if(doCutflow){
         MSPlot["cutflow"] ->Fill(1. , datasets[d], true,eventweightForplots);
@@ -2164,11 +2319,69 @@ int main(int argc, char* argv[]){
         if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(2. , datasets[d], true,eventweightForplots);
       }
       if(MakeSelectionTable) {
-        CutflowTable->Fill(d,2,eventweightForplots);
-        if(channelInt == 3) CutflowTable_eee->Fill(d,2,eventweightForplots);
-        if(channelInt == 2) CutflowTable_eeu->Fill(d,2,eventweightForplots);
-        if(channelInt == 1) CutflowTable_uue->Fill(d,2,eventweightForplots);
-        if(channelInt == 0) CutflowTable_uuu->Fill(d,2,eventweightForplots);
+        CutflowTableHisto->Fill(2.,eventweightForplots);
+        if(channelInt == 3) CutflowTableHisto_eee->Fill(2.,eventweightForplots);
+        if(channelInt == 2) CutflowTableHisto_eeu->Fill(2.,eventweightForplots);
+        if(channelInt == 1) CutflowTableHisto_uue->Fill(2.,eventweightForplots);
+        if(channelInt == 0) CutflowTableHisto_uuu->Fill(2.,eventweightForplots);
+        
+        
+        if(dataSetName.find("WZT")!=std::string::npos){
+          CutflowTableHisto__WZ->Fill(2.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(2.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(2.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(2.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(2.,eventweightForplots);
+        }
+        else if(dataSetName.find("fake")!=std::string::npos){
+          CutflowTableHisto__fake->Fill(2.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(2.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(2.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(2.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(2.,eventweightForplots);
+        }
+        else if(dataSetName.find("tZq")!=std::string::npos){
+          CutflowTableHisto__tZq->Fill(2.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(2.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(2.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(2.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(2.,eventweightForplots);
+        }
+        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
+          CutflowTableHisto__FCNCZut->Fill(2.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(2.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(2.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(2.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(2.,eventweightForplots);
+        }
+        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
+          CutflowTableHisto__FCNCZct->Fill(2.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(2.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(2.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(2.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(2.,eventweightForplots);
+        }
+        else if(dataSetName.find("TTZ")!=std::string::npos ){
+          CutflowTableHisto__ttZ->Fill(2.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(2.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(2.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(2.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(2.,eventweightForplots);
+        }
+        else if(isData){
+          CutflowTableHisto__data->Fill(2.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__data->Fill(2.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(2.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__data->Fill(2.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(2.,eventweightForplots);
+        }
+        else {
+          CutflowTableHisto__other->Fill(2.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__other->Fill(2.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(2.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__other->Fill(2.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(2.,eventweightForplots);
+        }
       }
       // cout << "in assigner" <<endl;
       
@@ -2183,19 +2396,30 @@ int main(int argc, char* argv[]){
       
       
       if(isfakes && applyfakesf && !isData){
+        int binx = -5;
+        int biny  = -5;
         int binSF = -1;
         double fakeSF = 1.;
-        if(Zboson.Pt() > 300.){ binSF = fake_SFHisto->GetXaxis()->FindBin(299.);}
-        else binSF = fake_SFHisto->GetXaxis()->FindBin(Zboson.Pt());
+        double xvalue = 0;
+        double yvalue = 0;
+        if(Zboson.Pt() > 300.){ xvalue = 299;}
+        else {xvalue = Zboson.Pt();}
+        
+        
+        fake_SFHisto->GetXaxis()->FindBin(Zboson.Pt());
+        
+        if(Wlep.Pt() > 200.){ yvalue = 199.;}
+        else yvalue = Wlep.Pt();
+        binSF = fake_SFHisto->FindBin(xvalue,yvalue);
         fakeSF = fake_SFHisto->GetBinContent(binSF);
         scaleFactor *= fakeSF;
         //cout << " bin " << binSF << " fake SF " << fakeSF << " SF " << scaleFactor << " weight " ;
         eventweightForplots *= fakeSF;
-         eventweightForNotMSplots *= fakeSF;
+        eventweightForNotMSplots *= fakeSF;
         //cout << eventweightForplots << endl;
       }
       
-     
+      
       
       
       // cout << "twolepregion" << " " << twolepregion << " " << "threelepregion" << " " <<  threelepregion << endl;
@@ -2204,7 +2428,7 @@ int main(int argc, char* argv[]){
         //cout << "ievt " << ievt << endl;
         //FillGeneralPlots(d, "control_afterAtLeast1Jet", decayChannels, isData, isfakes, threelepregion, twolepregion);
         //if(dataSetName.find("WZTo3LNu")!=std::string::npos) Fill1DPlots(dataSetName);
-       
+        
         
         //if(dataSetName.find("tZq")!=std::string::npos){ Fill1DPlots(dataSetName);}
         
@@ -2219,21 +2443,80 @@ int main(int argc, char* argv[]){
         if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(3. , datasets[d], true,eventweightForplots);
       }
       if(MakeSelectionTable) {
-        CutflowTable->Fill(d,3,eventweightForplots);
-        if(channelInt == 3) CutflowTable_eee->Fill(d,3,eventweightForplots);
-        if(channelInt == 2) CutflowTable_eeu->Fill(d,3,eventweightForplots);
-        if(channelInt == 1) CutflowTable_uue->Fill(d,3,eventweightForplots);
-        if(channelInt == 0) CutflowTable_uuu->Fill(d,3,eventweightForplots);
+        CutflowTableHisto->Fill(3,eventweightForplots);
+        if(channelInt == 3) CutflowTableHisto_eee->Fill(3.,eventweightForplots);
+        if(channelInt == 2) CutflowTableHisto_eeu->Fill(3.,eventweightForplots);
+        if(channelInt == 1) CutflowTableHisto_uue->Fill(3.,eventweightForplots);
+        if(channelInt == 0) CutflowTableHisto_uuu->Fill(3.,eventweightForplots);
+        
+        if(dataSetName.find("WZT")!=std::string::npos){
+          CutflowTableHisto__WZ->Fill(3.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(3.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(3.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(3.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(3.,eventweightForplots);
+        }
+        else if(dataSetName.find("fake")!=std::string::npos){
+          CutflowTableHisto__fake->Fill(3.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(3.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(3.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(3.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(3.,eventweightForplots);
+        }
+        else if(dataSetName.find("tZq")!=std::string::npos){
+          CutflowTableHisto__tZq->Fill(3.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(3.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(3.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(3.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(3.,eventweightForplots);
+        }
+        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
+          CutflowTableHisto__FCNCZut->Fill(3.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(3.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(3.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(3.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(3.,eventweightForplots);
+        }
+        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
+          CutflowTableHisto__FCNCZct->Fill(3.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(3.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(3.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(3.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(3.,eventweightForplots);
+        }
+        else if(dataSetName.find("TTZ")!=std::string::npos ){
+          CutflowTableHisto__ttZ->Fill(3.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(3.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(3.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(3.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(3.,eventweightForplots);
+        }
+        else if(isData){
+          CutflowTableHisto__data->Fill(3.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__data->Fill(3.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(3.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__data->Fill(3.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(3.,eventweightForplots);
+        }
+        else {
+          CutflowTableHisto__other->Fill(3.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__other->Fill(3.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(3.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__other->Fill(3.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(3.,eventweightForplots);
+        }
+        
       }
       
-      if( dofakesf && twolepregion){
+      if( dofakesf && twolepregion ){
         if(isfakes){
-          fake_Histo_data->Fill(Zboson.Pt(), eventweightForNotMSplots);
+          fake_Histo_data->Fill(Zboson.Pt(),Wlep.Pt(), eventweightForNotMSplots);
+          
         }
         if(dataSetName.find("TT")!=std::string::npos || dataSetName.find("DY")!=std::string::npos ||  dataSetName.find("WW")!=std::string::npos){
           
-            fake_Histo_sum-> Fill(Zboson.Pt(), eventweightForNotMSplots);
-         
+          fake_Histo_sum-> Fill(Zboson.Pt(),Wlep.Pt(), eventweightForNotMSplots);
+          
         }
       }
       
@@ -2245,9 +2528,10 @@ int main(int argc, char* argv[]){
         
         
       }
-      if((dataSetName.find("DY")!=std::string::npos || dataSetName.find("TTJets")!=std::string::npos || dataSetName.find("WWTo")!=std::string::npos|| dataSetName.find("Zjets")!=std::string::npos  || dataSetName.find("fake")!=std::string::npos || dataSetName.find("data")!=std::string::npos) && dofakevalidation && selectedJetsID.size() > 0 && selectedCSVLJetID.size()>0){
+      if((dataSetName.find("DY")!=std::string::npos || dataSetName.find("TTJets")!=std::string::npos || dataSetName.find("WWTo")!=std::string::npos|| dataSetName.find("Zjets")!=std::string::npos  || dataSetName.find("fake")!=std::string::npos || dataSetName.find("data")!=std::string::npos) && dofakevalidation ){
         //cout << "filling" << endl;
-        FillFakeValidation(dataSetName,decayChannels,isData, isfakes, threelepregion, twolepregion);
+        if(dataSetName.find("fake")==std::string::npos && selectedJetsID.size() > 0 ) FillFakeValidation(dataSetName,decayChannels,isData, isfakes, threelepregion, twolepregion);
+        else FillFakeValidation(dataSetName,decayChannels,isData, isfakes, threelepregion, twolepregion);
       }
       if(selectednonCSVLJetID.size()>0 && makePlots ){
         // FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels,isData, isfakes, threelepregion, twolepregion);
@@ -2267,11 +2551,68 @@ int main(int argc, char* argv[]){
         if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(4. , datasets[d], true,eventweightForplots);
       }
       if(MakeSelectionTable) {
-        CutflowTable->Fill(d,3,eventweightForplots);
-        if(channelInt == 3) CutflowTable_eee->Fill(d,4,eventweightForplots);
-        if(channelInt == 2) CutflowTable_eeu->Fill(d,4,eventweightForplots);
-        if(channelInt == 1) CutflowTable_uue->Fill(d,4,eventweightForplots);
-        if(channelInt == 0) CutflowTable_uuu->Fill(d,4,eventweightForplots);
+        CutflowTableHisto->Fill(4,eventweightForplots);
+        if(channelInt == 3) CutflowTableHisto_eee->Fill(4,eventweightForplots);
+        if(channelInt == 2) CutflowTableHisto_eeu->Fill(4,eventweightForplots);
+        if(channelInt == 1) CutflowTableHisto_uue->Fill(4,eventweightForplots);
+        if(channelInt == 0) CutflowTableHisto_uuu->Fill(4,eventweightForplots);
+        
+        if(dataSetName.find("WZT")!=std::string::npos){
+          CutflowTableHisto__WZ->Fill(4.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(4.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(4.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(4.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(4.,eventweightForplots);
+        }
+        else if(dataSetName.find("fake")!=std::string::npos){
+          CutflowTableHisto__fake->Fill(4.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(4.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(4.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(4.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(4.,eventweightForplots);
+        }
+        else if(dataSetName.find("tZq")!=std::string::npos){
+          CutflowTableHisto__tZq->Fill(4.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(4.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(4.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(4.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(4.,eventweightForplots);
+        }
+        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
+          CutflowTableHisto__FCNCZut->Fill(4.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(4.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(4.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(4.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(4.,eventweightForplots);
+        }
+        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
+          CutflowTableHisto__FCNCZct->Fill(4.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(4.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(4.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(4.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(4.,eventweightForplots);
+        }
+        else if(dataSetName.find("TTZ")!=std::string::npos ){
+          CutflowTableHisto__ttZ->Fill(4.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(4.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(4.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(4.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(4.,eventweightForplots);
+        }
+        else if(isData){
+          CutflowTableHisto__data->Fill(4.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__data->Fill(4.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(4.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__data->Fill(4.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(4.,eventweightForplots);
+        }
+        else {
+          CutflowTableHisto__other->Fill(4.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__other->Fill(4.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(4.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__other->Fill(4.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(4.,eventweightForplots);
+        }
       }
       
       
@@ -2283,7 +2624,7 @@ int main(int argc, char* argv[]){
       if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){deltaR =  ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],SMbjet);}
       else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){deltaR=  ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],SMbjet);}
       if(deltaR <= 2.5 ){ passedcuts = true; }
-      if(!passedcuts) continue;
+      // if(!passedcuts) continue;
       if(isfakes) fakeafter += eventweightForNotMSplots;
       
       
@@ -2363,15 +2704,72 @@ int main(int argc, char* argv[]){
         if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(5. , datasets[d], true,eventweightForplots);
       }
       if(MakeSelectionTable) {
-        CutflowTable->Fill(d,5,eventweightForplots);
-        if(channelInt == 3) CutflowTable_eee->Fill(d,5,eventweightForplots);
-        if(channelInt == 2) CutflowTable_eeu->Fill(d,5,eventweightForplots);
-        if(channelInt == 1) CutflowTable_uue->Fill(d,5,eventweightForplots);
-        if(channelInt == 0) CutflowTable_uuu->Fill(d,5,eventweightForplots);
+        CutflowTableHisto->Fill(5.,eventweightForplots);
+        if(channelInt == 3) CutflowTableHisto_eee->Fill(5.,eventweightForplots);
+        if(channelInt == 2) CutflowTableHisto_eeu->Fill(5.,eventweightForplots);
+        if(channelInt == 1) CutflowTableHisto_uue->Fill(5.,eventweightForplots);
+        if(channelInt == 0) CutflowTableHisto_uuu->Fill(5.,eventweightForplots);
+        
+        if(dataSetName.find("WZT")!=std::string::npos){
+          CutflowTableHisto__WZ->Fill(5.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(5.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(5.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(5.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(5.,eventweightForplots);
+        }
+        else if(dataSetName.find("fake")!=std::string::npos){
+          CutflowTableHisto__fake->Fill(5.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(5.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(5.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(5.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(5.,eventweightForplots);
+        }
+        else if(dataSetName.find("tZq")!=std::string::npos){
+          CutflowTableHisto__tZq->Fill(5.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(5.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(5.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(5.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(5.,eventweightForplots);
+        }
+        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
+          CutflowTableHisto__FCNCZut->Fill(5.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(5.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(5.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(5.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(5.,eventweightForplots);
+        }
+        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
+          CutflowTableHisto__FCNCZct->Fill(5.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(5.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(5.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(5.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(5.,eventweightForplots);
+        }
+        else if(dataSetName.find("TTZ")!=std::string::npos ){
+          CutflowTableHisto__ttZ->Fill(5.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(5.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(5.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(5.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(5.,eventweightForplots);
+        }
+        else if(isData){
+          CutflowTableHisto__data->Fill(5.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__data->Fill(5.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(5.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__data->Fill(5.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(5.,eventweightForplots);
+        }
+        else {
+          CutflowTableHisto__other->Fill(5.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee__other->Fill(5.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(5.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue__other->Fill(5.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(5.,eventweightForplots);
+        }
       }
       if(!threelepregion) cout << "WARNING something went wrong with threelep region" << endl;
       
-       if(threelepregion &&dataSetName.find("WZTo3LNu")!=std::string::npos && systematicplots ) Fill1DPlots(dataSetName, Luminosity/EquilumiSF, threelepregion,twolepregion); // FIX EVENTWEIGHT
+      if(threelepregion &&dataSetName.find("WZTo3LNu")!=std::string::npos && systematicplots ) Fill1DPlots(dataSetName, Luminosity/EquilumiSF, threelepregion,twolepregion); // FIX EVENTWEIGHT
       
       if((dataSetName.find("DY")!=std::string::npos || dataSetName.find("TTJets")!=std::string::npos || dataSetName.find("WWTo")!=std::string::npos|| dataSetName.find("Zjets")!=std::string::npos ||  dataSetName.find("FCNC")!=std::string::npos ||dataSetName.find("fake")!=std::string::npos) &&  findFakeDisc  && selectedJetsID.size() > 0 && selectedCSVLJetID.size()>0){
         //cout << "filling" << endl;
@@ -2392,7 +2790,7 @@ int main(int argc, char* argv[]){
         Region = 0;
         nSelectedEntriesST++;
         selected = true;
-        if(doCutflow){
+        if(doCutflow &&!isData){
           MSPlot["cutflow"] ->Fill(6. , datasets[d], true,eventweightForplots);
           if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(6. , datasets[d], true,eventweightForplots);
           if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(6. , datasets[d], true,eventweightForplots);
@@ -2400,18 +2798,75 @@ int main(int argc, char* argv[]){
           if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(6. , datasets[d], true,eventweightForplots);
         }
         if(MakeSelectionTable) {
-          CutflowTable->Fill(d,6,eventweightForplots);
-          if(channelInt == 3) CutflowTable_eee->Fill(d,6,eventweightForplots);
-          if(channelInt == 2) CutflowTable_eeu->Fill(d,6,eventweightForplots);
-          if(channelInt == 1) CutflowTable_uue->Fill(d,6,eventweightForplots);
-          if(channelInt == 0) CutflowTable_uuu->Fill(d,6,eventweightForplots);
+          CutflowTableHisto->Fill(6.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee->Fill(6.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu->Fill(6.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue->Fill(6.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu->Fill(6.,eventweightForplots);
+          
+          if(dataSetName.find("WZT")!=std::string::npos){
+            CutflowTableHisto__WZ->Fill(6.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(6.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(6.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(6.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(6.,eventweightForplots);
+          }
+          else if(dataSetName.find("fake")!=std::string::npos){
+            CutflowTableHisto__fake->Fill(0.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(6.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(6.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(6.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(6.,eventweightForplots);
+          }
+          else if(dataSetName.find("tZq")!=std::string::npos){
+            CutflowTableHisto__tZq->Fill(6.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(6.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(6.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(6.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(6.,eventweightForplots);
+          }
+          else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
+            CutflowTableHisto__FCNCZut->Fill(6.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(6.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(6.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(6.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(6.,eventweightForplots);
+          }
+          else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
+            CutflowTableHisto__FCNCZct->Fill(6.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(6.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(6.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(6.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(6.,eventweightForplots);
+          }
+          else if(dataSetName.find("TTZ")!=std::string::npos ){
+            CutflowTableHisto__ttZ->Fill(6.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(6.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(6.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(6.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(6.,eventweightForplots);
+          }
+          else if(isData){
+            CutflowTableHisto__data->Fill(6.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__data->Fill(6.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(6.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__data->Fill(6.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(6.,eventweightForplots);
+          }
+          else {
+            CutflowTableHisto__other->Fill(6.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__other->Fill(6.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(6.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__other->Fill(6.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(6.,eventweightForplots);
+          }
         }
-             } // ST region
+      } // ST region
       if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && threelepregion){
         Region = 1;
         nSelectedEntriesTT++;
         selected = true;
-        if(doCutflow){
+        if(doCutflow &&!isData){
           MSPlot["cutflow"] ->Fill(7. , datasets[d], true,eventweightForplots);
           if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(7. , datasets[d], true,eventweightForplots);
           if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(7. , datasets[d], true,eventweightForplots);
@@ -2419,17 +2874,75 @@ int main(int argc, char* argv[]){
           if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(7. , datasets[d], true,eventweightForplots);
         }
         if(MakeSelectionTable) {
-          CutflowTable->Fill(d,7,eventweightForplots);
-          if(channelInt == 3) CutflowTable_eee->Fill(d,7,eventweightForplots);
-          if(channelInt == 2) CutflowTable_eeu->Fill(d,7,eventweightForplots);
-          if(channelInt == 1) CutflowTable_uue->Fill(d,7,eventweightForplots);
-          if(channelInt == 0) CutflowTable_uuu->Fill(d,7,eventweightForplots);
+          CutflowTableHisto->Fill(7.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee->Fill(7.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu->Fill(7.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue->Fill(7.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu->Fill(7.,eventweightForplots);
+          
+          if(dataSetName.find("WZT")!=std::string::npos){
+            CutflowTableHisto__WZ->Fill(7.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(7.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(7.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(7.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(7.,eventweightForplots);
+          }
+          else if(dataSetName.find("fake")!=std::string::npos){
+            CutflowTableHisto__fake->Fill(0.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(7.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(7.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(7.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(7.,eventweightForplots);
+          }
+          else if(dataSetName.find("tZq")!=std::string::npos){
+            CutflowTableHisto__tZq->Fill(7.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(7.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(7.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(7.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(7.,eventweightForplots);
+          }
+          else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
+            CutflowTableHisto__FCNCZut->Fill(7.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(7.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(7.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(7.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(7.,eventweightForplots);
+          }
+          else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
+            CutflowTableHisto__FCNCZct->Fill(7.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(7.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(7.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(7.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(7.,eventweightForplots);
+          }
+          else if(dataSetName.find("TTZ")!=std::string::npos ){
+            CutflowTableHisto__ttZ->Fill(7.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(7.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(7.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(7.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(7.,eventweightForplots);
+          }
+          else if(isData){
+            CutflowTableHisto__data->Fill(7.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__data->Fill(7.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(7.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__data->Fill(7.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(7.,eventweightForplots);
+          }
+          else {
+            CutflowTableHisto__other->Fill(7.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__other->Fill(7.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(7.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__other->Fill(7.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(7.,eventweightForplots);
+          }
         }
         
-
+        
         
       } // ttbar region
       if(selectedJets.size() >0 && selectedCSVLJetID.size() == 0 && threelepregion){
+        
         Region = 2;
         nSelectedEntriesWZ++;
         selected = true;
@@ -2441,16 +2954,73 @@ int main(int argc, char* argv[]){
           if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(8. , datasets[d], true,eventweightForplots);
         }
         if(MakeSelectionTable) {
-          CutflowTable->Fill(d,8,eventweightForplots);
-          if(channelInt == 3) CutflowTable_eee->Fill(d,8,eventweightForplots);
-          if(channelInt == 2) CutflowTable_eeu->Fill(d,8,eventweightForplots);
-          if(channelInt == 1) CutflowTable_uue->Fill(d,8,eventweightForplots);
-          if(channelInt == 0) CutflowTable_uuu->Fill(d,8,eventweightForplots);
+          CutflowTableHisto->Fill(8.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee->Fill(8.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu->Fill(8.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue->Fill(8.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu->Fill(8.,eventweightForplots);
+          
+          if(dataSetName.find("WZT")!=std::string::npos){
+            CutflowTableHisto__WZ->Fill(8.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(8.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(8.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(8.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(8.,eventweightForplots);
+          }
+          else if(dataSetName.find("fake")!=std::string::npos){
+            CutflowTableHisto__fake->Fill(8.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(8.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(8.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(8.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(8.,eventweightForplots);
+          }
+          else if(dataSetName.find("tZq")!=std::string::npos){
+            CutflowTableHisto__tZq->Fill(8.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(8.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(8.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(8.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(8.,eventweightForplots);
+          }
+          else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
+            CutflowTableHisto__FCNCZut->Fill(8.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(8.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(8.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(8.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(8.,eventweightForplots);
+          }
+          else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
+            CutflowTableHisto__FCNCZct->Fill(8.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(8.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(8.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(8.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(8.,eventweightForplots);
+          }
+          else if(dataSetName.find("TTZ")!=std::string::npos ){
+            CutflowTableHisto__ttZ->Fill(8.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(8.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(8.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(8.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(8.,eventweightForplots);
+          }
+          else if(isData){
+            CutflowTableHisto__data->Fill(8.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__data->Fill(8.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(8.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__data->Fill(8.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(8.,eventweightForplots);
+          }
+          else {
+            CutflowTableHisto__other->Fill(8.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__other->Fill(8.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(8.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__other->Fill(8.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(8.,eventweightForplots);
+          }
         }
-       
+        
         
       }// WZ control region
-    
+      
       if(!selected){continue; }
       
       
@@ -2553,7 +3123,7 @@ int main(int argc, char* argv[]){
       if(Region == 2 ) nSelectedEntriesWZweighted += eventweightForNotMSplots;
       if(Region == 3 ) nSelectedEntriesTTZweighted += eventweightForNotMSplots;
       
-     
+      
       if((isData || dataSetName.find("WZ")!=std::string::npos)  && checktrigger ){
         myfile << evt_num << endl;
         if(PassedTrigger)  myfiletrigged << evt_num << endl;
@@ -2584,8 +3154,8 @@ int main(int argc, char* argv[]){
       /// Make plots
       if (makeMVAPlots )
       {
-       // if(Region == 0) FillMVAPlots(d,dataSetName, Region, "singletop", decayChannels);
-       // if(Region == 1) FillMVAPlots(d,dataSetName, Region, "toppair", decayChannels);
+        // if(Region == 0) FillMVAPlots(d,dataSetName, Region, "singletop", decayChannels);
+        // if(Region == 1) FillMVAPlots(d,dataSetName, Region, "toppair", decayChannels);
         if(Region == 2) FillMVAPlots(d,dataSetName, Region, "wzcontrol", decayChannels);
         // if(Region == 3) FillMVAPlots(d,dataSetName, Region, "ttzcontrol", decayChannels);
       }
@@ -2593,6 +3163,23 @@ int main(int argc, char* argv[]){
       
       
     } // events
+    
+    
+    if(MakeSelectionTable){
+      if(d == 0) CutflowTableFile = TFile::Open( CutflowTableFileName.c_str(), "RECREATE" );
+      else CutflowTableFile = TFile::Open( CutflowTableFileName.c_str(), "UPDATE" );
+      CutflowTableFile->cd();
+      CutflowTableHisto->Write();
+      CutflowTableHisto_eee->Write();
+      CutflowTableHisto_eeu->Write();
+      CutflowTableHisto_uue->Write();
+      CutflowTableHisto_uuu->Write();
+      
+      
+      CutflowTableFile->Close();
+    }
+    
+    
     
     if((isData || dataSetName.find("WZ")!=std::string::npos) && checktrigger){
       if(d == 0)triggerEfffile = TFile::Open( triggerEfffilename.c_str(), "RECREATE" );
@@ -2672,7 +3259,7 @@ int main(int argc, char* argv[]){
      nSelectedEntriesWZweighted = nSelectedEntriesWZ;
      }*/
     
-   
+    
     
     
     cout << "                nSelectedEntries ST region: " << nSelectedEntriesST << " weighted " << nSelectedEntriesSTweighted << endl;
@@ -2680,7 +3267,7 @@ int main(int argc, char* argv[]){
     cout << "                nSelectedEntries WZ region: " << nSelectedEntriesWZ  << " weighted " << nSelectedEntriesWZweighted << endl;
     cout << "                nSelectedEntries TTZ region: " << nSelectedEntriesTTZ  << " weighted " << nSelectedEntriesTTZweighted << endl;
     if(doDilep) cout << "                nSelectedEntries dilep region: " << nSelectedEntriesDilep  << " weighted " << nSelectedEntriesDilepweighted << endl;
-      cout << endl;
+    cout << endl;
     if(check_matching) MatchingEfficiency();
   } // data
   
@@ -2688,28 +3275,80 @@ int main(int argc, char* argv[]){
   
   
   if(checkcuts){
-  cout << "                nSelectedEntries FCNC d0 muon: " << eventsafter_d0muon << " / " << eventsbefore << " = " << eventsafter_d0muon/eventsbefore << endl;
-  cout << "                nSelectedEntries FCNC Delta Eta (Wlep,W) : " << eventsafter_DeltaEtaWlepW<< " / " << eventsbefore << " = " << eventsafter_DeltaEtaWlepW/eventsbefore << endl;
-  cout << "                nSelectedEntries FCNC Delta RTheEta (Wlep,SM top) : " << eventsafter_DeltaEtaWlepSMtop<< " / " << eventsbefore << " = " << eventsafter_DeltaEtaWlepSMtop/eventsbefore << endl;
-  cout << "                nSelectedEntries FCNC Delta R (Wlep,SM top) : " << eventsafter_DeltaRWlepSMtop<< " / " << eventsbefore << " = " << eventsafter_DeltaRWlepSMtop/eventsbefore << endl;
-  cout << "                nSelectedEntries FCNC Delta R (Wlep,SM b) : " << eventsafter_DeltaRWlepSMb<< " / " << eventsbefore << " = " << eventsafter_DeltaRWlepSMb/eventsbefore << endl;
-  cout << "                nSelectedEntries FCNC Delta Eta (Wlep,SMb) : " << eventsafter_DeltaEtaWlepZ << " / " << eventsbefore << " = " << eventsafter_DeltaEtaWlepZ/eventsbefore << endl;
-  cout << "                nSelectedEntries Fake d0 muon: " << feventsafter_d0muon << " / " << feventsbefore << " = " << feventsafter_d0muon/feventsbefore << endl;
-  cout << "                nSelectedEntries Fake Delta Eta (Wlep,W) : " << feventsafter_DeltaEtaWlepW<< " / " << feventsbefore << " = " << feventsafter_DeltaEtaWlepW/feventsbefore << endl;
-  cout << "                nSelectedEntries Fake Delta R (Wlep,SM top) : " << feventsafter_DeltaRWlepSMtop<< " / " << feventsbefore << " = " << feventsafter_DeltaRWlepSMtop/feventsbefore << endl;
-   cout << "                nSelectedEntries Fake Delta R (Wlep,SM b) : " << feventsafter_DeltaRWlepSMb<< " / " << feventsbefore << " = " << feventsafter_DeltaRWlepSMb/feventsbefore << endl;
-  cout << "                nSelectedEntries Fake Delta R ThEta (Wlep,SM top) : " << feventsafter_DeltaEtaWlepSMtop<< " / " << feventsbefore << " = " << feventsafter_DeltaEtaWlepSMtop/feventsbefore << endl;
-  cout << "                nSelectedEntries Fake Delta Eta (Wlep,SM b) : " << feventsafter_DeltaEtaWlepZ << " / " << feventsbefore << " = " << feventsafter_DeltaEtaWlepZ/feventsbefore << endl;
-  cout << endl;
-  cout << "                d0 muon: " << eventsafter_d0muon << " / " << sqrt(feventsafter_d0muon) << " = " << eventsafter_d0muon/sqrt(feventsafter_d0muon) << endl;
-  cout << "                Delta Eta (Wlep,W) : " << eventsafter_DeltaEtaWlepW<< " / " << sqrt(feventsafter_DeltaEtaWlepW) << " = " << eventsafter_DeltaEtaWlepW/sqrt(feventsafter_DeltaEtaWlepW) << endl;
-  cout << "                Delta R ThEta (Wlep,SM top) : " << eventsafter_DeltaEtaWlepSMtop<< " / " << sqrt(feventsafter_DeltaEtaWlepSMtop) << " = " << eventsafter_DeltaEtaWlepSMtop/sqrt(feventsafter_DeltaEtaWlepSMtop)<< endl;
-  cout << "                Delta R (Wlep,SM top) : " << eventsafter_DeltaRWlepSMtop<< " / " << sqrt(feventsafter_DeltaRWlepSMtop) << " = " << eventsafter_DeltaRWlepSMtop/sqrt(feventsafter_DeltaRWlepSMtop) << endl;
-  cout << "                Delta R (Wlep,SM b) : " << eventsafter_DeltaRWlepSMb<< " / " << sqrt(feventsafter_DeltaRWlepSMb) << " = " << eventsafter_DeltaRWlepSMb/sqrt(feventsafter_DeltaRWlepSMb) << endl;
-  cout << "                Delta Eta (Wlep,SM b) : " << eventsafter_DeltaEtaWlepZ << " / " << sqrt(feventsafter_DeltaEtaWlepZ) << " = " << eventsafter_DeltaEtaWlepZ/sqrt(feventsafter_DeltaEtaWlepZ) << endl;
-  cout << endl;
-  cout << endl;
+    cout << "                nSelectedEntries FCNC d0 muon: " << eventsafter_d0muon << " / " << eventsbefore << " = " << eventsafter_d0muon/eventsbefore << endl;
+    cout << "                nSelectedEntries FCNC Delta Eta (Wlep,W) : " << eventsafter_DeltaEtaWlepW<< " / " << eventsbefore << " = " << eventsafter_DeltaEtaWlepW/eventsbefore << endl;
+    cout << "                nSelectedEntries FCNC Delta RTheEta (Wlep,SM top) : " << eventsafter_DeltaEtaWlepSMtop<< " / " << eventsbefore << " = " << eventsafter_DeltaEtaWlepSMtop/eventsbefore << endl;
+    cout << "                nSelectedEntries FCNC Delta R (Wlep,SM top) : " << eventsafter_DeltaRWlepSMtop<< " / " << eventsbefore << " = " << eventsafter_DeltaRWlepSMtop/eventsbefore << endl;
+    cout << "                nSelectedEntries FCNC Delta R (Wlep,SM b) : " << eventsafter_DeltaRWlepSMb<< " / " << eventsbefore << " = " << eventsafter_DeltaRWlepSMb/eventsbefore << endl;
+    cout << "                nSelectedEntries FCNC Delta Eta (Wlep,SMb) : " << eventsafter_DeltaEtaWlepZ << " / " << eventsbefore << " = " << eventsafter_DeltaEtaWlepZ/eventsbefore << endl;
+    cout << "                nSelectedEntries Fake d0 muon: " << feventsafter_d0muon << " / " << feventsbefore << " = " << feventsafter_d0muon/feventsbefore << endl;
+    cout << "                nSelectedEntries Fake Delta Eta (Wlep,W) : " << feventsafter_DeltaEtaWlepW<< " / " << feventsbefore << " = " << feventsafter_DeltaEtaWlepW/feventsbefore << endl;
+    cout << "                nSelectedEntries Fake Delta R (Wlep,SM top) : " << feventsafter_DeltaRWlepSMtop<< " / " << feventsbefore << " = " << feventsafter_DeltaRWlepSMtop/feventsbefore << endl;
+    cout << "                nSelectedEntries Fake Delta R (Wlep,SM b) : " << feventsafter_DeltaRWlepSMb<< " / " << feventsbefore << " = " << feventsafter_DeltaRWlepSMb/feventsbefore << endl;
+    cout << "                nSelectedEntries Fake Delta R ThEta (Wlep,SM top) : " << feventsafter_DeltaEtaWlepSMtop<< " / " << feventsbefore << " = " << feventsafter_DeltaEtaWlepSMtop/feventsbefore << endl;
+    cout << "                nSelectedEntries Fake Delta Eta (Wlep,SM b) : " << feventsafter_DeltaEtaWlepZ << " / " << feventsbefore << " = " << feventsafter_DeltaEtaWlepZ/feventsbefore << endl;
+    cout << endl;
+    cout << "                d0 muon: " << eventsafter_d0muon << " / " << sqrt(feventsafter_d0muon) << " = " << eventsafter_d0muon/sqrt(feventsafter_d0muon) << endl;
+    cout << "                Delta Eta (Wlep,W) : " << eventsafter_DeltaEtaWlepW<< " / " << sqrt(feventsafter_DeltaEtaWlepW) << " = " << eventsafter_DeltaEtaWlepW/sqrt(feventsafter_DeltaEtaWlepW) << endl;
+    cout << "                Delta R ThEta (Wlep,SM top) : " << eventsafter_DeltaEtaWlepSMtop<< " / " << sqrt(feventsafter_DeltaEtaWlepSMtop) << " = " << eventsafter_DeltaEtaWlepSMtop/sqrt(feventsafter_DeltaEtaWlepSMtop)<< endl;
+    cout << "                Delta R (Wlep,SM top) : " << eventsafter_DeltaRWlepSMtop<< " / " << sqrt(feventsafter_DeltaRWlepSMtop) << " = " << eventsafter_DeltaRWlepSMtop/sqrt(feventsafter_DeltaRWlepSMtop) << endl;
+    cout << "                Delta R (Wlep,SM b) : " << eventsafter_DeltaRWlepSMb<< " / " << sqrt(feventsafter_DeltaRWlepSMb) << " = " << eventsafter_DeltaRWlepSMb/sqrt(feventsafter_DeltaRWlepSMb) << endl;
+    cout << "                Delta Eta (Wlep,SM b) : " << eventsafter_DeltaEtaWlepZ << " / " << sqrt(feventsafter_DeltaEtaWlepZ) << " = " << eventsafter_DeltaEtaWlepZ/sqrt(feventsafter_DeltaEtaWlepZ) << endl;
+    cout << endl;
+    cout << endl;
   }
+  
+  
+  
+  if(MakeSelectionTable){
+    CutflowTableFile = TFile::Open( CutflowTableFileName.c_str(), "UPDATE" );
+    CutflowTableFile->cd();
+    CutflowTableHisto__WZ->Write();
+    CutflowTableHisto_eee__WZ->Write();
+    CutflowTableHisto_eeu__WZ->Write();
+    CutflowTableHisto_uue__WZ->Write();
+    CutflowTableHisto_uuu__WZ->Write();
+    CutflowTableHisto__data->Write();
+    CutflowTableHisto_eee__data->Write();
+    CutflowTableHisto_eeu__data->Write();
+    CutflowTableHisto_uue__data->Write();
+    CutflowTableHisto_uuu__data->Write();
+    CutflowTableHisto__tZq->Write();
+    CutflowTableHisto_eee__tZq->Write();
+    CutflowTableHisto_eeu__tZq->Write();
+    CutflowTableHisto_uue__tZq->Write();
+    CutflowTableHisto_uuu__tZq->Write();
+    CutflowTableHisto__ttZ->Write();
+    CutflowTableHisto_eee__ttZ->Write();
+    CutflowTableHisto_eeu__ttZ->Write();
+    CutflowTableHisto_uue__ttZ->Write();
+    CutflowTableHisto_uuu__ttZ->Write();
+    CutflowTableHisto__FCNCZut->Write();
+    CutflowTableHisto_eee__FCNCZut->Write();
+    CutflowTableHisto_eeu__FCNCZut->Write();
+    CutflowTableHisto_uue__FCNCZut->Write();
+    CutflowTableHisto_uuu__FCNCZut->Write();
+    CutflowTableHisto__FCNCZct->Write();
+    CutflowTableHisto_eee__FCNCZct->Write();
+    CutflowTableHisto_eeu__FCNCZct->Write();
+    CutflowTableHisto_uue__FCNCZct->Write();
+    CutflowTableHisto_uuu__FCNCZct->Write();
+    CutflowTableHisto__other->Write();
+    CutflowTableHisto_eee__other->Write();
+    CutflowTableHisto_eeu__other->Write();
+    CutflowTableHisto_uue__other->Write();
+    CutflowTableHisto_uuu__other->Write();
+    CutflowTableHisto__fake->Write();
+    CutflowTableHisto_eee__fake->Write();
+    CutflowTableHisto_eeu__fake->Write();
+    CutflowTableHisto_uue__fake->Write();
+    CutflowTableHisto_uuu__fake->Write();
+    
+    CutflowTableFile->Close();
+  }
+  
+  
+  
   
   
   
@@ -2719,32 +3358,44 @@ int main(int argc, char* argv[]){
     
     fakescalefactorsfile = TFile::Open( fakescalefactorsfilename.c_str(), "RECREATE" );
     
-    SumNormal_fake = (TH1F*) (fake_Histo_sum)->Clone("SumNormal_fake");  // DY
-    dataNormal_fake = (TH1F*) (fake_Histo_data)->Clone("dataNormal_fake"); // DD fake
+    SumNormal_fake = (TH2F*) (fake_Histo_sum)->Clone("SumNormal_fake");  // DY
+    dataNormal_fake = (TH2F*) (fake_Histo_data)->Clone("dataNormal_fake"); // DD fake
     
     SumNormal_fake->Scale(1/SumNormal_fake->Integral());
     dataNormal_fake->Scale(1/dataNormal_fake->Integral());
     
-    fake_SFHisto = new TH1F("fake_SFHisto", "fake_SFHisto" , 10,0,300);
+    fake_SFHisto = new TH2F("fake_SFHisto", "fake_SFHisto" , 10,0,300,5,0,200);
     double bincontent = -10000;
     double binerror = 0;
-    for(int iBin = 1; iBin < SumNormal_fake->GetNbinsX()+1; iBin++){
-      bincontent = SumNormal_fake->GetBinContent(iBin)/ dataNormal_fake->GetBinContent(iBin);
-      binerror = Sqrt((pow(SumNormal_fake->GetBinError(iBin),2) / pow(dataNormal_fake->GetBinContent(iBin),2)) + ((pow(dataNormal_fake->GetBinError(iBin),2)*pow(SumNormal_fake->GetBinContent(iBin),2))/pow(dataNormal_fake->GetBinContent(iBin),4)));
-      fake_SFHisto->SetBinContent(iBin, bincontent);
-      fake_SFHisto->SetBinError(iBin, binerror);
+    int iBin = -5;
+    for(int iBinx = 1; iBinx < SumNormal_fake->GetNbinsX()+1; iBinx++){
+      for(int iBiny = 1; iBiny < SumNormal_fake->GetNbinsY()+1; iBiny++){
+        iBin =  SumNormal_fake->GetBin(iBinx, iBiny);
+        bincontent = SumNormal_fake->GetBinContent(iBin)/ dataNormal_fake->GetBinContent(iBin);
+        binerror = TMath::Sqrt((pow(SumNormal_fake->GetBinError(iBin),2) / pow(dataNormal_fake->GetBinContent(iBin),2)) + ((pow(dataNormal_fake->GetBinError(iBin),2)*pow(SumNormal_fake->GetBinContent(iBin),2))/pow(dataNormal_fake->GetBinContent(iBin),4)));
+        fake_SFHisto->SetBinContent(iBin, bincontent);
+        fake_SFHisto->SetBinError(iBin, binerror);
+      }
     }
-   
+    
     
     fakescalefactorsfile->cd();
     
     
     fake_Histo_data->Write();
     fake_Histo_sum->Write();
-     SumNormal_fake->Write();
-     dataNormal_fake->Write();
-     fake_SFHisto->Write();
-    
+    SumNormal_fake->Write();
+    dataNormal_fake->Write();
+    fake_SFHisto->Write();
+    TCanvas *tempC = new TCanvas();
+    tempC->cd();
+    fake_SFHisto->SetTitle("Z p_{T} ScaleFactors " );
+    fake_SFHisto->GetXaxis()->SetTitle("Z boson p_{T}");
+    fake_SFHisto->GetYaxis()->SetTitle("W lepton p_{T}");
+    fake_SFHisto->Draw("colz text");
+    tempC->Update();
+    tempC->Write();
+    tempC->SaveAs( "SF_fake.png" );
     
     
     
@@ -2875,27 +3526,6 @@ int main(int argc, char* argv[]){
     
   }
   
-  if(MakeSelectionTable){
-    CutflowTable->TableCalculator(false, false, false, false, false, false, false, true); // mergeTT, mergeQCD , mergeW, mergeZ, mergeST, mergeVV, mergeTTV, NPmass -> write NP poverlay entries, nonpromptmc, tth, np zut, np zct
-    string CutflowTablestring = "Cutflowtable_table.tex";
-    CutflowTable->Write(CutflowTablestring.c_str(), true,true,true,true,true,true,true);  //output, witherr, merged, usebooktabs, addrawnbrs, addeff, add total aff, writelandscape
-    
-    CutflowTable_eee->TableCalculator(false, false, false, false, false, false, false, true);
-    CutflowTablestring = "Cutflowtable_table_eee.tex";
-    CutflowTable_eee->Write(CutflowTablestring.c_str(), true,true,true,true,true,true,true);
-    
-    CutflowTable_eeu->TableCalculator(false, false, false, false, false, false, false, true);
-    CutflowTablestring = "Cutflowtable_table_eeu.tex";
-    CutflowTable_eeu->Write(CutflowTablestring.c_str(), true,true,true,true,true,true,true);
-    
-    CutflowTable_uue->TableCalculator(false, false, false, false, false, false, false, true);
-    CutflowTablestring = "Cutflowtable_table_uue.tex";
-    CutflowTable_uue->Write(CutflowTablestring.c_str(), true,true,true,true,true,true,true);
-    
-    CutflowTable_uuu->TableCalculator(false, false, false, false, false, false, false, true);
-    CutflowTablestring = "Cutflowtable_table_uuu.tex";
-    CutflowTable_uuu->Write(CutflowTablestring.c_str(), true,true,true,true,true,true,true);
-  }
   
   ///*****************///
   ///   Write plots   ///
@@ -2925,7 +3555,7 @@ int main(int argc, char* argv[]){
         MultiSamplePlot *temp = it->second;
         
         //temp->showNumberEntries(showEntriesLegend);
-       // temp->setPreliminary(false);
+        // temp->setPreliminary(false);
         //temp->setErrorBandFile(errorbandfile, dosystfile);
         //temp->Draw(name,RatioType, addRatioErrorBand, addErrorBand, ErrorBandAroundTotalInput, scaleNPSignal);
         string name = it->first;
@@ -2968,8 +3598,8 @@ int main(int argc, char* argv[]){
       th1dirfakes->cd();
       gStyle->SetOptStat(0);
       
-      string poststring = "2lep_jets_bjets_zmasswindow";
-      string posttitle = " channel - >= 2 lep, >0 j, >0 b, Zmass window";
+      string poststring = "2lep";
+      string posttitle = " channel - >= 2 lep";
       vector<string> plotnames = {"ZbosonPt_","ZbosonEta_","ZbosonPhi_","WlepPt_","WlepEta_","WlepPhi_","TrMassW_"};
       vector<string> plottitles = {"p_{T} Z boson (GeV)","#eta Z boson","#phi Z boson","p_{T} l_{W} (GeV)","#eta l_{W}","#phi l_{W}","transv. mass W boson (GeV)"};
       
@@ -3014,30 +3644,30 @@ int main(int argc, char* argv[]){
             {
               TH1F *temp = it->second;
               string name = it->first;
-              
+              cout << name << endl;
               if(name.find(plotnames[iv].c_str())==std::string::npos) continue;
               if(name.find(channelst.c_str())==std::string::npos) continue;
-             // if(name.find("uuu")!=std::string::npos || name.find("uue")!=std::string::npos || name.find("euu")!=std::string::npos || name.find("eee")!=std::string::npos) continue;
-              //cout << name << endl;
+              // if(name.find("uuu")!=std::string::npos || name.find("uue")!=std::string::npos || name.find("euu")!=std::string::npos || name.find("eee")!=std::string::npos) continue;
+              cout << name << endl;
               if(name.find("data")!=std::string::npos){
                 //cout << "data" << endl;
                 if(tempdata == 0) tempdata = (TH1F*) temp;
                 else tempdata->Add((TH1F*) temp);
               }
               else if(name.find("fake")!=std::string::npos){
-              //  cout << "fake" << endl;
+                //  cout << "fake" << endl;
                 if(tempfake == 0) tempfake = (TH1F*) temp;
                 else tempfake->Add((TH1F*) temp);
               }
               else if(name.find("DY")!=std::string::npos  || dataSetName.find("TT")!=std::string::npos || dataSetName.find("WW")!=std::string::npos ){
-             //   cout << "DY" << endl;
+                //   cout << "DY" << endl;
                 if(tempDY == 0) tempDY = (TH1F*) temp;
                 else tempDY->Add((TH1F*) temp);
               }
               
             }
             
-            //cout << "scaling" <<endl;
+            cout << "scaling" <<endl;
             tempfake->Scale(1./tempfake->Integral());
             tempdata->Scale(1./tempdata->Integral());
             tempDY->Scale(1./tempDY->Integral());
@@ -3091,10 +3721,10 @@ int main(int argc, char* argv[]){
             ratioFakeVsFake->Draw("histo e");
             line->Draw("same");
             Canvasfakes->Update();
-             Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiofakes_"+plotnames[iv]+poststring+channelst+".png").c_str());
+            Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiofakes_"+plotnames[iv]+poststring+channelst+".png").c_str());
             Canvasfakes->SetLogy();
             Canvasfakes->Update();
-           Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiofakes_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str());
+            Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiofakes_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str());
             
             TH1F* ratioFakeVsData = (TH1F*) tempdata->Clone("ratioFakeVsData");
             ratioFakeVsData->Divide((TH1F*) tempfake);
@@ -3108,10 +3738,10 @@ int main(int argc, char* argv[]){
             ratioFakeVsData->Draw("histo e");
             line->Draw("same");
             Canvasfakes->Update();
-             Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiodata_"+plotnames[iv]+poststring+channelst+".png").c_str());
+            Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiodata_"+plotnames[iv]+poststring+channelst+".png").c_str());
             Canvasfakes->SetLogy();
             Canvasfakes->Update();
-             Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiodata_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str());
+            Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiodata_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str());
             
             legfakes = new TLegend(xl1,yl1,xl2,yl2);
             legfakes->AddEntry(ratioFakeVsData,"DD non prompt/Data","L");   // h1 and h2 are histogram pointers
@@ -3166,7 +3796,7 @@ int main(int argc, char* argv[]){
           splitname = (split(it->first, seperator))[0];
           plotnames.push_back(splitname);
           plottitles.push_back(splitname);
-         // cout << "split " << splitname << endl;
+          // cout << "split " << splitname << endl;
         }
       }
       //cout << "plotnames size " << plotnames.size();
@@ -3229,7 +3859,7 @@ int main(int argc, char* argv[]){
             
             legfakes->AddEntry(tempdata,"DD non prompt","L");   // h1 and h2 are histogram pointers
             legfakes->AddEntry(tempNP,"FCNC","L");
-           // legfakes->AddEntry(tempDY,"MC non prompt","L");
+            // legfakes->AddEntry(tempDY,"MC non prompt","L");
             
             double maximum = TMath::Max(TMath::Max(tempNP->GetMaximum(), tempdata->GetMaximum()), tempDY->GetMaximum());
             tempdata->SetMaximum(maximum*1.5);
@@ -3245,7 +3875,7 @@ int main(int argc, char* argv[]){
             Canvasfakes->cd();
             tempdata->Draw("histo e");
             tempNP->Draw("e same histo");
-           // tempDY->Draw("same histo e");
+            // tempDY->Draw("same histo e");
             legfakes->Draw("");
             Canvasfakes->Update();
             Canvasfakes->SaveAs( ("fakedisc/fakedisc_"+plotnames[iv]+poststring+channelst+".png").c_str());
@@ -3282,686 +3912,686 @@ int main(int argc, char* argv[]){
       }
     }
     
-      if(systematicplots){
-     TDirectory* th1dirsys = fout->mkdir("1D_histograms_sys");
-     th1dirsys->cd();
-     gStyle->SetOptStat(1110);
-     gStyle->SetOptStat(0);
-     TH1F *tempnom =0;
-     TH1F *tempup = 0;
-     TH1F *tempdown = 0;
-     int Nnom = 0;
-     int Nup = 0;
-     int Ndown = 0;
-     double max = 0.;
-     double max1 = 0.;
-     TCanvas* Canvas = 0;
-     Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
-     TLegend *leg = new TLegend(xl1,yl1,xl2,yl2);
-     std::map<std::string,TH1F*>::const_iterator nom = histo1D_PUSystematics.begin(), up=histo1D_PUSystematics.begin(), down=histo1D_PUSystematics.begin();
-     
-     
-     for (std::map<std::string,TH1F*>::const_iterator it = histo1D_PUSystematics.begin(); it != histo1D_PUSystematics.end(); it++)
-     {
-     string name = it->first;
-     if(name.find("nom")!=std::string::npos){
-     nom = it;
-     if(tempnom == 0) tempnom = nom->second;
-     else tempnom->Add(nom->second);
-     }
-     if(name.find("up")!=std::string::npos){
-     up= it;
-     if(tempup == 0) tempup = up->second;
-     else tempup->Add(up->second);
-     }
-     if(name.find("down")!=std::string::npos){
-     down = it;
-     if(tempdown == 0) tempdown = down->second;
-     else tempdown->Add(down->second);
-     }
-     
-     }
-     
-     Nnom= tempnom->GetNbinsX();
-     tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-     tempnom->SetBinContent(Nnom+1,0);
-     tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempnom->Write();
-     Nup = tempup->GetNbinsX();
-     tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-     tempup->SetBinContent(Nup+1,0);
-     tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempup->Write();
-     Ndown= tempdown->GetNbinsX();
-     tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-     tempdown->SetBinContent(Ndown+1,0);
-     tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempdown->Write();
-     tempnom->SetLineColor(kRed);
-     tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kGreen+3);
-     
-     leg->AddEntry(tempnom,"Nominal","L");   // h1 and h2 are histogram pointers
-     leg->AddEntry(tempup,"Up","L");
-     leg->AddEntry(tempdown,"Down","L");
-     
-     
-     max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
-     max = TMath::Max(max1, tempdown->GetMaximum());
-     tempnom->SetMaximum(max*1.2);
-     
-     
-     tempnom->SetTitle("Nb Of vertices: PU SF");
-     Canvas =  TCanvasCreator(tempnom, "Nb Of vertices: PU SF" );//new TCanvas("Canvas_PU","Canvas_PU");
-     Canvas->cd();
-     tempnom->Draw("h e");
-     tempup->Draw("SAME,h e");
-     tempdown->Draw("SAME,h e");
-     leg->Draw("sames");
-     Canvas->SaveAs( (placeTH1F+"PUSF_nvtx.png").c_str() );
-     Canvas->SetLogy();
-     Canvas->Update();
-     Canvas->SaveAs( (placeTH1F+"PUSF_nvtx_LogY.png").c_str() );
-     
-     tempnom =0;
-     tempup = 0;
-     tempdown = 0;
-     // electron SF
-     for (std::map<std::string,TH1F*>::const_iterator it = histo1D_ElSystematics.begin(); it != histo1D_ElSystematics.end(); it++)
-     {
-     string name = it->first;
-     if(name.find("nom")!=std::string::npos){
-     nom = it;
-     if(tempnom == 0) tempnom = nom->second;
-     else tempnom->Add(nom->second);
-     }
-     if(name.find("up")!=std::string::npos){
-     up= it;
-     if(tempup == 0) tempup = up->second;
-     else tempup->Add(up->second);
-     }
-     if(name.find("down")!=std::string::npos){
-     down = it;
-     if(tempdown == 0) tempdown = down->second;
-     else tempdown->Add(down->second);
-     }
-     
-     }
-     
-     
-     Nnom= tempnom->GetNbinsX();
-     tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-     tempnom->SetBinContent(Nnom+1,0);
-     tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempnom->Write();
-     Nup = tempup->GetNbinsX();
-     tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-     tempup->SetBinContent(Nup+1,0);
-     tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempup->Write();
-     Ndown= tempdown->GetNbinsX();
-     tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-     tempdown->SetBinContent(Ndown+1,0);
-     tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempdown->Write();
-     tempnom->SetLineColor(kRed);
-     tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kGreen+3);
-     
-     max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
-     max = TMath::Max(max1, tempdown->GetMaximum());
-     tempnom->SetMaximum(max*1.2);
-     tempnom->SetTitle("Pt electrons: El SF");
-     Canvas =  TCanvasCreator(tempnom, "Pt leading electron: El SF" );//new TCanvas("Canvas_PU","Canvas_PU");
-     Canvas->cd();
-     tempnom->Draw("histo e");
-     tempup->Draw("same histo e");
-     tempdown->Draw("same histo e");
-     leg->Draw("sames");
-     Canvas->SaveAs( (placeTH1F+"ELSF_ptelectron.png").c_str() );
-     Canvas->SetLogy();
-     Canvas->Update();
-     Canvas->SaveAs( (placeTH1F+"ELSF_ptelectron_LogY.png").c_str() );
-     
-     // muon SF
-     tempnom =0;
-     tempup = 0;
-     tempdown = 0;
-     
-     for (std::map<std::string,TH1F*>::const_iterator it = histo1D_MuSystematics.begin(); it != histo1D_MuSystematics.end(); it++)
-     {
-     string name = it->first;
-     if(name.find("nom")!=std::string::npos){
-     nom = it;
-     if(tempnom == 0) tempnom = nom->second;
-     else tempnom->Add(nom->second);
-     }
-     if(name.find("up")!=std::string::npos){
-     up= it;
-     if(tempup == 0) tempup = up->second;
-     else tempup->Add(up->second);
-     }
-     if(name.find("down")!=std::string::npos){
-     down = it;
-     if(tempdown == 0) tempdown = down->second;
-     else tempdown->Add(down->second);
-     }
-     
-     }
-     Nnom= tempnom->GetNbinsX();
-     tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-     tempnom->SetBinContent(Nnom+1,0);
-     tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempnom->Write();
-     Nup = tempup->GetNbinsX();
-     tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-     tempup->SetBinContent(Nup+1,0);
-     tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempup->Write();
-     Ndown= tempdown->GetNbinsX();
-     tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-     tempdown->SetBinContent(Ndown+1,0);
-     tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempdown->Write();
-     tempnom->SetLineColor(kRed);
-     tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kGreen+3);
-     
-     max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
-     max = TMath::Max(max1, tempdown->GetMaximum());
-     tempnom->SetMaximum(max*1.2);
-     tempnom->SetTitle("Pt muons: Mu SF");
-     Canvas =  TCanvasCreator(tempnom, "Pt leading muon: Mu SF" );//new TCanvas("Canvas_PU","Canvas_PU");
-     Canvas->cd();
-     tempnom->Draw("histo e");
-     tempup->Draw("same histo e");
-     tempdown->Draw("same histo e");
-     leg->Draw("sames");
-     Canvas->SaveAs( (placeTH1F+"MUSF_ptmuon.png").c_str() );
-     Canvas->SetLogy();
-     Canvas->Update();
-     Canvas->SaveAs( (placeTH1F+"MUSF_ptmuon_LogY.png").c_str() );
-     
-     // btag SF cferr1
-     tempnom =0;
-     tempup = 0;
-     tempdown = 0;
-     
-     for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bcferr1Systematics.begin(); it != histo1D_Bcferr1Systematics.end(); it++)
-     {
-     string name = it->first;
-     if(name.find("nom")!=std::string::npos){
-     nom = it;
-     if(tempnom == 0) tempnom = nom->second;
-     else tempnom->Add(nom->second);
-     }
-     if(name.find("up")!=std::string::npos){
-     up= it;
-     if(tempup == 0) tempup = up->second;
-     else tempup->Add(up->second);
-     }
-     if(name.find("down")!=std::string::npos){
-     down = it;
-     if(tempdown == 0) tempdown = down->second;
-     else tempdown->Add(down->second);
-     }
-     
-     }
-     Nnom= tempnom->GetNbinsX();
-     tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-     tempnom->SetBinContent(Nnom+1,0);
-     tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempnom->Write();
-     Nup = tempup->GetNbinsX();
-     tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-     tempup->SetBinContent(Nup+1,0);
-     tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempup->Write();
-     Ndown= tempdown->GetNbinsX();
-     tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-     tempdown->SetBinContent(Ndown+1,0);
-     tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempdown->Write();
-     tempnom->SetLineColor(kRed);
-     tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kGreen+3);
-     
-     max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
-     max = TMath::Max(max1, tempdown->GetMaximum());
-     tempnom->SetMaximum(max*1.2);
-     tempnom->SetTitle("CSVv2 leading jet: btag SF cferr1");
-     Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF cferr1" );//new TCanvas("Canvas_PU","Canvas_PU");
-     Canvas->cd();
-     tempnom->Draw("histo e");
-     tempup->Draw("same histo e");
-     tempdown->Draw("same histo e");
-     leg->Draw("sames");
-     Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr1.png").c_str() );
-     Canvas->SetLogy();
-     Canvas->Update();
-     Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr1_LogY.png").c_str() );
-     
-     // btag SF cferr2
-     tempnom =0;
-     tempup = 0;
-     tempdown = 0;
-     
-     for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bcferr2Systematics.begin(); it != histo1D_Bcferr2Systematics.end(); it++)
-     {
-     string name = it->first;
-     if(name.find("nom")!=std::string::npos){
-     nom = it;
-     if(tempnom == 0) tempnom = nom->second;
-     else tempnom->Add(nom->second);
-     }
-     if(name.find("up")!=std::string::npos){
-     up= it;
-     if(tempup == 0) tempup = up->second;
-     else tempup->Add(up->second);
-     }
-     if(name.find("down")!=std::string::npos){
-     down = it;
-     if(tempdown == 0) tempdown = down->second;
-     else tempdown->Add(down->second);
-     }
-     
-     }
-     Nnom= tempnom->GetNbinsX();
-     tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-     tempnom->SetBinContent(Nnom+1,0);
-     tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempnom->Write();
-     Nup = tempup->GetNbinsX();
-     tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-     tempup->SetBinContent(Nup+1,0);
-     tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempup->Write();
-     Ndown= tempdown->GetNbinsX();
-     tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-     tempdown->SetBinContent(Ndown+1,0);
-     tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempdown->Write();
-     tempnom->SetLineColor(kRed);
-     tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kGreen+3);
-     
-     max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
-     max = TMath::Max(max1, tempdown->GetMaximum());
-     tempnom->SetMaximum(max*1.2);
-     tempnom->SetTitle("CSVv2 leading jet: btag SF cferr2");
-     Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF cferr2" );//new TCanvas("Canvas_PU","Canvas_PU");
-     Canvas->cd();
-     tempnom->Draw("histo e");
-     tempup->Draw("same histo e");
-     tempdown->Draw("same histo e");
-     leg->Draw("sames");
-     Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr2.png").c_str() );
-     Canvas->SetLogy();
-     Canvas->Update();
-     Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr2_LogY.png").c_str() );
-     
-     // btag SF hfstats1
-     tempnom =0;
-     tempup = 0;
-     tempdown = 0;
-     
-     for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bhfstats1Systematics.begin(); it != histo1D_Bhfstats1Systematics.end(); it++)
-     {
-     string name = it->first;
-     if(name.find("nom")!=std::string::npos){
-     nom = it;
-     if(tempnom == 0) tempnom = nom->second;
-     else tempnom->Add(nom->second);
-     }
-     if(name.find("up")!=std::string::npos){
-     up= it;
-     if(tempup == 0) tempup = up->second;
-     else tempup->Add(up->second);
-     }
-     if(name.find("down")!=std::string::npos){
-     down = it;
-     if(tempdown == 0) tempdown = down->second;
-     else tempdown->Add(down->second);
-     }
-     
-     }
-     Nnom= tempnom->GetNbinsX();
-     tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-     tempnom->SetBinContent(Nnom+1,0);
-     tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempnom->Write();
-     Nup = tempup->GetNbinsX();
-     tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-     tempup->SetBinContent(Nup+1,0);
-     tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempup->Write();
-     Ndown= tempdown->GetNbinsX();
-     tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-     tempdown->SetBinContent(Ndown+1,0);
-     tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempdown->Write();
-     tempnom->SetLineColor(kRed);
-     tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kGreen+3);
-     
-     max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
-     max = TMath::Max(max1, tempdown->GetMaximum());
-     tempnom->SetMaximum(max*1.2);
-     tempnom->SetTitle("CSVv2 leading jet: btag SF hfstats1");
-     Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF hfstats1" );//new TCanvas("Canvas_PU","Canvas_PU");
-     Canvas->cd();
-     tempnom->Draw("histo e");
-     tempup->Draw("same histo e");
-     tempdown->Draw("same histo e");
-     leg->Draw("sames");
-     Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats1.png").c_str() );
-     Canvas->SetLogy();
-     Canvas->Update();
-     Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats1_LogY.png").c_str() );
-     
-     // btag SF hfstats2
-     tempnom =0;
-     tempup = 0;
-     tempdown = 0;
-     
-     for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bhfstats2Systematics.begin(); it != histo1D_Bhfstats2Systematics.end(); it++)
-     {
-     string name = it->first;
-     if(name.find("nom")!=std::string::npos){
-     nom = it;
-     if(tempnom == 0) tempnom = nom->second;
-     else tempnom->Add(nom->second);
-     }
-     if(name.find("up")!=std::string::npos){
-     up= it;
-     if(tempup == 0) tempup = up->second;
-     else tempup->Add(up->second);
-     }
-     if(name.find("down")!=std::string::npos){
-     down = it;
-     if(tempdown == 0) tempdown = down->second;
-     else tempdown->Add(down->second);
-     }
-     
-     }
-     Nnom= tempnom->GetNbinsX();
-     tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-     tempnom->SetBinContent(Nnom+1,0);
-     tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempnom->Write();
-     Nup = tempup->GetNbinsX();
-     tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-     tempup->SetBinContent(Nup+1,0);
-     tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempup->Write();
-     Ndown= tempdown->GetNbinsX();
-     tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-     tempdown->SetBinContent(Ndown+1,0);
-     tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempdown->Write();
-     tempnom->SetLineColor(kRed);
-     tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kGreen+3);
-     
-     max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
-     max = TMath::Max(max1, tempdown->GetMaximum());
-     tempnom->SetMaximum(max*1.2);
-     tempnom->SetTitle("CSVv2 leading jet: btag SF hfstats2");
-     Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF hfstats2" );//new TCanvas("Canvas_PU","Canvas_PU");
-     Canvas->cd();
-     tempnom->Draw("histo e");
-     tempup->Draw("same histo e");
-     tempdown->Draw("same histo e");
-     leg->Draw("sames");
-     Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats2.png").c_str() );
-     Canvas->SetLogy();
-     Canvas->Update();
-     Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats2_LogY.png").c_str() );
-     
-     
-     // btag SF lfstats1
-     tempnom =0;
-     tempup = 0;
-     tempdown = 0;
-     
-     for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Blfstats1Systematics.begin(); it != histo1D_Blfstats1Systematics.end(); it++)
-     {
-     string name = it->first;
-     if(name.find("nom")!=std::string::npos){
-     nom = it;
-     if(tempnom == 0) tempnom = nom->second;
-     else tempnom->Add(nom->second);
-     }
-     if(name.find("up")!=std::string::npos){
-     up= it;
-     if(tempup == 0) tempup = up->second;
-     else tempup->Add(up->second);
-     }
-     if(name.find("down")!=std::string::npos){
-     down = it;
-     if(tempdown == 0) tempdown = down->second;
-     else tempdown->Add(down->second);
-     }
-     
-     }
-     
-     Nnom= tempnom->GetNbinsX();
-     tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-     tempnom->SetBinContent(Nnom+1,0);
-     tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempnom->Write();
-     Nup = tempup->GetNbinsX();
-     tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-     tempup->SetBinContent(Nup+1,0);
-     tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempup->Write();
-     Ndown= tempdown->GetNbinsX();
-     tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-     tempdown->SetBinContent(Ndown+1,0);
-     tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempdown->Write();
-     tempnom->SetLineColor(kRed);
-     tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kGreen+3);
-     
-     max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
-     max = TMath::Max(max1, tempdown->GetMaximum());
-     tempnom->SetMaximum(max*1.2);
-     tempnom->SetTitle("CSVv2 leading jet: btag SF lfstats1");
-     Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF lfstats1" );//new TCanvas("Canvas_PU","Canvas_PU");
-     Canvas->cd();
-     tempnom->Draw("histo e");
-     tempup->Draw("same histo e");
-     tempdown->Draw("same histo e");
-     leg->Draw("sames");
-     Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats1.png").c_str() );
-     Canvas->SetLogy();
-     Canvas->Update();
-     Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats1_LogY.png").c_str() );
-     
-     // btag SF lfstats2
-     tempnom =0;
-     tempup = 0;
-     tempdown = 0;
-     
-     for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Blfstats2Systematics.begin(); it != histo1D_Blfstats2Systematics.end(); it++)
-     {
-     string name = it->first;
-     if(name.find("nom")!=std::string::npos){
-     nom = it;
-     if(tempnom == 0) tempnom = nom->second;
-     else tempnom->Add(nom->second);
-     }
-     if(name.find("up")!=std::string::npos){
-     up= it;
-     if(tempup == 0) tempup = up->second;
-     else tempup->Add(up->second);
-     }
-     if(name.find("down")!=std::string::npos){
-     down = it;
-     if(tempdown == 0) tempdown = down->second;
-     else tempdown->Add(down->second);
-     }
-     
-     }
-     Nnom= tempnom->GetNbinsX();
-     tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-     tempnom->SetBinContent(Nnom+1,0);
-     tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempnom->Write();
-     Nup = tempup->GetNbinsX();
-     tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-     tempup->SetBinContent(Nup+1,0);
-     tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempup->Write();
-     Ndown= tempdown->GetNbinsX();
-     tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-     tempdown->SetBinContent(Ndown+1,0);
-     tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempdown->Write();
-     tempnom->SetLineColor(kRed);
-     tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kGreen+3);
-     
-     max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
-     max = TMath::Max(max1, tempdown->GetMaximum());
-     tempnom->SetMaximum(max*1.2);
-     tempnom->SetTitle("CSVv2 leading jet: btag SF lfstats2");
-     Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF lfstats2" );//new TCanvas("Canvas_PU","Canvas_PU");
-     Canvas->cd();
-     tempnom->Draw("histo e");
-     tempup->Draw("same histo e");
-     tempdown->Draw("same histo e");
-     leg->Draw("sames");
-     Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats2.png").c_str() );
-     Canvas->SetLogy();
-     Canvas->Update();
-     Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats2_LogY.png").c_str() );
-     
-     
-     // btag SF hf
-     tempnom =0;
-     tempup = 0;
-     tempdown = 0;
-     
-     for (std::map<std::string,TH1F*>::const_iterator it = histo1D_BhfSystematics.begin(); it != histo1D_BhfSystematics.end(); it++)
-     {
-     string name = it->first;
-     if(name.find("nom")!=std::string::npos){
-     nom = it;
-     if(tempnom == 0) tempnom = nom->second;
-     else tempnom->Add(nom->second);
-     }
-     if(name.find("up")!=std::string::npos){
-     up= it;
-     if(tempup == 0) tempup = up->second;
-     else tempup->Add(up->second);
-     }
-     if(name.find("down")!=std::string::npos){
-     down = it;
-     if(tempdown == 0) tempdown = down->second;
-     else tempdown->Add(down->second);
-     }
-     
-     }
-     Nnom= tempnom->GetNbinsX();
-     tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-     tempnom->SetBinContent(Nnom+1,0);
-     tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempnom->Write();
-     Nup = tempup->GetNbinsX();
-     tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-     tempup->SetBinContent(Nup+1,0);
-     tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempup->Write();
-     Ndown= tempdown->GetNbinsX();
-     tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-     tempdown->SetBinContent(Ndown+1,0);
-     tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempdown->Write();
-     tempnom->SetLineColor(kRed);
-     tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kGreen+3);
-     
-     max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
-     max = TMath::Max(max1, tempdown->GetMaximum());
-     tempnom->SetMaximum(max*1.2);
-     tempnom->SetTitle("CSVv2 leading jet: btag SF hf");
-     Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF hf" );//new TCanvas("Canvas_PU","Canvas_PU");
-     Canvas->cd();
-     tempnom->Draw("histo e");
-     tempup->Draw("same histo e");
-     tempdown->Draw("same histo e");
-     leg->Draw("sames");
-     Canvas->SaveAs( (placeTH1F+"BSF_bdishf.png").c_str() );
-     Canvas->SetLogy();
-     Canvas->Update();
-     Canvas->SaveAs( (placeTH1F+"BSF_bdishf_LogY.png").c_str() );
-     
-     // btag SF lf
-     tempnom =0;
-     tempup = 0;
-     tempdown = 0;
-     
-     for (std::map<std::string,TH1F*>::const_iterator it = histo1D_BlfSystematics.begin(); it != histo1D_BlfSystematics.end(); it++)
-     {
-     string name = it->first;
-     if(name.find("nom")!=std::string::npos){
-     nom = it;
-     if(tempnom == 0) tempnom = nom->second;
-     else tempnom->Add(nom->second);
-     }
-     if(name.find("up")!=std::string::npos){
-     up= it;
-     if(tempup == 0) tempup = up->second;
-     else tempup->Add(up->second);
-     }
-     if(name.find("down")!=std::string::npos){
-     down = it;
-     if(tempdown == 0) tempdown = down->second;
-     else tempdown->Add(down->second);
-     }
-     
-     }
-     Nnom= tempnom->GetNbinsX();
-     tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
-     tempnom->SetBinContent(Nnom+1,0);
-     tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempnom->Write();
-     Nup = tempup->GetNbinsX();
-     tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
-     tempup->SetBinContent(Nup+1,0);
-     tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempup->Write();
-     Ndown= tempdown->GetNbinsX();
-     tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
-     tempdown->SetBinContent(Ndown+1,0);
-     tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
-     tempdown->Write();
-     tempnom->SetLineColor(kRed);
-     tempup->SetLineColor(kBlue);
-     tempdown->SetLineColor(kGreen+3);
-     
-     max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
-     max = TMath::Max(max1, tempdown->GetMaximum());
-     tempnom->SetMaximum(max*1.2);
-     tempnom->SetTitle("CSVv2 leading jet: btag SF lf");
-     Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF lf" );//new TCanvas("Canvas_PU","Canvas_PU");
-     Canvas->cd();
-     tempnom->Draw("histo e");
-     tempup->Draw("same histo e");
-     tempdown->Draw("same histo e");
-     leg->Draw("sames");
-     Canvas->SaveAs( (placeTH1F+"BSF_bdislf.png").c_str() );
-     Canvas->SetLogy();
-     Canvas->Update();
-     Canvas->SaveAs( (placeTH1F+"BSF_bdislf_LogY.png").c_str() );
-     
-     delete tempdown;
-     delete tempnom;
-     delete tempup;
-     delete leg;
-    
+    if(systematicplots){
+      TDirectory* th1dirsys = fout->mkdir("1D_histograms_sys");
+      th1dirsys->cd();
+      gStyle->SetOptStat(1110);
+      gStyle->SetOptStat(0);
+      TH1F *tempnom =0;
+      TH1F *tempup = 0;
+      TH1F *tempdown = 0;
+      int Nnom = 0;
+      int Nup = 0;
+      int Ndown = 0;
+      double max = 0.;
+      double max1 = 0.;
+      TCanvas* Canvas = 0;
+      Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
+      TLegend *leg = new TLegend(xl1,yl1,xl2,yl2);
+      std::map<std::string,TH1F*>::const_iterator nom = histo1D_PUSystematics.begin(), up=histo1D_PUSystematics.begin(), down=histo1D_PUSystematics.begin();
+      
+      
+      for (std::map<std::string,TH1F*>::const_iterator it = histo1D_PUSystematics.begin(); it != histo1D_PUSystematics.end(); it++)
+      {
+        string name = it->first;
+        if(name.find("nom")!=std::string::npos){
+          nom = it;
+          if(tempnom == 0) tempnom = nom->second;
+          else tempnom->Add(nom->second);
+        }
+        if(name.find("up")!=std::string::npos){
+          up= it;
+          if(tempup == 0) tempup = up->second;
+          else tempup->Add(up->second);
+        }
+        if(name.find("down")!=std::string::npos){
+          down = it;
+          if(tempdown == 0) tempdown = down->second;
+          else tempdown->Add(down->second);
+        }
+        
+      }
+      
+      Nnom= tempnom->GetNbinsX();
+      tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+      tempnom->SetBinContent(Nnom+1,0);
+      tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempnom->Write();
+      Nup = tempup->GetNbinsX();
+      tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+      tempup->SetBinContent(Nup+1,0);
+      tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempup->Write();
+      Ndown= tempdown->GetNbinsX();
+      tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+      tempdown->SetBinContent(Ndown+1,0);
+      tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempdown->Write();
+      tempnom->SetLineColor(kRed);
+      tempup->SetLineColor(kBlue);
+      tempdown->SetLineColor(kGreen+3);
+      
+      leg->AddEntry(tempnom,"Nominal","L");   // h1 and h2 are histogram pointers
+      leg->AddEntry(tempup,"Up","L");
+      leg->AddEntry(tempdown,"Down","L");
+      
+      
+      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+      max = TMath::Max(max1, tempdown->GetMaximum());
+      tempnom->SetMaximum(max*1.2);
+      
+      
+      tempnom->SetTitle("Nb Of vertices: PU SF");
+      Canvas =  TCanvasCreator(tempnom, "Nb Of vertices: PU SF" );//new TCanvas("Canvas_PU","Canvas_PU");
+      Canvas->cd();
+      tempnom->Draw("h e");
+      tempup->Draw("SAME,h e");
+      tempdown->Draw("SAME,h e");
+      leg->Draw("sames");
+      Canvas->SaveAs( (placeTH1F+"PUSF_nvtx.png").c_str() );
+      Canvas->SetLogy();
+      Canvas->Update();
+      Canvas->SaveAs( (placeTH1F+"PUSF_nvtx_LogY.png").c_str() );
+      
+      tempnom =0;
+      tempup = 0;
+      tempdown = 0;
+      // electron SF
+      for (std::map<std::string,TH1F*>::const_iterator it = histo1D_ElSystematics.begin(); it != histo1D_ElSystematics.end(); it++)
+      {
+        string name = it->first;
+        if(name.find("nom")!=std::string::npos){
+          nom = it;
+          if(tempnom == 0) tempnom = nom->second;
+          else tempnom->Add(nom->second);
+        }
+        if(name.find("up")!=std::string::npos){
+          up= it;
+          if(tempup == 0) tempup = up->second;
+          else tempup->Add(up->second);
+        }
+        if(name.find("down")!=std::string::npos){
+          down = it;
+          if(tempdown == 0) tempdown = down->second;
+          else tempdown->Add(down->second);
+        }
+        
+      }
+      
+      
+      Nnom= tempnom->GetNbinsX();
+      tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+      tempnom->SetBinContent(Nnom+1,0);
+      tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempnom->Write();
+      Nup = tempup->GetNbinsX();
+      tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+      tempup->SetBinContent(Nup+1,0);
+      tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempup->Write();
+      Ndown= tempdown->GetNbinsX();
+      tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+      tempdown->SetBinContent(Ndown+1,0);
+      tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempdown->Write();
+      tempnom->SetLineColor(kRed);
+      tempup->SetLineColor(kBlue);
+      tempdown->SetLineColor(kGreen+3);
+      
+      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+      max = TMath::Max(max1, tempdown->GetMaximum());
+      tempnom->SetMaximum(max*1.2);
+      tempnom->SetTitle("Pt electrons: El SF");
+      Canvas =  TCanvasCreator(tempnom, "Pt leading electron: El SF" );//new TCanvas("Canvas_PU","Canvas_PU");
+      Canvas->cd();
+      tempnom->Draw("histo e");
+      tempup->Draw("same histo e");
+      tempdown->Draw("same histo e");
+      leg->Draw("sames");
+      Canvas->SaveAs( (placeTH1F+"ELSF_ptelectron.png").c_str() );
+      Canvas->SetLogy();
+      Canvas->Update();
+      Canvas->SaveAs( (placeTH1F+"ELSF_ptelectron_LogY.png").c_str() );
+      
+      // muon SF
+      tempnom =0;
+      tempup = 0;
+      tempdown = 0;
+      
+      for (std::map<std::string,TH1F*>::const_iterator it = histo1D_MuSystematics.begin(); it != histo1D_MuSystematics.end(); it++)
+      {
+        string name = it->first;
+        if(name.find("nom")!=std::string::npos){
+          nom = it;
+          if(tempnom == 0) tempnom = nom->second;
+          else tempnom->Add(nom->second);
+        }
+        if(name.find("up")!=std::string::npos){
+          up= it;
+          if(tempup == 0) tempup = up->second;
+          else tempup->Add(up->second);
+        }
+        if(name.find("down")!=std::string::npos){
+          down = it;
+          if(tempdown == 0) tempdown = down->second;
+          else tempdown->Add(down->second);
+        }
+        
+      }
+      Nnom= tempnom->GetNbinsX();
+      tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+      tempnom->SetBinContent(Nnom+1,0);
+      tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempnom->Write();
+      Nup = tempup->GetNbinsX();
+      tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+      tempup->SetBinContent(Nup+1,0);
+      tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempup->Write();
+      Ndown= tempdown->GetNbinsX();
+      tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+      tempdown->SetBinContent(Ndown+1,0);
+      tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempdown->Write();
+      tempnom->SetLineColor(kRed);
+      tempup->SetLineColor(kBlue);
+      tempdown->SetLineColor(kGreen+3);
+      
+      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+      max = TMath::Max(max1, tempdown->GetMaximum());
+      tempnom->SetMaximum(max*1.2);
+      tempnom->SetTitle("Pt muons: Mu SF");
+      Canvas =  TCanvasCreator(tempnom, "Pt leading muon: Mu SF" );//new TCanvas("Canvas_PU","Canvas_PU");
+      Canvas->cd();
+      tempnom->Draw("histo e");
+      tempup->Draw("same histo e");
+      tempdown->Draw("same histo e");
+      leg->Draw("sames");
+      Canvas->SaveAs( (placeTH1F+"MUSF_ptmuon.png").c_str() );
+      Canvas->SetLogy();
+      Canvas->Update();
+      Canvas->SaveAs( (placeTH1F+"MUSF_ptmuon_LogY.png").c_str() );
+      
+      // btag SF cferr1
+      tempnom =0;
+      tempup = 0;
+      tempdown = 0;
+      
+      for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bcferr1Systematics.begin(); it != histo1D_Bcferr1Systematics.end(); it++)
+      {
+        string name = it->first;
+        if(name.find("nom")!=std::string::npos){
+          nom = it;
+          if(tempnom == 0) tempnom = nom->second;
+          else tempnom->Add(nom->second);
+        }
+        if(name.find("up")!=std::string::npos){
+          up= it;
+          if(tempup == 0) tempup = up->second;
+          else tempup->Add(up->second);
+        }
+        if(name.find("down")!=std::string::npos){
+          down = it;
+          if(tempdown == 0) tempdown = down->second;
+          else tempdown->Add(down->second);
+        }
+        
+      }
+      Nnom= tempnom->GetNbinsX();
+      tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+      tempnom->SetBinContent(Nnom+1,0);
+      tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempnom->Write();
+      Nup = tempup->GetNbinsX();
+      tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+      tempup->SetBinContent(Nup+1,0);
+      tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempup->Write();
+      Ndown= tempdown->GetNbinsX();
+      tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+      tempdown->SetBinContent(Ndown+1,0);
+      tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempdown->Write();
+      tempnom->SetLineColor(kRed);
+      tempup->SetLineColor(kBlue);
+      tempdown->SetLineColor(kGreen+3);
+      
+      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+      max = TMath::Max(max1, tempdown->GetMaximum());
+      tempnom->SetMaximum(max*1.2);
+      tempnom->SetTitle("CSVv2 leading jet: btag SF cferr1");
+      Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF cferr1" );//new TCanvas("Canvas_PU","Canvas_PU");
+      Canvas->cd();
+      tempnom->Draw("histo e");
+      tempup->Draw("same histo e");
+      tempdown->Draw("same histo e");
+      leg->Draw("sames");
+      Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr1.png").c_str() );
+      Canvas->SetLogy();
+      Canvas->Update();
+      Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr1_LogY.png").c_str() );
+      
+      // btag SF cferr2
+      tempnom =0;
+      tempup = 0;
+      tempdown = 0;
+      
+      for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bcferr2Systematics.begin(); it != histo1D_Bcferr2Systematics.end(); it++)
+      {
+        string name = it->first;
+        if(name.find("nom")!=std::string::npos){
+          nom = it;
+          if(tempnom == 0) tempnom = nom->second;
+          else tempnom->Add(nom->second);
+        }
+        if(name.find("up")!=std::string::npos){
+          up= it;
+          if(tempup == 0) tempup = up->second;
+          else tempup->Add(up->second);
+        }
+        if(name.find("down")!=std::string::npos){
+          down = it;
+          if(tempdown == 0) tempdown = down->second;
+          else tempdown->Add(down->second);
+        }
+        
+      }
+      Nnom= tempnom->GetNbinsX();
+      tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+      tempnom->SetBinContent(Nnom+1,0);
+      tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempnom->Write();
+      Nup = tempup->GetNbinsX();
+      tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+      tempup->SetBinContent(Nup+1,0);
+      tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempup->Write();
+      Ndown= tempdown->GetNbinsX();
+      tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+      tempdown->SetBinContent(Ndown+1,0);
+      tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempdown->Write();
+      tempnom->SetLineColor(kRed);
+      tempup->SetLineColor(kBlue);
+      tempdown->SetLineColor(kGreen+3);
+      
+      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+      max = TMath::Max(max1, tempdown->GetMaximum());
+      tempnom->SetMaximum(max*1.2);
+      tempnom->SetTitle("CSVv2 leading jet: btag SF cferr2");
+      Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF cferr2" );//new TCanvas("Canvas_PU","Canvas_PU");
+      Canvas->cd();
+      tempnom->Draw("histo e");
+      tempup->Draw("same histo e");
+      tempdown->Draw("same histo e");
+      leg->Draw("sames");
+      Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr2.png").c_str() );
+      Canvas->SetLogy();
+      Canvas->Update();
+      Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr2_LogY.png").c_str() );
+      
+      // btag SF hfstats1
+      tempnom =0;
+      tempup = 0;
+      tempdown = 0;
+      
+      for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bhfstats1Systematics.begin(); it != histo1D_Bhfstats1Systematics.end(); it++)
+      {
+        string name = it->first;
+        if(name.find("nom")!=std::string::npos){
+          nom = it;
+          if(tempnom == 0) tempnom = nom->second;
+          else tempnom->Add(nom->second);
+        }
+        if(name.find("up")!=std::string::npos){
+          up= it;
+          if(tempup == 0) tempup = up->second;
+          else tempup->Add(up->second);
+        }
+        if(name.find("down")!=std::string::npos){
+          down = it;
+          if(tempdown == 0) tempdown = down->second;
+          else tempdown->Add(down->second);
+        }
+        
+      }
+      Nnom= tempnom->GetNbinsX();
+      tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+      tempnom->SetBinContent(Nnom+1,0);
+      tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempnom->Write();
+      Nup = tempup->GetNbinsX();
+      tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+      tempup->SetBinContent(Nup+1,0);
+      tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempup->Write();
+      Ndown= tempdown->GetNbinsX();
+      tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+      tempdown->SetBinContent(Ndown+1,0);
+      tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempdown->Write();
+      tempnom->SetLineColor(kRed);
+      tempup->SetLineColor(kBlue);
+      tempdown->SetLineColor(kGreen+3);
+      
+      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+      max = TMath::Max(max1, tempdown->GetMaximum());
+      tempnom->SetMaximum(max*1.2);
+      tempnom->SetTitle("CSVv2 leading jet: btag SF hfstats1");
+      Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF hfstats1" );//new TCanvas("Canvas_PU","Canvas_PU");
+      Canvas->cd();
+      tempnom->Draw("histo e");
+      tempup->Draw("same histo e");
+      tempdown->Draw("same histo e");
+      leg->Draw("sames");
+      Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats1.png").c_str() );
+      Canvas->SetLogy();
+      Canvas->Update();
+      Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats1_LogY.png").c_str() );
+      
+      // btag SF hfstats2
+      tempnom =0;
+      tempup = 0;
+      tempdown = 0;
+      
+      for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Bhfstats2Systematics.begin(); it != histo1D_Bhfstats2Systematics.end(); it++)
+      {
+        string name = it->first;
+        if(name.find("nom")!=std::string::npos){
+          nom = it;
+          if(tempnom == 0) tempnom = nom->second;
+          else tempnom->Add(nom->second);
+        }
+        if(name.find("up")!=std::string::npos){
+          up= it;
+          if(tempup == 0) tempup = up->second;
+          else tempup->Add(up->second);
+        }
+        if(name.find("down")!=std::string::npos){
+          down = it;
+          if(tempdown == 0) tempdown = down->second;
+          else tempdown->Add(down->second);
+        }
+        
+      }
+      Nnom= tempnom->GetNbinsX();
+      tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+      tempnom->SetBinContent(Nnom+1,0);
+      tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempnom->Write();
+      Nup = tempup->GetNbinsX();
+      tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+      tempup->SetBinContent(Nup+1,0);
+      tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempup->Write();
+      Ndown= tempdown->GetNbinsX();
+      tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+      tempdown->SetBinContent(Ndown+1,0);
+      tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempdown->Write();
+      tempnom->SetLineColor(kRed);
+      tempup->SetLineColor(kBlue);
+      tempdown->SetLineColor(kGreen+3);
+      
+      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+      max = TMath::Max(max1, tempdown->GetMaximum());
+      tempnom->SetMaximum(max*1.2);
+      tempnom->SetTitle("CSVv2 leading jet: btag SF hfstats2");
+      Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF hfstats2" );//new TCanvas("Canvas_PU","Canvas_PU");
+      Canvas->cd();
+      tempnom->Draw("histo e");
+      tempup->Draw("same histo e");
+      tempdown->Draw("same histo e");
+      leg->Draw("sames");
+      Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats2.png").c_str() );
+      Canvas->SetLogy();
+      Canvas->Update();
+      Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats2_LogY.png").c_str() );
+      
+      
+      // btag SF lfstats1
+      tempnom =0;
+      tempup = 0;
+      tempdown = 0;
+      
+      for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Blfstats1Systematics.begin(); it != histo1D_Blfstats1Systematics.end(); it++)
+      {
+        string name = it->first;
+        if(name.find("nom")!=std::string::npos){
+          nom = it;
+          if(tempnom == 0) tempnom = nom->second;
+          else tempnom->Add(nom->second);
+        }
+        if(name.find("up")!=std::string::npos){
+          up= it;
+          if(tempup == 0) tempup = up->second;
+          else tempup->Add(up->second);
+        }
+        if(name.find("down")!=std::string::npos){
+          down = it;
+          if(tempdown == 0) tempdown = down->second;
+          else tempdown->Add(down->second);
+        }
+        
+      }
+      
+      Nnom= tempnom->GetNbinsX();
+      tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+      tempnom->SetBinContent(Nnom+1,0);
+      tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempnom->Write();
+      Nup = tempup->GetNbinsX();
+      tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+      tempup->SetBinContent(Nup+1,0);
+      tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempup->Write();
+      Ndown= tempdown->GetNbinsX();
+      tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+      tempdown->SetBinContent(Ndown+1,0);
+      tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempdown->Write();
+      tempnom->SetLineColor(kRed);
+      tempup->SetLineColor(kBlue);
+      tempdown->SetLineColor(kGreen+3);
+      
+      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+      max = TMath::Max(max1, tempdown->GetMaximum());
+      tempnom->SetMaximum(max*1.2);
+      tempnom->SetTitle("CSVv2 leading jet: btag SF lfstats1");
+      Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF lfstats1" );//new TCanvas("Canvas_PU","Canvas_PU");
+      Canvas->cd();
+      tempnom->Draw("histo e");
+      tempup->Draw("same histo e");
+      tempdown->Draw("same histo e");
+      leg->Draw("sames");
+      Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats1.png").c_str() );
+      Canvas->SetLogy();
+      Canvas->Update();
+      Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats1_LogY.png").c_str() );
+      
+      // btag SF lfstats2
+      tempnom =0;
+      tempup = 0;
+      tempdown = 0;
+      
+      for (std::map<std::string,TH1F*>::const_iterator it = histo1D_Blfstats2Systematics.begin(); it != histo1D_Blfstats2Systematics.end(); it++)
+      {
+        string name = it->first;
+        if(name.find("nom")!=std::string::npos){
+          nom = it;
+          if(tempnom == 0) tempnom = nom->second;
+          else tempnom->Add(nom->second);
+        }
+        if(name.find("up")!=std::string::npos){
+          up= it;
+          if(tempup == 0) tempup = up->second;
+          else tempup->Add(up->second);
+        }
+        if(name.find("down")!=std::string::npos){
+          down = it;
+          if(tempdown == 0) tempdown = down->second;
+          else tempdown->Add(down->second);
+        }
+        
+      }
+      Nnom= tempnom->GetNbinsX();
+      tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+      tempnom->SetBinContent(Nnom+1,0);
+      tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempnom->Write();
+      Nup = tempup->GetNbinsX();
+      tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+      tempup->SetBinContent(Nup+1,0);
+      tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempup->Write();
+      Ndown= tempdown->GetNbinsX();
+      tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+      tempdown->SetBinContent(Ndown+1,0);
+      tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempdown->Write();
+      tempnom->SetLineColor(kRed);
+      tempup->SetLineColor(kBlue);
+      tempdown->SetLineColor(kGreen+3);
+      
+      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+      max = TMath::Max(max1, tempdown->GetMaximum());
+      tempnom->SetMaximum(max*1.2);
+      tempnom->SetTitle("CSVv2 leading jet: btag SF lfstats2");
+      Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF lfstats2" );//new TCanvas("Canvas_PU","Canvas_PU");
+      Canvas->cd();
+      tempnom->Draw("histo e");
+      tempup->Draw("same histo e");
+      tempdown->Draw("same histo e");
+      leg->Draw("sames");
+      Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats2.png").c_str() );
+      Canvas->SetLogy();
+      Canvas->Update();
+      Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats2_LogY.png").c_str() );
+      
+      
+      // btag SF hf
+      tempnom =0;
+      tempup = 0;
+      tempdown = 0;
+      
+      for (std::map<std::string,TH1F*>::const_iterator it = histo1D_BhfSystematics.begin(); it != histo1D_BhfSystematics.end(); it++)
+      {
+        string name = it->first;
+        if(name.find("nom")!=std::string::npos){
+          nom = it;
+          if(tempnom == 0) tempnom = nom->second;
+          else tempnom->Add(nom->second);
+        }
+        if(name.find("up")!=std::string::npos){
+          up= it;
+          if(tempup == 0) tempup = up->second;
+          else tempup->Add(up->second);
+        }
+        if(name.find("down")!=std::string::npos){
+          down = it;
+          if(tempdown == 0) tempdown = down->second;
+          else tempdown->Add(down->second);
+        }
+        
+      }
+      Nnom= tempnom->GetNbinsX();
+      tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+      tempnom->SetBinContent(Nnom+1,0);
+      tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempnom->Write();
+      Nup = tempup->GetNbinsX();
+      tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+      tempup->SetBinContent(Nup+1,0);
+      tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempup->Write();
+      Ndown= tempdown->GetNbinsX();
+      tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+      tempdown->SetBinContent(Ndown+1,0);
+      tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempdown->Write();
+      tempnom->SetLineColor(kRed);
+      tempup->SetLineColor(kBlue);
+      tempdown->SetLineColor(kGreen+3);
+      
+      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+      max = TMath::Max(max1, tempdown->GetMaximum());
+      tempnom->SetMaximum(max*1.2);
+      tempnom->SetTitle("CSVv2 leading jet: btag SF hf");
+      Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF hf" );//new TCanvas("Canvas_PU","Canvas_PU");
+      Canvas->cd();
+      tempnom->Draw("histo e");
+      tempup->Draw("same histo e");
+      tempdown->Draw("same histo e");
+      leg->Draw("sames");
+      Canvas->SaveAs( (placeTH1F+"BSF_bdishf.png").c_str() );
+      Canvas->SetLogy();
+      Canvas->Update();
+      Canvas->SaveAs( (placeTH1F+"BSF_bdishf_LogY.png").c_str() );
+      
+      // btag SF lf
+      tempnom =0;
+      tempup = 0;
+      tempdown = 0;
+      
+      for (std::map<std::string,TH1F*>::const_iterator it = histo1D_BlfSystematics.begin(); it != histo1D_BlfSystematics.end(); it++)
+      {
+        string name = it->first;
+        if(name.find("nom")!=std::string::npos){
+          nom = it;
+          if(tempnom == 0) tempnom = nom->second;
+          else tempnom->Add(nom->second);
+        }
+        if(name.find("up")!=std::string::npos){
+          up= it;
+          if(tempup == 0) tempup = up->second;
+          else tempup->Add(up->second);
+        }
+        if(name.find("down")!=std::string::npos){
+          down = it;
+          if(tempdown == 0) tempdown = down->second;
+          else tempdown->Add(down->second);
+        }
+        
+      }
+      Nnom= tempnom->GetNbinsX();
+      tempnom->SetBinContent(Nnom,tempnom->GetBinContent(Nnom)+tempnom->GetBinContent(Nnom+1));
+      tempnom->SetBinContent(Nnom+1,0);
+      tempnom->SetEntries(tempnom->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempnom->Write();
+      Nup = tempup->GetNbinsX();
+      tempup->SetBinContent(Nup,tempup->GetBinContent(Nup)+tempup->GetBinContent(Nup+1));
+      tempup->SetBinContent(Nup+1,0);
+      tempup->SetEntries(tempup->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempup->Write();
+      Ndown= tempdown->GetNbinsX();
+      tempdown->SetBinContent(Ndown,tempdown->GetBinContent(Ndown)+tempdown->GetBinContent(Ndown+1));
+      tempdown->SetBinContent(Ndown+1,0);
+      tempdown->SetEntries(tempdown->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
+      tempdown->Write();
+      tempnom->SetLineColor(kRed);
+      tempup->SetLineColor(kBlue);
+      tempdown->SetLineColor(kGreen+3);
+      
+      max1 = TMath::Max(tempnom->GetMaximum(), tempup->GetMaximum());
+      max = TMath::Max(max1, tempdown->GetMaximum());
+      tempnom->SetMaximum(max*1.2);
+      tempnom->SetTitle("CSVv2 leading jet: btag SF lf");
+      Canvas =  TCanvasCreator(tempnom, "CSVv2: btag SF lf" );//new TCanvas("Canvas_PU","Canvas_PU");
+      Canvas->cd();
+      tempnom->Draw("histo e");
+      tempup->Draw("same histo e");
+      tempdown->Draw("same histo e");
+      leg->Draw("sames");
+      Canvas->SaveAs( (placeTH1F+"BSF_bdislf.png").c_str() );
+      Canvas->SetLogy();
+      Canvas->Update();
+      Canvas->SaveAs( (placeTH1F+"BSF_bdislf_LogY.png").c_str() );
+      
+      delete tempdown;
+      delete tempnom;
+      delete tempup;
+      delete leg;
+      
     }
     
     // 2D
@@ -4074,7 +4704,7 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
   MVA_weight_btagSF_lfstats2_up =  scaleFactor_btagSF_lfstats2_up ;
   MVA_weight_btagSF_lfstats2_down =  scaleFactor_btagSF_lfstats2_down ;
   MVA_weight_nloSF = scaleFactor_NLO;
- 
+  
   
   MVA_region = static_cast<float>( Region);
   
@@ -4234,7 +4864,7 @@ void MakeMVAvars(int Region, Double_t scaleFactor){
     deltaRjj_max = 0;
     deltaRjj_min = 0;
   }
- // cout << selectedJets.size() << " deltaRjj :"<< deltaRjj << " max: " << deltaRjj_max << " min: " << deltaRjj_min << " sum " << deltaRjj_sum << endl;
+  // cout << selectedJets.size() << " deltaRjj :"<< deltaRjj << " max: " << deltaRjj_max << " min: " << deltaRjj_min << " sum " << deltaRjj_sum << endl;
   
   for(int i = 0; i < selectedJets.size() ; i++){
     
@@ -4743,12 +5373,12 @@ void ReconstructObjects(vector<int> selectedJetsID, vector<TLorentzVector> Muons
   {
     //cout << "cjet" << endl;
     cjetindex = FCNCjetCalculator(selectedJets,Zboson ,SMjetIndex, 3);
-   /* cjetindex_CvsLtagger = FCNCjetCalculatorCvsLTagger(selectedJets,SMjetIndex, 3);
-    cjetindex_CvsBtagger = FCNCjetCalculatorCvsBTagger(selectedJets,SMjetIndex, 3);
-    cjetindex_Cloose = FCNCjetCalculatorCwp(selectedJets, selectedCharmLJetsindex,  SMjetIndex, 3);
-    cjetindex_Cmedium = FCNCjetCalculatorCwp(selectedJets, selectedCharmMJetsindex,  SMjetIndex, 3);
-    cjetindex_Ctight = FCNCjetCalculatorCwp(selectedJets, selectedCharmTJetsindex,  SMjetIndex, 3);
-    */
+    /* cjetindex_CvsLtagger = FCNCjetCalculatorCvsLTagger(selectedJets,SMjetIndex, 3);
+     cjetindex_CvsBtagger = FCNCjetCalculatorCvsBTagger(selectedJets,SMjetIndex, 3);
+     cjetindex_Cloose = FCNCjetCalculatorCwp(selectedJets, selectedCharmLJetsindex,  SMjetIndex, 3);
+     cjetindex_Cmedium = FCNCjetCalculatorCwp(selectedJets, selectedCharmMJetsindex,  SMjetIndex, 3);
+     cjetindex_Ctight = FCNCjetCalculatorCwp(selectedJets, selectedCharmTJetsindex,  SMjetIndex, 3);
+     */
     if(cjetindex > selectedJets.size() || cjetindex == SMjetIndex) cout << "Warning wrong cjet index " << endl;
     LightJet.SetPxPyPzE(selectedJets[cjetindex].Px(),selectedJets[cjetindex].Py(),selectedJets[cjetindex].Pz(),selectedJets[cjetindex].Energy());
     
@@ -4758,13 +5388,13 @@ void ReconstructObjects(vector<int> selectedJetsID, vector<TLorentzVector> Muons
   }
   
   
- 
+  
   bdiscriminantjet = 0.;
   for(int i = 0; i < selectedJetsID.size() ; i++){
     if(selectedJetsID[SMjetIndex] != selectedJetsID[i]) bdiscriminantjet += bdisc_jet[selectedJetsID[i]];
   }
   if(selectedJets.size() > 1) bdiscriminantcharm = bdisc_jet[selectedJetsID[cjetindex]];
-
+  
   
   //cout << "end reco" << endl;
   double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
@@ -5893,7 +6523,7 @@ void InitFakeDiscriminator(string dataSetName,  vector <int> decayChannels){
       //MSPlot[plotname.c_str()]->setChannel(true, decayChan);
       
       if((decayChannels[iChan] == 4 || decayChannels[iChan] == 5) && prefixregion.find("3lep")!=std::string::npos) continue;
-     
+      
       histo1D_fakedisc[("ZbosonPt"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPt"+channelstr+dataSetName).c_str(),"p_{T} Z boson (GeV)",10,0,500);
       histo1D_fakedisc[("ZbosonEta"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonEta"+channelstr+dataSetName).c_str(),"#eta Z boson",3,-3,3);
       histo1D_fakedisc[("ZbosonPhi"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPhi"+channelstr+dataSetName).c_str(),"#phi Z boson",8,-4,4);
@@ -5903,84 +6533,84 @@ void InitFakeDiscriminator(string dataSetName,  vector <int> decayChannels){
       histo1D_fakedisc[("WlepPhi"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPhi"+channelstr+dataSetName).c_str(),"#phi l_{W}",8,-4,4);
       histo1D_fakedisc[("TrMassW"+channelstr+dataSetName).c_str()] = new TH1F(("TrMassW"+channelstr+dataSetName).c_str(),"transv. mass W boson (GeV)",10,15,300);
       /*
-      histo1D_fakedisc[("ZbosonPtMu"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPtMu"+channelstr+dataSetName).c_str(),"p_{T} Z_{#mu #mu} boson (GeV)",10,0,500);
-      histo1D_fakedisc[("ZbosonEtaMu"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonEtaMu"+channelstr+dataSetName).c_str(),"#eta Z_{#mu #mu} boson",3,-3,3);
-      histo1D_fakedisc[("ZbosonPhiMu"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPhiMu"+channelstr+dataSetName).c_str(),"#phi Z_{#mu #mu} boson",8,-4,4);
-      
-      histo1D_fakedisc[("WlepPtMu"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPtMu"+channelstr+dataSetName).c_str(),"p_{T} #mu_{W} (GeV)",10,0,500);
-      histo1D_fakedisc[("WlepEtaMu"+channelstr+dataSetName).c_str()] = new TH1F(("WlepEtaMu"+channelstr+dataSetName).c_str(),"#eta #mu_{W}",3,-3,3);
-      histo1D_fakedisc[("WlepPhiMu"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPhiMu"+channelstr+dataSetName).c_str(),"#phi #mu_{W}",8,-4,4);
-      histo1D_fakedisc[("TrMassWMu"+channelstr+dataSetName).c_str()] = new TH1F(("TrMassWMu"+channelstr+dataSetName).c_str(),"transv. mass W_{#mu} boson (GeV)",10,15,300);
-      
-      histo1D_fakedisc[("ZbosonPtEl"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPtEl"+channelstr+dataSetName).c_str(),"p_{T} Z_{ee} boson (GeV)",10,0,500);
-      histo1D_fakedisc[("ZbosonEtaEl"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonEtaEl"+channelstr+dataSetName).c_str(),"#eta Z_{ee} boson",3,-3,3);
-      histo1D_fakedisc[("ZbosonPhiEl"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPhiEl"+channelstr+dataSetName).c_str(),"#phi Z_{ee} boson",8,-4,4);
-      
-      histo1D_fakedisc[("WlepPtEl"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPtEl"+channelstr+dataSetName).c_str(),"p_{T} e_{W} (GeV)",10,0,500);
-      histo1D_fakedisc[("WlepEtaEl"+channelstr+dataSetName).c_str()] = new TH1F(("WlepEtaEl"+channelstr+dataSetName).c_str(),"#eta e_{W}",3,-3,3);
-      histo1D_fakedisc[("WlepPhiEl"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPhiEl"+channelstr+dataSetName).c_str(),"#phi e_{W}",8,-4,4);
-      histo1D_fakedisc[("TrMassWEl"+channelstr+dataSetName).c_str()] = new TH1F(("TrMassWEl"+channelstr+dataSetName).c_str(),"transv. mass W_{e} boson (GeV)",10,15,300);
-      histo1D_fakedisc[("Ptleadinglep"+channelstr+dataSetName).c_str()] = new TH1F(("Ptleadinglep"+channelstr+dataSetName).c_str(),"p_{T} leading lepton (GeV)",10,0,500);
-      histo1D_fakedisc[("Pt2ndleadinglep"+channelstr+dataSetName).c_str()] = new TH1F(("Pt2ndleadinglep"+channelstr+dataSetName).c_str(),"p_{T} 2nd leading lepton (GeV)",10,0,500);
-      histo1D_fakedisc[("Pt3dleadinglep"+channelstr+dataSetName).c_str()] = new TH1F(("Pt3dleadinglep"+channelstr+dataSetName).c_str(),"p_{T} 3d leading lepton (GeV)",10,0,500);
-      
-      
-      histo1D_fakedisc[("pfIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("pfIsoelectron"+channelstr+dataSetName).c_str(),"Rel. iso electron",10,0,0.2);
-     */ histo1D_fakedisc[("d0electron"+channelstr+dataSetName).c_str()] = new TH1F(("d0electron"+channelstr+dataSetName).c_str(),"d0 electron (cm)", 10,0,0.02);
+       histo1D_fakedisc[("ZbosonPtMu"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPtMu"+channelstr+dataSetName).c_str(),"p_{T} Z_{#mu #mu} boson (GeV)",10,0,500);
+       histo1D_fakedisc[("ZbosonEtaMu"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonEtaMu"+channelstr+dataSetName).c_str(),"#eta Z_{#mu #mu} boson",3,-3,3);
+       histo1D_fakedisc[("ZbosonPhiMu"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPhiMu"+channelstr+dataSetName).c_str(),"#phi Z_{#mu #mu} boson",8,-4,4);
+       
+       histo1D_fakedisc[("WlepPtMu"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPtMu"+channelstr+dataSetName).c_str(),"p_{T} #mu_{W} (GeV)",10,0,500);
+       histo1D_fakedisc[("WlepEtaMu"+channelstr+dataSetName).c_str()] = new TH1F(("WlepEtaMu"+channelstr+dataSetName).c_str(),"#eta #mu_{W}",3,-3,3);
+       histo1D_fakedisc[("WlepPhiMu"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPhiMu"+channelstr+dataSetName).c_str(),"#phi #mu_{W}",8,-4,4);
+       histo1D_fakedisc[("TrMassWMu"+channelstr+dataSetName).c_str()] = new TH1F(("TrMassWMu"+channelstr+dataSetName).c_str(),"transv. mass W_{#mu} boson (GeV)",10,15,300);
+       
+       histo1D_fakedisc[("ZbosonPtEl"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPtEl"+channelstr+dataSetName).c_str(),"p_{T} Z_{ee} boson (GeV)",10,0,500);
+       histo1D_fakedisc[("ZbosonEtaEl"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonEtaEl"+channelstr+dataSetName).c_str(),"#eta Z_{ee} boson",3,-3,3);
+       histo1D_fakedisc[("ZbosonPhiEl"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPhiEl"+channelstr+dataSetName).c_str(),"#phi Z_{ee} boson",8,-4,4);
+       
+       histo1D_fakedisc[("WlepPtEl"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPtEl"+channelstr+dataSetName).c_str(),"p_{T} e_{W} (GeV)",10,0,500);
+       histo1D_fakedisc[("WlepEtaEl"+channelstr+dataSetName).c_str()] = new TH1F(("WlepEtaEl"+channelstr+dataSetName).c_str(),"#eta e_{W}",3,-3,3);
+       histo1D_fakedisc[("WlepPhiEl"+channelstr+dataSetName).c_str()] = new TH1F(("WlepPhiEl"+channelstr+dataSetName).c_str(),"#phi e_{W}",8,-4,4);
+       histo1D_fakedisc[("TrMassWEl"+channelstr+dataSetName).c_str()] = new TH1F(("TrMassWEl"+channelstr+dataSetName).c_str(),"transv. mass W_{e} boson (GeV)",10,15,300);
+       histo1D_fakedisc[("Ptleadinglep"+channelstr+dataSetName).c_str()] = new TH1F(("Ptleadinglep"+channelstr+dataSetName).c_str(),"p_{T} leading lepton (GeV)",10,0,500);
+       histo1D_fakedisc[("Pt2ndleadinglep"+channelstr+dataSetName).c_str()] = new TH1F(("Pt2ndleadinglep"+channelstr+dataSetName).c_str(),"p_{T} 2nd leading lepton (GeV)",10,0,500);
+       histo1D_fakedisc[("Pt3dleadinglep"+channelstr+dataSetName).c_str()] = new TH1F(("Pt3dleadinglep"+channelstr+dataSetName).c_str(),"p_{T} 3d leading lepton (GeV)",10,0,500);
+       
+       
+       histo1D_fakedisc[("pfIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("pfIsoelectron"+channelstr+dataSetName).c_str(),"Rel. iso electron",10,0,0.2);
+       */ histo1D_fakedisc[("d0electron"+channelstr+dataSetName).c_str()] = new TH1F(("d0electron"+channelstr+dataSetName).c_str(),"d0 electron (cm)", 10,0,0.02);
       /*histo1D_fakedisc[("sigmaIEtaIEtaelectron"+channelstr+dataSetName).c_str()] = new TH1F(("sigmaIEtaIEtaelectron"+channelstr+dataSetName).c_str(),"#sigma_{i#eta,i#eta} electron",10,0,0.03);
-      histo1D_fakedisc[("deltaEtaInelectron"+channelstr+dataSetName).c_str()] = new TH1F(("deltaEtaInelectron"+channelstr+dataSetName).c_str(),"#delta #eta_{in} electron",10,-0.015,0.015);
-      histo1D_fakedisc[("deltaPhiInelectron"+channelstr+dataSetName).c_str()] = new TH1F(("deltaPhiInelectron"+channelstr+dataSetName).c_str(),"#delta #phi_{in} electron",10,-0.04,0.04);
-      histo1D_fakedisc[("hadronicOverEmelectron"+channelstr+dataSetName).c_str()] = new TH1F(("hadronicOverEmelectron"+channelstr+dataSetName).c_str(),"H/E electron",10,0,0.03);
-      histo1D_fakedisc[("missingHitselectron"+channelstr+dataSetName).c_str()] = new TH1F(("missingHitselectron"+channelstr+dataSetName).c_str(),"missing hits electron", 2,0,2);
-      histo1D_fakedisc[("ioEmIoPelectron"+channelstr+dataSetName).c_str()] = new TH1F(("ioEmIoPelectron"+channelstr+dataSetName).c_str(),"1/E - 1/p electron (GeV^{-1})",10,0,0.014);
-      *///histo1D_fakedisc[("chargedHadronIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("chargedHadronIsoelectron"+channelstr+dataSetName).c_str(),"Charged Hadron Iso. electron",6,0,3);
+       histo1D_fakedisc[("deltaEtaInelectron"+channelstr+dataSetName).c_str()] = new TH1F(("deltaEtaInelectron"+channelstr+dataSetName).c_str(),"#delta #eta_{in} electron",10,-0.015,0.015);
+       histo1D_fakedisc[("deltaPhiInelectron"+channelstr+dataSetName).c_str()] = new TH1F(("deltaPhiInelectron"+channelstr+dataSetName).c_str(),"#delta #phi_{in} electron",10,-0.04,0.04);
+       histo1D_fakedisc[("hadronicOverEmelectron"+channelstr+dataSetName).c_str()] = new TH1F(("hadronicOverEmelectron"+channelstr+dataSetName).c_str(),"H/E electron",10,0,0.03);
+       histo1D_fakedisc[("missingHitselectron"+channelstr+dataSetName).c_str()] = new TH1F(("missingHitselectron"+channelstr+dataSetName).c_str(),"missing hits electron", 2,0,2);
+       histo1D_fakedisc[("ioEmIoPelectron"+channelstr+dataSetName).c_str()] = new TH1F(("ioEmIoPelectron"+channelstr+dataSetName).c_str(),"1/E - 1/p electron (GeV^{-1})",10,0,0.014);
+       *///histo1D_fakedisc[("chargedHadronIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("chargedHadronIsoelectron"+channelstr+dataSetName).c_str(),"Charged Hadron Iso. electron",6,0,3);
       /*histo1D_fakedisc[("neutralHadronIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("neutralHadronIsoelectron"+channelstr+dataSetName).c_str(),"Neutral Hadron Iso. electron",10,0,4);
-      histo1D_fakedisc[("photonIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("photonIsoelectron"+channelstr+dataSetName).c_str(),"Photon Iso. electron",10,0,4);
-     */
-       histo1D_fakedisc[("d0all"+channelstr+dataSetName).c_str()] = new TH1F(("d0all"+channelstr+dataSetName).c_str(),"d0 muon (cm)", 10,0,0.02);
-     /* histo1D_fakedisc[("pfIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("pfIsomuon"+channelstr+dataSetName).c_str(),"Rel. iso muon",10,0,0.4);
-     */ histo1D_fakedisc[("d0muon"+channelstr+dataSetName).c_str()] = new TH1F(("d0muon"+channelstr+dataSetName).c_str(),"d0 muon (cm)", 10,0,0.02);
+       histo1D_fakedisc[("photonIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("photonIsoelectron"+channelstr+dataSetName).c_str(),"Photon Iso. electron",10,0,4);
+       */
+      histo1D_fakedisc[("d0all"+channelstr+dataSetName).c_str()] = new TH1F(("d0all"+channelstr+dataSetName).c_str(),"d0 muon (cm)", 10,0,0.02);
+      /* histo1D_fakedisc[("pfIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("pfIsomuon"+channelstr+dataSetName).c_str(),"Rel. iso muon",10,0,0.4);
+       */ histo1D_fakedisc[("d0muon"+channelstr+dataSetName).c_str()] = new TH1F(("d0muon"+channelstr+dataSetName).c_str(),"d0 muon (cm)", 10,0,0.02);
       histo1D_fakedisc[("chargedHadronIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("chargedHadronIsomuon"+channelstr+dataSetName).c_str(),"Charged Hadron Iso. muon",12,0,6);
-     /* histo1D_fakedisc[("neutralHadronIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("neutralHadronIsomuon"+channelstr+dataSetName).c_str(),"Neutral Hadron Iso. muon",10,0,6);
-      histo1D_fakedisc[("photonIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("photonIsomuon"+channelstr+dataSetName).c_str(),"Photon Iso. muon",10,0,7);
-      histo1D_fakedisc[("TrackLayersmuon"+channelstr+dataSetName).c_str()] = new TH1F(("Tracklayersmuon"+channelstr+dataSetName).c_str(),"Nb. Tracklayers muon",10,0,6);
-
-      histo1D_fakedisc[("WleppfIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WleppfIsoelectron"+channelstr+dataSetName).c_str(),"Rel. iso W electron",10,0,0.02);
-      *///histo1D_fakedisc[("Wlepd0electron"+channelstr+dataSetName).c_str()] = new TH1F(("Wlepd0electron"+channelstr+dataSetName).c_str(),"d0 W electron (cm)", 5,-0.01,0.01);
+      /* histo1D_fakedisc[("neutralHadronIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("neutralHadronIsomuon"+channelstr+dataSetName).c_str(),"Neutral Hadron Iso. muon",10,0,6);
+       histo1D_fakedisc[("photonIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("photonIsomuon"+channelstr+dataSetName).c_str(),"Photon Iso. muon",10,0,7);
+       histo1D_fakedisc[("TrackLayersmuon"+channelstr+dataSetName).c_str()] = new TH1F(("Tracklayersmuon"+channelstr+dataSetName).c_str(),"Nb. Tracklayers muon",10,0,6);
+       
+       histo1D_fakedisc[("WleppfIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WleppfIsoelectron"+channelstr+dataSetName).c_str(),"Rel. iso W electron",10,0,0.02);
+       *///histo1D_fakedisc[("Wlepd0electron"+channelstr+dataSetName).c_str()] = new TH1F(("Wlepd0electron"+channelstr+dataSetName).c_str(),"d0 W electron (cm)", 5,-0.01,0.01);
       /*histo1D_fakedisc[("WlepsigmaIEtaIEtaelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepsigmaIEtaIEtaelectron"+channelstr+dataSetName).c_str(),"#sigma_{i#eta,i#eta} W electron",10,0,0.03);
-      histo1D_fakedisc[("WlepdeltaEtaInelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepdeltaEtaInelectron"+channelstr+dataSetName).c_str(),"#delta #eta_{in} W electron",10,-0.015,0.015);
-      histo1D_fakedisc[("WlepdeltaPhiInelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepdeltaPhiInelectron"+channelstr+dataSetName).c_str(),"#delta #phi_{in} W electron",10,-0.04,0.04);
-      histo1D_fakedisc[("WlephadronicOverEmelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlephadronicOverEmelectron"+channelstr+dataSetName).c_str(),"H/E W electron",10,0,0.03);
-      histo1D_fakedisc[("WlepmissingHitselectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepmissingHitselectron"+channelstr+dataSetName).c_str(),"missing hits W electron", 2,0,2);
-      histo1D_fakedisc[("WlepioEmIoPelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepioEmIoPelectron"+channelstr+dataSetName).c_str(),"1/E - 1/p W electron (GeV^{-1})",10,0,0.014);
-      *///histo1D_fakedisc[("WlepchargedHadronIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepchargedHadronIsoelectron"+channelstr+dataSetName).c_str(),"Charged Hadron Iso. W electron",6,0,3);
+       histo1D_fakedisc[("WlepdeltaEtaInelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepdeltaEtaInelectron"+channelstr+dataSetName).c_str(),"#delta #eta_{in} W electron",10,-0.015,0.015);
+       histo1D_fakedisc[("WlepdeltaPhiInelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepdeltaPhiInelectron"+channelstr+dataSetName).c_str(),"#delta #phi_{in} W electron",10,-0.04,0.04);
+       histo1D_fakedisc[("WlephadronicOverEmelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlephadronicOverEmelectron"+channelstr+dataSetName).c_str(),"H/E W electron",10,0,0.03);
+       histo1D_fakedisc[("WlepmissingHitselectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepmissingHitselectron"+channelstr+dataSetName).c_str(),"missing hits W electron", 2,0,2);
+       histo1D_fakedisc[("WlepioEmIoPelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepioEmIoPelectron"+channelstr+dataSetName).c_str(),"1/E - 1/p W electron (GeV^{-1})",10,0,0.014);
+       *///histo1D_fakedisc[("WlepchargedHadronIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepchargedHadronIsoelectron"+channelstr+dataSetName).c_str(),"Charged Hadron Iso. W electron",6,0,3);
       /*histo1D_fakedisc[("WlepneutralHadronIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepneutralHadronIsoelectron"+channelstr+dataSetName).c_str(),"Neutral Hadron Iso. W electron",10,0,4);
-      histo1D_fakedisc[("WlepphotonIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepphotonIsoelectron"+channelstr+dataSetName).c_str(),"Photon Iso. W electron",10,0,4);
-      
-      
-      histo1D_fakedisc[("WleppfIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("WleppfIsomuon"+channelstr+dataSetName).c_str(),"Rel. iso W muon",10,0,0.04);
-      *///histo1D_fakedisc[("Wlepd0muon"+channelstr+dataSetName).c_str()] = new TH1F(("Wlepd0muon"+channelstr+dataSetName).c_str(),"d0 W muon (cm)", 5,-0.02,0.02);
-     // histo1D_fakedisc[("WlepchargedHadronIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("WlepchargedHadronIsomuon"+channelstr+dataSetName).c_str(),"Charged Hadron Iso. W muon",12,0,6);
+       histo1D_fakedisc[("WlepphotonIsoelectron"+channelstr+dataSetName).c_str()] = new TH1F(("WlepphotonIsoelectron"+channelstr+dataSetName).c_str(),"Photon Iso. W electron",10,0,4);
+       
+       
+       histo1D_fakedisc[("WleppfIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("WleppfIsomuon"+channelstr+dataSetName).c_str(),"Rel. iso W muon",10,0,0.04);
+       *///histo1D_fakedisc[("Wlepd0muon"+channelstr+dataSetName).c_str()] = new TH1F(("Wlepd0muon"+channelstr+dataSetName).c_str(),"d0 W muon (cm)", 5,-0.02,0.02);
+      // histo1D_fakedisc[("WlepchargedHadronIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("WlepchargedHadronIsomuon"+channelstr+dataSetName).c_str(),"Charged Hadron Iso. W muon",12,0,6);
       /*histo1D_fakedisc[("WlepneutralHadronIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("WlepneutralHadronIsomuon"+channelstr+dataSetName).c_str(),"Neutral Hadron Iso. W muon",10,0,6);
-      histo1D_fakedisc[("WlepphotonIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("WlepphotonIsomuon"+channelstr+dataSetName).c_str(),"Photon Iso. W muon",10,0,7);
-      histo1D_fakedisc[("WlepTrackLayersmuon"+channelstr+dataSetName).c_str()] = new TH1F(("WlepTracklayersmuon"+channelstr+dataSetName).c_str(),"Nb. Tracklayers W muon",10,0,6);
-      */
+       histo1D_fakedisc[("WlepphotonIsomuon"+channelstr+dataSetName).c_str()] = new TH1F(("WlepphotonIsomuon"+channelstr+dataSetName).c_str(),"Photon Iso. W muon",10,0,7);
+       histo1D_fakedisc[("WlepTrackLayersmuon"+channelstr+dataSetName).c_str()] = new TH1F(("WlepTracklayersmuon"+channelstr+dataSetName).c_str(),"Nb. Tracklayers W muon",10,0,6);
+       */
       histo1D_fakedisc[("DeltaRWlepZ"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRWlepZ"+channelstr+dataSetName).c_str(), "#Delta R(l_{W},Z)", 12,0,6);
       histo1D_fakedisc[("DeltaRWlepW"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRWlepW"+channelstr+dataSetName).c_str(), "#Delta R(l_{W},W)", 12,0,6);
       histo1D_fakedisc[("DeltaRWlepB"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRWlepB"+channelstr+dataSetName).c_str(), "#Delta R(l_{W},b)", 12,0,6);
       histo1D_fakedisc[("DeltaRWlepSMtop"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRWlepSMtop"+channelstr+dataSetName).c_str(), "#Delta R(l_{W},SM t)", 12,0,6);
       
       /*
-      histo1D_fakedisc[("DeltaPhiWlepZ"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaPhiWlepZ"+channelstr+dataSetName).c_str(), "#Delta#phi(l_{W},Z)", 10,0,6);
-      histo1D_fakedisc[("DeltaPhiWlepW"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaPhiWlepW"+channelstr+dataSetName).c_str(), "#Delta#phi(l_{W},b)", 10,0,6);
-      histo1D_fakedisc[("DeltaPhiWlepB"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaPhiWlepB"+channelstr+dataSetName).c_str(), "#Delta#phi(l_{W},W)", 10,0,6);
-      histo1D_fakedisc[("DeltaPhiWlepSMtop"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaPhiWlepSMtop"+channelstr+dataSetName).c_str(), "#Delta#phi(l_{W},SM t)", 10,0,6);
-   */
+       histo1D_fakedisc[("DeltaPhiWlepZ"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaPhiWlepZ"+channelstr+dataSetName).c_str(), "#Delta#phi(l_{W},Z)", 10,0,6);
+       histo1D_fakedisc[("DeltaPhiWlepW"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaPhiWlepW"+channelstr+dataSetName).c_str(), "#Delta#phi(l_{W},b)", 10,0,6);
+       histo1D_fakedisc[("DeltaPhiWlepB"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaPhiWlepB"+channelstr+dataSetName).c_str(), "#Delta#phi(l_{W},W)", 10,0,6);
+       histo1D_fakedisc[("DeltaPhiWlepSMtop"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaPhiWlepSMtop"+channelstr+dataSetName).c_str(), "#Delta#phi(l_{W},SM t)", 10,0,6);
+       */
       histo1D_fakedisc[("DeltaEtaWlepZ"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaEtaWlepZ"+channelstr+dataSetName).c_str(), "#Delta#eta(l_{W},Z)", 12,0,6);
       histo1D_fakedisc[("DeltaEtaWlepW"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaEtaWlepW"+channelstr+dataSetName).c_str(), "#Delta#eta(l_{W},W)",12,0,6);
       histo1D_fakedisc[("DeltaEtaWlepB"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaEtaWlepB"+channelstr+dataSetName).c_str(), "#Delta#eta(l_{W},b)", 12,0,6);
       histo1D_fakedisc[("DeltaEtaWlepSMtop"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaEtaWlepSMtop"+channelstr+dataSetName).c_str(), "#Delta#eta(l_{W},SM t)", 12,0,6);
-     
+      
       histo1D_fakedisc[("DeltaROverPtWlepZ"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaROverPtWlepZ"+channelstr+dataSetName).c_str(), "#Delta R(l_{W},Z) / p_{T}(l_{W})", 20,0,0.2);
       histo1D_fakedisc[("DeltaROverPtWlepW"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaROverPtWlepW"+channelstr+dataSetName).c_str(), "#Delta R(l_{W},W) / p_{T}(l_{W})", 20,0,0.2);
       histo1D_fakedisc[("DeltaROverPtWlepB"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaROverPtWlepB"+channelstr+dataSetName).c_str(), "#Delta R(l_{W},b) / p_{T}(l_{W})", 20,0,0.2);
@@ -6000,7 +6630,7 @@ void InitFakeDiscriminator(string dataSetName,  vector <int> decayChannels){
       histo1D_fakedisc[("DeltaRThetaOverPtWlepW"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRThetaOverPtWlepW"+channelstr+dataSetName).c_str(), "#Delta R_{#theta}(l_{W},W) / p_{T}(l_{W})", 100,0,0.1);
       histo1D_fakedisc[("DeltaRThetaOverPtWlepB"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRThetaOverPtWlepB"+channelstr+dataSetName).c_str(), "#Delta R_{#theta}(l_{W},b) / p_{T}(l_{W})", 100,0,0.1);
       histo1D_fakedisc[("DeltaRThetaOverPtWlepSMtop"+channelstr+dataSetName).c_str()] = new TH1F(("DeltaRThetaOverPtWlepSMtop"+channelstr+dataSetName).c_str(), "#Delta R_{#theta}(l_{W},SM t) / p_{T}(l_{W})",100,0,0.1);
-
+      
       
       
       
@@ -6456,7 +7086,7 @@ void InitMVAMSPlotsTopPair(string prefix, vector <int> decayChannels){
   InitMVAMSPlotsSingletop(prefix, decayChannels);
   
   bool iswzcontrol = false;
-  if(prefix.find("wzcontrol")!=std::string::npos ) iswzcontrol = true; 
+  if(prefix.find("wzcontrol")!=std::string::npos ) iswzcontrol = true;
   for(int iChan =0; iChan < decayChannels.size() ; iChan++){
     if(decayChannels[iChan] == 4 || decayChannels[iChan] == 5) continue;
     string decaystring = "";
@@ -6623,9 +7253,9 @@ void InitTree(TTree* tree, bool isData, bool isfakes){
   tree->SetBranchAddress("id1", &id1, &b_id1);
   tree->SetBranchAddress("id2", &id2, &b_id2);
   tree->SetBranchAddress("q", &q, &b_q);
- 
-    tree->SetBranchAddress("hdamp_up", &hdamp_up, &b_hdamp_up);
-    tree->SetBranchAddress("hdamp_down", &hdamp_down, &b_hdamp_down);
+  
+  tree->SetBranchAddress("hdamp_up", &hdamp_up, &b_hdamp_up);
+  tree->SetBranchAddress("hdamp_down", &hdamp_down, &b_hdamp_down);
   if(!isData && !isfakes){
     tree->SetBranchAddress("weight0", &weight0, &b_weight0);
     tree->SetBranchAddress("weight1", &weight1, &b_weight1);
@@ -7231,59 +7861,59 @@ void FillFakeDiscriminator(string dataSetName, vector <int> decayChannels, bool 
       histo1D_fakedisc[("TrMassW"+decaystr+dataSetName).c_str()]->Fill(mWT, eventW*scaleFactor);
       
       /*
-      histo1D_fakedisc[("Ptleadinglep"+decaystr+dataSetName).c_str()]->Fill(selectedLeptons[0].Pt(), eventW*scaleFactor);
-      histo1D_fakedisc[("Pt2ndleadinglep"+decaystr+dataSetName).c_str()] ->Fill(selectedLeptons[1].Pt(), eventW*scaleFactor);
-      histo1D_fakedisc[("Pt3dleadinglep"+decaystr+dataSetName).c_str()]->Fill(selectedLeptons[2].Pt(), eventW*scaleFactor);
-      */
+       histo1D_fakedisc[("Ptleadinglep"+decaystr+dataSetName).c_str()]->Fill(selectedLeptons[0].Pt(), eventW*scaleFactor);
+       histo1D_fakedisc[("Pt2ndleadinglep"+decaystr+dataSetName).c_str()] ->Fill(selectedLeptons[1].Pt(), eventW*scaleFactor);
+       histo1D_fakedisc[("Pt3dleadinglep"+decaystr+dataSetName).c_str()]->Fill(selectedLeptons[2].Pt(), eventW*scaleFactor);
+       */
       
       for(int iEL = 0; iEL < selectedElectrons.size(); iEL++){
-       // histo1D_fakedisc[("pfIsoelectron"+decaystr+dataSetName).c_str()]->Fill(pfIso_electron[electronID[iEL]], eventW*scaleFactor);
+        // histo1D_fakedisc[("pfIsoelectron"+decaystr+dataSetName).c_str()]->Fill(pfIso_electron[electronID[iEL]], eventW*scaleFactor);
         histo1D_fakedisc[("d0electron"+decaystr+dataSetName).c_str()]->Fill(fabs(d0_electron[electronID[iEL]]), eventW*scaleFactor);
         histo1D_fakedisc[("d0all"+decaystr+dataSetName).c_str()]->Fill(fabs(d0_electron[electronID[iEL]]), eventW*scaleFactor);
-       /* histo1D_fakedisc[("sigmaIEtaIEtaelectron"+decaystr+dataSetName).c_str()]->Fill(sigmaIEtaIEta_electron[electronID[iEL]], eventW*scaleFactor);
-        histo1D_fakedisc[("deltaEtaInelectron"+decaystr+dataSetName).c_str()]->Fill(deltaEtaIn_electron[electronID[iEL]], eventW*scaleFactor);
-        histo1D_fakedisc[("deltaPhiInelectron"+decaystr+dataSetName).c_str()]->Fill(deltaPhiIn_electron[electronID[iEL]], eventW*scaleFactor);
-        histo1D_fakedisc[("hadronicOverEmelectron"+decaystr+dataSetName).c_str()]->Fill(hadronicOverEm_electron[electronID[iEL]], eventW*scaleFactor);
-        //histo1D_fakedisc[("missingHitselectron"+decaystr+dataSetName).c_str()]->Fill(missinghits_electron[electronID[iEL]], eventW*scaleFactor);
-        histo1D_fakedisc[("ioEmIoPelectron"+decaystr+dataSetName).c_str()]->Fill(ioEmIoP_electron[electronID[iEL]], eventW*scaleFactor);
-       */// histo1D_fakedisc[("chargedHadronIsoelectron"+decaystr+dataSetName).c_str()]->Fill(chargedHadronIso_electron[electronID[iEL]], eventW*scaleFactor);
+        /* histo1D_fakedisc[("sigmaIEtaIEtaelectron"+decaystr+dataSetName).c_str()]->Fill(sigmaIEtaIEta_electron[electronID[iEL]], eventW*scaleFactor);
+         histo1D_fakedisc[("deltaEtaInelectron"+decaystr+dataSetName).c_str()]->Fill(deltaEtaIn_electron[electronID[iEL]], eventW*scaleFactor);
+         histo1D_fakedisc[("deltaPhiInelectron"+decaystr+dataSetName).c_str()]->Fill(deltaPhiIn_electron[electronID[iEL]], eventW*scaleFactor);
+         histo1D_fakedisc[("hadronicOverEmelectron"+decaystr+dataSetName).c_str()]->Fill(hadronicOverEm_electron[electronID[iEL]], eventW*scaleFactor);
+         //histo1D_fakedisc[("missingHitselectron"+decaystr+dataSetName).c_str()]->Fill(missinghits_electron[electronID[iEL]], eventW*scaleFactor);
+         histo1D_fakedisc[("ioEmIoPelectron"+decaystr+dataSetName).c_str()]->Fill(ioEmIoP_electron[electronID[iEL]], eventW*scaleFactor);
+         */// histo1D_fakedisc[("chargedHadronIsoelectron"+decaystr+dataSetName).c_str()]->Fill(chargedHadronIso_electron[electronID[iEL]], eventW*scaleFactor);
         //histo1D_fakedisc[("neutralHadronIsoelectron"+decaystr+dataSetName).c_str()]->Fill(neutralHadronIso_electron[electronID[iEL]], eventW*scaleFactor);
         //histo1D_fakedisc[("photonIsoelectron"+decaystr+dataSetName).c_str()]->Fill(photonIso_electron[electronID[iEL]], eventW*scaleFactor);
         
-
+        
       }
       
       for(int iMu = 0; iMu < selectedMuons.size(); iMu ++){
         //histo1D_fakedisc[("pfIsomuon"+decaystr+dataSetName).c_str()]->Fill(pfIso_muon[muonID[iMu]], eventW*scaleFactor);
         histo1D_fakedisc[("d0muon"+decaystr+dataSetName).c_str()]->Fill(fabs(d0_muon[muonID[iMu]]), eventW*scaleFactor);
         histo1D_fakedisc[("d0all"+decaystr+dataSetName).c_str()]->Fill(fabs(d0_muon[muonID[iMu]]), eventW*scaleFactor);
-       // histo1D_fakedisc[("chargedHadronIsomuon"+decaystr+dataSetName).c_str()]->Fill(chargedHadronIso_muon[muonID[iMu]], eventW*scaleFactor);
+        // histo1D_fakedisc[("chargedHadronIsomuon"+decaystr+dataSetName).c_str()]->Fill(chargedHadronIso_muon[muonID[iMu]], eventW*scaleFactor);
         //histo1D_fakedisc[("neutralHadronIsomuon"+decaystr+dataSetName).c_str()]->Fill(neutralHadronIso_muon[muonID[iMu]], eventW*scaleFactor);
         //histo1D_fakedisc[("photonIsomuon"+decaystr+dataSetName).c_str()]->Fill(photonIso_muon[muonID[iMu]], eventW*scaleFactor);
-       // histo1D_fakedisc[("TrackLayersmuon"+decaystr+dataSetName).c_str()]->Fill(TrackLayers_muon[muonID[iMu]], eventW*scaleFactor);
+        // histo1D_fakedisc[("TrackLayersmuon"+decaystr+dataSetName).c_str()]->Fill(TrackLayers_muon[muonID[iMu]], eventW*scaleFactor);
         
       }
- 
+      
       if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){
         histo1D_fakedisc[("WlepPt"+decaystr+dataSetName).c_str()] ->Fill(selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
         histo1D_fakedisc[("WlepEta"+decaystr+dataSetName).c_str()]->Fill(selectedElectrons[WelecIndiceF].Eta(), eventW*scaleFactor);
         histo1D_fakedisc[("WlepPhi"+decaystr+dataSetName).c_str()]->Fill(selectedElectrons[WelecIndiceF].Phi(), eventW*scaleFactor);
         /*
-        histo1D_fakedisc[("WlepPtEl"+decaystr+dataSetName).c_str()] ->Fill(selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
-        histo1D_fakedisc[("WlepEtaEl"+decaystr+dataSetName).c_str()]->Fill(selectedElectrons[WelecIndiceF].Eta(), eventW*scaleFactor);
-        histo1D_fakedisc[("WlepPhiEl"+decaystr+dataSetName).c_str()]->Fill(selectedElectrons[WelecIndiceF].Phi(), eventW*scaleFactor);
-        histo1D_fakedisc[("TrMassWEl"+decaystr+dataSetName).c_str()]->Fill(mWT, eventW*scaleFactor);
-        */
+         histo1D_fakedisc[("WlepPtEl"+decaystr+dataSetName).c_str()] ->Fill(selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
+         histo1D_fakedisc[("WlepEtaEl"+decaystr+dataSetName).c_str()]->Fill(selectedElectrons[WelecIndiceF].Eta(), eventW*scaleFactor);
+         histo1D_fakedisc[("WlepPhiEl"+decaystr+dataSetName).c_str()]->Fill(selectedElectrons[WelecIndiceF].Phi(), eventW*scaleFactor);
+         histo1D_fakedisc[("TrMassWEl"+decaystr+dataSetName).c_str()]->Fill(mWT, eventW*scaleFactor);
+         */
         histo1D_fakedisc[("DeltaRWlepZ"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],Zboson), eventW*scaleFactor);
         histo1D_fakedisc[("DeltaRWlepW"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],Wboson), eventW*scaleFactor);
         histo1D_fakedisc[("DeltaRWlepB"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],SMbjet), eventW*scaleFactor);
         histo1D_fakedisc[("DeltaRWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],SMtop), eventW*scaleFactor);
         
-       /* histo1D_fakedisc[("DeltaPhiWlepZ"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedElectrons[WelecIndiceF],Zboson), eventW*scaleFactor);
-        histo1D_fakedisc[("DeltaPhiWlepW"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedElectrons[WelecIndiceF],Wboson), eventW*scaleFactor);
-        histo1D_fakedisc[("DeltaPhiWlepB"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedElectrons[WelecIndiceF],SMbjet), eventW*scaleFactor);
-        histo1D_fakedisc[("DeltaPhiWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedElectrons[WelecIndiceF],SMtop), eventW*scaleFactor);
-        */
+        /* histo1D_fakedisc[("DeltaPhiWlepZ"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedElectrons[WelecIndiceF],Zboson), eventW*scaleFactor);
+         histo1D_fakedisc[("DeltaPhiWlepW"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedElectrons[WelecIndiceF],Wboson), eventW*scaleFactor);
+         histo1D_fakedisc[("DeltaPhiWlepB"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedElectrons[WelecIndiceF],SMbjet), eventW*scaleFactor);
+         histo1D_fakedisc[("DeltaPhiWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedElectrons[WelecIndiceF],SMtop), eventW*scaleFactor);
+         */
         histo1D_fakedisc[("DeltaEtaWlepZ"+decaystr+dataSetName).c_str()]->Fill(DeltaEta(selectedElectrons[WelecIndiceF],Zboson), eventW*scaleFactor);
         histo1D_fakedisc[("DeltaEtaWlepW"+decaystr+dataSetName).c_str()]->Fill(DeltaEta(selectedElectrons[WelecIndiceF],Wboson), eventW*scaleFactor);
         histo1D_fakedisc[("DeltaEtaWlepB"+decaystr+dataSetName).c_str()]->Fill(DeltaEta(selectedElectrons[WelecIndiceF],SMbjet), eventW*scaleFactor);
@@ -7298,18 +7928,18 @@ void FillFakeDiscriminator(string dataSetName, vector <int> decayChannels, bool 
         histo1D_fakedisc[("DeltaThetaWlepW"+decaystr+dataSetName).c_str()]->Fill(DeltaTheta(selectedElectrons[WelecIndiceF],Wboson), eventW*scaleFactor);
         histo1D_fakedisc[("DeltaThetaWlepB"+decaystr+dataSetName).c_str()]->Fill(DeltaTheta(selectedElectrons[WelecIndiceF],SMbjet), eventW*scaleFactor);
         histo1D_fakedisc[("DeltaThetaWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(DeltaTheta(selectedElectrons[WelecIndiceF],SMtop), eventW*scaleFactor);
-      
+        
         histo1D_fakedisc[("DeltaRThetaWlepZ"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedElectrons[WelecIndiceF],Zboson), eventW*scaleFactor);
         histo1D_fakedisc[("DeltaRThetaWlepW"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedElectrons[WelecIndiceF],Wboson), eventW*scaleFactor);
         histo1D_fakedisc[("DeltaRThetaWlepB"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedElectrons[WelecIndiceF],SMbjet), eventW*scaleFactor);
         histo1D_fakedisc[("DeltaRThetaWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedElectrons[WelecIndiceF],SMtop), eventW*scaleFactor);
-       
+        
         histo1D_fakedisc[("DeltaRThetaOverPtWlepZ"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedElectrons[WelecIndiceF],Zboson)/selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
         histo1D_fakedisc[("DeltaRThetaOverPtWlepW"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedElectrons[WelecIndiceF],Wboson)/selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
         histo1D_fakedisc[("DeltaRThetaOverPtWlepB"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedElectrons[WelecIndiceF],SMbjet)/selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
         histo1D_fakedisc[("DeltaRThetaOverPtWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedElectrons[WelecIndiceF],SMtop)/selectedElectrons[WelecIndiceF].Pt(), eventW*scaleFactor);
-      
-    
+        
+        
         
         
       }
@@ -7318,21 +7948,21 @@ void FillFakeDiscriminator(string dataSetName, vector <int> decayChannels, bool 
         histo1D_fakedisc[("WlepEta"+decaystr+dataSetName).c_str()]->Fill(selectedMuons[WmuIndiceF].Eta(), eventW*scaleFactor);
         histo1D_fakedisc[("WlepPhi"+decaystr+dataSetName).c_str()]->Fill(selectedMuons[WmuIndiceF].Phi(), eventW*scaleFactor);
         /*
-        histo1D_fakedisc[("WlepPtMu"+decaystr+dataSetName).c_str()] ->Fill(selectedMuons[WmuIndiceF].Pt(), eventW*scaleFactor);
-        histo1D_fakedisc[("WlepEtaMu"+decaystr+dataSetName).c_str()]->Fill(selectedMuons[WmuIndiceF].Eta(), eventW*scaleFactor);
-        histo1D_fakedisc[("WlepPhiMu"+decaystr+dataSetName).c_str()]->Fill(selectedMuons[WmuIndiceF].Phi(), eventW*scaleFactor);
-        histo1D_fakedisc[("TrMassWMu"+decaystr+dataSetName).c_str()]->Fill(mWT, eventW*scaleFactor);
-        */
+         histo1D_fakedisc[("WlepPtMu"+decaystr+dataSetName).c_str()] ->Fill(selectedMuons[WmuIndiceF].Pt(), eventW*scaleFactor);
+         histo1D_fakedisc[("WlepEtaMu"+decaystr+dataSetName).c_str()]->Fill(selectedMuons[WmuIndiceF].Eta(), eventW*scaleFactor);
+         histo1D_fakedisc[("WlepPhiMu"+decaystr+dataSetName).c_str()]->Fill(selectedMuons[WmuIndiceF].Phi(), eventW*scaleFactor);
+         histo1D_fakedisc[("TrMassWMu"+decaystr+dataSetName).c_str()]->Fill(mWT, eventW*scaleFactor);
+         */
         histo1D_fakedisc[("DeltaRWlepZ"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],Zboson), eventW*scaleFactor);
         histo1D_fakedisc[("DeltaRWlepW"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],Wboson), eventW*scaleFactor);
         histo1D_fakedisc[("DeltaRWlepB"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],SMbjet), eventW*scaleFactor);
         histo1D_fakedisc[("DeltaRWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],SMtop), eventW*scaleFactor);
         /*
-        histo1D_fakedisc[("DeltaPhiWlepZ"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedMuons[WmuIndiceF],Zboson), eventW*scaleFactor);
-        histo1D_fakedisc[("DeltaPhiWlepW"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedMuons[WmuIndiceF],Wboson), eventW*scaleFactor);
-        histo1D_fakedisc[("DeltaPhiWlepB"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedMuons[WmuIndiceF],SMbjet), eventW*scaleFactor);
-        histo1D_fakedisc[("DeltaPhiWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedMuons[WmuIndiceF],SMtop), eventW*scaleFactor);
-        */
+         histo1D_fakedisc[("DeltaPhiWlepZ"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedMuons[WmuIndiceF],Zboson), eventW*scaleFactor);
+         histo1D_fakedisc[("DeltaPhiWlepW"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedMuons[WmuIndiceF],Wboson), eventW*scaleFactor);
+         histo1D_fakedisc[("DeltaPhiWlepB"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedMuons[WmuIndiceF],SMbjet), eventW*scaleFactor);
+         histo1D_fakedisc[("DeltaPhiWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaPhi(selectedMuons[WmuIndiceF],SMtop), eventW*scaleFactor);
+         */
         histo1D_fakedisc[("DeltaEtaWlepZ"+decaystr+dataSetName).c_str()]->Fill(DeltaEta(selectedMuons[WmuIndiceF],Zboson), eventW*scaleFactor);
         histo1D_fakedisc[("DeltaEtaWlepW"+decaystr+dataSetName).c_str()]->Fill(DeltaEta(selectedMuons[WmuIndiceF],Wboson), eventW*scaleFactor);
         histo1D_fakedisc[("DeltaEtaWlepB"+decaystr+dataSetName).c_str()]->Fill(DeltaEta(selectedMuons[WmuIndiceF],SMbjet), eventW*scaleFactor);
@@ -7359,30 +7989,30 @@ void FillFakeDiscriminator(string dataSetName, vector <int> decayChannels, bool 
         histo1D_fakedisc[("DeltaRThetaOverPtWlepSMtop"+decaystr+dataSetName).c_str()]->Fill(DeltaRTheta(selectedMuons[WmuIndiceF],SMtop)/selectedMuons[WmuIndiceF].Pt(), eventW*scaleFactor);
         
       }
-     
+      
       /*
-      if(ZmuIndiceF_0 != -999 && ZmuIndiceF_1 != -999 &&selectedMuons.size() > 1 ){
-        histo1D_fakedisc[("ZbosonPtMu"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Pt(), eventW*scaleFactor);
-        histo1D_fakedisc[("ZbosonEtaMu"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Eta(), eventW*scaleFactor);
-        histo1D_fakedisc[("ZbosonPhiMu"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Phi(), eventW*scaleFactor);
-      }
+       if(ZmuIndiceF_0 != -999 && ZmuIndiceF_1 != -999 &&selectedMuons.size() > 1 ){
+       histo1D_fakedisc[("ZbosonPtMu"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Pt(), eventW*scaleFactor);
+       histo1D_fakedisc[("ZbosonEtaMu"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Eta(), eventW*scaleFactor);
+       histo1D_fakedisc[("ZbosonPhiMu"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Phi(), eventW*scaleFactor);
+       }
        if(ZelecIndiceF_0 != -999 && ZelecIndiceF_1 != -999 && selectedElectrons.size() > 1 ){
-        histo1D_fakedisc[("ZbosonPtEl"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Pt(), eventW*scaleFactor);
-        histo1D_fakedisc[("ZbosonEtaEl"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Eta(), eventW*scaleFactor);
-        histo1D_fakedisc[("ZbosonPhiEl"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Phi(), eventW*scaleFactor);
-      }
-      */
+       histo1D_fakedisc[("ZbosonPtEl"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Pt(), eventW*scaleFactor);
+       histo1D_fakedisc[("ZbosonEtaEl"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Eta(), eventW*scaleFactor);
+       histo1D_fakedisc[("ZbosonPhiEl"+decaystr+dataSetName).c_str()] ->Fill(Zboson.Phi(), eventW*scaleFactor);
+       }
+       */
       
       if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){
-       // histo1D_fakedisc[("WleppfIsoelectron"+decaystr+dataSetName).c_str()]->Fill(pfIso_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
-      //  histo1D_fakedisc[("Wlepd0electron"+decaystr+dataSetName).c_str()]->Fill(d0_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
-       /* histo1D_fakedisc[("WlepsigmaIEtaIEtaelectron"+decaystr+dataSetName).c_str()]->Fill(sigmaIEtaIEta_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
-        histo1D_fakedisc[("WlepdeltaEtaInelectron"+decaystr+dataSetName).c_str()]->Fill(deltaEtaIn_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
-        histo1D_fakedisc[("WlepdeltaPhiInelectron"+decaystr+dataSetName).c_str()]->Fill(deltaPhiIn_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
-        histo1D_fakedisc[("WlephadronicOverEmelectron"+decaystr+dataSetName).c_str()]->Fill(hadronicOverEm_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
-      //  histo1D_fakedisc[("WlepmissingHitselectron"+decaystr+dataSetName).c_str()]->Fill(missinghits_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
-        histo1D_fakedisc[("WlepioEmIoPelectron"+decaystr+dataSetName).c_str()]->Fill(ioEmIoP_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
-        *///histo1D_fakedisc[("WlepchargedHadronIsoelectron"+decaystr+dataSetName).c_str()]->Fill(chargedHadronIso_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+        // histo1D_fakedisc[("WleppfIsoelectron"+decaystr+dataSetName).c_str()]->Fill(pfIso_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+        //  histo1D_fakedisc[("Wlepd0electron"+decaystr+dataSetName).c_str()]->Fill(d0_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+        /* histo1D_fakedisc[("WlepsigmaIEtaIEtaelectron"+decaystr+dataSetName).c_str()]->Fill(sigmaIEtaIEta_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+         histo1D_fakedisc[("WlepdeltaEtaInelectron"+decaystr+dataSetName).c_str()]->Fill(deltaEtaIn_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+         histo1D_fakedisc[("WlepdeltaPhiInelectron"+decaystr+dataSetName).c_str()]->Fill(deltaPhiIn_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+         histo1D_fakedisc[("WlephadronicOverEmelectron"+decaystr+dataSetName).c_str()]->Fill(hadronicOverEm_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+         //  histo1D_fakedisc[("WlepmissingHitselectron"+decaystr+dataSetName).c_str()]->Fill(missinghits_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+         histo1D_fakedisc[("WlepioEmIoPelectron"+decaystr+dataSetName).c_str()]->Fill(ioEmIoP_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
+         *///histo1D_fakedisc[("WlepchargedHadronIsoelectron"+decaystr+dataSetName).c_str()]->Fill(chargedHadronIso_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
         //histo1D_fakedisc[("WlepneutralHadronIsoelectron"+decaystr+dataSetName).c_str()]->Fill(neutralHadronIso_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
         //histo1D_fakedisc[("WlepphotonIsoelectron"+decaystr+dataSetName).c_str()]->Fill(photonIso_electron[electronID[WelecIndiceF]], eventW*scaleFactor);
         
@@ -7390,9 +8020,9 @@ void FillFakeDiscriminator(string dataSetName, vector <int> decayChannels, bool 
       }
       
       if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){
-      //  histo1D_fakedisc[("WleppfIsomuon"+decaystr+dataSetName).c_str()]->Fill(pfIso_muon[muonID[WmuIndiceF]], eventW*scaleFactor);
-       // histo1D_fakedisc[("Wlepd0muon"+decaystr+dataSetName).c_str()]->Fill(d0_muon[muonID[WmuIndiceF]], eventW*scaleFactor);
-       // histo1D_fakedisc[("WlepchargedHadronIsomuon"+decaystr+dataSetName).c_str()]->Fill(chargedHadronIso_muon[muonID[WmuIndiceF]], eventW*scaleFactor);
+        //  histo1D_fakedisc[("WleppfIsomuon"+decaystr+dataSetName).c_str()]->Fill(pfIso_muon[muonID[WmuIndiceF]], eventW*scaleFactor);
+        // histo1D_fakedisc[("Wlepd0muon"+decaystr+dataSetName).c_str()]->Fill(d0_muon[muonID[WmuIndiceF]], eventW*scaleFactor);
+        // histo1D_fakedisc[("WlepchargedHadronIsomuon"+decaystr+dataSetName).c_str()]->Fill(chargedHadronIso_muon[muonID[WmuIndiceF]], eventW*scaleFactor);
         //histo1D_fakedisc[("WlepneutralHadronIsomuon"+decaystr+dataSetName).c_str()]->Fill(neutralHadronIso_muon[muonID[WmuIndiceF]], eventW*scaleFactor);
         //histo1D_fakedisc[("WlepphotonIsomuon"+decaystr+dataSetName).c_str()]->Fill(photonIso_muon[muonID[WmuIndiceF]], eventW*scaleFactor);
         // histo1D_fakedisc[("WlepTrackLayersmuon"+decaystr+dataSetName).c_str()]->Fill(TrackLayers_muon[muonID[WmuIndiceF]], eventW*scaleFactor);
@@ -7732,13 +8362,13 @@ void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<i
     MSPlot[(sregion+"_MVA_TotalHt_lep_"+decaystring).c_str()]->Fill(MVA_TotalHt_lep , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
     MSPlot[(sregion+"_MVA_TotalInvMass_lep_"+decaystring).c_str()]->Fill( MVA_TotalInvMass_lep, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
     
-   if(selectedJetsID.size()>0) MSPlot[(sregion+"_MVA_bdiscCSVv2_jet_0_"+decaystring).c_str()]->Fill(MVA_bdiscCSVv2_jet_0 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-   if(selectedJetsID.size()>1)  MSPlot[(sregion+"_MVA_bdiscCSVv2_jet_1_"+decaystring).c_str()]->Fill(MVA_bdiscCSVv2_jet_1 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+    if(selectedJetsID.size()>0) MSPlot[(sregion+"_MVA_bdiscCSVv2_jet_0_"+decaystring).c_str()]->Fill(MVA_bdiscCSVv2_jet_0 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+    if(selectedJetsID.size()>1)  MSPlot[(sregion+"_MVA_bdiscCSVv2_jet_1_"+decaystring).c_str()]->Fill(MVA_bdiscCSVv2_jet_1 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
     // MSPlot[(sregion+"_MVA_CosTheta_"+decaystring).c_str()]->Fill(MVA_CosTheta , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
     //  MSPlot[(sregion+"_MVA_CosTheta_alt_"+decaystring).c_str()]->Fill(MVA_CosTheta_alt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
     
     
-   if(selectedJetsID.size()>1) MSPlot[(sregion+"_MVA_cdiscCvsB_jet_1_"+decaystring).c_str()]->Fill(MVA_cdiscCvsB_jet_1 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+    if(selectedJetsID.size()>1) MSPlot[(sregion+"_MVA_cdiscCvsB_jet_1_"+decaystring).c_str()]->Fill(MVA_cdiscCvsB_jet_1 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
     if(selectedJetsID.size()>1) MSPlot[(sregion+"_MVA_cdiscCvsL_jet_1_"+decaystring).c_str()]->Fill(MVA_cdiscCvsL_jet_1 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
     if(selectedJetsID.size()>0) MSPlot[(sregion+"_MVA_cdiscCvsB_jet_0_"+decaystring).c_str()]->Fill(MVA_cdiscCvsB_jet_0 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
     if(selectedJetsID.size()>0) MSPlot[(sregion+"_MVA_cdiscCvsL_jet_0_"+decaystring).c_str()]->Fill(MVA_cdiscCvsL_jet_0 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
@@ -7784,14 +8414,14 @@ void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<i
       
       MSPlot[(sregion+"_MVA_dRZc_"+decaystring).c_str()]->Fill(MVA_dRZc , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
       MSPlot[(sregion+"_MVA_dPhiZc_"+decaystring).c_str()]->Fill(MVA_dPhiZc , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-     
+      
       // interplay
       MSPlot[(sregion+"_MVA_dRSMFCNCtop_"+decaystring).c_str()]->Fill(MVA_dRSMFCNCtop , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
       MSPlot[(sregion+"_MVA_dRWlepc_"+decaystring).c_str()]->Fill(MVA_dRWlepc , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
       MSPlot[(sregion+"_MVA_dPhiSMFCNCtop_"+decaystring).c_str()]->Fill(MVA_dPhiSMFCNCtop , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
       MSPlot[(sregion+"_MVA_dPhiWlepc_"+decaystring).c_str()]->Fill(MVA_dRWlepc , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
       
-     
+      
     }
     
   }
@@ -8476,19 +9106,19 @@ double DeltaRTheta(TLorentzVector vec1, TLorentzVector vec2){
   
   return sqrt(ROOT::Math::VectorUtil::DeltaPhi(vec1,vec2) + DeltaEta(vec1,vec2));
 }
-  std::vector<std::string> split(const std::string &text, char sep) {
-    std::vector<std::string> tokens;
-    std::size_t start = 0, end = 0;
-    while ((end = text.find(sep, start)) != std::string::npos) {
-      if (end != start) {
-        tokens.push_back(text.substr(start, end - start));
-      }
-      start = end + 1;
-    }
+std::vector<std::string> split(const std::string &text, char sep) {
+  std::vector<std::string> tokens;
+  std::size_t start = 0, end = 0;
+  while ((end = text.find(sep, start)) != std::string::npos) {
     if (end != start) {
-      tokens.push_back(text.substr(start));
+      tokens.push_back(text.substr(start, end - start));
     }
-    return tokens;
+    start = end + 1;
   }
+  if (end != start) {
+    tokens.push_back(text.substr(start));
+  }
+  return tokens;
+}
 
 
