@@ -92,6 +92,7 @@ void FillSystematicHisto(string dataSetName, string systematic, Double_t weight_
 bool makePlots = false;
 bool doMTWtemplate = false;
 bool PlotSystematics = false;
+bool PlotJeSystematics = false;
 bool doPseudoData = false;
 bool doSystematics = false;
 Int_t channel = -999;
@@ -134,6 +135,17 @@ Double_t        MVA_x2;
 Int_t           MVA_id1;
 Int_t           MVA_id2;
 Double_t        MVA_q;
+Double_t        MVA_weight0;
+Double_t        MVA_weight1;
+Double_t        MVA_weight2;
+Double_t        MVA_weight3;
+Double_t        MVA_weight4;
+Double_t        MVA_weight5;
+Double_t        MVA_weight6;
+Double_t        MVA_weight7;
+Double_t        MVA_weight8;
+Double_t        MVA_hdamp_up;
+Double_t        MVA_hdamp_down;
 Int_t           MVA_channel;
 Float_t         MVA_weight;
 Double_t        MVA_weight_nom;
@@ -141,8 +153,11 @@ Double_t        MVA_weight_puSF_up;
 Double_t        MVA_weight_puSF_down;
 Double_t        MVA_weight_electronSF_up;
 Double_t        MVA_weight_electronSF_down;
+Double_t        MVA_weight_puSF;
+Double_t        MVA_weight_muonSF;
+Double_t        MVA_weight_electronSF;
+Double_t        MVA_weight_btagSF;
 Double_t        MVA_weight_muonSF_up;
-Double_t        MVA_weight_nloSF;
 Double_t        MVA_weight_muonSF_down;
 Double_t        MVA_weight_btagSF_cferr1_up;
 Double_t        MVA_weight_btagSF_cferr1_down;
@@ -160,10 +175,7 @@ Double_t        MVA_weight_btagSF_lfstats1_up;
 Double_t        MVA_weight_btagSF_lfstats1_down;
 Double_t        MVA_weight_btagSF_lfstats2_up;
 Double_t        MVA_weight_btagSF_lfstats2_down;
-Double_t MVA_weight_puSF = 1. ;
-Double_t MVA_weight_btagSF = 1.;
-Double_t MVA_weight_muonSF = 1.;
-Double_t MVA_weight_electronSF = 1.;
+Double_t        MVA_weight_nloSF;
 Float_t         MVA_region;
 Double_t        MVA_EqLumi;
 Double_t        MVA_Luminosity;
@@ -209,6 +221,7 @@ Float_t         MVA_mWt2;
 Float_t         MVA_SMtop_M;
 Float_t         MVA_mlb;
 Float_t         MVA_Wboson_M;
+Float_t         MVA_SMtop_rap;
 Float_t         MVA_dRWlepb;
 Float_t         MVA_dPhiWlepb;
 Float_t         MVA_Wlep_Charge;
@@ -226,8 +239,15 @@ Float_t         MVA_bdiscCSVv2_jet_0;
 Float_t         MVA_bdiscCSVv2_jet_1;
 Float_t         MVA_CosTheta;
 Float_t         MVA_CosTheta_alt;
+Float_t         MVA_FCNCtop_rap;
+Float_t         MVA_cdiscCvsB_cjet;
+Float_t         MVA_cdiscCvsL_cjet;
+Float_t         MVA_cdiscCvsB_highestdisjet;
+Float_t         MVA_cdiscCvsL_highestdisjet;
 Float_t         MVA_FCNCtop_M;
 Float_t         MVA_Zboson_M;
+Float_t         MVA_Bdis_Lightjet;
+Float_t         MVA_Bdis_OtherJets;
 Float_t         MVA_dRZc;
 Float_t         MVA_dPhiZc;
 Float_t         MVA_cdiscCvsB_jet_1;
@@ -238,6 +258,13 @@ Float_t         MVA_nJets_CharmL;
 Float_t         MVA_nJets_CharmM;
 Float_t         MVA_nJets_CharmT;
 Float_t         MVA_dRSMFCNCtop;
+Float_t         MVA_ptWQ;
+Float_t         MVA_deltaRjj_max;
+Float_t         MVA_deltaRjj_min;
+Float_t         MVA_deltaRjj_sum;
+Float_t         MVA_deltaRWlepJet_max;
+Float_t         MVA_deltaRWlepJet_min;
+Float_t         MVA_dRSMjetLightjet;
 Float_t         MVA_dRZb;
 Float_t         MVA_dRWlepc;
 Float_t         MVA_dRZWlep;
@@ -248,19 +275,25 @@ Float_t         MVA_dPhiWlepc;
 Float_t         MVA_dPhiZWlep;
 Float_t         MVA_dPhiZSMtop;
 Float_t         MVA_m3l;
-
 // List of branches
-TBranch        *b_MVA_weight_puSF;
-TBranch        *b_MVA_weight_nloSF;
-TBranch        *b_MVA_weight_btagSF ;
-TBranch        *b_MVA_weight_muonSF ;
-TBranch        *b_MVA_weight_electronSF ;
+
 TBranch         *b_MVA_BDT;
 TBranch        *b_MVA_x1;   //!
 TBranch        *b_MVA_x2;   //!
 TBranch        *b_MVA_id1;   //!
 TBranch        *b_MVA_id2;   //!
 TBranch        *b_MVA_q;   //!
+TBranch        *b_MVA_weight0;   //!
+TBranch        *b_MVA_weight1;   //!
+TBranch        *b_MVA_weight2;   //!
+TBranch        *b_MVA_weight3;   //!
+TBranch        *b_MVA_weight4;   //!
+TBranch        *b_MVA_weight5;   //!
+TBranch        *b_MVA_weight6;   //!
+TBranch        *b_MVA_weight7;   //!
+TBranch        *b_MVA_weight8;   //!
+TBranch        *b_MVA_hdamp_up;   //!
+TBranch        *b_MVA_hdamp_down;   //!
 TBranch        *b_MVA_channel;   //!
 TBranch        *b_MVA_weight;   //!
 TBranch        *b_MVA_weight_nom;   //!
@@ -268,6 +301,10 @@ TBranch        *b_MVA_weight_puSF_up;   //!
 TBranch        *b_MVA_weight_puSF_down;   //!
 TBranch        *b_MVA_weight_electronSF_up;   //!
 TBranch        *b_MVA_weight_electronSF_down;   //!
+TBranch        *b_MVA_weight_puSF;   //!
+TBranch        *b_MVA_weight_muonSF;   //!
+TBranch        *b_MVA_weight_electronSF;   //!
+TBranch        *b_MVA_weight_btagSF;   //!
 TBranch        *b_MVA_weight_muonSF_up;   //!
 TBranch        *b_MVA_weight_muonSF_down;   //!
 TBranch        *b_MVA_weight_btagSF_cferr1_up;   //!
@@ -286,6 +323,7 @@ TBranch        *b_MVA_weight_btagSF_lfstats1_up;   //!
 TBranch        *b_MVA_weight_btagSF_lfstats1_down;   //!
 TBranch        *b_MVA_weight_btagSF_lfstats2_up;   //!
 TBranch        *b_MVA_weight_btagSF_lfstats2_down;   //!
+TBranch        *b_MVA_weight_nloSF;   //!
 TBranch        *b_MVA_region;   //!
 TBranch        *b_MVA_EqLumi;   //!
 TBranch        *b_MVA_Luminosity;   //!
@@ -331,6 +369,7 @@ TBranch        *b_MVA_mWt2;   //!
 TBranch        *b_MVA_SMtop_M;   //!
 TBranch        *b_MVA_mlb;   //!
 TBranch        *b_MVA_Wboson_M;   //!
+TBranch        *b_MVA_SMtop_rap;   //!
 TBranch        *b_MVA_dRWlepb;   //!
 TBranch        *b_MVA_dPhiWlepb;   //!
 TBranch        *b_MVA_Wlep_Charge;   //!
@@ -348,8 +387,15 @@ TBranch        *b_MVA_bdiscCSVv2_jet_0;   //!
 TBranch        *b_MVA_bdiscCSVv2_jet_1;   //!
 TBranch        *b_MVA_CosTheta;   //!
 TBranch        *b_MVA_CosTheta_alt;   //!
+TBranch        *b_MVA_FCNCtop_rap;   //!
+TBranch        *b_MVA_cdiscCvsB_cjet;   //!
+TBranch        *b_MVA_cdiscCvsL_cjet;   //!
+TBranch        *b_MVA_cdiscCvsB_highestdisjet;   //!
+TBranch        *b_MVA_cdiscCvsL_highestdisjet;   //!
 TBranch        *b_MVA_FCNCtop_M;   //!
 TBranch        *b_MVA_Zboson_M;   //!
+TBranch        *b_MVA_Bdis_Lightjet;   //!
+TBranch        *b_MVA_Bdis_OtherJets;   //!
 TBranch        *b_MVA_dRZc;   //!
 TBranch        *b_MVA_dPhiZc;   //!
 TBranch        *b_MVA_cdiscCvsB_jet_1;   //!
@@ -360,6 +406,13 @@ TBranch        *b_MVA_nJets_CharmL;   //!
 TBranch        *b_MVA_nJets_CharmM;   //!
 TBranch        *b_MVA_nJets_CharmT;   //!
 TBranch        *b_MVA_dRSMFCNCtop;   //!
+TBranch        *b_MVA_ptWQ;   //!
+TBranch        *b_MVA_deltaRjj_max;   //!
+TBranch        *b_MVA_deltaRjj_min;   //!
+TBranch        *b_MVA_deltaRjj_sum;   //!
+TBranch        *b_MVA_deltaRWlepJet_max;   //!
+TBranch        *b_MVA_deltaRWlepJet_min;   //!
+TBranch        *b_MVA_dRSMjetLightjet;   //!
 TBranch        *b_MVA_dRZb;   //!
 TBranch        *b_MVA_dRWlepc;   //!
 TBranch        *b_MVA_dRZWlep;   //!
@@ -370,7 +423,6 @@ TBranch        *b_MVA_dPhiWlepc;   //!
 TBranch        *b_MVA_dPhiZWlep;   //!
 TBranch        *b_MVA_dPhiZSMtop;   //!
 TBranch        *b_MVA_m3l;   //!
-
 
 map<string,TH1F*> histo1DMTW;
 TH1F*  hist_BDT_JES_nom_sig = new TH1F("hist_BDT_JES_nom_sig","Effect of JES systematics on the BDT: Signal;BDT;Nb. of evts", nbin,-1.,1.);
@@ -472,6 +524,21 @@ TH1F*  hist_BDT_btagSF_lfstats2_down_sig = new TH1F("hist_BDT_lfstats2_btagSF_do
 TH1F*  hist_BDT_btagSF_lfstats2_down_bkg = new TH1F("hist_BDT_lfstats2_btagSF_down_bkg","Effect of btag SF lfstats2 systematics on the BDT: Background:BDT:Nb. of evts", nbin,-1.,1.);
 
 
+TH1F*  hist_mWt_JES_nom_sig = new TH1F("hist_mWt_JES_nom_sig","Effect of JES systematics on the mWt: Signal;mWt;Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_JES_nom_bkg = new TH1F("hist_mWt_JES_nom_bkg","Effect of JES systematics on the mWt: Background;mWt;Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_JES_up_sig = new TH1F("hist_mWt_JES_up_sig","Effect of JES systematics on the mWt: Signal:mWt:Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_JES_up_bkg = new TH1F("hist_mWt_JES_up_bkg","Effect of JES systematics on the mWt: Background;mWt;Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_JES_down_sig = new TH1F("hist_mWt_JES_down_sig","Effect of JES systematics on the mWt: Background:mWt:Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_JES_down_bkg = new TH1F("hist_mWt_JES_down_bkg","Effect of JES systematics on the mWt: Background:mWt:Nb. of evts", nbinMTW,0, endMTW);
+
+TH1F*  hist_mWt_JER_nom_sig = new TH1F("hist_mWt_JER_nom_sig","Effect of JER systematics on the mWt: Signal;mWt;Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_JER_nom_bkg = new TH1F("hist_mWt_JER_nom_bkg","Effect of JER systematics on the mWt: Background;mWt;Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_JER_up_sig = new TH1F("hist_mWt_JER_up_sig","Effect of JER systematics on the mWt: Signal:mWt:Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_JER_up_bkg = new TH1F("hist_mWt_JER_up_bkg","Effect of JER systematics on the mWt: Background;mWt;Nb. of evts", nbinMTW,0, endMTW);
+TH1F*  hist_mWt_JER_down_sig = new TH1F("hist_mWt_JER_down_sig","Effect of JER systematics on the mWt: Background:mWt:Nb. of evts" ,nbinMTW,0, endMTW);
+TH1F*  hist_mWt_JER_down_bkg = new TH1F("hist_mWt_JER_down_bkg","Effect of JER systematics on the mWt: Background:mWt:Nb. of evts", nbinMTW,0, endMTW);
+
+
 
 
 TH1F*  hist_mWt_puSF_nom_sig = new TH1F("hist_mWt_puSF_nom_sig","Effect of pile up systematics on the m_{T}(W): DD non prompt lepton;m_{T}(W);Nb. of evts", nbinMTW,0, endMTW);
@@ -561,16 +628,16 @@ TH1F*  hist_mWt_btagSF_lfstats2_down_bkg = new TH1F("hist_mWt_btagS_lfstats2_bta
 
 
 /*
-
-thesystlist.push_back("btagSF_cferr1Down");
-thesystlist.push_back("btagSF_cferr2Down");
-thesystlist.push_back("btagSF_hfDown");
-thesystlist.push_back("btagSF_hfstats1Down");
-thesystlist.push_back("btagSF_hfstats2Down");
-thesystlist.push_back("btagSF_lfDown");
-thesystlist.push_back("btagSF_lfstats1Down");
-thesystlist.push_back("btagSF_lfstats2Down");
-*/
+ 
+ thesystlist.push_back("btagSF_cferr1Down");
+ thesystlist.push_back("btagSF_cferr2Down");
+ thesystlist.push_back("btagSF_hfDown");
+ thesystlist.push_back("btagSF_hfstats1Down");
+ thesystlist.push_back("btagSF_hfstats2Down");
+ thesystlist.push_back("btagSF_lfDown");
+ thesystlist.push_back("btagSF_lfstats1Down");
+ thesystlist.push_back("btagSF_lfstats2Down");
+ */
 
 
 
@@ -620,6 +687,10 @@ Int_t main(Int_t argc, char* argv[]){
     }
     if(string(argv[i]).find("doSystematics")!=std::string::npos) {
       doSystematics= true;
+    }
+    if(string(argv[i]).find("PlotJeSystematics")!=std::string::npos) {
+      PlotJeSystematics= true;
+      //cout << "plotting sys" << endl;
     }
     if(string(argv[i]).find("PlotSystematics")!=std::string::npos) {
       PlotSystematics= true;
@@ -695,7 +766,7 @@ Int_t main(Int_t argc, char* argv[]){
     cout << "pushing back systematics" << endl;
     thesystlist.push_back("puSFDown");
     thesystlist.push_back("electronSFDown");
-     thesystlist.push_back("muonSFDown");
+    thesystlist.push_back("muonSFDown");
     thesystlist.push_back("btagSFDown");
     thesystlist.push_back("btagSF_cferr1Down");
     thesystlist.push_back("btagSF_cferr2Down");
@@ -738,8 +809,8 @@ Int_t main(Int_t argc, char* argv[]){
   thesystlistnames.push_back("btagSF_lf");
   thesystlistnames.push_back("btagSF_lfstats1");
   thesystlistnames.push_back("btagSF_lfstats2");
- // thesystlistnames.push_back("JES");
- // thesystlistnames.push_back("JER");
+  thesystlistnames.push_back("JES");
+  thesystlistnames.push_back("JER");
   
   
   ///////////////:  load datasets
@@ -752,7 +823,7 @@ Int_t main(Int_t argc, char* argv[]){
   for (Int_t d = 0; d < datasetsbf.size(); d++){   //Loop through datasets to get lumi setting
     
     dataSetName = datasetsbf[d]->Name();
-   // cout << "sample " << dataSetName << endl;
+    // cout << "sample " << dataSetName << endl;
     if( dataSetName.find("Data")!=std::string::npos || dataSetName.find("data")!=std::string::npos|| dataSetName.find("DATA")!=std::string::npos  ){
       Luminosity = datasetsbf[d]->EquivalentLumi();
       cout << " - lumi set to " << Luminosity << endl;
@@ -785,7 +856,7 @@ Int_t main(Int_t argc, char* argv[]){
   
   cout << datasets.size() << " samples will be used " << endl;
   ///////////////// Initialisation ////////////////////
-
+  
   //if(toppair) nbin = 50;
   if(makePlots && !doMTWtemplate){
     for(Int_t isys = 0; isys < thesystlist.size() ; isys++){
@@ -819,7 +890,7 @@ Int_t main(Int_t argc, char* argv[]){
   if(!doMTWtemplate) fin = new TFile((ntupleFileName).c_str(),"READ");
   bool onlynomforsys = false;
   Int_t WZregionEntries = 0;
- 
+  
   
   TH1::SetDefaultSumw2();
   TH1F* hist_WZ = new TH1F("MTW_WZ","trans. mass W boson in WZ region: WZ (GeV)",           nbinMTW, 0., endMTW);
@@ -836,7 +907,7 @@ Int_t main(Int_t argc, char* argv[]){
   for(Int_t isys = 0; isys < thesystlist.size() ; isys++){
     systematic = thesystlist[isys];
     cout << "looking at " << systematic << " systematics " << endl;
-
+    
     for (Int_t d = 0; d < datasets.size(); d++)   //Loop through datasets
     {
       cout << "   Dataset " << d << ": " << datasets[d]->Name() << " / title : " << datasets[d]->Title() << endl;
@@ -885,7 +956,7 @@ Int_t main(Int_t argc, char* argv[]){
       
       // Initialise plots
       if(!doMTWtemplate && PlotMVAvars && isys == 0){
-         Init1DHisto(dataSetName, systematic, toppair, doZut, decayChannels);
+        Init1DHisto(dataSetName, systematic, toppair, doZut, decayChannels);
       }
       // initialise combine output histograms
       TH1::SetDefaultSumw2();
@@ -909,11 +980,11 @@ Int_t main(Int_t argc, char* argv[]){
       }
       
       
-     
-    
+      
+      
       if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos || dataSetName.find("FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && doMTWtemplate){
         // InitMTWShapeHisto(dataSetName, systematic, isys, decayChannels);
-       
+        
       }
       
       // safeties
@@ -935,16 +1006,16 @@ Int_t main(Int_t argc, char* argv[]){
         /// Load event
         tTree[(dataSetName).c_str()]->GetEntry(ievt);
         /*if(datafound && MVA_BDT > -0.68 && !doMTWtemplate && !toppair && doZut){ continue;}
-        else if(datafound && MVA_BDT > -0.6 && !doMTWtemplate && !toppair && !doZut){ continue;}
-        else if(datafound && MVA_BDT > -0.12 && !doMTWtemplate && toppair && !doZut){ continue;}
-        else if(datafound && MVA_BDT > -0.2 && !doMTWtemplate && toppair && doZut){ continue;}*/
-       // cout << "region " <<MVA_region << endl;
+         else if(datafound && MVA_BDT > -0.6 && !doMTWtemplate && !toppair && !doZut){ continue;}
+         else if(datafound && MVA_BDT > -0.12 && !doMTWtemplate && toppair && !doZut){ continue;}
+         else if(datafound && MVA_BDT > -0.2 && !doMTWtemplate && toppair && doZut){ continue;}*/
+        // cout << "region " <<MVA_region << endl;
         
         if(doMTWtemplate &&MVA_region != 2 ){ continue ;} // only in WZ control region}
         else if(doMTWtemplate) { WZregionEntries++; }
         
         if(doMTWtemplate &&MVA_region == 2 && MVA_channel == 0) { WZregionEntriesuuu++;}
-       // MVA_weight_nloSF = 1.;
+        // MVA_weight_nloSF = 1.;
         weight = 1.;
         if(!isData && dataSetName.find("fake")==std::string::npos)  weight = MVA_Luminosity /MVA_EqLumi;
         if(!isData && dataSetName.find("fake")==std::string::npos && !onlynomforsys && isys != 0 && (systematic.find("JES")==std::string::npos) && (systematic.find("JER")==std::string::npos) ){
@@ -975,11 +1046,11 @@ Int_t main(Int_t argc, char* argv[]){
         }
         else if(isData ) weight = 1.;
         else weight *= MVA_weight_nom;
-    
-
-       if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ weight *= 0.545 ;}
-       if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ weight *= 0.590;}
-       if(dataSetName.find("WZ")!=std::string::npos ){ weight *=0.841 ;}
+        
+        
+        if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ weight *= 0.545 ;}
+        if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ weight *= 0.590;}
+        //     if(dataSetName.find("WZ")!=std::string::npos ){ weight *=0.841 ;}
         //if(dataSetName.find("fake")!=std::string::npos) weight *= 0.0001;
         
         if(!doMTWtemplate){
@@ -998,224 +1069,239 @@ Int_t main(Int_t argc, char* argv[]){
         // for MS plots
         Double_t weightMSPlot = weight;
         if(isData || dataSetName.find("fake")!=std::string::npos) weightMSPlot *= MVA_Luminosity;
-         /// Fill plots
+        /// Fill plots
         if(doPDFunc && !doMTWtemplate){
           if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos) CalculatePDFWeight(dataSetName, MVA_BDT,MVA_weight_nom, MVA_channel);
         }
         if(PlotMVAvars  && isys == 0 && !doMTWtemplate){
           Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
-       }
-        
-        if(systematic.find("JESDown")!=std::string::npos && dataSetName.find("FCNC")!=std::string::npos) hist_BDT_JES_down_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
-        if(systematic.find("JESUp")!=std::string::npos && dataSetName.find("FCNC")!=std::string::npos) hist_BDT_JES_up_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
-        if(systematic.find("JERDown")!=std::string::npos && dataSetName.find("FCNC")!=std::string::npos) hist_BDT_JER_down_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
-        if(systematic.find("JERUp")!=std::string::npos && dataSetName.find("FCNC")!=std::string::npos) hist_BDT_JER_up_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
-        if(isys ==0 && dataSetName.find("FCNC")!=std::string::npos) hist_BDT_JES_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
-        if(isys ==0 && dataSetName.find("FCNC")!=std::string::npos) hist_BDT_JER_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
-        
-        if(systematic.find("JESDown")!=std::string::npos && dataSetName.find("FCNC")==std::string::npos) hist_BDT_JES_down_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
-        if(systematic.find("JESUp")!=std::string::npos && dataSetName.find("FCNC")==std::string::npos) hist_BDT_JES_up_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
-        if(systematic.find("JERDown")!=std::string::npos && dataSetName.find("FCNC")==std::string::npos) hist_BDT_JER_down_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
-        if(systematic.find("JERUp")!=std::string::npos && dataSetName.find("FCNC")==std::string::npos) hist_BDT_JER_up_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
-        if(isys ==0 && dataSetName.find("FCNC")==std::string::npos) hist_BDT_JES_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
-        if(isys ==0 && dataSetName.find("FCNC")==std::string::npos) hist_BDT_JER_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
-        
+        }
+        if(!isData && PlotJeSystematics && !doMTWtemplate){
+          if(systematic.find("JESDown")!=std::string::npos && dataSetName.find("FCNC")!=std::string::npos) hist_BDT_JES_down_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(systematic.find("JESUp")!=std::string::npos && dataSetName.find("FCNC")!=std::string::npos) hist_BDT_JES_up_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(systematic.find("JERDown")!=std::string::npos && dataSetName.find("FCNC")!=std::string::npos) hist_BDT_JER_down_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(systematic.find("JERUp")!=std::string::npos && dataSetName.find("FCNC")!=std::string::npos) hist_BDT_JER_up_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(isys ==0 && dataSetName.find("FCNC")!=std::string::npos) hist_BDT_JES_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(isys ==0 && dataSetName.find("FCNC")!=std::string::npos) hist_BDT_JER_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          
+          if(systematic.find("JESDown")!=std::string::npos && dataSetName.find("FCNC")==std::string::npos && dataSetName.find("fake")==std::string::npos) hist_BDT_JES_down_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(systematic.find("JESUp")!=std::string::npos && dataSetName.find("FCNC")==std::string::npos && dataSetName.find("fake")==std::string::npos) hist_BDT_JES_up_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(systematic.find("JERDown")!=std::string::npos && dataSetName.find("FCNC")==std::string::npos && dataSetName.find("fake")==std::string::npos) hist_BDT_JER_down_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(systematic.find("JERUp")!=std::string::npos && dataSetName.find("FCNC")==std::string::npos && dataSetName.find("fake")==std::string::npos) hist_BDT_JER_up_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(isys ==0 && dataSetName.find("FCNC")==std::string::npos && dataSetName.find("fake")==std::string::npos) hist_BDT_JES_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(isys ==0 && dataSetName.find("FCNC")==std::string::npos && dataSetName.find("fake")==std::string::npos) hist_BDT_JER_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+        }
+        else if(!isData && PlotJeSystematics && doMTWtemplate){
+          if(systematic.find("JESDown")!=std::string::npos && dataSetName.find("FCNC")!=std::string::npos) hist_mWt_JES_down_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(systematic.find("JESUp")!=std::string::npos && dataSetName.find("FCNC")!=std::string::npos) hist_mWt_JES_up_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(systematic.find("JERDown")!=std::string::npos && dataSetName.find("FCNC")!=std::string::npos) hist_mWt_JER_down_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(systematic.find("JERUp")!=std::string::npos && dataSetName.find("FCNC")!=std::string::npos) hist_mWt_JER_up_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(isys ==0 && dataSetName.find("FCNC")!=std::string::npos) hist_mWt_JES_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(isys ==0 && dataSetName.find("FCNC")!=std::string::npos) hist_mWt_JER_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          
+          if(systematic.find("JESDown")!=std::string::npos && dataSetName.find("FCNC")==std::string::npos && dataSetName.find("fake")==std::string::npos) hist_mWt_JES_down_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(systematic.find("JESUp")!=std::string::npos && dataSetName.find("FCNC")==std::string::npos && dataSetName.find("fake")==std::string::npos) hist_mWt_JES_up_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(systematic.find("JERDown")!=std::string::npos && dataSetName.find("FCNC")==std::string::npos && dataSetName.find("fake")==std::string::npos) hist_mWt_JER_down_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(systematic.find("JERUp")!=std::string::npos && dataSetName.find("FCNC")==std::string::npos && dataSetName.find("fake")==std::string::npos) hist_mWt_JER_up_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(isys ==0 && dataSetName.find("FCNC")==std::string::npos && dataSetName.find("fake")==std::string::npos) hist_mWt_JES_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+          if(isys ==0 && dataSetName.find("FCNC")==std::string::npos && dataSetName.find("fake")==std::string::npos) hist_mWt_JER_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+        }
         
         //cout << "booleans " <<  PlotSystematics << " "<< !isData << " " <<  !doMTWtemplate << endl;
         if(PlotSystematics && !isData && dataSetName.find("fake")==std::string::npos && !doMTWtemplate && !doSystematics){
           if(dataSetName.find("FCNC")!=std::string::npos){
-            hist_BDT_puSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_puSF_up_sig->Fill(MVA_BDT, MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_puSF_down_sig->Fill(MVA_BDT, MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_puSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_puSF_up_sig->Fill(MVA_BDT, MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_puSF_down_sig->Fill(MVA_BDT, MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
             
-            hist_BDT_electronSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_electronSF_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_electronSF_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_electronSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_electronSF_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_electronSF_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_BDT_muonSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_muonSF_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_muonSF_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_muonSF_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_muonSF_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_muonSF_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
             
-            hist_BDT_btagSF_cferr1_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_cferr1_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_cferr1_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_cferr1_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_cferr1_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_cferr1_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_BDT_btagSF_cferr2_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_cferr2_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_cferr2_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_cferr2_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_cferr2_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_cferr2_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_BDT_btagSF_hf_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_hf_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_hf_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_hf_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_hf_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_hf_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_BDT_btagSF_hfstats1_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_hfstats1_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_hfstats1_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_hfstats1_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_hfstats1_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_hfstats1_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_BDT_btagSF_hfstats2_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_hfstats2_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_hfstats2_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_hfstats2_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_hfstats2_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_hfstats2_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_BDT_btagSF_lf_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_lf_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_lf_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_lf_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_lf_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_lf_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_BDT_btagSF_lfstats1_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_lfstats1_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_lfstats1_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_lfstats1_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_lfstats1_up_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_lfstats1_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_BDT_btagSF_lfstats2_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_lfstats2_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_lfstats2_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_lfstats2_nom_sig->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_lfstats2_up_sig->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_lfstats2_down_sig->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
           }
           else{
             
-            hist_BDT_puSF_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_puSF_up_bkg->Fill(MVA_BDT, MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_puSF_down_bkg->Fill(MVA_BDT, MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_puSF_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_puSF_up_bkg->Fill(MVA_BDT, MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_puSF_down_bkg->Fill(MVA_BDT, MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
             
-            hist_BDT_electronSF_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_electronSF_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_electronSF_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_electronSF_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_electronSF_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_electronSF_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_BDT_muonSF_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_muonSF_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_muonSF_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_muonSF_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_muonSF_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_muonSF_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
             
-            hist_BDT_btagSF_cferr1_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_cferr1_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_cferr1_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_cferr1_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_cferr1_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_cferr1_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_BDT_btagSF_cferr2_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_cferr2_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_cferr2_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_cferr2_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_cferr2_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_cferr2_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_BDT_btagSF_hf_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_hf_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_hf_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_hf_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_hf_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_hf_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_BDT_btagSF_hfstats1_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_hfstats1_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_hfstats1_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_hfstats1_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_hfstats1_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_hfstats1_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_BDT_btagSF_hfstats2_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_hfstats2_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_hfstats2_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_hfstats2_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_hfstats2_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_hfstats2_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_BDT_btagSF_lf_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_lf_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_lf_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_lf_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_lf_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_lf_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_BDT_btagSF_lfstats1_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_lfstats1_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_lfstats1_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_lfstats1_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_lfstats1_up_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_lfstats1_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_BDT_btagSF_lfstats2_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_lfstats2_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_BDT_btagSF_lfstats2_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_BDT_btagSF_lfstats2_nom_bkg->Fill(MVA_BDT,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_lfstats2_up_bkg->Fill(MVA_BDT, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF*MVA_Luminosity /MVA_EqLumi );
+            hist_BDT_btagSF_lfstats2_down_bkg->Fill(MVA_BDT, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
           }
           
           
         }
         else if(PlotSystematics && !isData && dataSetName.find("FCNC")==std::string::npos && doMTWtemplate && !doSystematics){
           
-           if(dataSetName.find("fake")!=std::string::npos){
-            hist_mWt_puSF_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_puSF_up_sig->Fill(MVA_mWt, MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_puSF_down_sig->Fill(MVA_mWt, MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+          if(dataSetName.find("fake")!=std::string::npos){
+            hist_mWt_puSF_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_puSF_up_sig->Fill(MVA_mWt, MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_puSF_down_sig->Fill(MVA_mWt, MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
             
-            hist_mWt_electronSF_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_electronSF_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_electronSF_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_electronSF_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_electronSF_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_electronSF_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_mWt_muonSF_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_muonSF_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_muonSF_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-             
-             hist_mWt_btagSF_cferr1_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-             hist_mWt_btagSF_cferr1_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-             hist_mWt_btagSF_cferr1_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-             
-             hist_mWt_btagSF_cferr2_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-             hist_mWt_btagSF_cferr2_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-             hist_mWt_btagSF_cferr2_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-           
-             hist_mWt_btagSF_hf_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-             hist_mWt_btagSF_hf_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-             hist_mWt_btagSF_hf_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-           
-             hist_mWt_btagSF_hfstats1_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-             hist_mWt_btagSF_hfstats1_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-             hist_mWt_btagSF_hfstats1_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-           
-             hist_mWt_btagSF_hfstats2_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-             hist_mWt_btagSF_hfstats2_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-             hist_mWt_btagSF_hfstats2_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-             
-             hist_mWt_btagSF_lf_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-             hist_mWt_btagSF_lf_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-             hist_mWt_btagSF_lf_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-             
-             hist_mWt_btagSF_lfstats1_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-             hist_mWt_btagSF_lfstats1_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-             hist_mWt_btagSF_lfstats1_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-             
-             hist_mWt_btagSF_lfstats2_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-             hist_mWt_btagSF_lfstats2_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF*MVA_Luminosity /MVA_EqLumi ); 
-             hist_mWt_btagSF_lfstats2_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-             
+            hist_mWt_muonSF_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_muonSF_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_muonSF_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            
+            hist_mWt_btagSF_cferr1_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_cferr1_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_cferr1_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            
+            hist_mWt_btagSF_cferr2_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_cferr2_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_cferr2_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            
+            hist_mWt_btagSF_hf_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_hf_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_hf_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            
+            hist_mWt_btagSF_hfstats1_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_hfstats1_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_hfstats1_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            
+            hist_mWt_btagSF_hfstats2_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_hfstats2_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_hfstats2_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            
+            hist_mWt_btagSF_lf_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_lf_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_lf_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            
+            hist_mWt_btagSF_lfstats1_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_lfstats1_up_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_lfstats1_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            
+            hist_mWt_btagSF_lfstats2_nom_sig->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_lfstats2_up_sig->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_lfstats2_down_sig->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            
             // cout << "filling" <<endl;
           }
           else{
-            hist_mWt_puSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_puSF_up_bkg->Fill(MVA_mWt,MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_puSF_down_bkg->Fill(MVA_mWt,MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_puSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_puSF_up_bkg->Fill(MVA_mWt,MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_puSF_down_bkg->Fill(MVA_mWt,MVA_weight_puSF_down * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_mWt_electronSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_electronSF_up_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_electronSF_down_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_electronSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_electronSF_up_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF_up * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_electronSF_down_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF_down * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_mWt_muonSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_muonSF_up_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_muonSF_down_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_muonSF_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_muonSF_up_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_up * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_muonSF_down_bkg->Fill(MVA_mWt,MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF * MVA_weight_muonSF_down * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
             
-            hist_mWt_btagSF_cferr1_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_btagSF_cferr1_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_btagSF_cferr1_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_cferr1_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_cferr1_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_cferr1_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_mWt_btagSF_cferr2_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_btagSF_cferr2_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_btagSF_cferr2_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_cferr2_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_cferr2_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_cferr2_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_cferr2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_mWt_btagSF_hf_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_btagSF_hf_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_btagSF_hf_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_hf_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_hf_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_hf_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_mWt_btagSF_hfstats1_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_btagSF_hfstats1_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_btagSF_hfstats1_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_hfstats1_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_hfstats1_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_hfstats1_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_mWt_btagSF_hfstats2_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_btagSF_hfstats2_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_btagSF_hfstats2_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_hfstats2_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_hfstats2_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_hfstats2_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_hfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_mWt_btagSF_lf_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_btagSF_lf_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_btagSF_lf_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_lf_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_lf_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_up * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_lf_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lf_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_mWt_btagSF_lfstats1_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_btagSF_lfstats1_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_btagSF_lfstats1_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_lfstats1_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_lfstats1_up_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_up* MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_lfstats1_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats1_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
-            hist_mWt_btagSF_lfstats2_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_btagSF_lfstats2_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF*MVA_Luminosity /MVA_EqLumi ); 
-            hist_mWt_btagSF_lfstats2_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi ); 
+            hist_mWt_btagSF_lfstats2_nom_bkg->Fill(MVA_mWt,MVA_weight_nom*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_lfstats2_up_bkg->Fill(MVA_mWt, MVA_weight_nom*MVA_weight_btagSF_lfstats2_up/MVA_weight_btagSF*MVA_Luminosity /MVA_EqLumi );
+            hist_mWt_btagSF_lfstats2_down_bkg->Fill(MVA_mWt, MVA_weight_puSF * MVA_weight_electronSF* MVA_weight_btagSF_lfstats2_down * MVA_weight_muonSF * MVA_weight_nloSF*MVA_Luminosity /MVA_EqLumi );
             
             // cout << "filling" <<endl;
           }
@@ -1235,21 +1321,21 @@ Int_t main(Int_t argc, char* argv[]){
         if (makePlots && doMTWtemplate)
         {
           if(isys != 0) tempstring = "_" + systematic;
-         // if(isData) cout << "fill data " << endl;
+          // if(isData) cout << "fill data " << endl;
           FillMTWPlots(d, tempstring, decayChannels, weightMSPlot, MVA_channel);
         }
         
-       
+        
         if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos)&& isys == 0 && doMTWtemplate) histo1DMTW["MTW_WZ"]->Fill(MVA_mWt, weight);
         if(dataSetName.find("fake")!=std::string::npos && isys == 0 && doMTWtemplate) histo1DMTW["MTW_fakes"]->Fill(MVA_mWt, weight);
         if(dataSetName.find("TT_FCNC")!=std::string::npos && isys == 0 && doMTWtemplate) histo1DMTW["MTW_TT_FCNC"]->Fill(MVA_mWt, weight);
         
-
+        
         
       } // events
       
       cout << endl;
-     if(doMTWtemplate) cout << "                WZ entries " << WZregionEntries << " uuu " << WZregionEntriesuuu << endl;
+      if(doMTWtemplate) cout << "                WZ entries " << WZregionEntries << " uuu " << WZregionEntriesuuu << endl;
       /// Write combine histograms
       // --- Write histograms
       //cout << "DATASET " << dataSetName << " ISYS " << isys << endl;
@@ -1362,7 +1448,7 @@ Int_t main(Int_t argc, char* argv[]){
     systematic = "";
   } // systematics
   
- //cout << "ENTRIES " << hist_WZ->GetEntries() << endl;
+  //cout << "ENTRIES " << hist_WZ->GetEntries() << endl;
   
   cout << "ENTRIES " << histo1DMTW["MTW_WZ"]->GetEntries() << endl;
   if(!doMTWtemplate){
@@ -1478,7 +1564,7 @@ Int_t main(Int_t argc, char* argv[]){
   ///   Write plots   ///
   ///*****************///
   
-  if((makePlots || doPDFunc || PlotMVAvars || PlotSystematics ) ){
+  if((makePlots || doPDFunc || PlotMVAvars || PlotSystematics || PlotJeSystematics) ){
     string pathOutput = "OutputPlots/";
     mkdir(pathOutput.c_str(),0777);
     string pathOutputdate = pathOutput + dateString + "/"  ;
@@ -1500,7 +1586,7 @@ Int_t main(Int_t argc, char* argv[]){
     ///Write histograms
     fout->cd();
     
-   if(makePlots && doMTWtemplate){
+    if(makePlots && doMTWtemplate){
       for (map<string,MultiSamplePlot*>::const_iterator it = MSPlotMTW.begin(); it != MSPlotMTW.end(); it++)
       {
         //cout << "MSPlot: " << it->first << endl;
@@ -1526,7 +1612,7 @@ Int_t main(Int_t argc, char* argv[]){
       }
       
     }
-   if(makePlots && !doMTWtemplate){
+    if(makePlots && !doMTWtemplate){
       for (map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
       {
         cout << "MSPlot: " << it->first << endl;
@@ -1566,833 +1652,3483 @@ Int_t main(Int_t argc, char* argv[]){
         }
       }
     }
-     if(PlotSystematics && !doMTWtemplate){
-       double maximum_sig = hist_BDT_puSF_nom_sig->GetMaximum()*1.5;
-       double maximum_bkg = hist_BDT_puSF_nom_bkg->GetMaximum()*1.5;
-       
-       hist_BDT_puSF_nom_bkg->SetMaximum(maximum_bkg);
-       hist_BDT_puSF_nom_sig->SetMaximum(maximum_sig);
-       hist_BDT_electronSF_nom_bkg->SetMaximum(maximum_bkg);
-       hist_BDT_electronSF_nom_sig->SetMaximum(maximum_sig);
-       hist_BDT_muonSF_nom_bkg->SetMaximum(maximum_bkg);
-       hist_BDT_muonSF_nom_sig->SetMaximum(maximum_sig);
-       hist_BDT_btagSF_cferr1_nom_bkg->SetMaximum(maximum_bkg);
-       hist_BDT_btagSF_cferr1_nom_sig->SetMaximum(maximum_sig);
-       hist_BDT_btagSF_cferr2_nom_bkg->SetMaximum(maximum_bkg);
-       hist_BDT_btagSF_cferr2_nom_sig->SetMaximum(maximum_sig);
-       hist_BDT_btagSF_hf_nom_bkg->SetMaximum(maximum_bkg);
-       hist_BDT_btagSF_hf_nom_sig->SetMaximum(maximum_sig);
-       hist_BDT_btagSF_hfstats1_nom_bkg->SetMaximum(maximum_bkg);
-       hist_BDT_btagSF_hfstats1_nom_sig->SetMaximum(maximum_sig);
-       hist_BDT_btagSF_hfstats2_nom_bkg->SetMaximum(maximum_bkg);
-       hist_BDT_btagSF_hfstats2_nom_sig->SetMaximum(maximum_sig);
-       hist_BDT_btagSF_lf_nom_bkg->SetMaximum(maximum_bkg);
-       hist_BDT_btagSF_lf_nom_sig->SetMaximum(maximum_sig);
-       hist_BDT_btagSF_lfstats1_nom_bkg->SetMaximum(maximum_bkg);
-       hist_BDT_btagSF_lfstats1_nom_sig->SetMaximum(maximum_sig);
-       hist_BDT_btagSF_lfstats2_nom_bkg->SetMaximum(maximum_bkg);
-       hist_BDT_btagSF_lfstats2_nom_sig->SetMaximum(maximum_sig);
-       
-       hist_BDT_puSF_nom_sig->SetLineColor(kRed);
-       hist_BDT_puSF_up_sig->SetLineColor(kBlue);
-       hist_BDT_puSF_down_sig->SetLineColor(kGreen+2);
-       hist_BDT_puSF_nom_bkg->SetLineColor(kRed);
-       hist_BDT_puSF_up_bkg->SetLineColor(kBlue);
-       hist_BDT_puSF_down_bkg->SetLineColor(kGreen+2);
-       hist_BDT_puSF_nom_sig->SetLineWidth(2);
-       hist_BDT_puSF_up_sig->SetLineWidth(2);
-       hist_BDT_puSF_down_sig->SetLineWidth(2);
-       hist_BDT_puSF_nom_bkg->SetLineWidth(2);
-       hist_BDT_puSF_up_bkg->SetLineWidth(2);
-       hist_BDT_puSF_down_bkg->SetLineWidth(2);
-       
-       
-       hist_BDT_electronSF_nom_sig->SetLineColor(kRed);
-       hist_BDT_electronSF_up_sig->SetLineColor(kBlue);
-       hist_BDT_electronSF_down_sig->SetLineColor(kGreen+2);
-       hist_BDT_electronSF_nom_bkg->SetLineColor(kRed);
-       hist_BDT_electronSF_up_bkg->SetLineColor(kBlue);
-       hist_BDT_electronSF_down_bkg->SetLineColor(kGreen+2);
-       hist_BDT_electronSF_nom_sig->SetLineWidth(2);
-       hist_BDT_electronSF_up_sig->SetLineWidth(2);
-       hist_BDT_electronSF_down_sig->SetLineWidth(2);
-       hist_BDT_electronSF_nom_bkg->SetLineWidth(2);
-       hist_BDT_electronSF_up_bkg->SetLineWidth(2);
-       hist_BDT_electronSF_down_bkg->SetLineWidth(2);
-       
-       hist_BDT_muonSF_nom_sig->SetLineColor(kRed);
-       hist_BDT_muonSF_up_sig->SetLineColor(kBlue);
-       hist_BDT_muonSF_down_sig->SetLineColor(kGreen+2);
-       hist_BDT_muonSF_nom_bkg->SetLineColor(kRed);
-       hist_BDT_muonSF_up_bkg->SetLineColor(kBlue);
-       hist_BDT_muonSF_down_bkg->SetLineColor(kGreen+2);
-       hist_BDT_muonSF_nom_sig->SetLineWidth(2);
-       hist_BDT_muonSF_up_sig->SetLineWidth(2);
-       hist_BDT_muonSF_down_sig->SetLineWidth(2);
-       hist_BDT_muonSF_nom_bkg->SetLineWidth(2);
-       hist_BDT_muonSF_up_bkg->SetLineWidth(2);
-       hist_BDT_muonSF_down_bkg->SetLineWidth(2);
-       
-       
-       
-       hist_BDT_btagSF_cferr1_nom_sig->SetLineColor(kRed);
-       hist_BDT_btagSF_cferr1_up_sig->SetLineColor(kBlue);
-       hist_BDT_btagSF_cferr1_down_sig->SetLineColor(kGreen+2);
-       hist_BDT_btagSF_cferr1_nom_bkg->SetLineColor(kRed);
-       hist_BDT_btagSF_cferr1_up_bkg->SetLineColor(kBlue);
-       hist_BDT_btagSF_cferr1_down_bkg->SetLineColor(kGreen+2);
-       hist_BDT_btagSF_cferr1_nom_sig->SetLineWidth(2);
-       hist_BDT_btagSF_cferr1_up_sig->SetLineWidth(2);
-       hist_BDT_btagSF_cferr1_down_sig->SetLineWidth(2);
-       hist_BDT_btagSF_cferr1_nom_bkg->SetLineWidth(2);
-       hist_BDT_btagSF_cferr1_up_bkg->SetLineWidth(2);
-       hist_BDT_btagSF_cferr1_down_bkg->SetLineWidth(2);
-       
-       
-       hist_BDT_btagSF_cferr2_nom_sig->SetLineColor(kRed);
-       hist_BDT_btagSF_cferr2_up_sig->SetLineColor(kBlue);
-       hist_BDT_btagSF_cferr2_down_sig->SetLineColor(kGreen+2);
-       hist_BDT_btagSF_cferr2_nom_bkg->SetLineColor(kRed);
-       hist_BDT_btagSF_cferr2_up_bkg->SetLineColor(kBlue);
-       hist_BDT_btagSF_cferr2_down_bkg->SetLineColor(kGreen+2);
-       hist_BDT_btagSF_cferr2_nom_sig->SetLineWidth(2);
-       hist_BDT_btagSF_cferr2_up_sig->SetLineWidth(2);
-       hist_BDT_btagSF_cferr2_down_sig->SetLineWidth(2);
-       hist_BDT_btagSF_cferr2_nom_bkg->SetLineWidth(2);
-       hist_BDT_btagSF_cferr2_up_bkg->SetLineWidth(2);
-       hist_BDT_btagSF_cferr2_down_bkg->SetLineWidth(2);
-       
-       hist_BDT_btagSF_hf_nom_sig->SetLineColor(kRed);
-       hist_BDT_btagSF_hf_up_sig->SetLineColor(kBlue);
-       hist_BDT_btagSF_hf_down_sig->SetLineColor(kGreen+2);
-       hist_BDT_btagSF_hf_nom_bkg->SetLineColor(kRed);
-       hist_BDT_btagSF_hf_up_bkg->SetLineColor(kBlue);
-       hist_BDT_btagSF_hf_down_bkg->SetLineColor(kGreen+2);
-       hist_BDT_btagSF_hf_nom_sig->SetLineWidth(2);
-       hist_BDT_btagSF_hf_up_sig->SetLineWidth(2);
-       hist_BDT_btagSF_hf_down_sig->SetLineWidth(2);
-       hist_BDT_btagSF_hf_nom_bkg->SetLineWidth(2);
-       hist_BDT_btagSF_hf_up_bkg->SetLineWidth(2);
-       hist_BDT_btagSF_hf_down_bkg->SetLineWidth(2);
-       
-       hist_BDT_btagSF_hfstats1_nom_sig->SetLineColor(kRed);
-       hist_BDT_btagSF_hfstats1_up_sig->SetLineColor(kBlue);
-       hist_BDT_btagSF_hfstats1_down_sig->SetLineColor(kGreen+2);
-       hist_BDT_btagSF_hfstats1_nom_bkg->SetLineColor(kRed);
-       hist_BDT_btagSF_hfstats1_up_bkg->SetLineColor(kBlue);
-       hist_BDT_btagSF_hfstats1_down_bkg->SetLineColor(kGreen+2);
-       hist_BDT_btagSF_hfstats1_nom_sig->SetLineWidth(2);
-       hist_BDT_btagSF_hfstats1_up_sig->SetLineWidth(2);
-       hist_BDT_btagSF_hfstats1_down_sig->SetLineWidth(2);
-       hist_BDT_btagSF_hfstats1_nom_bkg->SetLineWidth(2);
-       hist_BDT_btagSF_hfstats1_up_bkg->SetLineWidth(2);
-       hist_BDT_btagSF_hfstats1_down_bkg->SetLineWidth(2);
-       
-       
-       hist_BDT_btagSF_hfstats2_nom_sig->SetLineColor(kRed);
-       hist_BDT_btagSF_hfstats2_up_sig->SetLineColor(kBlue);
-       hist_BDT_btagSF_hfstats2_down_sig->SetLineColor(kGreen+2);
-       hist_BDT_btagSF_hfstats2_nom_bkg->SetLineColor(kRed);
-       hist_BDT_btagSF_hfstats2_up_bkg->SetLineColor(kBlue);
-       hist_BDT_btagSF_hfstats2_down_bkg->SetLineColor(kGreen+2);
-       hist_BDT_btagSF_hfstats2_nom_sig->SetLineWidth(2);
-       hist_BDT_btagSF_hfstats2_up_sig->SetLineWidth(2);
-       hist_BDT_btagSF_hfstats2_down_sig->SetLineWidth(2);
-       hist_BDT_btagSF_hfstats2_nom_bkg->SetLineWidth(2);
-       hist_BDT_btagSF_hfstats2_up_bkg->SetLineWidth(2);
-       hist_BDT_btagSF_hfstats2_down_bkg->SetLineWidth(2);
-       
-       hist_BDT_btagSF_lf_nom_sig->SetLineColor(kRed);
-       hist_BDT_btagSF_lf_up_sig->SetLineColor(kBlue);
-       hist_BDT_btagSF_lf_down_sig->SetLineColor(kGreen+2);
-       hist_BDT_btagSF_lf_nom_bkg->SetLineColor(kRed);
-       hist_BDT_btagSF_lf_up_bkg->SetLineColor(kBlue);
-       hist_BDT_btagSF_lf_down_bkg->SetLineColor(kGreen+2);
-       hist_BDT_btagSF_lf_nom_sig->SetLineWidth(2);
-       hist_BDT_btagSF_lf_up_sig->SetLineWidth(2);
-       hist_BDT_btagSF_lf_down_sig->SetLineWidth(2);
-       hist_BDT_btagSF_lf_nom_bkg->SetLineWidth(2);
-       hist_BDT_btagSF_lf_up_bkg->SetLineWidth(2);
-       hist_BDT_btagSF_lf_down_bkg->SetLineWidth(2);
-       
-       hist_BDT_btagSF_lfstats1_nom_sig->SetLineColor(kRed);
-       hist_BDT_btagSF_lfstats1_up_sig->SetLineColor(kBlue);
-       hist_BDT_btagSF_lfstats1_down_sig->SetLineColor(kGreen+2);
-       hist_BDT_btagSF_lfstats1_nom_bkg->SetLineColor(kRed);
-       hist_BDT_btagSF_lfstats1_up_bkg->SetLineColor(kBlue);
-       hist_BDT_btagSF_lfstats1_down_bkg->SetLineColor(kGreen+2);
-       hist_BDT_btagSF_lfstats1_nom_sig->SetLineWidth(2);
-       hist_BDT_btagSF_lfstats1_up_sig->SetLineWidth(2);
-       hist_BDT_btagSF_lfstats1_down_sig->SetLineWidth(2);
-       hist_BDT_btagSF_lfstats1_nom_bkg->SetLineWidth(2);
-       hist_BDT_btagSF_lfstats1_up_bkg->SetLineWidth(2);
-       hist_BDT_btagSF_lfstats1_down_bkg->SetLineWidth(2);
-       
-       
-       hist_BDT_btagSF_lfstats2_nom_sig->SetLineColor(kRed);
-       hist_BDT_btagSF_lfstats2_up_sig->SetLineColor(kBlue);
-       hist_BDT_btagSF_lfstats2_down_sig->SetLineColor(kGreen+2);
-       hist_BDT_btagSF_lfstats2_nom_bkg->SetLineColor(kRed);
-       hist_BDT_btagSF_lfstats2_up_bkg->SetLineColor(kBlue);
-       hist_BDT_btagSF_lfstats2_down_bkg->SetLineColor(kGreen+2);
-       hist_BDT_btagSF_lfstats2_nom_sig->SetLineWidth(2);
-       hist_BDT_btagSF_lfstats2_up_sig->SetLineWidth(2);
-       hist_BDT_btagSF_lfstats2_down_sig->SetLineWidth(2);
-       hist_BDT_btagSF_lfstats2_nom_bkg->SetLineWidth(2);
-       hist_BDT_btagSF_lfstats2_up_bkg->SetLineWidth(2);
-       hist_BDT_btagSF_lfstats2_down_bkg->SetLineWidth(2);
-       
-       
-       Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
-       TLegend *legsig = new TLegend(xl1,yl1,xl2,yl2);
-       legsig->AddEntry(hist_BDT_puSF_nom_sig,"nominal","L");   // h1 and h2 are histogram pointers
-       legsig->AddEntry(hist_BDT_puSF_up_sig,"unc +","L");
-       legsig->AddEntry(hist_BDT_puSF_down_sig,"unc -","L");
-       
-       gStyle->SetOptStat(0);
-       
-       TCanvas* tempCanvas = TCanvasCreator(hist_BDT_puSF_nom_sig, "");
-       hist_BDT_puSF_nom_sig->Draw("e histo");
-       hist_BDT_puSF_up_sig->Draw("e same histo");
-       hist_BDT_puSF_down_sig->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_puSF_nom_sig.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_puSF_nom_sig_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_BDT_puSF_nom_bkg, "");
-       hist_BDT_puSF_nom_bkg->Draw("e histo");
-       hist_BDT_puSF_up_bkg->Draw("e same histo");
-       hist_BDT_puSF_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_puSF_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_puSF_nom_bkg_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_BDT_electronSF_nom_sig, "");
-       hist_BDT_electronSF_nom_sig->Draw("e histo");
-       hist_BDT_electronSF_up_sig->Draw("e same histo");
-       hist_BDT_electronSF_down_sig->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_electronSF_nom_sig.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_electronSF_nom_sig_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_BDT_electronSF_nom_bkg, "");
-       hist_BDT_electronSF_nom_bkg->Draw("e histo");
-       hist_BDT_electronSF_up_bkg->Draw("e same histo");
-       hist_BDT_electronSF_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_electronSF_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_electronSF_nom_bkg_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_BDT_muonSF_nom_sig, "");
-       hist_BDT_muonSF_nom_sig->Draw("e histo");
-       hist_BDT_muonSF_up_sig->Draw("e same histo");
-       hist_BDT_muonSF_down_sig->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_muonSF_nom_sig.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_muonSF_nom_sig_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_BDT_muonSF_nom_bkg, "");
-       hist_BDT_muonSF_nom_bkg->Draw("e histo");
-       hist_BDT_muonSF_up_bkg->Draw("e same histo");
-       hist_BDT_muonSF_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_muonSF_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_muonSF_nom_bkg_LogY.png");
-       
-       
-       tempCanvas = TCanvasCreator(hist_BDT_btagSF_cferr1_nom_sig, "");
-       hist_BDT_btagSF_cferr1_nom_sig->Draw("e histo");
-       hist_BDT_btagSF_cferr1_up_sig->Draw("e same histo");
-       hist_BDT_btagSF_cferr1_down_sig->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_cferr1_nom_sig.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_cferr1_nom_sig_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_BDT_btagSF_cferr1_nom_bkg, "");
-       hist_BDT_btagSF_cferr1_nom_bkg->Draw("e histo");
-       hist_BDT_btagSF_cferr1_up_bkg->Draw("e same histo");
-       hist_BDT_btagSF_cferr1_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_cferr1_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_cferr1_nom_bkg_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_BDT_btagSF_cferr2_nom_sig, "");
-       hist_BDT_btagSF_cferr2_nom_sig->Draw("e histo");
-       hist_BDT_btagSF_cferr2_up_sig->Draw("e same histo");
-       hist_BDT_btagSF_cferr2_down_sig->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_cferr2_nom_sig.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_cferr2_nom_sig_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_BDT_btagSF_cferr2_nom_bkg, "");
-       hist_BDT_btagSF_cferr2_nom_bkg->Draw("e histo");
-       hist_BDT_btagSF_cferr2_up_bkg->Draw("e same histo");
-       hist_BDT_btagSF_cferr2_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_cferr2_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_cferr2_nom_bkg_LogY.png");
-       
-       
-       tempCanvas = TCanvasCreator(hist_BDT_btagSF_lf_nom_sig, "");
-       hist_BDT_btagSF_lf_nom_sig->Draw("e histo");
-       hist_BDT_btagSF_lf_up_sig->Draw("e same histo");
-       hist_BDT_btagSF_lf_down_sig->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_lf_nom_sig.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_lf_nom_sig_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_BDT_btagSF_lf_nom_bkg, "");
-       hist_BDT_btagSF_lf_nom_bkg->Draw("e histo");
-       hist_BDT_btagSF_lf_up_bkg->Draw("e same histo");
-       hist_BDT_btagSF_lf_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_lf_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_lf_nom_bkg_LogY.png");
-       
-       
-       tempCanvas = TCanvasCreator(hist_BDT_btagSF_lfstats1_nom_bkg, "");
-       hist_BDT_btagSF_lfstats1_nom_bkg->Draw("e histo");
-       hist_BDT_btagSF_lfstats1_up_bkg->Draw("e same histo");
-       hist_BDT_btagSF_lfstats1_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_bkg_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_BDT_btagSF_lfstats2_nom_sig, "");
-       hist_BDT_btagSF_lfstats2_nom_sig->Draw("e histo");
-       hist_BDT_btagSF_lfstats2_up_sig->Draw("e same histo");
-       hist_BDT_btagSF_lfstats2_down_sig->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_sig.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_sig_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_BDT_btagSF_lfstats2_nom_bkg, "");
-       hist_BDT_btagSF_lfstats2_nom_bkg->Draw("e histo");
-       hist_BDT_btagSF_lfstats2_up_bkg->Draw("e same histo");
-       hist_BDT_btagSF_lfstats2_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats2_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_lfstats2_nom_bkg_LogY.png");
-       
-       
-       tempCanvas = TCanvasCreator(hist_BDT_btagSF_hf_nom_sig, "");
-       hist_BDT_btagSF_hf_nom_sig->Draw("e histo");
-       hist_BDT_btagSF_hf_up_sig->Draw("e same histo");
-       hist_BDT_btagSF_hf_down_sig->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_hf_nom_sig.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_hf_nom_sig_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_BDT_btagSF_hf_nom_bkg, "");
-       hist_BDT_btagSF_hf_nom_bkg->Draw("e histo");
-       hist_BDT_btagSF_hf_up_bkg->Draw("e same histo");
-       hist_BDT_btagSF_hf_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_hf_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_hf_nom_bkg_LogY.png");
-       
-       
-       tempCanvas = TCanvasCreator(hist_BDT_btagSF_hfstats1_nom_bkg, "");
-       hist_BDT_btagSF_hfstats1_nom_bkg->Draw("e histo");
-       hist_BDT_btagSF_hfstats1_up_bkg->Draw("e same histo");
-       hist_BDT_btagSF_hfstats1_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_bkg_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_BDT_btagSF_hfstats2_nom_sig, "");
-       hist_BDT_btagSF_hfstats2_nom_sig->Draw("e histo");
-       hist_BDT_btagSF_hfstats2_up_sig->Draw("e same histo");
-       hist_BDT_btagSF_hfstats2_down_sig->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_sig.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_sig_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_BDT_btagSF_hfstats2_nom_bkg, "");
-       hist_BDT_btagSF_hfstats2_nom_bkg->Draw("e histo");
-       hist_BDT_btagSF_hfstats2_up_bkg->Draw("e same histo");
-       hist_BDT_btagSF_hfstats2_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats2_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_BDT_btagSF_hfstats2_nom_bkg_LogY.png");
-       
+    if(PlotJeSystematics && !doMTWtemplate){
+      double maximum_sig = hist_BDT_JES_nom_sig->GetMaximum()*1.5;
+      double maximum_bkg = hist_BDT_JES_nom_bkg->GetMaximum()*1.5;
+      
+      hist_BDT_JES_nom_bkg->SetMaximum(maximum_bkg);
+      hist_BDT_JES_nom_sig->SetMaximum(maximum_sig);
+      hist_BDT_JER_nom_bkg->SetMaximum(maximum_bkg);
+      hist_BDT_JER_nom_sig->SetMaximum(maximum_sig);
+      
+      hist_BDT_JER_nom_sig->SetLineColor(kRed);
+      hist_BDT_JER_up_sig->SetLineColor(kBlue);
+      hist_BDT_JER_down_sig->SetLineColor(kGreen+2);
+      hist_BDT_JER_nom_bkg->SetLineColor(kRed);
+      hist_BDT_JER_up_bkg->SetLineColor(kBlue);
+      hist_BDT_JER_down_bkg->SetLineColor(kGreen+2);
+      hist_BDT_JER_nom_sig->SetLineWidth(2);
+      hist_BDT_JER_up_sig->SetLineWidth(2);
+      hist_BDT_JER_down_sig->SetLineWidth(2);
+      hist_BDT_JER_nom_bkg->SetLineWidth(2);
+      hist_BDT_JER_up_bkg->SetLineWidth(2);
+      hist_BDT_JER_down_bkg->SetLineWidth(2);
+      
+      hist_BDT_JES_nom_sig->SetLineColor(kRed);
+      hist_BDT_JES_up_sig->SetLineColor(kBlue);
+      hist_BDT_JES_down_sig->SetLineColor(kGreen+2);
+      hist_BDT_JES_nom_bkg->SetLineColor(kRed);
+      hist_BDT_JES_up_bkg->SetLineColor(kBlue);
+      hist_BDT_JES_down_bkg->SetLineColor(kGreen+2);
+      hist_BDT_JES_nom_sig->SetLineWidth(2);
+      hist_BDT_JES_up_sig->SetLineWidth(2);
+      hist_BDT_JES_down_sig->SetLineWidth(2);
+      hist_BDT_JES_nom_bkg->SetLineWidth(2);
+      hist_BDT_JES_up_bkg->SetLineWidth(2);
+      hist_BDT_JES_down_bkg->SetLineWidth(2);
+      
+      Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
+      TLegend *legsig = new TLegend(xl1,yl1,xl2,yl2);
+      legsig->AddEntry(hist_BDT_JER_nom_sig,"nominal","L");   // h1 and h2 are histogram pointers
+      legsig->AddEntry(hist_BDT_JER_up_sig,"unc +","L");
+      legsig->AddEntry(hist_BDT_JER_down_sig,"unc -","L");
+      
+      gStyle->SetOptStat(0);
+      
+      //JER
+      TCanvas* tempCanvas = new TCanvas("", "");
+      TPad *histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_JER_nom_sig->Draw("e histo");
+      hist_BDT_JER_up_sig->Draw("e same histo");
+      hist_BDT_JER_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      TPad *ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      TH1F* ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_JER_nom_sig->GetNbinsX(),hist_BDT_JER_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_JER_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_JER_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_JER_nom_sig,hist_BDT_JER_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      TH1F* ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_JER_nom_sig->GetNbinsX(),hist_BDT_JER_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_JER_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_JER_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_JER_nom_sig,hist_BDT_JER_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      TLine *line = new TLine(hist_BDT_JER_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_JER_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_JER_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_JER_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_JER_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_JER_nom_bkg->Draw("e histo");
+      hist_BDT_JER_up_bkg->Draw("e same histo");
+      hist_BDT_JER_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_JER_nom_bkg->GetNbinsX(),hist_BDT_JER_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_JER_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_JER_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_JER_nom_bkg,hist_BDT_JER_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_JER_nom_bkg->GetNbinsX(),hist_BDT_JER_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_JER_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_JER_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_JER_nom_bkg,hist_BDT_JER_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_JER_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_JER_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_JER_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_JER_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_JER_nom_bkg_LogY.png");
+      
 
-     }
-     else if(PlotSystematics && doMTWtemplate){
-       double maximum_sig = hist_mWt_puSF_nom_sig->GetMaximum()*1.5;
-       double maximum_bkg = hist_mWt_puSF_nom_bkg->GetMaximum()*1.5;
-       
-       hist_mWt_puSF_nom_bkg->SetMaximum(maximum_bkg);
-       hist_mWt_puSF_nom_sig->SetMaximum(maximum_sig);
-       hist_mWt_electronSF_nom_bkg->SetMaximum(maximum_bkg);
-       hist_mWt_electronSF_nom_sig->SetMaximum(maximum_sig);
-       hist_mWt_muonSF_nom_bkg->SetMaximum(maximum_bkg);
-       hist_mWt_muonSF_nom_sig->SetMaximum(maximum_sig);
-       hist_mWt_btagSF_cferr1_nom_bkg->SetMaximum(maximum_bkg);
-       hist_mWt_btagSF_cferr1_nom_sig->SetMaximum(maximum_sig);
-       hist_mWt_btagSF_cferr2_nom_bkg->SetMaximum(maximum_bkg);
-       hist_mWt_btagSF_cferr2_nom_sig->SetMaximum(maximum_sig);
-       hist_mWt_btagSF_hf_nom_bkg->SetMaximum(maximum_bkg);
-       hist_mWt_btagSF_hf_nom_sig->SetMaximum(maximum_sig);
-       hist_mWt_btagSF_hfstats1_nom_bkg->SetMaximum(maximum_bkg);
-       hist_mWt_btagSF_hfstats1_nom_sig->SetMaximum(maximum_sig);
-       hist_mWt_btagSF_hfstats2_nom_bkg->SetMaximum(maximum_bkg);
-       hist_mWt_btagSF_hfstats2_nom_sig->SetMaximum(maximum_sig);
-       hist_mWt_btagSF_lf_nom_bkg->SetMaximum(maximum_bkg);
-       hist_mWt_btagSF_lf_nom_sig->SetMaximum(maximum_sig);
-       hist_mWt_btagSF_lfstats1_nom_bkg->SetMaximum(maximum_bkg);
-       hist_mWt_btagSF_lfstats1_nom_sig->SetMaximum(maximum_sig);
-       hist_mWt_btagSF_lfstats2_nom_bkg->SetMaximum(maximum_bkg);
-       hist_mWt_btagSF_lfstats2_nom_sig->SetMaximum(maximum_sig);
-       
-       
-       
-       hist_mWt_puSF_nom_sig->SetLineColor(kRed);
-       hist_mWt_puSF_up_sig->SetLineColor(kBlue);
-       hist_mWt_puSF_down_sig->SetLineColor(kGreen+2);
-       hist_mWt_puSF_nom_bkg->SetLineColor(kRed);
-       hist_mWt_puSF_up_bkg->SetLineColor(kBlue);
-       hist_mWt_puSF_down_bkg->SetLineColor(kGreen+2);
-       hist_mWt_puSF_nom_sig->SetLineWidth(2);
-       hist_mWt_puSF_up_sig->SetLineWidth(2);
-       hist_mWt_puSF_down_sig->SetLineWidth(2);
-       hist_mWt_puSF_nom_bkg->SetLineWidth(2);
-       hist_mWt_puSF_up_bkg->SetLineWidth(2);
-       hist_mWt_puSF_down_bkg->SetLineWidth(2);
-       
-       
-       hist_mWt_electronSF_nom_sig->SetLineColor(kRed);
-       hist_mWt_electronSF_up_sig->SetLineColor(kBlue);
-       hist_mWt_electronSF_down_sig->SetLineColor(kGreen+2);
-       hist_mWt_electronSF_nom_bkg->SetLineColor(kRed);
-       hist_mWt_electronSF_up_bkg->SetLineColor(kBlue);
-       hist_mWt_electronSF_down_bkg->SetLineColor(kGreen+2);
-       hist_mWt_electronSF_nom_sig->SetLineWidth(2);
-       hist_mWt_electronSF_up_sig->SetLineWidth(2);
-       hist_mWt_electronSF_down_sig->SetLineWidth(2);
-       hist_mWt_electronSF_nom_bkg->SetLineWidth(2);
-       hist_mWt_electronSF_up_bkg->SetLineWidth(2);
-       hist_mWt_electronSF_down_bkg->SetLineWidth(2);
-       
-       hist_mWt_muonSF_nom_sig->SetLineColor(kRed);
-       hist_mWt_muonSF_up_sig->SetLineColor(kBlue);
-       hist_mWt_muonSF_down_sig->SetLineColor(kGreen+2);
-       hist_mWt_muonSF_nom_bkg->SetLineColor(kRed);
-       hist_mWt_muonSF_up_bkg->SetLineColor(kBlue);
-       hist_mWt_muonSF_down_bkg->SetLineColor(kGreen+2);
-       hist_mWt_muonSF_nom_sig->SetLineWidth(2);
-       hist_mWt_muonSF_up_sig->SetLineWidth(2);
-       hist_mWt_muonSF_down_sig->SetLineWidth(2);
-       hist_mWt_muonSF_nom_bkg->SetLineWidth(2);
-       hist_mWt_muonSF_up_bkg->SetLineWidth(2);
-       hist_mWt_muonSF_down_bkg->SetLineWidth(2);
-       
-       
-       
-       hist_mWt_btagSF_cferr1_nom_sig->SetLineColor(kRed);
-       hist_mWt_btagSF_cferr1_up_sig->SetLineColor(kBlue);
-       hist_mWt_btagSF_cferr1_down_sig->SetLineColor(kGreen+2);
-       hist_mWt_btagSF_cferr1_nom_bkg->SetLineColor(kRed);
-       hist_mWt_btagSF_cferr1_up_bkg->SetLineColor(kBlue);
-       hist_mWt_btagSF_cferr1_down_bkg->SetLineColor(kGreen+2);
-       hist_mWt_btagSF_cferr1_nom_sig->SetLineWidth(2);
-       hist_mWt_btagSF_cferr1_up_sig->SetLineWidth(2);
-       hist_mWt_btagSF_cferr1_down_sig->SetLineWidth(2);
-       hist_mWt_btagSF_cferr1_nom_bkg->SetLineWidth(2);
-       hist_mWt_btagSF_cferr1_up_bkg->SetLineWidth(2);
-       hist_mWt_btagSF_cferr1_down_bkg->SetLineWidth(2);
-       
-       
-       hist_mWt_btagSF_cferr2_nom_sig->SetLineColor(kRed);
-       hist_mWt_btagSF_cferr2_up_sig->SetLineColor(kBlue);
-       hist_mWt_btagSF_cferr2_down_sig->SetLineColor(kGreen+2);
-       hist_mWt_btagSF_cferr2_nom_bkg->SetLineColor(kRed);
-       hist_mWt_btagSF_cferr2_up_bkg->SetLineColor(kBlue);
-       hist_mWt_btagSF_cferr2_down_bkg->SetLineColor(kGreen+2);
-       hist_mWt_btagSF_cferr2_nom_sig->SetLineWidth(2);
-       hist_mWt_btagSF_cferr2_up_sig->SetLineWidth(2);
-       hist_mWt_btagSF_cferr2_down_sig->SetLineWidth(2);
-       hist_mWt_btagSF_cferr2_nom_bkg->SetLineWidth(2);
-       hist_mWt_btagSF_cferr2_up_bkg->SetLineWidth(2);
-       hist_mWt_btagSF_cferr2_down_bkg->SetLineWidth(2);
-       
-       hist_mWt_btagSF_hf_nom_sig->SetLineColor(kRed);
-       hist_mWt_btagSF_hf_up_sig->SetLineColor(kBlue);
-       hist_mWt_btagSF_hf_down_sig->SetLineColor(kGreen+2);
-       hist_mWt_btagSF_hf_nom_bkg->SetLineColor(kRed);
-       hist_mWt_btagSF_hf_up_bkg->SetLineColor(kBlue);
-       hist_mWt_btagSF_hf_down_bkg->SetLineColor(kGreen+2);
-       hist_mWt_btagSF_hf_nom_sig->SetLineWidth(2);
-       hist_mWt_btagSF_hf_up_sig->SetLineWidth(2);
-       hist_mWt_btagSF_hf_down_sig->SetLineWidth(2);
-       hist_mWt_btagSF_hf_nom_bkg->SetLineWidth(2);
-       hist_mWt_btagSF_hf_up_bkg->SetLineWidth(2);
-       hist_mWt_btagSF_hf_down_bkg->SetLineWidth(2);
-       
-       hist_mWt_btagSF_hfstats1_nom_sig->SetLineColor(kRed);
-       hist_mWt_btagSF_hfstats1_up_sig->SetLineColor(kBlue);
-       hist_mWt_btagSF_hfstats1_down_sig->SetLineColor(kGreen+2);
-       hist_mWt_btagSF_hfstats1_nom_bkg->SetLineColor(kRed);
-       hist_mWt_btagSF_hfstats1_up_bkg->SetLineColor(kBlue);
-       hist_mWt_btagSF_hfstats1_down_bkg->SetLineColor(kGreen+2);
-       hist_mWt_btagSF_hfstats1_nom_sig->SetLineWidth(2);
-       hist_mWt_btagSF_hfstats1_up_sig->SetLineWidth(2);
-       hist_mWt_btagSF_hfstats1_down_sig->SetLineWidth(2);
-       hist_mWt_btagSF_hfstats1_nom_bkg->SetLineWidth(2);
-       hist_mWt_btagSF_hfstats1_up_bkg->SetLineWidth(2);
-       hist_mWt_btagSF_hfstats1_down_bkg->SetLineWidth(2);
-       
-       
-       hist_mWt_btagSF_hfstats2_nom_sig->SetLineColor(kRed);
-       hist_mWt_btagSF_hfstats2_up_sig->SetLineColor(kBlue);
-       hist_mWt_btagSF_hfstats2_down_sig->SetLineColor(kGreen+2);
-       hist_mWt_btagSF_hfstats2_nom_bkg->SetLineColor(kRed);
-       hist_mWt_btagSF_hfstats2_up_bkg->SetLineColor(kBlue);
-       hist_mWt_btagSF_hfstats2_down_bkg->SetLineColor(kGreen+2);
-       hist_mWt_btagSF_hfstats2_nom_sig->SetLineWidth(2);
-       hist_mWt_btagSF_hfstats2_up_sig->SetLineWidth(2);
-       hist_mWt_btagSF_hfstats2_down_sig->SetLineWidth(2);
-       hist_mWt_btagSF_hfstats2_nom_bkg->SetLineWidth(2);
-       hist_mWt_btagSF_hfstats2_up_bkg->SetLineWidth(2);
-       hist_mWt_btagSF_hfstats2_down_bkg->SetLineWidth(2);
-       
-       hist_mWt_btagSF_lf_nom_sig->SetLineColor(kRed);
-       hist_mWt_btagSF_lf_up_sig->SetLineColor(kBlue);
-       hist_mWt_btagSF_lf_down_sig->SetLineColor(kGreen+2);
-       hist_mWt_btagSF_lf_nom_bkg->SetLineColor(kRed);
-       hist_mWt_btagSF_lf_up_bkg->SetLineColor(kBlue);
-       hist_mWt_btagSF_lf_down_bkg->SetLineColor(kGreen+2);
-       hist_mWt_btagSF_lf_nom_sig->SetLineWidth(2);
-       hist_mWt_btagSF_lf_up_sig->SetLineWidth(2);
-       hist_mWt_btagSF_lf_down_sig->SetLineWidth(2);
-       hist_mWt_btagSF_lf_nom_bkg->SetLineWidth(2);
-       hist_mWt_btagSF_lf_up_bkg->SetLineWidth(2);
-       hist_mWt_btagSF_lf_down_bkg->SetLineWidth(2);
-       
-       hist_mWt_btagSF_lfstats1_nom_sig->SetLineColor(kRed);
-       hist_mWt_btagSF_lfstats1_up_sig->SetLineColor(kBlue);
-       hist_mWt_btagSF_lfstats1_down_sig->SetLineColor(kGreen+2);
-       hist_mWt_btagSF_lfstats1_nom_bkg->SetLineColor(kRed);
-       hist_mWt_btagSF_lfstats1_up_bkg->SetLineColor(kBlue);
-       hist_mWt_btagSF_lfstats1_down_bkg->SetLineColor(kGreen+2);
-       hist_mWt_btagSF_lfstats1_nom_sig->SetLineWidth(2);
-       hist_mWt_btagSF_lfstats1_up_sig->SetLineWidth(2);
-       hist_mWt_btagSF_lfstats1_down_sig->SetLineWidth(2);
-       hist_mWt_btagSF_lfstats1_nom_bkg->SetLineWidth(2);
-       hist_mWt_btagSF_lfstats1_up_bkg->SetLineWidth(2);
-       hist_mWt_btagSF_lfstats1_down_bkg->SetLineWidth(2);
-       
-       
-       hist_mWt_btagSF_lfstats2_nom_sig->SetLineColor(kRed);
-       hist_mWt_btagSF_lfstats2_up_sig->SetLineColor(kBlue);
-       hist_mWt_btagSF_lfstats2_down_sig->SetLineColor(kGreen+2);
-       hist_mWt_btagSF_lfstats2_nom_bkg->SetLineColor(kRed);
-       hist_mWt_btagSF_lfstats2_up_bkg->SetLineColor(kBlue);
-       hist_mWt_btagSF_lfstats2_down_bkg->SetLineColor(kGreen+2);
-       hist_mWt_btagSF_lfstats2_nom_sig->SetLineWidth(2);
-       hist_mWt_btagSF_lfstats2_up_sig->SetLineWidth(2);
-       hist_mWt_btagSF_lfstats2_down_sig->SetLineWidth(2);
-       hist_mWt_btagSF_lfstats2_nom_bkg->SetLineWidth(2);
-       hist_mWt_btagSF_lfstats2_up_bkg->SetLineWidth(2);
-       hist_mWt_btagSF_lfstats2_down_bkg->SetLineWidth(2);
-       
-       
-       Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
-       TLegend *legsig = new TLegend(xl1,yl1,xl2,yl2);
-       legsig->AddEntry(hist_mWt_puSF_nom_sig,"nominal","L");   // h1 and h2 are histogram pointers
-       legsig->AddEntry(hist_mWt_puSF_up_sig,"unc +","L");
-       legsig->AddEntry(hist_mWt_puSF_down_sig,"unc -","L");
-       
-       gStyle->SetOptStat(0);
-       
-       TCanvas* tempCanvas = TCanvasCreator(hist_mWt_puSF_nom_sig, "");
-       hist_mWt_puSF_nom_sig->Draw("e histo");
-       hist_mWt_puSF_up_sig->Draw("e same histo");
-       hist_mWt_puSF_down_sig->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_puSF_nom_sig.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_puSF_nom_sig_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_mWt_puSF_nom_bkg, "");
-       hist_mWt_puSF_nom_bkg->Draw("e histo");
-       hist_mWt_puSF_up_bkg->Draw("e same histo");
-       hist_mWt_puSF_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_puSF_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_puSF_nom_bkg_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_mWt_electronSF_nom_sig, "");
-       hist_mWt_electronSF_nom_sig->Draw("e histo");
-       hist_mWt_electronSF_up_sig->Draw("e same histo");
-       hist_mWt_electronSF_down_sig->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_electronSF_nom_sig.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_electronSF_nom_sig_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_mWt_electronSF_nom_bkg, "");
-       hist_mWt_electronSF_nom_bkg->Draw("e histo");
-       hist_mWt_electronSF_up_bkg->Draw("e same histo");
-       hist_mWt_electronSF_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_electronSF_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_electronSF_nom_bkg_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_mWt_muonSF_nom_sig, "");
-       hist_mWt_muonSF_nom_sig->Draw("e histo");
-       hist_mWt_muonSF_up_sig->Draw("e same histo");
-       hist_mWt_muonSF_down_sig->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_muonSF_nom_sig.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_muonSF_nom_sig_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_mWt_muonSF_nom_bkg, "");
-       hist_mWt_muonSF_nom_bkg->Draw("e histo");
-       hist_mWt_muonSF_up_bkg->Draw("e same histo");
-       hist_mWt_muonSF_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_muonSF_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_muonSF_nom_bkg_LogY.png");
-       
-       
-       tempCanvas = TCanvasCreator(hist_mWt_btagSF_cferr1_nom_sig, "");
-       hist_mWt_btagSF_cferr1_nom_sig->Draw("e histo");
-       hist_mWt_btagSF_cferr1_up_sig->Draw("e same histo");
-       hist_mWt_btagSF_cferr1_down_sig->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_cferr1_nom_sig.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_cferr1_nom_sig_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_mWt_btagSF_cferr1_nom_bkg, "");
-       hist_mWt_btagSF_cferr1_nom_bkg->Draw("e histo");
-       hist_mWt_btagSF_cferr1_up_bkg->Draw("e same histo");
-       hist_mWt_btagSF_cferr1_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_cferr1_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_cferr1_nom_bkg_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_mWt_btagSF_cferr2_nom_sig, "");
-       hist_mWt_btagSF_cferr2_nom_sig->Draw("e histo");
-       hist_mWt_btagSF_cferr2_up_sig->Draw("e same histo");
-       hist_mWt_btagSF_cferr2_down_sig->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_cferr2_nom_sig.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_cferr2_nom_sig_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_mWt_btagSF_cferr2_nom_bkg, "");
-       hist_mWt_btagSF_cferr2_nom_bkg->Draw("e histo");
-       hist_mWt_btagSF_cferr2_up_bkg->Draw("e same histo");
-       hist_mWt_btagSF_cferr2_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_cferr2_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_cferr2_nom_bkg_LogY.png");
-       
-       
-       tempCanvas = TCanvasCreator(hist_mWt_btagSF_lf_nom_sig, "");
-       hist_mWt_btagSF_lf_nom_sig->Draw("e histo");
-       hist_mWt_btagSF_lf_up_sig->Draw("e same histo");
-       hist_mWt_btagSF_lf_down_sig->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_lf_nom_sig.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_lf_nom_sig_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_mWt_btagSF_lf_nom_bkg, "");
-       hist_mWt_btagSF_lf_nom_bkg->Draw("e histo");
-       hist_mWt_btagSF_lf_up_bkg->Draw("e same histo");
-       hist_mWt_btagSF_lf_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_lf_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_lf_nom_bkg_LogY.png");
-       
-       
-       tempCanvas = TCanvasCreator(hist_mWt_btagSF_lfstats1_nom_bkg, "");
-       hist_mWt_btagSF_lfstats1_nom_bkg->Draw("e histo");
-       hist_mWt_btagSF_lfstats1_up_bkg->Draw("e same histo");
-       hist_mWt_btagSF_lfstats1_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats1_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats1_nom_bkg_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_mWt_btagSF_lfstats2_nom_sig, "");
-       hist_mWt_btagSF_lfstats2_nom_sig->Draw("e histo");
-       hist_mWt_btagSF_lfstats2_up_sig->Draw("e same histo");
-       hist_mWt_btagSF_lfstats2_down_sig->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats2_nom_sig.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats2_nom_sig_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_mWt_btagSF_lfstats2_nom_bkg, "");
-       hist_mWt_btagSF_lfstats2_nom_bkg->Draw("e histo");
-       hist_mWt_btagSF_lfstats2_up_bkg->Draw("e same histo");
-       hist_mWt_btagSF_lfstats2_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats2_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_lfstats2_nom_bkg_LogY.png");
-       
-       
-       tempCanvas = TCanvasCreator(hist_mWt_btagSF_hf_nom_sig, "");
-       hist_mWt_btagSF_hf_nom_sig->Draw("e histo");
-       hist_mWt_btagSF_hf_up_sig->Draw("e same histo");
-       hist_mWt_btagSF_hf_down_sig->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_hf_nom_sig.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_hf_nom_sig_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_mWt_btagSF_hf_nom_bkg, "");
-       hist_mWt_btagSF_hf_nom_bkg->Draw("e histo");
-       hist_mWt_btagSF_hf_up_bkg->Draw("e same histo");
-       hist_mWt_btagSF_hf_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_hf_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_hf_nom_bkg_LogY.png");
-       
-       
-       tempCanvas = TCanvasCreator(hist_mWt_btagSF_hfstats1_nom_bkg, "");
-       hist_mWt_btagSF_hfstats1_nom_bkg->Draw("e histo");
-       hist_mWt_btagSF_hfstats1_up_bkg->Draw("e same histo");
-       hist_mWt_btagSF_hfstats1_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats1_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats1_nom_bkg_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_mWt_btagSF_hfstats2_nom_sig, "");
-       hist_mWt_btagSF_hfstats2_nom_sig->Draw("e histo");
-       hist_mWt_btagSF_hfstats2_up_sig->Draw("e same histo");
-       hist_mWt_btagSF_hfstats2_down_sig->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats2_nom_sig.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats2_nom_sig_LogY.png");
-       
-       tempCanvas = TCanvasCreator(hist_mWt_btagSF_hfstats2_nom_bkg, "");
-       hist_mWt_btagSF_hfstats2_nom_bkg->Draw("e histo");
-       hist_mWt_btagSF_hfstats2_up_bkg->Draw("e same histo");
-       hist_mWt_btagSF_hfstats2_down_bkg->Draw("e same histo");
-       legsig->Draw("same");
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats2_nom_bkg.png");
-       tempCanvas->SetLogy();
-       tempCanvas->Update();
-       tempCanvas->SaveAs("hist_mWt_btagSF_hfstats2_nom_bkg_LogY.png");
-       
-       
-       
-     }
+      
+      //JES
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_JES_nom_sig->Draw("e histo");
+      hist_BDT_JES_up_sig->Draw("e same histo");
+      hist_BDT_JES_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+     ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_JES_nom_sig->GetNbinsX(),hist_BDT_JES_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_JES_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_JES_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_JES_nom_sig,hist_BDT_JES_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_JES_nom_sig->GetNbinsX(),hist_BDT_JES_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_JES_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_JES_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_JES_nom_sig,hist_BDT_JES_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_JES_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_JES_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_JES_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_JES_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_JES_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_JES_nom_bkg->Draw("e histo");
+      hist_BDT_JES_up_bkg->Draw("e same histo");
+      hist_BDT_JES_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_JES_nom_bkg->GetNbinsX(),hist_BDT_JES_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_JES_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_JES_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_JES_nom_bkg,hist_BDT_JES_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_JES_nom_bkg->GetNbinsX(),hist_BDT_JES_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_JES_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_JES_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_JES_nom_bkg,hist_BDT_JES_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_JES_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_JES_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_JES_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_JES_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_JES_nom_bkg_LogY.png");
+      
+      
+    }
+    if(PlotJeSystematics && doMTWtemplate){
+      double maximum_sig = hist_mWt_JES_nom_sig->GetMaximum()*1.5;
+      double maximum_bkg = hist_mWt_JES_nom_bkg->GetMaximum()*1.5;
+      
+      hist_mWt_JES_nom_bkg->SetMaximum(maximum_bkg);
+      hist_mWt_JES_nom_sig->SetMaximum(maximum_sig);
+      hist_mWt_JER_nom_bkg->SetMaximum(maximum_bkg);
+      hist_mWt_JER_nom_sig->SetMaximum(maximum_sig);
+      
+      hist_mWt_JER_nom_sig->SetLineColor(kRed);
+      hist_mWt_JER_up_sig->SetLineColor(kBlue);
+      hist_mWt_JER_down_sig->SetLineColor(kGreen+2);
+      hist_mWt_JER_nom_bkg->SetLineColor(kRed);
+      hist_mWt_JER_up_bkg->SetLineColor(kBlue);
+      hist_mWt_JER_down_bkg->SetLineColor(kGreen+2);
+      hist_mWt_JER_nom_sig->SetLineWidth(2);
+      hist_mWt_JER_up_sig->SetLineWidth(2);
+      hist_mWt_JER_down_sig->SetLineWidth(2);
+      hist_mWt_JER_nom_bkg->SetLineWidth(2);
+      hist_mWt_JER_up_bkg->SetLineWidth(2);
+      hist_mWt_JER_down_bkg->SetLineWidth(2);
+      
+      hist_mWt_JES_nom_sig->SetLineColor(kRed);
+      hist_mWt_JES_up_sig->SetLineColor(kBlue);
+      hist_mWt_JES_down_sig->SetLineColor(kGreen+2);
+      hist_mWt_JES_nom_bkg->SetLineColor(kRed);
+      hist_mWt_JES_up_bkg->SetLineColor(kBlue);
+      hist_mWt_JES_down_bkg->SetLineColor(kGreen+2);
+      hist_mWt_JES_nom_sig->SetLineWidth(2);
+      hist_mWt_JES_up_sig->SetLineWidth(2);
+      hist_mWt_JES_down_sig->SetLineWidth(2);
+      hist_mWt_JES_nom_bkg->SetLineWidth(2);
+      hist_mWt_JES_up_bkg->SetLineWidth(2);
+      hist_mWt_JES_down_bkg->SetLineWidth(2);
+      
+      Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
+      TLegend *legsig = new TLegend(xl1,yl1,xl2,yl2);
+      legsig->AddEntry(hist_mWt_JER_nom_sig,"nominal","L");   // h1 and h2 are histogram pointers
+      legsig->AddEntry(hist_mWt_JER_up_sig,"unc +","L");
+      legsig->AddEntry(hist_mWt_JER_down_sig,"unc -","L");
+      
+      gStyle->SetOptStat(0);
+      
+      //JER
+      TCanvas* tempCanvas = new TCanvas("", "");
+      TPad *histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_JER_nom_sig->Draw("e histo");
+      hist_mWt_JER_up_sig->Draw("e same histo");
+      hist_mWt_JER_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      TPad *ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      TH1F* ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_JER_nom_sig->GetNbinsX(),hist_mWt_JER_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_JER_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_JER_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_JER_nom_sig,hist_mWt_JER_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      TH1F* ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_JER_nom_sig->GetNbinsX(),hist_mWt_JER_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_JER_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_JER_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_JER_nom_sig,hist_mWt_JER_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      TLine *line = new TLine(hist_mWt_JER_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_JER_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_JER_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_JER_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_JER_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_JER_nom_bkg->Draw("e histo");
+      hist_mWt_JER_up_bkg->Draw("e same histo");
+      hist_mWt_JER_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_JER_nom_bkg->GetNbinsX(),hist_mWt_JER_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_JER_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_JER_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_JER_nom_bkg,hist_mWt_JER_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_JER_nom_bkg->GetNbinsX(),hist_mWt_JER_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_JER_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_JER_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_JER_nom_bkg,hist_mWt_JER_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_JER_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_JER_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_JER_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_JER_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_JER_nom_bkg_LogY.png");
+      
+      
+      
+      //JES
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_JES_nom_sig->Draw("e histo");
+      hist_mWt_JES_up_sig->Draw("e same histo");
+      hist_mWt_JES_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_JES_nom_sig->GetNbinsX(),hist_mWt_JES_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_JES_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_JES_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_JES_nom_sig,hist_mWt_JES_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_JES_nom_sig->GetNbinsX(),hist_mWt_JES_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_JES_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_JES_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_JES_nom_sig,hist_mWt_JES_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_JES_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_JES_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_JES_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_JES_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_JES_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_JES_nom_bkg->Draw("e histo");
+      hist_mWt_JES_up_bkg->Draw("e same histo");
+      hist_mWt_JES_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_JES_nom_bkg->GetNbinsX(),hist_mWt_JES_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_JES_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_JES_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_JES_nom_bkg,hist_mWt_JES_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_JES_nom_bkg->GetNbinsX(),hist_mWt_JES_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_JES_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_JES_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_JES_nom_bkg,hist_mWt_JES_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_JES_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_JES_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_JES_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_JES_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_JES_nom_bkg_LogY.png");
+      
+      
+    }
+    
+    if(PlotSystematics && !doMTWtemplate){
+      double maximum_sig = hist_BDT_puSF_nom_sig->GetMaximum()*1.5;
+      double maximum_bkg = hist_BDT_puSF_nom_bkg->GetMaximum()*1.5;
+      
+      hist_BDT_puSF_nom_bkg->SetMaximum(maximum_bkg);
+      hist_BDT_puSF_nom_sig->SetMaximum(maximum_sig);
+      hist_BDT_electronSF_nom_bkg->SetMaximum(maximum_bkg);
+      hist_BDT_electronSF_nom_sig->SetMaximum(maximum_sig);
+      hist_BDT_muonSF_nom_bkg->SetMaximum(maximum_bkg);
+      hist_BDT_muonSF_nom_sig->SetMaximum(maximum_sig);
+      hist_BDT_btagSF_cferr1_nom_bkg->SetMaximum(maximum_bkg);
+      hist_BDT_btagSF_cferr1_nom_sig->SetMaximum(maximum_sig);
+      hist_BDT_btagSF_cferr2_nom_bkg->SetMaximum(maximum_bkg);
+      hist_BDT_btagSF_cferr2_nom_sig->SetMaximum(maximum_sig);
+      hist_BDT_btagSF_hf_nom_bkg->SetMaximum(maximum_bkg);
+      hist_BDT_btagSF_hf_nom_sig->SetMaximum(maximum_sig);
+      hist_BDT_btagSF_hfstats1_nom_bkg->SetMaximum(maximum_bkg);
+      hist_BDT_btagSF_hfstats1_nom_sig->SetMaximum(maximum_sig);
+      hist_BDT_btagSF_hfstats2_nom_bkg->SetMaximum(maximum_bkg);
+      hist_BDT_btagSF_hfstats2_nom_sig->SetMaximum(maximum_sig);
+      hist_BDT_btagSF_lf_nom_bkg->SetMaximum(maximum_bkg);
+      hist_BDT_btagSF_lf_nom_sig->SetMaximum(maximum_sig);
+      hist_BDT_btagSF_lfstats1_nom_bkg->SetMaximum(maximum_bkg);
+      hist_BDT_btagSF_lfstats1_nom_sig->SetMaximum(maximum_sig);
+      hist_BDT_btagSF_lfstats2_nom_bkg->SetMaximum(maximum_bkg);
+      hist_BDT_btagSF_lfstats2_nom_sig->SetMaximum(maximum_sig);
+      
+      hist_BDT_puSF_nom_sig->SetLineColor(kRed);
+      hist_BDT_puSF_up_sig->SetLineColor(kBlue);
+      hist_BDT_puSF_down_sig->SetLineColor(kGreen+2);
+      hist_BDT_puSF_nom_bkg->SetLineColor(kRed);
+      hist_BDT_puSF_up_bkg->SetLineColor(kBlue);
+      hist_BDT_puSF_down_bkg->SetLineColor(kGreen+2);
+      hist_BDT_puSF_nom_sig->SetLineWidth(2);
+      hist_BDT_puSF_up_sig->SetLineWidth(2);
+      hist_BDT_puSF_down_sig->SetLineWidth(2);
+      hist_BDT_puSF_nom_bkg->SetLineWidth(2);
+      hist_BDT_puSF_up_bkg->SetLineWidth(2);
+      hist_BDT_puSF_down_bkg->SetLineWidth(2);
+      
+      
+      hist_BDT_electronSF_nom_sig->SetLineColor(kRed);
+      hist_BDT_electronSF_up_sig->SetLineColor(kBlue);
+      hist_BDT_electronSF_down_sig->SetLineColor(kGreen+2);
+      hist_BDT_electronSF_nom_bkg->SetLineColor(kRed);
+      hist_BDT_electronSF_up_bkg->SetLineColor(kBlue);
+      hist_BDT_electronSF_down_bkg->SetLineColor(kGreen+2);
+      hist_BDT_electronSF_nom_sig->SetLineWidth(2);
+      hist_BDT_electronSF_up_sig->SetLineWidth(2);
+      hist_BDT_electronSF_down_sig->SetLineWidth(2);
+      hist_BDT_electronSF_nom_bkg->SetLineWidth(2);
+      hist_BDT_electronSF_up_bkg->SetLineWidth(2);
+      hist_BDT_electronSF_down_bkg->SetLineWidth(2);
+      
+      hist_BDT_muonSF_nom_sig->SetLineColor(kRed);
+      hist_BDT_muonSF_up_sig->SetLineColor(kBlue);
+      hist_BDT_muonSF_down_sig->SetLineColor(kGreen+2);
+      hist_BDT_muonSF_nom_bkg->SetLineColor(kRed);
+      hist_BDT_muonSF_up_bkg->SetLineColor(kBlue);
+      hist_BDT_muonSF_down_bkg->SetLineColor(kGreen+2);
+      hist_BDT_muonSF_nom_sig->SetLineWidth(2);
+      hist_BDT_muonSF_up_sig->SetLineWidth(2);
+      hist_BDT_muonSF_down_sig->SetLineWidth(2);
+      hist_BDT_muonSF_nom_bkg->SetLineWidth(2);
+      hist_BDT_muonSF_up_bkg->SetLineWidth(2);
+      hist_BDT_muonSF_down_bkg->SetLineWidth(2);
+      
+      
+      
+      hist_BDT_btagSF_cferr1_nom_sig->SetLineColor(kRed);
+      hist_BDT_btagSF_cferr1_up_sig->SetLineColor(kBlue);
+      hist_BDT_btagSF_cferr1_down_sig->SetLineColor(kGreen+2);
+      hist_BDT_btagSF_cferr1_nom_bkg->SetLineColor(kRed);
+      hist_BDT_btagSF_cferr1_up_bkg->SetLineColor(kBlue);
+      hist_BDT_btagSF_cferr1_down_bkg->SetLineColor(kGreen+2);
+      hist_BDT_btagSF_cferr1_nom_sig->SetLineWidth(2);
+      hist_BDT_btagSF_cferr1_up_sig->SetLineWidth(2);
+      hist_BDT_btagSF_cferr1_down_sig->SetLineWidth(2);
+      hist_BDT_btagSF_cferr1_nom_bkg->SetLineWidth(2);
+      hist_BDT_btagSF_cferr1_up_bkg->SetLineWidth(2);
+      hist_BDT_btagSF_cferr1_down_bkg->SetLineWidth(2);
+      
+      
+      hist_BDT_btagSF_cferr2_nom_sig->SetLineColor(kRed);
+      hist_BDT_btagSF_cferr2_up_sig->SetLineColor(kBlue);
+      hist_BDT_btagSF_cferr2_down_sig->SetLineColor(kGreen+2);
+      hist_BDT_btagSF_cferr2_nom_bkg->SetLineColor(kRed);
+      hist_BDT_btagSF_cferr2_up_bkg->SetLineColor(kBlue);
+      hist_BDT_btagSF_cferr2_down_bkg->SetLineColor(kGreen+2);
+      hist_BDT_btagSF_cferr2_nom_sig->SetLineWidth(2);
+      hist_BDT_btagSF_cferr2_up_sig->SetLineWidth(2);
+      hist_BDT_btagSF_cferr2_down_sig->SetLineWidth(2);
+      hist_BDT_btagSF_cferr2_nom_bkg->SetLineWidth(2);
+      hist_BDT_btagSF_cferr2_up_bkg->SetLineWidth(2);
+      hist_BDT_btagSF_cferr2_down_bkg->SetLineWidth(2);
+      
+      hist_BDT_btagSF_hf_nom_sig->SetLineColor(kRed);
+      hist_BDT_btagSF_hf_up_sig->SetLineColor(kBlue);
+      hist_BDT_btagSF_hf_down_sig->SetLineColor(kGreen+2);
+      hist_BDT_btagSF_hf_nom_bkg->SetLineColor(kRed);
+      hist_BDT_btagSF_hf_up_bkg->SetLineColor(kBlue);
+      hist_BDT_btagSF_hf_down_bkg->SetLineColor(kGreen+2);
+      hist_BDT_btagSF_hf_nom_sig->SetLineWidth(2);
+      hist_BDT_btagSF_hf_up_sig->SetLineWidth(2);
+      hist_BDT_btagSF_hf_down_sig->SetLineWidth(2);
+      hist_BDT_btagSF_hf_nom_bkg->SetLineWidth(2);
+      hist_BDT_btagSF_hf_up_bkg->SetLineWidth(2);
+      hist_BDT_btagSF_hf_down_bkg->SetLineWidth(2);
+      
+      hist_BDT_btagSF_hfstats1_nom_sig->SetLineColor(kRed);
+      hist_BDT_btagSF_hfstats1_up_sig->SetLineColor(kBlue);
+      hist_BDT_btagSF_hfstats1_down_sig->SetLineColor(kGreen+2);
+      hist_BDT_btagSF_hfstats1_nom_bkg->SetLineColor(kRed);
+      hist_BDT_btagSF_hfstats1_up_bkg->SetLineColor(kBlue);
+      hist_BDT_btagSF_hfstats1_down_bkg->SetLineColor(kGreen+2);
+      hist_BDT_btagSF_hfstats1_nom_sig->SetLineWidth(2);
+      hist_BDT_btagSF_hfstats1_up_sig->SetLineWidth(2);
+      hist_BDT_btagSF_hfstats1_down_sig->SetLineWidth(2);
+      hist_BDT_btagSF_hfstats1_nom_bkg->SetLineWidth(2);
+      hist_BDT_btagSF_hfstats1_up_bkg->SetLineWidth(2);
+      hist_BDT_btagSF_hfstats1_down_bkg->SetLineWidth(2);
+      
+      
+      hist_BDT_btagSF_hfstats2_nom_sig->SetLineColor(kRed);
+      hist_BDT_btagSF_hfstats2_up_sig->SetLineColor(kBlue);
+      hist_BDT_btagSF_hfstats2_down_sig->SetLineColor(kGreen+2);
+      hist_BDT_btagSF_hfstats2_nom_bkg->SetLineColor(kRed);
+      hist_BDT_btagSF_hfstats2_up_bkg->SetLineColor(kBlue);
+      hist_BDT_btagSF_hfstats2_down_bkg->SetLineColor(kGreen+2);
+      hist_BDT_btagSF_hfstats2_nom_sig->SetLineWidth(2);
+      hist_BDT_btagSF_hfstats2_up_sig->SetLineWidth(2);
+      hist_BDT_btagSF_hfstats2_down_sig->SetLineWidth(2);
+      hist_BDT_btagSF_hfstats2_nom_bkg->SetLineWidth(2);
+      hist_BDT_btagSF_hfstats2_up_bkg->SetLineWidth(2);
+      hist_BDT_btagSF_hfstats2_down_bkg->SetLineWidth(2);
+      
+      hist_BDT_btagSF_lf_nom_sig->SetLineColor(kRed);
+      hist_BDT_btagSF_lf_up_sig->SetLineColor(kBlue);
+      hist_BDT_btagSF_lf_down_sig->SetLineColor(kGreen+2);
+      hist_BDT_btagSF_lf_nom_bkg->SetLineColor(kRed);
+      hist_BDT_btagSF_lf_up_bkg->SetLineColor(kBlue);
+      hist_BDT_btagSF_lf_down_bkg->SetLineColor(kGreen+2);
+      hist_BDT_btagSF_lf_nom_sig->SetLineWidth(2);
+      hist_BDT_btagSF_lf_up_sig->SetLineWidth(2);
+      hist_BDT_btagSF_lf_down_sig->SetLineWidth(2);
+      hist_BDT_btagSF_lf_nom_bkg->SetLineWidth(2);
+      hist_BDT_btagSF_lf_up_bkg->SetLineWidth(2);
+      hist_BDT_btagSF_lf_down_bkg->SetLineWidth(2);
+      
+      hist_BDT_btagSF_lfstats1_nom_sig->SetLineColor(kRed);
+      hist_BDT_btagSF_lfstats1_up_sig->SetLineColor(kBlue);
+      hist_BDT_btagSF_lfstats1_down_sig->SetLineColor(kGreen+2);
+      hist_BDT_btagSF_lfstats1_nom_bkg->SetLineColor(kRed);
+      hist_BDT_btagSF_lfstats1_up_bkg->SetLineColor(kBlue);
+      hist_BDT_btagSF_lfstats1_down_bkg->SetLineColor(kGreen+2);
+      hist_BDT_btagSF_lfstats1_nom_sig->SetLineWidth(2);
+      hist_BDT_btagSF_lfstats1_up_sig->SetLineWidth(2);
+      hist_BDT_btagSF_lfstats1_down_sig->SetLineWidth(2);
+      hist_BDT_btagSF_lfstats1_nom_bkg->SetLineWidth(2);
+      hist_BDT_btagSF_lfstats1_up_bkg->SetLineWidth(2);
+      hist_BDT_btagSF_lfstats1_down_bkg->SetLineWidth(2);
+      
+      
+      hist_BDT_btagSF_lfstats2_nom_sig->SetLineColor(kRed);
+      hist_BDT_btagSF_lfstats2_up_sig->SetLineColor(kBlue);
+      hist_BDT_btagSF_lfstats2_down_sig->SetLineColor(kGreen+2);
+      hist_BDT_btagSF_lfstats2_nom_bkg->SetLineColor(kRed);
+      hist_BDT_btagSF_lfstats2_up_bkg->SetLineColor(kBlue);
+      hist_BDT_btagSF_lfstats2_down_bkg->SetLineColor(kGreen+2);
+      hist_BDT_btagSF_lfstats2_nom_sig->SetLineWidth(2);
+      hist_BDT_btagSF_lfstats2_up_sig->SetLineWidth(2);
+      hist_BDT_btagSF_lfstats2_down_sig->SetLineWidth(2);
+      hist_BDT_btagSF_lfstats2_nom_bkg->SetLineWidth(2);
+      hist_BDT_btagSF_lfstats2_up_bkg->SetLineWidth(2);
+      hist_BDT_btagSF_lfstats2_down_bkg->SetLineWidth(2);
+      
+      
+      Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
+      TLegend *legsig = new TLegend(xl1,yl1,xl2,yl2);
+      legsig->AddEntry(hist_BDT_puSF_nom_sig,"nominal","L");   // h1 and h2 are histogram pointers
+      legsig->AddEntry(hist_BDT_puSF_up_sig,"unc +","L");
+      legsig->AddEntry(hist_BDT_puSF_down_sig,"unc -","L");
+      
+      gStyle->SetOptStat(0);
+      //PILE UP
+      TCanvas* tempCanvas = new TCanvas("", "");
+      TPad *histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_puSF_nom_sig->Draw("e histo");
+      hist_BDT_puSF_up_sig->Draw("e same histo");
+      hist_BDT_puSF_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      TPad *ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      TH1F* ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_puSF_nom_sig->GetNbinsX(),hist_BDT_puSF_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_puSF_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_puSF_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_puSF_nom_sig,hist_BDT_puSF_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      TH1F* ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_puSF_nom_sig->GetNbinsX(),hist_BDT_puSF_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_puSF_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_puSF_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_puSF_nom_sig,hist_BDT_puSF_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      TLine *line = new TLine(hist_BDT_puSF_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_puSF_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_puSF_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_puSF_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_puSF_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_puSF_nom_bkg->Draw("e histo");
+      hist_BDT_puSF_up_bkg->Draw("e same histo");
+      hist_BDT_puSF_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_puSF_nom_bkg->GetNbinsX(),hist_BDT_puSF_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_puSF_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_puSF_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_puSF_nom_bkg,hist_BDT_puSF_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_puSF_nom_bkg->GetNbinsX(),hist_BDT_puSF_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_puSF_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_puSF_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_puSF_nom_bkg,hist_BDT_puSF_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_puSF_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_puSF_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_puSF_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_puSF_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_puSF_nom_bkg_LogY.png");
+      
+      
+      //ELECTRON
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_electronSF_nom_sig->Draw("e histo");
+      hist_BDT_electronSF_up_sig->Draw("e same histo");
+      hist_BDT_electronSF_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_electronSF_nom_sig->GetNbinsX(),hist_BDT_electronSF_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_electronSF_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_electronSF_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_electronSF_nom_sig,hist_BDT_electronSF_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_electronSF_nom_sig->GetNbinsX(),hist_BDT_electronSF_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_electronSF_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_electronSF_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_electronSF_nom_sig,hist_BDT_electronSF_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_electronSF_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_electronSF_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_electronSF_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_electronSF_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_electronSF_nom_sig_LogY.png");
+
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_electronSF_nom_bkg->Draw("e histo");
+      hist_BDT_electronSF_up_bkg->Draw("e same histo");
+      hist_BDT_electronSF_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_electronSF_nom_bkg->GetNbinsX(),hist_BDT_electronSF_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_electronSF_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_electronSF_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_electronSF_nom_bkg,hist_BDT_electronSF_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_electronSF_nom_bkg->GetNbinsX(),hist_BDT_electronSF_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_electronSF_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_electronSF_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_electronSF_nom_bkg,hist_BDT_electronSF_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_electronSF_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_electronSF_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_electronSF_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_electronSF_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_electronSF_nom_bkg_LogY.png");
+      
+     
+      
+      //MUON
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_muonSF_nom_sig->Draw("e histo");
+      hist_BDT_muonSF_up_sig->Draw("e same histo");
+      hist_BDT_muonSF_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_muonSF_nom_sig->GetNbinsX(),hist_BDT_muonSF_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_muonSF_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_muonSF_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_muonSF_nom_sig,hist_BDT_muonSF_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_muonSF_nom_sig->GetNbinsX(),hist_BDT_muonSF_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_muonSF_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_muonSF_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_muonSF_nom_sig,hist_BDT_muonSF_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_muonSF_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_muonSF_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_muonSF_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_muonSF_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_muonSF_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_muonSF_nom_bkg->Draw("e histo");
+      hist_BDT_muonSF_up_bkg->Draw("e same histo");
+      hist_BDT_muonSF_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_muonSF_nom_bkg->GetNbinsX(),hist_BDT_muonSF_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_muonSF_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_muonSF_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_muonSF_nom_bkg,hist_BDT_muonSF_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_muonSF_nom_bkg->GetNbinsX(),hist_BDT_muonSF_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_muonSF_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_muonSF_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_muonSF_nom_bkg,hist_BDT_muonSF_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_muonSF_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_muonSF_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_muonSF_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_muonSF_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_muonSF_nom_bkg_LogY.png");
+      
+      //BTAG CFERR1
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_btagSF_cferr1_nom_sig->Draw("e histo");
+      hist_BDT_btagSF_cferr1_up_sig->Draw("e same histo");
+      hist_BDT_btagSF_cferr1_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_btagSF_cferr1_nom_sig->GetNbinsX(),hist_BDT_btagSF_cferr1_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_cferr1_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_cferr1_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_btagSF_cferr1_nom_sig,hist_BDT_btagSF_cferr1_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_btagSF_cferr1_nom_sig->GetNbinsX(),hist_BDT_btagSF_cferr1_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_cferr1_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_cferr1_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_btagSF_cferr1_nom_sig,hist_BDT_btagSF_cferr1_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_btagSF_cferr1_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_btagSF_cferr1_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_cferr1_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_btagSF_cferr1_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_btagSF_cferr1_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_btagSF_cferr1_nom_bkg->Draw("e histo");
+      hist_BDT_btagSF_cferr1_up_bkg->Draw("e same histo");
+      hist_BDT_btagSF_cferr1_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_btagSF_cferr1_nom_bkg->GetNbinsX(),hist_BDT_btagSF_cferr1_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_cferr1_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_cferr1_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_btagSF_cferr1_nom_bkg,hist_BDT_btagSF_cferr1_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_btagSF_cferr1_nom_bkg->GetNbinsX(),hist_BDT_btagSF_cferr1_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_cferr1_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_cferr1_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_btagSF_cferr1_nom_bkg,hist_BDT_btagSF_cferr1_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_btagSF_cferr1_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_btagSF_cferr1_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_cferr1_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_btagSF_cferr1_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_btagSF_cferr1_nom_bkg_LogY.png");
+      
+      //BTAG cferr2
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_btagSF_cferr2_nom_sig->Draw("e histo");
+      hist_BDT_btagSF_cferr2_up_sig->Draw("e same histo");
+      hist_BDT_btagSF_cferr2_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_btagSF_cferr2_nom_sig->GetNbinsX(),hist_BDT_btagSF_cferr2_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_cferr2_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_cferr2_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_btagSF_cferr2_nom_sig,hist_BDT_btagSF_cferr2_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_btagSF_cferr2_nom_sig->GetNbinsX(),hist_BDT_btagSF_cferr2_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_cferr2_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_cferr2_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_btagSF_cferr2_nom_sig,hist_BDT_btagSF_cferr2_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_btagSF_cferr2_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_btagSF_cferr2_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_cferr2_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_btagSF_cferr2_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_btagSF_cferr2_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_btagSF_cferr2_nom_bkg->Draw("e histo");
+      hist_BDT_btagSF_cferr2_up_bkg->Draw("e same histo");
+      hist_BDT_btagSF_cferr2_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_btagSF_cferr2_nom_bkg->GetNbinsX(),hist_BDT_btagSF_cferr2_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_cferr2_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_cferr2_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_btagSF_cferr2_nom_bkg,hist_BDT_btagSF_cferr2_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_btagSF_cferr2_nom_bkg->GetNbinsX(),hist_BDT_btagSF_cferr2_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_cferr2_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_cferr2_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_btagSF_cferr2_nom_bkg,hist_BDT_btagSF_cferr2_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_btagSF_cferr2_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_btagSF_cferr2_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_cferr2_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_btagSF_cferr2_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_btagSF_cferr2_nom_bkg_LogY.png");
+      
+      //BTAG lf
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_btagSF_lf_nom_sig->Draw("e histo");
+      hist_BDT_btagSF_lf_up_sig->Draw("e same histo");
+      hist_BDT_btagSF_lf_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_btagSF_lf_nom_sig->GetNbinsX(),hist_BDT_btagSF_lf_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_lf_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_lf_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_btagSF_lf_nom_sig,hist_BDT_btagSF_lf_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_btagSF_lf_nom_sig->GetNbinsX(),hist_BDT_btagSF_lf_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_lf_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_lf_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_btagSF_lf_nom_sig,hist_BDT_btagSF_lf_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_btagSF_lf_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_btagSF_lf_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_lf_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_btagSF_lf_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_btagSF_lf_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_btagSF_lf_nom_bkg->Draw("e histo");
+      hist_BDT_btagSF_lf_up_bkg->Draw("e same histo");
+      hist_BDT_btagSF_lf_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_btagSF_lf_nom_bkg->GetNbinsX(),hist_BDT_btagSF_lf_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_lf_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_lf_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_btagSF_lf_nom_bkg,hist_BDT_btagSF_lf_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_btagSF_lf_nom_bkg->GetNbinsX(),hist_BDT_btagSF_lf_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_lf_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_lf_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_btagSF_lf_nom_bkg,hist_BDT_btagSF_lf_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_btagSF_lf_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_btagSF_lf_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_lf_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_btagSF_lf_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_btagSF_lf_nom_bkg_LogY.png");
+      
+      //BTAG lfstats1
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_btagSF_lfstats1_nom_sig->Draw("e histo");
+      hist_BDT_btagSF_lfstats1_up_sig->Draw("e same histo");
+      hist_BDT_btagSF_lfstats1_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_btagSF_lfstats1_nom_sig->GetNbinsX(),hist_BDT_btagSF_lfstats1_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_lfstats1_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_lfstats1_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_btagSF_lfstats1_nom_sig,hist_BDT_btagSF_lfstats1_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_btagSF_lfstats1_nom_sig->GetNbinsX(),hist_BDT_btagSF_lfstats1_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_lfstats1_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_lfstats1_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_btagSF_lfstats1_nom_sig,hist_BDT_btagSF_lfstats1_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_btagSF_lfstats1_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_btagSF_lfstats1_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_lfstats1_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_btagSF_lfstats1_nom_bkg->Draw("e histo");
+      hist_BDT_btagSF_lfstats1_up_bkg->Draw("e same histo");
+      hist_BDT_btagSF_lfstats1_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_btagSF_lfstats1_nom_bkg->GetNbinsX(),hist_BDT_btagSF_lfstats1_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_lfstats1_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_lfstats1_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_btagSF_lfstats1_nom_bkg,hist_BDT_btagSF_lfstats1_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_btagSF_lfstats1_nom_bkg->GetNbinsX(),hist_BDT_btagSF_lfstats1_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_lfstats1_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_lfstats1_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_btagSF_lfstats1_nom_bkg,hist_BDT_btagSF_lfstats1_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_btagSF_lfstats1_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_btagSF_lfstats1_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_lfstats1_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_btagSF_lfstats1_nom_bkg_LogY.png");
+      
+      
+      
+      //BTAG lfstats2
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_btagSF_lfstats2_nom_sig->Draw("e histo");
+      hist_BDT_btagSF_lfstats2_up_sig->Draw("e same histo");
+      hist_BDT_btagSF_lfstats2_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_btagSF_lfstats2_nom_sig->GetNbinsX(),hist_BDT_btagSF_lfstats2_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_lfstats2_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_lfstats2_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_btagSF_lfstats2_nom_sig,hist_BDT_btagSF_lfstats2_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_btagSF_lfstats2_nom_sig->GetNbinsX(),hist_BDT_btagSF_lfstats2_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_lfstats2_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_lfstats2_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_btagSF_lfstats2_nom_sig,hist_BDT_btagSF_lfstats2_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_btagSF_lfstats2_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_btagSF_lfstats2_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_lfstats2_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_btagSF_lfstats2_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_btagSF_lfstats2_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_btagSF_lfstats2_nom_bkg->Draw("e histo");
+      hist_BDT_btagSF_lfstats2_up_bkg->Draw("e same histo");
+      hist_BDT_btagSF_lfstats2_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_btagSF_lfstats2_nom_bkg->GetNbinsX(),hist_BDT_btagSF_lfstats2_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_lfstats2_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_lfstats2_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_btagSF_lfstats2_nom_bkg,hist_BDT_btagSF_lfstats2_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_btagSF_lfstats2_nom_bkg->GetNbinsX(),hist_BDT_btagSF_lfstats2_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_lfstats2_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_lfstats2_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_btagSF_lfstats2_nom_bkg,hist_BDT_btagSF_lfstats2_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_btagSF_lfstats2_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_btagSF_lfstats2_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_lfstats2_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_btagSF_lfstats2_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_btagSF_lfstats2_nom_bkg_LogY.png");
+      
+      
+      //BTAG hf
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_btagSF_hf_nom_sig->Draw("e histo");
+      hist_BDT_btagSF_hf_up_sig->Draw("e same histo");
+      hist_BDT_btagSF_hf_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_btagSF_hf_nom_sig->GetNbinsX(),hist_BDT_btagSF_hf_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_hf_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_hf_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_btagSF_hf_nom_sig,hist_BDT_btagSF_hf_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_btagSF_hf_nom_sig->GetNbinsX(),hist_BDT_btagSF_hf_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_hf_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_hf_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_btagSF_hf_nom_sig,hist_BDT_btagSF_hf_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_btagSF_hf_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_btagSF_hf_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_hf_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_btagSF_hf_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_btagSF_hf_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_btagSF_hf_nom_bkg->Draw("e histo");
+      hist_BDT_btagSF_hf_up_bkg->Draw("e same histo");
+      hist_BDT_btagSF_hf_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_btagSF_hf_nom_bkg->GetNbinsX(),hist_BDT_btagSF_hf_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_hf_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_hf_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_btagSF_hf_nom_bkg,hist_BDT_btagSF_hf_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_btagSF_hf_nom_bkg->GetNbinsX(),hist_BDT_btagSF_hf_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_hf_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_hf_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_btagSF_hf_nom_bkg,hist_BDT_btagSF_hf_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_btagSF_hf_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_btagSF_hf_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_hf_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_btagSF_hf_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_btagSF_hf_nom_bkg_LogY.png");
+      
+      //BTAG hfstats1
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_btagSF_hfstats1_nom_sig->Draw("e histo");
+      hist_BDT_btagSF_hfstats1_up_sig->Draw("e same histo");
+      hist_BDT_btagSF_hfstats1_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_btagSF_hfstats1_nom_sig->GetNbinsX(),hist_BDT_btagSF_hfstats1_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_hfstats1_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_hfstats1_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_btagSF_hfstats1_nom_sig,hist_BDT_btagSF_hfstats1_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_btagSF_hfstats1_nom_sig->GetNbinsX(),hist_BDT_btagSF_hfstats1_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_hfstats1_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_hfstats1_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_btagSF_hfstats1_nom_sig,hist_BDT_btagSF_hfstats1_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_btagSF_hfstats1_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_btagSF_hfstats1_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_hfstats1_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_btagSF_hfstats1_nom_bkg->Draw("e histo");
+      hist_BDT_btagSF_hfstats1_up_bkg->Draw("e same histo");
+      hist_BDT_btagSF_hfstats1_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_btagSF_hfstats1_nom_bkg->GetNbinsX(),hist_BDT_btagSF_hfstats1_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_hfstats1_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_hfstats1_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_btagSF_hfstats1_nom_bkg,hist_BDT_btagSF_hfstats1_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_btagSF_hfstats1_nom_bkg->GetNbinsX(),hist_BDT_btagSF_hfstats1_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_hfstats1_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_hfstats1_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_btagSF_hfstats1_nom_bkg,hist_BDT_btagSF_hfstats1_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_btagSF_hfstats1_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_btagSF_hfstats1_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_hfstats1_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_btagSF_hfstats1_nom_bkg_LogY.png");
+      
+      
+      
+      //BTAG hfstats2
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_btagSF_hfstats2_nom_sig->Draw("e histo");
+      hist_BDT_btagSF_hfstats2_up_sig->Draw("e same histo");
+      hist_BDT_btagSF_hfstats2_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_btagSF_hfstats2_nom_sig->GetNbinsX(),hist_BDT_btagSF_hfstats2_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_hfstats2_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_hfstats2_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_btagSF_hfstats2_nom_sig,hist_BDT_btagSF_hfstats2_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_btagSF_hfstats2_nom_sig->GetNbinsX(),hist_BDT_btagSF_hfstats2_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_hfstats2_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_hfstats2_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_btagSF_hfstats2_nom_sig,hist_BDT_btagSF_hfstats2_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_btagSF_hfstats2_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_btagSF_hfstats2_nom_sig->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_hfstats2_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_btagSF_hfstats2_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_btagSF_hfstats2_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_BDT_btagSF_hfstats2_nom_bkg->Draw("e histo");
+      hist_BDT_btagSF_hfstats2_up_bkg->Draw("e same histo");
+      hist_BDT_btagSF_hfstats2_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_BDT_btagSF_hfstats2_nom_bkg->GetNbinsX(),hist_BDT_btagSF_hfstats2_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_hfstats2_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_hfstats2_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_BDT_btagSF_hfstats2_nom_bkg,hist_BDT_btagSF_hfstats2_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_BDT_btagSF_hfstats2_nom_bkg->GetNbinsX(),hist_BDT_btagSF_hfstats2_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_BDT_btagSF_hfstats2_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_hfstats2_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_BDT_btagSF_hfstats2_nom_bkg,hist_BDT_btagSF_hfstats2_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_BDT_btagSF_hfstats2_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_BDT_btagSF_hfstats2_nom_bkg->GetXaxis()->GetBinUpEdge(hist_BDT_btagSF_hfstats2_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_BDT_btagSF_hfstats2_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_BDT_btagSF_hfstats2_nom_bkg_LogY.png");
+      
+      
+    }
+    else if(PlotSystematics && doMTWtemplate){
+      double maximum_sig = hist_mWt_puSF_nom_sig->GetMaximum()*1.5;
+      double maximum_bkg = hist_mWt_puSF_nom_bkg->GetMaximum()*1.5;
+      
+      hist_mWt_puSF_nom_bkg->SetMaximum(maximum_bkg);
+      hist_mWt_puSF_nom_sig->SetMaximum(maximum_sig);
+      hist_mWt_electronSF_nom_bkg->SetMaximum(maximum_bkg);
+      hist_mWt_electronSF_nom_sig->SetMaximum(maximum_sig);
+      hist_mWt_muonSF_nom_bkg->SetMaximum(maximum_bkg);
+      hist_mWt_muonSF_nom_sig->SetMaximum(maximum_sig);
+      hist_mWt_btagSF_cferr1_nom_bkg->SetMaximum(maximum_bkg);
+      hist_mWt_btagSF_cferr1_nom_sig->SetMaximum(maximum_sig);
+      hist_mWt_btagSF_cferr2_nom_bkg->SetMaximum(maximum_bkg);
+      hist_mWt_btagSF_cferr2_nom_sig->SetMaximum(maximum_sig);
+      hist_mWt_btagSF_hf_nom_bkg->SetMaximum(maximum_bkg);
+      hist_mWt_btagSF_hf_nom_sig->SetMaximum(maximum_sig);
+      hist_mWt_btagSF_hfstats1_nom_bkg->SetMaximum(maximum_bkg);
+      hist_mWt_btagSF_hfstats1_nom_sig->SetMaximum(maximum_sig);
+      hist_mWt_btagSF_hfstats2_nom_bkg->SetMaximum(maximum_bkg);
+      hist_mWt_btagSF_hfstats2_nom_sig->SetMaximum(maximum_sig);
+      hist_mWt_btagSF_lf_nom_bkg->SetMaximum(maximum_bkg);
+      hist_mWt_btagSF_lf_nom_sig->SetMaximum(maximum_sig);
+      hist_mWt_btagSF_lfstats1_nom_bkg->SetMaximum(maximum_bkg);
+      hist_mWt_btagSF_lfstats1_nom_sig->SetMaximum(maximum_sig);
+      hist_mWt_btagSF_lfstats2_nom_bkg->SetMaximum(maximum_bkg);
+      hist_mWt_btagSF_lfstats2_nom_sig->SetMaximum(maximum_sig);
+      
+      
+      
+      hist_mWt_puSF_nom_sig->SetLineColor(kRed);
+      hist_mWt_puSF_up_sig->SetLineColor(kBlue);
+      hist_mWt_puSF_down_sig->SetLineColor(kGreen+2);
+      hist_mWt_puSF_nom_bkg->SetLineColor(kRed);
+      hist_mWt_puSF_up_bkg->SetLineColor(kBlue);
+      hist_mWt_puSF_down_bkg->SetLineColor(kGreen+2);
+      hist_mWt_puSF_nom_sig->SetLineWidth(2);
+      hist_mWt_puSF_up_sig->SetLineWidth(2);
+      hist_mWt_puSF_down_sig->SetLineWidth(2);
+      hist_mWt_puSF_nom_bkg->SetLineWidth(2);
+      hist_mWt_puSF_up_bkg->SetLineWidth(2);
+      hist_mWt_puSF_down_bkg->SetLineWidth(2);
+      
+      
+      hist_mWt_electronSF_nom_sig->SetLineColor(kRed);
+      hist_mWt_electronSF_up_sig->SetLineColor(kBlue);
+      hist_mWt_electronSF_down_sig->SetLineColor(kGreen+2);
+      hist_mWt_electronSF_nom_bkg->SetLineColor(kRed);
+      hist_mWt_electronSF_up_bkg->SetLineColor(kBlue);
+      hist_mWt_electronSF_down_bkg->SetLineColor(kGreen+2);
+      hist_mWt_electronSF_nom_sig->SetLineWidth(2);
+      hist_mWt_electronSF_up_sig->SetLineWidth(2);
+      hist_mWt_electronSF_down_sig->SetLineWidth(2);
+      hist_mWt_electronSF_nom_bkg->SetLineWidth(2);
+      hist_mWt_electronSF_up_bkg->SetLineWidth(2);
+      hist_mWt_electronSF_down_bkg->SetLineWidth(2);
+      
+      hist_mWt_muonSF_nom_sig->SetLineColor(kRed);
+      hist_mWt_muonSF_up_sig->SetLineColor(kBlue);
+      hist_mWt_muonSF_down_sig->SetLineColor(kGreen+2);
+      hist_mWt_muonSF_nom_bkg->SetLineColor(kRed);
+      hist_mWt_muonSF_up_bkg->SetLineColor(kBlue);
+      hist_mWt_muonSF_down_bkg->SetLineColor(kGreen+2);
+      hist_mWt_muonSF_nom_sig->SetLineWidth(2);
+      hist_mWt_muonSF_up_sig->SetLineWidth(2);
+      hist_mWt_muonSF_down_sig->SetLineWidth(2);
+      hist_mWt_muonSF_nom_bkg->SetLineWidth(2);
+      hist_mWt_muonSF_up_bkg->SetLineWidth(2);
+      hist_mWt_muonSF_down_bkg->SetLineWidth(2);
+      
+      
+      
+      hist_mWt_btagSF_cferr1_nom_sig->SetLineColor(kRed);
+      hist_mWt_btagSF_cferr1_up_sig->SetLineColor(kBlue);
+      hist_mWt_btagSF_cferr1_down_sig->SetLineColor(kGreen+2);
+      hist_mWt_btagSF_cferr1_nom_bkg->SetLineColor(kRed);
+      hist_mWt_btagSF_cferr1_up_bkg->SetLineColor(kBlue);
+      hist_mWt_btagSF_cferr1_down_bkg->SetLineColor(kGreen+2);
+      hist_mWt_btagSF_cferr1_nom_sig->SetLineWidth(2);
+      hist_mWt_btagSF_cferr1_up_sig->SetLineWidth(2);
+      hist_mWt_btagSF_cferr1_down_sig->SetLineWidth(2);
+      hist_mWt_btagSF_cferr1_nom_bkg->SetLineWidth(2);
+      hist_mWt_btagSF_cferr1_up_bkg->SetLineWidth(2);
+      hist_mWt_btagSF_cferr1_down_bkg->SetLineWidth(2);
+      
+      
+      hist_mWt_btagSF_cferr2_nom_sig->SetLineColor(kRed);
+      hist_mWt_btagSF_cferr2_up_sig->SetLineColor(kBlue);
+      hist_mWt_btagSF_cferr2_down_sig->SetLineColor(kGreen+2);
+      hist_mWt_btagSF_cferr2_nom_bkg->SetLineColor(kRed);
+      hist_mWt_btagSF_cferr2_up_bkg->SetLineColor(kBlue);
+      hist_mWt_btagSF_cferr2_down_bkg->SetLineColor(kGreen+2);
+      hist_mWt_btagSF_cferr2_nom_sig->SetLineWidth(2);
+      hist_mWt_btagSF_cferr2_up_sig->SetLineWidth(2);
+      hist_mWt_btagSF_cferr2_down_sig->SetLineWidth(2);
+      hist_mWt_btagSF_cferr2_nom_bkg->SetLineWidth(2);
+      hist_mWt_btagSF_cferr2_up_bkg->SetLineWidth(2);
+      hist_mWt_btagSF_cferr2_down_bkg->SetLineWidth(2);
+      
+      hist_mWt_btagSF_hf_nom_sig->SetLineColor(kRed);
+      hist_mWt_btagSF_hf_up_sig->SetLineColor(kBlue);
+      hist_mWt_btagSF_hf_down_sig->SetLineColor(kGreen+2);
+      hist_mWt_btagSF_hf_nom_bkg->SetLineColor(kRed);
+      hist_mWt_btagSF_hf_up_bkg->SetLineColor(kBlue);
+      hist_mWt_btagSF_hf_down_bkg->SetLineColor(kGreen+2);
+      hist_mWt_btagSF_hf_nom_sig->SetLineWidth(2);
+      hist_mWt_btagSF_hf_up_sig->SetLineWidth(2);
+      hist_mWt_btagSF_hf_down_sig->SetLineWidth(2);
+      hist_mWt_btagSF_hf_nom_bkg->SetLineWidth(2);
+      hist_mWt_btagSF_hf_up_bkg->SetLineWidth(2);
+      hist_mWt_btagSF_hf_down_bkg->SetLineWidth(2);
+      
+      hist_mWt_btagSF_hfstats1_nom_sig->SetLineColor(kRed);
+      hist_mWt_btagSF_hfstats1_up_sig->SetLineColor(kBlue);
+      hist_mWt_btagSF_hfstats1_down_sig->SetLineColor(kGreen+2);
+      hist_mWt_btagSF_hfstats1_nom_bkg->SetLineColor(kRed);
+      hist_mWt_btagSF_hfstats1_up_bkg->SetLineColor(kBlue);
+      hist_mWt_btagSF_hfstats1_down_bkg->SetLineColor(kGreen+2);
+      hist_mWt_btagSF_hfstats1_nom_sig->SetLineWidth(2);
+      hist_mWt_btagSF_hfstats1_up_sig->SetLineWidth(2);
+      hist_mWt_btagSF_hfstats1_down_sig->SetLineWidth(2);
+      hist_mWt_btagSF_hfstats1_nom_bkg->SetLineWidth(2);
+      hist_mWt_btagSF_hfstats1_up_bkg->SetLineWidth(2);
+      hist_mWt_btagSF_hfstats1_down_bkg->SetLineWidth(2);
+      
+      
+      hist_mWt_btagSF_hfstats2_nom_sig->SetLineColor(kRed);
+      hist_mWt_btagSF_hfstats2_up_sig->SetLineColor(kBlue);
+      hist_mWt_btagSF_hfstats2_down_sig->SetLineColor(kGreen+2);
+      hist_mWt_btagSF_hfstats2_nom_bkg->SetLineColor(kRed);
+      hist_mWt_btagSF_hfstats2_up_bkg->SetLineColor(kBlue);
+      hist_mWt_btagSF_hfstats2_down_bkg->SetLineColor(kGreen+2);
+      hist_mWt_btagSF_hfstats2_nom_sig->SetLineWidth(2);
+      hist_mWt_btagSF_hfstats2_up_sig->SetLineWidth(2);
+      hist_mWt_btagSF_hfstats2_down_sig->SetLineWidth(2);
+      hist_mWt_btagSF_hfstats2_nom_bkg->SetLineWidth(2);
+      hist_mWt_btagSF_hfstats2_up_bkg->SetLineWidth(2);
+      hist_mWt_btagSF_hfstats2_down_bkg->SetLineWidth(2);
+      
+      hist_mWt_btagSF_lf_nom_sig->SetLineColor(kRed);
+      hist_mWt_btagSF_lf_up_sig->SetLineColor(kBlue);
+      hist_mWt_btagSF_lf_down_sig->SetLineColor(kGreen+2);
+      hist_mWt_btagSF_lf_nom_bkg->SetLineColor(kRed);
+      hist_mWt_btagSF_lf_up_bkg->SetLineColor(kBlue);
+      hist_mWt_btagSF_lf_down_bkg->SetLineColor(kGreen+2);
+      hist_mWt_btagSF_lf_nom_sig->SetLineWidth(2);
+      hist_mWt_btagSF_lf_up_sig->SetLineWidth(2);
+      hist_mWt_btagSF_lf_down_sig->SetLineWidth(2);
+      hist_mWt_btagSF_lf_nom_bkg->SetLineWidth(2);
+      hist_mWt_btagSF_lf_up_bkg->SetLineWidth(2);
+      hist_mWt_btagSF_lf_down_bkg->SetLineWidth(2);
+      
+      hist_mWt_btagSF_lfstats1_nom_sig->SetLineColor(kRed);
+      hist_mWt_btagSF_lfstats1_up_sig->SetLineColor(kBlue);
+      hist_mWt_btagSF_lfstats1_down_sig->SetLineColor(kGreen+2);
+      hist_mWt_btagSF_lfstats1_nom_bkg->SetLineColor(kRed);
+      hist_mWt_btagSF_lfstats1_up_bkg->SetLineColor(kBlue);
+      hist_mWt_btagSF_lfstats1_down_bkg->SetLineColor(kGreen+2);
+      hist_mWt_btagSF_lfstats1_nom_sig->SetLineWidth(2);
+      hist_mWt_btagSF_lfstats1_up_sig->SetLineWidth(2);
+      hist_mWt_btagSF_lfstats1_down_sig->SetLineWidth(2);
+      hist_mWt_btagSF_lfstats1_nom_bkg->SetLineWidth(2);
+      hist_mWt_btagSF_lfstats1_up_bkg->SetLineWidth(2);
+      hist_mWt_btagSF_lfstats1_down_bkg->SetLineWidth(2);
+      
+      
+      hist_mWt_btagSF_lfstats2_nom_sig->SetLineColor(kRed);
+      hist_mWt_btagSF_lfstats2_up_sig->SetLineColor(kBlue);
+      hist_mWt_btagSF_lfstats2_down_sig->SetLineColor(kGreen+2);
+      hist_mWt_btagSF_lfstats2_nom_bkg->SetLineColor(kRed);
+      hist_mWt_btagSF_lfstats2_up_bkg->SetLineColor(kBlue);
+      hist_mWt_btagSF_lfstats2_down_bkg->SetLineColor(kGreen+2);
+      hist_mWt_btagSF_lfstats2_nom_sig->SetLineWidth(2);
+      hist_mWt_btagSF_lfstats2_up_sig->SetLineWidth(2);
+      hist_mWt_btagSF_lfstats2_down_sig->SetLineWidth(2);
+      hist_mWt_btagSF_lfstats2_nom_bkg->SetLineWidth(2);
+      hist_mWt_btagSF_lfstats2_up_bkg->SetLineWidth(2);
+      hist_mWt_btagSF_lfstats2_down_bkg->SetLineWidth(2);
+      
+      
+      Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
+      TLegend *legsig = new TLegend(xl1,yl1,xl2,yl2);
+      legsig->AddEntry(hist_mWt_puSF_nom_sig,"nominal","L");   // h1 and h2 are histogram pointers
+      legsig->AddEntry(hist_mWt_puSF_up_sig,"unc +","L");
+      legsig->AddEntry(hist_mWt_puSF_down_sig,"unc -","L");
+      
+      gStyle->SetOptStat(0);
+      
+      
+      gStyle->SetOptStat(0);
+      //PILE UP
+      TCanvas* tempCanvas = new TCanvas("", "");
+      TPad *histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_puSF_nom_sig->Draw("e histo");
+      hist_mWt_puSF_up_sig->Draw("e same histo");
+      hist_mWt_puSF_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      TPad *ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      TH1F* ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_puSF_nom_sig->GetNbinsX(),hist_mWt_puSF_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_puSF_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_puSF_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_puSF_nom_sig,hist_mWt_puSF_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      TH1F* ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_puSF_nom_sig->GetNbinsX(),hist_mWt_puSF_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_puSF_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_puSF_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_puSF_nom_sig,hist_mWt_puSF_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      TLine *line = new TLine(hist_mWt_puSF_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_puSF_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_puSF_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_puSF_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_puSF_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_puSF_nom_bkg->Draw("e histo");
+      hist_mWt_puSF_up_bkg->Draw("e same histo");
+      hist_mWt_puSF_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_puSF_nom_bkg->GetNbinsX(),hist_mWt_puSF_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_puSF_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_puSF_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_puSF_nom_bkg,hist_mWt_puSF_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_puSF_nom_bkg->GetNbinsX(),hist_mWt_puSF_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_puSF_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_puSF_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_puSF_nom_bkg,hist_mWt_puSF_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_puSF_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_puSF_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_puSF_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_puSF_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_puSF_nom_bkg_LogY.png");
+      
+      
+      //ELECTRON
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_electronSF_nom_sig->Draw("e histo");
+      hist_mWt_electronSF_up_sig->Draw("e same histo");
+      hist_mWt_electronSF_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_electronSF_nom_sig->GetNbinsX(),hist_mWt_electronSF_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_electronSF_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_electronSF_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_electronSF_nom_sig,hist_mWt_electronSF_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_electronSF_nom_sig->GetNbinsX(),hist_mWt_electronSF_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_electronSF_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_electronSF_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_electronSF_nom_sig,hist_mWt_electronSF_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_electronSF_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_electronSF_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_electronSF_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_electronSF_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_electronSF_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_electronSF_nom_bkg->Draw("e histo");
+      hist_mWt_electronSF_up_bkg->Draw("e same histo");
+      hist_mWt_electronSF_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_electronSF_nom_bkg->GetNbinsX(),hist_mWt_electronSF_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_electronSF_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_electronSF_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_electronSF_nom_bkg,hist_mWt_electronSF_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_electronSF_nom_bkg->GetNbinsX(),hist_mWt_electronSF_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_electronSF_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_electronSF_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_electronSF_nom_bkg,hist_mWt_electronSF_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_electronSF_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_electronSF_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_electronSF_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_electronSF_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_electronSF_nom_bkg_LogY.png");
+      
+      
+      
+      //MUON
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_muonSF_nom_sig->Draw("e histo");
+      hist_mWt_muonSF_up_sig->Draw("e same histo");
+      hist_mWt_muonSF_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_muonSF_nom_sig->GetNbinsX(),hist_mWt_muonSF_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_muonSF_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_muonSF_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_muonSF_nom_sig,hist_mWt_muonSF_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_muonSF_nom_sig->GetNbinsX(),hist_mWt_muonSF_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_muonSF_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_muonSF_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_muonSF_nom_sig,hist_mWt_muonSF_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_muonSF_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_muonSF_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_muonSF_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_muonSF_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_muonSF_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_muonSF_nom_bkg->Draw("e histo");
+      hist_mWt_muonSF_up_bkg->Draw("e same histo");
+      hist_mWt_muonSF_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_muonSF_nom_bkg->GetNbinsX(),hist_mWt_muonSF_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_muonSF_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_muonSF_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_muonSF_nom_bkg,hist_mWt_muonSF_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_muonSF_nom_bkg->GetNbinsX(),hist_mWt_muonSF_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_muonSF_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_muonSF_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_muonSF_nom_bkg,hist_mWt_muonSF_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_muonSF_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_muonSF_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_muonSF_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_muonSF_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_muonSF_nom_bkg_LogY.png");
+      
+      //BTAG CFERR1
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_btagSF_cferr1_nom_sig->Draw("e histo");
+      hist_mWt_btagSF_cferr1_up_sig->Draw("e same histo");
+      hist_mWt_btagSF_cferr1_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_btagSF_cferr1_nom_sig->GetNbinsX(),hist_mWt_btagSF_cferr1_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_cferr1_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_cferr1_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_btagSF_cferr1_nom_sig,hist_mWt_btagSF_cferr1_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_btagSF_cferr1_nom_sig->GetNbinsX(),hist_mWt_btagSF_cferr1_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_cferr1_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_cferr1_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_btagSF_cferr1_nom_sig,hist_mWt_btagSF_cferr1_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_btagSF_cferr1_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_btagSF_cferr1_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_cferr1_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_btagSF_cferr1_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_btagSF_cferr1_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_btagSF_cferr1_nom_bkg->Draw("e histo");
+      hist_mWt_btagSF_cferr1_up_bkg->Draw("e same histo");
+      hist_mWt_btagSF_cferr1_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_btagSF_cferr1_nom_bkg->GetNbinsX(),hist_mWt_btagSF_cferr1_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_cferr1_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_cferr1_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_btagSF_cferr1_nom_bkg,hist_mWt_btagSF_cferr1_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_btagSF_cferr1_nom_bkg->GetNbinsX(),hist_mWt_btagSF_cferr1_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_cferr1_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_cferr1_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_btagSF_cferr1_nom_bkg,hist_mWt_btagSF_cferr1_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_btagSF_cferr1_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_btagSF_cferr1_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_cferr1_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_btagSF_cferr1_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_btagSF_cferr1_nom_bkg_LogY.png");
+      
+      //BTAG cferr2
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_btagSF_cferr2_nom_sig->Draw("e histo");
+      hist_mWt_btagSF_cferr2_up_sig->Draw("e same histo");
+      hist_mWt_btagSF_cferr2_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_btagSF_cferr2_nom_sig->GetNbinsX(),hist_mWt_btagSF_cferr2_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_cferr2_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_cferr2_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_btagSF_cferr2_nom_sig,hist_mWt_btagSF_cferr2_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_btagSF_cferr2_nom_sig->GetNbinsX(),hist_mWt_btagSF_cferr2_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_cferr2_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_cferr2_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_btagSF_cferr2_nom_sig,hist_mWt_btagSF_cferr2_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_btagSF_cferr2_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_btagSF_cferr2_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_cferr2_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_btagSF_cferr2_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_btagSF_cferr2_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_btagSF_cferr2_nom_bkg->Draw("e histo");
+      hist_mWt_btagSF_cferr2_up_bkg->Draw("e same histo");
+      hist_mWt_btagSF_cferr2_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_btagSF_cferr2_nom_bkg->GetNbinsX(),hist_mWt_btagSF_cferr2_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_cferr2_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_cferr2_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_btagSF_cferr2_nom_bkg,hist_mWt_btagSF_cferr2_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_btagSF_cferr2_nom_bkg->GetNbinsX(),hist_mWt_btagSF_cferr2_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_cferr2_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_cferr2_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_btagSF_cferr2_nom_bkg,hist_mWt_btagSF_cferr2_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_btagSF_cferr2_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_btagSF_cferr2_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_cferr2_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_btagSF_cferr2_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_btagSF_cferr2_nom_bkg_LogY.png");
+      
+      //BTAG lf
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_btagSF_lf_nom_sig->Draw("e histo");
+      hist_mWt_btagSF_lf_up_sig->Draw("e same histo");
+      hist_mWt_btagSF_lf_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_btagSF_lf_nom_sig->GetNbinsX(),hist_mWt_btagSF_lf_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_lf_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_lf_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_btagSF_lf_nom_sig,hist_mWt_btagSF_lf_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_btagSF_lf_nom_sig->GetNbinsX(),hist_mWt_btagSF_lf_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_lf_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_lf_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_btagSF_lf_nom_sig,hist_mWt_btagSF_lf_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_btagSF_lf_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_btagSF_lf_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_lf_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_btagSF_lf_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_btagSF_lf_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_btagSF_lf_nom_bkg->Draw("e histo");
+      hist_mWt_btagSF_lf_up_bkg->Draw("e same histo");
+      hist_mWt_btagSF_lf_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_btagSF_lf_nom_bkg->GetNbinsX(),hist_mWt_btagSF_lf_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_lf_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_lf_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_btagSF_lf_nom_bkg,hist_mWt_btagSF_lf_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_btagSF_lf_nom_bkg->GetNbinsX(),hist_mWt_btagSF_lf_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_lf_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_lf_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_btagSF_lf_nom_bkg,hist_mWt_btagSF_lf_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_btagSF_lf_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_btagSF_lf_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_lf_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_btagSF_lf_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_btagSF_lf_nom_bkg_LogY.png");
+      
+      //BTAG lfstats1
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_btagSF_lfstats1_nom_sig->Draw("e histo");
+      hist_mWt_btagSF_lfstats1_up_sig->Draw("e same histo");
+      hist_mWt_btagSF_lfstats1_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_btagSF_lfstats1_nom_sig->GetNbinsX(),hist_mWt_btagSF_lfstats1_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_lfstats1_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_lfstats1_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_btagSF_lfstats1_nom_sig,hist_mWt_btagSF_lfstats1_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_btagSF_lfstats1_nom_sig->GetNbinsX(),hist_mWt_btagSF_lfstats1_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_lfstats1_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_lfstats1_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_btagSF_lfstats1_nom_sig,hist_mWt_btagSF_lfstats1_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_btagSF_lfstats1_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_btagSF_lfstats1_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_lfstats1_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_btagSF_lfstats1_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_btagSF_lfstats1_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_btagSF_lfstats1_nom_bkg->Draw("e histo");
+      hist_mWt_btagSF_lfstats1_up_bkg->Draw("e same histo");
+      hist_mWt_btagSF_lfstats1_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_btagSF_lfstats1_nom_bkg->GetNbinsX(),hist_mWt_btagSF_lfstats1_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_lfstats1_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_lfstats1_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_btagSF_lfstats1_nom_bkg,hist_mWt_btagSF_lfstats1_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_btagSF_lfstats1_nom_bkg->GetNbinsX(),hist_mWt_btagSF_lfstats1_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_lfstats1_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_lfstats1_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_btagSF_lfstats1_nom_bkg,hist_mWt_btagSF_lfstats1_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_btagSF_lfstats1_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_btagSF_lfstats1_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_lfstats1_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_btagSF_lfstats1_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_btagSF_lfstats1_nom_bkg_LogY.png");
+      
+      
+      
+      //BTAG lfstats2
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_btagSF_lfstats2_nom_sig->Draw("e histo");
+      hist_mWt_btagSF_lfstats2_up_sig->Draw("e same histo");
+      hist_mWt_btagSF_lfstats2_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_btagSF_lfstats2_nom_sig->GetNbinsX(),hist_mWt_btagSF_lfstats2_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_lfstats2_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_lfstats2_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_btagSF_lfstats2_nom_sig,hist_mWt_btagSF_lfstats2_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_btagSF_lfstats2_nom_sig->GetNbinsX(),hist_mWt_btagSF_lfstats2_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_lfstats2_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_lfstats2_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_btagSF_lfstats2_nom_sig,hist_mWt_btagSF_lfstats2_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_btagSF_lfstats2_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_btagSF_lfstats2_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_lfstats2_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_btagSF_lfstats2_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_btagSF_lfstats2_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_btagSF_lfstats2_nom_bkg->Draw("e histo");
+      hist_mWt_btagSF_lfstats2_up_bkg->Draw("e same histo");
+      hist_mWt_btagSF_lfstats2_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_btagSF_lfstats2_nom_bkg->GetNbinsX(),hist_mWt_btagSF_lfstats2_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_lfstats2_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_lfstats2_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_btagSF_lfstats2_nom_bkg,hist_mWt_btagSF_lfstats2_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_btagSF_lfstats2_nom_bkg->GetNbinsX(),hist_mWt_btagSF_lfstats2_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_lfstats2_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_lfstats2_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_btagSF_lfstats2_nom_bkg,hist_mWt_btagSF_lfstats2_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_btagSF_lfstats2_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_btagSF_lfstats2_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_lfstats2_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_btagSF_lfstats2_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_btagSF_lfstats2_nom_bkg_LogY.png");
+      
+      
+      //BTAG hf
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_btagSF_hf_nom_sig->Draw("e histo");
+      hist_mWt_btagSF_hf_up_sig->Draw("e same histo");
+      hist_mWt_btagSF_hf_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_btagSF_hf_nom_sig->GetNbinsX(),hist_mWt_btagSF_hf_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_hf_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_hf_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_btagSF_hf_nom_sig,hist_mWt_btagSF_hf_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_btagSF_hf_nom_sig->GetNbinsX(),hist_mWt_btagSF_hf_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_hf_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_hf_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_btagSF_hf_nom_sig,hist_mWt_btagSF_hf_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_btagSF_hf_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_btagSF_hf_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_hf_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_btagSF_hf_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_btagSF_hf_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_btagSF_hf_nom_bkg->Draw("e histo");
+      hist_mWt_btagSF_hf_up_bkg->Draw("e same histo");
+      hist_mWt_btagSF_hf_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_btagSF_hf_nom_bkg->GetNbinsX(),hist_mWt_btagSF_hf_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_hf_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_hf_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_btagSF_hf_nom_bkg,hist_mWt_btagSF_hf_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_btagSF_hf_nom_bkg->GetNbinsX(),hist_mWt_btagSF_hf_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_hf_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_hf_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_btagSF_hf_nom_bkg,hist_mWt_btagSF_hf_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_btagSF_hf_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_btagSF_hf_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_hf_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_btagSF_hf_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_btagSF_hf_nom_bkg_LogY.png");
+      
+      //BTAG hfstats1
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_btagSF_hfstats1_nom_sig->Draw("e histo");
+      hist_mWt_btagSF_hfstats1_up_sig->Draw("e same histo");
+      hist_mWt_btagSF_hfstats1_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_btagSF_hfstats1_nom_sig->GetNbinsX(),hist_mWt_btagSF_hfstats1_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_hfstats1_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_hfstats1_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_btagSF_hfstats1_nom_sig,hist_mWt_btagSF_hfstats1_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_btagSF_hfstats1_nom_sig->GetNbinsX(),hist_mWt_btagSF_hfstats1_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_hfstats1_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_hfstats1_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_btagSF_hfstats1_nom_sig,hist_mWt_btagSF_hfstats1_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_btagSF_hfstats1_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_btagSF_hfstats1_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_hfstats1_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_btagSF_hfstats1_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_btagSF_hfstats1_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_btagSF_hfstats1_nom_bkg->Draw("e histo");
+      hist_mWt_btagSF_hfstats1_up_bkg->Draw("e same histo");
+      hist_mWt_btagSF_hfstats1_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_btagSF_hfstats1_nom_bkg->GetNbinsX(),hist_mWt_btagSF_hfstats1_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_hfstats1_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_hfstats1_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_btagSF_hfstats1_nom_bkg,hist_mWt_btagSF_hfstats1_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_btagSF_hfstats1_nom_bkg->GetNbinsX(),hist_mWt_btagSF_hfstats1_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_hfstats1_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_hfstats1_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_btagSF_hfstats1_nom_bkg,hist_mWt_btagSF_hfstats1_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_btagSF_hfstats1_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_btagSF_hfstats1_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_hfstats1_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_btagSF_hfstats1_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_btagSF_hfstats1_nom_bkg_LogY.png");
+      
+      
+      
+      //BTAG hfstats2
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_btagSF_hfstats2_nom_sig->Draw("e histo");
+      hist_mWt_btagSF_hfstats2_up_sig->Draw("e same histo");
+      hist_mWt_btagSF_hfstats2_down_sig->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_btagSF_hfstats2_nom_sig->GetNbinsX(),hist_mWt_btagSF_hfstats2_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_hfstats2_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_hfstats2_nom_sig->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_btagSF_hfstats2_nom_sig,hist_mWt_btagSF_hfstats2_up_sig);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_btagSF_hfstats2_nom_sig->GetNbinsX(),hist_mWt_btagSF_hfstats2_nom_sig->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_hfstats2_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_hfstats2_nom_sig->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_btagSF_hfstats2_nom_sig,hist_mWt_btagSF_hfstats2_down_sig);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_btagSF_hfstats2_nom_sig->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_btagSF_hfstats2_nom_sig->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_hfstats2_nom_sig->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_btagSF_hfstats2_nom_sig.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_btagSF_hfstats2_nom_sig_LogY.png");
+      
+      
+      tempCanvas = new TCanvas("", "");
+      histoPad = new TPad("histoPad","histoPad",0,0.3,1,1);
+      // pad1->SetLogy(1);
+      histoPad->Draw();
+      histoPad->SetBottomMargin(0.);
+      histoPad->cd();
+      
+      hist_mWt_btagSF_hfstats2_nom_bkg->Draw("e histo");
+      hist_mWt_btagSF_hfstats2_up_bkg->Draw("e same histo");
+      hist_mWt_btagSF_hfstats2_down_bkg->Draw("e same histo");
+      legsig->Draw("same");
+      histoPad->Update();
+      tempCanvas->cd();
+      ratioPad = new TPad("ratioPad","ratioPad",0,0,1,0.3);
+      ratioPad->SetTopMargin(0);
+      ratioPad->SetBottomMargin(0.35);
+      //   pad2->SetLogy();
+      ratioPad->Draw();
+      ratioPad->cd();
+      ratioPad->SetGridy();
+      ratioUp = new TH1F("ratioUp","ratioUp",hist_mWt_btagSF_hfstats2_nom_bkg->GetNbinsX(),hist_mWt_btagSF_hfstats2_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_hfstats2_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_hfstats2_nom_bkg->GetNbinsX()));
+      ratioUp->Divide(hist_mWt_btagSF_hfstats2_nom_bkg,hist_mWt_btagSF_hfstats2_up_bkg);
+      ratioUp->SetMarkerColor(kBlue);
+      ratioUp->SetMarkerStyle(9);
+      ratioUp->SetStats(0);
+      ratioUp->SetTitle("");
+      ratioUp->GetYaxis()->SetRangeUser(0.8, 1.2);
+      ratioUp->GetYaxis()->SetTitle("#frac{nominal}{uncertainty}");
+      ratioUp->GetYaxis()->CenterTitle(kTRUE);
+      ratioUp->GetYaxis()->SetTitleSize(0.11);
+      ratioUp->GetYaxis()->SetLabelSize(0.1);
+      ratioUp->GetYaxis()->SetTitleOffset(0.4);
+      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitleSize(0.12);
+      ratioUp->GetXaxis()->SetLabelSize(0.1);
+      ratioUp->Draw("P");
+      
+      ratioDown = new TH1F("ratioDown","ratioDown",hist_mWt_btagSF_hfstats2_nom_bkg->GetNbinsX(),hist_mWt_btagSF_hfstats2_nom_bkg->GetXaxis()->GetBinLowEdge(0), hist_mWt_btagSF_hfstats2_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_hfstats2_nom_bkg->GetNbinsX()));
+      ratioDown->Divide(hist_mWt_btagSF_hfstats2_nom_bkg,hist_mWt_btagSF_hfstats2_down_bkg);
+      ratioDown->SetMarkerColor(kGreen+2);
+      ratioDown->SetMarkerStyle(9);
+      ratioDown->SetLineColor(kGreen+2);
+      ratioDown->Draw("P SAME");
+      
+      
+      line = new TLine(hist_mWt_btagSF_hfstats2_nom_bkg->GetXaxis()->GetBinLowEdge(0),1,hist_mWt_btagSF_hfstats2_nom_bkg->GetXaxis()->GetBinUpEdge(hist_mWt_btagSF_hfstats2_nom_bkg->GetNbinsX()),1);
+      line->SetLineColor(kBlack);
+      line->SetLineWidth(1);
+      line->Draw();
+      tempCanvas->cd();
+      tempCanvas->SaveAs("hist_mWt_btagSF_hfstats2_nom_bkg.png");
+      histoPad->SetLogy();
+      ratioPad->SetLogy();
+      tempCanvas->SetLogy();
+      tempCanvas->Update();
+      tempCanvas->SaveAs("hist_mWt_btagSF_hfstats2_nom_bkg_LogY.png");
+      
+    }
     
     
     if(PlotMVAvars && !doMTWtemplate){
@@ -2438,27 +5174,27 @@ Int_t main(Int_t argc, char* argv[]){
             if(it->first.find(channellist[iChan].c_str())==std::string::npos) continue;
             if(it->first.find(splitname.c_str())==std::string::npos) continue;
             if(it->first.find("data")!=std::string::npos) continue;
-           cout << "looking at " << it->first << endl;
+            cout << "looking at " << it->first << endl;
             TH1F *temp = it->second;
-           
-        /*  if(it->first.find("fake")!=std::string::npos) {
+            
+            /*  if(it->first.find("fake")!=std::string::npos) {
              // cout << "filling fake " << tempfake << " " << temp << endl;
-              tempfakes = (TH1F*) temp->Clone("");
+             tempfakes = (TH1F*) temp->Clone("");
              
-            }
-            else */if(it->first.find("T_FCNC")!=std::string::npos) {
-              if(tempSignal == 0){ tempSignal = (TH1F*) temp->Clone(); title =  temp->GetTitle();}
-              else tempSignal->Add(temp);
-            }
-            else if(it->first.find("T_FCNC")==std::string::npos){
-              if(tempBKG == 0) tempBKG = (TH1F*) temp->Clone();
-              else tempBKG->Add(temp);
-            }
+             }
+             else */if(it->first.find("T_FCNC")!=std::string::npos) {
+               if(tempSignal == 0){ tempSignal = (TH1F*) temp->Clone(); title =  temp->GetTitle();}
+               else tempSignal->Add(temp);
+             }
+             else if(it->first.find("T_FCNC")==std::string::npos){
+               if(tempBKG == 0) tempBKG = (TH1F*) temp->Clone();
+               else tempBKG->Add(temp);
+             }
             //delete temp;
           }
           //cout << "filled histos " << endl;
           if(tempBKG == 0) cout << "ERROR tempBKG is null" << endl ;
-         // if(tempfakes == 0) cout << "ERROR tempfake is null" << endl ;
+          // if(tempfakes == 0) cout << "ERROR tempfake is null" << endl ;
           if(tempSignal == 0) cout << "ERROR tempSignal is null" << endl ;
           
           // tempfake->SetLineColor(kGreen);
@@ -2479,9 +5215,9 @@ Int_t main(Int_t argc, char* argv[]){
           // tempfake->Scale(scalefake);
           Double_t max = TMath::Max(tempSignal->GetMaximum(), tempBKG->GetMaximum());
           // Double_t max = TMath::Max(max0, tempfake->GetMaximum());
-         
           
-         
+          
+          
           tempBKG->SetLineColor(kBlue);
           tempSignal->SetLineColor(kRed);
           tempBKG->SetMarkerColor(kBlue);
@@ -2490,7 +5226,7 @@ Int_t main(Int_t argc, char* argv[]){
           tempBKG->SetMarkerStyle(2);
           tempSignal->SetLineWidth(2);
           tempSignal->SetMarkerStyle(2);
-         // cout << "title " << title.c_str() << endl;
+          // cout << "title " << title.c_str() << endl;
           tempBKG->GetXaxis()->SetTitle(title.c_str());
           tempBKG->GetYaxis()->SetTitle("Nb. Norm. Events");
           tempBKG->SetMaximum(max*1.7);
@@ -2519,14 +5255,14 @@ Int_t main(Int_t argc, char* argv[]){
         } // channellist
       }
     }
-
-  
- // if(false){ // TO FIX
+    
+    
+    // if(false){ // TO FIX
     if(makePlots && doMTWtemplate){
       hist_WZ->SetLineColor(kBlue);
       hist_fakes->SetLineColor(kGreen);
-     hist_TT_FCNC->SetLineColor(kRed-2);
-
+      hist_TT_FCNC->SetLineColor(kRed-2);
+      
       
       
       hist_WZ->SetName("M_T(W)");
@@ -2566,196 +5302,196 @@ Int_t main(Int_t argc, char* argv[]){
       
       
       /*
-      cout << "plotting mtW shapes " << endl;
-      std::vector<string> channellist;
-      channellist.push_back("all");
-      channellist.push_back("eee");
-      channellist.push_back("uue");
-      channellist.push_back("eeu");
-      channellist.push_back("uuu");
-
-      for(Int_t iChan = 0; iChan < channellist.size(); iChan++){
-        TH1F *tempBKG_nom(0);
-        TH1F *tempSignalST_nom(0);
-        TH1F *tempfake_nom(0);
-        TH1F *tempBKG_up(0);
-        TH1F *tempSignalST_up(0);
-        TH1F *tempBKG_down(0);
-        TH1F *tempSignalST_down(0);
-        TH1F *tempSignalTT_down(0);
-        TH1F *tempSignalTT_up(0);
-        TH1F *tempSignalTT_nom(0);
-        
-             //cout << "histo mtw size " << histo1DMTW.size() << endl;
-       for (map<string,TH1F*>::const_iterator it = histo1DMTW.begin(); it != histo1DMTW.end(); it++)
-        {
-         // cout << "looking at " << it->first << " and the channel to keep " << channellist[iChan].c_str() << endl;
-        
-         if(it->first.find(channellist[iChan].c_str())==std::string::npos){
-            //cout << "continuing " << endl;
-            continue;
-          }
-
-          TH1F* temp = it->second;
-          if(it->first.find("WZTo3LNu")!=std::string::npos && it->first.find("nominal")!= std::string::npos) {
-            if(tempBKG_nom == 0) tempBKG_nom = (TH1F*) temp->Clone();
-            else tempBKG_nom->Add(temp);
-          }
-          else if(it->first.find("WZTo3LNu")!=std::string::npos && it->first.find("Up")!= std::string::npos) {
-            if(tempBKG_up == 0) tempBKG_up = (TH1F*) temp->Clone();
-            else tempBKG_up->Add(temp);
-          }
-          else if(it->first.find("WZTo3LNu")!=std::string::npos && it->first.find("Down")!= std::string::npos) {
-            if(tempBKG_down == 0) tempBKG_down= (TH1F*) temp->Clone();
-            else tempBKG_down->Add(temp);
-          }
-          if(it->first.find("fake")!=std::string::npos && it->first.find("nominal")!= std::string::npos) {
-            if(tempfake_nom == 0) tempfake_nom = (TH1F*) temp->Clone();
-            else tempfake_nom->Add(temp);
-          }
-          if(it->first.find("ST_FCNC")!=std::string::npos && it->first.find("nominal")!= std::string::npos) {
-            cout << "st nom" << endl;
-            if(tempSignalST_nom == 0) tempSignalST_nom = (TH1F*) temp->Clone();
-            else tempSignalST_nom->Add(temp);
-          }
-          else if(it->first.find("ST_FCNC")!=std::string::npos && it->first.find("Up")!= std::string::npos) {
-            if(tempSignalST_up == 0) tempSignalST_up = (TH1F*) temp->Clone();
-            else tempSignalST_up->Add(temp);
-          }
-          else if(it->first.find("ST_FCNC")!=std::string::npos && it->first.find("Down")!= std::string::npos) {
-            if(tempSignalST_down == 0) tempSignalST_down= (TH1F*) temp->Clone();
-            else tempSignalST_down->Add(temp);
-          }
-          if(it->first.find("TT_FCNC")!=std::string::npos && it->first.find("nominal")!= std::string::npos) {
-             cout << "tt nom" << endl;
-            if(tempSignalTT_nom == 0) tempSignalTT_nom = (TH1F*) temp->Clone();
-            else tempSignalTT_nom->Add(temp);
-          }
-          else if(it->first.find("TT_FCNC")!=std::string::npos && it->first.find("Up")!= std::string::npos) {
-            if(tempSignalTT_up == 0) tempSignalTT_up = (TH1F*) temp->Clone();
-            else tempSignalTT_up->Add(temp);
-          }
-          else if(it->first.find("TT_FCNC")!=std::string::npos && it->first.find("Down")!= std::string::npos) {
-            if(tempSignalTT_down == 0) tempSignalTT_down= (TH1F*) temp->Clone();
-            else tempSignalTT_down->Add(temp);
-          }
-          delete temp;
-        }
-        //cout << "filled histos " << endl;
-        if(tempBKG_nom == 0) cout << "ERROR tempBKG is null" << endl ;
-        if(tempfake_nom == 0) cout << "ERROR tempfake is null" << endl ;
-        if(tempSignalST_nom == 0) cout << "ERROR tempSignalST is null" << endl ;
-        if(tempSignalTT_nom == 0) cout << "ERROR tempSignalTT is null" << endl ;
-        
-        tempBKG_nom->SetLineColor(kBlue);
-        tempBKG_up->SetLineColor(kBlue);
-        tempBKG_down->SetLineColor(kBlue);
-        tempBKG_up->SetLineStyle(8);
-        tempBKG_down->SetLineStyle(3);
-        tempSignalST_nom->SetLineColor(kRed);
-        tempSignalST_up->SetLineColor(kRed);
-        tempSignalST_down->SetLineColor(kRed);
-        tempSignalST_up->SetLineStyle(8);
-        tempSignalST_down->SetLineStyle(3);
-        tempfake_nom->SetLineColor(kGreen);
-        tempSignalTT_nom->SetLineColor(kRed-2);
-        tempSignalTT_up->SetLineColor(kRed-2);
-        tempSignalTT_down->SetLineColor(kRed-2);
-        tempSignalTT_up->SetLineStyle(8);
-        tempSignalTT_down->SetLineStyle(3);
-        
-        
-        tempBKG_nom->SetName("M_T(W)");
-        tempBKG_nom->SetTitle(("Shape comparison - " + channellist[iChan]).c_str());
-        
-        Double_t scaleBKG_nom = 1./tempBKG_nom->Integral();
-        tempBKG_nom->Scale(scaleBKG_nom);
-        Double_t scaleBKG_up= 1./tempBKG_up->Integral();
-        tempBKG_up->Scale(scaleBKG_up);
-        Double_t scaleBKG_down = 1./tempBKG_down->Integral();
-        tempBKG_down->Scale(scaleBKG_down);
-        Double_t scaleSigST_nom = 1./tempSignalST_nom->Integral();
-        tempSignalST_nom->Scale(scaleSigST_nom);
-        Double_t scaleSigST_down = 1./tempSignalST_down->Integral();
-        tempSignalST_down->Scale(scaleSigST_down);
-        Double_t scaleSigST_up = 1./tempSignalST_up->Integral();
-        tempSignalST_up->Scale(scaleSigST_up);
-        Double_t scaleSigTT_nom = 1./tempSignalTT_nom->Integral();
-        tempSignalST_nom->Scale(scaleSigST_nom);
-        Double_t scaleSigTT_down = 1./tempSignalTT_down->Integral();
-        tempSignalTT_down->Scale(scaleSigTT_down);
-        Double_t scaleSigTT_up = 1./tempSignalTT_up->Integral();
-        tempSignalTT_up->Scale(scaleSigTT_up);
-        Double_t scalefake_nom = 1./tempfake_nom->Integral();
-        tempfake_nom->Scale(scalefake_nom);
-        Double_t max0 = TMath::Max(tempSignalST_nom->GetMaximum(), tempBKG_nom->GetMaximum());
-        Double_t max1 = TMath::Max(tempSignalST_nom->GetMaximum(), tempfake_nom->GetMaximum());
-        Double_t max2 = TMath::Max(tempSignalST_nom->GetMaximum(), tempSignalTT_nom->GetMaximum());
-        Double_t max00 = TMath::Max(tempSignalST_up->GetMaximum(), tempBKG_up->GetMaximum());
-        Double_t max10 = TMath::Max(tempSignalST_up->GetMaximum(), tempfake_nom->GetMaximum());
-        Double_t max20 = TMath::Max(tempSignalST_up->GetMaximum(), tempSignalTT_up->GetMaximum());
-        Double_t max01 = TMath::Max(tempSignalST_down->GetMaximum(), tempBKG_down->GetMaximum());
-        Double_t max11 = TMath::Max(tempSignalST_down->GetMaximum(), tempfake_nom->GetMaximum());
-        Double_t max21 = TMath::Max(tempSignalST_down->GetMaximum(), tempSignalTT_down->GetMaximum());
-        Double_t maxA = TMath::Max(max0, max1);
-        Double_t maxB = TMath::Max(max2,max00);
-        Double_t maxC = TMath::Max(max10,max20);
-        Double_t maxD = TMath::Max(max01,max11);
-        Double_t maxX = TMath::Max(max21,maxA);
-        Double_t maxY = TMath::Max(maxB,maxC);
-        Double_t maxi = TMath::Max(maxD,maxX);
-        Double_t maximum = TMath::Max(maxi, maxY);
-        tempBKG_nom->SetMaximum(maximum*1.2);
-        tempBKG_nom->GetXaxis()->SetTitle("M_T(W)");
-        tempBKG_nom->GetYaxis()->SetTitle("Nb. Events");
-        
-        
-        Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
-        TLegend *leg = new TLegend(xl1,yl1,xl2,yl2);
-        leg->AddEntry(tempSignalST_nom,"Signal ST","L");   // h1 and h2 are histogram pointers
-        leg->AddEntry(tempSignalTT_nom,"Signal TT","L");
-        leg->AddEntry(tempBKG_nom,"WZ background","L");
-        leg->AddEntry(tempfake_nom,"DD non prompt","L");
-        
-        TCanvas* tempCanvas = TCanvasCreator(tempBKG_nom,"Normalised distribution" );
-        tempBKG_nom->Draw("h");
-        tempBKG_up->Draw("h,sames");
-        tempBKG_down->Draw("h,sames");
-        tempSignalST_nom->Draw("h,Sames");
-        tempSignalST_up->Draw("h,Sames");
-        tempSignalST_down->Draw("h,Sames");
-        tempSignalTT_nom->Draw("h,Sames");
-        tempSignalTT_up->Draw("h,Sames");
-        tempSignalTT_down->Draw("h,Sames");
-        tempfake_nom->Draw("L,Sames");
-        leg->Draw("Same");
-        tempCanvas->SaveAs( (placeTH1F+"MWT_"+channellist[iChan]+".png").c_str() );
-        
-        tempBKG_nom->Write();
-        tempSignalST_nom->Write();
-        tempSignalTT_nom->Write();
-        tempfake_nom->Write();
-        tempBKG_up->Write();
-        tempSignalST_up->Write();
-        tempSignalTT_up->Write();
-        tempBKG_down->Write();
-        tempSignalST_down->Write();
-        tempSignalTT_down->Write();
+       cout << "plotting mtW shapes " << endl;
+       std::vector<string> channellist;
+       channellist.push_back("all");
+       channellist.push_back("eee");
+       channellist.push_back("uue");
+       channellist.push_back("eeu");
+       channellist.push_back("uuu");
        
-        delete tempCanvas;
-        delete tempSignalST_nom;
-        delete tempSignalTT_nom;
-        delete tempfake_nom;
-        delete tempBKG_nom;
-        delete tempBKG_up;
-        delete tempSignalST_up;
-        delete tempSignalTT_up;
-        delete tempBKG_down;
-        delete tempSignalST_down;
-        delete tempSignalTT_down;
-        
-      } // channellist
-      */
+       for(Int_t iChan = 0; iChan < channellist.size(); iChan++){
+       TH1F *tempBKG_nom(0);
+       TH1F *tempSignalST_nom(0);
+       TH1F *tempfake_nom(0);
+       TH1F *tempBKG_up(0);
+       TH1F *tempSignalST_up(0);
+       TH1F *tempBKG_down(0);
+       TH1F *tempSignalST_down(0);
+       TH1F *tempSignalTT_down(0);
+       TH1F *tempSignalTT_up(0);
+       TH1F *tempSignalTT_nom(0);
+       
+       //cout << "histo mtw size " << histo1DMTW.size() << endl;
+       for (map<string,TH1F*>::const_iterator it = histo1DMTW.begin(); it != histo1DMTW.end(); it++)
+       {
+       // cout << "looking at " << it->first << " and the channel to keep " << channellist[iChan].c_str() << endl;
+       
+       if(it->first.find(channellist[iChan].c_str())==std::string::npos){
+       //cout << "continuing " << endl;
+       continue;
+       }
+       
+       TH1F* temp = it->second;
+       if(it->first.find("WZTo3LNu")!=std::string::npos && it->first.find("nominal")!= std::string::npos) {
+       if(tempBKG_nom == 0) tempBKG_nom = (TH1F*) temp->Clone();
+       else tempBKG_nom->Add(temp);
+       }
+       else if(it->first.find("WZTo3LNu")!=std::string::npos && it->first.find("Up")!= std::string::npos) {
+       if(tempBKG_up == 0) tempBKG_up = (TH1F*) temp->Clone();
+       else tempBKG_up->Add(temp);
+       }
+       else if(it->first.find("WZTo3LNu")!=std::string::npos && it->first.find("Down")!= std::string::npos) {
+       if(tempBKG_down == 0) tempBKG_down= (TH1F*) temp->Clone();
+       else tempBKG_down->Add(temp);
+       }
+       if(it->first.find("fake")!=std::string::npos && it->first.find("nominal")!= std::string::npos) {
+       if(tempfake_nom == 0) tempfake_nom = (TH1F*) temp->Clone();
+       else tempfake_nom->Add(temp);
+       }
+       if(it->first.find("ST_FCNC")!=std::string::npos && it->first.find("nominal")!= std::string::npos) {
+       cout << "st nom" << endl;
+       if(tempSignalST_nom == 0) tempSignalST_nom = (TH1F*) temp->Clone();
+       else tempSignalST_nom->Add(temp);
+       }
+       else if(it->first.find("ST_FCNC")!=std::string::npos && it->first.find("Up")!= std::string::npos) {
+       if(tempSignalST_up == 0) tempSignalST_up = (TH1F*) temp->Clone();
+       else tempSignalST_up->Add(temp);
+       }
+       else if(it->first.find("ST_FCNC")!=std::string::npos && it->first.find("Down")!= std::string::npos) {
+       if(tempSignalST_down == 0) tempSignalST_down= (TH1F*) temp->Clone();
+       else tempSignalST_down->Add(temp);
+       }
+       if(it->first.find("TT_FCNC")!=std::string::npos && it->first.find("nominal")!= std::string::npos) {
+       cout << "tt nom" << endl;
+       if(tempSignalTT_nom == 0) tempSignalTT_nom = (TH1F*) temp->Clone();
+       else tempSignalTT_nom->Add(temp);
+       }
+       else if(it->first.find("TT_FCNC")!=std::string::npos && it->first.find("Up")!= std::string::npos) {
+       if(tempSignalTT_up == 0) tempSignalTT_up = (TH1F*) temp->Clone();
+       else tempSignalTT_up->Add(temp);
+       }
+       else if(it->first.find("TT_FCNC")!=std::string::npos && it->first.find("Down")!= std::string::npos) {
+       if(tempSignalTT_down == 0) tempSignalTT_down= (TH1F*) temp->Clone();
+       else tempSignalTT_down->Add(temp);
+       }
+       delete temp;
+       }
+       //cout << "filled histos " << endl;
+       if(tempBKG_nom == 0) cout << "ERROR tempBKG is null" << endl ;
+       if(tempfake_nom == 0) cout << "ERROR tempfake is null" << endl ;
+       if(tempSignalST_nom == 0) cout << "ERROR tempSignalST is null" << endl ;
+       if(tempSignalTT_nom == 0) cout << "ERROR tempSignalTT is null" << endl ;
+       
+       tempBKG_nom->SetLineColor(kBlue);
+       tempBKG_up->SetLineColor(kBlue);
+       tempBKG_down->SetLineColor(kBlue);
+       tempBKG_up->SetLineStyle(8);
+       tempBKG_down->SetLineStyle(3);
+       tempSignalST_nom->SetLineColor(kRed);
+       tempSignalST_up->SetLineColor(kRed);
+       tempSignalST_down->SetLineColor(kRed);
+       tempSignalST_up->SetLineStyle(8);
+       tempSignalST_down->SetLineStyle(3);
+       tempfake_nom->SetLineColor(kGreen);
+       tempSignalTT_nom->SetLineColor(kRed-2);
+       tempSignalTT_up->SetLineColor(kRed-2);
+       tempSignalTT_down->SetLineColor(kRed-2);
+       tempSignalTT_up->SetLineStyle(8);
+       tempSignalTT_down->SetLineStyle(3);
+       
+       
+       tempBKG_nom->SetName("M_T(W)");
+       tempBKG_nom->SetTitle(("Shape comparison - " + channellist[iChan]).c_str());
+       
+       Double_t scaleBKG_nom = 1./tempBKG_nom->Integral();
+       tempBKG_nom->Scale(scaleBKG_nom);
+       Double_t scaleBKG_up= 1./tempBKG_up->Integral();
+       tempBKG_up->Scale(scaleBKG_up);
+       Double_t scaleBKG_down = 1./tempBKG_down->Integral();
+       tempBKG_down->Scale(scaleBKG_down);
+       Double_t scaleSigST_nom = 1./tempSignalST_nom->Integral();
+       tempSignalST_nom->Scale(scaleSigST_nom);
+       Double_t scaleSigST_down = 1./tempSignalST_down->Integral();
+       tempSignalST_down->Scale(scaleSigST_down);
+       Double_t scaleSigST_up = 1./tempSignalST_up->Integral();
+       tempSignalST_up->Scale(scaleSigST_up);
+       Double_t scaleSigTT_nom = 1./tempSignalTT_nom->Integral();
+       tempSignalST_nom->Scale(scaleSigST_nom);
+       Double_t scaleSigTT_down = 1./tempSignalTT_down->Integral();
+       tempSignalTT_down->Scale(scaleSigTT_down);
+       Double_t scaleSigTT_up = 1./tempSignalTT_up->Integral();
+       tempSignalTT_up->Scale(scaleSigTT_up);
+       Double_t scalefake_nom = 1./tempfake_nom->Integral();
+       tempfake_nom->Scale(scalefake_nom);
+       Double_t max0 = TMath::Max(tempSignalST_nom->GetMaximum(), tempBKG_nom->GetMaximum());
+       Double_t max1 = TMath::Max(tempSignalST_nom->GetMaximum(), tempfake_nom->GetMaximum());
+       Double_t max2 = TMath::Max(tempSignalST_nom->GetMaximum(), tempSignalTT_nom->GetMaximum());
+       Double_t max00 = TMath::Max(tempSignalST_up->GetMaximum(), tempBKG_up->GetMaximum());
+       Double_t max10 = TMath::Max(tempSignalST_up->GetMaximum(), tempfake_nom->GetMaximum());
+       Double_t max20 = TMath::Max(tempSignalST_up->GetMaximum(), tempSignalTT_up->GetMaximum());
+       Double_t max01 = TMath::Max(tempSignalST_down->GetMaximum(), tempBKG_down->GetMaximum());
+       Double_t max11 = TMath::Max(tempSignalST_down->GetMaximum(), tempfake_nom->GetMaximum());
+       Double_t max21 = TMath::Max(tempSignalST_down->GetMaximum(), tempSignalTT_down->GetMaximum());
+       Double_t maxA = TMath::Max(max0, max1);
+       Double_t maxB = TMath::Max(max2,max00);
+       Double_t maxC = TMath::Max(max10,max20);
+       Double_t maxD = TMath::Max(max01,max11);
+       Double_t maxX = TMath::Max(max21,maxA);
+       Double_t maxY = TMath::Max(maxB,maxC);
+       Double_t maxi = TMath::Max(maxD,maxX);
+       Double_t maximum = TMath::Max(maxi, maxY);
+       tempBKG_nom->SetMaximum(maximum*1.2);
+       tempBKG_nom->GetXaxis()->SetTitle("M_T(W)");
+       tempBKG_nom->GetYaxis()->SetTitle("Nb. Events");
+       
+       
+       Double_t xl1=0.7, yl1=.7, xl2=xl1+.2, yl2=yl1+.2;
+       TLegend *leg = new TLegend(xl1,yl1,xl2,yl2);
+       leg->AddEntry(tempSignalST_nom,"Signal ST","L");   // h1 and h2 are histogram pointers
+       leg->AddEntry(tempSignalTT_nom,"Signal TT","L");
+       leg->AddEntry(tempBKG_nom,"WZ background","L");
+       leg->AddEntry(tempfake_nom,"DD non prompt","L");
+       
+       TCanvas* tempCanvas = TCanvasCreator(tempBKG_nom,"Normalised distribution" );
+       tempBKG_nom->Draw("h");
+       tempBKG_up->Draw("h,sames");
+       tempBKG_down->Draw("h,sames");
+       tempSignalST_nom->Draw("h,Sames");
+       tempSignalST_up->Draw("h,Sames");
+       tempSignalST_down->Draw("h,Sames");
+       tempSignalTT_nom->Draw("h,Sames");
+       tempSignalTT_up->Draw("h,Sames");
+       tempSignalTT_down->Draw("h,Sames");
+       tempfake_nom->Draw("L,Sames");
+       leg->Draw("Same");
+       tempCanvas->SaveAs( (placeTH1F+"MWT_"+channellist[iChan]+".png").c_str() );
+       
+       tempBKG_nom->Write();
+       tempSignalST_nom->Write();
+       tempSignalTT_nom->Write();
+       tempfake_nom->Write();
+       tempBKG_up->Write();
+       tempSignalST_up->Write();
+       tempSignalTT_up->Write();
+       tempBKG_down->Write();
+       tempSignalST_down->Write();
+       tempSignalTT_down->Write();
+       
+       delete tempCanvas;
+       delete tempSignalST_nom;
+       delete tempSignalTT_nom;
+       delete tempfake_nom;
+       delete tempBKG_nom;
+       delete tempBKG_up;
+       delete tempSignalST_up;
+       delete tempSignalTT_up;
+       delete tempBKG_down;
+       delete tempSignalST_down;
+       delete tempSignalTT_down;
+       
+       } // channellist
+       */
     }
     fout->Write();
     fout->Close();
@@ -2764,9 +5500,9 @@ Int_t main(Int_t argc, char* argv[]){
     
   }
   
- /* delete hist_WZ;
-  delete hist_TT_FCNC;
-  delete hist_fakes;*/
+  /* delete hist_WZ;
+   delete hist_TT_FCNC;
+   delete hist_fakes;*/
   ///************************************///
   ///   ADD PDF UNC TO COMBINE TEMPLATE  ///
   ///************************************///
@@ -3028,10 +5764,10 @@ void InitMTWShapeHisto(string dataSetName, string systematic, Int_t isys,  vecto
     if(decayChannels[iChan] == -9) decaystring = "all";
     
     
-
+    
     if(isys == 0) output_histo_name = dataSetName+"_MTW_nominal_"+decaystring;
     else output_histo_name = dataSetName+"_MTW_"+systematic + "_" + decaystring;
-   //cout << "init " << output_histo_name.c_str() << endl;
+    //cout << "init " << output_histo_name.c_str() << endl;
     histo1DMTW[output_histo_name.c_str()] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbinMTW,0.,endMTW);
     
     output_histo_name = "";
@@ -3111,87 +5847,58 @@ void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut){
   
   
   tree->SetBranchAddress("MVA_BDT", &MVA_BDT, &b_MVA_BDT);
-  /* tree->SetBranchAddress("MVA_lepton0_pt", &MVA_lepton0_pt, &b_MVA_lepton0_pt);
-  tree->SetBranchAddress("MVA_lepton1_pt", &MVA_lepton1_pt, &b_MVA_lepton1_pt);
-  tree->SetBranchAddress("MVA_lepton2_pt", &MVA_lepton2_pt, &b_MVA_lepton2_pt);
-  tree->SetBranchAddress("MVA_Wlep_pt", &MVA_Wlep_pt, &b_MVA_Wlep_pt);
-  tree->SetBranchAddress("MVA_Wboson_pt", &MVA_Wboson_pt, &b_MVA_Wboson_pt);
-  tree->SetBranchAddress("MVA_SMbjet_pt", &MVA_SMbjet_pt, &b_MVA_SMbjet_pt);
-  tree->SetBranchAddress("MVA_SMtop_pt", &MVA_SMtop_pt, &b_MVA_SMtop_pt);*/
-  if(!toppair) tree->SetBranchAddress("MVA_Zboson_pt", &MVA_Zboson_pt, &b_MVA_Zboson_pt);
-  /*tree->SetBranchAddress("MVA_LightJet_pt", &MVA_LightJet_pt, &b_MVA_LightJet_pt);
-  tree->SetBranchAddress("MVA_FCNCtop_pt", &MVA_FCNCtop_pt, &b_MVA_FCNCtop_pt);
-  tree->SetBranchAddress("MVA_lepton0_eta", &MVA_lepton0_eta, &b_MVA_lepton0_eta);
-  tree->SetBranchAddress("MVA_lepton1_eta", &MVA_lepton1_eta, &b_MVA_lepton1_eta);
-  tree->SetBranchAddress("MVA_lepton2_eta", &MVA_lepton2_eta, &b_MVA_lepton2_eta);
-  tree->SetBranchAddress("MVA_Wlep_eta", &MVA_Wlep_eta, &b_MVA_Wlep_eta);
-  tree->SetBranchAddress("MVA_Wboson_eta", &MVA_Wboson_eta, &b_MVA_Wboson_eta);
-  tree->SetBranchAddress("MVA_SMbjet_eta", &MVA_SMbjet_eta, &b_MVA_SMbjet_eta);
-  tree->SetBranchAddress("MVA_SMtop_eta", &MVA_SMtop_eta, &b_MVA_SMtop_eta);
-  tree->SetBranchAddress("MVA_Zboson_eta", &MVA_Zboson_eta, &b_MVA_Zboson_eta);
-  tree->SetBranchAddress("MVA_LightJet_eta", &MVA_LightJet_eta, &b_MVA_LightJet_eta);
-  tree->SetBranchAddress("MVA_FCNCtop_eta", &MVA_FCNCtop_eta, &b_MVA_FCNCtop_eta);
-  tree->SetBranchAddress("MVA_lepton0_phi", &MVA_lepton0_phi, &b_MVA_lepton0_phi);
-  tree->SetBranchAddress("MVA_lepton1_phi", &MVA_lepton1_phi, &b_MVA_lepton1_phi);
-  tree->SetBranchAddress("MVA_lepton2_phi", &MVA_lepton2_phi, &b_MVA_lepton2_phi);
-  tree->SetBranchAddress("MVA_Wlep_phi", &MVA_Wlep_phi, &b_MVA_Wlep_phi);
-  tree->SetBranchAddress("MVA_Wboson_phi", &MVA_Wboson_phi, &b_MVA_Wboson_phi);
-  tree->SetBranchAddress("MVA_SMbjet_phi", &MVA_SMbjet_phi, &b_MVA_SMbjet_phi);
-  tree->SetBranchAddress("MVA_SMtop_phi", &MVA_SMtop_phi, &b_MVA_SMtop_phi);
-  tree->SetBranchAddress("MVA_Zboson_phi", &MVA_Zboson_phi, &b_MVA_Zboson_phi);
-  tree->SetBranchAddress("MVA_LightJet_phi", &MVA_LightJet_phi, &b_MVA_LightJet_phi);
-  tree->SetBranchAddress("MVA_FCNCtop_phi", &MVA_FCNCtop_phi, &b_MVA_FCNCtop_phi);
-  tree->SetBranchAddress("MVA_nElectrons", &MVA_nElectrons, &b_MVA_nElectrons);
-  tree->SetBranchAddress("MVA_nJets", &MVA_nJets, &b_MVA_nJets);
-  tree->SetBranchAddress("MVA_NJets_CSVv2L", &MVA_NJets_CSVv2L, &b_MVA_NJets_CSVv2L);
-  tree->SetBranchAddress("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, &b_MVA_NJets_CSVv2M);
-  tree->SetBranchAddress("MVA_NJets_CSVv2T", &MVA_NJets_CSVv2T, &b_MVA_NJets_CSVv2T);
-  tree->SetBranchAddress("MVA_nMuons", &MVA_nMuons, &b_MVA_nMuons);
-  tree->SetBranchAddress("MVA_met", &MVA_met, &b_MVA_met);
-  if(doMTWtemplate) tree->SetBranchAddress("MVA_mWt", &MVA_mWt, &b_MVA_mWt);
-  tree->SetBranchAddress("MVA_mWt2", &MVA_mWt2, &b_MVA_mWt2);*/
-  tree->SetBranchAddress("MVA_SMtop_M", &MVA_SMtop_M, &b_MVA_SMtop_M);
-  tree->SetBranchAddress("MVA_mlb", &MVA_mlb, &b_MVA_mlb);
- // tree->SetBranchAddress("MVA_Wboson_M", &MVA_Wboson_M, &b_MVA_Wboson_M);
-  tree->SetBranchAddress("MVA_dRWlepb", &MVA_dRWlepb, &b_MVA_dRWlepb);
-  if(!toppair)tree->SetBranchAddress("MVA_dPhiWlepb", &MVA_dPhiWlepb, &b_MVA_dPhiWlepb);
-  tree->SetBranchAddress("MVA_Wlep_Charge", &MVA_Wlep_Charge, &b_MVA_Wlep_Charge);
-  tree->SetBranchAddress("MVA_charge_asym", &MVA_charge_asym, &b_MVA_charge_asym);
-  tree->SetBranchAddress("MVA_TotalPt", &MVA_TotalPt, &b_MVA_TotalPt);
-  tree->SetBranchAddress("MVA_TotalHt", &MVA_TotalHt, &b_MVA_TotalHt);
-  tree->SetBranchAddress("MVA_TotalInvMass", &MVA_TotalInvMass, &b_MVA_TotalInvMass);
-  tree->SetBranchAddress("MVA_TotalPt_jet", &MVA_TotalPt_jet, &b_MVA_TotalPt_jet);
-  tree->SetBranchAddress("MVA_TotalHt_jet", &MVA_TotalHt_jet, &b_MVA_TotalHt_jet);
-  tree->SetBranchAddress("MVA_TotalInvMass_jet", &MVA_TotalInvMass_jet, &b_MVA_TotalInvMass_jet);
-  tree->SetBranchAddress("MVA_TotalPt_lep", &MVA_TotalPt_lep, &b_MVA_TotalPt_lep);
-  tree->SetBranchAddress("MVA_TotalHt_lep", &MVA_TotalHt_lep, &b_MVA_TotalHt_lep);
-  tree->SetBranchAddress("MVA_TotalInvMass_lep", &MVA_TotalInvMass_lep, &b_MVA_TotalInvMass_lep);
-  tree->SetBranchAddress("MVA_bdiscCSVv2_jet_0", &MVA_bdiscCSVv2_jet_0, &b_MVA_bdiscCSVv2_jet_0);
-  tree->SetBranchAddress("MVA_bdiscCSVv2_jet_1", &MVA_bdiscCSVv2_jet_1, &b_MVA_bdiscCSVv2_jet_1);
-  tree->SetBranchAddress("MVA_CosTheta", &MVA_CosTheta, &b_MVA_CosTheta);
-  tree->SetBranchAddress("MVA_CosTheta_alt", &MVA_CosTheta_alt, &b_MVA_CosTheta_alt);
-  tree->SetBranchAddress("MVA_FCNCtop_M", &MVA_FCNCtop_M, &b_MVA_FCNCtop_M);
-  tree->SetBranchAddress("MVA_Zboson_M", &MVA_Zboson_M, &b_MVA_Zboson_M);
-  tree->SetBranchAddress("MVA_dRZc", &MVA_dRZc, &b_MVA_dRZc);
-  tree->SetBranchAddress("MVA_dPhiZc", &MVA_dPhiZc, &b_MVA_dPhiZc);
-  tree->SetBranchAddress("MVA_cdiscCvsB_jet_1", &MVA_cdiscCvsB_jet_1, &b_MVA_cdiscCvsB_jet_1);
-  tree->SetBranchAddress("MVA_cdiscCvsL_jet_1", &MVA_cdiscCvsL_jet_1, &b_MVA_cdiscCvsL_jet_1);
-  tree->SetBranchAddress("MVA_cdiscCvsB_jet_0", &MVA_cdiscCvsB_jet_0, &b_MVA_cdiscCvsB_jet_0);
-  tree->SetBranchAddress("MVA_cdiscCvsL_jet_0", &MVA_cdiscCvsL_jet_0, &b_MVA_cdiscCvsL_jet_0);
-  tree->SetBranchAddress("MVA_nJets_CharmL", &MVA_nJets_CharmL, &b_MVA_nJets_CharmL);
-  tree->SetBranchAddress("MVA_nJets_CharmM", &MVA_nJets_CharmM, &b_MVA_nJets_CharmM);
-  tree->SetBranchAddress("MVA_nJets_CharmT", &MVA_nJets_CharmT, &b_MVA_nJets_CharmT);
-  tree->SetBranchAddress("MVA_dRSMFCNCtop", &MVA_dRSMFCNCtop, &b_MVA_dRSMFCNCtop);
-  tree->SetBranchAddress("MVA_dRZb", &MVA_dRZb, &b_MVA_dRZb);
-  tree->SetBranchAddress("MVA_dRWlepc", &MVA_dRWlepc, &b_MVA_dRWlepc);
-  tree->SetBranchAddress("MVA_dRZWlep", &MVA_dRZWlep, &b_MVA_dRZWlep);
-  tree->SetBranchAddress("MVA_dRZSMtop", &MVA_dRZSMtop, &b_MVA_dRZSMtop);
-  tree->SetBranchAddress("MVA_dPhiSMFCNCtop", &MVA_dPhiSMFCNCtop, &b_MVA_dPhiSMFCNCtop);
-  tree->SetBranchAddress("MVA_dPhiZb", &MVA_dPhiZb, &b_MVA_dPhiZb);
-  tree->SetBranchAddress("MVA_dPhiWlepc", &MVA_dPhiWlepc, &b_MVA_dPhiWlepc);
-  tree->SetBranchAddress("MVA_dPhiZWlep", &MVA_dPhiZWlep, &b_MVA_dPhiZWlep);
-  tree->SetBranchAddress("MVA_dPhiZSMtop", &MVA_dPhiZSMtop, &b_MVA_dPhiZSMtop);
-  tree->SetBranchAddress("MVA_m3l", &MVA_m3l, &b_MVA_m3l);
+  if(!istoppair && !doZut){
+    tree->SetBranchAddress("MVA_mlb", &MVA_mlb, &b_MVA_mlb);
+    tree->SetBranchAddress("MVA_bdiscCSVv2_jet_0", &MVA_bdiscCSVv2_jet_0, &b_MVA_bdiscCSVv2_jet_0);
+    tree->SetBranchAddress("MVA_SMtop_eta", &MVA_SMtop_eta, &b_MVA_SMtop_eta);
+    tree->SetBranchAddress("MVA_dPhiWlepb", &MVA_dPhiWlepb, &b_MVA_dPhiWlepb);
+    tree->SetBranchAddress("MVA_dRZWlep", &MVA_dRZWlep, &b_MVA_dRZWlep);
+    tree->SetBranchAddress("MVA_SMtop_rap", &MVA_SMtop_rap, &b_MVA_SMtop_rap);
+    tree->SetBranchAddress("MVA_TotalInvMass_lep", &MVA_TotalInvMass_lep, &b_MVA_TotalInvMass_lep);
+  }
+  else if(!istoppair && doZut){
+    tree->SetBranchAddress("MVA_mlb", &MVA_mlb, &b_MVA_mlb);
+    tree->SetBranchAddress("MVA_bdiscCSVv2_jet_0", &MVA_bdiscCSVv2_jet_0, &b_MVA_bdiscCSVv2_jet_0);
+    tree->SetBranchAddress("MVA_dPhiWlepb", &MVA_dPhiWlepb, &b_MVA_dPhiWlepb);
+    tree->SetBranchAddress("MVA_dRZWlep", &MVA_dRZWlep, &b_MVA_dRZWlep);
+    tree->SetBranchAddress("MVA_SMtop_rap", &MVA_SMtop_rap, &b_MVA_SMtop_rap);
+    tree->SetBranchAddress("MVA_TotalInvMass_lep", &MVA_TotalInvMass_lep, &b_MVA_TotalInvMass_lep);
+    tree->SetBranchAddress("MVA_charge_asym", &MVA_charge_asym, &b_MVA_charge_asym);
+    tree->SetBranchAddress("MVA_ptWQ", &MVA_ptWQ, &b_MVA_ptWQ);
+  }
+  else if(istoppair && doZut){
+    tree->SetBranchAddress("MVA_dPhiZWlep", &MVA_dPhiZWlep, &b_MVA_dPhiZWlep);
+    tree->SetBranchAddress("MVA_SMtop_rap", &MVA_SMtop_rap, &b_MVA_SMtop_rap);
+    tree->SetBranchAddress("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, &b_MVA_NJets_CSVv2M);
+    tree->SetBranchAddress("MVA_SMtop_M", &MVA_SMtop_M, &b_MVA_SMtop_M);
+    tree->SetBranchAddress("MVA_mlb", &MVA_mlb, &b_MVA_mlb);
+    tree->SetBranchAddress("MVA_dRWlepb", &MVA_dRWlepb, &b_MVA_dRWlepb);
+    tree->SetBranchAddress("MVA_TotalHt_lep", &MVA_TotalHt_lep, &b_MVA_TotalHt_lep);
+    tree->SetBranchAddress("MVA_Zboson_M", &MVA_Zboson_M, &b_MVA_Zboson_M);
+    tree->SetBranchAddress("MVA_dPhiZb", &MVA_dPhiZb, &b_MVA_dPhiZb);
+    tree->SetBranchAddress("MVA_dRZb", &MVA_dRZb, &b_MVA_dRZb);
+    tree->SetBranchAddress("MVA_dRZWlep", &MVA_dRZWlep, &b_MVA_dRZWlep);
+    tree->SetBranchAddress("MVA_FCNCtop_rap", &MVA_FCNCtop_rap, &b_MVA_FCNCtop_rap);
+    tree->SetBranchAddress("MVA_FCNCtop_M", &MVA_FCNCtop_M, &b_MVA_FCNCtop_M);
+  }
+  else if(istoppair && !doZut){
+    tree->SetBranchAddress("MVA_FCNCtop_rap", &MVA_FCNCtop_rap, &b_MVA_FCNCtop_rap);
+    tree->SetBranchAddress("MVA_SMtop_rap", &MVA_SMtop_rap, &b_MVA_SMtop_rap);
+    tree->SetBranchAddress("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, &b_MVA_NJets_CSVv2M);
+    tree->SetBranchAddress("MVA_mlb", &MVA_mlb, &b_MVA_mlb);
+    tree->SetBranchAddress("MVA_FCNCtop_M", &MVA_FCNCtop_M, &b_MVA_FCNCtop_M);
+    tree->SetBranchAddress("MVA_dRWlepb", &MVA_dRWlepb, &b_MVA_dRWlepb);
+    tree->SetBranchAddress("MVA_TotalInvMass", &MVA_TotalInvMass, &b_MVA_TotalInvMass);
+    tree->SetBranchAddress("MVA_Bdis_Lightjet", &MVA_Bdis_Lightjet, &b_MVA_Bdis_Lightjet);
+    tree->SetBranchAddress("MVA_dRZWlep", &MVA_dRZWlep, &b_MVA_dRZWlep);
+    tree->SetBranchAddress("MVA_dPhiZWlep", &MVA_dPhiZWlep, &b_MVA_dPhiZWlep);
+    tree->SetBranchAddress("MVA_Zboson_M", &MVA_Zboson_M, &b_MVA_Zboson_M);
+    tree->SetBranchAddress("MVA_dRZb", &MVA_dRZb, &b_MVA_dRZb);
+    
+  }
+  
+  
+  
   
   
 }
@@ -3209,72 +5916,76 @@ void Init1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
     
     output_histo_name = "BDT_"+dataSetName +"_"+decaystring+"_"+systematic;
     histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,-1.,1.);
-    /*
+    output_histo_name = "SMtoprap_"+dataSetName + "_" +decaystring+"_"+systematic;
+    histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "SM top rapidity",10,-6,6);
+    output_histo_name = "mlb_"+dataSetName + "_" +decaystring+"_"+systematic;
+    histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Inv. Mass l_{W}b (GeV)",10,0,400);
+    output_histo_name = "dRZWlep_"+dataSetName + "_" +decaystring+"_"+systematic;
+    histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "#Delta R(l_{W},Z)",15,0,6);
+    
+    
     if(!istoppair){
-      output_histo_name = "mlb_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Inv. Mass l_{W}b (GeV)",10,0,400);
-      output_histo_name = "dRWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "#Delta R(l_{W},b)",10,0,5);
-      output_histo_name = "dPhiWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "#Delta #phi(l_{W},b)",10,-4,4);
-      output_histo_name = "ZbosonPt_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Z boson p_{T} (GeV)",12,0,400);
-      output_histo_name = "dRZWlep_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "#Delta R(l_{W},Z)",15,0,6);
       output_histo_name = "bdiscCSVv2jet0_"+dataSetName + "_" +decaystring+"_"+systematic;
       histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "CSVv2 disc. highest p_{T} jet",20,0.5,1);
-      output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Charm vs b disc. highest p_{T} jet",20,-1,1);
-      output_histo_name = "cdiscCvsLjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(),"Charm vs light disc. highest p_{T} jet",15,-1,1);
-      output_histo_name = "SMtop_eta_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "SM top #eta",10,-6,6);
+      output_histo_name = "dPhiWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "#Delta #phi(l_{W},b)",10,-4,4);
+      output_histo_name = "TotalInvMasslep_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Inv. Mass of the leptons (GeV)",20,100,500);
+      
       if(isZut){
         output_histo_name = "chargeAsym_"+dataSetName + "_" +decaystring+"_"+systematic;
         histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Q(l_{W}|#eta of l_{W}|",6,-3,3);
-        output_histo_name = "TotalInvMass_lep_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Inv. Mass of the leptons (GeV)",20,100,500);
+        output_histo_name = "dRWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "#Delta R(l_{W},b)",10,0,5);
+        output_histo_name = "ptWQ_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "p_{T}(l_{W})Q(l_{W}",10,-200,200);
+        
         
       }
-    
+      if(!isZut){
+        output_histo_name = "SMtopeta_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "SM top #eta",10,-6,6);
+      }
+      
       
       
     }
+    
     else if(istoppair ){
+      output_histo_name = "FCNCtoprap_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "FCNC top rapidity",10,-3,3);
+      output_histo_name = "nJetsCSVv2M_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Nb. of CSVv2 M jets",7,-0.5,6.5);
+      output_histo_name = "FCNCtopM_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Inv. Mass FCNC top (GeV)",10,0,400);
+      output_histo_name = "ZbosonM_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Inv. Mass Zboson (GeV)",10,60,120);
+      output_histo_name = "dRZb_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "#Delta R(Z,b)",10,0,5);
       output_histo_name = "dPhiZWlep_"+dataSetName + "_" +decaystring+"_"+systematic;
       histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "#Delta #phi(l_{W},Z)",10,-4,4);
+      output_histo_name = "dRWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "#Delta R(l_{W},b)",10,0,5);
       
-      output_histo_name = "mlb_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Inv. Mass l_{W}b (GeV)",25,0,500);
-       output_histo_name = "dRWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "#Delta R (l_{W},b)",20,0,6);
-      output_histo_name = "dRZWlep_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(),"#Delta R (l_{W},Z)",20,0,6);
-     // output_histo_name = "dRZc_"+dataSetName + "_" +decaystring+"_"+systematic;
-     // histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),30,0,6);
-     //output_histo_name = "nJetsCSVv2M_"+dataSetName + "_" +decaystring+"_"+systematic;
-     //histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "#Delta R (l_{W},b)",10,-0.5,9.5);
-      output_histo_name = "nJetsCharmL_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Nb. Charm Loose ID jets",10,-0.5,9.5);
       
-      if(isZut){
-       output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
-        output_histo_name = "cdiscCvsBjet1_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
+      if(doZut){
+        output_histo_name = "dPhiZb_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "#Delta #phi(b,Z)",10,-4,4);
+        output_histo_name = "SMtopM_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Inv. Mass SM top (GeV)",10,0,400);
+        output_histo_name = "TotalHtlep_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Total H_{T} of the leptons (GeV)",10,0,400);
         
       }
-      else{
-        output_histo_name = "FCNCtopM_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Inv. Mass FCNC top (GeV)",10,0,450);
-        output_histo_name = "cdiscCvsLjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Charm vs light disc.",15,-1,1);
+      if(!doZut){
         output_histo_name = "TotalInvMass_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Total inv. mass (GeV)",20,0,1500);
-        output_histo_name = "cdiscCvsLjet1_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(),20,0,500);
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "Total Inv. Mass (GeV)",10,200,1500);
+        output_histo_name = "bdisclightjet_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] = new TH1F(output_histo_name.c_str(), "CSVv2 disc. FCNC jet",20,0.5,1);
       }
-    }*/
+    }
+    
+    
     
   }
   
@@ -3502,7 +6213,7 @@ void FillMTWPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t 
   Double_t eventW = 1.;
   eventW = weight_;
   
-
+  
   for(Int_t iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
     
@@ -3652,67 +6363,78 @@ void Fill1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
     output_histo_name = "BDT_"+dataSetName +"_"+decaystring+"_"+systematic;
     histo1D[output_histo_name] ->Fill(  MVA_BDT        ,weight_);
     
-
+    output_histo_name = "SMtoprap_"+dataSetName + "_" +decaystring+"_"+systematic;
+    histo1D[output_histo_name]->Fill(MVA_SMtop_rap,weight_);
+    output_histo_name = "mlb_"+dataSetName + "_" +decaystring+"_"+systematic;
+    histo1D[output_histo_name]->Fill(MVA_mlb, weight_);
+    output_histo_name = "dRZWlep_"+dataSetName + "_" +decaystring+"_"+systematic;
+    histo1D[output_histo_name]->Fill(MVA_dRZWlep, weight_);
     
-    /*
+    
     if(!istoppair){
-      output_histo_name = "mlb_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] ->Fill( MVA_mlb         ,weight_);
-      output_histo_name = "dRWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] ->Fill(   MVA_dRWlepb       ,weight_);
-      output_histo_name = "dPhiWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] ->Fill(  MVA_dPhiWlepb        ,weight_);
-      output_histo_name = "ZbosonPt_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] ->Fill(   MVA_Zboson_pt       ,weight_);
-      output_histo_name = "dRZWlep_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] ->Fill(   MVA_dRZWlep        ,weight_);
       output_histo_name = "bdiscCSVv2jet0_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] ->Fill(    MVA_bdiscCSVv2_jet_0      ,weight_);
-      output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] ->Fill(   MVA_cdiscCvsB_jet_0       ,weight_);
-      output_histo_name = "cdiscCvsLjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] ->Fill(   MVA_cdiscCvsL_jet_0       ,weight_);
-      output_histo_name = "SMtop_eta_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] ->Fill(   MVA_SMtop_eta      ,weight_);
+      histo1D[output_histo_name]->Fill(MVA_bdiscCSVv2_jet_0,weight_);
+      output_histo_name = "dPhiWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name]->Fill(MVA_dPhiWlepb, weight_);
+      output_histo_name = "TotalInvMasslep_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name]->Fill(MVA_TotalInvMass_lep,weight_);
+      
       if(isZut){
         output_histo_name = "chargeAsym_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] ->Fill( MVA_charge_asym         ,weight_);
-        output_histo_name = "TotalInvMass_lep_"+dataSetName + "_" +decaystring+"_"+systematic;
-         histo1D[output_histo_name] ->Fill( MVA_TotalInvMass_lep         ,weight_);
+        histo1D[output_histo_name]->Fill(MVA_charge_asym,weight_);
+        output_histo_name = "dRWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name]->Fill(MVA_dRWlepb,weight_);
+        output_histo_name = "ptWQ_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] ->Fill(MVA_ptWQ,weight_);
+        
+        
       }
+      if(!isZut){
+        output_histo_name = "SMtopeta_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] ->Fill(MVA_SMtop_eta,weight_);
+      }
+      
       
       
     }
+    
     else if(istoppair ){
+      output_histo_name = "FCNCtoprap_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(MVA_FCNCtop_rap,weight_);
+      output_histo_name = "nJetsCSVv2M_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(MVA_NJets_CSVv2M,weight_);
+      output_histo_name = "FCNCtopM_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name]->Fill(MVA_FCNCtop_M,weight_);
+      output_histo_name = "ZbosonM_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name]->Fill(MVA_Zboson_M,weight_);
+      output_histo_name = "dRZb_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(MVA_dRZb,weight_);
       output_histo_name = "dPhiZWlep_"+dataSetName + "_" +decaystring+"_"+systematic;
       histo1D[output_histo_name]->Fill(MVA_dPhiZWlep,weight_);
-
-      output_histo_name = "mlb_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] ->Fill(   MVA_mlb       ,weight_);
-        output_histo_name = "dRWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] ->Fill(    MVA_dRWlepb      ,weight_);
-      output_histo_name = "dRZWlep_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] ->Fill(   MVA_dRZWlep       ,weight_);
-       output_histo_name = "nJetsCharmL_"+dataSetName + "_" +decaystring+"_"+systematic;
-      histo1D[output_histo_name] ->Fill( MVA_nJets_CharmL        ,weight_);
+      output_histo_name = "dRWlepb_"+dataSetName + "_" +decaystring+"_"+systematic;
+      histo1D[output_histo_name] ->Fill(MVA_dRWlepb,weight_);
       
-      if(isZut){
-        output_histo_name = "cdiscCvsBjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
-        isto1D[output_histo_name] ->Fill(  MVA_cdiscCvsB_jet_0        ,weight_);
-        output_histo_name = "cdiscCvsBjet1_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] ->Fill(   MVA_cdiscCvsB_jet_1       ,weight_);
-     
-      }
-      else{
-        output_histo_name = "FCNCtopM_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] ->Fill(   MVA_FCNCtop_M       ,weight_);
+      
+      if(doZut){
+        output_histo_name = "dPhiZb_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name]->Fill(MVA_dPhiZb,weight_);
+        output_histo_name = "SMtopM_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name] ->Fill(MVA_SMtop_M,weight_);
+        output_histo_name = "TotalHtlep_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name]->Fill(MVA_TotalHt_lep,weight_);
         
-        output_histo_name = "cdiscCvsLjet0_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] ->Fill(   MVA_cdiscCvsL_jet_0       ,weight_);
-        output_histo_name = "TotalInvMass_"+dataSetName + "_" +decaystring+"_"+systematic;
-        histo1D[output_histo_name] ->Fill(   MVA_TotalInvMass      ,weight_);
       }
-    }*/
+      if(!doZut){
+        output_histo_name = "TotalInvMass_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name]->Fill(MVA_TotalInvMass,weight_);
+        output_histo_name = "bdisclightjet_"+dataSetName + "_" +decaystring+"_"+systematic;
+        histo1D[output_histo_name]->Fill(MVA_Bdis_Lightjet,weight_);
+      }
+    }
+    
+    
+    
+    
     
   }
   
@@ -3724,7 +6446,7 @@ void FillMTWShapeHisto(string dataSetName, string systematic, Double_t weight_,I
   
   for(Int_t iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
-
+    
     if((decayChannels[iChan] != -9) && (decayChannels[iChan] != MVA_channel)) continue;
     if(decayChannels[iChan] == 0) decaystring = "uuu";
     if(decayChannels[iChan] == 1) decaystring = "uue";
@@ -3735,8 +6457,8 @@ void FillMTWShapeHisto(string dataSetName, string systematic, Double_t weight_,I
     if(isys == 0) output_histo_name = dataSetName+"_MTW_nominal_"+decaystring;
     else output_histo_name = dataSetName+"_MTW_"+systematic + "_" + decaystring;
     
-   // cout << "fill " << output_histo_name << " " << MVA_mWt2 << " " << weight_ <<  endl;
-   histo1DMTW[output_histo_name.c_str()]->Fill(MVA_mWt2, 1.);
+    // cout << "fill " << output_histo_name << " " << MVA_mWt2 << " " << weight_ <<  endl;
+    histo1DMTW[output_histo_name.c_str()]->Fill(MVA_mWt2, 1.);
     // histo1DMTW[output_histo_name.c_str()]->Fill(1, 1);
     output_histo_name = "";
   }
@@ -3744,7 +6466,7 @@ void FillMTWShapeHisto(string dataSetName, string systematic, Double_t weight_,I
 }
 
 void FillSystematicHisto(string dataSetName, string systematic, Double_t weight_, Int_t isys, bool doMTWtemplate ){
-
+  
   if(isys == 0 && !doMTWtemplate) output_histo_name = dataSetName+"_BDT_nominal";
   else if(isys == 0 && doMTWtemplate) output_histo_name = dataSetName+"_MTW_nominal";
   else if(!doMTWtemplate) output_histo_name = dataSetName+"_BDT_"+systematic;
