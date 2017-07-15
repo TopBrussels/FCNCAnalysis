@@ -100,9 +100,9 @@ void datacards(TString  coupling = "Zct", TString channel = "3mu", TString regio
 
   const int nShapeSystematics = 13;
   TString ShapeSystematics[nShapeSystematics] =  {"puSF","electronSF","muonSF","btagSF_cferr1","btagSF_cferr2","btagSF_hf","btagSF_hfstats1","btagSF_hfstats2","btagSF_lf","btagSF_lfstats1","btagSF_lfstats2","JES","JER"};
-  const int nRateSystematics = 8;
-  TString RateSystematics[nRateSystematics] ={"Lumi","TrigRate","WZrate","ttZrate","tZqrate", "STrate", "ttHrate","ZZrate"};
-  double RateSystematicsNb[nRateSystematics] ={1.025,1.01,1.3,1.3,1.3,1.3,1.3,1.3};
+  const int nRateSystematics = 9;
+  TString RateSystematics[nRateSystematics] ={"Lumi","TrigRate","WZrate","ttZrate","tZqrate", "STrate", "ttHrate","ZZrate","FakeRate"};
+  double RateSystematicsNb[nRateSystematics] ={1.025,1.01,1.3,1.3,1.3,1.3,1.3,1.3,1.5};
   if(mode.Contains("3mu") || mode.Contains("2e1mu")) RateSystematicsNb[1] = 1.01;
   else if(mode.Contains("3e") || mode.Contains("1e2mu")) RateSystematicsNb[1] = 1.05;
   
@@ -276,6 +276,9 @@ void datacards(TString  coupling = "Zct", TString channel = "3mu", TString regio
         salida << RateSystematicsNb[iRateSys] << "           " ;
       }
       else if(RateSystematics[iRateSys].Contains("WZ") && processName[iProcess].Contains("WZTo3") && mode.Contains("WZ")){
+        salida << RateSystematicsNb[iRateSys] << "           " ;
+      }
+      else if(RateSystematics[iRateSys].Contains("Fake") && processName[iProcess].Contains("Fake") && mode.Contains("WZ")){
         salida << RateSystematicsNb[iRateSys] << "           " ;
       }
       else if(RateSystematics[iRateSys].Contains("ttZ") && processName[iProcess].Contains("TTZ")){
