@@ -64,14 +64,20 @@ void tables_sys(TString mode = "TTZct" ){
   
   double lumi = 35822.43741;
   bool dolandscape = false;
-  string sysratiosfilename = "sysratio_";
+  string sysratiosfilename = "tables/sysratio_";
   int modes = 0;
-  if(mode.Contains("TTZct")){ modes = 0; sysratiosfilename =+ "TTZct";}
-  else if(mode.Contains("TTZut")){ modes = 1; sysratiosfilename =+ "TTZut";}
-  else if(mode.Contains("STZct")){ modes = 2; sysratiosfilename =+ "STZct";}
-  else if(mode.Contains("STZut")){ modes = 3; sysratiosfilename =+ "STZut";}
+  if(mode.Contains("TTZct")){ modes = 0; sysratiosfilename += "TTZct";}
+  else if(mode.Contains("TTZut")){ modes = 1; sysratiosfilename += "TTZut";}
+  else if(mode.Contains("STZct")){ modes = 2; sysratiosfilename += "STZct";}
+  else if(mode.Contains("STZut")){ modes = 3; sysratiosfilename += "STZut";}
   sysratiosfilename += ".root";
   
+  string sysratiosfilenamejesjer = "tables/sysratio_";
+  if(mode.Contains("TTZct")){ modes = 0; sysratiosfilenamejesjer += "TTZct";}
+  else if(mode.Contains("TTZut")){ modes = 1; sysratiosfilenamejesjer += "TTZut";}
+  else if(mode.Contains("STZct")){ modes = 2; sysratiosfilenamejesjer += "STZct";}
+  else if(mode.Contains("STZut")){ modes = 3; sysratiosfilenamejesjer += "STZut";}
+  sysratiosfilenamejesjer += "_jerjes.root";
   
   
   char myTexFile[300];
@@ -81,15 +87,16 @@ void tables_sys(TString mode = "TTZct" ){
   
   
   TFile *_file0 = TFile::Open(sysratiosfilename.c_str());
+  TFile *_file0jerjes = TFile::Open(sysratiosfilenamejesjer.c_str());
   
   const int nProcess = 2;
   TString processName[nProcess] = { "sig", "bkg"};
   TString processLabel[nProcess] = { "Signal","Background"};
-  const int nCuts = 11;
+  const int nCuts = 13;
   
   const int nval = 3;
-  TString cutLabel[12] =  {"blank","puSF","electronSF","muonSF","btagSF_cferr1","btagSF_cferr2","btagSF_hf","btagSF_hfstats1","btagSF_hfstats2","btagSF_lf","btagSF_lfstats1","btagSF_lfstats2"};
-  TString cutLabelName[12] =  {"blank","Pile up","Electron SF","Muon SF","b tag cferr1","btag SF cferr2","b tag SF hf","btag SF hfstats1","btag SF hfstats 2","b tag SF lf","b tag SF lfstats1","b tag SF lfstats2"};
+  TString cutLabel[14] =  {"blank","puSF","electronSF","muonSF","btagSF_cferr1","btagSF_cferr2","btagSF_hf","btagSF_hfstats1","btagSF_hfstats2","btagSF_lf","btagSF_lfstats1","btagSF_lfstats2","JES","JER"};
+  TString cutLabelName[14] =  {"blank","Pile up SF","Electron SF","Muon SF","CSVv2 first charm flavour nuissance parameter","CSVv2 second charm flavour nuissance parameter","CSVv2 heavy flavour purity","CSVv2 heavy flavour statistical uncertainty (1)","CSVv2 heavy flavour statistical uncertainty (2)","CSVv2 light flavour purity","CSVv2 light flavour statistical uncertainty (1)","CSVv2 light flavour statistical uncertainty (2)","Jet Energy Scale", "Jet Energy Resolution"};
   
   TString values[3] = {"nom","up","down"};
  // TString valuesname[3] = {"Nominal","sig","sig"}; //"Nominal","$+1\\sigma$","$-1\\sigma$"};
@@ -98,8 +105,15 @@ void tables_sys(TString mode = "TTZct" ){
   for(int i=1; i<nCuts+1; i++){
     cout << "adding " << cutLabel[i] << endl;
     for(int j = 0 ; j < 3 ; j++){
-     h[i][j][0] = (TH1F*) _file0->Get("hist_BDT_"+cutLabel[i] + "_" + values[j]+"_sig");
-     h[i][j][1] = (TH1F*) _file0->Get("hist_BDT_"+cutLabel[i] + "_" + values[j]+"_bkg");
+      if(i < 12){
+        h[i][j][0] = (TH1F*) _file0->Get("hist_BDT_"+cutLabel[i] + "_" + values[j]+"_sig");
+        h[i][j][1] = (TH1F*) _file0->Get("hist_BDT_"+cutLabel[i] + "_" + values[j]+"_bkg");
+      }
+      else{
+        cout << "getting out of jerjes file" << endl;
+        h[i][j][0] = (TH1F*) _file0jerjes->Get("hist_BDT_"+cutLabel[i] + "_" + values[j]+"_sig");
+        h[i][j][1] = (TH1F*) _file0jerjes->Get("hist_BDT_"+cutLabel[i] + "_" + values[j]+"_bkg");
+      }
     }
   }
   
@@ -124,11 +138,11 @@ void tables_sys(TString mode = "TTZct" ){
   
   cout << "write table" << endl;
   
-  salida << "\\documentclass[a4paper,12pt]{article}" << endl;
+ /* salida << "\\documentclass[a4paper,12pt]{article}" << endl;
   salida << "\\begin{document}" << endl;
   salida << endl;
   salida << endl;
-  
+  */
   if(dolandscape)  salida << "  \\begin{landscape}" << endl;
   salida << "  \\begin{table}" << endl;
   salida << "  \\begin{center}" << endl;
@@ -178,7 +192,7 @@ void tables_sys(TString mode = "TTZct" ){
   salida << endl;
   
 
-  salida << "\\end{document}" << endl;
+ // salida << "\\end{document}" << endl;
   
 }
 

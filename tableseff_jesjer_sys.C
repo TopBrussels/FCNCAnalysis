@@ -60,22 +60,22 @@ double efficiency (double finalevents, double totalevents){
 
 
 
-void tableseff_sys(TString mode = "TTZct" ){
+void tableseff_jesjer_sys(TString mode = "STZct" ){
   
   double lumi = 35822.43741;
   bool dolandscape = false;
   string sysratiosfilename = "sysratio_";
   int modes = 0;
-  if(mode.Contains("TTZct")){ modes = 0; sysratiosfilename =+ "TTZct";}
-  else if(mode.Contains("TTZut")){ modes = 1; sysratiosfilename =+ "TTZut";}
-  else if(mode.Contains("STZct")){ modes = 2; sysratiosfilename =+ "STZct";}
-  else if(mode.Contains("STZut")){ modes = 3; sysratiosfilename =+ "STZut";}
-  sysratiosfilename += ".root";
+  if(mode.Contains("TTZct")){ modes = 0; sysratiosfilename += "TTZct";}
+  else if(mode.Contains("TTZut")){ modes = 1; sysratiosfilename += "TTZut";}
+  else if(mode.Contains("STZct")){ modes = 2; sysratiosfilename += "STZct";}
+  else if(mode.Contains("STZut")){ modes = 3; sysratiosfilename += "STZut";}
+  sysratiosfilename += "_jerjes.root";
   
   
   
   char myTexFile[300];
-  sprintf(myTexFile,"tables/systableeff_%d_%fpb.tex", modes, lumi);
+  sprintf(myTexFile,"tables/systableeffjesjer_%d_%fpb.tex", modes, lumi);
   ofstream salida(myTexFile);
   
   
@@ -85,11 +85,11 @@ void tableseff_sys(TString mode = "TTZct" ){
   const int nProcess = 2;
   TString processName[nProcess] = { "sig", "bkg"};
   TString processLabel[nProcess] = { "Signal","Background"};
-  const int nCuts = 11;
+  const int nCuts = 2;
   
   const int nval = 3;
-  TString cutLabel[12] =  {"blank","puSF","electronSF","muonSF","btagSF_cferr1","btagSF_cferr2","btagSF_hf","btagSF_hfstats1","btagSF_hfstats2","btagSF_lf","btagSF_lfstats1","btagSF_lfstats2"};
-  TString cutLabelName[12] =  {"blank","Pile up SF","Electron SF","Muon SF","CSVv2 first charm flavour nuissance parameter","CSVv2 second charm flavour nuissance parameter","CSVv2 heavy flavour purity","CSVv2 heavy flavour statistical uncertainty (1)","CSVv2 heavy flavour statistical uncertainty (2)","CSVv2 light flavour purity","CSVv2 light flavour statistical uncertainty (1)","CSVv2 light flavour statistical uncertainty (2)"};
+  TString cutLabel[3] =  {"blank","JES","JER"};
+  TString cutLabelName[3] =  {"blank","Jet Energy Scale","Jet Energy Resolution"};
   
   TString values[3] = {"nom","up","down"};
  // TString valuesname[3] = {"Nominal","sig","sig"}; //"Nominal","$+1\\sigma$","$-1\\sigma$"};
@@ -136,25 +136,6 @@ void tableseff_sys(TString mode = "TTZct" ){
     }
   }
   
-  double bvectorValue[2][3][2][3];; // sys nom process entries
-  
-  for(int k =0; k < 3; k++){
-    for (int j = 0; j < nProcess; j++){
-      //cout << "i " << i << " j " << j << " k " << k << endl;
-      //cout << h[i][k][j]->Integral() << endl;
-      // cout << "looking at cut " << cutLabel[i] << " for process " << processName[j] << endl;
-      bvectorValue[0][k][j][0] = 0;
-      for(int i = 4 ; i< nCuts+1; i++){
-        bvectorValue[0][k][j][0] += (vectorValue[i][k][j][0]*vectorValue[i][k][j][0]);
-        
-      }
-      bvectorValue[0][k][j][0] = sqrt(bvectorValue[0][k][j][0]);
-      if(k == 2) bvectorValue[0][k][j][0] = - sqrt(bvectorValue[0][k][j][0]);
-      bvectorValue[0][k][j][1] = 1; //precision(h[j]->GetBinError(i));
-      // vectorValue[i][k][j][2] = sqrt(h[i][k][j]->Integral());
-      //cout << vectorValue[i][k][j][0] << " pm " <<vectorValue[i][k][j][2]<< endl;
-    }
-  }
   
   
   
@@ -189,7 +170,7 @@ void tableseff_sys(TString mode = "TTZct" ){
   salida << "  \\\\ " << endl;
   salida << "  \\hline " << endl;
   
-  for (int i=1; i  < 4; i++){ // no btag
+  for (int i=1; i  < nCuts+1; i++){ // no btag
     salida << "\\multicolumn{" << nval << "}{c}{" << cutLabelName[i] << "} \\\\ \\hline " << endl;
     for(int k=0; k < nProcess; k++){
     salida   << processLabel[k] ;
@@ -205,22 +186,7 @@ void tableseff_sys(TString mode = "TTZct" ){
     }
     if(i!= nCuts) salida << "\\hline" << endl;
   }
-  // add btag
-  
-    salida << "\\multicolumn{" << nval << "}{c}{CSVv2 shape} \\\\ \\hline " << endl;
-    for(int k=0; k < nProcess; k++){
-      salida   << processLabel[k] ;
-      for (int j = 1; j < 3; j++){ // values  vectorValue[nCuts][3][2][3]; // sys nom process entries
-        if (bvectorValue[0][j][k][0] == 0 ){
-          salida << " & $-$ " ;
-        } else {
-          salida << " & " << std::setiosflags(std::ios::fixed) << setprecision(bvectorValue[0][j][k][1]) << bvectorValue[0][j][k][0] << "\\%";
-          // salida << " $\\pm $"  << setprecision(vectorValue[i][j][k][1])<< vectorValue[i][j][k][2];
-        }
-      }
-      salida <<  " \\\\  " << endl;
-    }
-
+ 
   
   salida << "   \\hline " << endl;
   salida << "  \\end{tabular}" << endl;
