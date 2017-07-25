@@ -120,7 +120,7 @@ string tTreeName = "";
 string postfix = "";
 string output_histo_name = "";
 string ntupleFileName ="";
-Int_t nbin = 20;
+Int_t nbin = 10;
 double BDT_begin = -1;
 double BDT_end = 1;
 
@@ -819,12 +819,10 @@ Int_t main(Int_t argc, char* argv[]){
   if(doMTWtemplate) combinetemplate_filename = placeOutputReading+"/Reader_"+coupling+"_MTW.root";
   cout <<" - Combine templates stored at " << combinetemplate_filename.c_str() << endl;
   
-  /*
-  if(!toppair && !doZut){ BDT_begin= -0.4; BDT_end = 0.8; nbin = 15;}
-  else if(toppair&& !doZut){ BDT_begin= -0.9; BDT_end = 0.8; nbin = 20;}
-  else if(!toppair && doZut){ BDT_begin= -0.4; BDT_end = 0.7; nbin = 14;}
-  else if(toppair&& doZut){ BDT_begin= -0.9; BDT_end = 0.9; nbin = 22;}
-  */
+  
+  if(!toppair){ BDT_begin= -0.4; nbin = 6;}
+  
+  
   std::vector < int>  decayChannels = {0,1,2,3,-9}; // uuu uue eeu eee all
   vector <string> thesystlist;
   vector <string> thesystlistnames;
@@ -1119,7 +1117,7 @@ Int_t main(Int_t argc, char* argv[]){
         
         if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ weight *= 0.545 ;}
         if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ weight *= 0.590;}
-            if(dataSetName.find("WZ")!=std::string::npos ){ weight *=0.841 ;}
+        //     if(dataSetName.find("WZ")!=std::string::npos ){ weight *=0.841 ;}
         //if(dataSetName.find("fake")!=std::string::npos) weight *= 0.0001;
         
         if(!doMTWtemplate){
