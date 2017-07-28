@@ -1521,9 +1521,9 @@ Int_t main(Int_t argc, char* argv[]){
           if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_eeu_FakeMu_80X_"  + systematic ;
           else output_histo_name = coupling + "_BDT_" + region+"_eeu_FakeMu_80X"  ;
           /*if(!toppair && !doZut){ hist_eeu->GetXaxis()->SetRangeUser(-0.4,0.8); }
-          else if(toppair&& !doZut){ hist_eeu->GetXaxis()->SetRangeUser(-0.9,0.8);}
-          else if(!toppair && doZut){hist_eeu->GetXaxis()->SetRangeUser(-0.4,0.7);}
-          else if(toppair&& doZut){ hist_eeu->GetXaxis()->SetRangeUser(-0.9,0.9);}*/
+           else if(toppair&& !doZut){ hist_eeu->GetXaxis()->SetRangeUser(-0.9,0.8);}
+           else if(!toppair && doZut){hist_eeu->GetXaxis()->SetRangeUser(-0.4,0.7);}
+           else if(toppair&& doZut){ hist_eeu->GetXaxis()->SetRangeUser(-0.9,0.9);}*/
           hist_eeu->SetTitle(output_histo_name.c_str());
           hist_eeu->Scale(hist_check_eeu->Integral()/hist_eeu->Integral());
           hist_eeu->Write(output_histo_name.c_str());
@@ -1709,41 +1709,59 @@ Int_t main(Int_t argc, char* argv[]){
           hist_check_eee->Write(output_histo_name.c_str());
         }
       }
+      
+      
+      
+      if(isys == 0 && dataSetName.find("fake")!=std::string::npos){
+        
+        cout << endl;
+        cout << "************************* KOLMOGOROV TESTING : fakes ************************ " << endl;
+        cout << hist_uuu->KolmogorovTest(hist_check_uuu,"D")<< endl;
+        cout << hist_uue->KolmogorovTest(hist_check_uue,"D")<< endl;
+        cout << hist_eee->KolmogorovTest(hist_check_eee,"D")<< endl;
+        cout << hist_eeu->KolmogorovTest(hist_check_eeu,"D")<< endl;
+        cout << "************************* KOLMOGOROV TESTING : fakes ************************ " << endl;
+        cout << endl;
+        
+      }
+      
+      
+      
       /*if(dataSetName.find("fake")!=std::string::npos){
-        TCanvas* c1 = new TCanvas();
-        gStyle->SetOptStat(0);
-        c1->cd();
-        hist_check_uuu->SetLineColor(kRed);
-        hist_check_uuu->Draw("hist");
-        hist_uuu->Draw("hist sames");
-        c1->Modified();
-        c1->SaveAs("checkMTW_uuu_FakeMu_80X.png");
-        
-        c1 = new TCanvas();
-        c1->cd();
-        hist_check_uue->SetLineColor(kRed);
-        hist_check_uue->Draw("hist");
-        hist_uue->Draw("hist sames");
-        c1->Modified();
-        c1->SaveAs("checkMTW_uue_FakeEl_80X.png");
-        
-        c1 = new TCanvas();
-        c1->cd();
-        hist_check_eeu->SetLineColor(kRed);
-        hist_check_eeu->Draw("hist");
-        hist_eeu->Draw("hist sames");
-        c1->Modified();
-        c1->SaveAs("checkMTW_eeu_FakeMu_80X.png");
-        
-        c1 = new TCanvas();
-        c1->cd();
-        hist_check_eee->SetLineColor(kRed);
-        hist_check_eee->Draw("hist");
-        hist_eee->Draw("hist sames");
-        c1->Modified();
-        c1->SaveAs("checkMTW_eee_FakeEl_80X.png");
-        
-      }*/
+       TCanvas* c1 = new TCanvas();
+       gStyle->SetOptStat(0);
+       c1->cd();
+       hist_check_uuu->SetLineColor(kRed);
+       hist_check_uuu->Draw("hist");
+       hist_uuu->Draw("hist sames");
+       c1->Modified();
+       c1->SaveAs("checkMTW_uuu_FakeMu_80X.png");
+       
+       c1 = new TCanvas();
+       c1->cd();
+       hist_check_uue->SetLineColor(kRed);
+       hist_check_uue->Draw("hist");
+       hist_uue->Draw("hist sames");
+       c1->Modified();
+       c1->SaveAs("checkMTW_uue_FakeEl_80X.png");
+       
+       c1 = new TCanvas();
+       c1->cd();
+       hist_check_eeu->SetLineColor(kRed);
+       hist_check_eeu->Draw("hist");
+       hist_eeu->Draw("hist sames");
+       c1->Modified();
+       c1->SaveAs("checkMTW_eeu_FakeMu_80X.png");
+       
+       c1 = new TCanvas();
+       c1->cd();
+       hist_check_eee->SetLineColor(kRed);
+       hist_check_eee->Draw("hist");
+       hist_eee->Draw("hist sames");
+       c1->Modified();
+       c1->SaveAs("checkMTW_eee_FakeEl_80X.png");
+       
+       }*/
       combinetemplate_file->Close();
       //cout << "closed " << combinetemplate_filename.c_str() << endl;
       delete combinetemplate_file;
@@ -1752,15 +1770,19 @@ Int_t main(Int_t argc, char* argv[]){
       if(doMTWtemplate) tFileMap[dataSetName.c_str()]->Close();
     }// datasets
     
-    cout << endl; 
-    cout << "************************* KOLMOGOROV TESTING ************************ " << endl;
-    cout << hist_BDT_tt_nonpromptinZ->KolmogorovTest(hist_BDT_tt_nonpromptinW,"D") << endl;
-    cout << hist_BDT_tt_uuu_nonpromptinZ->KolmogorovTest(hist_BDT_tt_uuu_nonpromptinW,"D")<< endl;
-    cout << hist_BDT_tt_uue_nonpromptinZ->KolmogorovTest(hist_BDT_tt_uue_nonpromptinW,"D")<< endl;
-    cout << hist_BDT_tt_eee_nonpromptinZ->KolmogorovTest(hist_BDT_tt_eee_nonpromptinW,"D")<< endl;
-    cout << hist_BDT_tt_eeu_nonpromptinZ->KolmogorovTest(hist_BDT_tt_eeu_nonpromptinW,"D")<< endl;
-    cout << endl;
-    
+    if(isys == 0){
+      cout << endl;
+      cout << "************************* KOLMOGOROV TESTING : Non prompts ************************ " << endl;
+      cout << hist_BDT_tt_nonpromptinZ->KolmogorovTest(hist_BDT_tt_nonpromptinW,"D") << endl;
+      cout << hist_BDT_tt_uuu_nonpromptinZ->KolmogorovTest(hist_BDT_tt_uuu_nonpromptinW,"D")<< endl;
+      cout << hist_BDT_tt_uue_nonpromptinZ->KolmogorovTest(hist_BDT_tt_uue_nonpromptinW,"D")<< endl;
+      cout << hist_BDT_tt_eee_nonpromptinZ->KolmogorovTest(hist_BDT_tt_eee_nonpromptinW,"D")<< endl;
+      cout << hist_BDT_tt_eeu_nonpromptinZ->KolmogorovTest(hist_BDT_tt_eeu_nonpromptinW,"D")<< endl;
+      cout << "************************* KOLMOGOROV TESTING : Non prompts ************************ " << endl;
+      cout << endl;
+      
+      
+    }
     
     
     
