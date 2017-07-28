@@ -120,7 +120,7 @@ string tTreeName = "";
 string postfix = "";
 string output_histo_name = "";
 string ntupleFileName ="";
-Int_t nbin = 20;
+Int_t nbin = 10;
 double BDT_begin = -1;
 double BDT_end = 1;
 
@@ -429,22 +429,6 @@ TBranch        *b_MVA_dPhiZSMtop;   //!
 TBranch        *b_MVA_m3l;   //!
 
 map<string,TH1F*> histo1DMTW;
-TH1F*  hist_BDT_tt_nonpromptinZ = new TH1F("hist_BDT_tt_nonpromptinZ","hist_BDT_tt_nonpromptinZ;BDT;Nb. of evts", nbin,BDT_begin,BDT_end);
-TH1F*  hist_BDT_tt_nonpromptinW = new TH1F("hist_BDT_tt_nonpromptinW","hist_BDT_tt_nonpromptinW;BDT;Nb. of evts", nbin,BDT_begin,BDT_end);
-TH1F*  hist_BDT_tt_uuu_nonpromptinZ = new TH1F("hist_BDT_tt_uuu_nonpromptinZ","hist_BDT_tt_uuu_nonpromptinZ;BDT;Nb. of evts", nbin,BDT_begin,BDT_end);
-TH1F*  hist_BDT_tt_uuu_nonpromptinW = new TH1F("hist_BDT_tt_uuu_nonpromptinW","hist_BDT_tt_uuu_nonpromptinW;BDT;Nb. of evts", nbin,BDT_begin,BDT_end);
-TH1F*  hist_BDT_tt_eee_nonpromptinZ = new TH1F("hist_BDT_tt_eee_nonpromptinZ","hist_BDT_tt_eee_nonpromptinZ;BDT;Nb. of evts", nbin,BDT_begin,BDT_end);
-TH1F*  hist_BDT_tt_eee_nonpromptinW = new TH1F("hist_BDT_tt_eee_nonpromptinW","hist_BDT_tt_eee_nonpromptinW;BDT;Nb. of evts", nbin,BDT_begin,BDT_end);
-TH1F*  hist_BDT_tt_eeu_nonpromptinZ = new TH1F("hist_BDT_tt_eeu_nonpromptinZ","hist_BDT_tt_eeu_nonpromptinZ;BDT;Nb. of evts", nbin,BDT_begin,BDT_end);
-TH1F*  hist_BDT_tt_eeu_nonpromptinW = new TH1F("hist_BDT_tt_eeu_nonpromptinW","hist_BDT_tt_eeu_nonpromptinW;BDT;Nb. of evts", nbin,BDT_begin,BDT_end);
-TH1F*  hist_BDT_tt_uue_nonpromptinZ = new TH1F("hist_BDT_tt_uue_nonpromptinZ","hist_BDT_tt_uue_nonpromptinZ;BDT;Nb. of evts", nbin,BDT_begin,BDT_end);
-TH1F*  hist_BDT_tt_uue_nonpromptinW = new TH1F("hist_BDT_tt_uue_nonpromptinW","hist_BDT_tt_uue_nonpromptinW;BDT;Nb. of evts", nbin,BDT_begin,BDT_end);
-
-
-
-
-
-
 TH1F*  hist_BDT_JES_nom_sig = new TH1F("hist_BDT_JES_nom_sig","Effect of JES systematics on the BDT: Signal;BDT;Nb. of evts", nbin,BDT_begin,BDT_end);
 TH1F*  hist_BDT_JES_nom_bkg = new TH1F("hist_BDT_JES_nom_bkg","Effect of JES systematics on the BDT: Background;BDT;Nb. of evts", nbin,BDT_begin,BDT_end);
 TH1F*  hist_BDT_JES_up_sig = new TH1F("hist_BDT_JES_up_sig","Effect of JES systematics on the BDT: Signal:BDT:Nb. of evts" ,nbin,BDT_begin,BDT_end);
@@ -835,12 +819,10 @@ Int_t main(Int_t argc, char* argv[]){
   if(doMTWtemplate) combinetemplate_filename = placeOutputReading+"/Reader_"+coupling+"_MTW.root";
   cout <<" - Combine templates stored at " << combinetemplate_filename.c_str() << endl;
   
-  /*
-  if(!toppair && !doZut){ BDT_begin= -0.4; BDT_end = 0.8; nbin = 15;}
-  else if(toppair&& !doZut){ BDT_begin= -0.9; BDT_end = 0.8; nbin = 20;}
-  else if(!toppair && doZut){ BDT_begin= -0.4; BDT_end = 0.7; nbin = 14;}
-  else if(toppair&& doZut){ BDT_begin= -0.9; BDT_end = 0.9; nbin = 22;}
-  */
+  
+  if(!toppair){ BDT_begin= -0.4; nbin = 6;}
+  
+  
   std::vector < int>  decayChannels = {0,1,2,3,-9}; // uuu uue eeu eee all
   vector <string> thesystlist;
   vector <string> thesystlistnames;
@@ -1133,21 +1115,10 @@ Int_t main(Int_t argc, char* argv[]){
         else weight *= MVA_weight_nom;
         
         
-      //  if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ weight *= 0.545 ;}
-      //  if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ weight *= 0.590;}
-       //     if(dataSetName.find("WZ")!=std::string::npos ){ weight *=0.841 ;}
+        if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ weight *= 0.545 ;}
+        if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ weight *= 0.590;}
+        //     if(dataSetName.find("WZ")!=std::string::npos ){ weight *=0.841 ;}
         //if(dataSetName.find("fake")!=std::string::npos) weight *= 0.0001;
-        
-         if(dataSetName.find("nonpromptwrong")!=std::string::npos) hist_BDT_tt_nonpromptinZ->Fill(MVA_BDT, weight);
-        if(dataSetName.find("nonpromptcorrect")!=std::string::npos) hist_BDT_tt_nonpromptinW->Fill(MVA_BDT, weight);
-        if(dataSetName.find("nonpromptwrong")!=std::string::npos && MVA_channel == 0) hist_BDT_tt_uuu_nonpromptinZ->Fill(MVA_BDT, weight);
-        if(dataSetName.find("nonpromptcorrect")!=std::string::npos && MVA_channel == 0) hist_BDT_tt_uuu_nonpromptinW->Fill(MVA_BDT, weight);
-        if(dataSetName.find("nonpromptwrong")!=std::string::npos && MVA_channel == 1) hist_BDT_tt_uue_nonpromptinZ->Fill(MVA_BDT, weight);
-        if(dataSetName.find("nonpromptcorrect")!=std::string::npos && MVA_channel == 1) hist_BDT_tt_uue_nonpromptinW->Fill(MVA_BDT, weight);
-        if(dataSetName.find("nonpromptwrong")!=std::string::npos && MVA_channel == 2) hist_BDT_tt_eeu_nonpromptinZ->Fill(MVA_BDT, weight);
-        if(dataSetName.find("nonpromptcorrect")!=std::string::npos && MVA_channel == 2) hist_BDT_tt_eeu_nonpromptinW->Fill(MVA_BDT, weight);
-        if(dataSetName.find("nonpromptwrong")!=std::string::npos && MVA_channel == 3) hist_BDT_tt_eee_nonpromptinZ->Fill(MVA_BDT, weight);
-        if(dataSetName.find("nonpromptcorrect")!=std::string::npos && MVA_channel == 3) hist_BDT_tt_eee_nonpromptinW->Fill(MVA_BDT, weight);
         
         if(!doMTWtemplate){
           if(MVA_channel== 0) 		{hist_uuu->Fill( MVA_BDT, weight);}
@@ -1538,14 +1509,6 @@ Int_t main(Int_t argc, char* argv[]){
       
       if(doMTWtemplate) tFileMap[dataSetName.c_str()]->Close();
     }// datasets
-    
-     cout << "KOLMOGOROV TESTING " << endl;
-    cout << hist_BDT_tt_nonpromptinZ->KolmogorovTest(hist_BDT_tt_nonpromptinW,"D") << endl;
-    cout << hist_BDT_tt_uuu_nonpromptinZ->KolmogorovTest(hist_BDT_tt_uuu_nonpromptinW,"D")<< endl;
-    cout << hist_BDT_tt_uue_nonpromptinZ->KolmogorovTest(hist_BDT_tt_uue_nonpromptinW,"D")<< endl;
-    cout << hist_BDT_tt_eee_nonpromptinZ->KolmogorovTest(hist_BDT_tt_eee_nonpromptinW,"D")<< endl;
-    cout << hist_BDT_tt_eeu_nonpromptinZ->KolmogorovTest(hist_BDT_tt_eeu_nonpromptinW,"D")<< endl;
-    cout << endl;
     
     if(isys != 0) cout<<"Done with "<< systematic <<" systematic"<<endl;
     else cout<<"Done with nominal sample"<<endl;
