@@ -122,6 +122,9 @@ int nbin_charmVSl= 4;
 TFile * tupfile = 0;
 TFile* nonptupfile  =0;
 TFile* nonpwtupfile = 0;
+TFile* wzlightfile = 0;
+TFile* wzccfile = 0;
+TFile* wzbbfile = 0;
 
 TTree* mvatree = 0;
 TTree* mvatree_JECup = 0;
@@ -132,6 +135,7 @@ TTree* mvatree_JERdown = 0;
 
 Int_t MVA_channel = -999.;
 Float_t MVA_weight = 1.;
+Double_t MVA_weightWZcorr = 1.;
 Double_t MVA_weight_nom = 1.;
 Double_t MVA_weight_puSF_up = 1.;
 Double_t MVA_weight_puSF_down = 1.;
@@ -169,6 +173,8 @@ Double_t         MVA_q;
 Double_t        MVA_weight0, MVA_weight1, MVA_weight2, MVA_weight3, MVA_weight4, MVA_weight5, MVA_weight6, MVA_weight7, MVA_weight8;
 Double_t        MVA_hdamp_up;
 Double_t        MVA_hdamp_down;
+
+Int_t MVA_WZlightbbcc = -9;
 
 Float_t MVA_region = -999.;
 Double_t MVA_EqLumi = -999.;
@@ -352,6 +358,9 @@ TBranch *b_WPc_CvsL_Medium;
 TBranch *b_WPc_CvsL_Tight;
 
 
+TBranch *b_WZlightbbcc;
+
+Int_t WZlightbbcc;
 
 
 Int_t nbEv_3lep_all;
@@ -731,7 +740,7 @@ void FillRecovsGenInfoPlots(string dataSetName, vector<TLorentzVector> selectedE
 void FillFakeValidation(string dataSetName, vector <int> decayChannels, bool isData, bool isfakes, bool threelepregion,bool twolepregion);
 void FillFakeDiscriminator(string dataSetName, vector <int> decayChannels, bool isData, bool isfakes, bool threelepregion,bool twolepregion);
 void Fill1DPlots(string dataSetName, double eventW, bool threelepregion, bool twolepregion);
-void InitTree(TTree* tree, bool isData, bool isfakes);
+void InitTree(TTree* tree, bool isData, bool isfakes, bool isWZ);
 // data from global tree
 void ClearMetaData();
 void GetMetaData(TTree* tree, bool isData,int Entries, bool isAMC, bool isfakes);
@@ -747,7 +756,7 @@ void FillGeneralPlots(int d, string prefix, vector<int>decayChannels, bool isDat
 void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<int>decayChannels);
 string ConvertIntToString(int nb, bool pad);
 void ReconstructObjects(vector<int> selectedJetsID, vector<TLorentzVector> Muons,vector<TLorentzVector> selectedElectrons, vector<TLorentzVector> selectedJets,int Region, bool threelepregion);
-void MakeMVAvars(int Region, Double_t scaleFactor, int nonpromptWrong_);
+void MakeMVAvars(int Region, Double_t scaleFactor, int nonpromptWrong_, Double_t scaleFactorWZcorr);
 void createMVAtree(string dataSetName);
 void writeMVAtree();
 int SMjetCalculator(vector<TLorentzVector> Jets,int verb);
@@ -906,6 +915,7 @@ vector <int> selectedCharmMJetsindex;
 vector <int> selectedCharmTJetsindex;
 vector <int> selectedJetsID;
 Double_t scaleFactor;
+Double_t scaleFactorWZcorr;
 Double_t scaleFactor_bfBT;
 Double_t scaleFactor_bfELSF;
 Double_t scaleFactor_bfMuSF;
@@ -1000,6 +1010,7 @@ int total_nbEv_ZbosonWindow_eee= 0;
 
 bool check_matching = false;
 bool checkNonprompt = false;
+bool checkFlavours = false;
 int  MVAchannelCheck = -9;
 int  RegionNonprompt = 0;
 bool debugmatching = false;
@@ -1089,6 +1100,7 @@ int main(int argc, char* argv[]){
   bool dorochester = true;
   bool dofakevalidation = false;
   bool findFakeDisc = false;
+  
   
   bool applyTrigSF = false;
   bool doCutflow = false;
@@ -1224,15 +1236,15 @@ int main(int argc, char* argv[]){
     if(string(argv[i]).find("MakeMatchingPlots")!=std::string::npos) {
       makeMatchingPlots = true;
     }
-   /* if(string(argv[i]).find("NonPrompt")!=std::string::npos) {
-      checkNonprompt = true;
-      i++;
-      RegionNonprompt = strtol(argv[i], NULL, 10);;
-    }
-    if(string(argv[i]).find("MVAchan")!=std::string::npos) {
-      i++;
-      MVAchannelCheck = strtol(argv[i], NULL, 10);
-    }*/
+    /* if(string(argv[i]).find("NonPrompt")!=std::string::npos) {
+     checkNonprompt = true;
+     i++;
+     RegionNonprompt = strtol(argv[i], NULL, 10);;
+     }
+     if(string(argv[i]).find("MVAchan")!=std::string::npos) {
+     i++;
+     MVAchannelCheck = strtol(argv[i], NULL, 10);
+     }*/
     if(string(argv[i]).find("Matching")!=std::string::npos) {
       check_matching = true;
     }
@@ -1376,8 +1388,8 @@ int main(int argc, char* argv[]){
     MSPlot["muon1_pt"]= new MultiSamplePlot(datasets, "muon1_pt", 50, 0., 250., "Muon 1 p_{T} [GeV]");
     MSPlot["muon2_pt"]= new MultiSamplePlot(datasets, "muon2_pt", 20, 0., 200., "Muon 2 p_{T} [GeV]");
     
-
-
+    
+    
     
     
     Init2DPlots();
@@ -1416,6 +1428,7 @@ int main(int argc, char* argv[]){
   string dataSetName, slumi;
   double timePerDataSet[datasets.size()];
   bool isData = false;
+  bool isWZ = false;
   bool isfakes = false;
   bool isAMC = false;
   bool isNP = false;
@@ -1593,6 +1606,13 @@ int main(int argc, char* argv[]){
       isData = true;
       cout <<" found data " << endl;
     }
+    isWZ = false;
+    checkFlavours = false;
+    if ( dataSetName.find("WZTo3LNu_amc_new") != std::string::npos  )
+    {
+      isWZ = true;
+      checkFlavours = true;
+    }
     isfakes = false;
     if(dataSetName.find("fake")!=std::string::npos ) {isfakes = true;}
     isAMC= false;
@@ -1674,7 +1694,7 @@ int main(int argc, char* argv[]){
     
     
     // Set branch addresses and branch pointers
-    InitTree(tTree[dataSetName.c_str()], isData, isfakes);
+    InitTree(tTree[dataSetName.c_str()], isData, isfakes, isWZ);
     
     if(makeMVAtree){
       
@@ -1686,7 +1706,7 @@ int main(int argc, char* argv[]){
       mvatree = new TTree(("mvatree"+postfix).c_str(), ("mvatree"+postfix).c_str());
       
       output_file_namemvatree = pathOutputdate+"/MVAtrees/MVA_tree_" + dataSetName + postfix ;
-        createMVAtree(dataSetName);
+      createMVAtree(dataSetName);
       
     }
     
@@ -1842,6 +1862,7 @@ int main(int argc, char* argv[]){
     for (int ievt = 0; ievt < endEvent; ievt++)
     {
       ClearObjects(); // put everything to default values
+      WZlightbbcc = -9;
       
       if(ievt == 0 ){ firstevent = true;}
       else{ firstevent = false;}
@@ -1929,7 +1950,7 @@ int main(int argc, char* argv[]){
       
       
       
-       sort(selectedLeptons.begin(), selectedLeptons.end(), HighestPt());
+      sort(selectedLeptons.begin(), selectedLeptons.end(), HighestPt());
       
       
       
@@ -2059,6 +2080,7 @@ int main(int argc, char* argv[]){
       // apply SF
       scaleFactor_NLO = 1.;
       scaleFactor = 1.;
+      scaleFactorWZcorr = 1;
       scaleFactor_bfBT = 1.;
       scaleFactor_bfELSF = 1.;
       scaleFactor_bfMuSF = 1.;
@@ -2247,6 +2269,13 @@ int main(int argc, char* argv[]){
       // if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ scaleFactor *= 0.265 * 0.0001;}
       
       
+      if(isWZ){
+        if(WZlightbbcc == 3) scaleFactorWZcorr = 1.0744*1000000. / 1179097.;
+        if(WZlightbbcc == 4) scaleFactorWZcorr = 102657./ 1179097.;
+        if(WZlightbbcc == 5) scaleFactorWZcorr = 2040. / 1179097.;
+      }
+      
+      
       double eventweightForNotMSplots = 1.;
       if(!isData && !isfakes) eventweightForNotMSplots = Luminosity/EquilumiSF;
       if(!isData) eventweightForNotMSplots*= scaleFactor;
@@ -2257,7 +2286,7 @@ int main(int argc, char* argv[]){
       eventweightForplots = Luminosity/EquilumiSF; // equilumi SF is the eqlumi (not one) for MC and one for data/fakes
       if(!isData) eventweightForplots*= scaleFactor;
       
-     
+      
       
       //  if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ eventweightForNotMSplots *= 0.545 ; eventweightForplots *= 0.545 ; scaleFactor *= 0.545 ;}
       // if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ eventweightForNotMSplots *= 0.590; eventweightForplots *= 0.590; scaleFactor  *= 0.590;}
@@ -3292,9 +3321,9 @@ int main(int argc, char* argv[]){
       MVA_Luminosity = Luminosity;
       if(makeMVAtree ){
         //cout << "ievt " << ievt << endl;
-        if(foundWcorrect) MakeMVAvars(Region, scaleFactor,0);
-        else if(foundWwrong) MakeMVAvars(Region, scaleFactor,1);
-        else MakeMVAvars(Region, scaleFactor,-9);
+        if(foundWcorrect) MakeMVAvars(Region, scaleFactor,0, scaleFactorWZcorr);
+        else if(foundWwrong) MakeMVAvars(Region, scaleFactor,1, scaleFactorWZcorr);
+        else MakeMVAvars(Region, scaleFactor,-9, scaleFactorWZcorr);
         
       }
       // cout << "region "<< Region << endl;
@@ -3419,13 +3448,13 @@ int main(int argc, char* argv[]){
     
     if(checkNonprompt){
       MatchingEfficiencyNonPrompt();
-    /*  nonpormptsfile = TFile::Open("nonprompts.root", "RECREATE");
-      nonpormptsfile->cd();
-      Histo_nonprompt_ttbar ->Write();
-      Histo_nonprompt_zjets->Write();
-      Histo_nonprompt_ttbarother->Write();
-      Histo_nonprompt_zjetsother->Write();
-      nonpormptsfile->Close();*/
+      /*  nonpormptsfile = TFile::Open("nonprompts.root", "RECREATE");
+       nonpormptsfile->cd();
+       Histo_nonprompt_ttbar ->Write();
+       Histo_nonprompt_zjets->Write();
+       Histo_nonprompt_ttbarother->Write();
+       Histo_nonprompt_zjetsother->Write();
+       nonpormptsfile->Close();*/
     }
   } // data
   
@@ -3440,7 +3469,7 @@ int main(int argc, char* argv[]){
     significance_bkg = histo1D_lepton0_bkg_pt->Integral(iBin, histo1D_lepton0_bkg_pt->GetNbinsX());
     significance_sig = histo1D_lepton0_sig_pt->Integral(iBin, histo1D_lepton0_sig_pt->GetNbinsX());
     if(significance_bkg != 0 && significance_sig !=0){
-       significance =  significance_sig / sqrt(significance_bkg);
+      significance =  significance_sig / sqrt(significance_bkg);
     }
     else if(significance_bkg == 0 && significance_sig !=0){
       significance =  1.;
@@ -3454,7 +3483,7 @@ int main(int argc, char* argv[]){
     significance_bkg = histo1D_lepton1_bkg_pt->Integral(iBin, histo1D_lepton1_bkg_pt->GetNbinsX());
     significance_sig = histo1D_lepton1_sig_pt->Integral(iBin, histo1D_lepton1_sig_pt->GetNbinsX());
     if(significance_bkg != 0 &&significance_sig !=0){
-       significance =  significance_sig / sqrt(significance_bkg);
+      significance =  significance_sig / sqrt(significance_bkg);
     }
     else if(significance_bkg == 0 &&significance_sig !=0){
       significance =  1.;
@@ -3462,14 +3491,14 @@ int main(int argc, char* argv[]){
     else if(significance_sig == 0){
       significance =  0.;
     }
-
+    
     histo1D_lepton1_sign_pt->SetBinContent(iBin,significance);
   }
   for( int iBin = 0; iBin < histo1D_lepton2_bkg_pt->GetNbinsX(); iBin++){
     significance_bkg = histo1D_lepton2_bkg_pt->Integral(iBin, histo1D_lepton2_bkg_pt->GetNbinsX());
     significance_sig = histo1D_lepton2_sig_pt->Integral(iBin, histo1D_lepton2_sig_pt->GetNbinsX());
     if(significance_bkg != 0 &&significance_sig !=0){
-       significance =  significance_sig / sqrt(significance_bkg);
+      significance =  significance_sig / sqrt(significance_bkg);
     }
     else if(significance_bkg == 0 &&significance_sig !=0){
       significance =  1.;
@@ -3477,7 +3506,7 @@ int main(int argc, char* argv[]){
     else if(significance_sig == 0){
       significance =  0.;
     }
-
+    
     histo1D_lepton2_sign_pt->SetBinContent(iBin,significance);
   }
   
@@ -3485,7 +3514,7 @@ int main(int argc, char* argv[]){
     significance_bkg = histo1D_electron0_bkg_pt->Integral(iBin, histo1D_electron0_bkg_pt->GetNbinsX());
     significance_sig = histo1D_electron0_sig_pt->Integral(iBin, histo1D_electron0_sig_pt->GetNbinsX());
     if(significance_bkg != 0 &&significance_sig !=0){
-       significance =  significance_sig / sqrt(significance_bkg);
+      significance =  significance_sig / sqrt(significance_bkg);
     }
     else if(significance_bkg == 0 &&significance_sig !=0){
       significance =  1.;
@@ -3493,14 +3522,14 @@ int main(int argc, char* argv[]){
     else if(significance_sig == 0){
       significance =  0.;
     }
-
+    
     histo1D_electron0_sign_pt->SetBinContent(iBin,significance);
   }
   for( int iBin = 0; iBin < histo1D_electron1_bkg_pt->GetNbinsX(); iBin++){
     significance_bkg = histo1D_electron1_bkg_pt->Integral(iBin, histo1D_electron1_bkg_pt->GetNbinsX());
     significance_sig = histo1D_electron1_sig_pt->Integral(iBin, histo1D_electron1_sig_pt->GetNbinsX());
     if(significance_bkg != 0 &&significance_sig !=0){
-       significance =  significance_sig / sqrt(significance_bkg);
+      significance =  significance_sig / sqrt(significance_bkg);
     }
     else if(significance_bkg == 0 &&significance_sig !=0){
       significance =  1.;
@@ -3508,14 +3537,14 @@ int main(int argc, char* argv[]){
     else if(significance_sig == 0){
       significance =  0.;
     }
-
+    
     histo1D_electron1_sign_pt->SetBinContent(iBin,significance);
   }
   for( int iBin = 0; iBin < histo1D_electron2_bkg_pt->GetNbinsX(); iBin++){
     significance_bkg = histo1D_electron2_bkg_pt->Integral(iBin, histo1D_electron2_bkg_pt->GetNbinsX());
     significance_sig = histo1D_electron2_sig_pt->Integral(iBin, histo1D_electron2_sig_pt->GetNbinsX());
     if(significance_bkg != 0 &&significance_sig !=0){
-       significance =  significance_sig / sqrt(significance_bkg);
+      significance =  significance_sig / sqrt(significance_bkg);
     }
     else if(significance_bkg == 0 &&significance_sig !=0){
       significance =  1.;
@@ -3523,14 +3552,14 @@ int main(int argc, char* argv[]){
     else if(significance_sig == 0){
       significance =  0.;
     }
-
+    
     histo1D_electron2_sign_pt->SetBinContent(iBin,significance);
   }
   for( int iBin = 0; iBin < histo1D_muon0_bkg_pt->GetNbinsX(); iBin++){
     significance_bkg = histo1D_muon0_bkg_pt->Integral(iBin, histo1D_muon0_bkg_pt->GetNbinsX());
     significance_sig = histo1D_muon0_sig_pt->Integral(iBin, histo1D_muon0_sig_pt->GetNbinsX());
     if(significance_bkg != 0 &&significance_sig !=0){
-       significance =  significance_sig / sqrt(significance_bkg);
+      significance =  significance_sig / sqrt(significance_bkg);
     }
     else if(significance_bkg == 0 &&significance_sig !=0){
       significance =  1.;
@@ -3538,14 +3567,14 @@ int main(int argc, char* argv[]){
     else if(significance_sig == 0){
       significance =  0.;
     }
-
+    
     histo1D_muon0_sign_pt->SetBinContent(iBin,significance);
   }
   for( int iBin = 0; iBin < histo1D_muon1_bkg_pt->GetNbinsX(); iBin++){
     significance_bkg = histo1D_muon1_bkg_pt->Integral(iBin, histo1D_muon1_bkg_pt->GetNbinsX());
     significance_sig = histo1D_muon1_sig_pt->Integral(iBin, histo1D_muon1_sig_pt->GetNbinsX());
     if(significance_bkg != 0 &&significance_sig !=0){
-       significance =  significance_sig / sqrt(significance_bkg);
+      significance =  significance_sig / sqrt(significance_bkg);
     }
     else if(significance_bkg == 0 &&significance_sig !=0){
       significance =  1.;
@@ -3553,14 +3582,14 @@ int main(int argc, char* argv[]){
     else if(significance_sig == 0){
       significance =  0.;
     }
-
+    
     histo1D_muon1_sign_pt->SetBinContent(iBin,significance);
   }
   for( int iBin = 0; iBin < histo1D_muon2_bkg_pt->GetNbinsX(); iBin++){
     significance_bkg = histo1D_muon2_bkg_pt->Integral(iBin, histo1D_muon2_bkg_pt->GetNbinsX());
     significance_sig = histo1D_muon2_sig_pt->Integral(iBin, histo1D_muon2_sig_pt->GetNbinsX());
     if(significance_bkg != 0 &&significance_sig !=0){
-       significance =  significance_sig / sqrt(significance_bkg);
+      significance =  significance_sig / sqrt(significance_bkg);
     }
     else if(significance_bkg == 0 &&significance_sig !=0){
       significance =  1.;
@@ -3568,7 +3597,7 @@ int main(int argc, char* argv[]){
     else if(significance_sig == 0){
       significance =  0.;
     }
-
+    
     histo1D_muon2_sign_pt->SetBinContent(iBin,significance);
   }
   
@@ -4973,7 +5002,7 @@ int main(int argc, char* argv[]){
       cout << "(This corresponds to " << mins << " min and " << secs << " s)" << endl;
   }
   
-  PtInvFile->Close(); 
+  PtInvFile->Close();
   
   
   cout << "********************************************" << endl;
@@ -4986,7 +5015,7 @@ int main(int argc, char* argv[]){
 }  // end main
 
 ///////////////////////////////////// MVA INPUT /////////////////////////////////////////
-void MakeMVAvars(int Region, Double_t scaleFactor, int nonpromptWrong_){
+void MakeMVAvars(int Region, Double_t scaleFactor, int nonpromptWrong_, Double_t scaleFactorWZcorr){
   clock_t start_sub = clock();
   
   MVA_x1 = x1;
@@ -5006,6 +5035,8 @@ void MakeMVAvars(int Region, Double_t scaleFactor, int nonpromptWrong_){
   MVA_hdamp_down = hdamp_down;
   MVA_hdamp_up = hdamp_up;
   
+  MVA_WZlightbbcc = WZlightbbcc;
+  
   MVA_NonPromptInZ = nonpromptWrong_;
   
   MVA_channel = channelInt;
@@ -5013,6 +5044,8 @@ void MakeMVAvars(int Region, Double_t scaleFactor, int nonpromptWrong_){
   MVA_EqLumi = EquilumiSF;
   MVA_weight = static_cast<float>( scaleFactor * Luminosity /EquilumiSF );
   MVA_weight_nom =  scaleFactor ;
+  
+  MVA_weightWZcorr = scaleFactorWZcorr;
   MVA_weight_puSF = scaleFactor_puSF;
   MVA_weight_muonSF = scaleFactor_muonSF;
   MVA_weight_electronSF = scaleFactor_electronSF;
@@ -5275,9 +5308,12 @@ void createMVAtree(string dataSetName){
   mvatree->Branch("MVA_hdamp_up",&MVA_hdamp_up,"MVA_hdamp_up/D");
   mvatree->Branch("MVA_hdamp_down",&MVA_hdamp_down,"MVA_hdamp_down/D");
   
+  mvatree->Branch("MVA_WZlightbbcc",&MVA_WZlightbbcc,"MVA_WZlightbbcc/I");
+  
   mvatree->Branch("MVA_channel", &MVA_channel , "MVA_channel/I");
   mvatree->Branch("MVA_weight", &MVA_weight, "MVA_weight/F");
   mvatree->Branch("MVA_weight_nom", &MVA_weight_nom, "MVA_weight_nom/D");
+  mvatree->Branch("MVA_weightWZcorr", &MVA_weightWZcorr, "MVA_weightWZcorr/D");
   mvatree->Branch("MVA_weight_puSF_up", &MVA_weight_puSF_up, "MVA_weight_puSF_up/D");
   mvatree->Branch("MVA_weight_puSF_down", &MVA_weight_puSF_down, "MVA_weight_puSF_down/D");
   mvatree->Branch("MVA_weight_electronSF_up", &MVA_weight_electronSF_up, "MVA_weight_electronSF_up/D");
@@ -5485,34 +5521,72 @@ void writeMVAtree(){
   
   
   
-     tupfile->cd();
-    mvatree->Write();
+  tupfile->cd();
+  mvatree->Write();
+  
+  
+  
+  
+  if(checkNonprompt){
+    nonptupfile = new TFile((output_file_namemvatree+"nonpromptcorrect_80X.root").c_str(),"RECREATE");
+    TTree* nonpmvatree = (TTree*) mvatree->CloneTree(0);
     
-
-  
- 
-  
-  nonptupfile = new TFile((output_file_namemvatree+"nonpromptcorrect_80X.root").c_str(),"RECREATE");
-  TTree* nonpmvatree = (TTree*) mvatree->CloneTree(0);
-  
-  for (Long64_t it=0;it<mvatree->GetEntries(); it++) {
-    mvatree->GetEntry(it);
-    if (MVA_NonPromptInZ == 0) nonpmvatree->Fill();
-   
-  }
-  nonpmvatree->AutoSave();
-  
-  nonpwtupfile = new TFile((output_file_namemvatree+"nonpromptwrong_80X.root").c_str(),"RECREATE");
-  TTree *nonpwmvatree = (TTree*) mvatree->CloneTree(0);
-  
-  for (Long64_t it=0;it<mvatree->GetEntries(); it++) {
-    mvatree->GetEntry(it);
-    if (MVA_NonPromptInZ == 1) nonpwmvatree->Fill();
+    for (Long64_t it=0;it<mvatree->GetEntries(); it++) {
+      mvatree->GetEntry(it);
+      if (MVA_NonPromptInZ == 0) nonpmvatree->Fill();
+      
+    }
+    nonpmvatree->AutoSave();
     
+    nonpwtupfile = new TFile((output_file_namemvatree+"nonpromptwrong_80X.root").c_str(),"RECREATE");
+    TTree *nonpwmvatree = (TTree*) mvatree->CloneTree(0);
+    
+    for (Long64_t it=0;it<mvatree->GetEntries(); it++) {
+      mvatree->GetEntry(it);
+      if (MVA_NonPromptInZ == 1) nonpwmvatree->Fill();
+      
+    }
+    nonpwmvatree->AutoSave();
   }
-  nonpwmvatree->AutoSave();
-  
-  
+  if(checkFlavours){
+    wzlightfile = new TFile((output_file_namemvatree+"light_80X.root").c_str(),"RECREATE");
+    TTree *wzlightmvatree = (TTree*) mvatree->CloneTree(0);
+    
+    for (Long64_t it=0;it<mvatree->GetEntries(); it++) {
+      mvatree->GetEntry(it);
+      if (MVA_WZlightbbcc == 3){
+        MVA_weight = MVA_weightWZcorr * MVA_weight;
+        wzlightmvatree->Fill();
+      }
+    }
+    wzlightmvatree->AutoSave();
+    
+    wzccfile = new TFile((output_file_namemvatree+"cc_80X.root").c_str(),"RECREATE");
+    TTree *wzccmvatree = (TTree*) mvatree->CloneTree(0);
+    
+    for (Long64_t it=0;it<mvatree->GetEntries(); it++) {
+      mvatree->GetEntry(it);
+      if (MVA_WZlightbbcc == 4){
+        MVA_weight = MVA_weightWZcorr * MVA_weight;
+        wzccmvatree->Fill();
+      }
+    }
+    wzccmvatree->AutoSave();
+    
+    
+    wzbbfile = new TFile((output_file_namemvatree+"bb_80X.root").c_str(),"RECREATE");
+    TTree *wzbbmvatree = (TTree*) mvatree->CloneTree(0);
+    
+    for (Long64_t it=0;it<mvatree->GetEntries(); it++) {
+      mvatree->GetEntry(it);
+      if (MVA_WZlightbbcc == 5){
+        MVA_weight = MVA_weightWZcorr * MVA_weight;
+        wzbbmvatree->Fill();
+      }
+      
+    }
+    wzbbmvatree->AutoSave();
+  }
   tupfile->Close();
   
   double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
@@ -6415,6 +6489,7 @@ void ClearMVAVars(){
   MVA_channel = -999;
   MVA_weight = 1.;
   MVA_weight_nom = 1.;
+  MVA_weightWZcorr  = 1.;
   MVA_weight_puSF_up = 1.;
   MVA_weight_puSF_down = 1.;
   MVA_weight_electronSF_up =1.;
@@ -7612,7 +7687,7 @@ void InitRecovsGenInfoPlots(string dataSetName){
 }
 
 ///////////////////////////////////// INIT TREES /////////////////////////////////////////
-void InitTree(TTree* tree, bool isData, bool isfakes){
+void InitTree(TTree* tree, bool isData, bool isfakes, bool isWZ){
   // Set branch addresses and branch pointers
   if (!tree) return;
   tree->SetMakeClass(1);
@@ -7624,6 +7699,10 @@ void InitTree(TTree* tree, bool isData, bool isfakes){
   
   tree->SetBranchAddress("hdamp_up", &hdamp_up, &b_hdamp_up);
   tree->SetBranchAddress("hdamp_down", &hdamp_down, &b_hdamp_down);
+  
+  if(isWZ){
+    tree->SetBranchAddress("WZlightbbcc", &WZlightbbcc, &b_WZlightbbcc);
+  }
   if(!isData && !isfakes){
     tree->SetBranchAddress("weight0", &weight0, &b_weight0);
     tree->SetBranchAddress("weight1", &weight1, &b_weight1);
@@ -8862,49 +8941,49 @@ bool MatchingFunctionNonPromt(string dataSetName, vector <TLorentzVector> Lepton
   foundWwrong = false;
   foundWcorrect = false;
   //if(Region ==  RegionNonprompt  ){
-    if(WmuIndiceF == WmuIndiceMatched_top && WmuIndiceMatched_top != -999 ){ WlepTopNonprompt++; foundmatching = true;
-      //Histo_nonprompt_ttbar->Fill(mWT);
-      if(dataSetName.find("TTJets")!=std::string::npos) foundWcorrect = true;
-    }
-    else if(WelecIndiceF == WelecIndiceMatched_top && WelecIndiceMatched_top != -999 ){ WlepTopNonprompt++; foundmatching = true;
-      //if(Region ==  RegionNonprompt   ) Histo_nonprompt_ttbar->Fill(mWT);
-      if(dataSetName.find("TTJets")!=std::string::npos) foundWcorrect = true;
-      
-    }
-    else if(WmuIndiceF == WmuIndiceMatched_Zboson && WmuIndiceMatched_Zboson != -999 ){ WlepZNonprompt++; foundmatching = true;
-     // if(Region ==  RegionNonprompt   ) Histo_nonprompt_zjets->Fill(mWT);
-      if(dataSetName.find("DY")!=std::string::npos) foundWwrong= true;
-    }
-    else if(WelecIndiceF == WelecIndiceMatched_Zboson && WelecIndiceMatched_Zboson != -999 ){ WlepZNonprompt++; foundmatching = true;
-      //if(Region ==  RegionNonprompt   ) Histo_nonprompt_zjets->Fill(mWT);
-      if(dataSetName.find("DY")!=std::string::npos) foundWwrong = true;
-    }
-    else if(othermuonMatchedIndex.size() != 0 || otherelectronMatchedIndex.size()!=0){
-      for(int iMuMC = 0; iMuMC < othermuonMatchedIndex.size() ; iMuMC++){
-        if( WmuIndiceF == othermuonMatchedIndex[iMuMC]){ WlepOtherNonprompt++; foundmatching = true;
-          //if(Region ==  RegionNonprompt && dataSetName.find("TTJets")!=std::string::npos) Histo_nonprompt_ttbarother->Fill(mWT);
-         // if(Region ==  RegionNonprompt   && dataSetName.find("DY")!=std::string::npos) Histo_nonprompt_zjetsother->Fill(mWT);
-          if(dataSetName.find("TTJets")!=std::string::npos) foundWwrong = true;
-          if(dataSetName.find("DY")!=std::string::npos) foundWcorrect = true;
-        }
-      }
-      for(int iMuMC = 0; iMuMC < otherelectronMatchedIndex.size() ; iMuMC++){
-        if( WelecIndiceF == otherelectronMatchedIndex[iMuMC]){ WlepOtherNonprompt++; foundmatching = true;
-          //if(Region ==  RegionNonprompt   && dataSetName.find("TTJets")!=std::string::npos) Histo_nonprompt_ttbarother->Fill(mWT);
-         // if(Region ==  RegionNonprompt   && dataSetName.find("DY")!=std::string::npos) Histo_nonprompt_zjetsother->Fill(mWT);
-          if(dataSetName.find("TTJets")!=std::string::npos) foundWwrong = true;
-          if(dataSetName.find("DY")!=std::string::npos) foundWcorrect = true;
-        }
-      }
-    }
-    else return false;
+  if(WmuIndiceF == WmuIndiceMatched_top && WmuIndiceMatched_top != -999 ){ WlepTopNonprompt++; foundmatching = true;
+    //Histo_nonprompt_ttbar->Fill(mWT);
+    if(dataSetName.find("TTJets")!=std::string::npos) foundWcorrect = true;
+  }
+  else if(WelecIndiceF == WelecIndiceMatched_top && WelecIndiceMatched_top != -999 ){ WlepTopNonprompt++; foundmatching = true;
+    //if(Region ==  RegionNonprompt   ) Histo_nonprompt_ttbar->Fill(mWT);
+    if(dataSetName.find("TTJets")!=std::string::npos) foundWcorrect = true;
     
-    if( foundmatching ) WlepMatchedeventNonprompt++;
+  }
+  else if(WmuIndiceF == WmuIndiceMatched_Zboson && WmuIndiceMatched_Zboson != -999 ){ WlepZNonprompt++; foundmatching = true;
+    // if(Region ==  RegionNonprompt   ) Histo_nonprompt_zjets->Fill(mWT);
+    if(dataSetName.find("DY")!=std::string::npos) foundWwrong= true;
+  }
+  else if(WelecIndiceF == WelecIndiceMatched_Zboson && WelecIndiceMatched_Zboson != -999 ){ WlepZNonprompt++; foundmatching = true;
+    //if(Region ==  RegionNonprompt   ) Histo_nonprompt_zjets->Fill(mWT);
+    if(dataSetName.find("DY")!=std::string::npos) foundWwrong = true;
+  }
+  else if(othermuonMatchedIndex.size() != 0 || otherelectronMatchedIndex.size()!=0){
+    for(int iMuMC = 0; iMuMC < othermuonMatchedIndex.size() ; iMuMC++){
+      if( WmuIndiceF == othermuonMatchedIndex[iMuMC]){ WlepOtherNonprompt++; foundmatching = true;
+        //if(Region ==  RegionNonprompt && dataSetName.find("TTJets")!=std::string::npos) Histo_nonprompt_ttbarother->Fill(mWT);
+        // if(Region ==  RegionNonprompt   && dataSetName.find("DY")!=std::string::npos) Histo_nonprompt_zjetsother->Fill(mWT);
+        if(dataSetName.find("TTJets")!=std::string::npos) foundWwrong = true;
+        if(dataSetName.find("DY")!=std::string::npos) foundWcorrect = true;
+      }
+    }
+    for(int iMuMC = 0; iMuMC < otherelectronMatchedIndex.size() ; iMuMC++){
+      if( WelecIndiceF == otherelectronMatchedIndex[iMuMC]){ WlepOtherNonprompt++; foundmatching = true;
+        //if(Region ==  RegionNonprompt   && dataSetName.find("TTJets")!=std::string::npos) Histo_nonprompt_ttbarother->Fill(mWT);
+        // if(Region ==  RegionNonprompt   && dataSetName.find("DY")!=std::string::npos) Histo_nonprompt_zjetsother->Fill(mWT);
+        if(dataSetName.find("TTJets")!=std::string::npos) foundWwrong = true;
+        if(dataSetName.find("DY")!=std::string::npos) foundWcorrect = true;
+      }
+    }
+  }
+  else return false;
+  
+  if( foundmatching ) WlepMatchedeventNonprompt++;
   //}
   //else return false;
   
   
-   return true;
+  return true;
 }
 
 bool MatchingFunction(string dataSetName, vector <TLorentzVector> Leptons, vector <TLorentzVector> selectedMuons, vector<TLorentzVector> selectedElectrons , vector <TLorentzVector> selectedJets, bool makePlots, bool debug){
@@ -9026,8 +9105,8 @@ void MatchingEfficiencyNonPrompt(){
   
   cout << "                LEPTON MATCHING" << endl;
   cout << "                  - W lepton was from Top: " << WlepTopNonprompt << " out of " << WlepMatchedeventNonprompt << " or " << (WlepTopNonprompt/WlepMatchedeventNonprompt)*100. << " % " << endl;
-   cout << "                  - W lepton was from Z: " << WlepZNonprompt << " out of " << WlepMatchedeventNonprompt << " or " << (WlepZNonprompt/WlepMatchedeventNonprompt)*100. << " % " << endl;
-   cout << "                  - W lepton was from other: " << WlepOtherNonprompt << " out of " << WlepMatchedeventNonprompt << " or " << (WlepOtherNonprompt/WlepMatchedeventNonprompt)*100. << " % " << endl;
+  cout << "                  - W lepton was from Z: " << WlepZNonprompt << " out of " << WlepMatchedeventNonprompt << " or " << (WlepZNonprompt/WlepMatchedeventNonprompt)*100. << " % " << endl;
+  cout << "                  - W lepton was from other: " << WlepOtherNonprompt << " out of " << WlepMatchedeventNonprompt << " or " << (WlepOtherNonprompt/WlepMatchedeventNonprompt)*100. << " % " << endl;
 };
 void MatchingEfficiency(){
   
