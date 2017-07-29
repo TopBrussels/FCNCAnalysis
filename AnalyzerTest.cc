@@ -2274,7 +2274,7 @@ int main(int argc, char* argv[]){
         if(WZlightbbcc == 4) scaleFactorWZcorr = 102657./ 1179097.;
         if(WZlightbbcc == 5) scaleFactorWZcorr = 2040. / 1179097.;
       }
-      
+      else scaleFactorWZcorr = 1.;
       
       double eventweightForNotMSplots = 1.;
       if(!isData && !isfakes) eventweightForNotMSplots = Luminosity/EquilumiSF;
@@ -2567,7 +2567,7 @@ int main(int argc, char* argv[]){
         
       }
       //cout << "zmass" << endl;
-      if(Zboson.M() < 76 || Zboson.M() > 106) continue;
+      if(Zboson.M() <( 76. +7.5)|| Zboson.M() > (106.-7.5)) continue;
       if(doCutflow){ // // {">1l,>0j", "SF pair","lep veto","Z mass","#Delta R (l_{W},b) <= 2.5",">2l","STSR","TTSR","WZCR"};
         MSPlot["cutflow"] ->Fill(3. , datasets[d], true,eventweightForplots);
         if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(3. , datasets[d], true,eventweightForplots);

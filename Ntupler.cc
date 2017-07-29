@@ -118,6 +118,7 @@ TLorentzVector MetzCalculator(TLorentzVector leptW, TLorentzVector v_met);
 // administration functions
 string ConvertIntToString(int Number, bool pad);
 string MakeTimeStamp();
+Int_t splitupsample(vector<TRootMCParticle*> Particles);
 pair< vector< pair<unsigned int, unsigned int>>, vector <string> >  ObjectMatcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TLorentzVector> selectedobjects);
 pair< vector< pair<unsigned int, unsigned int>>, vector <string> >  LeptonMatcher(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TLorentzVector> selectedleptons);
 pair< vector< pair<unsigned int, unsigned int>>, vector <string> >  LeptonMatcherST(vector<TRootMCParticle*> mcParticles_ , Long64_t evt_num_, vector<TLorentzVector> selectedleptons);
@@ -425,13 +426,13 @@ int main (int argc, char *argv[])
   /// Object ID              ///
   /////////////////////////////
   // electron
-  float el_pt_cut =30.; // 42
+  float el_pt_cut =20.; //8;//30.; // 42
   float el_eta_cut = 2.5;
   float el_iso_cone  = 0.3;
   // reliso cut fabs(eta supercluster) <= 1.479 --> 0.107587 // (fabs(eta supercluster) > 1.479 && fabs(eta supercluster) < 2.5) --> 0.113254
   // muon
-  float mu_pt_cut = 20.; // 40
-  float mu_pt_cut_loose = 30.;
+  float mu_pt_cut = 20; //5;// 20.; // 40
+  float mu_pt_cut_loose =20;// 5;//30.;
   float mu_eta_cut = 2.4;
   float mu_iso_cut = 0.15;
   float mu_iso_cut_loose = 0.25;
@@ -896,6 +897,7 @@ int main (int argc, char *argv[])
     if(doJESJERshift == 3) postfix = "_JERdown" ;
     if(doJESJERshift == 4) postfix = "_JERup" ;
     if(doFakeshift == 1) postfix ="_FakeShift";
+    
     string Ntupname = date_dir +"FCNC_3L_" + dName + "_"+  strJobNum + postfix + ".root";
     cout << "Ntuple " << Ntupname << " created " << endl;
     
@@ -1010,6 +1012,7 @@ int main (int argc, char *argv[])
     Double_t WPc_CvsL_Tight;
     Int_t PassedMET;
     Int_t channelInt;
+    Int_t WZlightbbcc;
     
     // variables for electrons
     Int_t nbOfLooseElectrons;
@@ -1034,7 +1037,7 @@ int main (int argc, char *argv[])
     Bool_t passConversion_electron[10];
     Bool_t isId_electron[10];
     Bool_t isIso_electron[10];
-    Bool_t isEBEEGap[10];
+   Double_t ioEmIoP_electron[10];
     
     //variable for muons
     Int_t nbOfLooseMuons;
@@ -1085,6 +1088,10 @@ int main (int argc, char *argv[])
     Double_t met_Pt;
     Double_t met_Px;
     Double_t met_Py;
+    Double_t met_Px_uncDown;
+    Double_t met_Py_uncDown;
+    Double_t met_Px_uncUp;
+    Double_t met_Py_uncUp;
     // Double_t met_Pz;
     Double_t met_Phi;
     Double_t met_Eta;
@@ -1177,6 +1184,7 @@ int main (int argc, char *argv[])
      myTree->Branch("weight8", &weight0," weight8/D");
     
     myTree->Branch("channelInt", &channelInt, "channelInt/I");
+    myTree->Branch("WZlightbbcc", &WZlightbbcc, "WZlightbbcc/I");
     myTree->Branch("nloWeight",&nloWeight,"nloWeight/D");
     myTree->Branch("run_num",&run_num,"run_num/I");
     myTree->Branch("evt_num",&evt_num,"evt_num/L");
@@ -1254,7 +1262,7 @@ int main (int argc, char *argv[])
     myTree->Branch("passConversion_electron",passConversion_electron,"passConversion_electron[nElectrons]/O)");
     myTree->Branch("isId_electron",isId_electron,"isId_electron[nElectrons]/O)");
     myTree->Branch("isIso_electron",isIso_electron,"isIso_electron[nElectrons]/O)");
-    myTree->Branch("isEBEEGap",isEBEEGap,"isEBEEGap[nElectrons]/O)");
+    myTree->Branch("ioEmIoP_electron",ioEmIoP_electron,"ioEmIoP_electron[nElectrons]/D)");
     
     // muons
     myTree->Branch("nbOfLooseMuons", &nbOfLooseMuons, "nbOfLooseMuons/I");
@@ -1350,6 +1358,10 @@ int main (int argc, char *argv[])
     myTree->Branch("met_Phi", &met_Phi, "met_Phi/D");
     myTree->Branch("met_Px", &met_Px, "met_Px/D");
     myTree->Branch("met_Py", &met_Py, "met_Py/D");
+    myTree->Branch("met_Px_uncDown", &met_Px_uncDown, "met_Px_uncDown/D");
+    myTree->Branch("met_Py_uncDown", &met_Py_uncDown, "met_Py_uncDown/D");
+    myTree->Branch("met_Px_uncUp", &met_Px_uncUp, "met_Px_uncUp/D");
+    myTree->Branch("met_Py_uncUp", &met_Py_uncUp, "met_Py_uncUp/D");
     //myTree->Branch("met_Pz", &met_Pz, "met_Pz/D");
     myTree->Branch("met_before_JES", &met_before_JES, "met_before_JES/D");
     myTree->Branch("met_after_JES", &met_after_JES, "met_after_JES/D");
@@ -2105,6 +2117,7 @@ int main (int argc, char *argv[])
        
       }
      
+      
            ///////////////////////////////////////////////////////////
       // Event selection
       ///////////////////////////////////////////////////////////
@@ -2347,7 +2360,8 @@ int main (int argc, char *argv[])
       //////////////////////////////////////////////////////
       continueFlow = true;
       nbEvents++;
-
+      
+      
       
       if(!doFakeLepton){
         if(((selectedMuons.size() + selectedElectrons.size()) < 2)){
@@ -2375,19 +2389,9 @@ int main (int argc, char *argv[])
         
       }
       else  if(doFakeLepton){
-        if ((selectedMuons.size() > 0 || selectedElectrons.size() > 0) && (selectedFakeMuons.size() + selectedFakeElectrons.size()) >  0 ){
-          if(selectedMuons.size() == 2 && selectedFakeMuons.size() == 1) {channelInt = 0; i_channel = 0;}
-          else if(selectedElectrons.size() == 2 && selectedFakeElectrons.size() == 1) {channelInt = 3; i_channel = 3;}
-          else if(selectedElectrons.size() == 1 && selectedMuons.size() == 1 && selectedFakeElectrons.size() == 1 ) {channelInt = 2; i_channel = 2; }
-          else if(selectedElectrons.size() == 2 && selectedFakeMuons.size() == 1  ) {channelInt = 2; i_channel = 2; }
-          else if(selectedMuons.size() == 2 && selectedFakeElectrons.size() == 1){channelInt = 1; i_channel = 1; }
-          else if(selectedMuons.size() == 1 && selectedElectrons.size() == 1  && selectedFakeMuons.size() == 1){channelInt = 1; i_channel = 1; }
-          else if(selectedMuons.size() == 1 && selectedFakeMuons.size() == 1){channelInt = 4; i_channel = 4; }
-          else if(selectedElectrons.size() == 1  && selectedFakeElectrons.size() == 1){channelInt = 5; i_channel = 5; }
-        }
-        else{ continueFlow = false; }
        
-          if((selectedMuons.size() + selectedElectrons.size()) == 2 && (selectedFakeMuons.size() + selectedFakeElectrons.size()) == 1 ){
+          if((selectedMuons.size() + selectedElectrons.size()) > 1 && (selectedFakeMuons.size() + selectedFakeElectrons.size()) >0 ){
+            //if((selectedMuons.size() + selectedElectrons.size()) = 2 && (selectedFakeMuons.size() + selectedFakeElectrons.size()) =1 )
             selections.push_back(1);
             nbSelectedEvents_3L++;
             lep3 = true;
@@ -2402,6 +2406,7 @@ int main (int argc, char *argv[])
           else{
             lep3 = false;
             selections.push_back(0);
+            continueFlow = false;
             //continueFlow = false;
           }
         
@@ -2425,12 +2430,42 @@ int main (int argc, char *argv[])
         }
       }*/
       
-      double met_px = mets[0]->Px();
-      double met_py = mets[0]->Py();
-      met_Pt = sqrt(met_px*met_px + met_py*met_py);
+      met_Px = mets[0]->Px();
+      met_Py = mets[0]->Py();
+      met_Pt = sqrt(met_Px*met_Px + met_Py*met_Py);
       met = met_Pt;
       met_Phi = mets[0]->Phi();
       met_Eta = mets[0]->Eta();
+      
+      
+      //--------------------------------------------------------------
+      // Set up of the unclustered MET systematic
+      //---------------------------------------------------------------
+      double uncmet_px = mets[0]->Px();
+      double uncmet_py = mets[0]->Py();
+      for(unsigned int i=0; i<init_jets.size(); i++){
+        uncmet_px += init_jets[i]->Px();
+        uncmet_py += init_jets[i]->Py();
+      }
+      for(unsigned int i=0; i<init_muons.size(); i++){
+        uncmet_px += init_muons[i]->Px();
+        uncmet_py += init_muons[i]->Py();
+      }
+      for(unsigned int i=0; i<init_electrons.size(); i++){
+        uncmet_px += init_electrons[i]->Px();
+        uncmet_py += init_electrons[i]->Py();
+      }
+    
+        met_Px_uncUp = met_Px + uncmet_px*0.1;
+        met_Py_uncUp = met_Py + uncmet_py*0.1;
+      
+      
+        met_Px_uncDown = met_Px -uncmet_px*0.1;
+        met_Py_uncDown = met_Py - uncmet_py*0.1;
+      
+      
+      
+      
       
       if(!isData)puSF =  LumiWeights.ITweight((int)event->nTruePU());
       if(!isData)puSF_up =  LumiWeights_up.ITweight((int)event->nTruePU());
@@ -2503,40 +2538,13 @@ int main (int argc, char *argv[])
         eventweight = 1.;
         eventweight *= puSF;
         eventweight *= btagWeightShape;
-        /*
-        triggers_container.fill(0);
-        for(int iter_trig=0; iter_trig< trigger_mu->triggerList.size() && iter_trig<200; iter_trig++){
-          triggers_container[iter_trig] = trigger_mu->triggermap.find(trigger_mu->triggerList[iter_trig])->second.second;
-        }
-        for(int iter_trig=0; iter_trig< trigger_mumu->triggerList.size() && iter_trig<200; iter_trig++){
-          triggers_container[iter_trig] = trigger_mumu->triggermap.find(trigger_mumu->triggerList[iter_trig])->second.second;
-        }
-        for(int iter_trig=0; iter_trig< trigger_mumumu->triggerList.size() && iter_trig<200; iter_trig++){
-          triggers_container[iter_trig] = trigger_mumumu->triggermap.find(trigger_mumumu->triggerList[iter_trig])->second.second;
-        }
-        for(int iter_trig=0; iter_trig< trigger_e->triggerList.size() && iter_trig<200; iter_trig++){
-          triggers_container[iter_trig] = trigger_e->triggermap.find(trigger_e->triggerList[iter_trig])->second.second;
-        }
-        for(int iter_trig=0; iter_trig< trigger_ee->triggerList.size() && iter_trig<200; iter_trig++){
-          triggers_container[iter_trig] = trigger_ee->triggermap.find(trigger_eee->triggerList[iter_trig])->second.second;
-        }
-        for(int iter_trig=0; iter_trig< trigger_eee->triggerList.size() && iter_trig<200; iter_trig++){
-          triggers_container[iter_trig] = trigger_eee->triggermap.find(trigger_eee->triggerList[iter_trig])->second.second;
-        }
-        for(int iter_trig=0; iter_trig< trigger_emu->triggerList.size() && iter_trig<200; iter_trig++){
-          triggers_container[iter_trig] = trigger_emu->triggermap.find(trigger_emu->triggerList[iter_trig])->second.second;
-        }
-        for(int iter_trig=0; iter_trig< trigger_emumu_mumue->triggerList.size() && iter_trig<200; iter_trig++){
-          triggers_container[iter_trig] = trigger_emumu_mumue->triggermap.find(trigger_emumu_mumue->triggerList[iter_trig])->second.second;
-        }
-        for(int iter_trig=0; iter_trig< trigger_met->triggerList.size() && iter_trig<200; iter_trig++){
-          triggers_container[iter_trig] = trigger_met->triggermap.find(trigger_met->triggerList[iter_trig])->second.second;
-        }
-        for(int iter_trig=0; iter_trig< trigger_jet->triggerList.size() && iter_trig<200; iter_trig++){
-          triggers_container[iter_trig] = trigger_jet->triggermap.find(trigger_jet->triggerList[iter_trig])->second.second;
-        }
-        */
+      
+        WZlightbbcc = -9;
         
+        if(daName.find("WZTo3LNu_amc")!=std::string::npos){
+          WZlightbbcc = splitupsample(mcParticles);
+          
+        }
         
         nMuons = 0;
         double muonSFtemp = 1.;
@@ -2556,7 +2564,16 @@ int main (int argc, char *argv[])
           badmueventclonemu[nMuons] = selectedMuons[selmu]->isClone80X();
           
           
+          
+          d0_muon[nMuons] = selectedMuons[selmu]->d0();
           pfIso_muon[nMuons]=selectedMuons[selmu]->relPfIso(4,0);
+          chargedHadronIso_muon[nMuons] = selectedMuons[selmu]->chargedHadronIso(4);
+          neutralHadronIso_muon[nMuons] = selectedMuons[selmu]->neutralHadronIso(4);
+          photonIso_muon[nMuons] = selectedMuons[selmu]->photonIso(4);
+          
+          
+
+          
           if(!isData)
           {
             
@@ -2626,36 +2643,42 @@ int main (int argc, char *argv[])
             pt_muon_corrected[nMuons]=selectedFakeMuons[selmu]->Pt()*ptSF_muon[nMuons];
             
             
+            d0_muon[nMuons] = selectedFakeMuons[selmu]->d0();
+            pfIso_muon[nMuons]=selectedFakeMuons[selmu]->relPfIso(4,0);
+            chargedHadronIso_muon[nMuons] = selectedFakeMuons[selmu]->chargedHadronIso(4);
+            neutralHadronIso_muon[nMuons] = selectedFakeMuons[selmu]->neutralHadronIso(4);
+            photonIso_muon[nMuons] = selectedFakeMuons[selmu]->photonIso(4);
+            
             pfIso_muon[nMuons]=selectedFakeMuons[selmu]->relPfIso(4,0);
             if(!isData)
             {
-              MuonIDSF_BCDEF[nMuons] = muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
-              MuonIsoSF_BCDEF[nMuons] = muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
-              MuonIDSF_GH[nMuons] = muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
-              MuonIsoSF_GH[nMuons] = muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 0);
+              MuonIDSF_BCDEF[nMuons] = muonSFWeightID_BCDEF->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 0);
+              MuonIsoSF_BCDEF[nMuons] = muonSFWeightIso_BCDEF->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 0);
+              MuonIDSF_GH[nMuons] = muonSFWeightID_GH->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 0);
+              MuonIsoSF_GH[nMuons] = muonSFWeightIso_GH->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 0);
               
-              MuonIDSF_BCDEF_down[nMuons] = muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1);
-              MuonIsoSF_BCDEF_down[nMuons] = muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1);
-              MuonIDSF_GH_down[nMuons] = muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1);
-              MuonIsoSF_GH_down[nMuons] = muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1);
+              MuonIDSF_BCDEF_down[nMuons] = muonSFWeightID_BCDEF->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), -1);
+              MuonIsoSF_BCDEF_down[nMuons] = muonSFWeightIso_BCDEF->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), -1);
+              MuonIDSF_GH_down[nMuons] = muonSFWeightID_GH->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), -1);
+              MuonIsoSF_GH_down[nMuons] = muonSFWeightIso_GH->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), -1);
               
-              MuonIDSF_BCDEF_up[nMuons] = muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1);
-              MuonIsoSF_BCDEF_up[nMuons] = muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1);
-              MuonIDSF_GH_up[nMuons] = muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1);
-              MuonIsoSF_GH_up[nMuons] = muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1);
+              MuonIDSF_BCDEF_up[nMuons] = muonSFWeightID_BCDEF->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 1);
+              MuonIsoSF_BCDEF_up[nMuons] = muonSFWeightIso_BCDEF->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 1);
+              MuonIDSF_GH_up[nMuons] = muonSFWeightID_GH->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 1);
+              MuonIsoSF_GH_up[nMuons] = muonSFWeightIso_GH->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 1);
               
               
               MuonIDSF[nMuons]  = (muonSFWeightID_BCDEF->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 0)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 0)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
               MuonIsoSF[nMuons] = (muonSFWeightIso_BCDEF->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 0)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 0)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
               
-              MuonIDSF_up[nMuons]  = (muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
-              MuonIsoSF_up[nMuons] = (muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), 1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+              MuonIDSF_up[nMuons]  = (muonSFWeightID_BCDEF->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 1)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+              MuonIsoSF_up[nMuons] = (muonSFWeightIso_BCDEF->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 1)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), 1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
               
-              MuonIDSF_down[nMuons]  = (muonSFWeightID_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
-              MuonIsoSF_down[nMuons] = (muonSFWeightIso_BCDEF->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedMuons[selmu]->Eta(), selectedMuons[selmu]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
-              MuonTrackSF[nMuons] = h_muonSFWeightTrack->Eval(selectedMuons[selmu]->Eta());
-              MuonTrackSF_up[nMuons] = h_muonSFWeightTrack->Eval(selectedMuons[selmu]->Eta())*1.01;
-              MuonTrackSF_down[nMuons] = h_muonSFWeightTrack->Eval(selectedMuons[selmu]->Eta())*0.99;
+              MuonIDSF_down[nMuons]  = (muonSFWeightID_BCDEF->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightID_GH->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+              MuonIsoSF_down[nMuons] = (muonSFWeightIso_BCDEF->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), -1)*lum_RunsBCDEF+muonSFWeightIso_GH->at(selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Pt(), -1)*lum_RunsGH)/(lum_RunsGH+lum_RunsBCDEF);
+              MuonTrackSF[nMuons] = h_muonSFWeightTrack->Eval(selectedFakeMuons[selmu]->Eta());
+              MuonTrackSF_up[nMuons] = h_muonSFWeightTrack->Eval(selectedFakeMuons[selmu]->Eta())*1.01;
+              MuonTrackSF_down[nMuons] = h_muonSFWeightTrack->Eval(selectedFakeMuons[selmu]->Eta())*0.99;
               
               eventweight *= MuonIDSF[nMuons] * MuonIsoSF[nMuons] *MuonTrackSF[nMuons];
             }
@@ -2690,6 +2713,22 @@ int main (int argc, char *argv[])
           E_electron[nElectrons]=selectedElectrons[selel]->E();
           pfIso_electron[nElectrons]=selectedElectrons[selel]->relPfIso(3,0);
           charge_electron[nElectrons]=selectedElectrons[selel]->charge();
+          
+          d0_electron[nElectrons] = selectedElectrons[selel]->d0();
+          chargedHadronIso_electron[nElectrons] = selectedElectrons[selel]->chargedHadronIso(3);
+          neutralHadronIso_electron[nElectrons] = selectedElectrons[selel]->neutralHadronIso(3);
+          photonIso_electron[nElectrons] = selectedElectrons[selel]->photonIso(3);
+          sigmaIEtaIEta_electron[nElectrons] = selectedElectrons[selel]->sigmaIEtaIEta_full5x5();
+          deltaEtaIn_electron[nElectrons] = selectedElectrons[selel]->deltaEtaIn();
+          deltaPhiIn_electron[nElectrons] = selectedElectrons[selel]->deltaPhiIn();
+          hadronicOverEm_electron[nElectrons]  = selectedElectrons[selel]->hadronicOverEm();
+          ioEmIoP_electron[nElectrons] = selectedElectrons[selel]->ioEmIoP();
+          passConversion_electron[nElectrons] = selectedElectrons[selel]->passConversion();
+          missingHits_electron[nElectrons] = selectedElectrons[selel]->missingHits();
+         
+         
+          
+          
           if(!isData){
             
             ElectronSF[nElectrons] = 1.; ElectronSF_up[nElectrons] = 1.; ElectronSF_down[nElectrons] = 1.;
@@ -2729,22 +2768,36 @@ int main (int argc, char *argv[])
             E_electron[nElectrons]=selectedFakeElectrons[selel]->E();
             pfIso_electron[nElectrons]=selectedFakeElectrons[selel]->relPfIso(3,0);
             charge_electron[nElectrons]=selectedFakeElectrons[selel]->charge();
+            d0_electron[nElectrons] = selectedFakeElectrons[selel]->d0();
+            chargedHadronIso_electron[nElectrons] = selectedFakeElectrons[selel]->chargedHadronIso(3);
+            neutralHadronIso_electron[nElectrons] = selectedFakeElectrons[selel]->neutralHadronIso(3);
+            photonIso_electron[nElectrons] = selectedFakeElectrons[selel]->photonIso(3);
+            sigmaIEtaIEta_electron[nElectrons] = selectedFakeElectrons[selel]->sigmaIEtaIEta_full5x5();
+            deltaEtaIn_electron[nElectrons] = selectedFakeElectrons[selel]->deltaEtaIn();
+            deltaPhiIn_electron[nElectrons] = selectedFakeElectrons[selel]->deltaPhiIn();
+            hadronicOverEm_electron[nElectrons]  = selectedFakeElectrons[selel]->hadronicOverEm();
+            ioEmIoP_electron[nElectrons] = selectedFakeElectrons[selel]->ioEmIoP();
+            passConversion_electron[nElectrons] = selectedFakeElectrons[selel]->passConversion();
+            missingHits_electron[nElectrons] = selectedFakeElectrons[selel]->missingHits();
+            
+            
+            
             if(!isData){
               ElectronSF[nElectrons] = 1.; ElectronSF_up[nElectrons] = 1.; ElectronSF_down[nElectrons] = 1.;
               
               ElectronSF[nElectrons] = electronSFWeightID->at(selectedFakeElectrons[selel]->Eta(),selectedFakeElectrons[selel]->Pt(),0)*electronSFWeightReco->at(selectedFakeElectrons[selel]->Eta(),selectedFakeElectrons[selel]->Pt(),0);
-              ElectronSF_up[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),1)*electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),1);
-              ElectronSF_down[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),-1)*electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),-1);
+              ElectronSF_up[nElectrons] = electronSFWeightID->at(selectedFakeElectrons[selel]->Eta(),selectedFakeElectrons[selel]->Pt(),1)*electronSFWeightReco->at(selectedFakeElectrons[selel]->Eta(),selectedFakeElectrons[selel]->Pt(),1);
+              ElectronSF_down[nElectrons] = electronSFWeightID->at(selectedFakeElectrons[selel]->Eta(),selectedFakeElectrons[selel]->Pt(),-1)*electronSFWeightReco->at(selectedFakeElectrons[selel]->Eta(),selectedFakeElectrons[selel]->Pt(),-1);
               
               ElectronSFID[nElectrons] = 1.; ElectronSFID_up[nElectrons] = 1.; ElectronSFID_down[nElectrons] = 1.;
-              ElectronSFID[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0);
-              ElectronSFID_up[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),1);
-              ElectronSFID_down[nElectrons] = electronSFWeightID->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),-1);
+              ElectronSFID[nElectrons] = electronSFWeightID->at(selectedFakeElectrons[selel]->Eta(),selectedFakeElectrons[selel]->Pt(),0);
+              ElectronSFID_up[nElectrons] = electronSFWeightID->at(selectedFakeElectrons[selel]->Eta(),selectedFakeElectrons[selel]->Pt(),1);
+              ElectronSFID_down[nElectrons] = electronSFWeightID->at(selectedFakeElectrons[selel]->Eta(),selectedFakeElectrons[selel]->Pt(),-1);
               
               ElectronSFReco[nElectrons] = 1.; ElectronSFReco_up[nElectrons] = 1.; ElectronSFReco_down[nElectrons] = 1.;
-              ElectronSFReco[nElectrons] = electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),0);
-              ElectronSFReco_up[nElectrons] = electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),1);
-              ElectronSFReco_down[nElectrons] = electronSFWeightReco->at(selectedElectrons[selel]->Eta(),selectedElectrons[selel]->Pt(),-1);
+              ElectronSFReco[nElectrons] = electronSFWeightReco->at(selectedFakeElectrons[selel]->Eta(),selectedFakeElectrons[selel]->Pt(),0);
+              ElectronSFReco_up[nElectrons] = electronSFWeightReco->at(selectedFakeElectrons[selel]->Eta(),selectedFakeElectrons[selel]->Pt(),1);
+              ElectronSFReco_down[nElectrons] = electronSFWeightReco->at(selectedFakeElectrons[selel]->Eta(),selectedFakeElectrons[selel]->Pt(),-1);
               
               
             }
@@ -2927,7 +2980,56 @@ string MakeTimeStamp(){
   return date_str;
 };
 
+Int_t splitupsample(vector<TRootMCParticle*> Particles){
+ // TLorentzVector GenParticle;
+ /* mc_status[iMC] = mcParticles[iMC]->status();
+  mc_pdgId[iMC] = mcParticles[iMC]->type();
+  mc_mother[iMC] = mcParticles[iMC]->motherType();
+  mc_granny[iMC] = mcParticles[iMC]->grannyType();
+  mc_pt[iMC] = mcParticles[iMC]->Pt();
+  mc_phi[iMC] = mcParticles[iMC]->Phi();
+  mc_eta[iMC] = mcParticles[iMC]->Eta();
+  mc_E[iMC] = mcParticles[iMC]->E();
+  mc_M[iMC] = mcParticles[iMC]->M();
+  mc_isLastCopy[iMC] = mcParticles[iMC]->isLastCopy();
+  mc_isPromptFinalState[iMC] = mcParticles[iMC]->isPromptFinalState();
+  mc_isHardProcess[iMC] = mcParticles[iMC]->isHardProcess();
+  mc_fromHardProcessFinalState[iMC] = mcParticles[iMC]->fromHardProcessFinalState();
+  */
+  /*vector < TLorentzVector > GenParticles;
+  GenParticles.clear();
+  vector <int> partonID;
+  partonID.clear();
+  for(int iMC = 0; iMC < Particles.size(); iMC++){
+    GenParticle.Clear();
+    GenParticle.SetPxPyPzE(Particles[iMC]->Px(), Particles[iMC]->Py(),,Particles[iMC]->Pz(), Particles[iMC]->E());
+    GenParticles.push_back(GenParticle);
+    partonID.push_back(iMC);
+  }
 
+  */
+  
+  // find events
+  Int_t returner = -9;
+  bool foundbjet = false;
+  bool foundcjet = false;
+  
+  
+  for(int iMC = 0; iMC < Particles.size(); iMC++){
+    if(Particles[iMC]->status() > 1 && Particles[iMC]->status() <= 20 || Particles[iMC]->status() >= 30) continue;
+    if( abs(Particles[iMC]->type()) > 8 ) continue;
+    
+    //cout << "looking at " << Particles[iMC]->type() << endl;
+    if(abs(Particles[iMC]->type()) == 5){ foundbjet = true; break; }
+    else if(abs(Particles[iMC]->type()) == 4){foundcjet = true; }
+    
+  }
+  if(foundbjet) returner = 5;
+  else if(foundcjet) returner = 4;
+  else returner = 3;
+  
+  return returner;
+}
 
 
 
