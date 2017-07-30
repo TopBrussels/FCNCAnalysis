@@ -55,6 +55,9 @@ double scaleFakes_uuu = 1.;
 double scaleFakes_uue = 1.;
 double scaleFakes_eeu = 1.;
 double scaleFakes_eee = 1.;
+bool FakeMuInW = false;
+bool FakeEinW = false;
+
 ////////////////////////////////// mapping ///////////////////////////////
 map<string,TFile*> tFileMap;
 TFile *fin;
@@ -753,7 +756,7 @@ Int_t main(Int_t argc, char* argv[]){
   clock_t start = clock();
   //setTDRStyle(); // TO FIX
   //setMyStyle(); // TO FIX stat box title
-  
+  bool applyiniweights = false;
   
   Int_t testnr = -1;
   //////////// Settings of the analysis //////////////////
@@ -774,7 +777,13 @@ Int_t main(Int_t argc, char* argv[]){
       std::cout << "   PlotSystematics: make sys plots fo WZ" << endl;
       std::cout << "   PlotMVAvars: plot mva vars" << endl;
       std::cout << "  doMTWtemplate make mtw templates" << endl;
+      std::cout << "  doIniWeight " << endl;
+
       return 0;
+    }
+    if(string(argv[i]).find("doIniWeight")!=std::string::npos){
+      applyiniweights  = true;
+      
     }
     if(string(argv[i]).find("doMTWtemplate")!=std::string::npos){
       doMTWtemplate = true;
@@ -1065,6 +1074,7 @@ Int_t main(Int_t argc, char* argv[]){
       }
       // initialise combine output histograms
       TH1::SetDefaultSumw2();
+      TH2::SetDefaultSumw2();
       //cout << "create template histo" << endl;
       TH1F *hist_uuu(0);
       if(!doMTWtemplate) hist_uuu = new TH1F( (coupling + "_" + region+"_uuu").c_str(),           (coupling + "_" + region+"_uuu").c_str(),           nbin,BDT_begin,BDT_end );
@@ -1093,6 +1103,18 @@ Int_t main(Int_t argc, char* argv[]){
       if(!doMTWtemplate) hist_check_eee = new TH1F( ("check"+coupling + "_" + region+"_eee").c_str(),           (coupling + "_" + region+"_eee").c_str(),           nbin,BDT_begin,BDT_end );
       else hist_check_eee = new TH1F( ("check"+coupling + "_mTW_eee").c_str(),           ("check"+coupling + "_mTW_eee").c_str(),           nbinMTW,0, endMTW );
       
+      
+      TH2F *hist_lep2_pt(0);
+      TH2F *hist_lep2_pt_uuu(0);
+      TH2F *hist_lep2_pt_uue(0);
+      TH2F *hist_lep2_pt_eeu(0);
+      TH2F *hist_lep2_pt_eee(0);
+      
+      hist_lep2_pt = new TH2F(("hist_lep2_pt"+coupling+"_"+region+"_"+dataSetName).c_str(),("hist_lep2_pt"+coupling+"_"+region+"_"+dataSetName).c_str(), 25,0.,150.,nbin, BDT_begin, BDT_end);
+      hist_lep2_pt_uuu = new TH2F(("hist_lep2_pt"+coupling+"_"+region+"_uuu_"+dataSetName).c_str(),("hist_lep2_pt"+coupling+"_"+region+"_uuu_"+dataSetName).c_str(), 25,0.,150.,nbin, BDT_begin, BDT_end);
+      hist_lep2_pt_uue = new TH2F(("hist_lep2_pt"+coupling+"_"+region+"_uue_"+dataSetName).c_str(),("hist_lep2_pt"+coupling+"_"+region+"_uue_"+dataSetName).c_str(), 25,0.,150.,nbin, BDT_begin, BDT_end);
+      hist_lep2_pt_eeu = new TH2F(("hist_lep2_pt"+coupling+"_"+region+"_eeu_"+dataSetName).c_str(),("hist_lep2_pt"+coupling+"_"+region+"_eeu_"+dataSetName).c_str(), 25,0.,150.,nbin, BDT_begin, BDT_end);
+      hist_lep2_pt_eee = new TH2F(("hist_lep2_pt"+coupling+"_"+region+"_eee_"+dataSetName).c_str(),("hist_lep2_pt"+coupling+"_"+region+"_eee_"+dataSetName).c_str(), 25,0.,150.,nbin, BDT_begin, BDT_end);
       
       //cout << "created template histo" << endl;
       /// Initialise WZ plots
@@ -1168,12 +1190,30 @@ Int_t main(Int_t argc, char* argv[]){
         else if(isData ) weight = 1.;
         else weight *= MVA_weight_nom;
         
-        
+        /*
         if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ weight *= 0.545 ;}
         if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ weight *= 0.590;}
-        if(dataSetName.find("WZ")!=std::string::npos ){ weight *=0.841 ;}
+        if(dataSetName.find("WZ")!=std::string::npos ){ weight *=0.841 ;}*/
         //if(dataSetName.find("fake")!=std::string::npos) weight *= 0.0001;
         
+        if(applyiniweights){
+          if(dataSetName.find("fake")!=std::string::npos && MVA_channel == 0 ){
+            weight *= 1.59;
+          }
+          if(dataSetName.find("fake")!=std::string::npos && MVA_channel == 2){ weight *= 0.255 ;}
+          if(dataSetName.find("fake")!=std::string::npos && MVA_channel == 1){
+            weight *= 1.01;
+          }
+          if(dataSetName.find("fake")!=std::string::npos && MVA_channel == 3){ weight *= 0.667;}
+          if(dataSetName.find("WZT")!=std::string::npos && MVA_channel == 0 ){
+            weight *= 1.102;
+          }
+          if(dataSetName.find("WZT")!=std::string::npos && MVA_channel == 2){ weight *= 1.776 ;}
+          if(dataSetName.find("WZT")!=std::string::npos && MVA_channel == 1){
+            weight *= 1.52;
+          }
+          if(dataSetName.find("WZT")!=std::string::npos && MVA_channel == 3){ weight *= 1.576;}
+        }
         
         if(dataSetName.find("nonpromptwrong")!=std::string::npos) hist_BDT_tt_nonpromptinZ->Fill(MVA_BDT, weight);
         if(dataSetName.find("nonpromptcorrect")!=std::string::npos) hist_BDT_tt_nonpromptinW->Fill(MVA_BDT, weight);
@@ -1238,9 +1278,16 @@ Int_t main(Int_t argc, char* argv[]){
           else if(MVA_channel == 3) {hist_check_eee->Fill( MVA_mWt, weight);}
         }
         
+        hist_lep2_pt->Fill(MVA_lepton2_pt,MVA_BDT,weight);
+        if(MVA_channel== 0) hist_lep2_pt_uuu->Fill(MVA_lepton2_pt,MVA_BDT,weight);
+        if(MVA_channel== 1) hist_lep2_pt_uue->Fill(MVA_lepton2_pt,MVA_BDT,weight);
+       if(MVA_channel== 2)  hist_lep2_pt_eeu->Fill(MVA_lepton2_pt,MVA_BDT,weight);
+        if(MVA_channel== 3) hist_lep2_pt_eee->Fill(MVA_lepton2_pt,MVA_BDT,weight);
+        
+        
         
         // for MS plots
-        Double_t weightMSPlot = weight*MVA_weightWZcorr;
+        Double_t weightMSPlot = weight;//*MVA_weightWZcorr;
         if(isData || dataSetName.find("fake")!=std::string::npos) weightMSPlot *= MVA_Luminosity;
         /// Fill plots
         if(doPDFunc && !doMTWtemplate){
@@ -1507,6 +1554,24 @@ Int_t main(Int_t argc, char* argv[]){
         
       } // events
       
+      /*TCanvas* lept2 = new TCanvas();
+      lept2->cd();
+      hist_lep2_pt->Draw("colz");
+      lept2->SaveAs(("hist_lep2_pt"+coupling+"_"+region+"_"+dataSetName+".png").c_str());
+      hist_lep2_pt_uuu->Draw("colz");
+      lept2->SaveAs(("hist_lep2_pt"+coupling+"_"+region+"_uuu_"+dataSetName+".png").c_str());
+      hist_lep2_pt_uue->Draw("colz");
+      lept2->SaveAs(("hist_lep2_pt"+coupling+"_"+region+"_uue_"+dataSetName+".png").c_str());
+      hist_lep2_pt_eeu->Draw("colz");
+      lept2->SaveAs(("hist_lep2_pt"+coupling+"_"+region+"_eeu_"+dataSetName+".png").c_str());
+      hist_lep2_pt_eee->Draw("colz");
+      lept2->SaveAs(("hist_lep2_pt"+coupling+"_"+region+"_eee_"+dataSetName+".png").c_str());
+      
+      delete lept2;
+      */
+      
+      
+      
       cout << endl;
       if(doMTWtemplate) cout << "                WZ entries " << WZregionEntries << " uuu " << WZregionEntriesuuu << endl;
       /// Write combine histograms
@@ -1748,7 +1813,7 @@ Int_t main(Int_t argc, char* argv[]){
       }
       
       
-      
+      /*
       if(isys == 0 && dataSetName.find("fake")!=std::string::npos){
         
         cout << endl;
@@ -1761,7 +1826,7 @@ Int_t main(Int_t argc, char* argv[]){
         cout << endl;
         
       }
-      
+      */
       
       
       /*if(dataSetName.find("fake")!=std::string::npos){
@@ -1807,7 +1872,7 @@ Int_t main(Int_t argc, char* argv[]){
       if(doMTWtemplate) tFileMap[dataSetName.c_str()]->Close();
     }// datasets
     
-    if(isys == 0){
+    /*if(isys == 0){
       cout << endl;
       cout << "************************* KOLMOGOROV TESTING : Non prompts ************************ " << endl;
       cout << hist_BDT_tt_nonpromptinZ->KolmogorovTest(hist_BDT_tt_nonpromptinW,"D") << endl;
@@ -1848,7 +1913,7 @@ Int_t main(Int_t argc, char* argv[]){
       cout << hist_BDT_WZ_eeu_b->KolmogorovTest(hist_BDT_WZ_eeu_c,"D")<< endl;
       cout << "************************* KOLMOGOROV TESTING : b vs c ************************ " << endl;
       cout << endl;
-    }
+    }*/
     
     
     
@@ -6363,6 +6428,7 @@ void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut){
   tree->SetMakeClass(1);
   InitAnalyzerTree(tree);
   
+  tree->SetBranchAddress("MVA_lepton2_pt", &MVA_lepton2_pt, &b_MVA_lepton2_pt);
   
   tree->SetBranchAddress("MVA_BDT", &MVA_BDT, &b_MVA_BDT);
   if(!istoppair && !doZut){
