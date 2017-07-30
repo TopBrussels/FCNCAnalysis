@@ -491,6 +491,7 @@ Int_t           nElectrons;
 Double_t        ElectronSF[3];   //[nElectrons]
 Double_t        ElectronSF_up[3];   //[nElectrons]
 Double_t        ElectronSF_down[3];   //[nElectrons]
+Double_t        promptelectron[3];
 Double_t        pt_electron[3];   //[nElectrons]
 Double_t        phi_electron[3];   //[nElectrons]
 Double_t        eta_electron[3];   //[nElectrons]
@@ -532,6 +533,7 @@ Double_t        TrackLayers_muon[3];
 Double_t        phi_muon[3];   //[nMuons]
 Double_t        eta_muon[3];   //[nMuons]
 Double_t        E_muon[3];   //[nMuons]
+ Double_t promptmuon[3];
 Double_t        chargedHadronIso_muon[3];   //[nMuons]
 Double_t        neutralHadronIso_muon[3];   //[nMuons]
 Double_t        photonIso_muon[3];   //[nMuons]
@@ -631,6 +633,7 @@ TBranch        *b_ElectronSF_up;   //!
 TBranch        *b_ElectronSF_down;   //!
 TBranch        *b_pt_electron;   //!
 TBranch        *b_phi_electron;   //!
+TBranch        *b_promptelectron;
 TBranch        *b_eta_electron;   //!
 TBranch        *b_eta_superCluster_electron;   //!
 TBranch        *b_E_electron;   //!
@@ -669,6 +672,7 @@ TBranch        *b_badmueventmu;
 TBranch        *b_phi_muon;   //!
 TBranch        *b_eta_muon;   //!
 TBranch        *b_E_muon;   //!
+TBranch        *b_promptmuon;
 TBranch        *b_chargedHadronIso_muon;   //!
 TBranch        *b_neutralHadronIso_muon;   //!
 TBranch        *b_photonIso_muon;   //!
@@ -1437,6 +1441,68 @@ int main(int argc, char* argv[]){
   int nSelectedEntriesWZ = 0;
   int nSelectedEntriesTTZ = 0;
   int nSelectedEntriesDilep = 0;
+  int nonpromptelectronInZ_ST = 0;
+  int nonpromptelectronInZ_TT = 0;
+  int nonpromptelectronInZ_WZ = 0;
+  int nonpromptelectronInW_ST = 0;
+  int nonpromptelectronInW_TT = 0;
+  int nonpromptelectronInW_WZ = 0;
+  int nonpromptmuonInW_ST = 0;
+  int nonpromptmuonInW_TT = 0;
+  int nonpromptmuonInW_WZ = 0;
+  int nonpromptmuonInZ_ST = 0;
+  int nonpromptmuonInZ_TT = 0;
+  int nonpromptmuonInZ_WZ = 0;
+  
+  int nonpromptelectronInZ_uuu_ST = 0;
+  int nonpromptelectronInZ_uuu_TT = 0;
+  int nonpromptelectronInZ_uuu_WZ = 0;
+  int nonpromptelectronInW_uuu_ST = 0;
+  int nonpromptelectronInW_uuu_TT = 0;
+  int nonpromptelectronInW_uuu_WZ = 0;
+  int nonpromptmuonInW_uuu_ST = 0;
+  int nonpromptmuonInW_uuu_TT = 0;
+  int nonpromptmuonInW_uuu_WZ = 0;
+  int nonpromptmuonInZ_uuu_ST = 0;
+  int nonpromptmuonInZ_uuu_TT = 0;
+  int nonpromptmuonInZ_uuu_WZ = 0;
+  int nonpromptelectronInZ_uue_ST = 0;
+  int nonpromptelectronInZ_uue_TT = 0;
+  int nonpromptelectronInZ_uue_WZ = 0;
+  int nonpromptelectronInW_uue_ST = 0;
+  int nonpromptelectronInW_uue_TT = 0;
+  int nonpromptelectronInW_uue_WZ = 0;
+  int nonpromptmuonInW_uue_ST = 0;
+  int nonpromptmuonInW_uue_TT = 0;
+  int nonpromptmuonInW_uue_WZ = 0;
+  int nonpromptmuonInZ_uue_ST = 0;
+  int nonpromptmuonInZ_uue_TT = 0;
+  int nonpromptmuonInZ_uue_WZ = 0;
+  int nonpromptelectronInZ_eeu_ST = 0;
+  int nonpromptelectronInZ_eeu_TT = 0;
+  int nonpromptelectronInZ_eeu_WZ = 0;
+  int nonpromptelectronInW_eeu_ST = 0;
+  int nonpromptelectronInW_eeu_TT = 0;
+  int nonpromptelectronInW_eeu_WZ = 0;
+  int nonpromptmuonInW_eeu_ST = 0;
+  int nonpromptmuonInW_eeu_TT = 0;
+  int nonpromptmuonInW_eeu_WZ = 0;
+  int nonpromptmuonInZ_eeu_ST = 0;
+  int nonpromptmuonInZ_eeu_TT = 0;
+  int nonpromptmuonInZ_eeu_WZ = 0;
+  int nonpromptelectronInZ_eee_ST = 0;
+  int nonpromptelectronInZ_eee_TT = 0;
+  int nonpromptelectronInZ_eee_WZ = 0;
+  int nonpromptelectronInW_eee_ST = 0;
+  int nonpromptelectronInW_eee_TT = 0;
+  int nonpromptelectronInW_eee_WZ = 0;
+  int nonpromptmuonInW_eee_ST = 0;
+  int nonpromptmuonInW_eee_TT = 0;
+  int nonpromptmuonInW_eee_WZ = 0;
+  int nonpromptmuonInZ_eee_ST = 0;
+  int nonpromptmuonInZ_eee_TT = 0;
+  int nonpromptmuonInZ_eee_WZ = 0;
+  
   Double_t eventsafter_d0muon = 0.;
   Double_t eventsafter_DeltaEtaWlepSMtop = 0.;
   Double_t eventsafter_DeltaEtaWlepW = 0.;
@@ -1566,6 +1632,9 @@ int main(int argc, char* argv[]){
   TH1F*  CutflowTableHisto_eeu__other = new TH1F("CutflowTableHisto_eeu__other", "CutflowTableHisto_eeu__other" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
   TH1F*  CutflowTableHisto_uue__other = new TH1F("CutflowTableHisto_uue__other", "CutflowTableHisto_uue__other" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
   TH1F*  CutflowTableHisto_uuu__other = new TH1F("CutflowTableHisto_uuu__other", "CutflowTableHisto_uuu__other" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+  
+  
+
   
   
   int xbinmcharm=-21;
@@ -1735,6 +1804,66 @@ int main(int argc, char* argv[]){
     nSelectedEntriesST = 0;
     nSelectedEntriesTT = 0;
     nSelectedEntriesWZ = 0;
+    nonpromptelectronInZ_ST = 0;
+    nonpromptelectronInZ_TT = 0;
+    nonpromptelectronInZ_WZ = 0;
+    nonpromptelectronInW_ST = 0;
+    nonpromptelectronInW_TT = 0;
+    nonpromptelectronInW_WZ = 0;
+    nonpromptmuonInW_ST = 0;
+    nonpromptmuonInW_TT = 0;
+    nonpromptmuonInW_WZ = 0;
+    nonpromptmuonInZ_ST = 0;
+    nonpromptmuonInZ_TT = 0;
+    nonpromptmuonInZ_WZ = 0;
+    nonpromptelectronInZ_uuu_ST = 0;
+    nonpromptelectronInZ_uuu_TT = 0;
+    nonpromptelectronInZ_uuu_WZ = 0;
+    nonpromptelectronInW_uuu_ST = 0;
+    nonpromptelectronInW_uuu_TT = 0;
+    nonpromptelectronInW_uuu_WZ = 0;
+    nonpromptmuonInW_uuu_ST = 0;
+    nonpromptmuonInW_uuu_TT = 0;
+    nonpromptmuonInW_uuu_WZ = 0;
+    nonpromptmuonInZ_uuu_ST = 0;
+    nonpromptmuonInZ_uuu_TT = 0;
+    nonpromptmuonInZ_uuu_WZ = 0;
+    nonpromptelectronInZ_uue_ST = 0;
+    nonpromptelectronInZ_uue_TT = 0;
+    nonpromptelectronInZ_uue_WZ = 0;
+    nonpromptelectronInW_uue_ST = 0;
+    nonpromptelectronInW_uue_TT = 0;
+    nonpromptelectronInW_uue_WZ = 0;
+    nonpromptmuonInW_uue_ST = 0;
+    nonpromptmuonInW_uue_TT = 0;
+    nonpromptmuonInW_uue_WZ = 0;
+    nonpromptmuonInZ_uue_ST = 0;
+    nonpromptmuonInZ_uue_TT = 0;
+    nonpromptmuonInZ_uue_WZ = 0;
+    nonpromptelectronInZ_eeu_ST = 0;
+    nonpromptelectronInZ_eeu_TT = 0;
+    nonpromptelectronInZ_eeu_WZ = 0;
+    nonpromptelectronInW_eeu_ST = 0;
+    nonpromptelectronInW_eeu_TT = 0;
+    nonpromptelectronInW_eeu_WZ = 0;
+    nonpromptmuonInW_eeu_ST = 0;
+    nonpromptmuonInW_eeu_TT = 0;
+    nonpromptmuonInW_eeu_WZ = 0;
+    nonpromptmuonInZ_eeu_ST = 0;
+    nonpromptmuonInZ_eeu_TT = 0;
+    nonpromptmuonInZ_eeu_WZ = 0;
+    nonpromptelectronInZ_eee_ST = 0;
+    nonpromptelectronInZ_eee_TT = 0;
+    nonpromptelectronInZ_eee_WZ = 0;
+    nonpromptelectronInW_eee_ST = 0;
+    nonpromptelectronInW_eee_TT = 0;
+    nonpromptelectronInW_eee_WZ = 0;
+    nonpromptmuonInW_eee_ST = 0;
+    nonpromptmuonInW_eee_TT = 0;
+    nonpromptmuonInW_eee_WZ = 0;
+    nonpromptmuonInZ_eee_ST = 0;
+    nonpromptmuonInZ_eee_TT = 0;
+    nonpromptmuonInZ_eee_WZ = 0;
     nSelectedEntriesSTweighted = 0.;
     nSelectedEntriesTTweighted = 0.;
     pnSelectedEntriesSTweighted = 0.;
@@ -1933,7 +2062,7 @@ int main(int argc, char* argv[]){
       // cout << "nMuons " << nMuons << " selected " << selectedMuons.size() << endl;
       electronID.clear();
       for(unsigned int iEl = 0; iEl < nElectrons ; iEl++){
-        if(pt_electron[iEl]<35.){ continue;}
+       if(pt_electron[iEl]<35.){ continue;}
         if(fabs(eta_electron[iEl]) >= 2.1){ continue;}
         electron.Clear();
         electron.SetPtEtaPhiE(pt_electron[iEl], eta_electron[iEl], phi_electron[iEl], E_electron[iEl]);
@@ -2959,12 +3088,43 @@ int main(int argc, char* argv[]){
         Region = 0;
         nSelectedEntriesST++;
         selected = true;
+        if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){
+          if( promptelectron[electronID[WelecIndiceF]] < 1) nonpromptelectronInW_ST++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0) nonpromptelectronInZ_ST++;
+          
+          if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 0) nonpromptelectronInW_uuu_ST++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 0) nonpromptelectronInZ_uuu_ST++;
+          if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 1) nonpromptelectronInW_uue_ST++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 1) nonpromptelectronInZ_uue_ST++;
+          if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 2) nonpromptelectronInW_eeu_ST++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 2) nonpromptelectronInZ_eeu_ST++;
+          if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 3) nonpromptelectronInW_eee_ST++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 3) nonpromptelectronInZ_eee_ST++;
+        }
+        else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){
+          if( promptmuon[muonID[WmuIndiceF]] < 1) nonpromptmuonInW_ST++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0) nonpromptmuonInZ_ST++;
+          
+          
+          if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 0) nonpromptmuonInW_uuu_ST++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 0) nonpromptmuonInZ_uuu_ST++;
+          if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 1) nonpromptmuonInW_uue_ST++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 1) nonpromptmuonInZ_uue_ST++;
+          if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 2) nonpromptmuonInW_eeu_ST++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 2) nonpromptmuonInZ_eeu_ST++;
+          if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 3) nonpromptmuonInW_eee_ST++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 3) nonpromptmuonInZ_eee_ST++;
+          
+        }
         if(doCutflow &&!isData){
           MSPlot["cutflow"] ->Fill(6. , datasets[d], true,eventweightForplots);
           if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(6. , datasets[d], true,eventweightForplots);
           if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(6. , datasets[d], true,eventweightForplots);
           if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(6. , datasets[d], true,eventweightForplots);
           if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(6. , datasets[d], true,eventweightForplots);
+          
+          
+          
         }
         if(MakeSelectionTable) {
           CutflowTableHisto->Fill(6.,eventweightForplots);
@@ -3034,7 +3194,34 @@ int main(int argc, char* argv[]){
       if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && threelepregion){
         Region = 1;
         nSelectedEntriesTT++;
-        selected = true;
+        if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){
+          if( promptelectron[electronID[WelecIndiceF]] < 1) nonpromptelectronInW_TT++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0) nonpromptelectronInZ_TT++;
+          
+          if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 0) nonpromptelectronInW_uuu_TT++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 0) nonpromptelectronInZ_uuu_TT++;
+          if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 1) nonpromptelectronInW_uue_TT++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 1) nonpromptelectronInZ_uue_TT++;
+          if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 2) nonpromptelectronInW_eeu_TT++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 2) nonpromptelectronInZ_eeu_TT++;
+          if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 3) nonpromptelectronInW_eee_TT++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 3) nonpromptelectronInZ_eee_TT++;
+        }
+        else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){
+          if( promptmuon[muonID[WmuIndiceF]] < 1) nonpromptmuonInW_TT++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0) nonpromptmuonInZ_TT++;
+          
+          
+          if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 0) nonpromptmuonInW_uuu_TT++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 0) nonpromptmuonInZ_uuu_TT++;
+          if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 1) nonpromptmuonInW_uue_TT++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 1) nonpromptmuonInZ_uue_TT++;
+          if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 2) nonpromptmuonInW_eeu_TT++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 2) nonpromptmuonInZ_eeu_TT++;
+          if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 3) nonpromptmuonInW_eee_TT++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 3) nonpromptmuonInZ_eee_TT++;
+          
+        }        selected = true;
         if(doCutflow &&!isData){
           MSPlot["cutflow"] ->Fill(7. , datasets[d], true,eventweightForplots);
           if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(7. , datasets[d], true,eventweightForplots);
@@ -3114,6 +3301,34 @@ int main(int argc, char* argv[]){
         
         Region = 2;
         nSelectedEntriesWZ++;
+        if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){
+          if( promptelectron[electronID[WelecIndiceF]] < 1) nonpromptelectronInW_WZ++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0) nonpromptelectronInZ_WZ++;
+          
+          if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 0) nonpromptelectronInW_uuu_WZ++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 0) nonpromptelectronInZ_uuu_WZ++;
+          if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 1) nonpromptelectronInW_uue_WZ++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 1) nonpromptelectronInZ_uue_WZ++;
+          if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 2) nonpromptelectronInW_eeu_WZ++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 2) nonpromptelectronInZ_eeu_WZ++;
+          if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 3) nonpromptelectronInW_eee_WZ++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 3) nonpromptelectronInZ_eee_WZ++;
+        }
+        else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){
+          if( promptmuon[muonID[WmuIndiceF]] < 1) nonpromptmuonInW_WZ++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0) nonpromptmuonInZ_WZ++;
+          
+          
+          if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 0) nonpromptmuonInW_uuu_WZ++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 0) nonpromptmuonInZ_uuu_WZ++;
+          if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 1) nonpromptmuonInW_uue_WZ++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 1) nonpromptmuonInZ_uue_WZ++;
+          if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 2) nonpromptmuonInW_eeu_WZ++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 2) nonpromptmuonInZ_eeu_WZ++;
+          if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 3) nonpromptmuonInW_eee_WZ++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 3) nonpromptmuonInZ_eee_WZ++;
+          
+        }
         selected = true;
         if(doCutflow){
           MSPlot["cutflow"] ->Fill(8. , datasets[d], true,eventweightForplots);
@@ -3446,7 +3661,244 @@ int main(int argc, char* argv[]){
     cout << endl;
     if(check_matching) MatchingEfficiency();
     
+    
+    if(dataSetName.find("fake")!=std::string::npos){
+      cout << "                ST region: non prompt muons in W:     " << nonpromptmuonInW_ST << " = " << ((double) nonpromptmuonInW_ST / ((double) nonpromptmuonInW_ST + (double) nonpromptmuonInZ_ST))*100 << "% vs non prompt in Z: " << nonpromptmuonInZ_ST << " = " << ((double) nonpromptmuonInZ_ST / ((double) nonpromptmuonInW_ST + (double) nonpromptmuonInZ_ST))*100 << "%" << endl;
+      cout << "                ST region: non prompt electrons in W: " << nonpromptelectronInW_ST << " = " << ((double) nonpromptelectronInW_ST / ((double) nonpromptelectronInW_ST + (double) nonpromptelectronInZ_ST))*100 << "% vs non prompt in Z: " << nonpromptelectronInZ_ST << " = " << ((double) nonpromptelectronInZ_ST / ((double) nonpromptelectronInW_ST + (double) nonpromptelectronInZ_ST))*100 << "%" << endl;
+      cout << "                ST region: non prompt leptons in W:   " << (nonpromptmuonInW_ST+nonpromptelectronInW_ST )<< " = " << ((double) (nonpromptmuonInW_ST+nonpromptelectronInW_ST) / ((double) (nonpromptmuonInW_ST+nonpromptelectronInW_ST) + (double) (nonpromptmuonInZ_ST+nonpromptelectronInZ_ST)))*100 << "% vs non prompt in Z: " << nonpromptmuonInZ_ST+nonpromptelectronInZ_ST << " = " << ((double) (nonpromptmuonInZ_ST+nonpromptelectronInZ_ST) / ((double) (nonpromptmuonInW_ST+nonpromptelectronInW_ST) + (double) (nonpromptmuonInZ_ST+nonpromptelectronInZ_ST)))*100 << "%" << endl;
+      
+      cout << "                TT region: non prompt muons in W:     " << nonpromptmuonInW_TT << " = " << ((double) nonpromptmuonInW_TT / ((double) nonpromptmuonInW_TT + (double) nonpromptmuonInZ_TT))*100 << "% vs non prompt in Z: " << nonpromptmuonInZ_TT << " = " << ((double) nonpromptmuonInZ_TT / ((double) nonpromptmuonInW_TT + (double) nonpromptmuonInZ_TT))*100 << "%" << endl;
+      cout << "                TT region: non prompt electrons in W: " << nonpromptelectronInW_TT << " = " << ((double) nonpromptelectronInW_TT / ((double) nonpromptelectronInW_TT + (double) nonpromptelectronInZ_TT))*100 << "% vs non prompt in Z: " << nonpromptelectronInZ_TT << " = " << ((double) nonpromptelectronInZ_TT / ((double) nonpromptelectronInW_TT + (double) nonpromptelectronInZ_TT))*100 << "%" << endl;
+      cout << "                TT region: non prompt leptons in W:   " << (nonpromptmuonInW_TT+nonpromptelectronInW_TT )<< " = " << ((double) (nonpromptmuonInW_TT+nonpromptelectronInW_TT) / ((double) (nonpromptmuonInW_TT+nonpromptelectronInW_TT) + (double) (nonpromptmuonInZ_TT+nonpromptelectronInZ_TT)))*100 << "% vs non prompt in Z: " << nonpromptmuonInZ_TT+nonpromptelectronInZ_TT << " = " << ((double) (nonpromptmuonInZ_TT+nonpromptelectronInZ_TT) / ((double) (nonpromptmuonInW_TT+nonpromptelectronInW_TT) + (double) (nonpromptmuonInZ_TT+nonpromptelectronInZ_TT)))*100 << "%" << endl;
+   
+      
+      cout << "                WZ region: non prompt muons in W:     " << nonpromptmuonInW_WZ << " = " << ((double) nonpromptmuonInW_WZ / ((double) nonpromptmuonInW_WZ + (double) nonpromptmuonInZ_WZ))*100 << "% vs non prompt in Z: " << nonpromptmuonInZ_WZ << " = " << ((double) nonpromptmuonInZ_WZ / ((double) nonpromptmuonInW_WZ + (double) nonpromptmuonInZ_WZ))*100 << "%" << endl;
+      cout << "                WZ region: non prompt electrons in W: " << nonpromptelectronInW_WZ << " = " << ((double) nonpromptelectronInW_WZ / ((double) nonpromptelectronInW_WZ + (double) nonpromptelectronInZ_WZ))*100 << "% vs non prompt in Z: " << nonpromptelectronInZ_WZ << " = " << ((double) nonpromptelectronInZ_WZ / ((double) nonpromptelectronInW_WZ + (double) nonpromptelectronInZ_WZ))*100 << "%" << endl;
+      cout << "                WZ region: non prompt leptons in W:   " << (nonpromptmuonInW_WZ+nonpromptelectronInW_WZ )<< " = " << ((double) (nonpromptmuonInW_WZ+nonpromptelectronInW_WZ) / ((double) (nonpromptmuonInW_WZ+nonpromptelectronInW_WZ) + (double) (nonpromptmuonInZ_WZ+nonpromptelectronInZ_WZ)))*100 << "% vs non prompt in Z: " << nonpromptmuonInZ_WZ+nonpromptelectronInZ_WZ << " = " << ((double) (nonpromptmuonInZ_WZ+nonpromptelectronInZ_WZ) / ((double) (nonpromptmuonInW_WZ+nonpromptelectronInW_WZ) + (double) (nonpromptmuonInZ_WZ+nonpromptelectronInZ_WZ)))*100 << "%" << endl;
+      
+      TH1F*  histo_nonpromptinW_data = new TH1F("histo_nonpromptinW_data", "Non Prompt in W (blue) or Z (red) per region, all channel", 11,-0.5,10.5);
+      TH1F*  histo_nonpromptinZ_data = new TH1F("histo_nonpromptinZ_data", "Non Prompt in Z, all channel", 11,-0.5,10.5);
+      histo_nonpromptinW_data->SetLineWidth(3);
+      histo_nonpromptinZ_data->SetLineWidth(3);
+      histo_nonpromptinW_data->GetYaxis()->SetTitle("% of non prompt");
+      histo_nonpromptinW_data->GetXaxis()->SetBinLabel(1,"ST:muon");
+      histo_nonpromptinW_data->GetXaxis()->SetBinLabel(2,"TT:muon");
+      histo_nonpromptinW_data->GetXaxis()->SetBinLabel(3,"WZ:muon");
+      histo_nonpromptinW_data->GetXaxis()->SetBinLabel(5,"ST:electron");
+      histo_nonpromptinW_data->GetXaxis()->SetBinLabel(6,"TT:electron");
+      histo_nonpromptinW_data->GetXaxis()->SetBinLabel(7,"WZ:electron");
+      
+      histo_nonpromptinW_data->GetXaxis()->SetBinLabel(9,"ST:lepton");
+      histo_nonpromptinW_data->GetXaxis()->SetBinLabel(10,"TT:lepton");
+      histo_nonpromptinW_data->GetXaxis()->SetBinLabel(11,"WZ:lepton");
+      
+      
+      TH1F*  histo_nonpromptinW_data_uuu = new TH1F("histo_nonpromptinW_data_uuu", "Non Prompt in W (blue) or Z (red) per region, uuu channel", 11,-0.5,10.5);
+      TH1F*  histo_nonpromptinZ_data_uuu = new TH1F("histo_nonpromptinZ_data_uuu", "Non Prompt in Z, uuu channel", 11,-0.5,10.5);
+      histo_nonpromptinW_data_uuu->SetLineWidth(3);
+      histo_nonpromptinZ_data_uuu->SetLineWidth(3);
+      histo_nonpromptinW_data_uuu->GetYaxis()->SetTitle("% of non prompts");
+      histo_nonpromptinW_data_uuu->GetXaxis()->SetBinLabel(1,"ST:muon");
+      histo_nonpromptinW_data_uuu->GetXaxis()->SetBinLabel(2,"TT:muon");
+      histo_nonpromptinW_data_uuu->GetXaxis()->SetBinLabel(3,"WZ:muon");
+      histo_nonpromptinW_data_uuu->GetXaxis()->SetBinLabel(5,"ST:electron");
+      histo_nonpromptinW_data_uuu->GetXaxis()->SetBinLabel(6,"TT:electron");
+      histo_nonpromptinW_data_uuu->GetXaxis()->SetBinLabel(7,"WZ:electron");
+      histo_nonpromptinW_data_uuu->GetXaxis()->SetBinLabel(9,"ST:lepton");
+      histo_nonpromptinW_data_uuu->GetXaxis()->SetBinLabel(10,"TT:lepton");
+      histo_nonpromptinW_data_uuu->GetXaxis()->SetBinLabel(11,"WZ:lepton");
+      
+      TH1F*  histo_nonpromptinW_data_uue = new TH1F("histo_nonpromptinW_data_uue", "Non Prompt in W (blue) or Z (red) per region, uue channel", 11,-0.5,10.5);
+      TH1F*  histo_nonpromptinZ_data_uue = new TH1F("histo_nonpromptinZ_data_uue", "Non Prompt in Z, uue channel", 11,-0.5,10.5);
+      histo_nonpromptinW_data_uue->SetLineWidth(3);
+      histo_nonpromptinZ_data_uue->SetLineWidth(3);
+      histo_nonpromptinW_data_uue->GetYaxis()->SetTitle("% of non prompts");
+      histo_nonpromptinW_data_uue->GetXaxis()->SetBinLabel(1,"ST:muon");
+      histo_nonpromptinW_data_uue->GetXaxis()->SetBinLabel(2,"TT:muon");
+      histo_nonpromptinW_data_uue->GetXaxis()->SetBinLabel(3,"WZ:muon");
+      histo_nonpromptinW_data_uue->GetXaxis()->SetBinLabel(5,"ST:electron");
+      histo_nonpromptinW_data_uue->GetXaxis()->SetBinLabel(6,"TT:electron");
+      histo_nonpromptinW_data_uue->GetXaxis()->SetBinLabel(7,"WZ:electron");
+      histo_nonpromptinW_data_uue->GetXaxis()->SetBinLabel(9,"ST:lepton");
+      histo_nonpromptinW_data_uue->GetXaxis()->SetBinLabel(10,"TT:lepton");
+      histo_nonpromptinW_data_uue->GetXaxis()->SetBinLabel(11,"WZ:lepton");
+      
+      TH1F*  histo_nonpromptinW_data_eeu = new TH1F("histo_nonpromptinW_data_eeu", "Non Prompt in W (blue) or Z (red) per region, eeu channel", 11,-0.5,10.5);
+      TH1F*  histo_nonpromptinZ_data_eeu = new TH1F("histo_nonpromptinZ_data_eeu", "Non Prompt in Z, eeu channel", 11,-0.5,10.5);
+      histo_nonpromptinW_data_eeu->SetLineWidth(3);
+      histo_nonpromptinZ_data_eeu->SetLineWidth(3);
+      histo_nonpromptinW_data_eeu->GetYaxis()->SetTitle("% of non prompts");
+      histo_nonpromptinW_data_eeu->GetXaxis()->SetBinLabel(1,"ST:muon");
+      histo_nonpromptinW_data_eeu->GetXaxis()->SetBinLabel(2,"TT:muon");
+      histo_nonpromptinW_data_eeu->GetXaxis()->SetBinLabel(3,"WZ:muon");
+      histo_nonpromptinW_data_eeu->GetXaxis()->SetBinLabel(5,"ST:electron");
+      histo_nonpromptinW_data_eeu->GetXaxis()->SetBinLabel(6,"TT:electron");
+      histo_nonpromptinW_data_eeu->GetXaxis()->SetBinLabel(7,"WZ:electron");
+      histo_nonpromptinW_data_eeu->GetXaxis()->SetBinLabel(9,"ST:lepton");
+      histo_nonpromptinW_data_eeu->GetXaxis()->SetBinLabel(10,"TT:lepton");
+      histo_nonpromptinW_data_eeu->GetXaxis()->SetBinLabel(11,"WZ:lepton");
+      
+      
+      TH1F*  histo_nonpromptinW_data_eee = new TH1F("histo_nonpromptinW_data_eee", "Non Prompt in W (blue) or Z (red) per region, eee channel", 11,-0.5,10.5);
+      TH1F*  histo_nonpromptinZ_data_eee = new TH1F("histo_nonpromptinZ_data_eee", "Non Prompt in Z, eee channel", 11,-0.5,10.5);
+      histo_nonpromptinW_data_eee->SetLineWidth(3);
+      histo_nonpromptinZ_data_eee->SetLineWidth(3);
+      histo_nonpromptinW_data_eee->GetYaxis()->SetTitle("% of non prompts");
+      histo_nonpromptinW_data_eee->GetXaxis()->SetBinLabel(1,"ST:muon");
+      histo_nonpromptinW_data_eee->GetXaxis()->SetBinLabel(2,"TT:muon");
+      histo_nonpromptinW_data_eee->GetXaxis()->SetBinLabel(3,"WZ:muon");
+      histo_nonpromptinW_data_eee->GetXaxis()->SetBinLabel(5,"ST:electron");
+      histo_nonpromptinW_data_eee->GetXaxis()->SetBinLabel(6,"TT:electron");
+      histo_nonpromptinW_data_eee->GetXaxis()->SetBinLabel(7,"WZ:electron");
+      histo_nonpromptinW_data_eee->GetXaxis()->SetBinLabel(9,"ST:lepton");
+      histo_nonpromptinW_data_eee->GetXaxis()->SetBinLabel(10,"TT:lepton");
+      histo_nonpromptinW_data_eee->GetXaxis()->SetBinLabel(11,"WZ:lepton");
+      
+      histo_nonpromptinW_data->Fill(0.,(double) nonpromptmuonInW_ST / ((double) nonpromptmuonInW_ST + (double) nonpromptmuonInZ_ST)) ;
+      histo_nonpromptinW_data->Fill(1.,((double) nonpromptmuonInW_TT / ((double) nonpromptmuonInW_TT + (double) nonpromptmuonInZ_TT))) ;
+      histo_nonpromptinW_data->Fill(2.,((double) nonpromptmuonInW_WZ / ((double) nonpromptmuonInW_WZ + (double) nonpromptmuonInZ_WZ))) ;
+      histo_nonpromptinW_data->Fill(4.,((double) nonpromptelectronInW_ST / ((double) nonpromptelectronInW_ST + (double) nonpromptelectronInZ_ST))) ;
+      histo_nonpromptinW_data->Fill(5.,((double) nonpromptelectronInW_TT / ((double) nonpromptelectronInW_TT + (double) nonpromptelectronInZ_TT))) ;
+      histo_nonpromptinW_data->Fill(6.,((double) nonpromptelectronInW_WZ / ((double) nonpromptelectronInW_WZ + (double) nonpromptelectronInZ_WZ))) ;
+      histo_nonpromptinW_data->Fill(8.,((double) (nonpromptmuonInW_ST+nonpromptelectronInW_ST) / ((double) (nonpromptmuonInW_ST+nonpromptelectronInW_ST) + (double) (nonpromptmuonInZ_ST+nonpromptelectronInZ_ST))));
+      histo_nonpromptinW_data->Fill(9.,((double) (nonpromptmuonInW_TT+nonpromptelectronInW_TT) / ((double) (nonpromptmuonInW_TT+nonpromptelectronInW_TT) + (double) (nonpromptmuonInZ_TT+nonpromptelectronInZ_TT))));
+      histo_nonpromptinW_data->Fill(10.,((double) (nonpromptmuonInW_WZ+nonpromptelectronInW_WZ) / ((double) (nonpromptmuonInW_WZ+nonpromptelectronInW_WZ) + (double) (nonpromptmuonInZ_WZ+nonpromptelectronInZ_WZ))));
+      histo_nonpromptinZ_data->Fill(0.,(double) nonpromptmuonInZ_ST / ((double) nonpromptmuonInW_ST + (double) nonpromptmuonInZ_ST)) ;
+      histo_nonpromptinZ_data->Fill(1.,((double) nonpromptmuonInZ_TT / ((double) nonpromptmuonInW_TT + (double) nonpromptmuonInZ_TT))) ;
+      histo_nonpromptinZ_data->Fill(2.,((double) nonpromptmuonInZ_WZ / ((double) nonpromptmuonInW_WZ + (double) nonpromptmuonInZ_WZ))) ;
+      histo_nonpromptinZ_data->Fill(4.,((double) nonpromptelectronInZ_ST / ((double) nonpromptelectronInW_ST + (double) nonpromptelectronInZ_ST))) ;
+      histo_nonpromptinZ_data->Fill(5.,((double) nonpromptelectronInZ_TT / ((double) nonpromptelectronInW_TT + (double) nonpromptelectronInZ_TT))) ;
+      histo_nonpromptinZ_data->Fill(6.,((double) nonpromptelectronInZ_WZ / ((double) nonpromptelectronInW_WZ + (double) nonpromptelectronInZ_WZ))) ;
+      histo_nonpromptinZ_data->Fill(8.,((double) (nonpromptmuonInZ_ST+nonpromptelectronInZ_ST) / ((double) (nonpromptmuonInW_ST+nonpromptelectronInW_ST) + (double) (nonpromptmuonInZ_ST+nonpromptelectronInZ_ST))));
+      histo_nonpromptinZ_data->Fill(9.,((double) (nonpromptmuonInZ_TT+nonpromptelectronInZ_TT) / ((double) (nonpromptmuonInW_TT+nonpromptelectronInW_TT) + (double) (nonpromptmuonInZ_TT+nonpromptelectronInZ_TT))));
+      histo_nonpromptinZ_data->Fill(10.,((double) (nonpromptmuonInZ_WZ+nonpromptelectronInZ_WZ) / ((double) (nonpromptmuonInW_WZ+nonpromptelectronInW_WZ) + (double) (nonpromptmuonInZ_WZ+nonpromptelectronInZ_WZ))));
+      
+      
+      
+      histo_nonpromptinW_data_uuu->Fill(0.,(double) nonpromptmuonInW_uuu_ST / max(((double) nonpromptmuonInW_uuu_ST + (double) nonpromptmuonInZ_uuu_ST),0.1)) ;
+      histo_nonpromptinW_data_uuu->Fill(1.,((double) nonpromptmuonInW_uuu_TT / max(((double) nonpromptmuonInW_uuu_TT + (double) nonpromptmuonInZ_uuu_TT),0.1))) ;
+      histo_nonpromptinW_data_uuu->Fill(2.,((double) nonpromptmuonInW_uuu_WZ / max(((double) nonpromptmuonInW_uuu_WZ + (double) nonpromptmuonInZ_uuu_WZ),0.1))) ;
+      histo_nonpromptinW_data_uuu->Fill(4.,((double) nonpromptelectronInW_uuu_ST / max(((double) nonpromptelectronInW_uuu_ST + (double) nonpromptelectronInZ_uuu_ST),0.1))) ;
+      histo_nonpromptinW_data_uuu->Fill(5.,((double) nonpromptelectronInW_uuu_TT / max(((double) nonpromptelectronInW_uuu_TT + (double) nonpromptelectronInZ_uuu_TT),0.1))) ;
+      histo_nonpromptinW_data_uuu->Fill(6.,((double) nonpromptelectronInW_uuu_WZ / max(((double) nonpromptelectronInW_uuu_WZ + (double) nonpromptelectronInZ_uuu_WZ),0.1))) ;
+      histo_nonpromptinW_data_uuu->Fill(8.,((double) (nonpromptmuonInW_uuu_ST+nonpromptelectronInW_uuu_ST) / max(((double) (nonpromptmuonInW_uuu_ST+nonpromptelectronInW_uuu_ST) + (double) (nonpromptmuonInZ_uuu_ST+nonpromptelectronInZ_uuu_ST)),0.1)));
+      histo_nonpromptinW_data_uuu->Fill(9.,((double) (nonpromptmuonInW_uuu_TT+nonpromptelectronInW_uuu_TT) / max(((double) (nonpromptmuonInW_uuu_TT+nonpromptelectronInW_uuu_TT) + (double) (nonpromptmuonInZ_uuu_TT+nonpromptelectronInZ_uuu_TT)),0.1)));
+      histo_nonpromptinW_data_uuu->Fill(10.,((double) (nonpromptmuonInW_uuu_WZ+nonpromptelectronInW_uuu_WZ) / max(((double) (nonpromptmuonInW_uuu_WZ+nonpromptelectronInW_uuu_WZ) + (double) (nonpromptmuonInZ_uuu_WZ+nonpromptelectronInZ_uuu_WZ)),0.1)));
+      histo_nonpromptinZ_data_uuu->Fill(0.,(double) nonpromptmuonInZ_uuu_ST / max(((double) nonpromptmuonInW_uuu_ST + (double) nonpromptmuonInZ_uuu_ST),0.1)) ;
+      histo_nonpromptinZ_data_uuu->Fill(1.,((double) nonpromptmuonInZ_uuu_TT / max(((double) nonpromptmuonInW_uuu_TT + (double) nonpromptmuonInZ_uuu_TT),0.1))) ;
+      histo_nonpromptinZ_data_uuu->Fill(2.,((double) nonpromptmuonInZ_uuu_WZ / max(((double) nonpromptmuonInW_uuu_WZ + (double) nonpromptmuonInZ_uuu_WZ),0.1))) ;
+      histo_nonpromptinZ_data_uuu->Fill(4.,((double) nonpromptelectronInZ_uuu_ST / max(((double) nonpromptelectronInW_uuu_ST + (double) nonpromptelectronInZ_uuu_ST),0.1))) ;
+      histo_nonpromptinZ_data_uuu->Fill(5.,((double) nonpromptelectronInZ_uuu_TT / max(((double) nonpromptelectronInW_uuu_TT + (double) nonpromptelectronInZ_uuu_TT),0.1))) ;
+      histo_nonpromptinZ_data_uuu->Fill(6.,((double) nonpromptelectronInZ_uuu_WZ / max(((double) nonpromptelectronInW_uuu_WZ + (double) nonpromptelectronInZ_uuu_WZ),0.1))) ;
+      histo_nonpromptinZ_data_uuu->Fill(8.,((double) (nonpromptmuonInZ_uuu_ST+nonpromptelectronInZ_uuu_ST) / max(((double) (nonpromptmuonInW_uuu_ST+nonpromptelectronInW_uuu_ST) + (double) (nonpromptmuonInZ_uuu_ST+nonpromptelectronInZ_uuu_ST)),0.1)));
+      histo_nonpromptinZ_data_uuu->Fill(9.,((double) (nonpromptmuonInZ_uuu_TT+nonpromptelectronInZ_uuu_TT) / max(((double) (nonpromptmuonInW_uuu_TT+nonpromptelectronInW_uuu_TT) + (double) (nonpromptmuonInZ_uuu_TT+nonpromptelectronInZ_uuu_TT)),0.1)));
+      histo_nonpromptinZ_data_uuu->Fill(10.,((double) (nonpromptmuonInZ_uuu_WZ+nonpromptelectronInZ_uuu_WZ) / max(((double) (nonpromptmuonInW_uuu_WZ+nonpromptelectronInW_uuu_WZ) + (double) (nonpromptmuonInZ_uuu_WZ+nonpromptelectronInZ_uuu_WZ)),0.1)));
+      
+      
+      histo_nonpromptinW_data_uue->Fill(0.,(double) nonpromptmuonInW_uue_ST / max(((double) nonpromptmuonInW_uue_ST + (double) nonpromptmuonInZ_uue_ST),0.1));
+      histo_nonpromptinW_data_uue->Fill(1.,((double) nonpromptmuonInW_uue_TT / max(((double) nonpromptmuonInW_uue_TT + (double) nonpromptmuonInZ_uue_TT),0.1))) ;
+      histo_nonpromptinW_data_uue->Fill(2.,((double) nonpromptmuonInW_uue_WZ / max(((double) nonpromptmuonInW_uue_WZ + (double) nonpromptmuonInZ_uue_WZ),0.1))) ;
+      histo_nonpromptinW_data_uue->Fill(4.,((double) nonpromptelectronInW_uue_ST / max(((double) nonpromptelectronInW_uue_ST + (double) nonpromptelectronInZ_uue_ST),0.1))) ;
+      histo_nonpromptinW_data_uue->Fill(5.,((double) nonpromptelectronInW_uue_TT / max(((double) nonpromptelectronInW_uue_TT + (double) nonpromptelectronInZ_uue_TT),0.1))) ;
+      histo_nonpromptinW_data_uue->Fill(6.,((double) nonpromptelectronInW_uue_WZ / max(((double) nonpromptelectronInW_uue_WZ + (double) nonpromptelectronInZ_uue_WZ),0.1))) ;
+      histo_nonpromptinW_data_uue->Fill(8.,((double) (nonpromptmuonInW_uue_ST+nonpromptelectronInW_uue_ST) / max(((double) (nonpromptmuonInW_uue_ST+nonpromptelectronInW_uue_ST) + (double) (nonpromptmuonInZ_uue_ST+nonpromptelectronInZ_uue_ST)),0.1)));
+      histo_nonpromptinW_data_uue->Fill(9.,((double) (nonpromptmuonInW_uue_TT+nonpromptelectronInW_uue_TT) / max(((double) (nonpromptmuonInW_uue_TT+nonpromptelectronInW_uue_TT) + (double) (nonpromptmuonInZ_uue_TT+nonpromptelectronInZ_uue_TT)),0.1)));
+      histo_nonpromptinW_data_uue->Fill(10.,((double) (nonpromptmuonInW_uue_WZ+nonpromptelectronInW_uue_WZ) / max(((double) (nonpromptmuonInW_uue_WZ+nonpromptelectronInW_uue_WZ) + (double) (nonpromptmuonInZ_uue_WZ+nonpromptelectronInZ_uue_WZ)),0.1)));
+      histo_nonpromptinZ_data_uue->Fill(0.,(double) nonpromptmuonInZ_uue_ST / max(((double) nonpromptmuonInW_uue_ST + (double) nonpromptmuonInZ_uue_ST),0.1));
+      histo_nonpromptinZ_data_uue->Fill(1.,((double) nonpromptmuonInZ_uue_TT / max(((double) nonpromptmuonInW_uue_TT + (double) nonpromptmuonInZ_uue_TT),0.1))) ;
+      histo_nonpromptinZ_data_uue->Fill(2.,((double) nonpromptmuonInZ_uue_WZ / max(((double) nonpromptmuonInW_uue_WZ + (double) nonpromptmuonInZ_uue_WZ),0.1))) ;
+      histo_nonpromptinZ_data_uue->Fill(4.,((double) nonpromptelectronInZ_uue_ST / max(((double) nonpromptelectronInW_uue_ST + (double) nonpromptelectronInZ_uue_ST),0.1))) ;
+      histo_nonpromptinZ_data_uue->Fill(5.,((double) nonpromptelectronInZ_uue_TT / max(((double) nonpromptelectronInW_uue_TT + (double) nonpromptelectronInZ_uue_TT),0.1))) ;
+      histo_nonpromptinZ_data_uue->Fill(6.,((double) nonpromptelectronInZ_uue_WZ / max(((double) nonpromptelectronInW_uue_WZ + (double) nonpromptelectronInZ_uue_WZ),0.1))) ;
+      histo_nonpromptinZ_data_uue->Fill(8.,((double) (nonpromptmuonInZ_uue_ST+nonpromptelectronInZ_uue_ST) / max(((double) (nonpromptmuonInW_uue_ST+nonpromptelectronInW_uue_ST) + (double) (nonpromptmuonInZ_uue_ST+nonpromptelectronInZ_uue_ST)),0.1)));
+      histo_nonpromptinZ_data_uue->Fill(9.,((double) (nonpromptmuonInZ_uue_TT+nonpromptelectronInZ_uue_TT) / max(((double) (nonpromptmuonInW_uue_TT+nonpromptelectronInW_uue_TT) + (double) (nonpromptmuonInZ_uue_TT+nonpromptelectronInZ_uue_TT)),0.1)));
+      histo_nonpromptinZ_data_uue->Fill(10.,((double) (nonpromptmuonInZ_uue_WZ+nonpromptelectronInZ_uue_WZ) / max(((double) (nonpromptmuonInW_uue_WZ+nonpromptelectronInW_uue_WZ) + (double) (nonpromptmuonInZ_uue_WZ+nonpromptelectronInZ_uue_WZ)),0.1)));
+      
+      
+      histo_nonpromptinW_data_eeu->Fill(0.,(double) nonpromptmuonInW_eeu_ST / max(((double) nonpromptmuonInW_eeu_ST + (double) nonpromptmuonInZ_eeu_ST),0.1));
+      histo_nonpromptinW_data_eeu->Fill(1.,((double) nonpromptmuonInW_eeu_TT / max(((double) nonpromptmuonInW_eeu_TT + (double) nonpromptmuonInZ_eeu_TT),0.1))) ;
+      histo_nonpromptinW_data_eeu->Fill(2.,((double) nonpromptmuonInW_eeu_WZ / max(((double) nonpromptmuonInW_eeu_WZ + (double) nonpromptmuonInZ_eeu_WZ),0.1))) ;
+      histo_nonpromptinW_data_eeu->Fill(4.,((double) nonpromptelectronInW_eeu_ST / max(((double) nonpromptelectronInW_eeu_ST + (double) nonpromptelectronInZ_eeu_ST),0.1))) ;
+      histo_nonpromptinW_data_eeu->Fill(5.,((double) nonpromptelectronInW_eeu_TT / max(((double) nonpromptelectronInW_eeu_TT + (double) nonpromptelectronInZ_eeu_TT),0.1))) ;
+      histo_nonpromptinW_data_eeu->Fill(6.,((double) nonpromptelectronInW_eeu_WZ / max(((double) nonpromptelectronInW_eeu_WZ + (double) nonpromptelectronInZ_eeu_WZ),0.1))) ;
+      histo_nonpromptinW_data_eeu->Fill(8.,((double) (nonpromptmuonInW_eeu_ST+nonpromptelectronInW_eeu_ST) / max(((double) (nonpromptmuonInW_eeu_ST+nonpromptelectronInW_eeu_ST) + (double) (nonpromptmuonInZ_eeu_ST+nonpromptelectronInZ_eeu_ST)),0.1)));
+      histo_nonpromptinW_data_eeu->Fill(9.,((double) (nonpromptmuonInW_eeu_TT+nonpromptelectronInW_eeu_TT) / max(((double) (nonpromptmuonInW_eeu_TT+nonpromptelectronInW_eeu_TT) + (double) (nonpromptmuonInZ_eeu_TT+nonpromptelectronInZ_eeu_TT)),0.1)));
+      histo_nonpromptinW_data_eeu->Fill(10.,((double) (nonpromptmuonInW_eeu_WZ+nonpromptelectronInW_eeu_WZ) / max(((double) (nonpromptmuonInW_eeu_WZ+nonpromptelectronInW_eeu_WZ) + (double) (nonpromptmuonInZ_eeu_WZ+nonpromptelectronInZ_eeu_WZ)),0.1)));
+      histo_nonpromptinZ_data_eeu->Fill(0.,(double) nonpromptmuonInZ_eeu_ST / max(((double) nonpromptmuonInW_eeu_ST + (double) nonpromptmuonInZ_eeu_ST),0.1)) ;
+      histo_nonpromptinZ_data_eeu->Fill(1.,((double) nonpromptmuonInZ_eeu_TT / max(((double) nonpromptmuonInW_eeu_TT + (double) nonpromptmuonInZ_eeu_TT),0.1))) ;
+      histo_nonpromptinZ_data_eeu->Fill(2.,((double) nonpromptmuonInZ_eeu_WZ / max(((double) nonpromptmuonInW_eeu_WZ + (double) nonpromptmuonInZ_eeu_WZ),0.1))) ;
+      histo_nonpromptinZ_data_eeu->Fill(4.,((double) nonpromptelectronInZ_eeu_ST / max(((double) nonpromptelectronInW_eeu_ST + (double) nonpromptelectronInZ_eeu_ST),0.1))) ;
+      histo_nonpromptinZ_data_eeu->Fill(5.,((double) nonpromptelectronInZ_eeu_TT / max(((double) nonpromptelectronInW_eeu_TT + (double) nonpromptelectronInZ_eeu_TT),0.1))) ;
+      histo_nonpromptinZ_data_eeu->Fill(6.,((double) nonpromptelectronInZ_eeu_WZ / max(((double) nonpromptelectronInW_eeu_WZ + (double) nonpromptelectronInZ_eeu_WZ),0.1))) ;
+      histo_nonpromptinZ_data_eeu->Fill(8.,((double) (nonpromptmuonInZ_eeu_ST+nonpromptelectronInZ_eeu_ST) / max(((double) (nonpromptmuonInW_eeu_ST+nonpromptelectronInW_eeu_ST) + (double) (nonpromptmuonInZ_eeu_ST+nonpromptelectronInZ_eeu_ST)),0.1)));
+      histo_nonpromptinZ_data_eeu->Fill(9.,((double) (nonpromptmuonInZ_eeu_TT+nonpromptelectronInZ_eeu_TT) / max(((double) (nonpromptmuonInW_eeu_TT+nonpromptelectronInW_eeu_TT) + (double) (nonpromptmuonInZ_eeu_TT+nonpromptelectronInZ_eeu_TT)),0.1)));
+      histo_nonpromptinZ_data_eeu->Fill(10.,((double) (nonpromptmuonInZ_eeu_WZ+nonpromptelectronInZ_eeu_WZ) / max(((double) (nonpromptmuonInW_eeu_WZ+nonpromptelectronInW_eeu_WZ) + (double) (nonpromptmuonInZ_eeu_WZ+nonpromptelectronInZ_eeu_WZ)),0.1)));
+      
+      
+      histo_nonpromptinW_data_eee->Fill(0.,(double) nonpromptmuonInW_eee_ST / max(((double) nonpromptmuonInW_eee_ST + (double) nonpromptmuonInZ_eee_ST),0.1));
+      histo_nonpromptinW_data_eee->Fill(1.,((double) nonpromptmuonInW_eee_TT / max(((double) nonpromptmuonInW_eee_TT + (double) nonpromptmuonInZ_eee_TT),0.1))) ;
+      histo_nonpromptinW_data_eee->Fill(2.,((double) nonpromptmuonInW_eee_WZ / max(((double) nonpromptmuonInW_eee_WZ + (double) nonpromptmuonInZ_eee_WZ),0.1))) ;
+      histo_nonpromptinW_data_eee->Fill(4.,((double) nonpromptelectronInW_eee_ST / max(((double) nonpromptelectronInW_eee_ST + (double) nonpromptelectronInZ_eee_ST),0.1))) ;
+      histo_nonpromptinW_data_eee->Fill(5.,((double) nonpromptelectronInW_eee_TT / max(((double) nonpromptelectronInW_eee_TT + (double) nonpromptelectronInZ_eee_TT),0.1))) ;
+      histo_nonpromptinW_data_eee->Fill(6.,((double) nonpromptelectronInW_eee_WZ / max(((double) nonpromptelectronInW_eee_WZ + (double) nonpromptelectronInZ_eee_WZ),0.1))) ;
+      histo_nonpromptinW_data_eee->Fill(8.,((double) (nonpromptmuonInW_eee_ST+nonpromptelectronInW_eee_ST) / max(((double) (nonpromptmuonInW_eee_ST+nonpromptelectronInW_eee_ST) + (double) (nonpromptmuonInZ_eee_ST+nonpromptelectronInZ_eee_ST)),0.1)));
+      histo_nonpromptinW_data_eee->Fill(9.,((double) (nonpromptmuonInW_eee_TT+nonpromptelectronInW_eee_TT) / max(((double) (nonpromptmuonInW_eee_TT+nonpromptelectronInW_eee_TT) + (double) (nonpromptmuonInZ_eee_TT+nonpromptelectronInZ_eee_TT)),0.1)));
+      histo_nonpromptinW_data_eee->Fill(10.,((double) (nonpromptmuonInW_eee_WZ+nonpromptelectronInW_eee_WZ) / max(((double) (nonpromptmuonInW_eee_WZ+nonpromptelectronInW_eee_WZ) + (double) (nonpromptmuonInZ_eee_WZ+nonpromptelectronInZ_eee_WZ)),0.1)));
+      histo_nonpromptinZ_data_eee->Fill(0.,(double) nonpromptmuonInZ_eee_ST / max(((double) nonpromptmuonInW_eee_ST + (double) nonpromptmuonInZ_eee_ST),0.1));
+      histo_nonpromptinZ_data_eee->Fill(1.,((double) nonpromptmuonInZ_eee_TT / max(((double) nonpromptmuonInW_eee_TT + (double) nonpromptmuonInZ_eee_TT),0.1))) ;
+      histo_nonpromptinZ_data_eee->Fill(2.,((double) nonpromptmuonInZ_eee_WZ / max(((double) nonpromptmuonInW_eee_WZ + (double) nonpromptmuonInZ_eee_WZ),0.1))) ;
+      histo_nonpromptinZ_data_eee->Fill(4.,((double) nonpromptelectronInZ_eee_ST / max(((double) nonpromptelectronInW_eee_ST + (double) nonpromptelectronInZ_eee_ST),0.1))) ;
+      histo_nonpromptinZ_data_eee->Fill(5.,((double) nonpromptelectronInZ_eee_TT / max(((double) nonpromptelectronInW_eee_TT + (double) nonpromptelectronInZ_eee_TT),0.1))) ;
+      histo_nonpromptinZ_data_eee->Fill(6.,((double) nonpromptelectronInZ_eee_WZ / max(((double) nonpromptelectronInW_eee_WZ + (double) nonpromptelectronInZ_eee_WZ),0.1))) ;
+      histo_nonpromptinZ_data_eee->Fill(8.,((double) (nonpromptmuonInZ_eee_ST+nonpromptelectronInZ_eee_ST) / max(((double) (nonpromptmuonInW_eee_ST+nonpromptelectronInW_eee_ST) + (double) (nonpromptmuonInZ_eee_ST+nonpromptelectronInZ_eee_ST)),0.1)));
+      histo_nonpromptinZ_data_eee->Fill(9.,((double) (nonpromptmuonInZ_eee_TT+nonpromptelectronInZ_eee_TT) / max(((double) (nonpromptmuonInW_eee_TT+nonpromptelectronInW_eee_TT) + (double) (nonpromptmuonInZ_eee_TT+nonpromptelectronInZ_eee_TT)),0.1)));
+      histo_nonpromptinZ_data_eee->Fill(10.,((double) (nonpromptmuonInZ_eee_WZ+nonpromptelectronInZ_eee_WZ) / max(((double) (nonpromptmuonInW_eee_WZ+nonpromptelectronInW_eee_WZ) + (double) (nonpromptmuonInZ_eee_WZ+nonpromptelectronInZ_eee_WZ)),0.1)));
+      
+      
+      TCanvas* c3 = new TCanvas();
+      c3->SetGrid();
+      c3->cd();
+      gStyle->SetOptStat(0);
+      histo_nonpromptinW_data->SetMaximum(1.);
+      histo_nonpromptinW_data->Draw("hist");
+      histo_nonpromptinZ_data->SetLineColor(kRed);
+      histo_nonpromptinZ_data->Draw("hist sames");
+      c3->SaveAs("nonpromptallchannel.png");
+      
+       histo_nonpromptinW_data_uuu->SetMaximum(1.);
+      histo_nonpromptinW_data_uuu->Draw("hist");
+      histo_nonpromptinZ_data_uuu->SetLineColor(kRed);
+      histo_nonpromptinZ_data_uuu->Draw("hist sames");
+      c3->SaveAs("nonpromptuuuchannel.png");
+      
+      gStyle->SetOptStat(0);
+      histo_nonpromptinW_data_uue->SetMaximum(1.);
+      histo_nonpromptinW_data_uue->Draw("hist");
+      histo_nonpromptinZ_data_uue->SetLineColor(kRed);
+      histo_nonpromptinZ_data_uue->Draw("hist sames");
+      c3->SaveAs("nonpromptuuechannel.png");
+ 
+       histo_nonpromptinW_data_eeu->SetMaximum(1.);
+      histo_nonpromptinW_data_eeu->Draw("hist");
+      histo_nonpromptinZ_data_eeu->SetLineColor(kRed);
+      histo_nonpromptinZ_data_eeu->Draw("hist sames");
+      c3->SaveAs("nonprompteeuchannel.png");
+      
+       histo_nonpromptinW_data_eee->SetMaximum(1.);
+      histo_nonpromptinW_data_eee->Draw("hist");
+      histo_nonpromptinZ_data_eee->SetLineColor(kRed);
+      histo_nonpromptinZ_data_eee->Draw("hist sames");
+      c3->SaveAs("nonprompteeechannel.png");
+      
+    }
+    
+    
+    
+    
+    
+    
     if(checkNonprompt){
+      
       MatchingEfficiencyNonPrompt();
       /*  nonpormptsfile = TFile::Open("nonprompts.root", "RECREATE");
        nonpormptsfile->cd();
@@ -7773,6 +8225,7 @@ void InitTree(TTree* tree, bool isData, bool isfakes, bool isWZ){
   tree->SetBranchAddress("isId_electron", isId_electron, &b_isId_electron);
   tree->SetBranchAddress("isIso_electron", isIso_electron, &b_isIso_electron);
   tree->SetBranchAddress("ioEmIoP_electron", ioEmIoP_electron, &b_ioEmIoP_electron);
+  tree->SetBranchAddress("promptelectron",promptelectron,&b_promptelectron);
   tree->SetBranchAddress("nbOfLooseMuons", &nbOfLooseMuons, &b_nbOfLooseMuons);
   tree->SetBranchAddress("nMuons", &nMuons, &b_nMuons);
   tree->SetBranchAddress("MuonIDSF", MuonIDSF, &b_MuonIDSF);
@@ -7794,6 +8247,7 @@ void InitTree(TTree* tree, bool isData, bool isfakes, bool isWZ){
   tree->SetBranchAddress("phi_muon", phi_muon, &b_phi_muon);
   tree->SetBranchAddress("eta_muon", eta_muon, &b_eta_muon);
   tree->SetBranchAddress("E_muon", E_muon, &b_E_muon);
+  tree->SetBranchAddress("promptmuon",promptmuon,&b_promptmuon);
   tree->SetBranchAddress("chargedHadronIso_muon", chargedHadronIso_muon, &b_chargedHadronIso_muon);
   tree->SetBranchAddress("neutralHadronIso_muon", neutralHadronIso_muon, &b_neutralHadronIso_muon);
   tree->SetBranchAddress("photonIso_muon", photonIso_muon, &b_photonIso_muon);
