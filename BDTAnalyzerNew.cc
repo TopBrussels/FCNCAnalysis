@@ -1103,7 +1103,7 @@ Int_t main(Int_t argc, char* argv[]){
       if(!doMTWtemplate) hist_check_eee = new TH1F( ("check"+coupling + "_" + region+"_eee").c_str(),           (coupling + "_" + region+"_eee").c_str(),           nbin,BDT_begin,BDT_end );
       else hist_check_eee = new TH1F( ("check"+coupling + "_mTW_eee").c_str(),           ("check"+coupling + "_mTW_eee").c_str(),           nbinMTW,0, endMTW );
       
-      
+      /*
       TH2F *hist_lep2_pt(0);
       TH2F *hist_lep2_pt_uuu(0);
       TH2F *hist_lep2_pt_uue(0);
@@ -1115,7 +1115,7 @@ Int_t main(Int_t argc, char* argv[]){
       hist_lep2_pt_uue = new TH2F(("hist_lep2_pt"+coupling+"_"+region+"_uue_"+dataSetName).c_str(),("hist_lep2_pt"+coupling+"_"+region+"_uue_"+dataSetName).c_str(), 25,0.,150.,nbin, BDT_begin, BDT_end);
       hist_lep2_pt_eeu = new TH2F(("hist_lep2_pt"+coupling+"_"+region+"_eeu_"+dataSetName).c_str(),("hist_lep2_pt"+coupling+"_"+region+"_eeu_"+dataSetName).c_str(), 25,0.,150.,nbin, BDT_begin, BDT_end);
       hist_lep2_pt_eee = new TH2F(("hist_lep2_pt"+coupling+"_"+region+"_eee_"+dataSetName).c_str(),("hist_lep2_pt"+coupling+"_"+region+"_eee_"+dataSetName).c_str(), 25,0.,150.,nbin, BDT_begin, BDT_end);
-      
+      */
       //cout << "created template histo" << endl;
       /// Initialise WZ plots
       if((dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos) && doPDFunc && !doMTWtemplate){
@@ -1278,12 +1278,12 @@ Int_t main(Int_t argc, char* argv[]){
           else if(MVA_channel == 3) {hist_check_eee->Fill( MVA_mWt, weight);}
         }
         
-        hist_lep2_pt->Fill(MVA_lepton2_pt,MVA_BDT,weight);
+       /* hist_lep2_pt->Fill(MVA_lepton2_pt,MVA_BDT,weight);
         if(MVA_channel== 0) hist_lep2_pt_uuu->Fill(MVA_lepton2_pt,MVA_BDT,weight);
         if(MVA_channel== 1) hist_lep2_pt_uue->Fill(MVA_lepton2_pt,MVA_BDT,weight);
        if(MVA_channel== 2)  hist_lep2_pt_eeu->Fill(MVA_lepton2_pt,MVA_BDT,weight);
         if(MVA_channel== 3) hist_lep2_pt_eee->Fill(MVA_lepton2_pt,MVA_BDT,weight);
-        
+        */
         
         
         // for MS plots
