@@ -1038,6 +1038,7 @@ int main (int argc, char *argv[])
     Bool_t isId_electron[10];
     Bool_t isIso_electron[10];
    Double_t ioEmIoP_electron[10];
+    Double_t promptelectron[10];
     
     //variable for muons
     Int_t nbOfLooseMuons;
@@ -1062,6 +1063,7 @@ int main (int argc, char *argv[])
     Bool_t isId_muon[10];
     Bool_t isIso_muon[10];
     Double_t pfIso_muon[10];
+    Double_t promptmuon[10];
     Int_t charge_muon[10];
     
     //variable for jets
@@ -1263,6 +1265,7 @@ int main (int argc, char *argv[])
     myTree->Branch("isId_electron",isId_electron,"isId_electron[nElectrons]/O)");
     myTree->Branch("isIso_electron",isIso_electron,"isIso_electron[nElectrons]/O)");
     myTree->Branch("ioEmIoP_electron",ioEmIoP_electron,"ioEmIoP_electron[nElectrons]/D)");
+      myTree->Branch("promptelectron",promptelectron,"promptelectron[nElectrons]/D");
     
     // muons
     myTree->Branch("nbOfLooseMuons", &nbOfLooseMuons, "nbOfLooseMuons/I");
@@ -1313,7 +1316,7 @@ int main (int argc, char *argv[])
     myTree->Branch("charge_muon",charge_muon,"charge_muon[nMuons]/I");
     myTree->Branch("d0_muon",d0_muon,"d0_muon[nMuons]/D");
     myTree->Branch("d0BeamSpot_muon",d0BeamSpot_muon,"d0BeamSpot_muon[nMuons]/D");
-    
+    myTree->Branch("promptmuon",promptmuon,"promptmuon[nMuons]/D");
     
     
     // jets
@@ -2558,6 +2561,7 @@ int main (int argc, char *argv[])
           if(!isData) TrackLayers_muon[nMuons] = selectedMuons[selmu]->nofTrackerLayersWithMeasurement();
            else TrackLayers_muon[nMuons] = -1;
           
+          promptmuon[nMuons] = 1.;
          
           
           badmueventmu[nMuons] = selectedMuons[selmu]->isBad80X();
@@ -2641,7 +2645,7 @@ int main (int argc, char *argv[])
             //else ptSF_muon[nMuons] = rc.kScaleAndSmearMC(selectedFakeMuons[selmu]->charge(), selectedFakeMuons[selmu]->Pt(), selectedFakeMuons[selmu]->Eta(), selectedFakeMuons[selmu]->Phi(), selectedFakeMuons[selmu]->nofTrackerLayersWithMeasurement(),gRandom->Rndm(),gRandom->Rndm(),0, 0);
             
             pt_muon_corrected[nMuons]=selectedFakeMuons[selmu]->Pt()*ptSF_muon[nMuons];
-            
+            promptmuon[nMuons] = 0.;
             
             d0_muon[nMuons] = selectedFakeMuons[selmu]->d0();
             pfIso_muon[nMuons]=selectedFakeMuons[selmu]->relPfIso(4,0);
@@ -2725,7 +2729,7 @@ int main (int argc, char *argv[])
           ioEmIoP_electron[nElectrons] = selectedElectrons[selel]->ioEmIoP();
           passConversion_electron[nElectrons] = selectedElectrons[selel]->passConversion();
           missingHits_electron[nElectrons] = selectedElectrons[selel]->missingHits();
-         
+         promptelectron[nElectrons] = 1.;
          
           
           
@@ -2779,6 +2783,7 @@ int main (int argc, char *argv[])
             ioEmIoP_electron[nElectrons] = selectedFakeElectrons[selel]->ioEmIoP();
             passConversion_electron[nElectrons] = selectedFakeElectrons[selel]->passConversion();
             missingHits_electron[nElectrons] = selectedFakeElectrons[selel]->missingHits();
+            promptelectron[nElectrons] = 0.;
             
             
             
