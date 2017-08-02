@@ -4,7 +4,8 @@ import xml.etree.cElementTree as ET
 import os
 
 # get filenames from the xml!!!
-tree = ET.ElementTree(file='config/Run2SameSignDiLepton_80X_ElEl_V9_Samples.xml')
+tree = ET.ElementTree(file='config/Run2SameSignDiLepton_80X_ElEl_V10_Samples.xml')
+#tree = ET.ElementTree(file='config/Run2SameSignDiLepton_80X_MuMu_V10_Samples.xml')
 
 root = tree.getroot()
 datasets = root.find('datasets')
