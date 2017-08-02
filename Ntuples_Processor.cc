@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
     applyGlobalSF = strtol(argv[8],NULL,10);
     applyAMC = strtol(argv[9],NULL,10);
     
-    string runDate = "Test_DDChargeMisIdCorrected_13June17"; // adapted to the date of the run and according to mereged ntuples
+    string runDate = "Test_DDsingleElec_23July17"; // adapted to the date of the run and according to mereged ntuples
     string xmlFileName;
     string CraneenPath;
     string decayChan;
@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
     {
         cout << " --> Using the DiMuon channel..." << endl;
         channelpostfix = "_Mu_Mu_";
-        xmlFileName = "config/Run2SameSignDiLepton_80X_MuMu_V10_Samples.xml"; // to be adapted when have different cfg.xml files according to different dilepton channel
+        xmlFileName = "config/Run2SameSignDiLepton_80X_MuMu_V10_Samples_Plotting.xml"; // to be adapted when have different cfg.xml files according to different dilepton channel
         DileptonMuMu = true;
         DataLumi  = 35826.306833965; // 80X_V4 B->H  //  pb-1
         CraneenPath += "MuMu";
@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
     {
         cout << " --> Using the DiElectron channel..." << endl;
         channelpostfix = "_El_El_";
-        xmlFileName = "config/Run2SameSignDiLepton_80X_ElEl_V10_Samples.xml"; // to be adapted when have different cfg.xml files according to different dilepton channel
+        xmlFileName = "config/Run2SameSignDiLepton_80X_ElEl_V10_Samples_Plotting.xml"; // to be adapted when have different cfg.xml files according to different dilepton channel
         DileptonMuMu = true;
         DataLumi  =  35826.306833965; //RunC //11716.571246596;//  pb-1
         CraneenPath += "ElecElec";
@@ -134,7 +134,7 @@ int main(int argc, char* argv[])
     {
         cout << " --> Using the DiElMu channel..." << endl;
         channelpostfix = "_El_Mu_";
-        xmlFileName = "config/Run2SameSignDiLepton_80X_ElMu_V10_Samples.xml"; // to be adapted when have different cfg.xml files according to different dilepton channel
+        xmlFileName = "config/Run2SameSignDiLepton_80X_ElMu_V10_Samples_Plotting.xml"; // to be adapted when have different cfg.xml files according to different dilepton channel
         DileptonElMu = true;
         DataLumi  = 35826.306833965;//  pb-1
         CraneenPath += "ElecMu";
@@ -192,10 +192,10 @@ int main(int argc, char* argv[])
 //    /// General Variables
 //    DatasetPlotter(70, -0.5, 69.5, "npu", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    DatasetPlotter(70, -0.5, 69.5, "nvtx", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-
-    /////////////////////////////////////////////////
-    /////****** Jet kinmatics variables *********////////
-    ////////////////////////////////////////////////
+//
+//    /////////////////////////////////////////////////
+//    /////****** Jet kinmatics variables *********////////
+//    ////////////////////////////////////////////////
 //    DatasetPlotter(100, 0, 500, "pt_jet[nJets]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    DatasetPlotter(50, -3.5, 3.5, "eta_jet[nJets]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    DatasetPlotter(100, -4.0, 4.0, "phi_jet[nJets]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
@@ -208,11 +208,11 @@ int main(int argc, char* argv[])
 //    DatasetPlotter(11, -0.5, 10.5, "MVA_nCSVLbtagJets", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    DatasetPlotter(100, 0, 300, "pt_1st_jet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    DatasetPlotter(100, 0, 300, "pt_2nd_jet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(100, 0, 300, "pt_3rd_jet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(100, 0, 300, "pt_4th_jet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    
-//    DatasetPlotter(12, -0.1, 1.1, "bdiscCSVv2_1st_bjet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(12, -0.1, 1.1, "bdiscCSVv2_2nd_bjet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(100, 0, 300, "pt_3rd_jet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(100, 0, 300, "pt_4th_jet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//
+    DatasetPlotter(12, -0.1, 1.1, "bdiscCSVv2_1st_bjet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+    DatasetPlotter(12, -0.1, 1.1, "bdiscCSVv2_2nd_bjet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    DatasetPlotter(12, -0.1, 1.1, "bdiscCSVv2_1st_jet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    DatasetPlotter(12, -0.1, 1.1, "bdiscCSVv2_2nd_jet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    DatasetPlotter(12, -0.1, 1.1, "bdiscCSVv2_3rd_jet", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
@@ -247,15 +247,23 @@ int main(int argc, char* argv[])
 //    DatasetPlotter(100, 0, 300, "pt_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    DatasetPlotter(50, -3.5, 3.5, "eta_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
 //    DatasetPlotter(100, -4.0, 4.0, "phi_electron[nElectrons]", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//
+////
 //    /// *** float variables *** ////
+ //   DatasetPlotter(100, 0, 200, "pt_1st_Electron", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+ //   DatasetPlotter(100, 0, 200, "pt_2nd_Electron", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+ //   DatasetPlotter(50, 0.0, 5.0 , "DeltaR_Elec0b0_DiElec", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(50, 0.0, 5.0 , "DeltaR_Elec1b0_DiElec", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(5, -2.5, 2.5 , "charge_1st_Electron", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+//    DatasetPlotter(5, -2.5, 2.5 , "charge_2nd_Electron", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
+////
+    ///////////////////////////////////
+    ///** DiElecMu Varaiables **////
+    /////////////////////////////////
     DatasetPlotter(100, 0, 200, "pt_1st_Electron", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
     DatasetPlotter(100, 0, 200, "pt_2nd_Electron", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
     DatasetPlotter(50, 0.0, 5.0 , "DeltaR_Elec0b0_DiElec", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
     DatasetPlotter(50, 0.0, 5.0 , "DeltaR_Elec1b0_DiElec", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(5, -2.5, 2.5 , "charge_1st_Electron", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-//    DatasetPlotter(5, -2.5, 2.5 , "charge_2nd_Electron", xmlFileName,CraneenPath,pathPNG, decayChan, Treename);
-////
+
 ////    //////////////////////////////
 ////    //// ** Met Variables ** ////
 //    /////////////////////////////
@@ -328,7 +336,7 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
    // float ScaleFactor, NormFactor, Luminosity;
   //  int varofInterest;  // used for plotting integer variables
     float varofInterest; // used for plotting float variables
-    //  double varofInterest; // used for plotting double variables
+    
     double varofInterest_double [20];
     
     vector<string> v;
@@ -384,8 +392,8 @@ void DatasetPlotter(int nBins, float plotLow, float plotHigh, string sVarofinter
             cout << "the current tree name is   =   " << TTreename << endl;
         }else if (TreeName == "NoZCut") {
            // TTreename = sNoZmassVetotree;
-           // TTreename = sSSLNoZmassVetotree;
-            TTreename = sOSLNoZmassVetotree;
+            TTreename = sSSLNoZmassVetotree;
+           // TTreename = sOSLNoZmassVetotree;
             cout << "the current tree name is   =   " << TTreename << endl;
         }else if (TreeName == "Init") {
             TTreename = sInitialTree;
@@ -693,8 +701,8 @@ void MSPCreator (string pathPNG , string TreeName)
             treename = "2OSl_";
         }else if (TreeName == "NoZCut") {
            // treename = "NoZCut_2L";
-           // treename = "NoZCut_2SSL_";
-            treename = "NoZCut_2OSL_";
+            treename = "NoZCut_2SSL_";
+           // treename = "NoZCut_2OSL_";
         }else if (TreeName == "Init") {
             treename = "Init_";
         }
