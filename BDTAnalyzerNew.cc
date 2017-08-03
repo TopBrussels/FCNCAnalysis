@@ -86,8 +86,8 @@ void Init1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
 // functions
 vector<double> BDTCUT(string region, string coupling);
 void CalculatePDFWeight(string dataSetName, Double_t BDT, Double_t MVA_weight_nom, Int_t MVA_channel);
-void FillMTWPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel);
-void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool isData, bool toppair, Double_t weight_, Int_t MVA_channel);
+void FillMTWPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm);
+void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool isZut , bool istoppair, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm);
 void GetPDFEnvelope(string dataSetName);
 void Fill1DHisto(string dataSetName,string systematic, bool istoppair, bool isZut, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel);
 void FillMTWShapeHisto(string dataSetName, string systematic, Double_t weight_,Int_t isys, Int_t MVA_channel, vector <int> decayChannels);
@@ -142,6 +142,12 @@ Int_t scaleNP = 10;
 // Declaration of leaf types
 // Declaration of leaf types
 Double_t        MVA_BDT;
+Double_t        MVA_DeltaR_lep0Jet;
+Double_t        MVA_DeltaR_lep1Jet;
+Double_t        MVA_DeltaR_lep2Jet;
+Double_t        MVA_DeltaR_MinLepJet;
+Double_t        MVA_DeltaR_NonIsoLepJet;
+Double_t        MVA_DeltaR_MinLepNonIsoJet;
 Double_t        MVA_x1;
 Double_t        MVA_x2;
 Int_t           MVA_id1;
@@ -288,6 +294,13 @@ Float_t         MVA_dPhiZWlep;
 Float_t         MVA_dPhiZSMtop;
 Float_t         MVA_m3l;
 // List of branches
+
+TBranch       *b_MVA_DeltaR_lep0Jet;
+TBranch       *b_MVA_DeltaR_lep1Jet;
+TBranch       *b_MVA_DeltaR_lep2Jet;
+TBranch       *b_MVA_DeltaR_MinLepJet;
+TBranch       *b_MVA_DeltaR_NonIsoLepJet;
+TBranch       *b_MVA_DeltaR_MinLepNonIsoJet;
 
 TBranch         *b_MVA_BDT;
 TBranch        *b_MVA_x1;   //!
@@ -438,6 +451,8 @@ TBranch        *b_MVA_m3l;   //!
 
 Double_t MVA_weightWZcorr;
 TBranch *b_MVA_weightWZcorr;
+
+
 
 TH1F*  hist_BDT_tt_nonpromptinZ = new TH1F("hist_BDT_tt_nonpromptinZ","hist_BDT_tt_nonpromptinZ;BDT;Nb. of evts", nbin,BDT_begin,BDT_end);
 TH1F*  hist_BDT_tt_nonpromptinW = new TH1F("hist_BDT_tt_nonpromptinW","hist_BDT_tt_nonpromptinW;BDT;Nb. of evts", nbin,BDT_begin,BDT_end);
@@ -890,8 +905,8 @@ Int_t main(Int_t argc, char* argv[]){
     thesystlist.push_back("btagSF_lfDown");
     thesystlist.push_back("btagSF_lfstats1Down");
     thesystlist.push_back("btagSF_lfstats2Down");
-    thesystlist.push_back("JERUp");
-    thesystlist.push_back("JESUp");
+   // thesystlist.push_back("JERUp");
+   // thesystlist.push_back("JESUp");
     
     thesystlist.push_back("puSFUp");
     thesystlist.push_back("electronSFUp");
@@ -906,9 +921,9 @@ Int_t main(Int_t argc, char* argv[]){
     thesystlist.push_back("btagSF_lfstats2Up");
     
     
-    thesystlist.push_back("JERDown");
+   // thesystlist.push_back("JERDown");
     
-    thesystlist.push_back("JESDown");
+    //thesystlist.push_back("JESDown");
   }
   cout << "Number of systematics " << thesystlist.size() << endl;
   //for plotting
@@ -1197,22 +1212,38 @@ Int_t main(Int_t argc, char* argv[]){
         //if(dataSetName.find("fake")!=std::string::npos) weight *= 0.0001;
         
         if(applyiniweights){
-          if(dataSetName.find("fake")!=std::string::npos && MVA_channel == 0 ){
-            weight *= 1.59;
+          if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinW")!=std::string::npos && MVA_channel == 0 ){
+            weight *= 0.615;
           }
-          if(dataSetName.find("fake")!=std::string::npos && MVA_channel == 2){ weight *= 0.255 ;}
-          if(dataSetName.find("fake")!=std::string::npos && MVA_channel == 1){
-            weight *= 1.01;
+          if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinZ")!=std::string::npos && MVA_channel == 0 ){
+            weight *= 0.;
           }
-          if(dataSetName.find("fake")!=std::string::npos && MVA_channel == 3){ weight *= 0.667;}
-          if(dataSetName.find("WZT")!=std::string::npos && MVA_channel == 0 ){
-            weight *= 1.102;
+          if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinW")!=std::string::npos && MVA_channel == 2){
+            weight *= 0.615 ;
           }
-          if(dataSetName.find("WZT")!=std::string::npos && MVA_channel == 2){ weight *= 1.776 ;}
+          if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinZ")!=std::string::npos && MVA_channel == 2){
+            weight *= 0.075 ;
+          }
+          if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinW")!=std::string::npos &&  MVA_channel == 1){
+            weight *= 0.48;
+          }
+          if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinZ")!=std::string::npos &&  MVA_channel == 1){
+            weight *= 0.;
+          }
+          if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinW")!=std::string::npos  && MVA_channel == 3){
+            weight *= 0.48;
+          }
+          if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinZ")!=std::string::npos  && MVA_channel == 3){
+            weight *= 0.075;
+          }
+          if(dataSetName.find("WZT")!=std::string::npos ){
+            weight *= 1.618;
+          }
+         /* if(dataSetName.find("WZT")!=std::string::npos && MVA_channel == 2){ weight *= 1.776 ;}
           if(dataSetName.find("WZT")!=std::string::npos && MVA_channel == 1){
             weight *= 1.52;
           }
-          if(dataSetName.find("WZT")!=std::string::npos && MVA_channel == 3){ weight *= 1.576;}
+          if(dataSetName.find("WZT")!=std::string::npos && MVA_channel == 3){ weight *= 1.576;}*/
         }
         
         if(dataSetName.find("nonpromptwrong")!=std::string::npos) hist_BDT_tt_nonpromptinZ->Fill(MVA_BDT, weight);
@@ -1536,13 +1567,13 @@ Int_t main(Int_t argc, char* argv[]){
           //cout << "ievt " << ievt << endl;
           tempstring = region + "_"+coupling;
           if(isys != 0) tempstring += "_"+ systematic;
-          FillGeneralPlots(d, tempstring, decayChannels, doZut, toppair, weightMSPlot, MVA_channel);
+          FillGeneralPlots(d, tempstring, decayChannels, doZut, toppair, weightMSPlot, MVA_channel, MVA_Zboson_M, MVA_NJets_CSVv2M);
         }
         if (makePlots && doMTWtemplate)
         {
           if(isys != 0) tempstring = "_" + systematic;
           // if(isData) cout << "fill data " << endl;
-          FillMTWPlots(d, tempstring, decayChannels, weightMSPlot, MVA_channel);
+          FillMTWPlots(d, tempstring, decayChannels, weightMSPlot, MVA_channel, MVA_Zboson_M, MVA_NJets_CSVv2M);
         }
         
         
@@ -1596,7 +1627,50 @@ Int_t main(Int_t argc, char* argv[]){
       //NB : theta name convention = <observable>__<process>[__<uncertainty>__(plus,minus)] FIX ME
       output_histo_name = "";
       if(!doMTWtemplate){
-        if (dataSetName.find("fake")!=std::string::npos ) //Last fake MC sample or data-driven fakes -> write fake histo w/ special name (for THETA)
+        if (dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinZ")!=std::string::npos ) //Last fake MC sample or data-driven fakes -> write fake histo w/ special name (for THETA)
+        {
+          scaleFakes_uuu = hist_check_uuu->Integral()/hist_uuu->Integral();
+          scaleFakes_uue = hist_check_uue->Integral()/hist_uue->Integral();
+          scaleFakes_eeu = hist_check_eeu->Integral()/hist_eeu->Integral();
+          scaleFakes_eee = hist_check_eee->Integral()/hist_eee->Integral();
+          if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_uuu_ZFakeMu_80X_"  + systematic ;
+          else output_histo_name = coupling + "_BDT_" + region+"_uuu_ZFakeMu_80X"  ;
+          hist_uuu->SetTitle(output_histo_name.c_str());
+          hist_uuu->Scale(hist_check_uuu->Integral()/hist_uuu->Integral());
+          /*if(!toppair && !doZut){ hist_uuu->GetXaxis()->SetRangeUser(-0.4,0.8); }
+           else if(toppair&& !doZut){ hist_uuu->GetXaxis()->SetRangeUser(-0.9,0.8);}
+           else if(!toppair && doZut){hist_uuu->GetXaxis()->SetRangeUser(-0.4,0.7);}
+           else if(toppair&& doZut){ hist_uuu->GetXaxis()->SetRangeUser(-0.9,0.9);}*/
+          hist_uuu->Write(output_histo_name.c_str());
+          if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_uue_ZFakeMu_80X_"  + systematic ;
+          else output_histo_name = coupling + "_BDT_" + region+"_uue_ZFakeMu_80X"  ;
+          hist_uue->SetTitle(output_histo_name.c_str());
+          /*if(!toppair && !doZut){ hist_uue->GetXaxis()->SetRangeUser(-0.4,0.8); }
+           else if(toppair&& !doZut){ hist_uue->GetXaxis()->SetRangeUser(-0.9,0.8);}
+           else if(!toppair && doZut){hist_uue->GetXaxis()->SetRangeUser(-0.4,0.7);}
+           else if(toppair&& doZut){ hist_uue->GetXaxis()->SetRangeUser(-0.9,0.9);}*/
+          hist_uue->Scale(hist_check_uue->Integral()/hist_uue->Integral());
+          hist_uue->Write(output_histo_name.c_str());
+          if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_eeu_ZFakeEl_80X_"  + systematic ;
+          else output_histo_name = coupling + "_BDT_" + region+"_eeu_ZFakeEl_80X"  ;
+          /*if(!toppair && !doZut){ hist_eeu->GetXaxis()->SetRangeUser(-0.4,0.8); }
+           else if(toppair&& !doZut){ hist_eeu->GetXaxis()->SetRangeUser(-0.9,0.8);}
+           else if(!toppair && doZut){hist_eeu->GetXaxis()->SetRangeUser(-0.4,0.7);}
+           else if(toppair&& doZut){ hist_eeu->GetXaxis()->SetRangeUser(-0.9,0.9);}*/
+          hist_eeu->SetTitle(output_histo_name.c_str());
+          hist_eeu->Scale(hist_check_eeu->Integral()/hist_eeu->Integral());
+          hist_eeu->Write(output_histo_name.c_str());
+          if(isys!=0) output_histo_name = coupling + "_BDT_" + region+"_eee_ZFakeEl_80X_"  + systematic ;
+          else output_histo_name = coupling + "_BDT_" + region+"_eee_ZFakeEl_80X"  ;
+          /* if(!toppair && !doZut){ hist_eee->GetXaxis()->SetRangeUser(-0.4,0.8); }
+           else if(toppair&& !doZut){ hist_eee->GetXaxis()->SetRangeUser(-0.9,0.8);}
+           else if(!toppair && doZut){hist_eee->GetXaxis()->SetRangeUser(-0.4,0.7);}
+           else if(toppair&& doZut){ hist_eee->GetXaxis()->SetRangeUser(-0.9,0.9);}*/
+          hist_eee->SetTitle(output_histo_name.c_str());
+          hist_eee->Scale(hist_check_eee->Integral()/hist_eee->Integral());
+          hist_eee->Write(output_histo_name.c_str());
+        }
+        else if (dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinW")!=std::string::npos  ) //Last fake MC sample or data-driven fakes -> write fake histo w/ special name (for THETA)
         {
           scaleFakes_uuu = hist_check_uuu->Integral()/hist_uuu->Integral();
           scaleFakes_uue = hist_check_uue->Integral()/hist_uue->Integral();
@@ -1676,7 +1750,26 @@ Int_t main(Int_t argc, char* argv[]){
         }
       }
       else if(doMTWtemplate){
-        if (dataSetName.find("fake")!=std::string::npos ) //Last fake MC sample or data-driven fakes -> write fake histo w/ special name (for THETA)
+        if (dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinZ")!=std::string::npos ) //Last fake MC sample or data-driven fakes -> write fake histo w/ special name (for THETA)
+        {
+          if(isys!=0) output_histo_name = "MTW_uuu_ZFakeMu_80X_"  + systematic ;
+          else output_histo_name = "MTW_uuu_ZFakeMu_80X"  ;
+          hist_uuu->SetTitle(output_histo_name.c_str());
+          hist_uuu->Write(output_histo_name.c_str());
+          if(isys!=0) output_histo_name = "MTW_uue_ZFakeMu_80X_"  + systematic ;
+          else output_histo_name = "MTW_uue_ZFakeMu_80X"  ;
+          hist_uue->SetTitle(output_histo_name.c_str());
+          hist_uue->Write(output_histo_name.c_str());
+          if(isys!=0) output_histo_name = "MTW_eeu_ZFakeEl_80X_"  + systematic ;
+          else output_histo_name = "MTW_eeu_ZFakeEl_80X"  ;
+          hist_eeu->SetTitle(output_histo_name.c_str());
+          hist_eeu->Write(output_histo_name.c_str());
+          if(isys!=0) output_histo_name = "MTW_eee_ZFakeEl_80X_"  + systematic ;
+          else output_histo_name = "MTW_eee_ZFakeEl_80X"  ;
+          hist_eee->SetTitle(output_histo_name.c_str());
+          hist_eee->Write(output_histo_name.c_str());
+        }
+        else  if (dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinW")!=std::string::npos ) //Last fake MC sample or data-driven fakes -> write fake histo w/ special name (for THETA)
         {
           if(isys!=0) output_histo_name = "MTW_uuu_FakeMu_80X_"  + systematic ;
           else output_histo_name = "MTW_uuu_FakeMu_80X"  ;
@@ -6238,6 +6331,19 @@ void InitMSPlotsMTW(string prefix, vector <int> decayChannels){
     
     //cout << "init msplots " << endl;
     MSPlotMTW[("MTW_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("MTW_"+decaystring).c_str(), nbinMTW, 0,endMTW, "transv. mass W boson (GeV)","GeV");
+    
+
+    MSPlotMTW[("DeltaR_NonIsoLepJet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("DeltaR_NonIsoLepJet_"+decaystring).c_str(), 20,0.,8., "#Delta R (non iso, jet)","units");
+    MSPlotMTW[("DeltaR_lep0Jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("DeltaR_lep0Jet_"+decaystring).c_str(), 20,0.,8., "#Delta R (lep0, jet)","units");
+    MSPlotMTW[("DeltaR_lep1Jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("DeltaR_lep1Jet_"+decaystring).c_str(), 20,0.,8., "#Delta R (lep1, jet)","units");
+    MSPlotMTW[("DeltaR_lep2Jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("DeltaR_lep2Jet_"+decaystring).c_str(), 20,0.,8., "#Delta R (lep2, jet)","units");
+    MSPlotMTW[("DeltaR_MinLepJet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("DeltaR_MinLepJet_"+decaystring).c_str(), 20,0.,8., "min. #Delta R (lep, jet)","units");
+    MSPlotMTW[("DeltaR_MinLepNonIsoJet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("DeltaR_MinLepNonIsoJet_"+decaystring).c_str(), 20,0.,8., "min #Delta R (non iso, jet)","units");
+   
+    MSPlotMTW[("ZBOSON_M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("ZBOSONM_"+decaystring).c_str(), 20,70,110, "mass Zboson","GeV");
+    MSPlotMTW[("ZBOSON_Mcut_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("ZBOSONMcut_"+decaystring).c_str(), 20,70,110, "mass Zboson","GeV");
+    //MSPlotMTW[("NJETSCSVM_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("NJETSCSVM_"+decaystring).c_str(), 6,-0.5,5.5, "nb CSVM jets","units");
+    //MSPlotMTW[("NJETSCSVMcut_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("NJETSCSVMcut_"+decaystring).c_str(), 6,-0.5,5.5, "nb CSVM jets","units");
   }
   decaystring = "";
 }
@@ -6261,6 +6367,21 @@ void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair, boo
     MSPlot[ (prefix+"channel_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"channel_"+decaystring).c_str(), 5,-0.5, 4.5, "decay");
     MSPlot[ (prefix+"weight_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"weight_"+decaystring).c_str(), 100,0, 0.3, "eventweight");
     
+    MSPlot[(prefix+"DeltaR_NonIsoLepJet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"DeltaR_NonIsoLepJet_"+decaystring).c_str(), 20,0.,8., "#Delta R (non iso, jet)","units");
+   
+    MSPlot[(prefix+"DeltaR_lep0Jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"DeltaR_lep0Jet_"+decaystring).c_str(), 20,0.,8., "#Delta R (lep0, jet)","units");
+    MSPlot[(prefix+"DeltaR_lep1Jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"DeltaR_lep1Jet_"+decaystring).c_str(), 20,0.,8., "#Delta R (lep1, jet)","units");
+    MSPlot[(prefix+"DeltaR_lep2Jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"DeltaR_lep2Jet_"+decaystring).c_str(), 20,0.,8., "#Delta R (lep2, jet)","units");
+    MSPlot[(prefix+"DeltaR_MinLepJet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"DeltaR_MinLepJet_"+decaystring).c_str(), 20,0.,8., "min. #Delta R (lep, jet)","units");
+    MSPlot[(prefix+"DeltaR_MinLepNonIsoJet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"DeltaR_MinLepNonIsoJet_"+decaystring).c_str(), 20,0.,8., "min #Delta R (non iso, jet)","units");
+    
+    //cout << (prefix+"ZBOSON_M_"+decaystring).c_str() << endl;
+    MSPlot[(prefix+"ZBOSON_M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"ZBOSONM_"+decaystring).c_str(), 20,70,110, "mass Zboson","GeV");
+    MSPlot[(prefix+"ZBOSON_Mcut_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"ZBOSONMcut_"+decaystring).c_str(), 20,70,110, "mass Zboson","GeV");
+    cout << (prefix+"NJETSCSVM_"+decaystring).c_str() << endl;
+    MSPlot[(prefix+"NJETSCSVM_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"NJETSCSVM_"+decaystring).c_str(), 6,-0.5,5.5, "nb CSVM jets","units");
+    MSPlot[(prefix+"NJETSCSVMcut_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"NJETSCSVMcut_"+decaystring).c_str(), 6,-0.5,5.5, "nb CSVM jets","units");
+   
     if(!istoppair){
       MSPlot[(prefix+"mlb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"mlb_"+decaystring).c_str(),10, 0, 500, "inv. mass l_{W}b (GeV)","GeV");
       MSPlot[(prefix+"dRWlepb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dRWlepb_"+decaystring).c_str(),10,0, 5, "#Delta R(l_{W},b)");
@@ -6388,6 +6509,16 @@ void InitAnalyzerTree(TTree* tree){
   tree->SetBranchAddress("MVA_id2", &MVA_id2, &b_MVA_id2);
   tree->SetBranchAddress("MVA_q", &MVA_q, &b_MVA_q);
   
+  tree->SetBranchAddress("MVA_DeltaR_NonIsoLepJet", &MVA_DeltaR_NonIsoLepJet, &b_MVA_DeltaR_NonIsoLepJet);
+  tree->SetBranchAddress("MVA_DeltaR_lep0Jet", &MVA_DeltaR_lep0Jet, &b_MVA_DeltaR_lep0Jet);
+  tree->SetBranchAddress("MVA_DeltaR_lep1Jet", &MVA_DeltaR_lep1Jet, &b_MVA_DeltaR_lep1Jet);
+  tree->SetBranchAddress("MVA_DeltaR_lep2Jet", &MVA_DeltaR_lep2Jet, &b_MVA_DeltaR_lep2Jet);
+  tree->SetBranchAddress("MVA_DeltaR_MinLepJet", &MVA_DeltaR_MinLepJet, &b_MVA_DeltaR_MinLepJet);
+  tree->SetBranchAddress("MVA_DeltaR_MinLepNonIsoJet", &MVA_DeltaR_MinLepNonIsoJet, &b_MVA_DeltaR_MinLepNonIsoJet);
+  tree->SetBranchAddress("MVA_Zboson_M", &MVA_Zboson_M, &b_MVA_Zboson_M);
+  tree->SetBranchAddress("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, &b_MVA_NJets_CSVv2M);
+  
+  
   tree->SetBranchAddress("MVA_weightWZcorr", &MVA_weightWZcorr, &b_MVA_weightWZcorr);
   tree->SetBranchAddress( "MVA_weight_nloSF", &MVA_weight_nloSF, &b_MVA_weight_nloSF);
   tree->SetBranchAddress( "MVA_weight_puSF_up", &MVA_weight_puSF_up, &b_MVA_weight_puSF_up);
@@ -6453,12 +6584,12 @@ void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut){
   else if(istoppair && doZut){
     tree->SetBranchAddress("MVA_dPhiZWlep", &MVA_dPhiZWlep, &b_MVA_dPhiZWlep);
     tree->SetBranchAddress("MVA_SMtop_rap", &MVA_SMtop_rap, &b_MVA_SMtop_rap);
-    tree->SetBranchAddress("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, &b_MVA_NJets_CSVv2M);
+    //tree->SetBranchAddress("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, &b_MVA_NJets_CSVv2M);
     tree->SetBranchAddress("MVA_SMtop_M", &MVA_SMtop_M, &b_MVA_SMtop_M);
     tree->SetBranchAddress("MVA_mlb", &MVA_mlb, &b_MVA_mlb);
     tree->SetBranchAddress("MVA_dRWlepb", &MVA_dRWlepb, &b_MVA_dRWlepb);
     tree->SetBranchAddress("MVA_TotalHt_lep", &MVA_TotalHt_lep, &b_MVA_TotalHt_lep);
-    tree->SetBranchAddress("MVA_Zboson_M", &MVA_Zboson_M, &b_MVA_Zboson_M);
+    //tree->SetBranchAddress("MVA_Zboson_M", &MVA_Zboson_M, &b_MVA_Zboson_M);
     tree->SetBranchAddress("MVA_dPhiZb", &MVA_dPhiZb, &b_MVA_dPhiZb);
     tree->SetBranchAddress("MVA_dRZb", &MVA_dRZb, &b_MVA_dRZb);
     tree->SetBranchAddress("MVA_dRZWlep", &MVA_dRZWlep, &b_MVA_dRZWlep);
@@ -6468,7 +6599,7 @@ void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut){
   else if(istoppair && !doZut){
     tree->SetBranchAddress("MVA_FCNCtop_rap", &MVA_FCNCtop_rap, &b_MVA_FCNCtop_rap);
     tree->SetBranchAddress("MVA_SMtop_rap", &MVA_SMtop_rap, &b_MVA_SMtop_rap);
-    tree->SetBranchAddress("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, &b_MVA_NJets_CSVv2M);
+   // tree->SetBranchAddress("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, &b_MVA_NJets_CSVv2M);
     tree->SetBranchAddress("MVA_mlb", &MVA_mlb, &b_MVA_mlb);
     tree->SetBranchAddress("MVA_FCNCtop_M", &MVA_FCNCtop_M, &b_MVA_FCNCtop_M);
     tree->SetBranchAddress("MVA_dRWlepb", &MVA_dRWlepb, &b_MVA_dRWlepb);
@@ -6476,7 +6607,7 @@ void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut){
     tree->SetBranchAddress("MVA_Bdis_Lightjet", &MVA_Bdis_Lightjet, &b_MVA_Bdis_Lightjet);
     tree->SetBranchAddress("MVA_dRZWlep", &MVA_dRZWlep, &b_MVA_dRZWlep);
     tree->SetBranchAddress("MVA_dPhiZWlep", &MVA_dPhiZWlep, &b_MVA_dPhiZWlep);
-    tree->SetBranchAddress("MVA_Zboson_M", &MVA_Zboson_M, &b_MVA_Zboson_M);
+   // tree->SetBranchAddress("MVA_Zboson_M", &MVA_Zboson_M, &b_MVA_Zboson_M);
     tree->SetBranchAddress("MVA_dRZb", &MVA_dRZb, &b_MVA_dRZb);
     
   }
@@ -6792,7 +6923,7 @@ void CalculatePDFWeight(string dataSetName, Double_t BDT, Double_t MVA_weight_no
    */
   
 }
-void FillMTWPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel){
+void FillMTWPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm){
   decaystring = "";
   Double_t eventW = 1.;
   eventW = weight_;
@@ -6812,10 +6943,20 @@ void FillMTWPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t 
     
     //if(datasets[d]->Name().find("data")!=std::string::npos) cout << "filling " << ("MTW_"+decaystring).c_str() << " with " << MVA_mWt2 << " " << weight_ << endl;
     MSPlotMTW[("MTW_"+decaystring).c_str()]->Fill(MVA_mWt , datasets[d], true, weight_);
-  }
+    
+    MSPlotMTW[("DeltaR_NonIsoLepJet_"+decaystring).c_str()]->Fill(MVA_DeltaR_NonIsoLepJet, datasets[d], true, weight_);
+    MSPlotMTW[("DeltaR_lep0Jet_"+decaystring).c_str()]->Fill(MVA_DeltaR_lep0Jet, datasets[d], true, weight_);
+    MSPlotMTW[("DeltaR_lep1Jet_"+decaystring).c_str()]->Fill(MVA_DeltaR_lep1Jet, datasets[d], true, weight_);
+    MSPlotMTW[("DeltaR_lep2Jet_"+decaystring).c_str()]->Fill(MVA_DeltaR_lep2Jet, datasets[d], true, weight_);
+    MSPlotMTW[("DeltaR_MinLepJet_"+decaystring).c_str()]->Fill(MVA_DeltaR_MinLepJet, datasets[d], true, weight_);
+    MSPlotMTW[("DeltaR_MinLepNonIsoJet_"+decaystring).c_str()]->Fill(MVA_DeltaR_MinLepNonIsoJet, datasets[d], true, weight_);
+    
+    MSPlotMTW[("ZBOSON_M_"+decaystring).c_str()]->Fill(MVA_Zboson_M, datasets[d], true, weight_);
+    if(  83.5 < MVA_Zboson_M && MVA_Zboson_M <  98.5) MSPlotMTW[("ZBOSON_Mcut_"+decaystring).c_str()]->Fill(MVA_Zboson_M, datasets[d], true, weight_);
+   }
   decaystring = "";
 }
-void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool isZut , bool istoppair, Double_t weight_, Int_t MVA_channel){
+void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool isZut , bool istoppair, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm){
   
   //cout << "fill plots" << endl;
   decaystring = "";
@@ -6839,6 +6980,24 @@ void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool i
     MSPlot[(prefix+"_BDT_"+decaystring).c_str()]->Fill(MVA_BDT , datasets[d], true, weight_);
     MSPlot[ (prefix+"_channel_"+decaystring).c_str()]->Fill(MVA_channel, datasets[d], true, weight_);
     MSPlot[ (prefix+"_weight_"+decaystring).c_str()]->Fill(weight_, datasets[d], true, 1.);
+    
+    
+    MSPlot[(prefix+"_DeltaR_NonIsoLepJet_"+decaystring).c_str()]->Fill(MVA_DeltaR_NonIsoLepJet, datasets[d], true, weight_);
+    //cout << (prefix+"_DeltaR_lep0Jet_"+decaystring).c_str() << endl;
+    MSPlot[(prefix+"_DeltaR_lep0Jet_"+decaystring).c_str()]->Fill(MVA_DeltaR_lep0Jet, datasets[d], true, weight_);
+    MSPlot[(prefix+"_DeltaR_lep1Jet_"+decaystring).c_str()]->Fill(MVA_DeltaR_lep1Jet, datasets[d], true, weight_);
+    MSPlot[(prefix+"_DeltaR_lep2Jet_"+decaystring).c_str()]->Fill(MVA_DeltaR_lep2Jet, datasets[d], true, weight_);
+    MSPlot[(prefix+"_DeltaR_MinLepJet_"+decaystring).c_str()]->Fill(MVA_DeltaR_MinLepJet, datasets[d], true, weight_);
+    MSPlot[(prefix+"_DeltaR_MinLepNonIsoJet_"+decaystring).c_str()]->Fill(MVA_DeltaR_MinLepNonIsoJet, datasets[d], true, weight_);
+    
+   // cout << (prefix+"_ZBOSON_M_"+decaystring).c_str() << endl;
+    MSPlot[(prefix+"_ZBOSON_M_"+decaystring).c_str()]->Fill(MVA_Zboson_M, datasets[d], true, weight_);
+    if( 83.5 < MVA_Zboson_M  &&  MVA_Zboson_M < 98.5) MSPlot[(prefix+"_ZBOSON_Mcut_"+decaystring).c_str()]->Fill(MVA_Zboson_M, datasets[d], true, weight_);
+   
+   //cout << (prefix+"_NJETSCSVM_"+decaystring).c_str() << endl;
+    MSPlot[(prefix+"_NJETSCSVM_"+decaystring).c_str()]->Fill(MVA_NJets_CSVv2M, datasets[d], true, weight_);
+    if(MVA_NJets_CSVv2M > 0 ) MSPlot[(prefix+"_NJETSCSVMcut_"+decaystring).c_str()]->Fill(MVA_NJets_CSVv2M, datasets[d], true, weight_);
+
     
     if(!istoppair){
       MSPlot[(prefix+"_mlb_"+decaystring).c_str()] ->Fill(MVA_mlb, datasets[d], true, weight_);
