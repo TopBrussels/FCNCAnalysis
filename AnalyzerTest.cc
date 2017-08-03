@@ -125,6 +125,8 @@ TFile* nonpwtupfile = 0;
 TFile* wzlightfile = 0;
 TFile* wzccfile = 0;
 TFile* wzbbfile = 0;
+TFile* nonpromptinZfile = 0;
+TFile* nonpromptinWfile = 0;
 
 TTree* mvatree = 0;
 TTree* mvatree_JECup = 0;
@@ -319,6 +321,9 @@ Float_t MVA_cdiscCvsB_highestdisjet = -999.;
 Float_t MVA_cdiscCvsB_cjet = -999.;
 Float_t MVA_cdiscCvsL_highestdisjet = -999.;
 Float_t MVA_cdiscCvsL_cjet = -999.;
+
+
+
 
 // Declaration of leaf types
 
@@ -760,9 +765,9 @@ void FillGeneralPlots(int d, string prefix, vector<int>decayChannels, bool isDat
 void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<int>decayChannels);
 string ConvertIntToString(int nb, bool pad);
 void ReconstructObjects(vector<int> selectedJetsID, vector<TLorentzVector> Muons,vector<TLorentzVector> selectedElectrons, vector<TLorentzVector> selectedJets,int Region, bool threelepregion);
-void MakeMVAvars(int Region, Double_t scaleFactor, int nonpromptWrong_, Double_t scaleFactorWZcorr);
+void MakeMVAvars(int Region, Double_t scaleFactor, int nonpromptWrong_, Double_t scaleFactorWZcorr, int d_ );
 void createMVAtree(string dataSetName);
-void writeMVAtree();
+void writeMVAtree(string dName);
 int SMjetCalculator(vector<TLorentzVector> Jets,int verb);
 TLorentzVector MetzCalculator(TLorentzVector leptW, TLorentzVector v_met, TLorentzVector SMjet);
 int FCNCjetCalculator(vector < TLorentzVector>  Jets, TLorentzVector recoZ ,int index, int verb);
@@ -1027,6 +1032,13 @@ Double_t tempPx_jet;
 Double_t tempPy_jet;
 Double_t tempHt_jet;
 
+
+Double_t MVA_DeltaR_NonIsoLepJet;
+Double_t MVA_DeltaR_lep0Jet;
+Double_t MVA_DeltaR_lep1Jet;
+Double_t MVA_DeltaR_lep2Jet;
+Double_t MVA_DeltaR_MinLepJet;
+Double_t MVA_DeltaR_MinLepNonIsoJet; 
 TLorentzVector tempInvMassObj;
 TLorentzVector tempInvMassObj_jet;
 
@@ -1392,20 +1404,22 @@ int main(int argc, char* argv[]){
     MSPlot["muon1_pt"]= new MultiSamplePlot(datasets, "muon1_pt", 50, 0., 250., "Muon 1 p_{T} [GeV]");
     MSPlot["muon2_pt"]= new MultiSamplePlot(datasets, "muon2_pt", 20, 0., 200., "Muon 2 p_{T} [GeV]");
     
-    
+     MSPlot["cutflowregions"] = new MultiSamplePlot(datasets, "cutflowregion", 10, -0.5, 9.5, "Cutflow region");
     
     
     
     Init2DPlots();
   }
   vector < string > v_cutflow = {">1l,>0j, <6j, m_{T}^{W} < 300", "SF pair","lep veto","Z mass",">2l","#Delta R (l_{W},b) <= 2.5","STSR","TTSR","WZCR"};
-  
+  vector < string > v_cutflowreg = {"basecuts","STSR","TTSR","WZCR","TTCR"};
+ 
+ 
   
   if(makeMVAtree && makeMVAPlots) {
-    // InitMVAMSPlotsSingletop("singletop", decayChannels);
-    InitMVAMSPlotsTopPair("wzcontrol", decayChannels);
-    // InitMVAMSPlotsTopPair("ttzcontrol", decayChannels);
-    //InitMVAMSPlotsTopPair("toppair", decayChannels);
+     InitMVAMSPlotsSingletop("singletop", decayChannels);
+     InitMVAMSPlotsTopPair("wzcontrol", decayChannels);
+     InitMVAMSPlotsTopPair("ttzcontrol", decayChannels);
+     InitMVAMSPlotsTopPair("toppair", decayChannels);
     
   }
   
@@ -1633,7 +1647,21 @@ int main(int argc, char* argv[]){
   TH1F*  CutflowTableHisto_uue__other = new TH1F("CutflowTableHisto_uue__other", "CutflowTableHisto_uue__other" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
   TH1F*  CutflowTableHisto_uuu__other = new TH1F("CutflowTableHisto_uuu__other", "CutflowTableHisto_uuu__other" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
   
-  
+ 
+   TH1F*  histo_data = new TH1F("histo_data","histo_data", 4, -0.5, 3.5); 
+   histo_data->GetXaxis()->SetBinLabel(1,"2 iso"); 
+   histo_data->GetXaxis()->SetBinLabel(2,"3 iso");
+   histo_data->GetXaxis()->SetBinLabel(3,"2 iso + non iso"); 
+
+  TH1F*  histo_ttbar = new TH1F("histo_ttbar","histo_ttbar", 4, -0.5, 3.5);
+  histo_ttbar->GetXaxis()->SetBinLabel(1,"2 iso");
+  histo_ttbar->GetXaxis()->SetBinLabel(2,"3 iso");
+  histo_ttbar->GetXaxis()->SetBinLabel(3,"2 iso + non iso");
+
+  TH1F*  histo_wz = new TH1F("histo_wz","histo_wz", 4, -0.5, 3.5);
+  histo_wz->GetXaxis()->SetBinLabel(1,"2 iso");
+  histo_wz->GetXaxis()->SetBinLabel(2,"3 iso");
+  histo_wz->GetXaxis()->SetBinLabel(3,"2 iso + non iso");
 
   
   
@@ -1706,7 +1734,7 @@ int main(int argc, char* argv[]){
       
     }
     else  if (dataSetName.find("DY")!=std::string::npos || dataSetName.find("TTJets")!=std::string::npos) checkNonprompt = true;
-    
+   if(dataSetName.find("fake")!=std::string::npos) checkNonprompt = false;  
     if(check_matching){
       ClearMatchingSampleVars();
       if(makeMatchingPlots){
@@ -2098,9 +2126,9 @@ int main(int argc, char* argv[]){
       cldiscrim = -5.;
       
       
-      
+      bool keepevent = true;
       for(unsigned int iJet = 0; iJet < nJets ; iJet++){
-        if(pt_jet[iJet] < 30. ) continue;
+        //if(pt_jet[iJet] < 30. ) continue;
         if(fabs(eta_jet[iJet]) >= 2.4){ continue;}
         jet.Clear();
         jet.SetPtEtaPhiE(pt_jet[iJet], eta_jet[iJet], phi_jet[iJet], E_jet[iJet]);
@@ -2113,21 +2141,30 @@ int main(int argc, char* argv[]){
         
         
         PushBack = true;
+        bool keepevent = true; 
         for(int iM = 0; iM < selectedMuons.size(); iM++){
-          if(jet.DeltaR(selectedMuons[iM]) < 0.4) {
+          if(jet.Pt() == selectedMuons[iM].Pt()){
             PushBack = false;
+            break;
+          }
+          else if(jet.DeltaR(selectedMuons[iM]) < 0.4) {
+            keepevent = false;
             break;
           }
         }
         if(!PushBack) {   continue;}
         for(int iE = 0; iE < selectedElectrons.size(); iE++){
-          if( jet.DeltaR(selectedElectrons[iE]) < 0.3) {
-            PushBack = false;
+           if(jet.Pt() == selectedElectrons[iE].Pt()){
+	   PushBack = false;
+            break;
+           } 
+           else if( jet.DeltaR(selectedElectrons[iE]) < 0.3) {
+            keepevent = false;
             break;
           }
         }
-        if(!PushBack){   continue;}
-        else{
+       if(!keepevent || !PushBack|| pt_jet[iJet] < 30. ){   continue;}
+       else{
           //if(isfakes) cout << "pushing back " << iJet << endl;
           selectedJets.push_back(jet);
           selectedJetsID.push_back(iJet);
@@ -2172,9 +2209,9 @@ int main(int argc, char* argv[]){
       }
       
       // cout << "before selections " << endl;
-      
+       if(!keepevent) continue;  
       // selections
-      if(selectedJetsID.size()>6) continue; // temp fix
+      if(selectedJetsID.size()>3) continue; // temp fix
       if(selectedJetsID.size() == 0) continue;
       if(mWT > 300.) continue;  // temp fix
       // if(met_Pt < 50. ) continue;
@@ -2498,6 +2535,20 @@ int main(int argc, char* argv[]){
       bool twolepregion = false;
       if(selectedLeptons.size() == 3)  threelepregion = true;
       if(selectedElectrons.size() > 1 || selectedMuons.size() > 1) twolepregion = true;
+      if(isData && twolepregion)  histo_data->Fill(0., 1.); 
+      if(isData && threelepregion)  histo_data->Fill(1., 1.);
+      if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("TT")==std::string::npos && threelepregion && dataSetName.find("WZ")==std::string::npos )  histo_data->Fill(2., 1.);
+
+      if(dataSetName.find("TTJets_pow")!=std::string::npos  && twolepregion)  histo_ttbar->Fill(0., eventweightForNotMSplots);
+      if( dataSetName.find("TTJets_pow")!=std::string::npos  && threelepregion)  histo_ttbar->Fill(1., eventweightForplots);
+      if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("TTJ")!=std::string::npos  )  histo_ttbar->Fill(2., eventweightForNotMSplots);
+
+      if(dataSetName.find("WZT")!=std::string::npos  && twolepregion)  histo_wz->Fill(0., eventweightForNotMSplots);
+      if( dataSetName.find("WZT")!=std::string::npos  && threelepregion)  histo_wz->Fill(1., eventweightForNotMSplots);
+      if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("WZT")!=std::string::npos  )  histo_wz->Fill(2., eventweightForNotMSplots);
+      
+
+      
       if(! threelepregion && ! twolepregion ) continue;
       if(MakeSelectionTable) {
         CutflowTableHisto->Fill(1.,eventweightForplots);
@@ -2696,7 +2747,9 @@ int main(int argc, char* argv[]){
         
       }
       //cout << "zmass" << endl;
-      if(Zboson.M() <( 76. +7.5)|| Zboson.M() > (106.-7.5)) continue;
+      bool IamInZwindow = true;
+//      if(Zboson.M() <( 76.+7.5)|| Zboson.M() > (106.-7.5)) continue;
+      if(Zboson.M() <( 76.)|| Zboson.M() > 106.) IamInZwindow = false; //  continue;
       if(doCutflow){ // // {">1l,>0j", "SF pair","lep veto","Z mass","#Delta R (l_{W},b) <= 2.5",">2l","STSR","TTSR","WZCR"};
         MSPlot["cutflow"] ->Fill(3. , datasets[d], true,eventweightForplots);
         if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(3. , datasets[d], true,eventweightForplots);
@@ -2770,7 +2823,7 @@ int main(int argc, char* argv[]){
         
       }
       
-      if( dofakesf && twolepregion ){
+      if( dofakesf && twolepregion && IamInZwindow ){
         if(isfakes){
           fake_Histo_data->Fill(Zboson.Pt(),Wlep.Pt(), eventweightForNotMSplots);
           
@@ -2784,7 +2837,7 @@ int main(int argc, char* argv[]){
       
       
       
-      if (makePlots )
+      if (makePlots && IamInZwindow )
       {
         FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow", decayChannels,isData, isfakes, threelepregion, twolepregion);
         
@@ -2802,10 +2855,10 @@ int main(int argc, char* argv[]){
       
       
       // from here only 3lep analysis !!!!
-      if(twolepregion && doDilep){ nSelectedEntriesDilep++; nSelectedEntriesDilepweighted += eventweightForNotMSplots;}
+      if(twolepregion && doDilep && IamInZwindow){ nSelectedEntriesDilep++; nSelectedEntriesDilepweighted += eventweightForNotMSplots;}
       if((selectedMuons.size()+selectedElectrons.size())!= 3) continue;
       
-      if(makePlots){
+      if(makePlots && IamInZwindow){
         MSPlot["lepton0_pt"] ->Fill(selectedLeptons[0].Pt() , datasets[d], true,eventweightForplots);
         MSPlot["lepton1_pt"] ->Fill(selectedLeptons[1].Pt() , datasets[d], true,eventweightForplots);
         MSPlot["lepton2_pt"] ->Fill(selectedLeptons[2].Pt() , datasets[d], true,eventweightForplots);
@@ -2924,6 +2977,7 @@ int main(int argc, char* argv[]){
       // if(!passedcuts) continue;
       if(isfakes) fakeafter += eventweightForNotMSplots;
       
+      MSPlot["cutflowregions"]->Fill(0. , datasets[d], true,eventweightForplots);
       
       if(checkcuts){
         if(dataSetName.find("FCNC")!=std::string::npos){
@@ -3066,7 +3120,7 @@ int main(int argc, char* argv[]){
       }
       if(!threelepregion) cout << "WARNING something went wrong with threelep region" << endl;
       
-      if(threelepregion &&dataSetName.find("WZTo3LNu")!=std::string::npos && systematicplots ) Fill1DPlots(dataSetName, Luminosity/EquilumiSF, threelepregion,twolepregion); // FIX EVENTWEIGHT
+      if(threelepregion &&dataSetName.find("WZTo3LNu")!=std::string::npos && systematicplots && IamInZwindow ) Fill1DPlots(dataSetName, Luminosity/EquilumiSF, threelepregion,twolepregion); // FIX EVENTWEIGHT
       
       if((dataSetName.find("DY")!=std::string::npos || dataSetName.find("TTJets")!=std::string::npos || dataSetName.find("WWTo")!=std::string::npos|| dataSetName.find("Zjets")!=std::string::npos ||  dataSetName.find("FCNC")!=std::string::npos ||dataSetName.find("fake")!=std::string::npos) &&  findFakeDisc  && selectedJetsID.size() > 0 && selectedCSVLJetID.size()>0){
         //cout << "filling" << endl;
@@ -3075,22 +3129,56 @@ int main(int argc, char* argv[]){
       
       
       bool matcher = false;
-      if(check_matching) matcher = MatchingFunction(dataSetName, selectedLeptonsForMatching, selectedMuons, selectedElectrons, selectedJets,makeMatchingPlots, debugmatching);
+      if(check_matching && IamInZwindow) matcher = MatchingFunction(dataSetName, selectedLeptonsForMatching, selectedMuons, selectedElectrons, selectedJets,makeMatchingPlots, debugmatching);
       if(matcher && debugmatching) cout << " done with matching " << endl;
       //if(matchernonprompt ) cout << " done with matching " << endl;
       
       // Signal regions and background region
       bool selected = false;
+      MVA_DeltaR_NonIsoLepJet = 0.;
+      MVA_DeltaR_MinLepNonIsoJet = 99999.;
+      for(int iElec = 0; iElec < electronID.size(); iElec++){
+        for(int iJet = 0; iJet < selectedJets.size(); iJet++){
+          if(promptelectron[electronID[iElec]] < 1){
+            MVA_DeltaR_NonIsoLepJet +=  ROOT::Math::VectorUtil::DeltaR(selectedElectrons[iElec],selectedJets[iJet]) ;
+            if( ROOT::Math::VectorUtil::DeltaR(selectedElectrons[iElec],selectedJets[iJet]) < MVA_DeltaR_MinLepNonIsoJet) MVA_DeltaR_MinLepNonIsoJet =  ROOT::Math::VectorUtil::DeltaR(selectedElectrons[iElec],selectedJets[iJet]);
+          }
+          
+        }
+      }
+      for(int iElec = 0; iElec < muonID.size(); iElec++){
+        for(int iJet = 0; iJet < selectedJets.size(); iJet++){
+          if(promptmuon[muonID[iElec]] < 1){
+            MVA_DeltaR_NonIsoLepJet +=  ROOT::Math::VectorUtil::DeltaR(selectedElectrons[iElec],selectedJets[iJet]) ;
+            if(ROOT::Math::VectorUtil::DeltaR(selectedMuons[iElec],selectedJets[iJet]) < MVA_DeltaR_MinLepNonIsoJet) MVA_DeltaR_MinLepNonIsoJet =  ROOT::Math::VectorUtil::DeltaR(selectedMuons[iElec],selectedJets[iJet]);
+            
+          }
+        }
+      }
       
+      bool nonpromptInW = false;
       
+     if(selectedJets.size() == 1 && selectedCSVLJetID.size() > 0 && threelepregion && IamInZwindow) MSPlot["cutflowregions"]->Fill(1. , datasets[d], true,eventweightForplots); // STSR
+     // if(selectedJets.size() == 1 && selectedCSVMJetID.size() > 0 && threelepregion && IamInZwindow) MSPlot["cutflowregions"]->Fill(2. , datasets[d], true,eventweightForplots); // STSR
+      if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && threelepregion && IamInZwindow) MSPlot["cutflowregions"]->Fill(2. , datasets[d], true,eventweightForplots); // TTSR
+     // if(selectedJets.size() > 1 && selectedCSVMJetID.size() > 0 && threelepregion && IamInZwindow) MSPlot["cutflowregions"]->Fill(4. , datasets[d], true,eventweightForplots); // TTSR
+     //if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && selectedCSVTJetID.size() < 2 && threelepregion && IamInZwindow) MSPlot["cutflowregions"]->Fill(3. , datasets[d], true,eventweightForplots); //TT SR CSVR
+     if(selectedJets.size() > 0 && selectedCSVLJetID.size() == 0 && threelepregion && IamInZwindow) MSPlot["cutflowregions"]->Fill(3. , datasets[d], true,eventweightForplots); //WZCR
+    //  if(selectedJets.size() > 0 && selectedCSVMJetID.size() == 0 && threelepregion && IamInZwindow) MSPlot["cutflowregions"]->Fill(6. , datasets[d], true,eventweightForplots); //WZCR
+     //if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && selectedCSVTJetID.size() > 1 && threelepregion) MSPlot["cutflowregions"]->Fill(5. , datasets[d], true,eventweightForplots); //TTCR T
+     //f(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && selectedCSVTJetID.size() > 1 && threelepregion && IamInZwindow) MSPlot["cutflowregions"]->Fill(6. , datasets[d], true,eventweightForplots); // TTCR T zmss
+     if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && threelepregion && !IamInZwindow) MSPlot["cutflowregions"]->Fill(4. , datasets[d], true,eventweightForplots);
+     // if(selectedJets.size() > 1 && selectedCSVMJetID.size() > 0 && threelepregion && !IamInZwindow) MSPlot["cutflowregions"]->Fill(8. , datasets[d], true,eventweightForplots);
+     //if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && selectedCSVTJetID.size() >0 && threelepregion && !IamInZwindow) MSPlot["cutflowregions"]->Fill(8. , datasets[d], true,eventweightForplots);
+   //   if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && selectedCSVTJetID.size() >1 && threelepregion && !IamInZwindow) MSPlot["cutflowregions"]->Fill(9. , datasets[d], true,eventweightForplots);
       
-      if(selectedJets.size() == 1 && selectedCSVLJetID.size() > 0 && threelepregion){
+      if(selectedJets.size() == 1 && selectedCSVLJetID.size() > 0 && threelepregion && IamInZwindow){
         Region = 0;
         nSelectedEntriesST++;
         selected = true;
         if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){
-          if( promptelectron[electronID[WelecIndiceF]] < 1) nonpromptelectronInW_ST++;
-          else if( promptelectron[electronID[WelecIndiceF]] > 0) nonpromptelectronInZ_ST++;
+          if( promptelectron[electronID[WelecIndiceF]] < 1) { nonpromptelectronInW_ST++; nonpromptInW = true;}
+          else if( promptelectron[electronID[WelecIndiceF]] > 0) {nonpromptelectronInZ_ST++; nonpromptInW = false; }
           
           if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 0) nonpromptelectronInW_uuu_ST++;
           else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 0) nonpromptelectronInZ_uuu_ST++;
@@ -3102,8 +3190,8 @@ int main(int argc, char* argv[]){
           else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 3) nonpromptelectronInZ_eee_ST++;
         }
         else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){
-          if( promptmuon[muonID[WmuIndiceF]] < 1) nonpromptmuonInW_ST++;
-          else if( promptmuon[muonID[WmuIndiceF]] > 0) nonpromptmuonInZ_ST++;
+          if( promptmuon[muonID[WmuIndiceF]] < 1){ nonpromptmuonInW_ST++; nonpromptInW = true; }
+          else if( promptmuon[muonID[WmuIndiceF]] > 0){ nonpromptmuonInZ_ST++; nonpromptInW = false; }
           
           
           if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 0) nonpromptmuonInW_uuu_ST++;
@@ -3191,12 +3279,12 @@ int main(int argc, char* argv[]){
           }
         }
       } // ST region
-      if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && threelepregion){
+      if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && threelepregion && IamInZwindow){
         Region = 1;
         nSelectedEntriesTT++;
         if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){
-          if( promptelectron[electronID[WelecIndiceF]] < 1) nonpromptelectronInW_TT++;
-          else if( promptelectron[electronID[WelecIndiceF]] > 0) nonpromptelectronInZ_TT++;
+          if( promptelectron[electronID[WelecIndiceF]] < 1){ nonpromptelectronInW_TT++; nonpromptInW = true; }
+          else if( promptelectron[electronID[WelecIndiceF]] > 0){ nonpromptelectronInZ_TT++; nonpromptInW = false;}
           
           if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 0) nonpromptelectronInW_uuu_TT++;
           else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 0) nonpromptelectronInZ_uuu_TT++;
@@ -3208,8 +3296,8 @@ int main(int argc, char* argv[]){
           else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 3) nonpromptelectronInZ_eee_TT++;
         }
         else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){
-          if( promptmuon[muonID[WmuIndiceF]] < 1) nonpromptmuonInW_TT++;
-          else if( promptmuon[muonID[WmuIndiceF]] > 0) nonpromptmuonInZ_TT++;
+          if( promptmuon[muonID[WmuIndiceF]] < 1){ nonpromptmuonInW_TT++; nonpromptInW = true;}
+          else if( promptmuon[muonID[WmuIndiceF]] > 0){ nonpromptmuonInZ_TT++; nonpromptInW = false;}
           
           
           if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 0) nonpromptmuonInW_uuu_TT++;
@@ -3221,7 +3309,8 @@ int main(int argc, char* argv[]){
           if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 3) nonpromptmuonInW_eee_TT++;
           else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 3) nonpromptmuonInZ_eee_TT++;
           
-        }        selected = true;
+        }
+        selected = true;
         if(doCutflow &&!isData){
           MSPlot["cutflow"] ->Fill(7. , datasets[d], true,eventweightForplots);
           if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(7. , datasets[d], true,eventweightForplots);
@@ -3297,13 +3386,13 @@ int main(int argc, char* argv[]){
         
         
       } // ttbar region
-      if(selectedJets.size() >0 && selectedCSVLJetID.size() == 0 && threelepregion){
+      if(selectedJets.size() >0 && selectedCSVLJetID.size() == 0 && threelepregion && IamInZwindow){
         
         Region = 2;
         nSelectedEntriesWZ++;
         if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){
-          if( promptelectron[electronID[WelecIndiceF]] < 1) nonpromptelectronInW_WZ++;
-          else if( promptelectron[electronID[WelecIndiceF]] > 0) nonpromptelectronInZ_WZ++;
+          if( promptelectron[electronID[WelecIndiceF]] < 1){ nonpromptelectronInW_WZ++; nonpromptInW = true;}
+          else if( promptelectron[electronID[WelecIndiceF]] > 0){ nonpromptelectronInZ_WZ++; nonpromptInW = false;}
           
           if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 0) nonpromptelectronInW_uuu_WZ++;
           else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 0) nonpromptelectronInZ_uuu_WZ++;
@@ -3315,8 +3404,8 @@ int main(int argc, char* argv[]){
           else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 3) nonpromptelectronInZ_eee_WZ++;
         }
         else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){
-          if( promptmuon[muonID[WmuIndiceF]] < 1) nonpromptmuonInW_WZ++;
-          else if( promptmuon[muonID[WmuIndiceF]] > 0) nonpromptmuonInZ_WZ++;
+          if( promptmuon[muonID[WmuIndiceF]] < 1){ nonpromptmuonInW_WZ++; nonpromptInW = true;}
+          else if( promptmuon[muonID[WmuIndiceF]] > 0){ nonpromptmuonInZ_WZ++; nonpromptInW = false;}
           
           
           if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 0) nonpromptmuonInW_uuu_WZ++;
@@ -3404,15 +3493,99 @@ int main(int argc, char* argv[]){
         
         
       }// WZ control region
-      
-      
-      bool matchernonprompt = false;
-      if(checkNonprompt) matchernonprompt = MatchingFunctionNonPromt(dataSetName, selectedLeptonsForMatching, selectedMuons, selectedElectrons, selectedJets,makeMatchingPlots, debugmatching);
-      
-      
+      if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && threelepregion && !IamInZwindow){
+        Region = 3;
+        nSelectedEntriesTTZ++;
+        selected = true;
+        if(doCutflow &&!isData){
+          MSPlot["cutflow"] ->Fill(9. , datasets[d], true,eventweightForplots);
+          if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(9. , datasets[d], true,eventweightForplots);
+          if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(9. , datasets[d], true,eventweightForplots);
+          if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(9. , datasets[d], true,eventweightForplots);
+          if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(9. , datasets[d], true,eventweightForplots);
+        }
+        if(MakeSelectionTable) {
+          CutflowTableHisto->Fill(9.,eventweightForplots);
+          if(channelInt == 3) CutflowTableHisto_eee->Fill(9.,eventweightForplots);
+          if(channelInt == 2) CutflowTableHisto_eeu->Fill(9.,eventweightForplots);
+          if(channelInt == 1) CutflowTableHisto_uue->Fill(9.,eventweightForplots);
+          if(channelInt == 0) CutflowTableHisto_uuu->Fill(9.,eventweightForplots);
+          
+          if(dataSetName.find("WZT")!=std::string::npos){
+            CutflowTableHisto__WZ->Fill(9.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(9.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(9.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(9.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(9.,eventweightForplots);
+          }
+          else if(dataSetName.find("fake")!=std::string::npos){
+            CutflowTableHisto__fake->Fill(0.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(9.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(9.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(9.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(9.,eventweightForplots);
+          }
+          else if(dataSetName.find("tZq")!=std::string::npos){
+            CutflowTableHisto__tZq->Fill(9.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(9.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(9.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(9.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(9.,eventweightForplots);
+          }
+          else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
+            CutflowTableHisto__FCNCZut->Fill(9.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(9.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(9.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(9.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(9.,eventweightForplots);
+          }
+          else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
+            CutflowTableHisto__FCNCZct->Fill(9.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(9.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(9.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(9.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(9.,eventweightForplots);
+          }
+          else if(dataSetName.find("TTZ")!=std::string::npos ){
+            CutflowTableHisto__ttZ->Fill(9.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(9.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(9.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(9.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(9.,eventweightForplots);
+          }
+          else if(isData){
+            CutflowTableHisto__data->Fill(9.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__data->Fill(9.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(9.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__data->Fill(9.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(9.,eventweightForplots);
+          }
+          else {
+            CutflowTableHisto__other->Fill(9.,eventweightForplots);
+            if(channelInt == 3) CutflowTableHisto_eee__other->Fill(9.,eventweightForplots);
+            if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(9.,eventweightForplots);
+            if(channelInt == 1) CutflowTableHisto_uue__other->Fill(9.,eventweightForplots);
+            if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(9.,eventweightForplots);
+          }
+        }
+        
+        
+        
+      } // ttbar control region
+
       if(!selected){continue; }
+      bool matchernonprompt = false;
+      if(checkNonprompt ) matchernonprompt = MatchingFunctionNonPromt(dataSetName, selectedLeptonsForMatching, selectedMuons, selectedElectrons, selectedJets,makeMatchingPlots, debugmatching);
       
       
+      
+      
+      if(dataSetName.find("fake")!=std::string::npos){
+        foundWcorrect = false;
+        foundWwrong = false;
+        if(nonpromptInW) foundWcorrect = true;
+        else if(!nonpromptInW) foundWwrong = true;
+      }
       
       //if(Region == 2 && (isData || dataSetName.find("WZ")!=std::string::npos)){
       if( (isData || dataSetName.find("WZ")!=std::string::npos) && checktrigger ){
@@ -3536,19 +3709,20 @@ int main(int argc, char* argv[]){
       MVA_Luminosity = Luminosity;
       if(makeMVAtree ){
         //cout << "ievt " << ievt << endl;
-        if(foundWcorrect) MakeMVAvars(Region, scaleFactor,0, scaleFactorWZcorr);
-        else if(foundWwrong) MakeMVAvars(Region, scaleFactor,1, scaleFactorWZcorr);
-        else MakeMVAvars(Region, scaleFactor,-9, scaleFactorWZcorr);
+        if(foundWcorrect) MakeMVAvars(Region, scaleFactor,0, scaleFactorWZcorr, d);
+        else if(foundWwrong) MakeMVAvars(Region, scaleFactor,1, scaleFactorWZcorr,d);
+        else MakeMVAvars(Region, scaleFactor,-9, scaleFactorWZcorr, d);
         
       }
       // cout << "region "<< Region << endl;
       /// Make plots
       if (makeMVAPlots )
       {
-        // if(Region == 0) FillMVAPlots(d,dataSetName, Region, "singletop", decayChannels);
-        // if(Region == 1) FillMVAPlots(d,dataSetName, Region, "toppair", decayChannels);
+        if(Region == 0) FillMVAPlots(d,dataSetName, Region, "singletop", decayChannels);
+        if(Region == 1) FillMVAPlots(d,dataSetName, Region, "toppair", decayChannels);
         if(Region == 2) FillMVAPlots(d,dataSetName, Region, "wzcontrol", decayChannels);
-        // if(Region == 3) FillMVAPlots(d,dataSetName, Region, "ttzcontrol", decayChannels);
+        if(Region == 3) FillMVAPlots(d,dataSetName, Region, "ttzcontrol", decayChannels);
+        
       }
       
       
@@ -3642,7 +3816,7 @@ int main(int argc, char* argv[]){
     }
     if(makeMVAtree){
       firstevent = true;
-      writeMVAtree();  //
+      writeMVAtree(dataSetName);  //
     }
     /* if(isData || isfakes) {
      nSelectedEntriesSTweighted = nSelectedEntriesST;
@@ -3895,8 +4069,6 @@ int main(int argc, char* argv[]){
     
     
     
-    
-    
     if(checkNonprompt){
       
       MatchingEfficiencyNonPrompt();
@@ -3909,7 +4081,20 @@ int main(int argc, char* argv[]){
        nonpormptsfile->Close();*/
     }
   } // data
-  
+ 
+  TCanvas* c33 = new TCanvas();
+  c33->SetGrid();
+  c33->cd();
+  gStyle->SetOptStat(0);
+  histo_data->Draw("text");
+  c33->SetLogy();
+  c33->SaveAs("datacount.png");
+  histo_ttbar->Draw("text");
+  c33->SetLogy();
+  c33->SaveAs("ttcount.png");
+  histo_wz->Draw("text");
+  c33->SetLogy();
+  c33->SaveAs("wzcount.png");
   
   
   
@@ -4386,6 +4571,7 @@ int main(int argc, char* argv[]){
         if(name.find("ee")!=std::string::npos && name.find("eee")==std::string::npos  && name.find("eeu")==std::string::npos && doDilep) temp->setChannel(true, "2e");
         if(name.find("Decay")!=std::string::npos) temp->setBins(vlabel_chan);
         if(name.find("cutflow")!=std::string::npos) temp->setBins(v_cutflow);
+        if(name.find("cutflowregion")!=std::string::npos) temp->setBins(v_cutflowreg);
         temp->Draw(name, 1, false, false, false, 10);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
         cout << "writing to " << pathOutputdate+"MSPlot" << endl;
         cout << "plot " << name << endl;
@@ -5467,7 +5653,7 @@ int main(int argc, char* argv[]){
 }  // end main
 
 ///////////////////////////////////// MVA INPUT /////////////////////////////////////////
-void MakeMVAvars(int Region, Double_t scaleFactor, int nonpromptWrong_, Double_t scaleFactorWZcorr){
+void MakeMVAvars(int Region, Double_t scaleFactor, int nonpromptWrong_, Double_t scaleFactorWZcorr, int d_){
   clock_t start_sub = clock();
   
   MVA_x1 = x1;
@@ -5496,6 +5682,9 @@ void MakeMVAvars(int Region, Double_t scaleFactor, int nonpromptWrong_, Double_t
   MVA_EqLumi = EquilumiSF;
   MVA_weight = static_cast<float>( scaleFactor * Luminosity /EquilumiSF );
   MVA_weight_nom =  scaleFactor ;
+  
+  
+  
   
   MVA_weightWZcorr = scaleFactorWZcorr;
   MVA_weight_puSF = scaleFactor_puSF;
@@ -5540,6 +5729,42 @@ void MakeMVAvars(int Region, Double_t scaleFactor, int nonpromptWrong_, Double_t
   MVA_lepton0_phi = static_cast<float>( selectedLeptons[0].Phi());
   MVA_lepton1_phi = static_cast<float>( selectedLeptons[1].Phi());
   MVA_lepton2_phi = static_cast<float>( selectedLeptons[2].Phi());
+  
+  
+  
+  MVA_DeltaR_lep0Jet = 0.;
+  MVA_DeltaR_lep1Jet = 0.;
+  MVA_DeltaR_lep2Jet = 0.;
+  string tempchannel = "";
+  if(MVA_channel == 0)  tempchannel = "uuu";
+  else if(MVA_channel == 3)  tempchannel = "eee";
+  else if(MVA_channel == 1)  tempchannel = "uue";
+  else if(MVA_channel == 2)  tempchannel = "eeu";
+  
+  double temp_DeltaR_MinLepJet = 9999999.;
+  for(int i = 0; i < selectedJets.size(); i++ ){
+    MVA_DeltaR_lep0Jet += ROOT::Math::VectorUtil::DeltaR(selectedLeptons[0],selectedJets[i]) ;
+    MVA_DeltaR_lep1Jet += ROOT::Math::VectorUtil::DeltaR(selectedLeptons[1],selectedJets[i]) ;
+    MVA_DeltaR_lep2Jet += ROOT::Math::VectorUtil::DeltaR(selectedLeptons[2],selectedJets[i]) ;
+    
+   // cout << "MVA " << ("wzregion_DeltaR_lep0Jet_"+tempchannel).c_str() << endl;
+    MSPlot[("wzcontrol_DeltaR_lep0Jet_"+tempchannel).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedLeptons[0],selectedJets[i]), datasets[d_], true, MVA_weight_nom);
+    MSPlot[("wzcontrol_DeltaR_lep1Jet_"+tempchannel).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedLeptons[1],selectedJets[i]), datasets[d_], true, MVA_weight_nom);
+    MSPlot[("wzcontrol_DeltaR_lep2Jet_"+tempchannel).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedLeptons[2],selectedJets[i]), datasets[d_], true, MVA_weight_nom);
+    
+    MSPlot["wzcontrol_DeltaR_lep0Jet_all"]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedLeptons[0],selectedJets[i]), datasets[d_], true, MVA_weight_nom);
+    MSPlot["wzcontrol_DeltaR_lep1Jet_all"]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedLeptons[1],selectedJets[i]), datasets[d_], true, MVA_weight_nom);
+    MSPlot["wzcontrol_DeltaR_lep2Jet_all"]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedLeptons[2],selectedJets[i]), datasets[d_], true, MVA_weight_nom);
+
+    
+    if(temp_DeltaR_MinLepJet > ROOT::Math::VectorUtil::DeltaR(selectedLeptons[0],selectedJets[i]) ) temp_DeltaR_MinLepJet = ROOT::Math::VectorUtil::DeltaR(selectedLeptons[0],selectedJets[i]);
+    if(temp_DeltaR_MinLepJet > ROOT::Math::VectorUtil::DeltaR(selectedLeptons[1],selectedJets[i]) ) temp_DeltaR_MinLepJet = ROOT::Math::VectorUtil::DeltaR(selectedLeptons[1],selectedJets[i]);
+    if(temp_DeltaR_MinLepJet > ROOT::Math::VectorUtil::DeltaR(selectedLeptons[2],selectedJets[i]) ) temp_DeltaR_MinLepJet = ROOT::Math::VectorUtil::DeltaR(selectedLeptons[2],selectedJets[i]);
+  }
+  MVA_DeltaR_MinLepJet = temp_DeltaR_MinLepJet;
+  
+  
+  
   
   MVA_nMuons = ( selectedMuons.size());
   MVA_nElectrons = ( selectedElectrons.size());
@@ -5854,6 +6079,13 @@ void createMVAtree(string dataSetName){
   
   mvatree->Branch("MVA_NonPromptInZ", &MVA_NonPromptInZ,"MVA_NonPromptInZ/I");
   
+
+  mvatree->Branch("MVA_DeltaR_NonIsoLepJet", &MVA_DeltaR_NonIsoLepJet, "MVA_DeltaR_NonIsoLepJet/D"); 
+  mvatree->Branch("MVA_DeltaR_lep0Jet", &MVA_DeltaR_lep0Jet, "MVA_DeltaR_lep0Jet/D"); 
+  mvatree->Branch("MVA_DeltaR_lep1Jet", &MVA_DeltaR_lep1Jet, "MVA_DeltaR_lep1Jet/D"); 
+  mvatree->Branch("MVA_DeltaR_lep2Jet", &MVA_DeltaR_lep2Jet, "MVA_DeltaR_lep2Jet/D"); 
+  mvatree->Branch("MVA_DeltaR_MinLepJet", &MVA_DeltaR_MinLepJet, "MVA_DeltaR_MinLepJet/D"); 
+  mvatree->Branch("MVA_DeltaR_MinLepNonIsoJet", &MVA_DeltaR_MinLepNonIsoJet, "MVA_DeltaR_MinLepNonIsoJet/D"); 
   
   //SM kinematics
   mvatree->Branch("MVA_mWt", &MVA_mWt,"MVA_mWt/F");
@@ -5968,7 +6200,7 @@ void createMVAtree(string dataSetName){
   }
   
 }
-void writeMVAtree(){
+void writeMVAtree(string dName){
   clock_t start_sub = clock();
   
   
@@ -6039,6 +6271,33 @@ void writeMVAtree(){
     }
     wzbbmvatree->AutoSave();
   }
+  if(dName.find("fake")!=std::string::npos){
+    nonpromptinWfile = new TFile((output_file_namemvatree+"_nonpromptinW_80X.root").c_str(),"RECREATE");
+    TTree *nonpromptinWmvatree = (TTree*) mvatree->CloneTree(0);
+    
+    for (Long64_t it=0;it<mvatree->GetEntries(); it++) {
+      mvatree->GetEntry(it);
+      if (MVA_NonPromptInZ == 0){
+        nonpromptinWmvatree->Fill();
+      }
+    }
+    nonpromptinWmvatree->AutoSave();
+    
+    nonpromptinZfile = new TFile((output_file_namemvatree+"_nonpromptinZ_80X.root").c_str(),"RECREATE");
+    TTree *nonpromptinZmvatree = (TTree*) mvatree->CloneTree(0);
+    
+    for (Long64_t it=0;it<mvatree->GetEntries(); it++) {
+      mvatree->GetEntry(it);
+      if (MVA_NonPromptInZ == 1){
+        nonpromptinZmvatree->Fill();
+      }
+    }
+    nonpromptinZmvatree->AutoSave();
+  }
+  
+  
+  
+  
   tupfile->Close();
   
   double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
@@ -6261,6 +6520,8 @@ void ReconstructObjects(vector<int> selectedJetsID, vector<TLorentzVector> Muons
     if( cdiscCvsB_highestdisjet < cdiscCvsB_jet[selectedJetsID[itJ]]) cdiscCvsB_highestdisjet = cdiscCvsB_jet[selectedJetsID[itJ]];
     if( cdiscCvsL_highestdisjet < cdiscCvsL_jet[selectedJetsID[itJ]]) cdiscCvsL_highestdisjet = cdiscCvsL_jet[selectedJetsID[itJ]];
   }
+  
+  
   
   
   if(selectedJets.size()>1 )
@@ -7849,6 +8110,23 @@ void InitMVAMSPlotsWZ(string prefix, vector <int> decayChannels){
     
     MSPlot[(prefix+"_MVA_mWt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_mWt_"+decaystring).c_str(),20, 0, 500, "Transv. Mass W boson  ", "GeV");
     MSPlot[(prefix+"_MVA_mWt2_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_mWt2_"+decaystring).c_str(),15, 0, 300, "Transv. Mass W boson ","GeV");
+    
+    MSPlot[(prefix+"_sDeltaR_NonIsoLepJet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"sDeltaR_NonIsoLepJet_"+decaystring).c_str(), 20,0.,8., "sum #Delta R (non iso, jet)","units");
+    MSPlot[(prefix+"_sDeltaR_lep0Jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"sDeltaR_lep0Jet_"+decaystring).c_str(), 20,0.,8., "sum #Delta R (lep0, jet)","units");
+    MSPlot[(prefix+"_sDeltaR_lep1Jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"sDeltaR_lep1Jet_"+decaystring).c_str(), 20,0.,8., "sum #Delta R (lep1, jet)","units");
+    MSPlot[(prefix+"_sDeltaR_lep2Jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"sDeltaR_lep2Jet_"+decaystring).c_str(), 20,0.,8., "sum #Delta R (lep2, jet)","units");
+    MSPlot[(prefix+"_sDeltaR_MinLepJet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"sDeltaR_MinLepJet_"+decaystring).c_str(), 20,0.,8., " min. #Delta R (lep, jet)","units");
+    MSPlot[(prefix+"_sDeltaR_MinLepNonIsoJet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"sDeltaR_MinLepNonIsoJet_"+decaystring).c_str(), 20,0.,8., " min #Delta R (non iso, jet)","units");
+   
+    MSPlot[(prefix+"_ZBOSON_M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"ZBOSONM_"+decaystring).c_str(), 20,70,110, "mass Zboson","GeV");
+    MSPlot[(prefix+"_ZBOSON_Mcut_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"ZBOSONMcut_"+decaystring).c_str(), 20,70,110, "mass Zboson","GeV");
+
+    //cout << "init " << (prefix+"_DeltaR_lep0Jet_"+decaystring).c_str() << endl;
+    MSPlot[(prefix+"_DeltaR_lep0Jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"DeltaR_lep0Jet_"+decaystring).c_str(), 20,0.,8., "#Delta R (lep0, jet)","units");
+    MSPlot[(prefix+"_DeltaR_lep1Jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"DeltaR_lep1Jet_"+decaystring).c_str(), 20,0.,8., "#Delta R (lep1, jet)","units");
+    MSPlot[(prefix+"_DeltaR_lep2Jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"DeltaR_lep2Jet_"+decaystring).c_str(), 20,0.,8., "#Delta R (lep2, jet)","units");
+    
+
   }
   
 }
@@ -9185,6 +9463,18 @@ void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<i
     
     if(decayChannels[iChan] == -9) decaystring = "all";
     //cout << decaystring << endl;
+    double weight_ = Luminosity*scaleFactor/EquilumiSF; 
+    MSPlot[(sregion+"_sDeltaR_NonIsoLepJet_"+decaystring).c_str()]->Fill(MVA_DeltaR_NonIsoLepJet, datasets[d], true, weight_);
+    MSPlot[(sregion+"_sDeltaR_lep0Jet_"+decaystring).c_str()]->Fill(MVA_DeltaR_lep0Jet, datasets[d], true, weight_);
+    MSPlot[(sregion+"_sDeltaR_lep1Jet_"+decaystring).c_str()]->Fill(MVA_DeltaR_lep1Jet, datasets[d], true, weight_);
+    MSPlot[(sregion+"_sDeltaR_lep2Jet_"+decaystring).c_str()]->Fill(MVA_DeltaR_lep2Jet, datasets[d], true, weight_);
+    MSPlot[(sregion+"_sDeltaR_MinLepJet_"+decaystring).c_str()]->Fill(MVA_DeltaR_MinLepJet, datasets[d], true, weight_);
+    MSPlot[(sregion+"_sDeltaR_MinLepNonIsoJet_"+decaystring).c_str()]->Fill(MVA_DeltaR_MinLepNonIsoJet, datasets[d], true, weight_);
+    
+    MSPlot[(sregion+"_ZBOSON_M_"+decaystring).c_str()]->Fill(MVA_Zboson_M, datasets[d], true, weight_);
+    if(  83.5 < MVA_Zboson_M && MVA_Zboson_M <  98.5) MSPlot[(sregion+"_ZBOSON_Mcut_"+decaystring).c_str()]->Fill(MVA_Zboson_M, datasets[d], true, weight_);
+
+
     MSPlot[(sregion+"_MVA_Zboson_eta_"+decaystring).c_str()]->Fill(MVA_Zboson_eta, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
     MSPlot[(sregion+"_MVA_channel_"+decaystring).c_str()]->Fill(MVA_channel, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
     MSPlot[(sregion+"_MVA_weight_"+decaystring).c_str()]->Fill(MVA_weight, datasets[d], true, 1);
@@ -9268,12 +9558,12 @@ void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<i
     // MSPlot[(sregion+"_MVA_CosTheta_"+decaystring).c_str()]->Fill(MVA_CosTheta , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
     //  MSPlot[(sregion+"_MVA_CosTheta_alt_"+decaystring).c_str()]->Fill(MVA_CosTheta_alt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
     
-    
+    /*
     if(selectedJetsID.size()>1) MSPlot[(sregion+"_MVA_cdiscCvsB_jet_1_"+decaystring).c_str()]->Fill(MVA_cdiscCvsB_jet_1 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
     if(selectedJetsID.size()>1) MSPlot[(sregion+"_MVA_cdiscCvsL_jet_1_"+decaystring).c_str()]->Fill(MVA_cdiscCvsL_jet_1 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
     if(selectedJetsID.size()>0) MSPlot[(sregion+"_MVA_cdiscCvsB_jet_0_"+decaystring).c_str()]->Fill(MVA_cdiscCvsB_jet_0 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
     if(selectedJetsID.size()>0) MSPlot[(sregion+"_MVA_cdiscCvsL_jet_0_"+decaystring).c_str()]->Fill(MVA_cdiscCvsL_jet_0 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-    
+    */
     
     
     
@@ -9294,10 +9584,10 @@ void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<i
     
     MSPlot[(sregion+"_MVA_mWt_"+decaystring).c_str()]->Fill(MVA_mWt , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
     MSPlot[(sregion+"_MVA_mWt2_"+decaystring).c_str()]->Fill(MVA_mWt2 , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-    
+    /*
     MSPlot[(sregion+"_MVA_nJets_CharmL_"+decaystring).c_str()]->Fill(MVA_nJets_CharmL, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
     MSPlot[(sregion+"_MVA_nJets_CharmM_"+decaystring).c_str()]->Fill(MVA_nJets_CharmM, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
-    MSPlot[(sregion+"_MVA_nJets_CharmT_"+decaystring).c_str()]->Fill(MVA_nJets_CharmT, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
+    MSPlot[(sregion+"_MVA_nJets_CharmT_"+decaystring).c_str()]->Fill(MVA_nJets_CharmT, datasets[d], true, Luminosity*scaleFactor/EquilumiSF);*/
     MSPlot[(sregion+"_MVA_Zboson_M_"+decaystring).c_str()]->Fill(MVA_Zboson_M , datasets[d], true, Luminosity*scaleFactor/EquilumiSF);
     
     
