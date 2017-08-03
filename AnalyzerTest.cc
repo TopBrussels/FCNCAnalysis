@@ -1404,7 +1404,6 @@ int main(int argc, char* argv[]){
     MSPlot["muon1_pt"]= new MultiSamplePlot(datasets, "muon1_pt", 50, 0., 250., "Muon 1 p_{T} [GeV]");
     MSPlot["muon2_pt"]= new MultiSamplePlot(datasets, "muon2_pt", 20, 0., 200., "Muon 2 p_{T} [GeV]");
     
-     MSPlot["cutflowregions"] = new MultiSamplePlot(datasets, "cutflowregion", 10, -0.5, 9.5, "Cutflow region");
     
     
     
@@ -1413,7 +1412,8 @@ int main(int argc, char* argv[]){
   vector < string > v_cutflow = {">1l,>0j, <6j, m_{T}^{W} < 300", "SF pair","lep veto","Z mass",">2l","#Delta R (l_{W},b) <= 2.5","STSR","TTSR","WZCR"};
   vector < string > v_cutflowreg = {"basecuts","STSR","TTSR","WZCR","TTCR"};
  
- 
+  MSPlot["cutflowregions"] = new MultiSamplePlot(datasets, "cutflowregion", 10, -0.5, 9.5, "Cutflow region");
+  
   
   if(makeMVAtree && makeMVAPlots) {
      InitMVAMSPlotsSingletop("singletop", decayChannels);
@@ -5748,14 +5748,14 @@ void MakeMVAvars(int Region, Double_t scaleFactor, int nonpromptWrong_, Double_t
     MVA_DeltaR_lep2Jet += ROOT::Math::VectorUtil::DeltaR(selectedLeptons[2],selectedJets[i]) ;
     
    // cout << "MVA " << ("wzregion_DeltaR_lep0Jet_"+tempchannel).c_str() << endl;
-    MSPlot[("wzcontrol_DeltaR_lep0Jet_"+tempchannel).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedLeptons[0],selectedJets[i]), datasets[d_], true, MVA_weight_nom);
+   /* MSPlot[("wzcontrol_DeltaR_lep0Jet_"+tempchannel).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedLeptons[0],selectedJets[i]), datasets[d_], true, MVA_weight_nom);
     MSPlot[("wzcontrol_DeltaR_lep1Jet_"+tempchannel).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedLeptons[1],selectedJets[i]), datasets[d_], true, MVA_weight_nom);
     MSPlot[("wzcontrol_DeltaR_lep2Jet_"+tempchannel).c_str()]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedLeptons[2],selectedJets[i]), datasets[d_], true, MVA_weight_nom);
     
     MSPlot["wzcontrol_DeltaR_lep0Jet_all"]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedLeptons[0],selectedJets[i]), datasets[d_], true, MVA_weight_nom);
     MSPlot["wzcontrol_DeltaR_lep1Jet_all"]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedLeptons[1],selectedJets[i]), datasets[d_], true, MVA_weight_nom);
     MSPlot["wzcontrol_DeltaR_lep2Jet_all"]->Fill(ROOT::Math::VectorUtil::DeltaR(selectedLeptons[2],selectedJets[i]), datasets[d_], true, MVA_weight_nom);
-
+*/
     
     if(temp_DeltaR_MinLepJet > ROOT::Math::VectorUtil::DeltaR(selectedLeptons[0],selectedJets[i]) ) temp_DeltaR_MinLepJet = ROOT::Math::VectorUtil::DeltaR(selectedLeptons[0],selectedJets[i]);
     if(temp_DeltaR_MinLepJet > ROOT::Math::VectorUtil::DeltaR(selectedLeptons[1],selectedJets[i]) ) temp_DeltaR_MinLepJet = ROOT::Math::VectorUtil::DeltaR(selectedLeptons[1],selectedJets[i]);
