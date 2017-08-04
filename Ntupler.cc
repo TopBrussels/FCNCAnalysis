@@ -740,6 +740,9 @@ int main (int argc, char *argv[])
         Double_t met_before_JES;
         Double_t met_after_JES;
 	      
+        Double_t mW;
+        Double_t pT_ttbar;
+
 	      //JetIndices_correctJetComb
 	      Int_t TOPTOPLEPHAD_JetIdx_LepTop;
 	      Int_t TOPTOPLEPHAD_JetIdx_HadTop;
@@ -1037,10 +1040,15 @@ int main (int argc, char *argv[])
         tup_ObjectVars->Branch("jet_matchedMC_pdgID",&jet_matchedMC_pdgID,"jet_matchedMC_pdgID[nJets]/D");
         tup_ObjectVars->Branch("jet_matchedMC_motherpdgID",&jet_matchedMC_motherpdgID,"jet_matchedMC_motherpdgID[nJets]/D");
         tup_ObjectVars->Branch("jet_matchedMC_grannypdgID",&jet_matchedMC_grannypdgID,"jet_matchedMC_grannypdgID[nJets]/D");
+
+        tup_ObjectVars->Branch("mW",&mW,"mW/D");
+        tup_ObjectVars->Branch("pT_ttbar",&pT_ttbar,"pT_ttbar/D");
+
+
         tup_ObjectVars->Branch("jet_Pt_before_JER",&jet_Pt_before_JER,"jet_Pt_before_JER[nJets]/D");
-        tup_ObjectVars->Branch("jet_Pt_before_JES",jet_Pt_before_JES,"jet_Pt_before_JES[nJets]/D");
-        tup_ObjectVars->Branch("jet_Pt_after_JER",jet_Pt_after_JER,"jet_Pt_after_JER[nJets]/D");
-        tup_ObjectVars->Branch("jet_Pt_after_JES",jet_Pt_after_JES,"jet_Pt_after_JES[nJets]/D");
+        tup_ObjectVars->Branch("jet_Pt_before_JES",&jet_Pt_before_JES,"jet_Pt_before_JES[nJets]/D");
+        tup_ObjectVars->Branch("jet_Pt_after_JER",&jet_Pt_after_JER,"jet_Pt_after_JER[nJets]/D");
+        tup_ObjectVars->Branch("jet_Pt_after_JES",&jet_Pt_after_JES,"jet_Pt_after_JES[nJets]/D");
 
         //MC variables (affected by TopPtReweighing
         tup_ObjectVars->Branch("MC_TopPt",&MC_TopPt,"MC_TopPt/D");
@@ -1739,6 +1747,9 @@ int main (int argc, char *argv[])
             HiggsBJet2Eta_TOPHLEPBB_hct = -999.;
             HiggsBJet2E_TOPHLEPBB_hct = -999.;
 
+            mW = -1.;
+            pT_ttbar = -1.;
+
             if(debug)cout<<"before tree load"<<endl;
             event = treeLoader.LoadEvent (ievt, vertex, init_muons, init_electrons, init_jets, mets, debug);  //load event
             if(debug)cout<<"after tree load"<<endl;
@@ -1961,11 +1972,14 @@ int main (int argc, char *argv[])
             vector<TRootJet*>      selectedLightJets_TWP;
             vector<TRootJet*>      selectedLightJets;
 		        vector<TLorentzVector> selectedMuonsTLV, selectedElectronsTLV, metsTLV, selectedJetsTLV, selectedBJetsTLV, selectedLightJetsTLV, selectedLeptonsTLV;
+		        TLorentzVector selectedLeptonTLV;
             vector<TLorentzVector> selectedMuonsTLV_JC, selectedElectronsTLV_JC, selectedLooseIsoMuonsTLV;
             vector<TLorentzVector> mcParticlesTLV, mcMuonsTLV, mcPartonsTLV;
             vector<TRootMCParticle*> mcParticlesMatching_,mcParticles;
             vector<int> mcMuonIndex, mcPartonIndex;
             JetPartonMatching muonMatching, jetMatching;
+            
+            TLorentzVector MET___;
 
 
 
@@ -2135,6 +2149,8 @@ int main (int argc, char *argv[])
             {
                 if  (  !( nMu ==1)) continue; // Muon Channel Selection
                 if(debug) cout << "Past cut 3: Single Muon selected" << endl;
+                
+                selectedLeptonTLV.SetPtEtaPhiE(selectedMuons[0]->Pt(),selectedMuons[0]->Eta(),selectedMuons[0]->Phi(),selectedMuons[0]->E());
             }
             else if (!Muon && Electron)
             {
@@ -2148,6 +2164,7 @@ int main (int argc, char *argv[])
                 if(fabs(selectedElectrons[0]->superClusterEta()) > 1.479 && fabs(selectedElectrons[0]->dz()) > 0.2 && fabs(selectedElectrons[0]->d0()) > 0.1) continue;//Apply loose selection on impact parameters
 */                
                 if(debug) cout << "Past cut 3: Single Electron selected" << endl;
+                selectedLeptonTLV.SetPtEtaPhiE(selectedElectrons[0]->Pt(),selectedElectrons[0]->Eta(),selectedElectrons[0]->Phi(),selectedElectrons[0]->E());
             }
             else
             {
@@ -2625,7 +2642,7 @@ cout << "W_ElectronTrigSF_Minus diff: " << fabs(W_ElectronTrigSF-W_ElectronTrigS
                 continue;
             }
 
-		  	    if(selectedMBJets.size() < 2) continue;
+//		  	    if(selectedMBJets.size() < 2) continue;
 //		  	    if(selectedLBJets.size() < 2) continue;
 //		  	    else if(bMethod == "CSVv2T" && selectedTBJets.size() < 2) continue;
 	          if (debug)	cout <<"Cut on nb b-jets..."<<endl;
@@ -2733,6 +2750,12 @@ cout << "W_ElectronTrigSF_Minus diff: " << fabs(W_ElectronTrigSF-W_ElectronTrigS
                     if (matchedJetNumber > -1) JetPartonPair.push_back( pair<unsigned int, unsigned int> (matchedJetNumber, i) );
                 }
                     
+                                TLorentzVector Wj1;
+                                TLorentzVector Wj2;
+                                TLorentzVector b1___;
+                                TLorentzVector b2___;
+                                TLorentzVector HadW;
+                                TLorentzVector TTbarSys;
                   
                 for (unsigned int i = 0; i < JetPartonPair.size(); i++)
                 {
@@ -2743,6 +2766,8 @@ cout << "W_ElectronTrigSF_Minus diff: " << fabs(W_ElectronTrigSF-W_ElectronTrigS
             	      if(debug) cout << "matched MCparticle of jet " << JetPartonPair[i].first << " has pdgID: " << jet_matchedMC_pdgID[JetPartonPair[i].first] << endl;
 	                  jet_matchedMC_motherpdgID[JetPartonPair[i].first] = mcParticlesMatching_[j]->motherType();
 	                  jet_matchedMC_grannypdgID[JetPartonPair[i].first] = mcParticlesMatching_[j]->grannyType();
+
+
                       
                     if ( fabs(mcParticlesMatching_[j]->type()) < 6 )  //light/b quarks, 6 should stay hardcoded
                     {
@@ -2756,6 +2781,12 @@ cout << "W_ElectronTrigSF_Minus diff: " << fabs(W_ElectronTrigSF-W_ElectronTrigS
                             else if (hadronicWJet2_.first == 9999)
                             {
                                 hadronicWJet2_ = JetPartonPair[i];
+                                
+
+                                
+                                Wj1 = *selectedJets[hadronicWJet1_.first];
+                                Wj2 = *selectedJets[hadronicWJet2_.first];
+                                HadW = Wj1 + Wj2;
                             }
                             else
                             {
@@ -2765,18 +2796,27 @@ cout << "W_ElectronTrigSF_Minus diff: " << fabs(W_ElectronTrigSF-W_ElectronTrigS
                                 exit(1);
                             }
                         }
-                    }
-                    if ( fabs(mcParticlesMatching_[j]->type()) == 5 || fabs(mcParticlesMatching_[j]->type()) == 4 || fabs(mcParticlesMatching_[j]->type()) == 2 )
+                    
+                    if ( fabs(mcParticlesMatching_[j]->type()) == 5/* || fabs(mcParticlesMatching_[j]->type()) == 4 || fabs(mcParticlesMatching_[j]->type()) == 2*/ )
                     {
-                        if ( ( Posleptonmatched && mcParticlesMatching_[j]->motherType() == -pdgID_top )
-                            || ( Negleptonmatched && mcParticlesMatching_[j]->motherType() == pdgID_top ) )  // if mu+ (top decay leptonic) and mother is antitop ---> hadronic b
+    //                    if ( ( Posleptonmatched && mcParticlesMatching_[j]->motherType() == -pdgID_top )
+    //                        || ( Negleptonmatched && mcParticlesMatching_[j]->motherType() == pdgID_top ) )  // if mu+ (top decay leptonic) and mother is antitop ---> hadronic b
+
+//cout << "HERE mcParticlesMatching" << endl;
+
+                        if ( mcParticlesMatching_[j]->motherType() == 6 )  // if mu+ (top decay leptonic) and mother is antitop ---> hadronic b
                         {
                             hadronicTopJet = JetPartonPair[i];
+                            b1___= *selectedJets[hadronicTopJet.first];
+cout << "HERE b1___: " << b1___.Pt() << endl;
                         }
-                        else if ( ( Posleptonmatched && mcParticlesMatching_[j]->motherType() == pdgID_top )
-                                        || ( Negleptonmatched && mcParticlesMatching_[j]->motherType() == -pdgID_top ) )
+    //                    else if ( ( Posleptonmatched && mcParticlesMatching_[j]->motherType() == pdgID_top )
+    //                                    || ( Negleptonmatched && mcParticlesMatching_[j]->motherType() == -pdgID_top ) )
+                        else if ( mcParticlesMatching_[j]->motherType() == -6  )
                         {
                             leptonicBJet_ = JetPartonPair[i];
+                            b2___= *selectedJets[leptonicBJet_.first];
+cout << "HERE b2___" << b2___.Pt()  << endl;
                         }
                         
                         if(mcParticlesMatching_[j]->motherType() == 25 && HiggsBJetCounter < 1)
@@ -2791,7 +2831,19 @@ cout << "W_ElectronTrigSF_Minus diff: " << fabs(W_ElectronTrigSF-W_ElectronTrigS
                         }
 
                     }
+                    }
+                    
+                    
                 }  /// End loop over Jet Parton Pairs
+                    if(HadW.Pt()!= 0 )
+                    {
+                        mW = HadW.M();
+                        if(b1___.Pt() != 0 && b2___.Pt() != 0)
+                        {
+cout << "HERE found 2  b-jets" << endl;
+                            pT_ttbar = (HadW+b1___+b2___+selectedLeptonTLV+metsTLV[0]).M();
+                        }
+                    }
             
             }// End MC matching (end of data-if-statement)
 

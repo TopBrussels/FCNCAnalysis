@@ -8,8 +8,8 @@ void SetPlotStyle ()
 {
   static TStyle* plotStyle = 0;
   if ( plotStyle==0 ) plotStyle = PlotStyle();
-  gROOT->SetStyle("PLOT");
-  gROOT->ForceStyle();
+//  gROOT->SetStyle("PLOT");
+//  gROOT->ForceStyle();
 }
 
 TStyle* PlotStyle()

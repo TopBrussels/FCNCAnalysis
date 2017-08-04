@@ -232,21 +232,21 @@ cout << SignalSample << " " << channel << ": ROC best cut is " << xminDist << en
     MVAvars.push_back("MVA_TOPHLEPBB");
     titles.push_back("bMVA (TOPHLEPBB)");
 	  MVAvars.push_back("HiggsMass_TOPHLEPBB");
-    titles.push_back("m_{H} (TOPHLEPBB)");
+    titles.push_back("m_{H} (TOPHLEPBB) [GeV]");
 	  MVAvars.push_back("HiggsMass_TOPHLEPBB");
-    titles.push_back("m_{H} (TOPHLEPBB)");
+    titles.push_back("m_{H} (TOPHLEPBB) [GeV]");
 	  MVAvars.push_back("HiggsEta_TOPHLEPBB");
     titles.push_back("#eta_{H} (TOPHLEPBB)");
 	  MVAvars.push_back("HiggsEta_TOPHLEPBB");
     titles.push_back("#eta_{H} (TOPHLEPBB)");
 	  MVAvars.push_back("TopLepMass_TOPHLEPBB");
-    titles.push_back("m_{t^{lep}} (TOPHLEPBB)");
+    titles.push_back("m_{t^{lep}} (TOPHLEPBB) [GeV]");
 	  MVAvars.push_back("TopLepMass_TOPHLEPBB");
-    titles.push_back("m_{t^{lep}} (TOPHLEPBB)");
+    titles.push_back("m_{t^{lep}} (TOPHLEPBB) [GeV]");
     MVAvars.push_back("TopLepPt_TOPHLEPBB");
-    titles.push_back("p_{T}(t^{lep}) (TOPHLEPBB)");
+    titles.push_back("p_{T}(t^{lep}) (TOPHLEPBB) [GeV]");
     MVAvars.push_back("TopLepPt_TOPHLEPBB");
-    titles.push_back("p_{T}(t^{lep}) (TOPHLEPBB)");
+    titles.push_back("p_{T}(t^{lep}) (TOPHLEPBB) [GeV]");
     MVAvars.push_back("TopLepEta_TOPHLEPBB");
     titles.push_back("#eta_{t^{lep}} (TOPHLEPBB)");
     MVAvars.push_back("TopLepEta_TOPHLEPBB");
@@ -272,9 +272,9 @@ cout << SignalSample << " " << channel << ": ROC best cut is " << xminDist << en
     MVAvars.push_back("TopLepBJetCSVv2_TOPHLEPBB");
     titles.push_back("b_{t^{lep}} CSVv2 (TOPHLEPBB)");
     MVAvars.push_back("TopHadMass_TOPTOPLEPHAD");
-    titles.push_back("m_{t^{had}} (TOPTOPLEPHAD)");
+    titles.push_back("m_{t^{had}} (TOPTOPLEPHAD) [GeV]");
     MVAvars.push_back("TopLepMass_TOPTOPLEPHAD");
-    titles.push_back("m_{t^{lep}} (TOPTOPLEPHAD)");
+    titles.push_back("m_{t^{lep}} (TOPTOPLEPHAD) [GeV]");
     MVAvars.push_back("TopLepTopHadDr_TOPTOPLEPHAD");
     titles.push_back("#Delta R (t^{lep},t^{had}) (TOPTOPLEPHAD)");
     MVAvars.push_back("TopLepBJetCSVv2_TOPTOPLEPHAD");
@@ -345,8 +345,9 @@ cout << SignalSample << " " << channel << ": ROC best cut is " << xminDist << en
         HistoNorm_S->SetMaximum(maxhist);
         HistoNorm_B->SetMaximum(maxhist);
         
-        HistoNorm_S->GetXaxis()->SetTitleSize(0.06);
+        HistoNorm_S->GetXaxis()->SetTitleSize(0.04);
         HistoNorm_S->GetXaxis()->SetTitle(titles[i_vars].c_str());
+        HistoNorm_S->SetTitle("");
 
         TCanvas *c1 = new TCanvas();
         c1->cd();
@@ -361,6 +362,7 @@ cout << SignalSample << " " << channel << ": ROC best cut is " << xminDist << en
 
 
         c1->SaveAs((outputpics+MVAvars[i_vars]+"_Norm.eps").c_str());
+        c1->SaveAs((outputpics+MVAvars[i_vars]+"_Norm.pdf").c_str());
 
       delete c1;
     }

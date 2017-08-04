@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!-- add="1" means run on the sample -->
+<!-- add="0" means do not run on the sample -->
+<!-- ex with eqlumi <d name="TTJets" add="1" color="4" ls="1" lw="1" normf="0.000437334" EqLumi="1" xsection="414" filenames="/user/echabert/TopTree_Prod229/TopTree_TTJets.root" EqLumi="2287."/> -->
+<!-- ex with NofEvts <d name="TTJets" add="1" color="4" ls="1" lw="1" normf="0.000437334" EqLumi="1" xsection="414" filenames="/user/echabert/TopTree_Prod229/TopTree_TTJets.root" NofEvts="946644"/> -->
+<!-- ex with PreselEff NofPSEvts <d name="TTJets" add="1" color="4" ls="1" lw="1" normf="0.000437334" EqLumi="1" xsection="414" filenames="/user/echabert/TopTree_Prod229/TopTree_TTJets.root" PreselEff="0.2307" NofPSEvts="218404"/> -->
+
+
+<!--NOT SURE HOW I SHOULD USE THE DIFFERENT OPTION -->
+
+<data>
+<datasets>
+
+<!--DATA-->
+
+<d name="TTJets_powheg_noJEC"  title="t\bar{t}+jets"            add="1"   color="861"  ls="1"  lw="2" normf="1"  EqLumi="93263.7864288"    xsection="831.76"                  PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v6/TTP-CMSSW_80X_v6--GT-80X_mcRun2_asymptotic_2016_TrancheIV_v7/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/crab_P8M2T413TeVpowhegpythia8RunIISummer16MiniAODv2PUMoriond1780XmcRun2asymptotic2016TrancheIVv6v1crab89/170316_220430/0000/TOPTREE_*.root"/>
+<d name="TTJets_FXFX"  title="t\bar{t}+jets"            add="0"   color="861"  ls="1"  lw="2" normf="1"  EqLumi="93263.7864288"    xsection="831.76"                  PreselEff="0.0"   filenames="/pnfs/iihe/cms/store/user/fblekman/TopTree/CMSSW_80X_v6/TTP-CMSSW_80X_v6--GT-80X_mcRun2_asymptotic_2016_TrancheIV_v7/TTJets_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/crab_mcatnloFXFXpythia8RunIISummer16MiniAODv2PUMoriond17backup80XmcRun2asymptotic2016TrancheIVv6v1crab81/170315_105629/0000/TOPTREE_*.root"/>
+
+
+</datasets>
+
+<!-- All parameters needed for the selection and the bkg estimation methods -->
+<analysis>
+<!-- JetType: 0=TRootJet - 1=TRootCaloJet - 2=TRootPFJet -->
+<a type="Collections" PVCollection="PrimaryVertex" JetType="2" JetCollection="PFJets_slimmedJets" METType="2" METCollection="PFMET_slimmedMETs" MuonCollection="Muons_slimmedMuons" ElectronCollection="Electrons_slimmedElectrons" loadGenJetCollection="0" GenJetCollection="GenJets_slimmedGenJets" loadNPGenEventCollection="0" NPGenEventCollection="NPGenEvent" loadMCParticles="1" MCParticlesCollection="MCParticles"/>
+<!-- LuminosityError has to be relative [0-1], ex: 0.1 means 10% uncertainty on luminosity -->
+<!-- other errors should be absolute -->
+</analysis>
+</data>
+

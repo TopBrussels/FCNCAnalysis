@@ -1859,7 +1859,8 @@ cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
               temp->showNumberEntries(false);
               temp->setChannel(true,category);
               temp->Draw("MyMSP_"+name, 1, true, true, true, 1);
-              temp->Write(outfile_errorbands, name, true,pathPNG, "eps");
+//              temp->Write(outfile_errorbands, name, true,pathPNG, "eps");
+              temp->Write(outfile_errorbands, name, true,pathPNG, "root");
 
           }
           else
@@ -1876,8 +1877,8 @@ cout << "----- event number: " << evt_num << ", lumi_num: " << lumi_num << endl;
               temp->setPreliminary(false);
               temp->setChannel(true,category);
               temp->Draw("MyMSP_"+name, 1, true, true, true, 1);
-              temp->Write(outfile_errorbands, name, true,pathPNG, "eps");//You can only call 1 format for saving the plots. The second time you want to draw, the THStacks are empty, because the object has been written to the root-file.
-        //      temp->Write(outfile_errorbands, name, true,pathPNG, "png");
+        //      temp->Write(outfile_errorbands, name, true,pathPNG, "eps");//You can only call 1 format for saving the plots. The second time you want to draw, the THStacks are empty, because the object has been written to the root-file.
+              temp->Write(outfile_errorbands, name, true,pathPNG, "root");
         //      temp->Write(outfile_errorbands, name, true,pathPNG, "pdf");//.pdf files are corrputed due to the #backslash symbol defined in MultiSamplePlot.cc
          }
 	    }

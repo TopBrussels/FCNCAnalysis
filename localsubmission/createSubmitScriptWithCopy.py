@@ -24,7 +24,7 @@ date = dd+"_"+mm+"_"+yyyy
 
 
 # pick one of the following
-channels = ["Mu","El"] 
+channels = ["Mu"] 
 #channels = ["MuMu"] 
 #channels = ["ElEl"] 
 #channels=["test"]
@@ -35,9 +35,9 @@ for chan in channels:
     print "\nSearching list of sample used for ", chan, " channel!"
     # getting the appropriate xml file
     if "Mu" in chan:
-        tree = ET.ElementTree(file='../config/FullMcBkgdSamples_Mu.xml')
+        tree = ET.ElementTree(file='../config/tmp.xml')
     elif "El" in chan:
-        tree = ET.ElementTree(file='../config/FullMcBkgdSamples_El.xml')
+        tree = ET.ElementTree(file='../config/tmp.xml')
     else:
         print "Channel '", chan , "' is not a correct channel name. No tree has been loaded!"
         sys.exit()
@@ -85,7 +85,7 @@ for chan in channels:
     for d in datasets:
         if d.attrib['add'] == '1':
             print "found dataset to be added..." + str(d.attrib['name'])
-            commandString = "./TreeMaker "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff']) +" "+ str(Luminosity_)
+            commandString = "./TreeMaker_noJEC "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff']) +" "+ str(Luminosity_)
             topTrees = glob.glob(d.attrib['filenames'])
 
             # setting the number of file per job depending whether it is data sample or not

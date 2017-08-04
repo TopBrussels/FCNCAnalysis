@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
     //***************************************************CREATING PLOT****************************************************
     for(int iSyst = 0; iSyst<WhatSysts.size();iSyst++)
     {
-        MSPlot[("CategoryRates"+WhatSysts[iSyst]).c_str()] = new MultiSamplePlot(datasets_splittedTTbar, ("CategoryRates"+WhatSysts[iSyst]).c_str(), 5, -0.5, 4.5, "BDT output","Events", "");
+        MSPlot[("CategoryRates"+WhatSysts[iSyst]).c_str()] = new MultiSamplePlot(datasets_splittedTTbar, ("CategoryRates"+WhatSysts[iSyst]).c_str(), 5, -0.5, 4.5, "Event category","Events", "");
     }
   
  

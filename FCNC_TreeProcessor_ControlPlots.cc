@@ -513,10 +513,10 @@ int main(int argc, char *argv[])
                 MSPlot[("HiggsBJet2E_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("HiggsBJet2E_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, 0., 350, "E_{b_{H2}}","entries", "","GeV");
 
 
-                MSPlot[("MVA_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -1., 1., "bMVA TopTopLepHad","entries", "");
-                MSPlot[("MVA_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -1., 1., "bMVA TopTopLepHbb","entries", "");
-                MSPlot[("MVA_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -1., 1., "bMVA TopHLepbb","entries", "");
-                MSPlot[("MVA_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -1., 1., "bMVa TopHLepbb","entries", "");
+                MSPlot[("MVA_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPTOPLEPHAD"+WhatSysts[iSyst]).c_str(), 30, -1., 1., "b jet assignment BDT score","entries", "");
+                MSPlot[("MVA_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPTOPLEPHBB"+WhatSysts[iSyst]).c_str(), 30, -1., 1., "b jet assignment BDT score","entries", "");
+                MSPlot[("MVA_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPHLEPBB_hut"+WhatSysts[iSyst]).c_str(), 30, -1., 1., "b jet assignment BDT score","entries", "");
+                MSPlot[("MVA_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str() ] = new MultiSamplePlot(datasets_splittedTTbar, ("MVA_TOPHLEPBB_hct"+WhatSysts[iSyst]).c_str(), 30, -1., 1., "b jet assignment BDT score","entries", "");
             
         }
     }
@@ -1993,9 +1993,9 @@ if(pt_lepton	< 30) continue;
           NominalVariableNames.push_back(name);
           writePic = true;
       }
-//      temp->Write(outfile, name, false,pathPNG, "png");
+      temp->Write(outfile, name, false,pathPNG, "root");
 
-      temp->Write(outfile, name, writePic,pathPNG, "eps");
+//      temp->Write(outfile, name, writePic,pathPNG, "eps");
 	}
 
   outfile->Write("kOverwrite");
@@ -2047,8 +2047,8 @@ if(pt_lepton	< 30) continue;
           temp->setChannel(true,category);
           temp->Draw("MyMSP_"+name, 1, true, true, true, 1);
           bool writePng = false;
-    //      temp->Write(outfile_errorbands, name, true,pathPNG, "png");
-          temp->Write(outfile_errorbands, name, true,pathPNG, "eps");
+          temp->Write(outfile_errorbands, name, true,pathPNG, "root");
+    //      temp->Write(outfile_errorbands, name, true,pathPNG, "eps");
     //      temp->Write(outfile_errorbands, name, true,pathPNG, "pdf");
 	    }
 	    outfile_errorbands->Write("kOverwrite");
