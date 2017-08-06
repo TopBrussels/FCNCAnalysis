@@ -29,6 +29,17 @@ void rebin(){
   TKey* key ;
   TObject* obj ;
   TH1F* tempHisto;
+  double entries_per_bins = 0;
+  int nbins = -5;
+  
+  tempHisto = (TH1F*)inputfile->Get("Zct_BDT_singletop_uuu_WZTo3LNu_amc_80X");
+  //inputfile->GetObject(obj->GetTitle(),tempHisto);
+  nbins = tempHisto->GetNbinsX();
+  cout << "nbins before " << tempHisto->GetNbinsX() << endl;
+  entries_per_bins = tempHisto->GetEntries() /tempHisto->GetNbinsX();
+
+  entries_per_bins = 20;
+  cout << "Asking for " << entries_per_bins << " entries per bin" << endl;
   
   while ( (key = (TKey*)next() )) {
     obj = key->ReadObj() ;
@@ -40,15 +51,36 @@ void rebin(){
     }
     inputfile->GetObject(obj->GetTitle(),tempHisto);
     cout << "Histo name: "<< obj->GetName() <<" title: " << obj->GetTitle() << endl;
-    cout << "nbins before " << tempHisto->GetNbinsX() << endl;
     
-    float newNbOfBins = 5;
-    tempHisto->Rebin(newNbOfBins);
+    Double_t *xq = new Double_t[nbins+1];
+    Double_t *content = new Double_t[nbins+1];
+    xq[0] = tempHisto->GetXaxis()->GetXmin();
+    content[0] = tempHisto->GetBinContent(0); // underflow
+    xq[nbins] = tempHisto->GetXaxis()->GetXmax();
+    content[nbins] = tempHisto->GetBinContent(nbins); // overflow
+    
+    double entries_so_far = 0;
+    int new_i = 1;
+    for(int i = 1; i < nbins; i++) {
+      entries_so_far += tempHisto->GetBinContent(i);
+      cout << entries_so_far << " / " << entries_per_bins << endl;
+      if (entries_so_far >= entries_per_bins || (i==(nbins-1))){
+        xq[ new_i ] = tempHisto->GetXaxis()->GetBinUpEdge( i );
+        content[new_i] = entries_so_far;
+        new_i++;
+        entries_so_far = 0;
+      }
+    }
+    
+    TH1F* historebinned = (TH1F*) tempHisto->Rebin(new_i-1,"historebinned",xq);
+    historebinned->SetName(tempHisto->GetName());
+    historebinned->SetTitle(tempHisto->GetTitle());
+    
     cout << "nbins after " << tempHisto->GetNbinsX() << endl;
     outputfile->cd();
-    tempHisto->Write();
+    historebinned->Write(tempHisto->GetTitle());
     
-   ;
+    
   }
   
 }
