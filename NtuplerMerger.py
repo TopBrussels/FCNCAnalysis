@@ -12,7 +12,7 @@ dd = str(now.day)
 mm = str(now.month)
 yyyy = str(now.year)
 # pick one of the two above
-date = "170320"
+date = "170804"
 #date = "17_1_2016"
 
 #channels = ["_MuMu","_ElEl"]
@@ -22,8 +22,8 @@ channels = ["_All"] #,"_ElElEl"]
 for chan in channels:
     
     #Define path where ntuples are stored
-    pathNonMerged = "NtupleMakerOutput/Ntuples/Ntuples_"+date+"/"
-    #pathNonMerged = "NtupleMakerOutput/Ntuplesfakes/Ntuples_"+date+"/";
+    pathNonMerged = "NtupleMakerOutput/NtuplesTest/Ntuples_"+date+"/"
+    #pathNonMerged = "NtupleMakerOutput/Ntuples_fakes/Ntuples_"+date+"/";
     if "MuMuMu" in chan:
         pathMerged = "NtupleMakerOutput/MergedTuples/mumumu/"+"160530"+"/"
     if "ElElEl" in chan:
@@ -67,6 +67,9 @@ for chan in channels:
             if  "80X" in str(d.attrib['name']) :
                 datasetNames.append(str(d.attrib['name']))
                 print str(d.attrib['name'])
+            if  "data" in str(d.attrib['name']) :
+                datasetNames.append(str(d.attrib['name']))
+                print str(d.attrib['name'])
     
     
     listOfZombie= []
@@ -75,6 +78,9 @@ for chan in channels:
     for n in datasetNames:
         filenames = glob.glob(pathNonMerged + "/*" + n + "*.root")
         hadd = "hadd -f " + pathMerged + "/"+ n + ".root"
+        #hadd = "hadd -f " + pathMerged + "/fake_"+ n + ".root"
+	      
+
 
         if (len(filenames) == 0):
             print "no root files found in directory" , pathNonMerged ,  " for dataset " , n , " !!"
@@ -106,10 +112,10 @@ for chan in channels:
     
     if (mergeData):
     # combining all the Data in one
-        cmd1 = "rm data_fake.root"; 
-        dataList=glob.glob(pathMerged+"*data*.root")
+        cmd1 = "rm fake_80X.root";
+        dataList=glob.glob(pathMerged+"*data_*2016*.root")
     
-	cmd = "hadd -f " + pathMerged + "/"+ "data_fake.root"
+	cmd = "hadd -f " + pathMerged + "/"+ "fake_80X.root"
         for data in dataList:
             cmd = cmd + " " + data
 	os.system(cmd1)

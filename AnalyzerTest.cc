@@ -1385,7 +1385,7 @@ int main(int argc, char* argv[]){
   if(makePlots){
     firstevent = true;
     //InitMSPlots("control_afterAtLeast1Jet", decayChannels);
-    InitMSPlots("control_afterAtLeast1Jet_afterZWindow", decayChannels);
+    InitMSPlots("control_afterAtLeast1Jet_3lep_", decayChannels);
     // InitMSPlots("control_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels);
     // Init1DPlots();
     MSPlot["cutflow"] = new MultiSamplePlot(datasets, "cutflow", 10, -0.5, 9.5, "Cutflow");
@@ -2145,30 +2145,38 @@ int main(int argc, char* argv[]){
         
         
         PushBack = true;
-        bool keepevent = true; 
+        bool keepevent = true;
         for(int iM = 0; iM < selectedMuons.size(); iM++){
           if(jet.Pt() == selectedMuons[iM].Pt()){
             PushBack = false;
             break;
           }
-          else if(jet.DeltaR(selectedMuons[iM]) < 0.4) {
+          else if(jet.DeltaR(selectedMuons[iM]) < 0.4 && !isfakes) {
+            keepevent = false;
+            break;
+          }
+          else if(jet.DeltaR(selectedMuons[iM]) < 0.1 && isfakes) {
             keepevent = false;
             break;
           }
         }
         if(!PushBack) {   continue;}
         for(int iE = 0; iE < selectedElectrons.size(); iE++){
-           if(jet.Pt() == selectedElectrons[iE].Pt()){
-	   PushBack = false;
+          if(jet.Pt() == selectedElectrons[iE].Pt()){
+            PushBack = false;
             break;
-           } 
-           else if( jet.DeltaR(selectedElectrons[iE]) < 0.3) {
+          }
+          else if( jet.DeltaR(selectedElectrons[iE]) < 0.3 && !isfakes) {
+            keepevent = false;
+            break;
+          }
+          else if( jet.DeltaR(selectedElectrons[iE]) < 0.1 && isfakes) {
             keepevent = false;
             break;
           }
         }
-       if(!keepevent || !PushBack|| pt_jet[iJet] < 30. ){   continue;}
-       else{
+        if(!keepevent || !PushBack|| pt_jet[iJet] < 30. ){   continue;}
+        else{
           //if(isfakes) cout << "pushing back " << iJet << endl;
           selectedJets.push_back(jet);
           selectedJetsID.push_back(iJet);
@@ -2752,8 +2760,12 @@ int main(int argc, char* argv[]){
       }
       //cout << "zmass" << endl;
       bool IamInZwindow = true;
+      bool IamInBigZwindow = true;
 //      if(Zboson.M() <( 76.+7.5)|| Zboson.M() > (106.-7.5)) continue;
       if(Zboson.M() <( 76.)|| Zboson.M() > 106.) IamInZwindow = false; //  continue;
+      if(Zboson.M() <( 61.)|| Zboson.M() > 121.) IamInBigZwindow = false;
+      if(!IamInBigZwindow && !IamInZwindow) continue;
+      if(IamInZwindow) IamInBigZwindow = false;
       if(doCutflow){ // // {">1l,>0j", "SF pair","lep veto","Z mass","#Delta R (l_{W},b) <= 2.5",">2l","STSR","TTSR","WZCR"};
         MSPlot["cutflow"] ->Fill(3. , datasets[d], true,eventweightForplots);
         if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(3. , datasets[d], true,eventweightForplots);
@@ -2841,12 +2853,7 @@ int main(int argc, char* argv[]){
       
       
       
-      if (makePlots && IamInZwindow )
-      {
-        FillGeneralPlots(d, "control_afterAtLeast1Jet_afterZWindow", decayChannels,isData, isfakes, threelepregion, twolepregion);
-        
-        
-      }
+     
       if((dataSetName.find("DY")!=std::string::npos || dataSetName.find("TTJets")!=std::string::npos || dataSetName.find("WWTo")!=std::string::npos|| dataSetName.find("Zjets")!=std::string::npos  || dataSetName.find("fake")!=std::string::npos || dataSetName.find("data")!=std::string::npos) && dofakevalidation ){
         //cout << "filling" << endl;
         if(dataSetName.find("fake")==std::string::npos && selectedJetsID.size() > 0 ) FillFakeValidation(dataSetName,decayChannels,isData, isfakes, threelepregion, twolepregion);
@@ -2861,6 +2868,13 @@ int main(int argc, char* argv[]){
       // from here only 3lep analysis !!!!
       if(twolepregion && doDilep && IamInZwindow){ nSelectedEntriesDilep++; nSelectedEntriesDilepweighted += eventweightForNotMSplots;}
       if((selectedMuons.size()+selectedElectrons.size())!= 3) continue;
+      
+      if (makePlots)
+      {
+        FillGeneralPlots(d, "control_afterAtLeast1Jet_3lep_", decayChannels,isData, isfakes, threelepregion, twolepregion);
+        
+        
+      }
       
       if(makePlots && IamInZwindow){
         MSPlot["lepton0_pt"] ->Fill(selectedLeptons[0].Pt() , datasets[d], true,eventweightForplots);
@@ -3171,7 +3185,7 @@ int main(int argc, char* argv[]){
     //  if(selectedJets.size() > 0 && selectedCSVMJetID.size() == 0 && threelepregion && IamInZwindow) MSPlot["cutflowregions"]->Fill(6. , datasets[d], true,eventweightForplots); //WZCR
      //if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && selectedCSVTJetID.size() > 1 && threelepregion) MSPlot["cutflowregions"]->Fill(5. , datasets[d], true,eventweightForplots); //TTCR T
      //f(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && selectedCSVTJetID.size() > 1 && threelepregion && IamInZwindow) MSPlot["cutflowregions"]->Fill(6. , datasets[d], true,eventweightForplots); // TTCR T zmss
-     if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && threelepregion && !IamInZwindow) MSPlot["cutflowregions"]->Fill(4. , datasets[d], true,eventweightForplots);
+     if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && threelepregion && IamInBigZwindow) MSPlot["cutflowregions"]->Fill(4. , datasets[d], true,eventweightForplots);
      // if(selectedJets.size() > 1 && selectedCSVMJetID.size() > 0 && threelepregion && !IamInZwindow) MSPlot["cutflowregions"]->Fill(8. , datasets[d], true,eventweightForplots);
      //if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && selectedCSVTJetID.size() >0 && threelepregion && !IamInZwindow) MSPlot["cutflowregions"]->Fill(8. , datasets[d], true,eventweightForplots);
    //   if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && selectedCSVTJetID.size() >1 && threelepregion && !IamInZwindow) MSPlot["cutflowregions"]->Fill(9. , datasets[d], true,eventweightForplots);
@@ -3283,7 +3297,7 @@ int main(int argc, char* argv[]){
           }
         }
       } // ST region
-      if(selectedJets.size() == 1 && selectedCSVLJetID.size() > 0 && threelepregion && !IamInZwindow){
+      if(selectedJets.size() == 1 && selectedCSVLJetID.size() > 0 && threelepregion && IamInBigZwindow){
         Region = 4;
         nSelectedEntriesSTTTZ++;
         selected = true;
@@ -3575,7 +3589,7 @@ int main(int argc, char* argv[]){
         
         
       }// WZ control region
-      if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && threelepregion && !IamInZwindow){
+      if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && threelepregion && IamInBigZwindow){
         Region = 3;
         nSelectedEntriesTTZ++;
         selected = true;
@@ -8031,7 +8045,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
       
       
       // vars
-      MSPlot[(prefixregion+prefix+"_ZbosonMass_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMass_"+decaystring).c_str(), 10, 70, 110, "inv. mass Z boson ","GeV");
+      MSPlot[(prefixregion+prefix+"_ZbosonMass_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMass_"+decaystring).c_str(), 20, 50, 130, "inv. mass Z boson ","GeV");
       if(prefixregion.find("3lep")!=std::string::npos){
         MSPlot[(prefixregion+prefix+"_WbosonMass_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_WbosonMass_"+decaystring).c_str(), 200, 0, 200, "inv. mass W boson ","GeV");
         MSPlot[(prefixregion+prefix+"_mlb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_mlb_"+decaystring).c_str(), 40, 0, 800, "Inv. Mass l_{W}+b^{SM} ","GeV");
@@ -8075,7 +8089,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
         MSPlot[(prefixregion+prefix+"_ZbosonMuIso_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMuIso_"+decaystring).c_str(), 10,0,0.5, "#mu_{Z} rel. iso.");
         MSPlot[(prefixregion+prefix+"_ZbosonMudPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMudPhi_"+decaystring).c_str(), 10,-4,4, "#Delta #phi (#mu_{Z},#mu_{Z})");
         MSPlot[(prefixregion+prefix+"_ZbosonMudR_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMudR_"+decaystring).c_str(), 20,0,4, "#Delta R(#mu,#mu) ");
-        MSPlot[(prefixregion+prefix+"_ZbosonMassMu_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMassMu_"+decaystring).c_str(), 10, 70, 110, "inv. mass Z_{#mu,#mu} boson ","GeV");
+        MSPlot[(prefixregion+prefix+"_ZbosonMassMu_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMassMu_"+decaystring).c_str(), 20, 50, 130, "inv. mass Z_{#mu,#mu} boson ","GeV");
         
         MSPlot[(prefixregion+prefix+"_ZbosonPtMu_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonPtMu_"+decaystring).c_str(), 40,0,500, "Z_{#mu,#mu} boson p_{T} ","GeV");
         
@@ -8123,7 +8137,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
         MSPlot[(prefixregion+prefix+"_ZbosonPtEl_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonPtEl_"+decaystring).c_str(), 20,0,500, "Z_{ee} boson p_{T}","GeV");
         
         MSPlot[(prefixregion+prefix+"_2ndLeadingElPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_2ndLeadingElPhi_"+decaystring).c_str(), 20,-4,4, "2nd leading electron #phi");
-        MSPlot[(prefixregion+prefix+"_ZbosonMassEl_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMassEl_"+decaystring).c_str(), 10, 70, 110, "inv. mass Z_{ee} boson ","GeV");
+        MSPlot[(prefixregion+prefix+"_ZbosonMassEl_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMassEl_"+decaystring).c_str(), 20, 50, 130, "inv. mass Z_{ee} boson ","GeV");
         
         if(decayChannels[iChan] == 2  ){
           MSPlot[(prefixregion+prefix+"_WlepMuEta_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_WlepMuEta_"+decaystring).c_str(), 15,-3,3, "#mu_{W}) #eta ");

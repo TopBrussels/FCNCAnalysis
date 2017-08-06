@@ -439,7 +439,7 @@ int main (int argc, char *argv[])
   float mu_iso_cut_fakeloose = 0.25;
   float mu_iso_cut_faketight= 0.15;
   //jets
-  float jet_pt_cut = 30.;
+  float jet_pt_cut = 15.;
   float jet_eta_cut = 2.4;
   
   // convert into string
@@ -882,7 +882,7 @@ int main (int argc, char *argv[])
     ////////////////////////////////////////////////////////////
     // Setup Date string and nTuple for output
     ///////////////////////////////////////////////////////////
-    if(!isData) doFakeLepton = false;
+   // if(!isData) doFakeLepton = false;
     
     string channel_dir = "NtupleMakerOutput/NtuplesTest/" ;
     if(doFakeLepton) channel_dir = "NtupleMakerOutput/Ntuples_fakes/" ;
@@ -2169,6 +2169,7 @@ int main (int argc, char *argv[])
       if (verbose>1) cout <<"Number of Muons, Electrons, Jets  ===>  " << endl << selectedMuons.size() <<" "  << selectedElectrons.size()<<" "<< PreselectedJets.size()   << endl;
       
       selectedJets.clear();
+      applyJetLeptonCleaning = false; 
       if(applyJetLeptonCleaning){
         bool PushBack = true;
         for(int iJ = 0; iJ < PreselectedJets.size() ; iJ++)
