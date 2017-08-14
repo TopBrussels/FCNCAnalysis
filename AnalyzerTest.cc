@@ -2782,7 +2782,7 @@ int main(int argc, char* argv[]){
       
       
       double btageffiencyforthisevent = 0.;
-      if(dataSetName.find("DY")!=std::string::npos && IamInZwindow && threelepregion){
+      if((dataSetName.find("DY")!=std::string::npos || dataSetName.find("WZT")!=std::string::npos) && IamInZwindow && threelepregion && selectedJetsID.size() > 0 && selectedCSVLJetID.size() == 0){
         btageffiencyforthisevent= MatchingFunctionDY( selectedJets, selectedJetsID );
         totalnbofbeventsforbtaginfo = totalnbofbeventsforbtaginfo + btageffiencyforthisevent;
         totalnbofeventsforbtaginfo = totalnbofeventsforbtaginfo + eventweightForNotMSplots;
@@ -3332,7 +3332,7 @@ int main(int argc, char* argv[]){
      }*/
     
     
-    if(dataSetName.find("DY")!=std::string::npos ) cout << "tot nb of btagged events: " << totalnbofbeventsforbtaginfo << " from " << totalnbofeventsforbtaginfo <<" events "<< endl;
+    if(dataSetName.find("DY")!=std::string::npos || dataSetName.find("WZT")!=std::string::npos ) cout << "tot nb of btagged events: " << totalnbofbeventsforbtaginfo << " from " << totalnbofeventsforbtaginfo <<" events "<< endl;
     
     cout << "                nSelectedEntries ST region: " << nSelectedEntriesST << " weighted " << nSelectedEntriesSTweighted << endl;
     cout << "                nSelectedEntries TT region: " << nSelectedEntriesTT << " weighted " << nSelectedEntriesTTweighted << endl;
@@ -9168,6 +9168,10 @@ double MatchingFunctionDY(vector <TLorentzVector> selectedJets, vector<int> sele
   int btotalnbofjets_bflav = 0;
   int btotalnbofjets_cflav = 0;
   int btotalnbofjets_udsgflav = 0;
+  double efficiency_bflav = 1.;
+  double efficiency_cflav =  1.;
+  double efficiency_udsgflav = 1.;
+
   for (unsigned int i = 0; i < JetPartonPair.size(); i++)
   {
     unsigned int partonIDnb = JetPartonPair[i].second; // place in mcParticles vector
@@ -9176,26 +9180,27 @@ double MatchingFunctionDY(vector <TLorentzVector> selectedJets, vector<int> sele
     int index = selectedJetsID[particlenb];
     if(abs(mc_pdgId[partonID[partonIDnb]] )== 5){  // b jets
       totalnbofjets_bflav++;
+      efficiency_bflav = efficiency_bflav *0.9;
       if(bdisc_jet[index] > WPb_L) btotalnbofjets_bflav++;
     }
     else if(abs(mc_pdgId[partonID[partonIDnb]] )== 4){  // c jets
       totalnbofjets_cflav++;
+      efficiency_cflav = efficiency_cflav * 0.6;
       if(bdisc_jet[index] > WPb_L) btotalnbofjets_cflav++;
     }
     else { //light jets
       totalnbofjets_udsgflav++;
+      efficiency_udsgflav = efficiency_udsgflav *0.1;
       if(bdisc_jet[index] > WPb_L) btotalnbofjets_udsgflav++;
 
     }
   
   }
   
-  double efficiency_bflav = 1.;
-  if(totalnbofjets_bflav != 0) efficiency_bflav = (double) btotalnbofjets_bflav / (double) totalnbofjets_bflav;
-  double efficiency_cflav =  1.;
+  
+ /* if(totalnbofjets_bflav != 0) efficiency_bflav = (double) btotalnbofjets_bflav / (double) totalnbofjets_bflav;
   if(totalnbofjets_cflav != 0) efficiency_cflav = (double) btotalnbofjets_cflav / (double) totalnbofjets_cflav;
-  double efficiency_udsgflav = 1.;
-  if(totalnbofjets_udsgflav != 0) efficiency_udsgflav = (double) btotalnbofjets_udsgflav / (double) totalnbofjets_udsgflav;
+  if(totalnbofjets_udsgflav != 0) efficiency_udsgflav = (double) btotalnbofjets_udsgflav / (double) totalnbofjets_udsgflav;*/
   double efficiency = efficiency_bflav*efficiency_cflav*efficiency_udsgflav;
    return efficiency;
 }
