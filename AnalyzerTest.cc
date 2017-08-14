@@ -763,6 +763,7 @@ void ClearMatchingVarsTLV();
 void ClearMatchingSampleVars();
 void FillGeneralPlots(int d, string prefix, vector<int>decayChannels, bool isData, bool isfakes,bool threelepregion,bool twolepregion);
 void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<int>decayChannels);
+double MatchingFunctionDY( vector <TLorentzVector> selectedJets, vector<int> selectedJetsID );
 string ConvertIntToString(int nb, bool pad);
 void ReconstructObjects(vector<int> selectedJetsID, vector<TLorentzVector> Muons,vector<TLorentzVector> selectedElectrons, vector<TLorentzVector> selectedJets,int Region, bool threelepregion);
 void MakeMVAvars(int Region, Double_t scaleFactor, int nonpromptWrong_, Double_t scaleFactorWZcorr, int d_ );
@@ -800,6 +801,9 @@ vector<int> selectedMuonsCharge;
 vector<int> electronID;
 vector<int> muonID;
 bool Assigned = false;
+Double_t btageffiencyforthisevent;
+Double_t totalnbofeventsforbtaginfo;
+Double_t totalnbofbeventsforbtaginfo;
 
 int WmuIndiceM = -999;
 int WelecIndiceM = -999;
@@ -1409,7 +1413,7 @@ int main(int argc, char* argv[]){
     
     Init2DPlots();
   }
-  vector < string > v_cutflow = {">1l,>0j, <6j, m_{T}^{W} < 300", "SF pair","lep veto","Z mass",">2l","#Delta R (l_{W},b) <= 2.5","STSR","TTSR","WZCR","TT TT CR", "ST TT CR"};
+  vector < string > v_cutflow = {"Z mass",">2l","STSR","TTSR","WZCR","TTCR", "STCR"};
   vector < string > v_cutflowreg = {"basecuts","STSR","TTSR","WZCR","TTCR"};
  
   MSPlot["cutflowregions"] = new MultiSamplePlot(datasets, "cutflowregion", 10, -0.5, 9.5, "Cutflow region");
@@ -1458,15 +1462,23 @@ int main(int argc, char* argv[]){
   int nSelectedEntriesDilep = 0;
   int nonpromptelectronInZ_ST = 0;
   int nonpromptelectronInZ_TT = 0;
+  int nonpromptelectronInZ_STCR = 0;
+  int nonpromptelectronInZ_TTCR = 0;
+  int nonpromptelectronInW_STCR = 0;
+  int nonpromptelectronInW_TTCR = 0;
   int nonpromptelectronInZ_WZ = 0;
   int nonpromptelectronInW_ST = 0;
   int nonpromptelectronInW_TT = 0;
   int nonpromptelectronInW_WZ = 0;
   int nonpromptmuonInW_ST = 0;
+  int nonpromptmuonInW_TTCR = 0;
+  int nonpromptmuonInW_STCR = 0;
   int nonpromptmuonInW_TT = 0;
   int nonpromptmuonInW_WZ = 0;
   int nonpromptmuonInZ_ST = 0;
   int nonpromptmuonInZ_TT = 0;
+  int nonpromptmuonInZ_STCR = 0;
+  int nonpromptmuonInZ_TTCR = 0;
   int nonpromptmuonInZ_WZ = 0;
   
   int nonpromptelectronInZ_uuu_ST = 0;
@@ -1598,56 +1610,6 @@ int main(int argc, char* argv[]){
   
   
   ///////// CUTFLOWS ///////////////
-  TH1F*  CutflowTableHisto__WZ = new TH1F("CutflowTableHisto__WZ", "CutflowTableHisto__WZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_eee__WZ = new TH1F("CutflowTableHisto_eee__WZ", "CutflowTableHisto_eee__WZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_eeu__WZ = new TH1F("CutflowTableHisto_eeu__WZ", "CutflowTableHisto_eeu__WZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_uue__WZ = new TH1F("CutflowTableHisto_uue__WZ", "CutflowTableHisto_uue__WZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_uuu__WZ = new TH1F("CutflowTableHisto_uuu__WZ", "CutflowTableHisto_uuu__WZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  
-  TH1F*  CutflowTableHisto__fake = new TH1F("CutflowTableHisto__fake", "CutflowTableHisto__fake" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_eee__fake = new TH1F("CutflowTableHisto_eee__fake", "CutflowTableHisto_eee__fake" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_eeu__fake = new TH1F("CutflowTableHisto_eeu__fake", "CutflowTableHisto_eeu__fake" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_uue__fake = new TH1F("CutflowTableHisto_uue__fake", "CutflowTableHisto_uue__fake" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_uuu__fake = new TH1F("CutflowTableHisto_uuu__fake", "CutflowTableHisto_uuu__fake" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  
-  TH1F*  CutflowTableHisto__data = new TH1F("CutflowTableHisto__data", "CutflowTableHisto__data" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_eee__data = new TH1F("CutflowTableHisto_eee__data", "CutflowTableHisto_eee__data" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_eeu__data = new TH1F("CutflowTableHisto_eeu__data", "CutflowTableHisto_eeu__data" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_uue__data = new TH1F("CutflowTableHisto_uue__data", "CutflowTableHisto_uue__data" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_uuu__data = new TH1F("CutflowTableHisto_uuu__data", "CutflowTableHisto_uuu__data" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  
-  
-  TH1F*  CutflowTableHisto__tZq = new TH1F("CutflowTableHisto__tZq", "CutflowTableHisto__tZq" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_eee__tZq = new TH1F("CutflowTableHisto_eee__tZq", "CutflowTableHisto_eee__tZq" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_eeu__tZq = new TH1F("CutflowTableHisto_eeu__tZq", "CutflowTableHisto_eeu__tZq" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_uue__tZq = new TH1F("CutflowTableHisto_uue__tZq", "CutflowTableHisto_uue__tZq" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_uuu__tZq = new TH1F("CutflowTableHisto_uuu__tZq", "CutflowTableHisto_uuu__tZq" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  
-  TH1F*  CutflowTableHisto__ttZ = new TH1F("CutflowTableHisto__ttZ", "CutflowTableHisto__ttZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_eee__ttZ = new TH1F("CutflowTableHisto_eee__ttZ", "CutflowTableHisto_eee__ttZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_eeu__ttZ = new TH1F("CutflowTableHisto_eeu__ttZ", "CutflowTableHisto_eeu__ttZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_uue__ttZ = new TH1F("CutflowTableHisto_uue__ttZ", "CutflowTableHisto_uue__ttZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_uuu__ttZ = new TH1F("CutflowTableHisto_uuu__ttZ", "CutflowTableHisto_uuu__ttZ" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  
-  TH1F*  CutflowTableHisto__FCNCZut = new TH1F("CutflowTableHisto__FCNCZut", "CutflowTableHisto__FCNCZut" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_eee__FCNCZut = new TH1F("CutflowTableHisto_eee__FCNCZut", "CutflowTableHisto_eee__FCNCZut" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_eeu__FCNCZut = new TH1F("CutflowTableHisto_eeu__FCNCZut", "CutflowTableHisto_eeu__FCNCZut" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_uue__FCNCZut = new TH1F("CutflowTableHisto_uue__FCNCZut", "CutflowTableHisto_uue__FCNCZut" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_uuu__FCNCZut = new TH1F("CutflowTableHisto_uuu__FCNCZut", "CutflowTableHisto_uuu__FCNCZut" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  
-  
-  TH1F*  CutflowTableHisto__FCNCZct = new TH1F("CutflowTableHisto__FCNCZct", "CutflowTableHisto__FCNCZct" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_eee__FCNCZct = new TH1F("CutflowTableHisto_eee__FCNCZct", "CutflowTableHisto_eee__FCNCZct" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_eeu__FCNCZct = new TH1F("CutflowTableHisto_eeu__FCNCZct", "CutflowTableHisto_eeu__FCNCZct" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_uue__FCNCZct = new TH1F("CutflowTableHisto_uue__FCNCZct", "CutflowTableHisto_uue__FCNCZct" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_uuu__FCNCZct = new TH1F("CutflowTableHisto_uuu__FCNCZct", "CutflowTableHisto_uuu__FCNCZct" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  
-  
-  TH1F*  CutflowTableHisto__other = new TH1F("CutflowTableHisto__other", "CutflowTableHisto__other" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_eee__other = new TH1F("CutflowTableHisto_eee__other", "CutflowTableHisto_eee__other" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_eeu__other = new TH1F("CutflowTableHisto_eeu__other", "CutflowTableHisto_eeu__other" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_uue__other = new TH1F("CutflowTableHisto_uue__other", "CutflowTableHisto_uue__other" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
-  TH1F*  CutflowTableHisto_uuu__other = new TH1F("CutflowTableHisto_uuu__other", "CutflowTableHisto_uuu__other" , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
   
  
    TH1F*  histo_data = new TH1F("histo_data","histo_data", 4, -0.5, 3.5); 
@@ -1687,6 +1649,9 @@ int main(int argc, char* argv[]){
     clock_t startDataSet = clock();
     Long64_t  mineventnb = 999999999;
     Long64_t maxeventnb = 0;
+    btageffiencyforthisevent = 0.;
+    totalnbofeventsforbtaginfo = 0.;
+    totalnbofbeventsforbtaginfo = 0.;
     
     firstevent = true;
     ClearMetaData();
@@ -1713,7 +1678,7 @@ int main(int argc, char* argv[]){
       checkFlavours = true;
     }
     isfakes = false;
-    if(dataSetName.find("fake")!=std::string::npos ) {isfakes = true;}
+    if(dataSetName.find("fake")!=std::string::npos || dataSetName.find("FakeShift")!=std::string::npos) {isfakes = true;}
     isAMC= false;
     if ( dataSetName.find("amc")!= std::string::npos || dataSetName.find("AMC") != std::string::npos  )
     {
@@ -1736,7 +1701,7 @@ int main(int argc, char* argv[]){
       
     }
     else  if (dataSetName.find("DY")!=std::string::npos || dataSetName.find("TTJets")!=std::string::npos) checkNonprompt = true;
-   if(dataSetName.find("fake")!=std::string::npos) checkNonprompt = false;  
+   if(dataSetName.find("fake")!=std::string::npos || dataSetName.find("FakeShift")!=std::string::npos) checkNonprompt = false;
     if(check_matching){
       ClearMatchingSampleVars();
       if(makeMatchingPlots){
@@ -1763,18 +1728,21 @@ int main(int argc, char* argv[]){
     }
     
     string ntupleFileName = "NtupleMakerOutput/MergedTuples/"+placeNtup+"/"+dataSetName+".root";
+    ntupleFileName = "/Volumes/MyBookForMac/20170408/170731_Mergedtuples/"+dataSetName+".root";
+   // ntupleFileName = "/Volumes/MyBookForMac/tuples/Mergedtuples/170804/"+dataSetName+".root";
     tFileMap[dataSetName.c_str()] = new TFile((ntupleFileName).c_str(),"READ"); //create TFile for each dataset
     
     string tTreeName = "tree";
     string tStatsTreeName = "globaltree";
     string postfix = "";
-    if(dataSetName.find("fakeshift")!=std::string::npos){ postfix ="_FakeShift";}
-    if(isData || isfakes) postfix = "";
+    
+    if(dataSetName.find("fakeshift")!=std::string::npos || dataSetName.find("FakeShift")!=std::string::npos){ postfix ="_FakeShift";}
+    
     if(applyJEC_down) postfix = "_JESdown";
     if(applyJEC_up) postfix = "_JESup";
     if(applyJER_down) postfix = "_JERdown";
     if(applyJER_up) postfix = "_JERup";
-    
+    if((isData || isfakes) && dataSetName.find("FakeShift")==std::string::npos) postfix = "";
     tTreeName += postfix;
     tStatsTreeName +=  postfix;
     cout << "looking at " << tStatsTreeName << " and " << tTreeName << endl;
@@ -1842,9 +1810,17 @@ int main(int argc, char* argv[]){
     nonpromptelectronInW_WZ = 0;
     nonpromptmuonInW_ST = 0;
     nonpromptmuonInW_TT = 0;
+    nonpromptelectronInZ_STCR = 0;
+    nonpromptelectronInZ_TTCR = 0;
+    nonpromptelectronInW_STCR = 0;
+    nonpromptelectronInW_TTCR = 0;
+    nonpromptmuonInW_STCR = 0;
+    nonpromptmuonInW_TTCR = 0;
     nonpromptmuonInW_WZ = 0;
     nonpromptmuonInZ_ST = 0;
     nonpromptmuonInZ_TT = 0;
+    nonpromptmuonInZ_STCR = 0;
+    nonpromptmuonInZ_TTCR = 0;
     nonpromptmuonInZ_WZ = 0;
     nonpromptelectronInZ_uuu_ST = 0;
     nonpromptelectronInZ_uuu_TT = 0;
@@ -2019,6 +1995,14 @@ int main(int argc, char* argv[]){
     TH1F*  CutflowTableHisto_eeu = new TH1F(("CutflowTableHisto_eeu_"+ dataSetName).c_str(), ("CutflowTableHisto_eeu_" + dataSetName).c_str() , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
     TH1F*  CutflowTableHisto_uue = new TH1F(("CutflowTableHisto_uue_"+ dataSetName).c_str(), ("CutflowTableHisto_uue_" + dataSetName).c_str() , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
     TH1F*  CutflowTableHisto_uuu = new TH1F(("CutflowTableHisto_uuu_"+ dataSetName).c_str(), ("CutflowTableHisto_uuu_" + dataSetName).c_str() , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+    
+    TH1F*  CutflowTableHistoRaw = new TH1F(("CutflowTableHistoRaw_"+ dataSetName).c_str(), ("CutflowTableHistoRaw_" + dataSetName).c_str() , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+    TH1F*  CutflowTableHistoRaw_eee = new TH1F(("CutflowTableHistoRaw_eee_"+ dataSetName).c_str(), ("CutflowTableHistoRaw_eee_" + dataSetName).c_str() , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+    TH1F*  CutflowTableHistoRaw_eeu = new TH1F(("CutflowTableHistoRaw_eeu_"+ dataSetName).c_str(), ("CutflowTableHistoRaw_eeu_" + dataSetName).c_str() , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+    TH1F*  CutflowTableHistoRaw_uue = new TH1F(("CutflowTableHistoRaw_uue_"+ dataSetName).c_str(), ("CutflowTableHistoRaw_uue_" + dataSetName).c_str() , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+    TH1F*  CutflowTableHistoRaw_uuu = new TH1F(("CutflowTableHistoRaw_uuu_"+ dataSetName).c_str(), ("CutflowTableHistoRaw_uuu_" + dataSetName).c_str() , v_cutflow.size(), -0.5, v_cutflow.size()-0.5);
+    
+    
     datasetNameTitle.push_back(pair<string,string>(datasets[d]->Name(), datasets[d]->Title()));
     for (int ievt = 0; ievt < endEvent; ievt++)
     {
@@ -2129,7 +2113,7 @@ int main(int argc, char* argv[]){
       cbdiscrim = -5.;
       cldiscrim = -5.;
       
-      
+      selectedJets.clear();
       bool keepevent = true;
       for(unsigned int iJet = 0; iJet < nJets ; iJet++){
         //if(pt_jet[iJet] < 30. ) continue;
@@ -2139,43 +2123,36 @@ int main(int argc, char* argv[]){
         bdiscrim = bdisc_jet[iJet];
         cbdiscrim = cdiscCvsB_jet[iJet];
         cldiscrim = cdiscCvsL_jet[iJet];
-        
-        
-        
-        
-        
+
         PushBack = true;
-        bool keepevent = true;
+        keepevent = true ;
         for(int iM = 0; iM < selectedMuons.size(); iM++){
           if(jet.Pt() == selectedMuons[iM].Pt()){
             PushBack = false;
-            break;
           }
-          else if(jet.DeltaR(selectedMuons[iM]) < 0.4 && !isfakes) {
+          else if(ROOT::Math::VectorUtil::DeltaR(jet,selectedMuons[iM]) < 0.3) {
             keepevent = false;
-            break;
           }
-          else if(jet.DeltaR(selectedMuons[iM]) < 0.1 && isfakes) {
+         /* else if(jet.DeltaR(selectedMuons[iM]) < 0.1 && isfakes) {
             keepevent = false;
-            break;
-          }
+          }*/
         }
-        if(!PushBack) {   continue;}
+        if(!PushBack ) {   continue;}
+        if(!keepevent) continue;
         for(int iE = 0; iE < selectedElectrons.size(); iE++){
           if(jet.Pt() == selectedElectrons[iE].Pt()){
             PushBack = false;
-            break;
-          }
-          else if( jet.DeltaR(selectedElectrons[iE]) < 0.3 && !isfakes) {
+           }
+          else if( ROOT::Math::VectorUtil::DeltaR(jet,selectedElectrons[iE]) < 0.3 ) {
             keepevent = false;
-            break;
           }
-          else if( jet.DeltaR(selectedElectrons[iE]) < 0.1 && isfakes) {
+         /* else if( jet.DeltaR(selectedElectrons[iE]) < 0.1 && isfakes) {
             keepevent = false;
-            break;
-          }
+          }*/
         }
-        if(!keepevent || !PushBack|| pt_jet[iJet] < 30. ){   continue;}
+        if(!keepevent) continue; ;
+        if( !PushBack ) continue;
+        else if( pt_jet[iJet] < 30. ){   continue;}
         else{
           //if(isfakes) cout << "pushing back " << iJet << endl;
           selectedJets.push_back(jet);
@@ -2221,7 +2198,7 @@ int main(int argc, char* argv[]){
       }
       
       // cout << "before selections " << endl;
-       if(!keepevent) continue;  
+     // if(!keepevent && selectedLeptons.size() <= 2) continue;
       // selections
       if(selectedJetsID.size()>3) continue; // temp fix
       if(selectedJetsID.size() == 0) continue;
@@ -2471,78 +2448,7 @@ int main(int argc, char* argv[]){
       // if(dataSetName.find("WZ")!=std::string::npos ){ eventweightForNotMSplots *=0.841 ; eventweightForNotMSplots *=0.841 ; scaleFactor*=0.841 ;}
       
       
-      // {">1l,>0j", "SF pair","lep veto","Z mass","#Delta R (l_{W},b) <= 2.5",">2l","STSR","TTSR","WZCR"};
-      if(doCutflow){
-        MSPlot["cutflow"] ->Fill(0. , datasets[d], true,eventweightForplots); // >0 jets
-        if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(0. , datasets[d], true,eventweightForplots);
-        if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(0. , datasets[d], true,eventweightForplots);
-        if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(0. , datasets[d], true,eventweightForplots);
-        if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(0. , datasets[d], true,eventweightForplots);
-      }
-      if(MakeSelectionTable) {
-        CutflowTableHisto->Fill(0.,eventweightForplots);
-        if(channelInt == 3) CutflowTableHisto_eee->Fill(0.,eventweightForplots);
-        if(channelInt == 2) CutflowTableHisto_eeu->Fill(0.,eventweightForplots);
-        if(channelInt == 1) CutflowTableHisto_uue->Fill(0.,eventweightForplots);
-        if(channelInt == 0) CutflowTableHisto_uuu->Fill(0.,eventweightForplots);
-        
-        if(dataSetName.find("WZT")!=std::string::npos){
-          CutflowTableHisto__WZ->Fill(0.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(0.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(0.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(0.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(0.,eventweightForplots);
-        }
-        else if(dataSetName.find("fake")!=std::string::npos){
-          CutflowTableHisto__fake->Fill(0.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(0.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(0.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(0.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(0.,eventweightForplots);
-        }
-        else if(dataSetName.find("tZq")!=std::string::npos){
-          CutflowTableHisto__tZq->Fill(0.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(0.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(0.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(0.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(0.,eventweightForplots);
-        }
-        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
-          CutflowTableHisto__FCNCZut->Fill(0.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(0.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(0.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(0.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(0.,eventweightForplots);
-        }
-        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
-          CutflowTableHisto__FCNCZct->Fill(0.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(0.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(0.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(0.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(0.,eventweightForplots);
-        }
-        else if(dataSetName.find("TTZ")!=std::string::npos ){
-          CutflowTableHisto__ttZ->Fill(0.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(0.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(0.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(0.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(0.,eventweightForplots);
-        }
-        else if(isData){
-          CutflowTableHisto__data->Fill(0.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__data->Fill(0.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(0.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__data->Fill(0.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(0.,eventweightForplots);
-        }
-        else {
-          CutflowTableHisto__other->Fill(0.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__other->Fill(0.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(0.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__other->Fill(0.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(0.,eventweightForplots);
-        }
-      }
+      
       bool threelepregion = false;
       bool twolepregion = false;
       if(selectedLeptons.size() == 3)  threelepregion = true;
@@ -2562,153 +2468,9 @@ int main(int argc, char* argv[]){
 
       
       if(! threelepregion && ! twolepregion ) continue;
-      if(MakeSelectionTable) {
-        CutflowTableHisto->Fill(1.,eventweightForplots);
-        if(channelInt == 3) CutflowTableHisto_eee->Fill(1.,eventweightForplots);
-        if(channelInt == 2) CutflowTableHisto_eeu->Fill(1.,eventweightForplots);
-        if(channelInt == 1) CutflowTableHisto_uue->Fill(1.,eventweightForplots);
-        if(channelInt == 0) CutflowTableHisto_uuu->Fill(1.,eventweightForplots);
-        
-        
-        if(dataSetName.find("WZT")!=std::string::npos){
-          CutflowTableHisto__WZ->Fill(1.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(1.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(1.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(1.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(1.,eventweightForplots);
-        }
-        else if(dataSetName.find("fake")!=std::string::npos){
-          CutflowTableHisto__fake->Fill(1.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(1.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(1.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(1.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(1.,eventweightForplots);
-        }
-        else if(dataSetName.find("tZq")!=std::string::npos){
-          CutflowTableHisto__tZq->Fill(1.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(1.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(1.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(1.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(1.,eventweightForplots);
-        }
-        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
-          CutflowTableHisto__FCNCZut->Fill(1.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(1.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(1.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(1.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(1.,eventweightForplots);
-        }
-        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
-          CutflowTableHisto__FCNCZct->Fill(1.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(1.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(1.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(1.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(1.,eventweightForplots);
-        }
-        else if(dataSetName.find("TTZ")!=std::string::npos ){
-          CutflowTableHisto__ttZ->Fill(1.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(1.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(1.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(1.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(1.,eventweightForplots);
-        }
-        else if(isData){
-          CutflowTableHisto__data->Fill(1.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__data->Fill(1.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(1.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__data->Fill(1.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(1.,eventweightForplots);
-        }
-        else {
-          CutflowTableHisto__other->Fill(1.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__other->Fill(1.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(1.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__other->Fill(1.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(1.,eventweightForplots);
-        }
-      }
-      if(doCutflow){
-        MSPlot["cutflow"] ->Fill(1. , datasets[d], true,eventweightForplots);
-        if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(1. , datasets[d], true,eventweightForplots);
-        if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(1. , datasets[d], true,eventweightForplots);
-        if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(1. , datasets[d], true,eventweightForplots);
-        if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(1. , datasets[d], true,eventweightForplots);
-      }
+
       if(selectedElectrons.size() != nbOfLooseElectrons  && threelepregion ) continue;  // veto loose
       if(selectedMuons.size() != nbOfLooseMuons && threelepregion ) continue; // veto loose
-      if(doCutflow){
-        MSPlot["cutflow"] ->Fill(2. , datasets[d], true,eventweightForplots);
-        if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(2. , datasets[d], true,eventweightForplots);
-        if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(2. , datasets[d], true,eventweightForplots);
-        if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(2. , datasets[d], true,eventweightForplots);
-        if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(2. , datasets[d], true,eventweightForplots);
-      }
-      if(MakeSelectionTable) {
-        CutflowTableHisto->Fill(2.,eventweightForplots);
-        if(channelInt == 3) CutflowTableHisto_eee->Fill(2.,eventweightForplots);
-        if(channelInt == 2) CutflowTableHisto_eeu->Fill(2.,eventweightForplots);
-        if(channelInt == 1) CutflowTableHisto_uue->Fill(2.,eventweightForplots);
-        if(channelInt == 0) CutflowTableHisto_uuu->Fill(2.,eventweightForplots);
-        
-        
-        if(dataSetName.find("WZT")!=std::string::npos){
-          CutflowTableHisto__WZ->Fill(2.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(2.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(2.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(2.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(2.,eventweightForplots);
-        }
-        else if(dataSetName.find("fake")!=std::string::npos){
-          CutflowTableHisto__fake->Fill(2.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(2.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(2.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(2.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(2.,eventweightForplots);
-        }
-        else if(dataSetName.find("tZq")!=std::string::npos){
-          CutflowTableHisto__tZq->Fill(2.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(2.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(2.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(2.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(2.,eventweightForplots);
-        }
-        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
-          CutflowTableHisto__FCNCZut->Fill(2.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(2.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(2.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(2.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(2.,eventweightForplots);
-        }
-        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
-          CutflowTableHisto__FCNCZct->Fill(2.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(2.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(2.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(2.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(2.,eventweightForplots);
-        }
-        else if(dataSetName.find("TTZ")!=std::string::npos ){
-          CutflowTableHisto__ttZ->Fill(2.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(2.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(2.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(2.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(2.,eventweightForplots);
-        }
-        else if(isData){
-          CutflowTableHisto__data->Fill(2.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__data->Fill(2.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(2.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__data->Fill(2.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(2.,eventweightForplots);
-        }
-        else {
-          CutflowTableHisto__other->Fill(2.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__other->Fill(2.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(2.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__other->Fill(2.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(2.,eventweightForplots);
-        }
-      }
-      // cout << "in assigner" <<endl;
       
       //cout << "WmuIndiceF " << WmuIndiceF <<" WelecIndiceF "<< WelecIndiceF <<" ZmuIndiceF_1 "<< ZmuIndiceF_1 <<" ZmuIndiceF_0 "<< ZmuIndiceF_0 <<" ZelecIndiceF_0 "<< ZelecIndiceF_0 <<" ZelecIndiceF_1 "<< ZelecIndiceF_1 << endl;
       
@@ -2762,80 +2524,30 @@ int main(int argc, char* argv[]){
       bool IamInZwindow = true;
       bool IamInBigZwindow = true;
 //      if(Zboson.M() <( 76.+7.5)|| Zboson.M() > (106.-7.5)) continue;
-      if(Zboson.M() <( 76.)|| Zboson.M() > 106.) IamInZwindow = false; //  continue;
+      if(Zboson.M() <( 76.+7.5)|| Zboson.M() > (106. -7.5)) IamInZwindow = false; //  continue;
       if(Zboson.M() <( 61.)|| Zboson.M() > 121.) IamInBigZwindow = false;
       if(!IamInBigZwindow && !IamInZwindow) continue;
       if(IamInZwindow) IamInBigZwindow = false;
-      if(doCutflow){ // // {">1l,>0j", "SF pair","lep veto","Z mass","#Delta R (l_{W},b) <= 2.5",">2l","STSR","TTSR","WZCR"};
-        MSPlot["cutflow"] ->Fill(3. , datasets[d], true,eventweightForplots);
-        if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(3. , datasets[d], true,eventweightForplots);
-        if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(3. , datasets[d], true,eventweightForplots);
-        if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(3. , datasets[d], true,eventweightForplots);
-        if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(3. , datasets[d], true,eventweightForplots);
+
+      if(doCutflow){ // // {"Z mass",">2l","STSR","TTSR","WZCR","TTCR", "STCR"};
+        MSPlot["cutflow"] ->Fill(0. , datasets[d], true,eventweightForplots);
+        if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(0. , datasets[d], true,eventweightForplots);
+        if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(0. , datasets[d], true,eventweightForplots);
+        if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(0. , datasets[d], true,eventweightForplots);
+        if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(0. , datasets[d], true,eventweightForplots);
       }
       if(MakeSelectionTable) {
-        CutflowTableHisto->Fill(3,eventweightForplots);
-        if(channelInt == 3) CutflowTableHisto_eee->Fill(3.,eventweightForplots);
-        if(channelInt == 2) CutflowTableHisto_eeu->Fill(3.,eventweightForplots);
-        if(channelInt == 1) CutflowTableHisto_uue->Fill(3.,eventweightForplots);
-        if(channelInt == 0) CutflowTableHisto_uuu->Fill(3.,eventweightForplots);
+        CutflowTableHisto->Fill(0.,eventweightForplots);
+        if(channelInt == 3) CutflowTableHisto_eee->Fill(0.,eventweightForplots);
+        if(channelInt == 2) CutflowTableHisto_eeu->Fill(0.,eventweightForplots);
+        if(channelInt == 1) CutflowTableHisto_uue->Fill(0.,eventweightForplots);
+        if(channelInt == 0) CutflowTableHisto_uuu->Fill(0.,eventweightForplots);
         
-        if(dataSetName.find("WZT")!=std::string::npos){
-          CutflowTableHisto__WZ->Fill(3.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(3.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(3.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(3.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(3.,eventweightForplots);
-        }
-        else if(dataSetName.find("fake")!=std::string::npos){
-          CutflowTableHisto__fake->Fill(3.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(3.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(3.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(3.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(3.,eventweightForplots);
-        }
-        else if(dataSetName.find("tZq")!=std::string::npos){
-          CutflowTableHisto__tZq->Fill(3.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(3.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(3.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(3.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(3.,eventweightForplots);
-        }
-        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
-          CutflowTableHisto__FCNCZut->Fill(3.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(3.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(3.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(3.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(3.,eventweightForplots);
-        }
-        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
-          CutflowTableHisto__FCNCZct->Fill(3.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(3.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(3.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(3.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(3.,eventweightForplots);
-        }
-        else if(dataSetName.find("TTZ")!=std::string::npos ){
-          CutflowTableHisto__ttZ->Fill(3.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(3.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(3.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(3.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(3.,eventweightForplots);
-        }
-        else if(isData){
-          CutflowTableHisto__data->Fill(3.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__data->Fill(3.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(3.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__data->Fill(3.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(3.,eventweightForplots);
-        }
-        else {
-          CutflowTableHisto__other->Fill(3.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__other->Fill(3.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(3.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__other->Fill(3.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(3.,eventweightForplots);
-        }
+        CutflowTableHistoRaw->Fill(0.,1.);
+        if(channelInt == 3) CutflowTableHistoRaw_eee->Fill(0.,1.);
+        if(channelInt == 2) CutflowTableHistoRaw_eeu->Fill(0.,1.);
+        if(channelInt == 1) CutflowTableHistoRaw_uue->Fill(0.,1.);
+        if(channelInt == 0) CutflowTableHistoRaw_uuu->Fill(0.,1.);
         
       }
       
@@ -2911,88 +2623,37 @@ int main(int argc, char* argv[]){
         }
       }
       
-      if(doCutflow){ // // {">1l,>0j", "SF pair","lep veto","Z mass","#Delta R (l_{W},b) <= 2.5",">2l","STSR","TTSR","WZCR"};
-        MSPlot["cutflow"] ->Fill(4. , datasets[d], true,eventweightForplots);
-        if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(4. , datasets[d], true,eventweightForplots);
-        if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(4. , datasets[d], true,eventweightForplots);
-        if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(4. , datasets[d], true,eventweightForplots);
-        if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(4. , datasets[d], true,eventweightForplots);
+      if(doCutflow){ // {"Z mass",">2l","STSR","TTSR","WZCR","TTCR", "STCR"};
+        MSPlot["cutflow"] ->Fill(1. , datasets[d], true,eventweightForplots);
+        if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(1. , datasets[d], true,eventweightForplots);
+        if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(1. , datasets[d], true,eventweightForplots);
+        if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(1. , datasets[d], true,eventweightForplots);
+        if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(1. , datasets[d], true,eventweightForplots);
       }
       if(MakeSelectionTable) {
-        CutflowTableHisto->Fill(4,eventweightForplots);
-        if(channelInt == 3) CutflowTableHisto_eee->Fill(4,eventweightForplots);
-        if(channelInt == 2) CutflowTableHisto_eeu->Fill(4,eventweightForplots);
-        if(channelInt == 1) CutflowTableHisto_uue->Fill(4,eventweightForplots);
-        if(channelInt == 0) CutflowTableHisto_uuu->Fill(4,eventweightForplots);
+        CutflowTableHisto->Fill(1.,eventweightForNotMSplots);
+        if(channelInt == 3) CutflowTableHisto_eee->Fill(1.,eventweightForNotMSplots);
+        if(channelInt == 2) CutflowTableHisto_eeu->Fill(1.,eventweightForNotMSplots);
+        if(channelInt == 1) CutflowTableHisto_uue->Fill(1.,eventweightForNotMSplots);
+        if(channelInt == 0) CutflowTableHisto_uuu->Fill(1.,eventweightForNotMSplots);
         
-        if(dataSetName.find("WZT")!=std::string::npos){
-          CutflowTableHisto__WZ->Fill(4.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(4.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(4.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(4.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(4.,eventweightForplots);
-        }
-        else if(dataSetName.find("fake")!=std::string::npos){
-          CutflowTableHisto__fake->Fill(4.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(4.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(4.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(4.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(4.,eventweightForplots);
-        }
-        else if(dataSetName.find("tZq")!=std::string::npos){
-          CutflowTableHisto__tZq->Fill(4.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(4.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(4.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(4.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(4.,eventweightForplots);
-        }
-        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
-          CutflowTableHisto__FCNCZut->Fill(4.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(4.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(4.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(4.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(4.,eventweightForplots);
-        }
-        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
-          CutflowTableHisto__FCNCZct->Fill(4.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(4.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(4.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(4.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(4.,eventweightForplots);
-        }
-        else if(dataSetName.find("TTZ")!=std::string::npos ){
-          CutflowTableHisto__ttZ->Fill(4.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(4.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(4.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(4.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(4.,eventweightForplots);
-        }
-        else if(isData){
-          CutflowTableHisto__data->Fill(4.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__data->Fill(4.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(4.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__data->Fill(4.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(4.,eventweightForplots);
-        }
-        else {
-          CutflowTableHisto__other->Fill(4.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__other->Fill(4.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(4.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__other->Fill(4.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(4.,eventweightForplots);
-        }
+        CutflowTableHistoRaw->Fill(1.,1.);
+        if(channelInt == 3) CutflowTableHistoRaw_eee->Fill(1.,1.);
+        if(channelInt == 2) CutflowTableHistoRaw_eeu->Fill(1.,1.);
+        if(channelInt == 1) CutflowTableHistoRaw_uue->Fill(1.,1.);
+        if(channelInt == 0) CutflowTableHistoRaw_uuu->Fill(1.,1.);
       }
       
       
       
-      
+      /*
       bool passedcuts = false;
       double deltaR  = 10000;
       if(isfakes) fakebefore += eventweightForNotMSplots;
       if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){deltaR =  ROOT::Math::VectorUtil::DeltaR(selectedElectrons[WelecIndiceF],SMbjet);}
       else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){deltaR=  ROOT::Math::VectorUtil::DeltaR(selectedMuons[WmuIndiceF],SMbjet);}
       if(deltaR <= 2.5 ){ passedcuts = true; }
-      // if(!passedcuts) continue;
+      // if(!passedcuts) continue;*/
       if(isfakes) fakeafter += eventweightForNotMSplots;
       
       MSPlot["cutflowregions"]->Fill(0. , datasets[d], true,eventweightForplots);
@@ -3065,78 +2726,7 @@ int main(int argc, char* argv[]){
         }
       }
       
-      if(doCutflow){ // // {">1l,>0j", "SF pair","lep veto","Z mass","#Delta R (l_{W},b) <= 2.5",">2l","STSR","TTSR","WZCR"};
-        MSPlot["cutflow"] ->Fill(5. , datasets[d], true,eventweightForplots);
-        if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(5. , datasets[d], true,eventweightForplots);
-        if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(5. , datasets[d], true,eventweightForplots);
-        if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(5. , datasets[d], true,eventweightForplots);
-        if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(5. , datasets[d], true,eventweightForplots);
-      }
-      if(MakeSelectionTable) {
-        CutflowTableHisto->Fill(5.,eventweightForplots);
-        if(channelInt == 3) CutflowTableHisto_eee->Fill(5.,eventweightForplots);
-        if(channelInt == 2) CutflowTableHisto_eeu->Fill(5.,eventweightForplots);
-        if(channelInt == 1) CutflowTableHisto_uue->Fill(5.,eventweightForplots);
-        if(channelInt == 0) CutflowTableHisto_uuu->Fill(5.,eventweightForplots);
-        
-        if(dataSetName.find("WZT")!=std::string::npos){
-          CutflowTableHisto__WZ->Fill(5.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(5.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(5.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(5.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(5.,eventweightForplots);
-        }
-        else if(dataSetName.find("fake")!=std::string::npos){
-          CutflowTableHisto__fake->Fill(5.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(5.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(5.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(5.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(5.,eventweightForplots);
-        }
-        else if(dataSetName.find("tZq")!=std::string::npos){
-          CutflowTableHisto__tZq->Fill(5.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(5.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(5.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(5.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(5.,eventweightForplots);
-        }
-        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
-          CutflowTableHisto__FCNCZut->Fill(5.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(5.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(5.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(5.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(5.,eventweightForplots);
-        }
-        else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
-          CutflowTableHisto__FCNCZct->Fill(5.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(5.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(5.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(5.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(5.,eventweightForplots);
-        }
-        else if(dataSetName.find("TTZ")!=std::string::npos ){
-          CutflowTableHisto__ttZ->Fill(5.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(5.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(5.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(5.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(5.,eventweightForplots);
-        }
-        else if(isData){
-          CutflowTableHisto__data->Fill(5.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__data->Fill(5.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(5.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__data->Fill(5.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(5.,eventweightForplots);
-        }
-        else {
-          CutflowTableHisto__other->Fill(5.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee__other->Fill(5.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(5.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue__other->Fill(5.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(5.,eventweightForplots);
-        }
-      }
-      if(!threelepregion) cout << "WARNING something went wrong with threelep region" << endl;
+       if(!threelepregion) cout << "WARNING something went wrong with threelep region" << endl;
       
       if(threelepregion &&dataSetName.find("WZTo3LNu")!=std::string::npos && systematicplots && IamInZwindow ) Fill1DPlots(dataSetName, Luminosity/EquilumiSF, threelepregion,twolepregion); // FIX EVENTWEIGHT
       
@@ -3190,6 +2780,14 @@ int main(int argc, char* argv[]){
      //if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && selectedCSVTJetID.size() >0 && threelepregion && !IamInZwindow) MSPlot["cutflowregions"]->Fill(8. , datasets[d], true,eventweightForplots);
    //   if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && selectedCSVTJetID.size() >1 && threelepregion && !IamInZwindow) MSPlot["cutflowregions"]->Fill(9. , datasets[d], true,eventweightForplots);
       
+      
+      double btageffiencyforthisevent = 0.;
+      if(dataSetName.find("DY")!=std::string::npos && IamInZwindow && threelepregion){
+        btageffiencyforthisevent= MatchingFunctionDY( selectedJets, selectedJetsID );
+        totalnbofbeventsforbtaginfo = totalnbofbeventsforbtaginfo + btageffiencyforthisevent;
+        totalnbofeventsforbtaginfo = totalnbofeventsforbtaginfo + eventweightForNotMSplots;
+      }
+      
       if(selectedJets.size() == 1 && selectedCSVLJetID.size() > 0 && threelepregion && IamInZwindow){
         Region = 0;
         nSelectedEntriesST++;
@@ -3222,160 +2820,31 @@ int main(int argc, char* argv[]){
           else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 3) nonpromptmuonInZ_eee_ST++;
           
         }
-        if(doCutflow &&!isData){
-          MSPlot["cutflow"] ->Fill(6. , datasets[d], true,eventweightForplots);
-          if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(6. , datasets[d], true,eventweightForplots);
-          if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(6. , datasets[d], true,eventweightForplots);
-          if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(6. , datasets[d], true,eventweightForplots);
-          if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(6. , datasets[d], true,eventweightForplots);
+        if(doCutflow &&!isData){ //{"Z mass",">2l","STSR","TTSR","WZCR","TTCR", "STCR"};
+          MSPlot["cutflow"] ->Fill(2. , datasets[d], true,eventweightForplots);
+          if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(2. , datasets[d], true,eventweightForplots);
+          if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(2. , datasets[d], true,eventweightForplots);
+          if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(2. , datasets[d], true,eventweightForplots);
+          if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(2. , datasets[d], true,eventweightForplots);
           
           
           
         }
         if(MakeSelectionTable) {
-          CutflowTableHisto->Fill(6.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee->Fill(6.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu->Fill(6.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue->Fill(6.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu->Fill(6.,eventweightForplots);
+          CutflowTableHisto->Fill(2.,eventweightForNotMSplots);
+          if(channelInt == 3) CutflowTableHisto_eee->Fill(2.,eventweightForNotMSplots);
+          if(channelInt == 2) CutflowTableHisto_eeu->Fill(2.,eventweightForNotMSplots);
+          if(channelInt == 1) CutflowTableHisto_uue->Fill(2.,eventweightForNotMSplots);
+          if(channelInt == 0) CutflowTableHisto_uuu->Fill(2.,eventweightForNotMSplots);
           
-          if(dataSetName.find("WZT")!=std::string::npos){
-            CutflowTableHisto__WZ->Fill(6.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(6.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(6.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(6.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(6.,eventweightForplots);
-          }
-          else if(dataSetName.find("fake")!=std::string::npos){
-            CutflowTableHisto__fake->Fill(0.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(6.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(6.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(6.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(6.,eventweightForplots);
-          }
-          else if(dataSetName.find("tZq")!=std::string::npos){
-            CutflowTableHisto__tZq->Fill(6.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(6.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(6.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(6.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(6.,eventweightForplots);
-          }
-          else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
-            CutflowTableHisto__FCNCZut->Fill(6.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(6.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(6.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(6.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(6.,eventweightForplots);
-          }
-          else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
-            CutflowTableHisto__FCNCZct->Fill(6.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(6.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(6.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(6.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(6.,eventweightForplots);
-          }
-          else if(dataSetName.find("TTZ")!=std::string::npos ){
-            CutflowTableHisto__ttZ->Fill(6.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(6.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(6.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(6.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(6.,eventweightForplots);
-          }
-          else if(isData){
-            CutflowTableHisto__data->Fill(6.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__data->Fill(6.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(6.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__data->Fill(6.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(6.,eventweightForplots);
-          }
-          else {
-            CutflowTableHisto__other->Fill(6.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__other->Fill(6.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(6.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__other->Fill(6.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(6.,eventweightForplots);
-          }
-        }
+          CutflowTableHistoRaw->Fill(2.,1.);
+          if(channelInt == 3) CutflowTableHistoRaw_eee->Fill(2.,1.);
+          if(channelInt == 2) CutflowTableHistoRaw_eeu->Fill(2.,1.);
+          if(channelInt == 1) CutflowTableHistoRaw_uue->Fill(2.,1.);
+          if(channelInt == 0) CutflowTableHistoRaw_uuu->Fill(2.,1.);
+              }
       } // ST region
-      if(selectedJets.size() == 1 && selectedCSVLJetID.size() > 0 && threelepregion && IamInBigZwindow){
-        Region = 4;
-        nSelectedEntriesSTTTZ++;
-        selected = true;
-        if(doCutflow &&!isData){
-          MSPlot["cutflow"] ->Fill(10. , datasets[d], true,eventweightForplots);
-          if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(10. , datasets[d], true,eventweightForplots);
-          if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(10. , datasets[d], true,eventweightForplots);
-          if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(10. , datasets[d], true,eventweightForplots);
-          if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(10. , datasets[d], true,eventweightForplots);
-        }
-        if(MakeSelectionTable) {
-          CutflowTableHisto->Fill(10.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee->Fill(10.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu->Fill(10.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue->Fill(10.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu->Fill(10.,eventweightForplots);
-          
-          if(dataSetName.find("WZT")!=std::string::npos){
-            CutflowTableHisto__WZ->Fill(10.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(10.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(10.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(10.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(10.,eventweightForplots);
-          }
-          else if(dataSetName.find("fake")!=std::string::npos){
-            CutflowTableHisto__fake->Fill(0.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(10.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(10.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(10.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(10.,eventweightForplots);
-          }
-          else if(dataSetName.find("tZq")!=std::string::npos){
-            CutflowTableHisto__tZq->Fill(10.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(10.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(10.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(10.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(10.,eventweightForplots);
-          }
-          else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
-            CutflowTableHisto__FCNCZut->Fill(10.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(10.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(10.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(10.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(10.,eventweightForplots);
-          }
-          else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
-            CutflowTableHisto__FCNCZct->Fill(10.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(10.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(10.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(10.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(10.,eventweightForplots);
-          }
-          else if(dataSetName.find("TTZ")!=std::string::npos ){
-            CutflowTableHisto__ttZ->Fill(10.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(10.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(10.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(10.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(10.,eventweightForplots);
-          }
-          else if(isData){
-            CutflowTableHisto__data->Fill(10.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__data->Fill(10.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(10.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__data->Fill(10.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(10.,eventweightForplots);
-          }
-          else {
-            CutflowTableHisto__other->Fill(10.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__other->Fill(10.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(10.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__other->Fill(10.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(10.,eventweightForplots);
-          }
-        }
-        
-
-      } // ST CRregion
-      if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && threelepregion && IamInZwindow){
+            if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && threelepregion && IamInZwindow){ // {"Z mass",">2l","STSR","TTSR","WZCR","TTCR", "STCR"};
         Region = 1;
         nSelectedEntriesTT++;
         if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){
@@ -3408,81 +2877,30 @@ int main(int argc, char* argv[]){
         }
         selected = true;
         if(doCutflow &&!isData){
-          MSPlot["cutflow"] ->Fill(7. , datasets[d], true,eventweightForplots);
-          if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(7. , datasets[d], true,eventweightForplots);
-          if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(7. , datasets[d], true,eventweightForplots);
-          if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(7. , datasets[d], true,eventweightForplots);
-          if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(7. , datasets[d], true,eventweightForplots);
+          MSPlot["cutflow"] ->Fill(3. , datasets[d], true,eventweightForplots);
+          if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(3. , datasets[d], true,eventweightForplots);
+          if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(3. , datasets[d], true,eventweightForplots);
+          if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(3. , datasets[d], true,eventweightForplots);
+          if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(3. , datasets[d], true,eventweightForplots);
         }
         if(MakeSelectionTable) {
-          CutflowTableHisto->Fill(7.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee->Fill(7.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu->Fill(7.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue->Fill(7.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu->Fill(7.,eventweightForplots);
+          CutflowTableHisto->Fill(3.,eventweightForNotMSplots);
+          if(channelInt == 3) CutflowTableHisto_eee->Fill(3.,eventweightForNotMSplots);
+          if(channelInt == 2) CutflowTableHisto_eeu->Fill(3.,eventweightForNotMSplots);
+          if(channelInt == 1) CutflowTableHisto_uue->Fill(3.,eventweightForNotMSplots);
+          if(channelInt == 0) CutflowTableHisto_uuu->Fill(3.,eventweightForNotMSplots);
           
-          if(dataSetName.find("WZT")!=std::string::npos){
-            CutflowTableHisto__WZ->Fill(7.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(7.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(7.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(7.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(7.,eventweightForplots);
-          }
-          else if(dataSetName.find("fake")!=std::string::npos){
-            CutflowTableHisto__fake->Fill(0.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(7.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(7.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(7.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(7.,eventweightForplots);
-          }
-          else if(dataSetName.find("tZq")!=std::string::npos){
-            CutflowTableHisto__tZq->Fill(7.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(7.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(7.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(7.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(7.,eventweightForplots);
-          }
-          else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
-            CutflowTableHisto__FCNCZut->Fill(7.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(7.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(7.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(7.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(7.,eventweightForplots);
-          }
-          else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
-            CutflowTableHisto__FCNCZct->Fill(7.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(7.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(7.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(7.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(7.,eventweightForplots);
-          }
-          else if(dataSetName.find("TTZ")!=std::string::npos ){
-            CutflowTableHisto__ttZ->Fill(7.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(7.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(7.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(7.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(7.,eventweightForplots);
-          }
-          else if(isData){
-            CutflowTableHisto__data->Fill(7.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__data->Fill(7.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(7.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__data->Fill(7.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(7.,eventweightForplots);
-          }
-          else {
-            CutflowTableHisto__other->Fill(7.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__other->Fill(7.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(7.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__other->Fill(7.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(7.,eventweightForplots);
-          }
+          CutflowTableHistoRaw->Fill(3.,1.);
+          if(channelInt == 3) CutflowTableHistoRaw_eee->Fill(3.,1.);
+          if(channelInt == 2) CutflowTableHistoRaw_eeu->Fill(3.,1.);
+          if(channelInt == 1) CutflowTableHistoRaw_uue->Fill(3.,1.);
+          if(channelInt == 0) CutflowTableHistoRaw_uuu->Fill(3.,1.);
         }
         
         
         
       } // ttbar region
-      if(selectedJets.size() >0 && selectedCSVLJetID.size() == 0 && threelepregion && IamInZwindow){
+      if(selectedJets.size() >0 && selectedCSVLJetID.size() == 0 && threelepregion && IamInZwindow){ // {"Z mass",">2l","STSR","TTSR","WZCR","TTCR", "STCR"};
         
         Region = 2;
         nSelectedEntriesWZ++;
@@ -3516,162 +2934,150 @@ int main(int argc, char* argv[]){
         }
         selected = true;
         if(doCutflow){
-          MSPlot["cutflow"] ->Fill(8. , datasets[d], true,eventweightForplots);
-          if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(8. , datasets[d], true,eventweightForplots);
-          if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(8. , datasets[d], true,eventweightForplots);
-          if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(8. , datasets[d], true,eventweightForplots);
-          if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(8. , datasets[d], true,eventweightForplots);
+          MSPlot["cutflow"] ->Fill(4. , datasets[d], true,eventweightForplots);
+          if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(4. , datasets[d], true,eventweightForplots);
+          if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(4. , datasets[d], true,eventweightForplots);
+          if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(4. , datasets[d], true,eventweightForplots);
+          if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(4. , datasets[d], true,eventweightForplots);
         }
         if(MakeSelectionTable) {
-          CutflowTableHisto->Fill(8.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee->Fill(8.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu->Fill(8.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue->Fill(8.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu->Fill(8.,eventweightForplots);
+          CutflowTableHisto->Fill(4.,eventweightForNotMSplots);
+          if(channelInt == 3) CutflowTableHisto_eee->Fill(4.,eventweightForNotMSplots);
+          if(channelInt == 2) CutflowTableHisto_eeu->Fill(4.,eventweightForNotMSplots);
+          if(channelInt == 1) CutflowTableHisto_uue->Fill(4.,eventweightForNotMSplots);
+          if(channelInt == 0) CutflowTableHisto_uuu->Fill(4.,eventweightForNotMSplots);
           
-          if(dataSetName.find("WZT")!=std::string::npos){
-            CutflowTableHisto__WZ->Fill(8.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(8.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(8.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(8.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(8.,eventweightForplots);
-          }
-          else if(dataSetName.find("fake")!=std::string::npos){
-            CutflowTableHisto__fake->Fill(8.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(8.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(8.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(8.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(8.,eventweightForplots);
-          }
-          else if(dataSetName.find("tZq")!=std::string::npos){
-            CutflowTableHisto__tZq->Fill(8.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(8.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(8.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(8.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(8.,eventweightForplots);
-          }
-          else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
-            CutflowTableHisto__FCNCZut->Fill(8.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(8.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(8.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(8.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(8.,eventweightForplots);
-          }
-          else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
-            CutflowTableHisto__FCNCZct->Fill(8.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(8.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(8.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(8.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(8.,eventweightForplots);
-          }
-          else if(dataSetName.find("TTZ")!=std::string::npos ){
-            CutflowTableHisto__ttZ->Fill(8.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(8.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(8.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(8.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(8.,eventweightForplots);
-          }
-          else if(isData){
-            CutflowTableHisto__data->Fill(8.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__data->Fill(8.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(8.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__data->Fill(8.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(8.,eventweightForplots);
-          }
-          else {
-            CutflowTableHisto__other->Fill(8.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__other->Fill(8.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(8.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__other->Fill(8.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(8.,eventweightForplots);
-          }
+          CutflowTableHistoRaw->Fill(4.,1.);
+          if(channelInt == 3) CutflowTableHistoRaw_eee->Fill(4.,1.);
+          if(channelInt == 2) CutflowTableHistoRaw_eeu->Fill(4.,1.);
+          if(channelInt == 1) CutflowTableHistoRaw_uue->Fill(4.,1.);
+          if(channelInt == 0) CutflowTableHistoRaw_uuu->Fill(4.,1.);
         }
         
         
       }// WZ control region
-      if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && threelepregion && IamInBigZwindow){
+      if(selectedJets.size() > 1 && selectedCSVLJetID.size() > 0 && threelepregion && IamInBigZwindow){ // {"Z mass",">2l","STSR","TTSR","WZCR","TTCR", "STCR"};
         Region = 3;
         nSelectedEntriesTTZ++;
         selected = true;
+        if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){
+          if( promptelectron[electronID[WelecIndiceF]] < 1){ nonpromptelectronInW_TTCR++; nonpromptInW = true; }
+          else if( promptelectron[electronID[WelecIndiceF]] > 0){ nonpromptelectronInZ_TTCR++; nonpromptInW = false;}
+          /*
+          if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 0) nonpromptelectronInW_uuu_TT++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 0) nonpromptelectronInZ_uuu_TT++;
+          if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 1) nonpromptelectronInW_uue_TT++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 1) nonpromptelectronInZ_uue_TT++;
+          if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 2) nonpromptelectronInW_eeu_TT++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 2) nonpromptelectronInZ_eeu_TT++;
+          if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 3) nonpromptelectronInW_eee_TT++;
+          else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 3) nonpromptelectronInZ_eee_TT++;*/
+        }
+        else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){
+          if( promptmuon[muonID[WmuIndiceF]] < 1){ nonpromptmuonInW_TTCR++; nonpromptInW = true;}
+          else if( promptmuon[muonID[WmuIndiceF]] > 0){ nonpromptmuonInZ_TTCR++; nonpromptInW = false;}
+          
+          /*
+          if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 0) nonpromptmuonInW_uuu_TT++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 0) nonpromptmuonInZ_uuu_TT++;
+          if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 1) nonpromptmuonInW_uue_TT++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 1) nonpromptmuonInZ_uue_TT++;
+          if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 2) nonpromptmuonInW_eeu_TT++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 2) nonpromptmuonInZ_eeu_TT++;
+          if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 3) nonpromptmuonInW_eee_TT++;
+          else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 3) nonpromptmuonInZ_eee_TT++;*/
+          
+        }
+
         if(doCutflow &&!isData){
-          MSPlot["cutflow"] ->Fill(9. , datasets[d], true,eventweightForplots);
-          if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(9. , datasets[d], true,eventweightForplots);
-          if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(9. , datasets[d], true,eventweightForplots);
-          if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(9. , datasets[d], true,eventweightForplots);
-          if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(9. , datasets[d], true,eventweightForplots);
+          MSPlot["cutflow"] ->Fill(5. , datasets[d], true,eventweightForplots);
+          if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(5. , datasets[d], true,eventweightForplots);
+          if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(5. , datasets[d], true,eventweightForplots);
+          if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(5. , datasets[d], true,eventweightForplots);
+          if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(5. , datasets[d], true,eventweightForplots);
         }
         if(MakeSelectionTable) {
-          CutflowTableHisto->Fill(9.,eventweightForplots);
-          if(channelInt == 3) CutflowTableHisto_eee->Fill(9.,eventweightForplots);
-          if(channelInt == 2) CutflowTableHisto_eeu->Fill(9.,eventweightForplots);
-          if(channelInt == 1) CutflowTableHisto_uue->Fill(9.,eventweightForplots);
-          if(channelInt == 0) CutflowTableHisto_uuu->Fill(9.,eventweightForplots);
+          CutflowTableHisto->Fill(5.,eventweightForNotMSplots);
+          if(channelInt == 3) CutflowTableHisto_eee->Fill(5.,eventweightForNotMSplots);
+          if(channelInt == 2) CutflowTableHisto_eeu->Fill(5.,eventweightForNotMSplots);
+          if(channelInt == 1) CutflowTableHisto_uue->Fill(5.,eventweightForNotMSplots);
+          if(channelInt == 0) CutflowTableHisto_uuu->Fill(5.,eventweightForNotMSplots);
           
-          if(dataSetName.find("WZT")!=std::string::npos){
-            CutflowTableHisto__WZ->Fill(9.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__WZ->Fill(9.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__WZ->Fill(9.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__WZ->Fill(9.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__WZ->Fill(9.,eventweightForplots);
-          }
-          else if(dataSetName.find("fake")!=std::string::npos){
-            CutflowTableHisto__fake->Fill(0.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__fake->Fill(9.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__fake->Fill(9.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__fake->Fill(9.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__fake->Fill(9.,eventweightForplots);
-          }
-          else if(dataSetName.find("tZq")!=std::string::npos){
-            CutflowTableHisto__tZq->Fill(9.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__tZq->Fill(9.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__tZq->Fill(9.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__tZq->Fill(9.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__tZq->Fill(9.,eventweightForplots);
-          }
-          else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zut")!=std::string::npos){
-            CutflowTableHisto__FCNCZut->Fill(9.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__FCNCZut->Fill(9.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__FCNCZut->Fill(9.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__FCNCZut->Fill(9.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__FCNCZut->Fill(9.,eventweightForplots);
-          }
-          else if(dataSetName.find("FCNC")!=std::string::npos && dataSetName.find("zct")!=std::string::npos){
-            CutflowTableHisto__FCNCZct->Fill(9.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__FCNCZct->Fill(9.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__FCNCZct->Fill(9.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__FCNCZct->Fill(9.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__FCNCZct->Fill(9.,eventweightForplots);
-          }
-          else if(dataSetName.find("TTZ")!=std::string::npos ){
-            CutflowTableHisto__ttZ->Fill(9.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__ttZ->Fill(9.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__ttZ->Fill(9.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__ttZ->Fill(9.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__ttZ->Fill(9.,eventweightForplots);
-          }
-          else if(isData){
-            CutflowTableHisto__data->Fill(9.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__data->Fill(9.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__data->Fill(9.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__data->Fill(9.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__data->Fill(9.,eventweightForplots);
-          }
-          else {
-            CutflowTableHisto__other->Fill(9.,eventweightForplots);
-            if(channelInt == 3) CutflowTableHisto_eee__other->Fill(9.,eventweightForplots);
-            if(channelInt == 2) CutflowTableHisto_eeu__other->Fill(9.,eventweightForplots);
-            if(channelInt == 1) CutflowTableHisto_uue__other->Fill(9.,eventweightForplots);
-            if(channelInt == 0) CutflowTableHisto_uuu__other->Fill(9.,eventweightForplots);
-          }
-        }
+          CutflowTableHistoRaw->Fill(5.,1.);
+          if(channelInt == 3) CutflowTableHistoRaw_eee->Fill(5.,1.);
+          if(channelInt == 2) CutflowTableHistoRaw_eeu->Fill(5.,1.);
+          if(channelInt == 1) CutflowTableHistoRaw_uue->Fill(5.,1.);
+          if(channelInt == 0) CutflowTableHistoRaw_uuu->Fill(5.,1.);
+          
+          
+                 }
         
         
         
       } // ttbar control region
+      
+      if(selectedJets.size() == 1 && selectedCSVLJetID.size() > 0 && threelepregion && IamInBigZwindow){ //{"Z mass",">2l","STSR","TTSR","WZCR","TTCR", "STCR"};
+        Region = 4;
+        nSelectedEntriesSTTTZ++;
+        selected = true;
+        if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){
+          if( promptelectron[electronID[WelecIndiceF]] < 1) { nonpromptelectronInW_STCR++; nonpromptInW = true;}
+          else if( promptelectron[electronID[WelecIndiceF]] > 0) {nonpromptelectronInZ_STCR++; nonpromptInW = false; }
+          /*
+           if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 0) nonpromptelectronInW_uuu_STCR++;
+           else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 0) nonpromptelectronInZ_uuu_STCR++;
+           if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 1) nonpromptelectronInW_uue_STCR++;
+           else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 1) nonpromptelectronInZ_uue_STCR++;
+           if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 2) nonpromptelectronInW_eeu_ST++;
+           else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 2) nonpromptelectronInZ_eeu_STCR++;
+           if( promptelectron[electronID[WelecIndiceF]] < 1 && channelInt == 3) nonpromptelectronInW_eee_STCR++;
+           else if( promptelectron[electronID[WelecIndiceF]] > 0 && channelInt == 3) nonpromptelectronInZ_eee_STCR++;*/
+        }
+        else if(WmuIndiceF != -999 && selectedMuons.size() > 0 ){
+          if( promptmuon[muonID[WmuIndiceF]] < 1){ nonpromptmuonInW_STCR++; nonpromptInW = true; }
+          else if( promptmuon[muonID[WmuIndiceF]] > 0){ nonpromptmuonInZ_STCR++; nonpromptInW = false; }
+          
+          /*
+           if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 0) nonpromptmuonInW_uuu_ST++;
+           else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 0) nonpromptmuonInZ_uuu_ST++;
+           if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 1) nonpromptmuonInW_uue_ST++;
+           else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 1) nonpromptmuonInZ_uue_ST++;
+           if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 2) nonpromptmuonInW_eeu_ST++;
+           else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 2) nonpromptmuonInZ_eeu_ST++;
+           if( promptmuon[muonID[WmuIndiceF]] < 1 && channelInt == 3) nonpromptmuonInW_eee_ST++;
+           else if( promptmuon[muonID[WmuIndiceF]] > 0 && channelInt == 3) nonpromptmuonInZ_eee_ST++;*/
+          
+        }
+        if(doCutflow &&!isData){
+          MSPlot["cutflow"] ->Fill(6. , datasets[d], true,eventweightForplots);
+          if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(6. , datasets[d], true,eventweightForplots);
+          if(channelInt == 2) MSPlot["cutflow_eeu"] ->Fill(6. , datasets[d], true,eventweightForplots);
+          if(channelInt == 1) MSPlot["cutflow_uue"] ->Fill(6. , datasets[d], true,eventweightForplots);
+          if(channelInt == 0) MSPlot["cutflow_uuu"] ->Fill(6. , datasets[d], true,eventweightForplots);
+        }
+        if(MakeSelectionTable) {
+          CutflowTableHisto->Fill(6.,eventweightForNotMSplots);
+          if(channelInt == 3) CutflowTableHisto_eee->Fill(6.,eventweightForNotMSplots);
+          if(channelInt == 2) CutflowTableHisto_eeu->Fill(6.,eventweightForNotMSplots);
+          if(channelInt == 1) CutflowTableHisto_uue->Fill(6.,eventweightForNotMSplots);
+          if(channelInt == 0) CutflowTableHisto_uuu->Fill(6.,eventweightForNotMSplots);
+          
+          CutflowTableHistoRaw->Fill(6.,1.);
+          if(channelInt == 3) CutflowTableHistoRaw_eee->Fill(6.,1.);
+          if(channelInt == 2) CutflowTableHistoRaw_eeu->Fill(6.,1.);
+          if(channelInt == 1) CutflowTableHistoRaw_uue->Fill(6.,1.);
+          if(channelInt == 0) CutflowTableHistoRaw_uuu->Fill(6.,1.);
+          
+          
+        }
+        
+        
+      } // ST CRregion
+
 
       if(!selected){continue; }
       bool matchernonprompt = false;
-      if(checkNonprompt ) matchernonprompt = MatchingFunctionNonPromt(dataSetName, selectedLeptonsForMatching, selectedMuons, selectedElectrons, selectedJets,makeMatchingPlots, debugmatching);
+      if(checkNonprompt) matchernonprompt = MatchingFunctionNonPromt(dataSetName, selectedLeptonsForMatching, selectedMuons, selectedElectrons, selectedJets,makeMatchingPlots, debugmatching);
       
       
       
@@ -3836,6 +3242,11 @@ int main(int argc, char* argv[]){
       CutflowTableHisto_uue->Write();
       CutflowTableHisto_uuu->Write();
       
+      CutflowTableHistoRaw->Write();
+      CutflowTableHistoRaw_eee->Write();
+      CutflowTableHistoRaw_eeu->Write();
+      CutflowTableHistoRaw_uue->Write();
+      CutflowTableHistoRaw_uuu->Write();
       
       CutflowTableFile->Close();
     }
@@ -3921,7 +3332,7 @@ int main(int argc, char* argv[]){
      }*/
     
     
-    
+    if(dataSetName.find("DY")!=std::string::npos ) cout << "tot nb of btagged events: " << totalnbofbeventsforbtaginfo << " from " << totalnbofeventsforbtaginfo <<" events "<< endl;
     
     cout << "                nSelectedEntries ST region: " << nSelectedEntriesST << " weighted " << nSelectedEntriesSTweighted << endl;
     cout << "                nSelectedEntries TT region: " << nSelectedEntriesTT << " weighted " << nSelectedEntriesTTweighted << endl;
@@ -3946,6 +3357,18 @@ int main(int argc, char* argv[]){
       cout << "                WZ region: non prompt muons in W:     " << nonpromptmuonInW_WZ << " = " << ((double) nonpromptmuonInW_WZ / ((double) nonpromptmuonInW_WZ + (double) nonpromptmuonInZ_WZ))*100 << "% vs non prompt in Z: " << nonpromptmuonInZ_WZ << " = " << ((double) nonpromptmuonInZ_WZ / ((double) nonpromptmuonInW_WZ + (double) nonpromptmuonInZ_WZ))*100 << "%" << endl;
       cout << "                WZ region: non prompt electrons in W: " << nonpromptelectronInW_WZ << " = " << ((double) nonpromptelectronInW_WZ / ((double) nonpromptelectronInW_WZ + (double) nonpromptelectronInZ_WZ))*100 << "% vs non prompt in Z: " << nonpromptelectronInZ_WZ << " = " << ((double) nonpromptelectronInZ_WZ / ((double) nonpromptelectronInW_WZ + (double) nonpromptelectronInZ_WZ))*100 << "%" << endl;
       cout << "                WZ region: non prompt leptons in W:   " << (nonpromptmuonInW_WZ+nonpromptelectronInW_WZ )<< " = " << ((double) (nonpromptmuonInW_WZ+nonpromptelectronInW_WZ) / ((double) (nonpromptmuonInW_WZ+nonpromptelectronInW_WZ) + (double) (nonpromptmuonInZ_WZ+nonpromptelectronInZ_WZ)))*100 << "% vs non prompt in Z: " << nonpromptmuonInZ_WZ+nonpromptelectronInZ_WZ << " = " << ((double) (nonpromptmuonInZ_WZ+nonpromptelectronInZ_WZ) / ((double) (nonpromptmuonInW_WZ+nonpromptelectronInW_WZ) + (double) (nonpromptmuonInZ_WZ+nonpromptelectronInZ_WZ)))*100 << "%" << endl;
+      
+      
+      cout << "                STCR region: non prompt muons in W:     " << nonpromptmuonInW_STCR << " = " << ((double) nonpromptmuonInW_STCR / ((double) nonpromptmuonInW_STCR + (double) nonpromptmuonInZ_STCR))*100 << "% vs non prompt in Z: " << nonpromptmuonInZ_STCR << " = " << ((double) nonpromptmuonInZ_STCR / ((double) nonpromptmuonInW_STCR + (double) nonpromptmuonInZ_STCR))*100 << "%" << endl;
+      cout << "                STCR region: non prompt electrons in W: " << nonpromptelectronInW_STCR << " = " << ((double) nonpromptelectronInW_STCR / ((double) nonpromptelectronInW_STCR + (double) nonpromptelectronInZ_STCR))*100 << "% vs non prompt in Z: " << nonpromptelectronInZ_STCR << " = " << ((double) nonpromptelectronInZ_STCR / ((double) nonpromptelectronInW_STCR + (double) nonpromptelectronInZ_STCR))*100 << "%" << endl;
+      cout << "                STCR region: non prompt leptons in W:   " << (nonpromptmuonInW_STCR+nonpromptelectronInW_STCR )<< " = " << ((double) (nonpromptmuonInW_STCR+nonpromptelectronInW_STCR) / ((double) (nonpromptmuonInW_STCR+nonpromptelectronInW_STCR) + (double) (nonpromptmuonInZ_STCR+nonpromptelectronInZ_STCR)))*100 << "% vs non prompt in Z: " << nonpromptmuonInZ_STCR+nonpromptelectronInZ_STCR << " = " << ((double) (nonpromptmuonInZ_STCR+nonpromptelectronInZ_STCR) / ((double) (nonpromptmuonInW_STCR+nonpromptelectronInW_STCR) + (double) (nonpromptmuonInZ_STCR+nonpromptelectronInZ_STCR)))*100 << "%" << endl;
+
+      cout << "                TTCR region: non prompt muons in W:     " << nonpromptmuonInW_TTCR << " = " << ((double) nonpromptmuonInW_TTCR / ((double) nonpromptmuonInW_TTCR + (double) nonpromptmuonInZ_TTCR))*100 << "% vs non prompt in Z: " << nonpromptmuonInZ_TTCR << " = " << ((double) nonpromptmuonInZ_TTCR / ((double) nonpromptmuonInW_TTCR + (double) nonpromptmuonInZ_TTCR))*100 << "%" << endl;
+      cout << "                TTCR region: non prompt electrons in W: " << nonpromptelectronInW_TTCR << " = " << ((double) nonpromptelectronInW_TTCR / ((double) nonpromptelectronInW_TTCR + (double) nonpromptelectronInZ_TTCR))*100 << "% vs non prompt in Z: " << nonpromptelectronInZ_TTCR << " = " << ((double) nonpromptelectronInZ_TTCR / ((double) nonpromptelectronInW_TTCR + (double) nonpromptelectronInZ_TTCR))*100 << "%" << endl;
+      cout << "                TTCR region: non prompt leptons in W:   " << (nonpromptmuonInW_TTCR+nonpromptelectronInW_TTCR )<< " = " << ((double) (nonpromptmuonInW_TTCR+nonpromptelectronInW_TTCR) / ((double) (nonpromptmuonInW_TTCR+nonpromptelectronInW_TTCR) + (double) (nonpromptmuonInZ_TTCR+nonpromptelectronInZ_TTCR)))*100 << "% vs non prompt in Z: " << nonpromptmuonInZ_TTCR+nonpromptelectronInZ_TTCR << " = " << ((double) (nonpromptmuonInZ_TTCR+nonpromptelectronInZ_TTCR) / ((double) (nonpromptmuonInW_TTCR+nonpromptelectronInW_TTCR) + (double) (nonpromptmuonInZ_TTCR+nonpromptelectronInZ_TTCR)))*100 << "%" << endl;
+
+      
+      
       
       TH1F*  histo_nonpromptinW_data = new TH1F("histo_nonpromptinW_data", "Non Prompt in W (blue) or Z (red) per region, all channel", 11,-0.5,10.5);
       TH1F*  histo_nonpromptinZ_data = new TH1F("histo_nonpromptinZ_data", "Non Prompt in Z, all channel", 11,-0.5,10.5);
@@ -4399,54 +3822,7 @@ int main(int argc, char* argv[]){
   
   
   
-  if(MakeSelectionTable){
-    CutflowTableFile = TFile::Open( CutflowTableFileName.c_str(), "UPDATE" );
-    CutflowTableFile->cd();
-    CutflowTableHisto__WZ->Write();
-    CutflowTableHisto_eee__WZ->Write();
-    CutflowTableHisto_eeu__WZ->Write();
-    CutflowTableHisto_uue__WZ->Write();
-    CutflowTableHisto_uuu__WZ->Write();
-    CutflowTableHisto__data->Write();
-    CutflowTableHisto_eee__data->Write();
-    CutflowTableHisto_eeu__data->Write();
-    CutflowTableHisto_uue__data->Write();
-    CutflowTableHisto_uuu__data->Write();
-    CutflowTableHisto__tZq->Write();
-    CutflowTableHisto_eee__tZq->Write();
-    CutflowTableHisto_eeu__tZq->Write();
-    CutflowTableHisto_uue__tZq->Write();
-    CutflowTableHisto_uuu__tZq->Write();
-    CutflowTableHisto__ttZ->Write();
-    CutflowTableHisto_eee__ttZ->Write();
-    CutflowTableHisto_eeu__ttZ->Write();
-    CutflowTableHisto_uue__ttZ->Write();
-    CutflowTableHisto_uuu__ttZ->Write();
-    CutflowTableHisto__FCNCZut->Write();
-    CutflowTableHisto_eee__FCNCZut->Write();
-    CutflowTableHisto_eeu__FCNCZut->Write();
-    CutflowTableHisto_uue__FCNCZut->Write();
-    CutflowTableHisto_uuu__FCNCZut->Write();
-    CutflowTableHisto__FCNCZct->Write();
-    CutflowTableHisto_eee__FCNCZct->Write();
-    CutflowTableHisto_eeu__FCNCZct->Write();
-    CutflowTableHisto_uue__FCNCZct->Write();
-    CutflowTableHisto_uuu__FCNCZct->Write();
-    CutflowTableHisto__other->Write();
-    CutflowTableHisto_eee__other->Write();
-    CutflowTableHisto_eeu__other->Write();
-    CutflowTableHisto_uue__other->Write();
-    CutflowTableHisto_uuu__other->Write();
-    CutflowTableHisto__fake->Write();
-    CutflowTableHisto_eee__fake->Write();
-    CutflowTableHisto_eeu__fake->Write();
-    CutflowTableHisto_uue__fake->Write();
-    CutflowTableHisto_uuu__fake->Write();
     
-    CutflowTableFile->Close();
-  }
-  
-  
   
   
   
@@ -9737,6 +9113,92 @@ void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<i
 }
 
 ///////////////////////////////////// MATCHING /////////////////////////////////////////
+double MatchingFunctionDY(vector <TLorentzVector> selectedJets, vector<int> selectedJetsID ){
+  ClearMatchingVars(); // to do with each new dataset
+  ClearMatchingVarsTLV();
+  for (int iMC = 0; iMC < nMCParticles; iMC++)
+  {
+    mcpart.Clear();
+    mcpart.SetPtEtaPhiE(mc_pt[iMC], mc_eta[iMC],mc_phi[iMC],mc_E[iMC]);
+    mcParticles.push_back(mcpart);
+  }
+  if(mcParticles.size() != nMCParticles){cout << "ERROR mcP not filled correctly" << endl;  }
+  
+  
+  vector <TLorentzVector> partons;
+  partons.clear();
+  vector <int> partonID;
+  partonID.clear();
+  
+  for (unsigned int iMC = 0; iMC < mcParticles.size(); iMC++)
+  {
+    if ( (mc_status[iMC] > 1 && mc_status[iMC] <= 20) || mc_status[iMC] >= 30 ) continue;  /// Final state particle or particle from hardest process
+    if( abs(mc_pdgId[iMC]) > 0 && abs(mc_pdgId[iMC]) <9){
+      partons.push_back(mcParticles[iMC]);
+      partonID.push_back(iMC);
+    } // leptons
+  }
+  
+   JetPartonMatching matchingTool = JetPartonMatching(partons, selectedJets,2,true,true,0.1 );
+  
+  if (matchingTool.getNumberOfAvailableCombinations() != 1)
+    cerr << "matching.getNumberOfAvailableCombinations() = " << matchingTool.getNumberOfAvailableCombinations() << " .  This should be equal to 1 !!!" << endl;
+  
+  
+  /// Fill match in JetPartonPair;
+  vector< pair<unsigned int, unsigned int> > JetPartonPair; // First one is jet number, second one is mcParticle number
+  JetPartonPair.clear();
+  
+  
+  for (unsigned int i = 0; i < partons.size(); i++)
+  {
+    int matchedJetNumber = matchingTool.getMatchForParton(i, 0);
+    if (matchedJetNumber > -1)
+      JetPartonPair.push_back( pair<unsigned int, unsigned int> (matchedJetNumber, i) );
+    // matched jet number is nb in selectedleptons collection
+    // i is nb in partons
+    // partonID contains place in mcParticles vector
+  }
+  
+  
+  int totalnbofjets = 0;
+  int totalnbofjets_bflav = 0;
+  int totalnbofjets_cflav = 0;
+  int totalnbofjets_udsgflav = 0;
+  int btotalnbofjets_bflav = 0;
+  int btotalnbofjets_cflav = 0;
+  int btotalnbofjets_udsgflav = 0;
+  for (unsigned int i = 0; i < JetPartonPair.size(); i++)
+  {
+    unsigned int partonIDnb = JetPartonPair[i].second; // place in mcParticles vector
+    unsigned int particlenb = JetPartonPair[i].first;  // place in selectedjets vector
+    
+    int index = selectedJetsID[particlenb];
+    if(abs(mc_pdgId[partonID[partonIDnb]] )== 5){  // b jets
+      totalnbofjets_bflav++;
+      if(bdisc_jet[index] > WPb_L) btotalnbofjets_bflav++;
+    }
+    else if(abs(mc_pdgId[partonID[partonIDnb]] )== 4){  // c jets
+      totalnbofjets_cflav++;
+      if(bdisc_jet[index] > WPb_L) btotalnbofjets_cflav++;
+    }
+    else { //light jets
+      totalnbofjets_udsgflav++;
+      if(bdisc_jet[index] > WPb_L) btotalnbofjets_udsgflav++;
+
+    }
+  
+  }
+  
+  double efficiency_bflav = 1.;
+  if(totalnbofjets_bflav != 0) efficiency_bflav = (double) btotalnbofjets_bflav / (double) totalnbofjets_bflav;
+  double efficiency_cflav =  1.;
+  if(totalnbofjets_cflav != 0) efficiency_cflav = (double) btotalnbofjets_cflav / (double) totalnbofjets_cflav;
+  double efficiency_udsgflav = 1.;
+  if(totalnbofjets_udsgflav != 0) efficiency_udsgflav = (double) btotalnbofjets_udsgflav / (double) totalnbofjets_udsgflav;
+  double efficiency = efficiency_bflav*efficiency_cflav*efficiency_udsgflav;
+   return efficiency;
+}
 bool MatchingFunctionNonPromt(string dataSetName, vector <TLorentzVector> Leptons, vector <TLorentzVector> selectedMuons, vector<TLorentzVector> selectedElectrons , vector <TLorentzVector> selectedJets, bool makePlots, bool debug){
   ClearMatchingVars(); // to do with each new dataset
   ClearMatchingVarsTLV();
@@ -10084,8 +9546,6 @@ pair< vector< pair<unsigned int, unsigned int>>, vector <string> > LeptonMatchin
   return returnVector;
   
 }
-
-
 pair< vector< pair<unsigned int, unsigned int>>, vector <string> > LeptonMatchingNonPormpt(vector < TLorentzVector> selectedleptons, vector <TLorentzVector> mcParticles, string dataSetName, bool debug){
   vector <TLorentzVector> partons;
   partons.clear();
@@ -10179,6 +9639,9 @@ pair< vector< pair<unsigned int, unsigned int>>, vector <string> > LeptonMatchin
   return returnVector;
   
 }
+
+
+
 pair< vector< pair<unsigned int, unsigned int>>, vector <string> > JetMatching(vector < TLorentzVector> selectedJets, vector <TLorentzVector> mcParticles, string dataSetName, bool debug){
   vector <TLorentzVector> partons;
   partons.clear();

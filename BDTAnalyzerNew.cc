@@ -50,6 +50,7 @@ map<string,TH1F*> histo1DSysMTW;
 map<string,TH2F*> histo2D;
 map<string,MultiSamplePlot*> MSPlot;
 map<string,MultiSamplePlot*> MSPlotMTW;
+map<string,MultiSamplePlot*> MSPlotTTZ;
 
 double scaleFakes_uuu = 1.;
 double scaleFakes_uue = 1.;
@@ -58,6 +59,12 @@ double scaleFakes_eee = 1.;
 bool FakeMuInW = false;
 bool FakeEinW = false;
 
+double nboffakesinWZ = 0.;
+double nboffakesinTTSR = 0.;
+double nboffakesinTTSRwith2jets = 0.;
+double nboffakesinTTSRwith3jets = 0.;
+double nboffakesinWZwith2jets = 0.;
+double nboffakesinWZwith3jets = 0.;
 ////////////////////////////////// mapping ///////////////////////////////
 map<string,TFile*> tFileMap;
 TFile *fin;
@@ -76,6 +83,7 @@ Double_t minimumValue(vector<double> array);
 // initialisations
 
 void InitMSPlotsMTW(string prefix, vector <int> decayChannels);
+void InitMSPlotsTTZ(string prefix, vector <int> decayChannels);
 void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair, bool isZut);
 void InitCalculatePDFWeightHisto(string dataSetName);
 void InitMTWShapeHisto(string dataSetName, string systematic, Int_t isys,  vector <int> decayChannels);
@@ -87,6 +95,8 @@ void Init1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
 vector<double> BDTCUT(string region, string coupling);
 void CalculatePDFWeight(string dataSetName, Double_t BDT, Double_t MVA_weight_nom, Int_t MVA_channel);
 void FillMTWPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm);
+void FillTTZPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm);
+
 void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool isZut , bool istoppair, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm);
 void GetPDFEnvelope(string dataSetName);
 void Fill1DHisto(string dataSetName,string systematic, bool istoppair, bool isZut, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel);
@@ -1020,6 +1030,14 @@ Int_t main(Int_t argc, char* argv[]){
     }
   }
   
+  if(makePlots && !doMTWtemplate && doTTZtemplate){
+    for(Int_t isys = 0; isys < thesystlist.size() ; isys++){
+      systematic = thesystlist[isys];
+      if(isys != 0 ) tempstring = "_" + systematic;
+      InitMSPlotsTTZ(tempstring, decayChannels);
+    }
+  }
+  
   
   ///////////// General function //////////
   if(DetermineCut && !doMTWtemplate && !doTTZtemplate){
@@ -1055,6 +1073,12 @@ Int_t main(Int_t argc, char* argv[]){
     
     for (Int_t d = 0; d < datasets.size(); d++)   //Loop through datasets
     {
+      nboffakesinWZ = 0.;
+      nboffakesinTTSR = 0.;
+      nboffakesinTTSRwith2jets = 0.;
+      nboffakesinTTSRwith3jets = 0.;
+      nboffakesinWZwith2jets = 0.;
+      nboffakesinWZwith3jets = 0.;
       cout << "   Dataset " << d << ": " << datasets[d]->Name() << " / title : " << datasets[d]->Title() << endl;
       // settings
       isData = false;
@@ -1098,6 +1122,7 @@ Int_t main(Int_t argc, char* argv[]){
       if(!doMTWtemplate && !doTTZtemplate) InitTree(tTree[dataSetName.c_str()], isData, toppair, doZut);
       else if(doMTWtemplate || doTTZtemplate) InitAnalyzerTree(tTree[dataSetName.c_str()]);
       
+      if(toppair && !doMTWtemplate && !doTTZtemplate) MVA_region = 1;
       
       // Initialise plots
       if(!doMTWtemplate && PlotMVAvars && isys == 0 && !doTTZtemplate){
@@ -1193,6 +1218,18 @@ Int_t main(Int_t argc, char* argv[]){
          else if(datafound && MVA_BDT > -0.12 && !doMTWtemplate && toppair && !doZut){ continue;}
          else if(datafound && MVA_BDT > -0.2 && !doMTWtemplate && toppair && doZut){ continue;}*/
         // cout << "region " <<MVA_region << endl;
+        if(dataSetName.find("fake")!=std::string::npos || dataSetName.find("WZ")!=std::string::npos){
+          if(MVA_region == 2){
+            nboffakesinWZ++;
+            if(MVA_nJets == 2)nboffakesinWZwith2jets++;
+            if(MVA_nJets == 3)nboffakesinWZwith3jets++;
+          }
+        if(MVA_region == 1){
+          nboffakesinTTSR++;
+          if(MVA_nJets == 2) nboffakesinTTSRwith2jets++;
+          if(MVA_nJets == 3) nboffakesinTTSRwith3jets++;
+        }
+        }
         
         if(doMTWtemplate &&MVA_region != 2 ){ continue ;} // only in WZ control region}
         else if(doMTWtemplate) { WZregionEntries++; }
@@ -1624,7 +1661,13 @@ Int_t main(Int_t argc, char* argv[]){
           // if(isData) cout << "fill data " << endl;
           FillMTWPlots(d, tempstring, decayChannels, weightMSPlot, MVA_channel, MVA_Zboson_M, MVA_NJets_CSVv2M);
         }
-        
+        if (makePlots &&( doTTZtemplate ))
+        {
+          if(isys != 0) tempstring = "_" + systematic;
+          // if(isData) cout << "fill data " << endl;
+          FillTTZPlots(d, tempstring, decayChannels, weightMSPlot, MVA_channel, MVA_Zboson_M, MVA_NJets_CSVv2M);
+        }
+  
         
         if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos)&& isys == 0 && doMTWtemplate) histo1DMTW["MTW_WZ"]->Fill(MVA_mWt, weight);
         if(dataSetName.find("fake")!=std::string::npos && isys == 0 && doMTWtemplate) histo1DMTW["MTW_fakes"]->Fill(MVA_mWt, weight);
@@ -1650,6 +1693,9 @@ Int_t main(Int_t argc, char* argv[]){
       delete lept2;
       */
       
+      cout << "jet numbers" << endl;
+      cout << "#WZ " << nboffakesinWZ  << " #2j " << nboffakesinWZwith2jets << " #3j " << nboffakesinWZwith3jets << endl;
+      cout << "#TTSR " << nboffakesinTTSR << " #2j " << nboffakesinTTSRwith2jets << " #3j " << nboffakesinTTSRwith3jets << endl;
       
       
       cout << endl;
@@ -1672,6 +1718,7 @@ Int_t main(Int_t argc, char* argv[]){
       if(d == 0 && isys == 0) combinetemplate_file = TFile::Open( combinetemplate_filename.c_str(), "RECREATE" );
       else combinetemplate_file = TFile::Open( combinetemplate_filename.c_str(), "UPDATE" );
       combinetemplate_file->cd();
+      
       //cout << "opened " << combinetemplate_filename.c_str() << endl;
       //NB : theta name convention = <observable>__<process>[__<uncertainty>__(plus,minus)] FIX ME
       output_histo_name = "";
@@ -2408,6 +2455,35 @@ Int_t main(Int_t argc, char* argv[]){
         cout << "plot " << name << endl;
         cout << "temp " << temp << endl;
         if(doMTWtemplate) temp->Write(fout, name, true, (pathOutputdate+"MSPlotMTW").c_str(), "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
+        
+        
+      }
+      
+    }
+    if(makePlots && doTTZtemplate){
+      for (map<string,MultiSamplePlot*>::const_iterator it = MSPlotTTZ.begin(); it != MSPlotTTZ.end(); it++)
+      {
+        //cout << "MSPlot: " << it->first << endl;
+        MultiSamplePlot *temp = it->second;
+        string name = it->first;
+        if(!datafound){
+          cout << "no data found, setting lumi as " << Luminosity << endl;
+          temp->setDataLumi(Luminosity);
+        }
+        //temp->SetPreliminary(false);
+        double scalefakes =  1.;
+        if(!datafound) temp->setDataLumi(Luminosity);
+        if(name.find("all")!=std::string::npos) temp->setChannel(true, "all");
+        if(name.find("eee")!=std::string::npos){ temp->setChannel(true, "3e"); scalefakes = scaleFakes_eee; }
+        if(name.find("eeu")!=std::string::npos){ temp->setChannel(true, "2e1#mu"); scalefakes = scaleFakes_eeu; }
+        if(name.find("uue")!=std::string::npos){ temp->setChannel(true, "1e2#mu"); scalefakes = scaleFakes_uue; }
+        if(name.find("uuu")!=std::string::npos){ temp->setChannel(true, "3#mu"); scalefakes = scaleFakes_uuu; }
+        if(name.find("Decay")!=std::string::npos) temp->setBins(vlabel_chan);
+        //temp->SetPreliminary(false);
+        temp->Draw(name, 1, false, false, false, 10,scalefakes);  // string label, unsigned Int_t RatioType, bool addRatioErrorBand, bool addErrorBand, bool    cout << "writing to " << pathOutputdate+"MSPlotMTW" << endl;
+        cout << "plot " << name << endl;
+        cout << "temp " << temp << endl;
+        if(doTTZtemplate) temp->Write(fout, name, true, (pathOutputdate+"MSPlotTTZ").c_str(), "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
         
         
       }
@@ -6580,6 +6656,34 @@ void InitMSPlotsMTW(string prefix, vector <int> decayChannels){
   }
   decaystring = "";
 }
+void InitMSPlotsTTZ(string prefix, vector <int> decayChannels){
+  for(Int_t iChan =0; iChan < decayChannels.size() ; iChan++){
+    decaystring = "";
+    if(decayChannels[iChan] == 0) decaystring = "uuu";
+    if(decayChannels[iChan] == 1) decaystring = "uue";
+    if(decayChannels[iChan] == 2) decaystring = "eeu";
+    if(decayChannels[iChan] == 3) decaystring = "eee";
+    if(decayChannels[iChan] == -9) decaystring = "all";
+    decaystring += prefix;
+    
+    //cout << "init msplots " << endl;
+    MSPlotTTZ[("TTZ_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("TTZ_"+decaystring).c_str(), nbinTTZ, beginTTZ,endTTZ, "inv. mass Z boson (GeV)","GeV");
+    
+    /*
+     MSPlotMTW[("DeltaR_NonIsoLepJet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("DeltaR_NonIsoLepJet_"+decaystring).c_str(), 20,0.,8., "#Delta R (non iso, jet)","units");
+     MSPlotMTW[("DeltaR_lep0Jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("DeltaR_lep0Jet_"+decaystring).c_str(), 20,0.,8., "#Delta R (lep0, jet)","units");
+     MSPlotMTW[("DeltaR_lep1Jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("DeltaR_lep1Jet_"+decaystring).c_str(), 20,0.,8., "#Delta R (lep1, jet)","units");
+     MSPlotMTW[("DeltaR_lep2Jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("DeltaR_lep2Jet_"+decaystring).c_str(), 20,0.,8., "#Delta R (lep2, jet)","units");
+     //MSPlotMTW[("DeltaR_MinLepJet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("DeltaR_MinLepJet_"+decaystring).c_str(), 20,0.,8., "min. #Delta R (lep, jet)","units");
+     //  MSPlotMTW[("DeltaR_MinLepNonIsoJet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("DeltaR_MinLepNonIsoJet_"+decaystring).c_str(), 20,0.,8., "min #Delta R (non iso, jet)","units");
+     
+     MSPlotMTW[("ZBOSON_M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("ZBOSONM_"+decaystring).c_str(), 20,70,110, "mass Zboson","GeV");
+     MSPlotMTW[("ZBOSON_Mcut_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("ZBOSONMcut_"+decaystring).c_str(), 20,70,110, "mass Zboson","GeV");
+     //MSPlotMTW[("NJETSCSVM_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("NJETSCSVM_"+decaystring).c_str(), 6,-0.5,5.5, "nb CSVM jets","units");
+     //MSPlotMTW[("NJETSCSVMcut_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("NJETSCSVMcut_"+decaystring).c_str(), 6,-0.5,5.5, "nb CSVM jets","units");*/
+  }
+  decaystring = "";
+}
 void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair, bool isZut){
   clock_t start_sub = clock();
   
@@ -6727,7 +6831,7 @@ void InitAnalyzerTree(TTree* tree){
   // Set branch addresses and branch pointers
   if (!tree) return;
   tree->SetMakeClass(1);
-  tree->SetBranchAddress("MVA_channel", &MVA_channel, &b_MVA_region);
+  tree->SetBranchAddress("MVA_channel", &MVA_channel, &b_MVA_channel);
   tree->SetBranchAddress( "MVA_weight_nom", &MVA_weight_nom, &b_MVA_weight_nom);
   tree->SetBranchAddress("MVA_channel", &MVA_channel, &b_MVA_channel);
   tree->SetBranchAddress("MVA_EqLumi", &MVA_EqLumi, &b_MVA_EqLumi);
@@ -6750,7 +6854,7 @@ void InitAnalyzerTree(TTree* tree){
   tree->SetBranchAddress("MVA_DeltaR_MinLepNonIsoJet", &MVA_DeltaR_MinLepNonIsoJet, &b_MVA_DeltaR_MinLepNonIsoJet);
   tree->SetBranchAddress("MVA_Zboson_M", &MVA_Zboson_M, &b_MVA_Zboson_M);
   tree->SetBranchAddress("MVA_NJets_CSVv2M", &MVA_NJets_CSVv2M, &b_MVA_NJets_CSVv2M);
-  
+  tree->SetBranchAddress( "MVA_nJets",&MVA_nJets, &b_MVA_nJets);
   
   tree->SetBranchAddress("MVA_weightWZcorr", &MVA_weightWZcorr, &b_MVA_weightWZcorr);
   tree->SetBranchAddress( "MVA_weight_nloSF", &MVA_weight_nloSF, &b_MVA_weight_nloSF);
@@ -7187,6 +7291,29 @@ void FillMTWPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t 
    // MSPlotMTW[("ZBOSON_M_"+decaystring).c_str()]->Fill(MVA_Zboson_M, datasets[d], true, weight_);
     //if(  83.5 < MVA_Zboson_M && MVA_Zboson_M <  98.5) MSPlotMTW[("ZBOSON_Mcut_"+decaystring).c_str()]->Fill(MVA_Zboson_M, datasets[d], true, weight_);
    }
+  decaystring = "";
+}
+void FillTTZPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm){
+  decaystring = "";
+  Double_t eventW = 1.;
+  eventW = weight_;
+  
+  
+  for(Int_t iChan =0; iChan < decayChannels.size() ; iChan++){
+    decaystring = "";
+    
+    if((decayChannels[iChan] != -9) && (decayChannels[iChan] != MVA_channel)) continue;
+    if(decayChannels[iChan] == 0) decaystring = "uuu";
+    if(decayChannels[iChan] == 1) decaystring = "uue";
+    if(decayChannels[iChan] == 2) decaystring = "eeu";
+    if(decayChannels[iChan] == 3) decaystring = "eee";
+    if(decayChannels[iChan] == -9) decaystring = "all";
+    //cout << "filling " << datasets[d]->Name() << endl;
+    decaystring += postfix;
+    
+    //if(datasets[d]->Name().find("data")!=std::string::npos) cout << "filling " << ("MTW_"+decaystring).c_str() << " with " << MVA_mWt2 << " " << weight_ << endl;
+    MSPlotTTZ[("TTZ_"+decaystring).c_str()]->Fill(MVA_Zboson_M , datasets[d], true, weight_);
+      }
   decaystring = "";
 }
 void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool isZut , bool istoppair, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm){
