@@ -1414,7 +1414,7 @@ int main(int argc, char* argv[]){
     
     Init2DPlots();
   }
-  vector < string > v_cutflow = {"Z mass",">2l","STSR","TTSR","WZCR","TTCR", "STCR","exp b WZCR","matched WZCR","exp b 1 jet WZCR", "matched 1 jet WZCR","exp b >1 jet WZCR", "matched >1 jet WZCR"};
+  vector < string > v_cutflow = {"Z mass",">2l","STSR","TTSR","WZCR >0jet","TTCR", "STCR","exp b WZCR >0jet","matched WZCR >0jet","WZCR =1jet", "WZCR >1jet"};
   vector < string > v_cutflowreg = {"basecuts","STSR","TTSR","WZCR","TTCR"};
  
   MSPlot["cutflowregions"] = new MultiSamplePlot(datasets, "cutflowregion", 10, -0.5, 9.5, "Cutflow region");
@@ -1458,6 +1458,8 @@ int main(int argc, char* argv[]){
   int nSelectedEntriesST = 0;
   int nSelectedEntriesTT = 0;
   int nSelectedEntriesWZ = 0;
+  int nSelectedEntriesWZ1jet = 0;
+  int nSelectedEntriesWZ2jet = 0;
   int nSelectedEntriesTTZ = 0;
   int nSelectedEntriesSTTTZ = 0;
   int nSelectedEntriesDilep = 0;
@@ -1561,6 +1563,8 @@ int main(int argc, char* argv[]){
   Double_t nSelectedEntriesSTweighted = 0.;
   Double_t nSelectedEntriesTTweighted = 0.;
   Double_t nSelectedEntriesWZweighted = 0.;
+   Double_t nSelectedEntriesWZ1jetweighted = 0.;
+   Double_t nSelectedEntriesWZ2jetweighted = 0.;
   Double_t nSelectedEntriesTTZweighted = 0.;
   Double_t nSelectedEntriesSTTTZweighted = 0.;
   Double_t pnSelectedEntriesSTweighted = 0.;
@@ -1803,6 +1807,8 @@ int main(int argc, char* argv[]){
     nSelectedEntriesST = 0;
     nSelectedEntriesTT = 0;
     nSelectedEntriesWZ = 0;
+    nSelectedEntriesWZ2jet = 0;
+    nSelectedEntriesWZ1jet = 0;
     nonpromptelectronInZ_ST = 0;
     nonpromptelectronInZ_TT = 0;
     nonpromptelectronInZ_WZ = 0;
@@ -1876,6 +1882,8 @@ int main(int argc, char* argv[]){
     pnSelectedEntriesSTweighted = 0.;
     pnSelectedEntriesTTweighted = 0.;
     nSelectedEntriesWZweighted = 0.;
+    nSelectedEntriesWZ1jetweighted = 0.;
+    nSelectedEntriesWZ2jetweighted = 0.;
     nSelectedEntriesDilep = 0;
     nSelectedEntriesTTZ = 0;
     nSelectedEntriesTTZweighted = 0.;
@@ -2821,7 +2829,7 @@ int main(int argc, char* argv[]){
           
           
         }
-        if(MakeSelectionTable && foundmatchforbtag && selectedJetsID.size() == 1) {
+       /* if(MakeSelectionTable && foundmatchforbtag && selectedJetsID.size() == 1) {
           CutflowTableHisto->Fill(9.,eventweightForNotMSplots*btageffiencyforthisevent);
           if(channelInt == 3) CutflowTableHisto_eee->Fill(9.,eventweightForNotMSplots*btageffiencyforthisevent);
           if(channelInt == 2) CutflowTableHisto_eeu->Fill(9.,eventweightForNotMSplots*btageffiencyforthisevent);
@@ -2874,7 +2882,7 @@ int main(int argc, char* argv[]){
           if(channelInt == 0) CutflowTableHistoRaw_uuu->Fill(12.,1.);
           
           
-        }
+        }*/
       }
       
       if(selectedJets.size() == 1 && selectedCSVLJetID.size() > 0 && threelepregion && IamInZwindow){
@@ -2993,6 +3001,8 @@ int main(int argc, char* argv[]){
         
         Region = 2;
         nSelectedEntriesWZ++;
+        if(selectedJetsID.size() == 1) nSelectedEntriesWZ1jet++;
+        if(selectedJetsID.size() > 1) nSelectedEntriesWZ2jet++;
         if(WelecIndiceF != -999 && selectedElectrons.size() > 0 ){
           if( promptelectron[electronID[WelecIndiceF]] < 1){ nonpromptelectronInW_WZ++; nonpromptInW = true;}
           else if( promptelectron[electronID[WelecIndiceF]] > 0){ nonpromptelectronInZ_WZ++; nonpromptInW = false;}
@@ -3041,6 +3051,37 @@ int main(int argc, char* argv[]){
           if(channelInt == 2) CutflowTableHistoRaw_eeu->Fill(4.,1.);
           if(channelInt == 1) CutflowTableHistoRaw_uue->Fill(4.,1.);
           if(channelInt == 0) CutflowTableHistoRaw_uuu->Fill(4.,1.);
+        }
+        if(MakeSelectionTable  && selectedJetsID.size() == 1) {
+          
+          
+          CutflowTableHisto->Fill(9.,eventweightForNotMSplots);
+          if(channelInt == 3) CutflowTableHisto_eee->Fill(9.,eventweightForNotMSplots);
+          if(channelInt == 2) CutflowTableHisto_eeu->Fill(9.,eventweightForNotMSplots);
+          if(channelInt == 1) CutflowTableHisto_uue->Fill(9.,eventweightForNotMSplots);
+          if(channelInt == 0) CutflowTableHisto_uuu->Fill(9.,eventweightForNotMSplots);
+          
+          CutflowTableHistoRaw->Fill(9.,1.);
+          if(channelInt == 3) CutflowTableHistoRaw_eee->Fill(9.,1.);
+          if(channelInt == 2) CutflowTableHistoRaw_eeu->Fill(9.,1.);
+          if(channelInt == 1) CutflowTableHistoRaw_uue->Fill(9.,1.);
+          if(channelInt == 0) CutflowTableHistoRaw_uuu->Fill(9.,1.);
+          
+          
+        }
+        if(MakeSelectionTable && selectedJetsID.size() > 1) {
+          CutflowTableHisto->Fill(10.,eventweightForNotMSplots);
+          if(channelInt == 3) CutflowTableHisto_eee->Fill(10.,eventweightForNotMSplots);
+          if(channelInt == 2) CutflowTableHisto_eeu->Fill(10.,eventweightForNotMSplots);
+          if(channelInt == 1) CutflowTableHisto_uue->Fill(10.,eventweightForNotMSplots);
+          if(channelInt == 0) CutflowTableHisto_uuu->Fill(10.,eventweightForNotMSplots);
+          
+          CutflowTableHistoRaw->Fill(10.,1.);
+          if(channelInt == 3) CutflowTableHistoRaw_eee->Fill(10.,1.);
+          if(channelInt == 2) CutflowTableHistoRaw_eeu->Fill(10.,1.);
+          if(channelInt == 1) CutflowTableHistoRaw_uue->Fill(10.,1.);
+          if(channelInt == 0) CutflowTableHistoRaw_uuu->Fill(10.,1.);
+          
         }
         
         
@@ -3273,7 +3314,10 @@ int main(int argc, char* argv[]){
       
       if(Region == 0 ) nSelectedEntriesSTweighted += eventweightForNotMSplots; //
       if(Region == 1 ) nSelectedEntriesTTweighted += eventweightForNotMSplots;
-      if(Region == 2 ) nSelectedEntriesWZweighted += eventweightForNotMSplots;
+      if(Region == 2 ) {nSelectedEntriesWZweighted += eventweightForNotMSplots;
+        if(selectedJetsID.size() == 1) nSelectedEntriesWZ1jetweighted += eventweightForNotMSplots;
+        if(selectedJetsID.size() > 1) nSelectedEntriesWZ2jetweighted += eventweightForNotMSplots;
+      }
       if(Region == 3 ) nSelectedEntriesTTZweighted += eventweightForNotMSplots;
       if(Region == 4 ) nSelectedEntriesSTTTZweighted += eventweightForNotMSplots;
       
@@ -3425,7 +3469,9 @@ int main(int argc, char* argv[]){
     
     cout << "                nSelectedEntries ST region: " << nSelectedEntriesST << " weighted " << nSelectedEntriesSTweighted << endl;
     cout << "                nSelectedEntries TT region: " << nSelectedEntriesTT << " weighted " << nSelectedEntriesTTweighted << endl;
-    cout << "                nSelectedEntries WZ region: " << nSelectedEntriesWZ  << " weighted " << nSelectedEntriesWZweighted << endl;
+    cout << "                nSelectedEntries WZ region: " << nSelectedEntriesWZ  << " weighted " << nSelectedEntriesWZweighted <<  endl;
+     cout << "                nSelectedEntries WZ region: 1 jet " << nSelectedEntriesWZ1jet  << " weighted " << nSelectedEntriesWZ1jetweighted <<  endl;
+    cout << "                nSelectedEntries WZ region: 2 jet " << nSelectedEntriesWZ2jet  << " weighted " << nSelectedEntriesWZ2jetweighted <<  endl;
     cout << "                nSelectedEntries TT TT region: " << nSelectedEntriesTTZ  << " weighted " << nSelectedEntriesTTZweighted << endl;
     cout << "                nSelectedEntries ST TT region: " << nSelectedEntriesSTTTZ  << " weighted " << nSelectedEntriesSTTTZweighted << endl;
     if(doDilep) cout << "                nSelectedEntries dilep region: " << nSelectedEntriesDilep  << " weighted " << nSelectedEntriesDilepweighted << endl;
