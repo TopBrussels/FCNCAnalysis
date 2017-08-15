@@ -804,6 +804,7 @@ bool Assigned = false;
 Double_t btageffiencyforthisevent;
 Double_t totalnbofeventsforbtaginfo;
 Double_t totalnbofbeventsforbtaginfo;
+bool foundmatchforbtag ;
 
 int WmuIndiceM = -999;
 int WelecIndiceM = -999;
@@ -1413,7 +1414,7 @@ int main(int argc, char* argv[]){
     
     Init2DPlots();
   }
-  vector < string > v_cutflow = {"Z mass",">2l","STSR","TTSR","WZCR","TTCR", "STCR"};
+  vector < string > v_cutflow = {"Z mass",">2l","STSR","TTSR","WZCR","TTCR", "STCR","exp b WZCR","matched WZCR"};
   vector < string > v_cutflowreg = {"basecuts","STSR","TTSR","WZCR","TTCR"};
  
   MSPlot["cutflowregions"] = new MultiSamplePlot(datasets, "cutflowregion", 10, -0.5, 9.5, "Cutflow region");
@@ -2782,10 +2783,39 @@ int main(int argc, char* argv[]){
       
       
       double btageffiencyforthisevent = 0.;
-      if((dataSetName.find("DY")!=std::string::npos || dataSetName.find("WZT")!=std::string::npos) && IamInZwindow && threelepregion && selectedJetsID.size() > 0 && selectedCSVLJetID.size() == 0){
+      foundmatchforbtag  = false;
+      if(!isfakes && !isData && IamInZwindow && threelepregion && selectedJetsID.size() > 0 && selectedCSVLJetID.size() == 0){
         btageffiencyforthisevent= MatchingFunctionDY( selectedJets, selectedJetsID );
-        totalnbofbeventsforbtaginfo = totalnbofbeventsforbtaginfo + btageffiencyforthisevent;
-        totalnbofeventsforbtaginfo = totalnbofeventsforbtaginfo + eventweightForNotMSplots;
+        if(foundmatchforbtag) totalnbofbeventsforbtaginfo = totalnbofbeventsforbtaginfo + (btageffiencyforthisevent*eventweightForNotMSplots);
+        if(foundmatchforbtag) totalnbofeventsforbtaginfo = totalnbofeventsforbtaginfo + eventweightForNotMSplots;
+        
+        if(MakeSelectionTable && foundmatchforbtag) {
+          CutflowTableHisto->Fill(7.,eventweightForNotMSplots*btageffiencyforthisevent);
+          if(channelInt == 3) CutflowTableHisto_eee->Fill(7.,eventweightForNotMSplots*btageffiencyforthisevent);
+          if(channelInt == 2) CutflowTableHisto_eeu->Fill(7.,eventweightForNotMSplots*btageffiencyforthisevent);
+          if(channelInt == 1) CutflowTableHisto_uue->Fill(7.,eventweightForNotMSplots*btageffiencyforthisevent);
+          if(channelInt == 0) CutflowTableHisto_uuu->Fill(7.,eventweightForNotMSplots*btageffiencyforthisevent);
+          
+          CutflowTableHistoRaw->Fill(7.,1.*btageffiencyforthisevent);
+          if(channelInt == 3) CutflowTableHistoRaw_eee->Fill(7.,1.*btageffiencyforthisevent);
+          if(channelInt == 2) CutflowTableHistoRaw_eeu->Fill(7.,1.*btageffiencyforthisevent);
+          if(channelInt == 1) CutflowTableHistoRaw_uue->Fill(7.,1.*btageffiencyforthisevent);
+          if(channelInt == 0) CutflowTableHistoRaw_uuu->Fill(7.,1.*btageffiencyforthisevent);
+          
+          CutflowTableHisto->Fill(8.,eventweightForNotMSplots);
+          if(channelInt == 3) CutflowTableHisto_eee->Fill(8.,eventweightForNotMSplots);
+          if(channelInt == 2) CutflowTableHisto_eeu->Fill(8.,eventweightForNotMSplots);
+          if(channelInt == 1) CutflowTableHisto_uue->Fill(8.,eventweightForNotMSplots);
+          if(channelInt == 0) CutflowTableHisto_uuu->Fill(8.,eventweightForNotMSplots);
+          
+          CutflowTableHistoRaw->Fill(8.,1.);
+          if(channelInt == 3) CutflowTableHistoRaw_eee->Fill(8.,1.);
+          if(channelInt == 2) CutflowTableHistoRaw_eeu->Fill(8.,1.);
+          if(channelInt == 1) CutflowTableHistoRaw_uue->Fill(8.,1.);
+          if(channelInt == 0) CutflowTableHistoRaw_uuu->Fill(8.,1.);
+          
+          
+        }
       }
       
       if(selectedJets.size() == 1 && selectedCSVLJetID.size() > 0 && threelepregion && IamInZwindow){
@@ -9180,28 +9210,28 @@ double MatchingFunctionDY(vector <TLorentzVector> selectedJets, vector<int> sele
     int index = selectedJetsID[particlenb];
     if(abs(mc_pdgId[partonID[partonIDnb]] )== 5){  // b jets
       totalnbofjets_bflav++;
-      efficiency_bflav = efficiency_bflav *0.9;
+      efficiency_bflav = efficiency_bflav *0.1;
       if(bdisc_jet[index] > WPb_L) btotalnbofjets_bflav++;
     }
     else if(abs(mc_pdgId[partonID[partonIDnb]] )== 4){  // c jets
       totalnbofjets_cflav++;
-      efficiency_cflav = efficiency_cflav * 0.6;
+      efficiency_cflav = efficiency_cflav * 0.4;
       if(bdisc_jet[index] > WPb_L) btotalnbofjets_cflav++;
     }
     else { //light jets
       totalnbofjets_udsgflav++;
-      efficiency_udsgflav = efficiency_udsgflav *0.1;
+      efficiency_udsgflav = efficiency_udsgflav *0.9;
       if(bdisc_jet[index] > WPb_L) btotalnbofjets_udsgflav++;
 
     }
   
   }
   
-  
+  if(JetPartonPair.size() != 0) foundmatchforbtag = true;
  /* if(totalnbofjets_bflav != 0) efficiency_bflav = (double) btotalnbofjets_bflav / (double) totalnbofjets_bflav;
   if(totalnbofjets_cflav != 0) efficiency_cflav = (double) btotalnbofjets_cflav / (double) totalnbofjets_cflav;
   if(totalnbofjets_udsgflav != 0) efficiency_udsgflav = (double) btotalnbofjets_udsgflav / (double) totalnbofjets_udsgflav;*/
-  double efficiency = efficiency_bflav*efficiency_cflav*efficiency_udsgflav;
+  double efficiency =1-( efficiency_bflav*efficiency_cflav*efficiency_udsgflav);
    return efficiency;
 }
 bool MatchingFunctionNonPromt(string dataSetName, vector <TLorentzVector> Leptons, vector <TLorentzVector> selectedMuons, vector<TLorentzVector> selectedElectrons , vector <TLorentzVector> selectedJets, bool makePlots, bool debug){
