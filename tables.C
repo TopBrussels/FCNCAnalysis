@@ -81,15 +81,15 @@ void tables(int mode = 9){
   else if(mode == 3)  channelname = "eee_";
   else if(mode == 9)  channelname = "";
   const int nProcess = 23;
-  TString processName[24] {"NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80X","NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut_80X","NP_overlay_ST_FCNC_zut_80X", "NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80X","NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct_80X","NP_overlay_ST_FCNC_zct_80X","DYJets50_amc_80X","TTJets_powheg_80X","fake_80X","WZTo3LNu_amc_80X","tZq_amc_80X","TTZToLLNuNu_amc_80X","ZZTo4L_80X",
+  TString processName[24] {"NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80X","NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut_80X","NP_overlay_ST_FCNC_zut_80X", "NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80X","NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct_80X","NP_overlay_ST_FCNC_zct_80X","DYJets50_80X","TTJets_powheg_80X","fake_80X","WZTo3LNu_amc_80X","tZq_amc_80X","TTZToLLNuNu_amc_80X","ZZTo4L_80X",
       "STtW_atop_80X","STtW_top_80X","tWll_80X","ZZZ_amc_80X","WZZ_amc_80X", "TTWJetsToLNu_amc_80X", "tHq_80X", "ttHToNonbb_80X", "ttHTobb_80X","data"};
  // TString processName[nProcess] = { "FCNCZut", "FCNCZct","fake","ttZ", "WZ", "tZq", "other", "data", "mc"};
-  TString processLabel[14] = { "\\textbf{FCNC tZu}", "\\textbf{FCNC tZc}","\\textbf{DY}" ,"\\textbf{ttbar}","\\textbf{non prompt lepton}", "\\textbf{WZ+jets}", "\\textbf{tZq}","\\textbf{ttZ}", "\\textbf{ZZ}", "\\textbf{other}","\\textbf{data}",  "\\textbf{MC (no fakes)}", "\\textbf{MC + MC fakes}", "\\textbf{MC +DD fakes}"};
+  TString processLabel[14] = { "\\textbf{FCNC tZu}", "\\textbf{FCNC tZc}","\\textbf{DY amc}" ,"\\textbf{ttbar}","\\textbf{DD fake}", "\\textbf{WZ+jets}", "\\textbf{tZq}","\\textbf{ttZ}", "\\textbf{ZZ}", "\\textbf{other}","\\textbf{data}",  "\\textbf{MC (no fakes)}", "\\textbf{MC}", "\\textbf{MC +DDf}"};
   
    //TString processLabel[12] = { "\\textbf{FCNC tZu tt}", "\\textbf{FCNC tZu}", "\\textbf{FCNC tZc}","\\textbf{DY}" ,"\\textbf{ttbar}","\\textbf{non prompt lepton}", "\\textbf{WZ+jets}", "\\textbf{tZq}","\\textbf{ttZ}", "\\textbf{ZZ}", "\\textbf{other}","\\textbf{data}",  "\\textbf{MC (no fakes)}"};
-  const int nCuts = 7;
+  const int nCuts = 11;
   
-  TString cutLabel[7] =  {"Z mass","$>2l$","STSR","TTSR","WZCR","TTCR","STCR"};
+  TString cutLabel[11] =  {"Z mass","$>2l$","STSR","TTSR","WZCR","TTCR","STCR","$Tr_{WZCR \\rightarrow STSR}$","$Tr_{WZCR \\rightarrow TTSR}$" ,"$Tr_{TTCR \\rightarrow TTSR}$", "$Tr_{STCR \\rightarrow STSR}$"};
   
   TH1F*  h[14];
   
@@ -140,7 +140,7 @@ void tables(int mode = 9){
   double vectorValue[14][nCuts][3];
   
   
-  for (int i = 0; i < nCuts; i++){
+  for (int i = 0; i < nCuts-4; i++){
     //cout << "looking at cut " << cutLabel[i] << endl;
     for (int j = 0; j < 14; j++){
      // cout << "j " << j << endl;
@@ -152,10 +152,61 @@ void tables(int mode = 9){
       cout << vectorValue[j][i][0] << " pm " << vectorValue[j][i][2] << endl;
     }
   }
+  
+  for (int j = 0; j < 14; j++){
+    // cout << "j " << j << endl;
+    // cout << h[j]->GetBinContent(i+1) << endl;
+    cout << "looking at cut " << cutLabel[7] << " for process " << processLabel[j] << endl;
+    
+    cout << h[j]->GetBinContent(7+1) <<" over " <<h[j]->GetBinContent(8+1)<<endl;
+    vectorValue[j][7][0] = h[j]->GetBinContent(7+1)/h[j]->GetBinContent(8+1)*h[j]->GetBinContent(9+1);
+    vectorValue[j][7][1] = 2; //precision(h[j]->GetBinError(i));
+    double a = h[j]->GetBinContent(7+1);
+    double sa = h[j]->GetBinError(7+1);
+    double b= h[j]->GetBinContent(8+1);
+    double sb = h[j]->GetBinError(8+1);
+    double c = h[j]->GetBinContent(9+1);
+    double sc = h[j]->GetBinError(9+1);
+    vectorValue[j][7][2] = TMath::Sqrt(pow(sa,2.)*pow(c/b,2)+pow(a*c/pow(b,2.),2.)*pow(sb,2.)+pow(a/b,2.)*pow(sc,2.));
+    cout << vectorValue[j][7][0] << " pm " << vectorValue[j][7][2] << endl;
+    
+    vectorValue[j][8][0] = h[j]->GetBinContent(7+1)/h[j]->GetBinContent(8+1) ;
+    vectorValue[j][8][1] = 2; //precision(h[j]->GetBinError(i));
+     a = h[j]->GetBinContent(7+1);
+     sa = h[j]->GetBinError(7+1);
+     b= h[j]->GetBinContent(8+1);
+     sb = h[j]->GetBinError(8+1);
+    vectorValue[j][8][2] = TMath::Sqrt(pow(sa,2.)*pow(1./b,2)+pow(a/pow(b,2.),2.)*pow(sb,2.));
+    cout << vectorValue[j][8][0] << " pm " << vectorValue[j][8][2] << endl;
+   
+    if(j == 3){
+    vectorValue[j][9][0] = 15./(60.-15.);
+    vectorValue[j][9][1] = 2; //precision(h[j]->GetBinError(i));
+    vectorValue[j][9][2] = 0.;
+    //cout << vectorValue[j][8][0] << " pm " << vectorValue[j][8][2] << endl;
+
+    vectorValue[j][10][0] = 15./(60.-15.);
+    vectorValue[j][10][1] = 2; //precision(h[j]->GetBinError(i));
+    vectorValue[j][10][2] = 0;
+   // cout << vectorValue[j][9][0] << " pm " << vectorValue[j][9][2] << endl;
+   // cout << h[j]->GetBinContent(6+1) << endl;
+    }
+    else{
+      vectorValue[j][9][0] = 0.;
+      vectorValue[j][9][1] = 1.;
+      vectorValue[j][9][2] = 0.;
+
+      vectorValue[j][10][0] = 0.;
+      vectorValue[j][10][1] = 1.;
+      vectorValue[j][10][2] = 0.;
+    }
+      
+  }
+  
   cout << "write table" << endl;
   
   salida << "\\documentclass[a4paper,12pt]{article}" << endl;
-  salida << "\\usepackage[a4paper,bindingoffset=0.2in,left=1in,right=1in,top=1in,bottom=1in,[footskip=.25in]{geometry}" << endl;
+  salida << "\\usepackage[a4paper,bindingoffset=0.2in,left=1in,right=1in,top=1in,bottom=0.5in,[footskip=.25in]{geometry}" << endl;
   salida << "\\usepackage{lscape}" <<endl;
   salida << "\\begin{document}" << endl;
   salida << "\\thispagestyle{empty}" << endl;
@@ -193,10 +244,14 @@ void tables(int mode = 9){
   salida << endl;
   salida << endl;
   */
-  
+  if(dolandscape)  salida << "  \\begin{landscape}" << endl;
    salida << "  \\begin{table}" << endl;
   salida << "  \\begin{center}" << endl;
-  salida << "  \\begin{tabular} {|l|c|c|c|c|c|}" << endl;
+  salida << "  \\begin{tabular} {|l| ";
+  for(int i = 2; i < nCuts; i++){
+  salida << "c|";
+  }
+    salida << "}" << endl;
   salida << "  \\hline " << endl;
   for (int i = 2; i < nCuts; i++){
     salida << " & " << cutLabel[i] ;
@@ -210,7 +265,7 @@ void tables(int mode = 9){
       /*if (i != 0 && vectorValue[j][i][0] == 0 && vectorValue[j][i-1][0] != 0){
        salida << " & $\\leq$ " << setprecision(vectorValue[j][i-1][1]) << 2*vectorValue[j][i-1][2];
        } else if (i != 0 && vectorValue[j][i][0] == 0 && vectorValue[j][i-1][0] == 0){*/
-      if (i != 0 && vectorValue[j][i][0] == 0 ){
+      if ((i != 0 && vectorValue[j][i][0] == 0 )|| vectorValue[j][i][0]!= vectorValue[j][i][0] ){
         salida << " & $-$ " ;
       } else {
         salida << " & " << std::setiosflags(std::ios::fixed) << setprecision(vectorValue[j][i][1]) << vectorValue[j][i][0] ;
@@ -221,20 +276,136 @@ void tables(int mode = 9){
   }
   salida << "   \\hline " << endl;
   salida << "  \\end{tabular}" << endl;
-  salida << " \\caption{Event yields. " ;
+  salida << " \\caption{Event yields: " ;
     
-  if(mode == 9) salida << " All channel.}" << endl;
-  else if(mode == 0)  salida << " 3mu channel.}" << endl;
-  else if(mode == 1) salida << " 1e2mu channel.}" << endl;
-  else if(mode == 2) salida << " 2e1mu channel.}" << endl;
-  else if(mode == 3) salida << " 3e channel.}" << endl;
+  if(mode == 9) salida << " All channel.";
+  else if(mode == 0)  salida << " 3mu channel.";
+  else if(mode == 1) salida << " 1e2mu channel.";
+  else if(mode == 2) salida << " 2e1mu channel.";
+  else if(mode == 3) salida << " 3e channel.";
+  salida << "The last three columns represent the transfer factors that have to be applied.}" << endl;
   salida << "  \\end{center}" << endl;
   salida << "  \\end{table}" << endl;
 
    salida << endl;
   salida << endl;
 
+   if(dolandscape)  salida << "  \\end{landscape}" << endl;
   
+  
+  
+  
+  ///////////////////
+  cutLabel[7] =  "STSR (WZCR)";
+  cutLabel[8] =  "TTSR (WZCR)";
+  cutLabel[9] ="TTSR (TTCR)";
+  cutLabel[10] = "STSR (STCR)";
+ 
+  
+  for (int j = 0; j < 14; j++){
+    // cout << "j " << j << endl;
+    // cout << h[j]->GetBinContent(i+1) << endl;
+    cout << "looking at cut " << cutLabel[7] << " for process " << processLabel[j] << endl;
+    
+     vectorValue[j][7][0] = (h[j]->GetBinContent(7+1)/h[j]->GetBinContent(8+1))*h[j]->GetBinContent(9+1); // 1jet
+    vectorValue[j][7][1] = 2; //precision(h[j]->GetBinError(i));
+    double a = h[j]->GetBinContent(7+1);
+    double sa = h[j]->GetBinError(7+1);
+    double b= h[j]->GetBinContent(8+1);
+    double sb = h[j]->GetBinError(8+1);
+    double c = h[j]->GetBinContent(9+1);
+    double sc = h[j]->GetBinError(9+1);
+    vectorValue[j][7][2] = TMath::Sqrt(pow(sa,2.)*pow(c/b,2)+pow(a*c/pow(b,2.),2.)*pow(sb,2.) + pow(sc,2.)*pow(a/b,2.));
+    cout << vectorValue[j][7][0] << " pm " << vectorValue[j][7][2] << endl;
+    
+    vectorValue[j][8][0] = (h[j]->GetBinContent(7+1)/h[j]->GetBinContent(8+1))*h[j]->GetBinContent(4+1); // >0jet
+    vectorValue[j][8][1] = 2; //precision(h[j]->GetBinError(i));
+     a = h[j]->GetBinContent(7+1);
+     sa = h[j]->GetBinError(7+1);
+     b= h[j]->GetBinContent(8+1);
+     sb = h[j]->GetBinError(8+1);
+     c = h[j]->GetBinContent(4+1);
+     sc = h[j]->GetBinError(4+1);
+    vectorValue[j][8][2] = TMath::Sqrt(pow(sa,2.)*pow(c/b,2)+pow(a*c/pow(b,2.),2.)*pow(sb,2.) + pow(sc,2.)*pow(a/b,2.));
+    cout << vectorValue[j][8][0] << " pm " << vectorValue[j][8][2] << endl;
+    
+    if(j == 3){
+      vectorValue[j][9][0] = h[j]->GetBinContent(5+1)*15./(60.-15.);
+      vectorValue[j][9][1] = 2; //precision(h[j]->GetBinError(i));
+      vectorValue[j][9][2] = h[j]->GetBinError(5+1)*15./(60.-15.);
+      cout << vectorValue[j][8][0] << " pm " << vectorValue[j][8][2] << endl;
+      
+      vectorValue[j][10][0] = h[j]->GetBinContent(6+1)*15./(60.-15.);
+      vectorValue[j][10][1] = 2; //precision(h[j]->GetBinError(i));
+      vectorValue[j][10][2] = h[j]->GetBinError(6+1)*15./(60.-15.);
+      cout << vectorValue[j][9][0] << " pm " << vectorValue[j][9][2] << endl;
+      // cout << h[j]->GetBinContent(6+1) << endl;
+    }
+    else{
+      vectorValue[j][9][0] = 0.;
+      vectorValue[j][9][1] = 1.;
+      vectorValue[j][9][2] = 0.;
+      
+      vectorValue[j][10][0] = 0.;
+      vectorValue[j][10][1] = 1.;
+      vectorValue[j][10][2] = 0.;
+    }
+    
+  }
+  
+  cout << "write table" << endl;
+  
+   salida << "\\thispagestyle{empty}" << endl;
+  salida << endl;
+  salida << endl;
+
+  if(dolandscape)  salida << "  \\begin{landscape}" << endl;
+  salida << "  \\begin{table}" << endl;
+  salida << "  \\begin{center}" << endl;
+  salida << "  \\begin{tabular} {|l| ";
+  for(int i = 2; i < nCuts; i++){
+    salida << "c|";
+  }
+  salida << "}" << endl;
+  salida << "  \\hline " << endl;
+  for (int i = 2; i < nCuts; i++){
+    salida << " & " << cutLabel[i] ;
+  }
+  salida << "  \\\\ " << endl;
+  salida << "  \\hline " << endl;
+  
+  for (int j=0; j  < 14; j++){
+    salida <<  processLabel[j] ;
+    for (int i = 2; i < nCuts; i++){
+      /*if (i != 0 && vectorValue[j][i][0] == 0 && vectorValue[j][i-1][0] != 0){
+       salida << " & $\\leq$ " << setprecision(vectorValue[j][i-1][1]) << 2*vectorValue[j][i-1][2];
+       } else if (i != 0 && vectorValue[j][i][0] == 0 && vectorValue[j][i-1][0] == 0){*/
+      if ((i != 0 && vectorValue[j][i][0] == 0 )|| vectorValue[j][i][0]!= vectorValue[j][i][0] ){
+        salida << " & $-$ " ;
+      } else {
+        salida << " & " << std::setiosflags(std::ios::fixed) << setprecision(vectorValue[j][i][1]) << vectorValue[j][i][0] ;
+        salida << " $\\pm $"  << setprecision(vectorValue[j][i][1])<< vectorValue[j][i][2];
+      }
+    }
+    salida <<  " \\\\  " << endl;
+  }
+  salida << "   \\hline " << endl;
+  salida << "  \\end{tabular}" << endl;
+  salida << " \\caption{Event yields for " ;
+  
+  if(mode == 9) salida << " All channel.";
+  else if(mode == 0)  salida << " 3mu channel.";
+  else if(mode == 1) salida << " 1e2mu channel.";
+  else if(mode == 2) salida << " 2e1mu channel.";
+  else if(mode == 3) salida << " 3e channel.";
+  salida << "The last tree columns represent the predicted event yield after applying the transfer factors. The regions between brakets correspond to the region from which the prediction is made.}" << endl;
+  salida << "  \\end{center}" << endl;
+  salida << "  \\end{table}" << endl;
+  
+  salida << endl;
+  salida << endl;
+  
+  if(dolandscape)  salida << "  \\end{landscape}" << endl;
 
   salida << "\\end{document}" << endl;
   
