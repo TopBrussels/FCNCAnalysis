@@ -1414,7 +1414,7 @@ int main(int argc, char* argv[]){
     
     Init2DPlots();
   }
-  vector < string > v_cutflow = {"Z mass",">2l","STSR","TTSR","WZCR","TTCR", "STCR","exp b WZCR","matched WZCR"};
+  vector < string > v_cutflow = {"Z mass",">2l","STSR","TTSR","WZCR","TTCR", "STCR","exp b WZCR","matched WZCR","exp b 1 jet WZCR", "matched 1 jet WZCR","exp b >1 jet WZCR", "matched >1 jet WZCR"};
   vector < string > v_cutflowreg = {"basecuts","STSR","TTSR","WZCR","TTCR"};
  
   MSPlot["cutflowregions"] = new MultiSamplePlot(datasets, "cutflowregion", 10, -0.5, 9.5, "Cutflow region");
@@ -2783,9 +2783,14 @@ int main(int argc, char* argv[]){
       
       
       double btageffiencyforthisevent = 0.;
+      double btageffiencyforthisevent_1jet = 0.;
+      double btageffiencyforthisevent_2jet = 0.;
       foundmatchforbtag  = false;
       if(!isfakes && !isData && IamInZwindow && threelepregion && selectedJetsID.size() > 0 && selectedCSVLJetID.size() == 0){
         btageffiencyforthisevent= MatchingFunctionDY( selectedJets, selectedJetsID );
+        if(selectedJetsID.size() == 1) btageffiencyforthisevent_1jet= MatchingFunctionDY( selectedJets, selectedJetsID );
+        if(selectedJetsID.size() > 1) btageffiencyforthisevent_2jet= MatchingFunctionDY( selectedJets, selectedJetsID );
+        
         if(foundmatchforbtag) totalnbofbeventsforbtaginfo = totalnbofbeventsforbtaginfo + (btageffiencyforthisevent*eventweightForNotMSplots);
         if(foundmatchforbtag) totalnbofeventsforbtaginfo = totalnbofeventsforbtaginfo + eventweightForNotMSplots;
         
@@ -2813,6 +2818,60 @@ int main(int argc, char* argv[]){
           if(channelInt == 2) CutflowTableHistoRaw_eeu->Fill(8.,1.);
           if(channelInt == 1) CutflowTableHistoRaw_uue->Fill(8.,1.);
           if(channelInt == 0) CutflowTableHistoRaw_uuu->Fill(8.,1.);
+          
+          
+        }
+        if(MakeSelectionTable && foundmatchforbtag && selectedJetsID.size() == 1) {
+          CutflowTableHisto->Fill(9.,eventweightForNotMSplots*btageffiencyforthisevent);
+          if(channelInt == 3) CutflowTableHisto_eee->Fill(9.,eventweightForNotMSplots*btageffiencyforthisevent);
+          if(channelInt == 2) CutflowTableHisto_eeu->Fill(9.,eventweightForNotMSplots*btageffiencyforthisevent);
+          if(channelInt == 1) CutflowTableHisto_uue->Fill(9.,eventweightForNotMSplots*btageffiencyforthisevent);
+          if(channelInt == 0) CutflowTableHisto_uuu->Fill(9.,eventweightForNotMSplots*btageffiencyforthisevent);
+          
+          CutflowTableHistoRaw->Fill(9.,1.*btageffiencyforthisevent);
+          if(channelInt == 3) CutflowTableHistoRaw_eee->Fill(9.,1.*btageffiencyforthisevent);
+          if(channelInt == 2) CutflowTableHistoRaw_eeu->Fill(9.,1.*btageffiencyforthisevent);
+          if(channelInt == 1) CutflowTableHistoRaw_uue->Fill(9.,1.*btageffiencyforthisevent);
+          if(channelInt == 0) CutflowTableHistoRaw_uuu->Fill(9.,1.*btageffiencyforthisevent);
+          
+          CutflowTableHisto->Fill(10.,eventweightForNotMSplots);
+          if(channelInt == 3) CutflowTableHisto_eee->Fill(10.,eventweightForNotMSplots);
+          if(channelInt == 2) CutflowTableHisto_eeu->Fill(10.,eventweightForNotMSplots);
+          if(channelInt == 1) CutflowTableHisto_uue->Fill(10.,eventweightForNotMSplots);
+          if(channelInt == 0) CutflowTableHisto_uuu->Fill(10.,eventweightForNotMSplots);
+          
+          CutflowTableHistoRaw->Fill(10.,1.);
+          if(channelInt == 3) CutflowTableHistoRaw_eee->Fill(10.,1.);
+          if(channelInt == 2) CutflowTableHistoRaw_eeu->Fill(10.,1.);
+          if(channelInt == 1) CutflowTableHistoRaw_uue->Fill(10.,1.);
+          if(channelInt == 0) CutflowTableHistoRaw_uuu->Fill(10.,1.);
+          
+          
+        }
+        if(MakeSelectionTable && foundmatchforbtag && selectedJetsID.size() > 1) {
+          CutflowTableHisto->Fill(11.,eventweightForNotMSplots*btageffiencyforthisevent);
+          if(channelInt == 3) CutflowTableHisto_eee->Fill(11.,eventweightForNotMSplots*btageffiencyforthisevent);
+          if(channelInt == 2) CutflowTableHisto_eeu->Fill(11.,eventweightForNotMSplots*btageffiencyforthisevent);
+          if(channelInt == 1) CutflowTableHisto_uue->Fill(11.,eventweightForNotMSplots*btageffiencyforthisevent);
+          if(channelInt == 0) CutflowTableHisto_uuu->Fill(11.,eventweightForNotMSplots*btageffiencyforthisevent);
+          
+          CutflowTableHistoRaw->Fill(11.,1.*btageffiencyforthisevent);
+          if(channelInt == 3) CutflowTableHistoRaw_eee->Fill(11.,1.*btageffiencyforthisevent);
+          if(channelInt == 2) CutflowTableHistoRaw_eeu->Fill(11.,1.*btageffiencyforthisevent);
+          if(channelInt == 1) CutflowTableHistoRaw_uue->Fill(11.,1.*btageffiencyforthisevent);
+          if(channelInt == 0) CutflowTableHistoRaw_uuu->Fill(11.,1.*btageffiencyforthisevent);
+          
+          CutflowTableHisto->Fill(12.,eventweightForNotMSplots);
+          if(channelInt == 3) CutflowTableHisto_eee->Fill(12.,eventweightForNotMSplots);
+          if(channelInt == 2) CutflowTableHisto_eeu->Fill(12.,eventweightForNotMSplots);
+          if(channelInt == 1) CutflowTableHisto_uue->Fill(12.,eventweightForNotMSplots);
+          if(channelInt == 0) CutflowTableHisto_uuu->Fill(12.,eventweightForNotMSplots);
+          
+          CutflowTableHistoRaw->Fill(12.,1.);
+          if(channelInt == 3) CutflowTableHistoRaw_eee->Fill(12.,1.);
+          if(channelInt == 2) CutflowTableHistoRaw_eeu->Fill(12.,1.);
+          if(channelInt == 1) CutflowTableHistoRaw_uue->Fill(12.,1.);
+          if(channelInt == 0) CutflowTableHistoRaw_uuu->Fill(12.,1.);
           
           
         }
