@@ -426,20 +426,22 @@ int main (int argc, char *argv[])
   /// Object ID              ///
   /////////////////////////////
   // electron
-  float el_pt_cut =20.; //8;//30.; // 42
+  float el_pt_cut =30.; //8;//30.; // 42
   float el_eta_cut = 2.5;
   float el_iso_cone  = 0.3;
   // reliso cut fabs(eta supercluster) <= 1.479 --> 0.107587 // (fabs(eta supercluster) > 1.479 && fabs(eta supercluster) < 2.5) --> 0.113254
   // muon
-  float mu_pt_cut = 20; //5;// 20.; // 40
-  float mu_pt_cut_loose =20;// 5;//30.;
+
+
+  float mu_pt_cut = 30; //5;// 20.; // 40
+  float mu_pt_cut_loose =30;// 5;//30.;
   float mu_eta_cut = 2.4;
   float mu_iso_cut = 0.15;
   float mu_iso_cut_loose = 0.25;
   float mu_iso_cut_fakeloose = 0.25;
   float mu_iso_cut_faketight= 0.15;
   //jets
-  float jet_pt_cut = 15.;
+  float jet_pt_cut = 30.;
   float jet_eta_cut = 2.4;
   
   // convert into string
@@ -2156,8 +2158,8 @@ int main (int argc, char *argv[])
       selectedFakeTightElectrons.clear();
       selectedElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Tight","Spring16_80X",true,true);// pt, eta, WP point, campaign, cutbased, VID EA
       selectedVetoElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "Veto","Spring16_80X",true,true);// pt, eta
-      selectedFakeTightElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "FakeTight","Spring16_80X",true,false);
-      selectedFakeLooseElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "FakeLoose","Spring16_80X",true,false);
+      selectedFakeTightElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "FakeLoose","Spring16_80X",true,false);
+      selectedFakeLooseElectrons = selection.GetSelectedElectrons(el_pt_cut, el_eta_cut, "FakeTight","Spring16_80X",true,false);
       
       if(!doFakeshift) selectedFakeElectrons = selectedFakeTightElectrons;
       else if(doFakeshift) selectedFakeElectrons = selectedFakeLooseElectrons;
