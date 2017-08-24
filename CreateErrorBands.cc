@@ -16,7 +16,7 @@
 using namespace std;
 
 //int main(unsigned int argc, char *argv[])
-int CreateErrorBands( unsigned int verbose = 0, string basedir = "ErrorBandInput/") //0 = silent, 1 = normal, 2 = loud
+int CreateErrorBands( unsigned int verbose = 0, string basedir = "ErrorBandInput/", bool doOnlyConsider = true) //0 = silent, 1 = normal, 2 = loud
 {
   cout<<"This macro will calculate the systematic error bands."<<endl;
   cout<<"Note that it makes use of the fixed structure of MultiSamplePlots + some hardcoded strings to recognize systematics and physics-process names!"<<endl;
@@ -24,11 +24,12 @@ int CreateErrorBands( unsigned int verbose = 0, string basedir = "ErrorBandInput
   // unsigned int verbose = 0; //0 = silent, 1 = normal, 2 = loud
   
   //string basedir = "OutputPlots/170823_1854/";
-  string InputfilenameNominal = basedir+"NtuplePlots.root";
+  string InputfilenameNominal = basedir+"NtuplePlots.root"; // nominal
   
+  // systematics
   string InputfilenameJESPlus = basedir+"NtuplePlots_JESPlus.root";
   string InputfilenameJESMinus = basedir+"NtuplePlots_JESMinus.root";
- 
+  
   string InputfilenameJERPlus = basedir+"NtuplePlots_JERPlus.root";
   string InputfilenameJERMinus = basedir+"NtuplePlots_JERMinus.root";
   
@@ -44,6 +45,7 @@ int CreateErrorBands( unsigned int verbose = 0, string basedir = "ErrorBandInput
   string InputfilenameElectronSFPlus = basedir+"NtuplePlots_ElectronSFPlus.root";
   string InputfilenameElectronSFMinus = basedir+"NtuplePlots_ElectronSFMinus.root";
   
+  //btag
   string Inputfilenamecferr1Minus = basedir + "NtuplePlots_cferr1Minus.root";
   string Inputfilenamecferr1Plus = basedir + "NtuplePlots_cferr1Plus.root";
   string Inputfilenamecferr2Minus = basedir + "NtuplePlots_cferr2Minus.root";
@@ -63,7 +65,7 @@ int CreateErrorBands( unsigned int verbose = 0, string basedir = "ErrorBandInput
   
   
   string Outputpath = "ErrorBand/";
-  string Outputfilename = "ErrorBandFile.root";
+  string Outputfilename = "ErrorBandFile_new.root";
   // mkdir(Outputpath.c_str(),0777);
   //bool mergeSignal = false;
   
@@ -106,9 +108,30 @@ int CreateErrorBands( unsigned int verbose = 0, string basedir = "ErrorBandInput
   bool doIgnore = true; //true: ignore MSPlots with names including one of the strings in MSPlotsIgnore, false: strings in MSPlotsIgnore will not be used to ignore certain MSPlots.
   vector<string> MSPlotsIgnore;
   //MSPlotsIgnore.push_back("BtagWeight");
-  bool doOnlyConsider = false; //true: only consider MSPlots with names including one of the strings in MSPlotsIgnore, false: strings in MSPlotsIgnore will not be used to 'only consider' certain MSPlots
+  //bool doOnlyConsider = true; //true: only consider MSPlots with names including one of the strings in MSPlotsIgnore, false: strings in MSPlotsIgnore will not be used to 'only consider' certain MSPlots
   vector<string> MSPlotsOnlyConsider;
-  //MSPlotsOnlyConsider.push_back("box");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_mWt");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_SMtop_eta");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_mlb");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_dPhiWlepb");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_deltaRWlepJet_min");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_Zboson_M");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_dPhiZWlep");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_dRWlepb");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_NJets_CSVv2M");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_FCNCtop_M");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_dRZc");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_dRZb");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_dRSMjetLightjet");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_charge_asym");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_bdiscCSVv2_jet_0");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_TotalHt_lep");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_ptWQ");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_TotalInvMass");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_TotalInvMass_lep");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_dRZWlep");
+  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_Bdis_LightJet");
+  
   //note: if plot name should both be 'ignored' and 'only considered', it will be ignored.
   
   
@@ -186,7 +209,7 @@ int CreateErrorBands( unsigned int verbose = 0, string basedir = "ErrorBandInput
                 sumNominal = histo;
                 firstdataset = false;
               }
-				          else sumNominal->Add( histo );
+              else sumNominal->Add( histo );
             }
           }
         }
@@ -204,25 +227,22 @@ int CreateErrorBands( unsigned int verbose = 0, string basedir = "ErrorBandInput
           if(verbose >= 1) cout<<" -> systematic "<<syst[iSyst]<<endl;
           if(verbose >= 1) cout<<"    up variations"<<endl;
           TFile* inFilePlus = 0;
-          if(syst[iSyst] == "JES") inFilePlus = new TFile(InputfilenameJESPlus.c_str(),"READ");
-           else if(syst[iSyst] == "JER") inFilePlus = new TFile(InputfilenameJERPlus.c_str(),"READ");
-           else if(syst[iSyst] == "bTag") inFilePlus = new TFile(InputfilenamebTagPlus.c_str(),"READ");
-           else if(syst[iSyst] == "PU") inFilePlus = new TFile(InputfilenamePUPlus.c_str(),"READ");
-           else if(syst[iSyst] == "MuonSF") inFilePlus = new TFile(InputfilenameMuonSFPlus.c_str(),"READ");
-           else if(syst[iSyst] == "ElectronSF") inFilePlus = new TFile(InputfilenameElectronSFPlus.c_str(),"READ");
+          if(syst[iSyst] == "JES")            inFilePlus = new TFile(InputfilenameJESPlus.c_str(),"READ");
+          else if(syst[iSyst] == "JER")       inFilePlus = new TFile(InputfilenameJERPlus.c_str(),"READ");
+          else if(syst[iSyst] == "bTag")      inFilePlus = new TFile(InputfilenamebTagPlus.c_str(),"READ");
+          else if(syst[iSyst] == "PU")        inFilePlus = new TFile(InputfilenamePUPlus.c_str(),"READ");
+          else if(syst[iSyst] == "MuonSF")    inFilePlus = new TFile(InputfilenameMuonSFPlus.c_str(),"READ");
+          else if(syst[iSyst] == "ElectronSF")inFilePlus = new TFile(InputfilenameElectronSFPlus.c_str(),"READ");
+          else if(syst[iSyst] ==  "cferr1"  ) inFilePlus = new TFile(Inputfilenamecferr1Plus.c_str(),"READ");
+          else if(syst[iSyst] == "cferr2"   ) inFilePlus = new TFile(Inputfilenamecferr2Plus.c_str(),"READ");
+          else if(syst[iSyst] == "hf"     )   inFilePlus = new TFile(InputfilenamehfPlus.c_str(),"READ");
+          else if(syst[iSyst] ==  "hfstats1") inFilePlus = new TFile(Inputfilenamehfstats1Plus.c_str(),"READ");
+          else if(syst[iSyst] ==  "hfstats2") inFilePlus = new TFile(Inputfilenamehfstats2Plus.c_str(),"READ");
+          else if(syst[iSyst] ==  "lf"    )   inFilePlus = new TFile(InputfilenamelfPlus.c_str(),"READ");
+          else if(syst[iSyst] == "lfstats1" ) inFilePlus = new TFile(Inputfilenamelfstats1Plus.c_str(),"READ");
+          else if(syst[iSyst] ==  "lfstats2") inFilePlus = new TFile(Inputfilenamelfstats2Plus.c_str(),"READ");
+          else                                inFilePlus = new TFile(InputfilenameNominal.c_str(),"READ");
           
-           else if(syst[iSyst] ==  "cferr1"    ) inFilePlus = new TFile(Inputfilenamecferr1Plus.c_str(),"READ");
-           else if(syst[iSyst] == "cferr2"     ) inFilePlus = new TFile(Inputfilenamecferr2Plus.c_str(),"READ");
-           else if(syst[iSyst] == "hf"     ) inFilePlus = new TFile(InputfilenamehfPlus.c_str(),"READ");
-           else if(syst[iSyst] ==  "hfstats1"    ) inFilePlus = new TFile(Inputfilenamehfstats1Plus.c_str(),"READ");
-           else if(syst[iSyst] ==  "hfstats2"    ) inFilePlus = new TFile(Inputfilenamehfstats2Plus.c_str(),"READ");
-           else if(syst[iSyst] ==  "lf"    ) inFilePlus = new TFile(InputfilenamelfPlus.c_str(),"READ");
-           else if(syst[iSyst] == "lfstats1"     ) inFilePlus = new TFile(Inputfilenamelfstats1Plus.c_str(),"READ");
-           else if(syst[iSyst] ==  "lfstats2"    ) inFilePlus = new TFile(Inputfilenamelfstats2Plus.c_str(),"READ");
-          
-          
-          
-          else inFilePlus = new TFile(InputfilenameNominal.c_str(),"READ");
           if(verbose >= 1) cout<<"    Plusfile read = "<<inFilePlus->GetName()<<endl;
           TDirectory* subdirPlus = (TDirectory*) inFilePlus->Get(subdirname.c_str());
           TH1F* sumPlus = 0;
@@ -232,7 +252,7 @@ int CreateErrorBands( unsigned int verbose = 0, string basedir = "ErrorBandInput
           bool firstdatasetPlus = true;
           
           // shapes needed
-          if(syst[iSyst] == "JES"  || syst[iSyst] == "JER" || syst[iSyst] == "cferr1" || syst[iSyst] == "cferr2" || syst[iSyst] == "hf" || syst[iSyst] == "hfstats1" || syst[iSyst] == "hfstats2" || syst[iSyst] == "lf" || syst[iSyst] == "lfstats1" || syst[iSyst] == "lfstats2" ||  syst[iSyst] == "PU" || syst[iSyst] == "MuonSF" || syst[iSyst] == "ElectronSF") //WARNING: this is some necessary hardcoding, unfortunately...
+          if(syst[iSyst] == "JES"  || syst[iSyst] == "JER" || syst[iSyst] == "cferr1" || syst[iSyst] == "cferr2" || syst[iSyst] == "hf" || syst[iSyst] == "hfstats1" || syst[iSyst] == "hfstats2" || syst[iSyst] == "lf" || syst[iSyst] == "lfstats1" || syst[iSyst] == "lfstats2" ||  syst[iSyst] == "PU" || syst[iSyst] == "MuonSF" || syst[iSyst] == "ElectronSF") //WARNING: HARDCODED
           {
             if(verbose >= 1) cout<<"    loop over histograms (in multisampleplot directory) and obtain total up-varied histogram"<<endl;
             while ((plotkeyPlus = (TKey*)nextplotkeyPlus()))
@@ -320,22 +340,21 @@ int CreateErrorBands( unsigned int verbose = 0, string basedir = "ErrorBandInput
           
           if(verbose >= 1) cout<<"    minus variations"<<endl;
           TFile* inFileMinus = 0;
-          if(syst[iSyst] == "JES") inFileMinus = new TFile(InputfilenameJESMinus.c_str(),"READ");
-           else if(syst[iSyst] == "JER") inFileMinus = new TFile(InputfilenameJERMinus.c_str(),"READ");
-          else if(syst[iSyst] == "bTag") inFileMinus = new TFile(InputfilenamebTagMinus.c_str(),"READ");
-          else if(syst[iSyst] == "PU") inFileMinus = new TFile(InputfilenamePUMinus.c_str(),"READ");
-          else if(syst[iSyst] == "MuonSF") inFileMinus = new TFile(InputfilenameMuonSFMinus.c_str(),"READ");
-          else if(syst[iSyst] == "ElectronSF") inFileMinus = new TFile(InputfilenameElectronSFMinus.c_str(),"READ");
+          if(syst[iSyst] == "JES")              inFileMinus = new TFile(InputfilenameJESMinus.c_str(),"READ");
+          else if(syst[iSyst] == "JER")         inFileMinus = new TFile(InputfilenameJERMinus.c_str(),"READ");
+          else if(syst[iSyst] == "bTag")        inFileMinus = new TFile(InputfilenamebTagMinus.c_str(),"READ");
+          else if(syst[iSyst] == "PU")          inFileMinus = new TFile(InputfilenamePUMinus.c_str(),"READ");
+          else if(syst[iSyst] == "MuonSF")      inFileMinus = new TFile(InputfilenameMuonSFMinus.c_str(),"READ");
+          else if(syst[iSyst] == "ElectronSF")  inFileMinus = new TFile(InputfilenameElectronSFMinus.c_str(),"READ");
           else if(syst[iSyst] ==  "cferr1"    ) inFileMinus = new TFile(Inputfilenamecferr1Minus.c_str(),"READ");
           else if(syst[iSyst] == "cferr2"     ) inFileMinus = new TFile(Inputfilenamecferr2Minus.c_str(),"READ");
-          else if(syst[iSyst] == "hf"     ) inFileMinus = new TFile(InputfilenamehfMinus.c_str(),"READ");
-          else if(syst[iSyst] ==  "hfstats1"    ) inFileMinus = new TFile(Inputfilenamehfstats1Minus.c_str(),"READ");
-          else if(syst[iSyst] ==  "hfstats2"    ) inFileMinus = new TFile(Inputfilenamehfstats2Minus.c_str(),"READ");
-          else if(syst[iSyst] ==  "lf"    ) inFileMinus = new TFile(InputfilenamelfMinus.c_str(),"READ");
-          else if(syst[iSyst] == "lfstats1"     ) inFileMinus = new TFile(Inputfilenamelfstats1Minus.c_str(),"READ");
-          else if(syst[iSyst] ==  "lfstats2"    ) inFileMinus = new TFile(Inputfilenamelfstats2Minus.c_str(),"READ");
-
-          else inFileMinus = new TFile(InputfilenameNominal.c_str(),"READ");
+          else if(syst[iSyst] == "hf"     )     inFileMinus = new TFile(InputfilenamehfMinus.c_str(),"READ");
+          else if(syst[iSyst] ==  "hfstats1"  ) inFileMinus = new TFile(Inputfilenamehfstats1Minus.c_str(),"READ");
+          else if(syst[iSyst] ==  "hfstats2"  ) inFileMinus = new TFile(Inputfilenamehfstats2Minus.c_str(),"READ");
+          else if(syst[iSyst] ==  "lf"    )     inFileMinus = new TFile(InputfilenamelfMinus.c_str(),"READ");
+          else if(syst[iSyst] == "lfstats1"   ) inFileMinus = new TFile(Inputfilenamelfstats1Minus.c_str(),"READ");
+          else if(syst[iSyst] ==  "lfstats2"  ) inFileMinus = new TFile(Inputfilenamelfstats2Minus.c_str(),"READ");
+          else                                  inFileMinus = new TFile(InputfilenameNominal.c_str(),"READ");
           if(verbose >= 1) cout<<"   Minusfile read = "<<inFileMinus->GetName()<<endl;
           TDirectory* subdirMinus = (TDirectory*) inFileMinus->Get(subdirname.c_str());
           TH1F* sumMinus = 0;
@@ -344,7 +363,7 @@ int CreateErrorBands( unsigned int verbose = 0, string basedir = "ErrorBandInput
           TKey *plotkeyMinus;
           bool firstdatasetMinus = true;
           
-          if(syst[iSyst] == "JES"  || syst[iSyst] == "JER" || syst[iSyst] == "cferr1" || syst[iSyst] == "cferr2" || syst[iSyst] == "hf" || syst[iSyst] == "hfstats1" || syst[iSyst] == "hfstats2" || syst[iSyst] == "lf" || syst[iSyst] == "lfstats1" || syst[iSyst] == "lfstats2" || syst[iSyst] == "PU" || syst[iSyst] == "MuonSF" || syst[iSyst] == "ElectronSF")
+          if(syst[iSyst] == "JES"  || syst[iSyst] == "JER" || syst[iSyst] == "cferr1" || syst[iSyst] == "cferr2" || syst[iSyst] == "hf" || syst[iSyst] == "hfstats1" || syst[iSyst] == "hfstats2" || syst[iSyst] == "lf" || syst[iSyst] == "lfstats1" || syst[iSyst] == "lfstats2" || syst[iSyst] == "PU" || syst[iSyst] == "MuonSF" || syst[iSyst] == "ElectronSF") // WARNING HARDCODED
           {
             if(verbose >= 1) cout<<"   loop over histograms (in multisampleplot directories) and obtain total down-varied histogram"<<endl;
             while ( (plotkeyMinus = (TKey*)nextplotkeyMinus()) )
@@ -509,7 +528,7 @@ int CreateErrorBands( unsigned int verbose = 0, string basedir = "ErrorBandInput
         
         outFile->cd();
         if(outFile->Get(subdirname.c_str())==0)
-        outFile->mkdir(subdirname.c_str());
+          outFile->mkdir(subdirname.c_str());
         outFile->cd(subdirname.c_str());
         errorMinus->SetNameTitle("Minus","Minus");
         errorMinus->SetLineColor(1);

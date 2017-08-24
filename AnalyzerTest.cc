@@ -4319,7 +4319,7 @@ int main(int argc, char* argv[]){
     if(makePlots && !makeMatchingPlots){
       for (map<string,MultiSamplePlot*>::const_iterator it = MSPlot.begin(); it != MSPlot.end(); it++)
       {
-        cout << "MSPlot: " << it->first << endl;
+        ///cout << "MSPlot: " << it->first << endl;
         MultiSamplePlot *temp = it->second;
         
         //temp->showNumberEntries(showEntriesLegend);
@@ -4343,9 +4343,9 @@ int main(int argc, char* argv[]){
           temp->Draw(name, 1, true, true, true, 10);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
         }
         else temp->Draw(name, 1, false, false, false, 10);
-        cout << "writing to " << pathOutputdate+"MSPlot" << endl;
-        cout << "plot " << name << endl;
-        cout << "temp " << temp << endl;
+        //cout << "writing to " << pathOutputdate+"MSPlot" << endl;
+        //cout << "plot " << name << endl;
+        //cout << "temp " << temp << endl;
         if(!makeerrorbands) temp->Write(fout, name, true, (pathOutputdate+"/MSPlot").c_str(), "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
         else if(makeerrorbands){
           string postsys = "";
