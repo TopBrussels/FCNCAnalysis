@@ -888,7 +888,7 @@ int Z_Indice = -999;
 int Cjet_Indice = -999;
 int Ujet_Indice = -999;
 bool foundDecay = false;
-
+  bool makeMVAtree = false;
 TLorentzVector temp0;
 TLorentzVector temp1;
 TLorentzVector temp2;
@@ -1087,7 +1087,7 @@ int main(int argc, char* argv[]){
   bool makePlots = false;
   bool makeMVAPlots = false;
   bool makeMatchingPlots = false;
-  bool makeMVAtree = false;
+  makeMVAtree = false;
   bool applyMuonSF = false;
   bool applyMuonSF_down = false;
   bool applyMuonSF_up = false;
@@ -1128,6 +1128,22 @@ int main(int argc, char* argv[]){
   bool MakeSelectionTable = false;
   bool systematicplots = false;
   bool checkcuts = false;
+  bool makeerrorbands = false;
+  int doerrorbandJER = 0;
+  int doerrorbandJES = 0;
+  int doerrorbandPU = 0;
+  int doerrorbandMuon = 0;
+  int doerrorbandElectron = 0;
+  int doerrorbandcferr1   = 0;
+  int doerrorbandcferr2   = 0;
+  int doerrorbandhf       = 0;
+  int doerrorbandhfstats1 = 0;
+  int doerrorbandhfstats2 = 0;
+  int doerrorbandlf       = 0;
+  int doerrorbandlfstats1 = 0;
+  int doerrorbandlfstats2 = 0;
+  
+  bool doIniWeight = false;
   doDilep = false;
   for(int i = 0; i <argc; i++){
     if(string(argv[i]).find("help")!=string::npos) {
@@ -1163,7 +1179,42 @@ int main(int argc, char* argv[]){
       std::cout << "   doCutTable" << endl;
       std::cout << "   doSys" << endl;
       std::cout  << "   findFakeDisc" << endl;
+      std::cout  << "   ErrorBands: JESMin, JESPlus, JERMin, JERPlus, PUSFMin/Plus, MuonSFMin/Plus, ElectronSFMinPlus" << endl;
       return 0;
+    }
+    if(string(argv[i]).find("IniWeight")!=std::string::npos){
+      doIniWeight = true;
+    }
+    if(string(argv[i]).find("ErrorBands")!=std::string::npos) {
+      makeerrorbands = true;
+      i++;
+      if(string(argv[i]).find("JESMin")!=std::string::npos){ doerrorbandJES = -1; applyJEC_down= true;}
+      else if(string(argv[i]).find("JESPlus")!=std::string::npos){ doerrorbandJES = 1; applyJEC_up = true;}
+      else if(string(argv[i]).find("JERMin")!=std::string::npos){ doerrorbandJER = -1; applyJER_down = true; }
+      else if(string(argv[i]).find("JERPlus")!=std::string::npos){ doerrorbandJER = 1; applyJER_up = true;}
+      else if(string(argv[i]).find("PUMin")!=std::string::npos) doerrorbandPU = -1;
+      else if(string(argv[i]).find("PUSFPlus")!=std::string::npos) doerrorbandPU = 1;
+      else if(string(argv[i]).find("MuonSFMin")!=std::string::npos) doerrorbandMuon = -1;
+      else if(string(argv[i]).find("MuonSFPlus")!=std::string::npos) doerrorbandMuon = 1;
+      else if(string(argv[i]).find("ElectronSFMin")!=std::string::npos) doerrorbandElectron = -1;
+      else if(string(argv[i]).find("ElectronSFPlus")!=std::string::npos) doerrorbandElectron = 1;
+      else if(string(argv[i]).find("cferr1Min")!=std::string::npos)     doerrorbandcferr1    = -1;
+      else if(string(argv[i]).find("cferr1Plus")!=std::string::npos)    doerrorbandcferr1    = 1;
+      else if(string(argv[i]).find("cferr2Min")!=std::string::npos)     doerrorbandcferr2    = -1;
+      else if(string(argv[i]).find("cferr2Plus")!=std::string::npos)    doerrorbandcferr2    = 1;
+      else if(string(argv[i]).find("hfMin")!=std::string::npos)         doerrorbandhf           = -1;
+      else if(string(argv[i]).find("hfPlus")!=std::string::npos)        doerrorbandhf           = 1;
+      else if(string(argv[i]).find("hfstats1Min")!=std::string::npos)   doerrorbandhfstats1    = -1;
+      else if(string(argv[i]).find("hfstats1Plus")!=std::string::npos)  doerrorbandhfstats1    = 1;
+      else if(string(argv[i]).find("hfstats2Min")!=std::string::npos)   doerrorbandhfstats2    = -1;
+      else if(string(argv[i]).find("hfstats2Plus")!=std::string::npos)  doerrorbandhfstats2    = 1;
+      else if(string(argv[i]).find("lfMin")!=std::string::npos)         doerrorbandlf         = -1;
+      else if(string(argv[i]).find("lfPlus")!=std::string::npos)        doerrorbandlf         = 1;
+      else if(string(argv[i]).find("lfstats1Min")!=std::string::npos)   doerrorbandlfstats1    = -1;
+      else if(string(argv[i]).find("lfstats1Plus")!=std::string::npos)  doerrorbandlfstats1    = 1;
+      else if(string(argv[i]).find("lfstats2Min")!=std::string::npos)   doerrorbandlfstats2    = -1;
+      else if(string(argv[i]).find("lfstats2Plus")!=std::string::npos)  doerrorbandlfstats2    = 1;
+      
     }
     if(string(argv[i]).find("checkcuts")!=std::string::npos) {
       checkcuts= true;
@@ -1348,8 +1399,8 @@ int main(int argc, char* argv[]){
         cout << "setting lumi to " << Luminosity << endl;
       }
     }
-    if((applyJEC_down || applyJEC_up || applyJER_down || applyJER_up) && dataSetName.find("data")!=std::string::npos){continue;}
-    else if((applyJEC_down || applyJEC_up || applyJER_down || applyJER_up) && dataSetName.find("fake")!=std::string::npos){continue;}
+    if((applyJEC_down || applyJEC_up || applyJER_down || applyJER_up) && dataSetName.find("data")!=std::string::npos && !makeerrorbands){continue;}
+    else if((applyJEC_down || applyJEC_up || applyJER_down || applyJER_up) && dataSetName.find("fake")!=std::string::npos && !makeerrorbands){continue;}
     else{
       datasets.push_back(datasetsbefore[d]);
       cout << " looking at " << dataSetName << endl;
@@ -1420,7 +1471,7 @@ int main(int argc, char* argv[]){
   MSPlot["cutflowregions"] = new MultiSamplePlot(datasets, "cutflowregion", 10, -0.5, 9.5, "Cutflow region");
   
   
-  if(makeMVAtree && makeMVAPlots) {
+  if(makeMVAPlots) {
    // InitMVAMSPlotsSingletop("singletop", decayChannels);
     InitMVAMSPlotsTopPair("wzcontrol", decayChannels);
    // InitMVAMSPlotsTopPair("ttzcontrol", decayChannels);
@@ -1768,7 +1819,7 @@ int main(int argc, char* argv[]){
     // Set branch addresses and branch pointers
     InitTree(tTree[dataSetName.c_str()], isData, isfakes, isWZ);
     
-    if(makeMVAtree){
+    if(makeMVAtree ){
       
       TString output_file_name = pathOutputdate+"/MVAtrees/";
       mkdir(output_file_name, 0777);
@@ -1781,6 +1832,7 @@ int main(int argc, char* argv[]){
       createMVAtree(dataSetName);
       
     }
+    else if(makeMVAPlots) ClearMVAVars();
     
     if( (isData || dataSetName.find("WZ")!=std::string::npos) && checktrigger ){
       myfile.open((dataSetName+"eventID.txt").c_str());
@@ -2443,15 +2495,49 @@ int main(int argc, char* argv[]){
       
       double eventweightForNotMSplots = 1.;
       if(!isData && !isfakes) eventweightForNotMSplots = Luminosity/EquilumiSF;
-      if(!isData) eventweightForNotMSplots*= scaleFactor;
+      if(!isData ) eventweightForNotMSplots*= scaleFactor;
       //else if(isData) eventweightForplots =  Luminosity/EquilumiSF;;
       
       
       double eventweightForplots = 1.; /// MSPlot divides by eqlumi, for data and fakes this is the lumi, for MC this is set to one
       eventweightForplots = Luminosity/EquilumiSF; // equilumi SF is the eqlumi (not one) for MC and one for data/fakes
-      if(!isData) eventweightForplots*= scaleFactor;
+      if(!isData && !makeerrorbands) eventweightForplots*= scaleFactor;
+      if(makeerrorbands && !isData){
+        if(doerrorbandElectron != 0 && doerrorbandElectron < 0) eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF * scaleFactor_electronSF_down * scaleFactor_muonSF * scaleFactor_NLO;
+        else if(doerrorbandElectron != 0 && doerrorbandElectron > 0) eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF * scaleFactor_electronSF_up * scaleFactor_muonSF * scaleFactor_NLO;
+        else if(doerrorbandMuon != 0 && doerrorbandMuon < 0) eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF * scaleFactor_electronSF * scaleFactor_muonSF_down * scaleFactor_NLO;
+        else if(doerrorbandMuon != 0 && doerrorbandMuon > 0) eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF * scaleFactor_electronSF * scaleFactor_muonSF_up * scaleFactor_NLO;
+        else if(doerrorbandPU != 0 && doerrorbandPU < 0) eventweightForplots *= scaleFactor_puSF_down * scaleFactor_btagSF * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if(doerrorbandPU != 0 && doerrorbandPU > 0) eventweightForplots *= scaleFactor_puSF_up * scaleFactor_btagSF * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if(doerrorbandJES != 0 ) eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if(doerrorbandJER != 0 ) eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if (doerrorbandcferr1 != 0 && doerrorbandcferr1 < 0)     eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF_cferr1_down * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if (doerrorbandcferr1 != 0 && doerrorbandcferr1 > 0)     eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF_cferr1_up * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if (doerrorbandcferr2 != 0 && doerrorbandcferr2 < 0)     eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF_cferr2_down * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if (doerrorbandcferr2 != 0 && doerrorbandcferr2 > 0)     eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF_cferr2_up * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if (doerrorbandhf != 0 && doerrorbandhf < 0)             eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF_hf_down * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if (doerrorbandhf != 0 && doerrorbandhf > 0)             eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF_hf_up * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if (doerrorbandhfstats1 != 0 && doerrorbandhfstats1 < 0) eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF_hfstats1_down * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if (doerrorbandhfstats1 != 0 && doerrorbandhfstats1 > 0) eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF_hfstats1_up * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if (doerrorbandhfstats2 != 0 && doerrorbandhfstats2 < 0) eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF_hfstats2_down * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if (doerrorbandhfstats2 != 0 && doerrorbandhfstats2 > 0) eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF_hfstats2_up * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if (doerrorbandlf != 0 && doerrorbandlf < 0)             eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF_lf_down * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if (doerrorbandlf != 0 && doerrorbandlf > 0)             eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF_lf_up * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if (doerrorbandlfstats1 != 0 && doerrorbandlfstats1 < 0) eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF_lfstats1_down * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if (doerrorbandlfstats1 != 0 && doerrorbandlfstats1 > 0) eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF_lfstats1_up * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if (doerrorbandlfstats2 != 0 && doerrorbandlfstats2 < 0) eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF_lfstats2_down * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        else if (doerrorbandlfstats2 != 0 && doerrorbandlfstats2 > 0) eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF_lfstats2_up * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        
+        
+        else eventweightForplots*= scaleFactor;
+       // if(doerrorbandElectron != 0 && doerrorbandElectron > 0) eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+       // if(doerrorbandElectron != 0 && doerrorbandElectron < 0) eventweightForplots *= scaleFactor_puSF * scaleFactor_btagSF * scaleFactor_electronSF * scaleFactor_muonSF * scaleFactor_NLO;
+        
+        
+      }
       
-      /*if(dataSetName.find("fake")!=std::string::npos  && (channelInt == 0 || channelInt== 1)){
+      if(doIniWeight){
+      if(dataSetName.find("fake")!=std::string::npos  && (channelInt == 0 || channelInt== 1)){
         eventweightForNotMSplots *= 1.825;
         eventweightForplots *= 1.825;
       }
@@ -2463,7 +2549,7 @@ int main(int argc, char* argv[]){
         eventweightForNotMSplots *= 1.235;
         eventweightForplots *= 1.235; 
       }
-*/
+      }
       
       //  if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)){ eventweightForNotMSplots *= 0.545 ; eventweightForplots *= 0.545 ; scaleFactor *= 0.545 ;}
       // if(dataSetName.find("fake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)){ eventweightForNotMSplots *= 0.590; eventweightForplots *= 0.590; scaleFactor  *= 0.590;}
@@ -3354,7 +3440,7 @@ int main(int argc, char* argv[]){
       }
       MVA_EqLumi = EquilumiSF;
       MVA_Luminosity = Luminosity;
-      if(makeMVAtree ){
+      if(makeMVAtree || makeMVAPlots){
         //cout << "ievt " << ievt << endl;
         if(foundWcorrect) MakeMVAvars(Region, scaleFactor,0, scaleFactorWZcorr, d);
         else if(foundWwrong) MakeMVAvars(Region, scaleFactor,1, scaleFactorWZcorr,d);
@@ -3905,8 +3991,9 @@ int main(int argc, char* argv[]){
     histo1D_muon2_sign_pt->SetBinContent(iBin,significance);
   }
   
-  PtInvFile = TFile::Open( PtInvFileName.c_str(), "RECREATE" );
-  PtInvFile->cd();
+  /*
+
+   PtInvFile->cd();
   histo1D_lepton0_sign_pt->Write();
   histo1D_lepton0_bkg_pt->Write();
   histo1D_lepton0_sig_pt->Write();
@@ -3937,7 +4024,7 @@ int main(int argc, char* argv[]){
   histo1D_muon2_bkg_pt->Write();
   histo1D_muon2_sig_pt->Write();
   
-  
+  */
   
   
   cout << " fake before " << fakebefore << " after " << fakeafter << endl;
@@ -4154,7 +4241,66 @@ int main(int argc, char* argv[]){
   ///*****************///
   if(makePlots || dofakevalidation || makeMatchingPlots || systematicplots || findFakeDisc){
     string rootFileName ="NtuplePlots.root";
+    if(makeerrorbands){
+      if(doerrorbandElectron != 0 && doerrorbandElectron < 0) rootFileName = "NtuplePlots_ElectronSFMinus.root";
+      else if(doerrorbandElectron != 0 && doerrorbandElectron > 0) rootFileName = "NtuplePlots_ElectronSFPlus.root";
+      else if(doerrorbandMuon != 0 && doerrorbandMuon < 0) rootFileName = "NtuplePlots_MuonSFMinus.root";
+      else if(doerrorbandMuon != 0 && doerrorbandMuon > 0) rootFileName = "NtuplePlots_MuonSFPlus.root";
+      else if(doerrorbandPU != 0 && doerrorbandPU < 0) rootFileName = "NtuplePlots_PUMinus.root";
+      else if(doerrorbandPU != 0 && doerrorbandPU > 0) rootFileName = "NtuplePlots_PUPlus.root";
+      else if(doerrorbandJER != 0 && doerrorbandJER < 0) rootFileName = "NtuplePlots_JERMinus.root";
+      else if(doerrorbandJER != 0 && doerrorbandJER > 0) rootFileName = "NtuplePlots_JERPlus.root";
+      else if(doerrorbandJES != 0 && doerrorbandJES < 0) rootFileName = "NtuplePlots_JESMinus.root";
+      else if(doerrorbandJES != 0 && doerrorbandJES > 0) rootFileName = "NtuplePlots_JESPlus.root";
+      else if (doerrorbandcferr1 != 0 &&    doerrorbandcferr1 < 0) rootFileName = "NtuplePlots_cferr1Minus.root";
+      else if (doerrorbandcferr1 != 0 &&    doerrorbandcferr1 > 0) rootFileName = "NtuplePlots_cferr1Plus.root";
+      else if (doerrorbandcferr2 != 0 &&    doerrorbandcferr2 < 0) rootFileName = "NtuplePlots_cferr2Minus.root";
+      else if (doerrorbandcferr2 != 0 &&    doerrorbandcferr2 > 0) rootFileName = "NtuplePlots_cferr2Plus.root";
+      else if (doerrorbandhf != 0 &&        doerrorbandhf < 0) rootFileName = "NtuplePlots_hfMinus.root";
+      else if (doerrorbandhf != 0 &&        doerrorbandhf > 0) rootFileName = "NtuplePlots_hfPlus.root";
+      else if (doerrorbandhfstats1 != 0 &&  doerrorbandhfstats1 < 0) rootFileName = "NtuplePlots_hfstats1Minus.root";
+      else if (doerrorbandhfstats1 != 0 &&  doerrorbandhfstats1 > 0) rootFileName = "NtuplePlots_hfstats1Plus.root";
+      else if (doerrorbandhfstats2 != 0 &&  doerrorbandhfstats2 < 0) rootFileName = "NtuplePlots_hfstats2Minus.root";
+      else if (doerrorbandhfstats2 != 0 &&  doerrorbandhfstats2 > 0) rootFileName = "NtuplePlots_hfstats2Plus.root";
+      else if (doerrorbandlf != 0 &&        doerrorbandlf < 0) rootFileName = "NtuplePlots_lfMinus.root";
+      else if (doerrorbandlf != 0 &&        doerrorbandlf > 0) rootFileName = "NtuplePlots_lfPlus.root";
+      else if (doerrorbandlfstats1 != 0 &&  doerrorbandlfstats1 < 0) rootFileName = "NtuplePlots_lfstats1Minus.root";
+      else if (doerrorbandlfstats1 != 0 &&  doerrorbandlfstats1 > 0) rootFileName = "NtuplePlots_lfstats1Plus.root";
+      else if (doerrorbandlfstats2 != 0 &&  doerrorbandlfstats2 < 0) rootFileName = "NtuplePlots_lfstats2Minus.root";
+      else if (doerrorbandlfstats2 != 0 &&  doerrorbandlfstats2 > 0) rootFileName = "NtuplePlots_lfstats2Plus.root";
+      
+      
+    }
     string place =pathOutputdate+"/MSPlot/";
+    if(makeerrorbands){
+      if(doerrorbandElectron != 0 && doerrorbandElectron < 0) place =pathOutputdate+"/MSPlotElMin/";
+      else if(doerrorbandElectron != 0 && doerrorbandElectron > 0) place =pathOutputdate+"/MSPlotElPlus/";
+      else if(doerrorbandMuon != 0 && doerrorbandMuon < 0) place =pathOutputdate+"/MSPlotMuMin/";
+      else if(doerrorbandMuon != 0 && doerrorbandMuon > 0) place =pathOutputdate+"/MSPlotMuPlus/";
+      else if(doerrorbandPU != 0 && doerrorbandPU < 0) place =pathOutputdate+"/MSPlotPuMin/";
+      else if(doerrorbandPU != 0 && doerrorbandPU > 0)place =pathOutputdate+"/MSPlotPuPlus/";
+      else if(doerrorbandJER != 0 && doerrorbandJER < 0) place =pathOutputdate+"/MSPlotJERMin/";
+      else if(doerrorbandJER != 0 && doerrorbandJER > 0) place =pathOutputdate+"/MSPlotJERPlus/";
+      else if(doerrorbandJES != 0 && doerrorbandJES < 0) place =pathOutputdate+"/MSPlotJESMin/";
+      else if(doerrorbandJES != 0 && doerrorbandJES > 0) place =pathOutputdate+"/MSPlotJESPlus/";
+      else if (doerrorbandcferr1 != 0 && doerrorbandcferr1 < 0) place =pathOutputdate+"/MSPlotcferr1Minus/";
+      else if (doerrorbandcferr1 != 0 && doerrorbandcferr1 > 0) place =pathOutputdate+"/MSPlotcferr1Plus/";
+      else if (doerrorbandcferr2 != 0 && doerrorbandcferr2 < 0) place =pathOutputdate+"/MSPlotcferr2Minus/";
+      else if (doerrorbandcferr2 != 0 && doerrorbandcferr2 > 0) place =pathOutputdate+"/MSPlotcferr2Plus/";
+      else if (doerrorbandhf != 0 && doerrorbandhf < 0) place =pathOutputdate+"/MSPlothfMinus/";
+      else if (doerrorbandhf != 0 && doerrorbandhf > 0) place =pathOutputdate+"/MSPlothfPlus/";
+      else if (doerrorbandhfstats1 != 0 && doerrorbandhfstats1 < 0) place =pathOutputdate+"/MSPlothfstats1Minus/";
+      else if (doerrorbandhfstats1 != 0 && doerrorbandhfstats1 > 0) place =pathOutputdate+"/MSPlothfstats1Plus/";
+      else if (doerrorbandhfstats2 != 0 && doerrorbandhfstats2 < 0) place =pathOutputdate+"/MSPlothfstats2Minus/";
+      else if (doerrorbandhfstats2 != 0 && doerrorbandhfstats2 > 0) place =pathOutputdate+"/MSPlothfstats2Plus/";
+      else if (doerrorbandlf != 0 && doerrorbandlf < 0) place =pathOutputdate+"/MSPlotlfMinus/";
+      else if (doerrorbandlf != 0 && doerrorbandlf > 0) place =pathOutputdate+"/MSPlotlfPlus/";
+      else if (doerrorbandlfstats1 != 0 && doerrorbandlfstats1 < 0) place =pathOutputdate+"/MSPlotlfstats1Minus/";
+      else if (doerrorbandlfstats1 != 0 && doerrorbandlfstats1 > 0) place =pathOutputdate+"/MSPlotlfstats1Plus/";
+      else if (doerrorbandlfstats2 != 0 && doerrorbandlfstats2 < 0) place =pathOutputdate+"/MSPlotlfstats2Minus/";
+      else if (doerrorbandlfstats2 != 0 && doerrorbandlfstats2 > 0) place =pathOutputdate+"/MSPlotlfstats2Plus/";
+      else place =pathOutputdate+"/MSPlotnom/";
+    }
     string placeTH1F = pathOutputdate+"/TH1F/";
     string placeTH2F = pathOutputdate+"/TH2F/";
     vector <string> vlabel_chan = {"3#mu", "1e2#mu", "2e1#mu", "3e"};
@@ -4192,11 +4338,47 @@ int main(int argc, char* argv[]){
         if(name.find("Decay")!=std::string::npos) temp->setBins(vlabel_chan);
         if(name.find("cutflow")!=std::string::npos) temp->setBins(v_cutflow);
         if(name.find("cutflowregion")!=std::string::npos) temp->setBins(v_cutflowreg);
-        temp->Draw(name, 1, false, false, false, 10);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
+        if(!makeerrorbands){
+          temp->setErrorBandFile("ErrorBand/ErrorBandFile.root", false);  // false means that there are up and down sys
+          temp->Draw(name, 1, true, true, true, 10);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
+        }
+        else temp->Draw(name, 1, false, false, false, 10);
         cout << "writing to " << pathOutputdate+"MSPlot" << endl;
         cout << "plot " << name << endl;
         cout << "temp " << temp << endl;
-        temp->Write(fout, name, true, (pathOutputdate+"/MSPlot").c_str(), "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
+        if(!makeerrorbands) temp->Write(fout, name, true, (pathOutputdate+"/MSPlot").c_str(), "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
+        else if(makeerrorbands){
+          string postsys = "";
+          if(doerrorbandElectron != 0 && doerrorbandElectron < 0) postsys = "ElMin";
+          else if(doerrorbandElectron != 0 && doerrorbandElectron > 0) postsys = "ElPlus";
+          else if(doerrorbandMuon != 0 && doerrorbandMuon < 0) postsys = "MuMin";
+          else if(doerrorbandMuon != 0 && doerrorbandMuon > 0) postsys = "MuPlus";
+          else if(doerrorbandPU != 0 && doerrorbandPU < 0) postsys = "PuMin";
+          else if(doerrorbandPU != 0 && doerrorbandPU > 0)postsys = "PuPlus";
+          else if(doerrorbandJER != 0 && doerrorbandJER < 0) postsys = "JERMin";
+          else if(doerrorbandJER != 0 && doerrorbandJER > 0) postsys = "JERPlus";
+          else if(doerrorbandJES != 0 && doerrorbandJES < 0) postsys = "JESMin";
+          else if(doerrorbandJES != 0 && doerrorbandJES > 0) postsys = "JESPlus";
+          else if (doerrorbandcferr1 != 0 && doerrorbandcferr1 < 0) postsys ="cferr1Minus";
+          else if (doerrorbandcferr1 != 0 && doerrorbandcferr1 > 0) postsys ="cferr1Plus";
+          else if (doerrorbandcferr2 != 0 && doerrorbandcferr2 < 0) postsys ="cferr2Minus";
+          else if (doerrorbandcferr2 != 0 && doerrorbandcferr2 > 0) postsys ="cferr2Plus";
+          else if (doerrorbandhf != 0 && doerrorbandhf < 0) postsys ="hfMinus";
+          else if (doerrorbandhf != 0 && doerrorbandhf > 0) postsys ="hfPlus";
+          else if (doerrorbandhfstats1 != 0 && doerrorbandhfstats1 < 0) postsys ="hfstats1Minus";
+          else if (doerrorbandhfstats1 != 0 && doerrorbandhfstats1 > 0) postsys ="hfstats1Plus";
+          else if (doerrorbandhfstats2 != 0 && doerrorbandhfstats2 < 0) postsys ="hfstats2Minus";
+          else if (doerrorbandhfstats2 != 0 && doerrorbandhfstats2 > 0) postsys ="hfstats2Plus";
+          else if (doerrorbandlf != 0 && doerrorbandlf < 0) postsys ="lfMinus";
+          else if (doerrorbandlf != 0 && doerrorbandlf > 0) postsys ="lfPlus";
+          else if (doerrorbandlfstats1 != 0 && doerrorbandlfstats1 < 0) postsys ="lfstats1Minus";
+          else if (doerrorbandlfstats1 != 0 && doerrorbandlfstats1 > 0) postsys ="lfstats1Plus";
+          else if (doerrorbandlfstats2 != 0 && doerrorbandlfstats2 < 0) postsys ="lfstats2Minus";
+          else if (doerrorbandlfstats2 != 0 && doerrorbandlfstats2 > 0) postsys ="lfstats2Plus";
+          else postsys = "nom"; 
+          
+           temp->Write(fout, name, false, (pathOutputdate+"/MSPlot"+postsys).c_str(), "png");
+        }
       }
       
     }
@@ -5260,7 +5442,7 @@ int main(int argc, char* argv[]){
       cout << "(This corresponds to " << mins << " min and " << secs << " s)" << endl;
   }
   
-  PtInvFile->Close();
+ // PtInvFile->Close();
   
   
   cout << "********************************************" << endl;
@@ -5558,7 +5740,7 @@ void MakeMVAvars(int Region, Double_t scaleFactor, int nonpromptWrong_, Double_t
   MVA_mWt2 = static_cast<float>(mWT2);
   MVA_mWt = static_cast<float>(mWT);
   
-  mvatree->Fill();
+  if(makeMVAtree) mvatree->Fill();
   
   
   double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
