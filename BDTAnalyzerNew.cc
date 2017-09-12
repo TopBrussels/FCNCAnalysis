@@ -140,11 +140,12 @@ string tTreeName = "";
 string postfix = "";
 string output_histo_name = "";
 string ntupleFileName ="";
-Int_t nbin = 20;
+Int_t nbin = 20; // 20 voor zct // 25 voor toppair zut en 20? voor st zut
+//nbin = 20;
 double BDT_begin = -1;
 double BDT_end = 1;
 
-
+bool doPostFit =false;
 Int_t nbinMTW = 20;
 Double_t endMTW = 300.;
 
@@ -791,6 +792,7 @@ Int_t main(Int_t argc, char* argv[]){
   
   Int_t testnr = -1;
   //////////// Settings of the analysis //////////////////
+  bool makeerrorbands =false;
   for(Int_t i = 0; i <argc; i++){
     if(string(argv[i]).find("help")!=string::npos) {
       std::cout << "****** help ******" << endl;
@@ -805,16 +807,25 @@ Int_t main(Int_t argc, char* argv[]){
       std::cout << "   PSdata: generate pseudo data" << endl;
       std::cout << "   doSystematics: loop over systematics" << endl;
       std::cout << "   doPDFunc: calculate PDF unc" << endl;
-      std::cout << "   PlotSystematics: make sys plots fo WZ" << endl;
+      std::cout << "   PlotSystematics: make sys plots " << endl;
       std::cout << "   PlotMVAvars: plot mva vars" << endl;
       std::cout << "  doMTWtemplate make mtw templates" << endl;
       std::cout << "  doTTZtemplate make mtw templates" << endl;
       std::cout << "  doIniWeight " << endl;
-
+      std::cout << "  makeerrorbands " << endl;
+      std::cout << "  doPostFit " << endl;
       return 0;
     }
     if(string(argv[i]).find("doIniWeight")!=std::string::npos){
       applyiniweights  = true;
+      
+    }
+    if(string(argv[i]).find("doPostFit")!=std::string::npos){
+      doPostFit = true;
+      
+    }
+    if(string(argv[i]).find("ErrorBand")!=std::string::npos){
+      makeerrorbands  = true;
       
     }
     if(string(argv[i]).find("doMTWtemplate")!=std::string::npos){
@@ -905,6 +916,11 @@ Int_t main(Int_t argc, char* argv[]){
   if(doTTZtemplate ) combinetemplate_filename = placeOutputReading+"/Reader_"+coupling+"_TTZ.root";
   cout <<" - Combine templates stored at " << combinetemplate_filename.c_str() << endl;
   
+  
+  string postfitSFfilename = "Zut_PostFitBinnedSF_both.root";
+  TFile *postfitSFfile = 0;
+  if(doPostFit) postfitSFfile = new TFile(postfitSFfilename.c_str(),"READ");
+  
   /*
    if(!toppair && !doZut){ BDT_begin= -0.4; BDT_end = 0.8; nbin = 15;}
    else if(toppair&& !doZut){ BDT_begin= -0.9; BDT_end = 0.8; nbin = 20;}
@@ -931,8 +947,8 @@ Int_t main(Int_t argc, char* argv[]){
     thesystlist.push_back("btagSF_lfDown");
     thesystlist.push_back("btagSF_lfstats1Down");
     thesystlist.push_back("btagSF_lfstats2Down");
-   // thesystlist.push_back("JERUp");
-   // thesystlist.push_back("JESUp");
+    thesystlist.push_back("JERUp"); // to plot je inmpact only tunr these one with do systematics and plotsystematics
+    thesystlist.push_back("JESUp");
     
     thesystlist.push_back("puSFUp");
     thesystlist.push_back("electronSFUp");
@@ -945,11 +961,11 @@ Int_t main(Int_t argc, char* argv[]){
     thesystlist.push_back("btagSF_lfUp");
     thesystlist.push_back("btagSF_lfstats1Up");
     thesystlist.push_back("btagSF_lfstats2Up");
+   
     
+    thesystlist.push_back("JERDown");
     
-   // thesystlist.push_back("JERDown");
-    
-    //thesystlist.push_back("JESDown");
+    thesystlist.push_back("JESDown");
   }
   cout << "Number of systematics " << thesystlist.size() << endl;
   //for plotting
@@ -1280,32 +1296,24 @@ Int_t main(Int_t argc, char* argv[]){
         //if(dataSetName.find("fake")!=std::string::npos) weight *= 0.0001;
         
         if(applyiniweights){
-          if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinW")!=std::string::npos && MVA_channel == 0 ){
-            weight *= 0.615;
+                   if(doMTWtemplate){
+          if(dataSetName.find("fake")!=std::string::npos  && (MVA_channel == 0 || MVA_channel == 1)){
+            weight *= 1.825;
           }
-          if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinZ")!=std::string::npos && MVA_channel == 0 ){
-            weight *= 0.;
+          else if(dataSetName.find("fake")!=std::string::npos  && (MVA_channel == 2 || MVA_channel == 3)){
+            weight *= 1.321;
           }
-          if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinW")!=std::string::npos && MVA_channel == 2){
-            weight *= 0.615 ;
+          else if(dataSetName.find("WZT")!=std::string::npos  ){
+            weight *= 1.235;
           }
-          if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinZ")!=std::string::npos && MVA_channel == 2){
-            weight *= 0.075 ;
           }
-          if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinW")!=std::string::npos &&  MVA_channel == 1){
-            weight *= 0.48;
-          }
-          if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinZ")!=std::string::npos &&  MVA_channel == 1){
-            weight *= 0.;
-          }
-          if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinW")!=std::string::npos  && MVA_channel == 3){
-            weight *= 0.48;
-          }
-          if(dataSetName.find("fake")!=std::string::npos && dataSetName.find("nonpromptinZ")!=std::string::npos  && MVA_channel == 3){
-            weight *= 0.075;
-          }
-          if(dataSetName.find("WZT")!=std::string::npos ){
-            weight *= 1.618;
+          if(doTTZtemplate && ! singletoptemplate){
+            if(dataSetName.find("fake")!=std::string::npos  && (MVA_channel == 0 || MVA_channel == 1)){
+              weight *= 0.926; // fake el in Z
+            }
+            else if(dataSetName.find("fake")!=std::string::npos  && (MVA_channel == 2 || MVA_channel == 3)){
+              weight *= 1.076;
+            }
           }
          /* if(dataSetName.find("WZT")!=std::string::npos && MVA_channel == 2){ weight *= 1.776 ;}
           if(dataSetName.find("WZT")!=std::string::npos && MVA_channel == 1){
@@ -1313,6 +1321,7 @@ Int_t main(Int_t argc, char* argv[]){
           }
           if(dataSetName.find("WZT")!=std::string::npos && MVA_channel == 3){ weight *= 1.576;}*/
         }
+        
         
         if(dataSetName.find("nonpromptwrong")!=std::string::npos) hist_BDT_tt_nonpromptinZ->Fill(MVA_BDT, weight);
         if(dataSetName.find("nonpromptcorrect")!=std::string::npos) hist_BDT_tt_nonpromptinW->Fill(MVA_BDT, weight);
@@ -1405,6 +1414,31 @@ Int_t main(Int_t argc, char* argv[]){
         
         // for MS plots
         Double_t weightMSPlot = weight;//*MVA_weightWZcorr;
+        string channelname = "";
+        string regionname = "";
+        string dataSetTitel = datasets[d]->Title();
+        if(dataSetTitel.find("ZFake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 1)) dataSetTitel = "ZFakeMu";
+        else if(dataSetTitel.find("ZFake")!=std::string::npos && (MVA_channel == 2 || MVA_channel == 3)) dataSetTitel = "ZFakeEl";
+        else if(dataSetTitel.find("WFake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)) dataSetTitel = "WFakeMu";
+        else if(dataSetTitel.find("WFake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)) dataSetTitel = "WFakeEl";
+
+        if(doPostFit && !isData && dataSetName.find("NP")==std::string::npos){
+          if(MVA_channel == 0) channelname = "_LepChan_3mu_";
+          else if(MVA_channel == 1) channelname = "_LepChan_1e2mu_";
+          else if(MVA_channel == 2) channelname = "_LepChan_2e1mu_";
+          else if(MVA_channel == 3) channelname = "_LepChan_3e_";
+          
+          if(toppair) regionname = "TTSR";
+          else regionname = "STSR";
+          
+          //cout << "getting " << ("SF_"+ dataSetTitel +channelname+regionname).c_str() << " from " << postfitSFfilename.c_str()  << endl;
+          TH1F* h_postfitSF = (TH1F*)( postfitSFfile->Get(("SF_"+ dataSetTitel +channelname+regionname).c_str())->Clone("h_postfitSF"));
+          if(h_postfitSF == 0) cout << "histo not found" << endl;
+         // else cout << "got histo " << endl;
+          double postfitSF = h_postfitSF->GetBinContent( h_postfitSF->GetXaxis()->FindBin(MVA_BDT));
+          weightMSPlot *= postfitSF;
+        }
+
         if(isData || dataSetName.find("fake")!=std::string::npos) weightMSPlot *= MVA_Luminosity;
         /// Fill plots
         if(doPDFunc && !doMTWtemplate && !doTTZtemplate){
@@ -1715,6 +1749,7 @@ Int_t main(Int_t argc, char* argv[]){
       }
       //cout << "making template" << endl;
       TFile* combinetemplate_file(0);
+      
       if(d == 0 && isys == 0) combinetemplate_file = TFile::Open( combinetemplate_filename.c_str(), "RECREATE" );
       else combinetemplate_file = TFile::Open( combinetemplate_filename.c_str(), "UPDATE" );
       combinetemplate_file->cd();
@@ -2234,6 +2269,7 @@ Int_t main(Int_t argc, char* argv[]){
        
        }*/
       combinetemplate_file->Close();
+      
       //cout << "closed " << combinetemplate_filename.c_str() << endl;
       delete combinetemplate_file;
       delete  hist_eee; delete hist_uuu; delete hist_uue; delete hist_eeu;
@@ -2294,7 +2330,7 @@ Int_t main(Int_t argc, char* argv[]){
   //cout << "ENTRIES " << hist_WZ->GetEntries() << endl;
   
   cout << "ENTRIES " << histo1DMTW["MTW_WZ"]->GetEntries() << endl;
-  if(!doMTWtemplate && !doTTZtemplate){
+  if(!doMTWtemplate && !doTTZtemplate && !doPostFit){
     fin->Close();
     delete fin;
   }
@@ -2445,10 +2481,10 @@ Int_t main(Int_t argc, char* argv[]){
         double scalefakes =  1.;
         if(!datafound) temp->setDataLumi(Luminosity);
         if(name.find("all")!=std::string::npos) temp->setChannel(true, "all");
-        if(name.find("eee")!=std::string::npos){ temp->setChannel(true, "3e"); scalefakes = scaleFakes_eee; }
-        if(name.find("eeu")!=std::string::npos){ temp->setChannel(true, "2e1#mu"); scalefakes = scaleFakes_eeu; }
-        if(name.find("uue")!=std::string::npos){ temp->setChannel(true, "1e2#mu"); scalefakes = scaleFakes_uue; }
-        if(name.find("uuu")!=std::string::npos){ temp->setChannel(true, "3#mu"); scalefakes = scaleFakes_uuu; }
+        if(name.find("eee")!=std::string::npos){ temp->setChannel(true, "3e"); scalefakes = scaleFakes_eee; cout << "scalefakes_eee " << scaleFakes_eee << endl; }
+        if(name.find("eeu")!=std::string::npos){ temp->setChannel(true, "2e1#mu"); scalefakes = scaleFakes_eeu;  cout << "scalefakes_eeu " << scaleFakes_eeu << endl;  }
+        if(name.find("uue")!=std::string::npos){ temp->setChannel(true, "1e2#mu"); scalefakes = scaleFakes_uue;  cout << "scalefakes_uue " << scaleFakes_uue << endl; }
+        if(name.find("uuu")!=std::string::npos){ temp->setChannel(true, "3#mu"); scalefakes = scaleFakes_uuu;  cout << "scalefakes_uuu " << scaleFakes_uuu<< endl;  }
         if(name.find("Decay")!=std::string::npos) temp->setBins(vlabel_chan);
         //temp->SetPreliminary(false);
         temp->Draw(name, 1, false, false, false, 10,scalefakes);  // string label, unsigned Int_t RatioType, bool addRatioErrorBand, bool addErrorBand, bool    cout << "writing to " << pathOutputdate+"MSPlotMTW" << endl;
@@ -2495,16 +2531,24 @@ Int_t main(Int_t argc, char* argv[]){
         cout << "MSPlot: " << it->first << endl;
         MultiSamplePlot *temp = it->second;
         string name = it->first;
+        double scalefakes = 1.;
         if(!datafound) temp->setDataLumi(Luminosity);
         if(name.find("all")!=std::string::npos) temp->setChannel(true, "all");
-        if(name.find("eee")!=std::string::npos) temp->setChannel(true, "3e");
-        if(name.find("eeu")!=std::string::npos) temp->setChannel(true, "2e1#mu");
-        if(name.find("uue")!=std::string::npos) temp->setChannel(true, "1e2#mu");
-        if(name.find("uuu")!=std::string::npos) temp->setChannel(true, "3#mu");
+           if(name.find("eee")!=std::string::npos){ temp->setChannel(true, "3e"); scalefakes = scaleFakes_eee; }
+          if(name.find("eeu")!=std::string::npos){ temp->setChannel(true, "2e1#mu"); scalefakes = scaleFakes_eeu;  }
+          if(name.find("uue")!=std::string::npos){ temp->setChannel(true, "1e2#mu"); scalefakes = scaleFakes_uue; }
+          if(name.find("uuu")!=std::string::npos){ temp->setChannel(true, "3#mu"); scalefakes = scaleFakes_uuu; }
+     
+          
         if(name.find("Decay")!=std::string::npos) temp->setBins(vlabel_chan);
         //temp->SetPreliminary(false);
-        temp->Draw(name, 1, false, false, false, 10);  // string label, unsigned Int_t RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, Int_t scaleNPSignal
-        cout << "writing to " << pathOutputdate+"MSPlot" << endl;
+       /* if(doPostFit){
+          if(doZut ) temp->setErrorBandFile("Zut_PostFitErrorBand.root");
+          else if(!doZut ) temp->setErrorBandFile("Zct_PostFitErrorBand.root");
+          temp->Draw(name, 1, true, true, true, 10,scalefakes);
+        }
+        else*/
+          temp->Draw(name, 1, false, false, false, 10,scalefakes);  // string label, unsigned Int_t RatioType, bool addRatioErrorBand, bool addErrorBand, bool    cout << "writing to " << cout << "writing to " << pathOutputdate+"MSPlot" << endl;
         cout << "plot " << name << endl;
         cout << "temp " << temp << endl;
         temp->Write(fout, name, true, (pathOutputdate+"MSPlot").c_str(), "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
@@ -2604,7 +2648,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -2662,7 +2706,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -2721,7 +2765,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -2779,7 +2823,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -2905,7 +2949,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -2963,7 +3007,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -3022,7 +3066,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -3080,7 +3124,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -3324,7 +3368,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -3382,7 +3426,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -3440,7 +3484,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -3498,7 +3542,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -3557,7 +3601,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -3615,7 +3659,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -3672,7 +3716,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -3730,7 +3774,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -3787,7 +3831,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -3845,7 +3889,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -3902,7 +3946,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -3960,7 +4004,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -4017,7 +4061,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -4075,7 +4119,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -4134,7 +4178,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -4192,7 +4236,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -4250,7 +4294,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -4308,7 +4352,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -4365,7 +4409,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -4423,7 +4467,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -4482,7 +4526,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -4540,7 +4584,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -4871,7 +4915,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -4929,7 +4973,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -4987,7 +5031,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -5045,7 +5089,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -5104,7 +5148,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -5162,7 +5206,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -5219,7 +5263,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -5277,7 +5321,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -5334,7 +5378,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -5392,7 +5436,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -5449,7 +5493,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -5507,7 +5551,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -5564,7 +5608,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -5622,7 +5666,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -5681,7 +5725,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -5739,7 +5783,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -5797,7 +5841,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -5855,7 +5899,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -5912,7 +5956,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -5970,7 +6014,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -6029,7 +6073,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -6087,7 +6131,7 @@ Int_t main(Int_t argc, char* argv[]){
       ratioUp->GetYaxis()->SetTitleSize(0.11);
       ratioUp->GetYaxis()->SetLabelSize(0.1);
       ratioUp->GetYaxis()->SetTitleOffset(0.4);
-      ratioUp->GetXaxis()->SetTitle("BDT");
+      ratioUp->GetXaxis()->SetTitle("D");
       ratioUp->GetXaxis()->SetTitleSize(0.12);
       ratioUp->GetXaxis()->SetLabelSize(0.1);
       ratioUp->Draw("P");
@@ -6639,7 +6683,7 @@ void InitMSPlotsMTW(string prefix, vector <int> decayChannels){
     decaystring += prefix;
     
     //cout << "init msplots " << endl;
-    MSPlotMTW[("MTW_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("MTW_"+decaystring).c_str(), nbinMTW, 0,endMTW, "transv. mass W boson (GeV)","GeV");
+    MSPlotMTW[("MTW_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("MTW_"+decaystring).c_str(), nbinMTW, 0,endMTW, "transv. mass W boson","GeV");
     
 /*
     MSPlotMTW[("DeltaR_NonIsoLepJet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("DeltaR_NonIsoLepJet_"+decaystring).c_str(), 20,0.,8., "#Delta R (non iso, jet)","units");
@@ -6667,7 +6711,7 @@ void InitMSPlotsTTZ(string prefix, vector <int> decayChannels){
     decaystring += prefix;
     
     //cout << "init msplots " << endl;
-    MSPlotTTZ[("TTZ_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("TTZ_"+decaystring).c_str(), nbinTTZ, beginTTZ,endTTZ, "inv. mass Z boson (GeV)","GeV");
+    MSPlotTTZ[("TTZ_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("TTZ_"+decaystring).c_str(), nbinTTZ, beginTTZ,endTTZ, "","units");
     
     /*
      MSPlotMTW[("DeltaR_NonIsoLepJet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, ("DeltaR_NonIsoLepJet_"+decaystring).c_str(), 20,0.,8., "#Delta R (non iso, jet)","units");
@@ -6700,9 +6744,9 @@ void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair, boo
     
     
     //cout << "init " << (prefix+"_BDT_"+decaystring).c_str() << endl;
-    MSPlot[(prefix+"BDT_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_BDT_"+decaystring).c_str(), nbin,BDT_begin,BDT_end, "BDT");
+    MSPlot[(prefix+"BDT_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_BDT_"+decaystring).c_str(), nbin,BDT_begin,BDT_end, "D");
     MSPlot[ (prefix+"channel_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"channel_"+decaystring).c_str(), 5,-0.5, 4.5, "decay");
-    MSPlot[ (prefix+"weight_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"weight_"+decaystring).c_str(), 100,0, 0.3, "eventweight");
+  //  MSPlot[ (prefix+"weight_"+decaystring).c_str()]= new MultiSamplePlot(datasets, (prefix+"weight_"+decaystring).c_str(), 100,0, 0.3, "eventweight");
     /*
     MSPlot[(prefix+"DeltaR_NonIsoLepJet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"DeltaR_NonIsoLepJet_"+decaystring).c_str(), 20,0.,8., "#Delta R (non iso, jet)","units");
    
@@ -6719,7 +6763,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair, boo
     MSPlot[(prefix+"NJETSCSVM_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"NJETSCSVM_"+decaystring).c_str(), 6,-0.5,5.5, "nb CSVM jets","units");
     MSPlot[(prefix+"NJETSCSVMcut_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"NJETSCSVMcut_"+decaystring).c_str(), 6,-0.5,5.5, "nb CSVM jets","units");
    */
-    if(!istoppair){
+  /*  if(!istoppair){
       MSPlot[(prefix+"mlb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"mlb_"+decaystring).c_str(),10, 0, 500, "inv. mass l_{W}b (GeV)","GeV");
       MSPlot[(prefix+"dRWlepb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dRWlepb_"+decaystring).c_str(),10,0, 5, "#Delta R(l_{W},b)");
       MSPlot[(prefix+"dPhiWlepb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"dPhiWlepb_"+decaystring).c_str(),10,-4, 4, "#Delta #Phi (l_{W},b)");
@@ -6758,7 +6802,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair, boo
         
         
       }
-    }
+    }*/
     
   }
   decaystring = "";
@@ -7158,7 +7202,7 @@ vector<double> BDTCUT(string region, string coupling){
     TCanvas* c = new TCanvas("c", "Signal vs Background");
     gStyle->SetOptStat(0);
     h_sum_bkg->GetYaxis()->SetRange(min,1.049*max);
-    h_sum_bkg->GetXaxis()->SetTitle("BDT Discriminant");
+    h_sum_bkg->GetXaxis()->SetTitle("D");
     h_sum_bkg->SetTitle("Signal vs Background");
     h_sum_bkg->SetLineColor(kBlue);
     h_sum_sig->SetLineColor(kRed-3);
@@ -7339,7 +7383,7 @@ void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool i
     //cout << "bdt " << MVA_BDT << " in " << (prefix+"_BDT_"+decaystring).c_str()<< endl;
     MSPlot[(prefix+"_BDT_"+decaystring).c_str()]->Fill(MVA_BDT , datasets[d], true, weight_);
     MSPlot[ (prefix+"_channel_"+decaystring).c_str()]->Fill(MVA_channel, datasets[d], true, weight_);
-    MSPlot[ (prefix+"_weight_"+decaystring).c_str()]->Fill(weight_, datasets[d], true, 1.);
+   // MSPlot[ (prefix+"_weight_"+decaystring).c_str()]->Fill(weight_, datasets[d], true, 1.);
     
     /*
     MSPlot[(prefix+"_DeltaR_NonIsoLepJet_"+decaystring).c_str()]->Fill(MVA_DeltaR_NonIsoLepJet, datasets[d], true, weight_);
@@ -7358,7 +7402,7 @@ void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool i
     MSPlot[(prefix+"_NJETSCSVM_"+decaystring).c_str()]->Fill(MVA_NJets_CSVv2M, datasets[d], true, weight_);
     if(MVA_NJets_CSVv2M > 0 ) MSPlot[(prefix+"_NJETSCSVMcut_"+decaystring).c_str()]->Fill(MVA_NJets_CSVv2M, datasets[d], true, weight_);
 */
-    
+    /*
     if(!istoppair){
       MSPlot[(prefix+"_mlb_"+decaystring).c_str()] ->Fill(MVA_mlb, datasets[d], true, weight_);
       MSPlot[(prefix+"_dRWlepb_"+decaystring).c_str()] ->Fill(MVA_dRWlepb, datasets[d], true, weight_);
@@ -7398,7 +7442,7 @@ void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool i
         
         
       }
-    }
+    }*/
   }
   decaystring = "";
 }
