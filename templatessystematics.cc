@@ -12,7 +12,7 @@
 
 
 
-void templates(string coupling= "Zct", string region = "singletop", string temp = "BDT"){
+void templates(string coupling= "Zut", string region = "toppair", string temp = "TTTTZ"){
   TH1::SetDefaultSumw2();
   
   string inputfilename = "MVAoutput/outputtemplates/" + coupling +"_"+ region +"/Reader_"+coupling+"_"+region;
