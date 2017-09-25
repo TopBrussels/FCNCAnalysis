@@ -22,14 +22,15 @@ channels = ["_All"] #,"_ElElEl"]
 for chan in channels:
     
     #Define path where ntuples are stored
-    pathNonMerged = "NtupleMakerOutput/NtuplesTest/Ntuples_"+date+"/"
+    #pathNonMerged = "NtupleMakerOutput/NtuplesTest/Ntuples_"+date+"/"
+    pathNonMerged ="/Volumes/MyBookforMac/tuples/Ntuples_170804/"
     #pathNonMerged = "NtupleMakerOutput/Ntuples_fakes/Ntuples_"+date+"/";
     if "MuMuMu" in chan:
         pathMerged = "NtupleMakerOutput/MergedTuples/mumumu/"+"160530"+"/"
     if "ElElEl" in chan:
         pathMerged = "NtupleMakerOutput/MergedTuples/eee/"+"160530"+"/"
     if "All" in chan:
-        pathMerged = "NtupleMakerOutput/MergedTuples/"+date+"/"
+      pathMerged = "/Volumes/MyBookforMac/tuples/MergedTuples/170804"  #"NtupleMakerOutput/MergedTuples/"+date+"/"
     
     if not os.path.exists(pathMerged):
         os.makedirs(pathMerged)

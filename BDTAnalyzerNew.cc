@@ -97,7 +97,7 @@ void CalculatePDFWeight(string dataSetName, Double_t BDT, Double_t MVA_weight_no
 void FillMTWPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm);
 void FillTTZPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm);
 
-void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool isZut , bool istoppair, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm);
+void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool isZut , bool istoppair, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm,bool postfit);
 void GetPDFEnvelope(string dataSetName);
 void Fill1DHisto(string dataSetName,string systematic, bool istoppair, bool isZut, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel);
 void FillMTWShapeHisto(string dataSetName, string systematic, Double_t weight_,Int_t isys, Int_t MVA_channel, vector <int> decayChannels);
@@ -146,6 +146,7 @@ double BDT_begin = -1;
 double BDT_end = 1;
 
 bool doPostFit =false;
+bool doErrorband = false;
 Int_t nbinMTW = 20;
 Double_t endMTW = 300.;
 
@@ -824,6 +825,10 @@ Int_t main(Int_t argc, char* argv[]){
       doPostFit = true;
       
     }
+    if(string(argv[i]).find("doErrorband")!=std::string::npos){
+      doErrorband = true;
+      
+    }
     if(string(argv[i]).find("ErrorBand")!=std::string::npos){
       makeerrorbands  = true;
       
@@ -898,7 +903,8 @@ Int_t main(Int_t argc, char* argv[]){
     }
   }
   string xmlFileName = "";
-  xmlFileName = "config/Run2TriLepton_samples_analy.xml" ;
+  if(doPostFit) xmlFileName = "config/Run2TriLepton_samples_analycop.xml" ;
+  else xmlFileName = "config/Run2TriLepton_samples_analy.xml" ;
   const char* xmlFile = xmlFileName.c_str();
   cout << " - Using config file " << xmlFile << endl;
   cout << " - Using mvatrees of " << placeNtup << endl;
@@ -917,7 +923,7 @@ Int_t main(Int_t argc, char* argv[]){
   cout <<" - Combine templates stored at " << combinetemplate_filename.c_str() << endl;
   
   
-  string postfitSFfilename = "Zut_PostFitBinnedSF_both.root";
+  string postfitSFfilename = "postfit/Zut_PostFitBinnedSF_both.root";
   TFile *postfitSFfile = 0;
   if(doPostFit) postfitSFfile = new TFile(postfitSFfilename.c_str(),"READ");
   
@@ -1352,6 +1358,8 @@ Int_t main(Int_t argc, char* argv[]){
         if(dataSetName.find("WZTo3LNu_amc_new_80Xcc")!=std::string::npos && MVA_channel == 1)   hist_BDT_WZ_uue_c->Fill(MVA_BDT, weight*MVA_weightWZcorr);
         if(dataSetName.find("WZTo3LNu_amc_new_80Xbb")!=std::string::npos && MVA_channel == 1)   hist_BDT_WZ_uue_b->Fill(MVA_BDT, weight*MVA_weightWZcorr);
         
+       
+        
         
         if(!doMTWtemplate && !doTTZtemplate && (dataSetName.find("fake")==std::string::npos)){
           if(MVA_channel== 0) 		{hist_uuu->Fill( MVA_BDT, weight);}
@@ -1421,7 +1429,7 @@ Int_t main(Int_t argc, char* argv[]){
         else if(dataSetTitel.find("ZFake")!=std::string::npos && (MVA_channel == 2 || MVA_channel == 3)) dataSetTitel = "ZFakeEl";
         else if(dataSetTitel.find("WFake")!=std::string::npos && (MVA_channel == 0 || MVA_channel == 2)) dataSetTitel = "WFakeMu";
         else if(dataSetTitel.find("WFake")!=std::string::npos && (MVA_channel == 1 || MVA_channel == 3)) dataSetTitel = "WFakeEl";
-
+        
         if(doPostFit && !isData && dataSetName.find("NP")==std::string::npos){
           if(MVA_channel == 0) channelname = "_LepChan_3mu_";
           else if(MVA_channel == 1) channelname = "_LepChan_1e2mu_";
@@ -1434,9 +1442,10 @@ Int_t main(Int_t argc, char* argv[]){
           //cout << "getting " << ("SF_"+ dataSetTitel +channelname+regionname).c_str() << " from " << postfitSFfilename.c_str()  << endl;
           TH1F* h_postfitSF = (TH1F*)( postfitSFfile->Get(("SF_"+ dataSetTitel +channelname+regionname).c_str())->Clone("h_postfitSF"));
           if(h_postfitSF == 0) cout << "histo not found" << endl;
-         // else cout << "got histo " << endl;
+          // else cout << "got histo " << endl;
           double postfitSF = h_postfitSF->GetBinContent( h_postfitSF->GetXaxis()->FindBin(MVA_BDT));
           weightMSPlot *= postfitSF;
+          
         }
 
         if(isData || dataSetName.find("fake")!=std::string::npos) weightMSPlot *= MVA_Luminosity;
@@ -1687,7 +1696,7 @@ Int_t main(Int_t argc, char* argv[]){
           //cout << "ievt " << ievt << endl;
           tempstring = region + "_"+coupling;
           if(isys != 0) tempstring += "_"+ systematic;
-          FillGeneralPlots(d, tempstring, decayChannels, doZut, toppair, weightMSPlot, MVA_channel, MVA_Zboson_M, MVA_NJets_CSVv2M);
+          FillGeneralPlots(d, tempstring, decayChannels, doZut, toppair, weightMSPlot, MVA_channel, MVA_Zboson_M, MVA_NJets_CSVv2M,doPostFit);
         }
         if (makePlots &&( doMTWtemplate ))
         {
@@ -2534,21 +2543,26 @@ Int_t main(Int_t argc, char* argv[]){
         double scalefakes = 1.;
         if(!datafound) temp->setDataLumi(Luminosity);
         if(name.find("all")!=std::string::npos) temp->setChannel(true, "all");
-           if(name.find("eee")!=std::string::npos){ temp->setChannel(true, "3e"); scalefakes = scaleFakes_eee; }
-          if(name.find("eeu")!=std::string::npos){ temp->setChannel(true, "2e1#mu"); scalefakes = scaleFakes_eeu;  }
-          if(name.find("uue")!=std::string::npos){ temp->setChannel(true, "1e2#mu"); scalefakes = scaleFakes_uue; }
-          if(name.find("uuu")!=std::string::npos){ temp->setChannel(true, "3#mu"); scalefakes = scaleFakes_uuu; }
-     
-          
+          if(name.find("eee")!=std::string::npos){ temp->setChannel(true, "3e"); scalefakes = scaleFakes_eee; cout << "scalefakes_eee " << scaleFakes_eee << endl;  }
+          if(name.find("eeu")!=std::string::npos){ temp->setChannel(true, "2e1#mu"); scalefakes = scaleFakes_eeu; cout << "scalefakes_eeu " << scaleFakes_eeu << endl;  }
+          if(name.find("uue")!=std::string::npos){ temp->setChannel(true, "1e2#mu"); scalefakes = scaleFakes_uue;cout << "scalefakes_uue " << scaleFakes_uue << endl;  }
+          if(name.find("uuu")!=std::string::npos){ temp->setChannel(true, "3#mu"); scalefakes = scaleFakes_uuu; cout << "scalefakes_uuu " << scaleFakes_uuu << endl;  }
+        if(doPostFit){
+        if(name.find("eee")!=std::string::npos){ temp->setChannel(true, "3e"); scalefakes =  1.; cout << "scalefakes_eee " << scaleFakes_eee << endl;  }
+        if(name.find("eeu")!=std::string::npos){ temp->setChannel(true, "2e1#mu"); scalefakes = 1.; cout << "scalefakes_eeu " << scaleFakes_eeu << endl;  }
+        if(name.find("uue")!=std::string::npos){ temp->setChannel(true, "1e2#mu"); scalefakes = 1.;cout << "scalefakes_uue " << scaleFakes_uue << endl;  }
+        if(name.find("uuu")!=std::string::npos){ temp->setChannel(true, "3#mu"); scalefakes =  1.; cout << "scalefakes_uuu " << scaleFakes_uuu << endl;  }
+        
+        }
         if(name.find("Decay")!=std::string::npos) temp->setBins(vlabel_chan);
         //temp->SetPreliminary(false);
-       /* if(doPostFit){
+        if(doPostFit && doErrorband){
+          //temp->showNumberEntries(false);
           if(doZut ) temp->setErrorBandFile("Zut_PostFitErrorBand.root");
           else if(!doZut ) temp->setErrorBandFile("Zct_PostFitErrorBand.root");
           temp->Draw(name, 1, true, true, true, 10,scalefakes);
         }
-        else*/
-          temp->Draw(name, 1, false, false, false, 10,scalefakes);  // string label, unsigned Int_t RatioType, bool addRatioErrorBand, bool addErrorBand, bool    cout << "writing to " << cout << "writing to " << pathOutputdate+"MSPlot" << endl;
+        else temp->Draw(name, 1, false, false, false, 10,scalefakes);  // string label, unsigned Int_t RatioType, bool addRatioErrorBand, bool addErrorBand, bool    cout << "writing to " << cout << "writing to " << pathOutputdate+"MSPlot" << endl;
         cout << "plot " << name << endl;
         cout << "temp " << temp << endl;
         temp->Write(fout, name, true, (pathOutputdate+"MSPlot").c_str(), "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
@@ -7360,15 +7374,15 @@ void FillTTZPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t 
       }
   decaystring = "";
 }
-void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool isZut , bool istoppair, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm){
+void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool isZut , bool istoppair, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm, bool postfit){
   
   //cout << "fill plots" << endl;
   decaystring = "";
   Double_t eventW = 1.;
   eventW = weight_;
   
-  
-  
+
+  double originalweight = weight_;
   for(Int_t iChan =0; iChan < decayChannels.size() ; iChan++){
     decaystring = "";
     
@@ -7379,6 +7393,21 @@ void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool i
     if(decayChannels[iChan] == 3) decaystring = "eee";
     if(decayChannels[iChan] == -9) decaystring = "all";
     //cout << "filling " << datasets[d]->Name() << endl;
+    
+    if(decayChannels[iChan] != -9){
+    if( ((datasets[d]->Name()).find("fake")!=std::string::npos) && postfit && !istoppair && isZut){
+      if(decayChannels[iChan]  == 3) weight_ = originalweight *0.0714286;
+      else if(decayChannels[iChan]  == 2) weight_ = originalweight * 0.0714286;
+      else if(decayChannels[iChan]  == 1) weight_ = originalweight *0.357143;
+      else if(decayChannels[iChan]  == 0) weight_= originalweight *0.5;
+    }
+    else if( ((datasets[d]->Name()).find("fake")!=std::string::npos) && postfit && istoppair && isZut){
+      if(decayChannels[iChan]  == 3) weight_ = originalweight *0.166667;
+      else if(decayChannels[iChan]  == 2) weight_ = originalweight * 0.0833333;
+      else if(decayChannels[iChan]  == 1) weight_ = originalweight *0.458333;
+      else if(decayChannels[iChan]  == 0) weight_= originalweight *0.291667;
+    }
+    }
     
     //cout << "bdt " << MVA_BDT << " in " << (prefix+"_BDT_"+decaystring).c_str()<< endl;
     MSPlot[(prefix+"_BDT_"+decaystring).c_str()]->Fill(MVA_BDT , datasets[d], true, weight_);
