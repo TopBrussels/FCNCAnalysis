@@ -25,12 +25,12 @@ date = yyyy+mm+dd
 #channels = ["MuMu","ElEl"] 
 #channels = ["mumumu","eee","all"] 
 channels = ["all"]
-doFakes = 0;
+doFakes =0;
 JES = 1; 
 JER = 1; 
 doJESJER = 4;
 doFakeshift = 0;
-dotrileponly = 1;
+dotrileponly = 0;
 #if(doJESJERshift == 1) postfix = "_JESdown" ;
 #    if(doJESJERshift == 2) postfix = "_JESup" ;
 #    if(doJESJERshift == 3) postfix = "_JERdown" ;
@@ -128,7 +128,7 @@ for chan in channels:
     
     # loop over all the dataset with add="1"
     for d in datasets:
-      if d.attrib['add'] == '1' and  "80X" in str(d.attrib['name']):
+      if d.attrib['add'] == '1' and   "DYJets50_80X" in str(d.attrib['name']): # and  not "amc" in str(d.attrib['name']):
             print "found dataset to be added..." + str(d.attrib['name'])
             commandString = "./Ntupler "+str(d.attrib['name'])+" "+str(d.attrib['title'])+" "+str(d.attrib['add'])+" "+str(d.attrib['color'])+" "+str(d.attrib['ls'])+" "+str(d.attrib['lw'])+" "+str(d.attrib['normf'])+" "+str(d.attrib['EqLumi'])+" "+str(d.attrib['xsection'])+" "+str(d.attrib['PreselEff'])
             topTrees = glob.glob(d.attrib['filenames'])
@@ -136,25 +136,25 @@ for chan in channels:
             # setting the number of file per job depending whether it is data sample or not
             # this ca be tweaked
             if "data_MET" in str(d.attrib['name']):
-                FilePerJob=15
-            elif "data_Single" in str(d.attrib['name']):
-                FilePerJob=15
-            elif "data_Double" in str(d.attrib['name']):
-                FilePerJob=15
-            elif "data" in str(d.attrib['name']):
                 FilePerJob=30
-            elif "TTJets" in str(d.attrib['name']):
-                FilePerJob=5
-            elif "DY" in str(d.attrib['name']):
+            elif "data_Single" in str(d.attrib['name']):
                 FilePerJob=10
+            elif "data_Double" in str(d.attrib['name']):
+                FilePerJob=10
+            elif "data" in str(d.attrib['name']):
+                FilePerJob=10
+            elif "TTJets" in str(d.attrib['name']):
+                FilePerJob=2
+            elif "DY" in str(d.attrib['name']):
+                FilePerJob=5
             elif "Zjets" in str(d.attrib['name']):
                 FilePerJob=5
             elif "tZq" in str(d.attrib['name']):
-                FilePerJob=5
+                FilePerJob=2
             elif "TT_no" in str(d.attrib['name']):
                 FilePerJob=10
             else:
-                FilePerJob=25
+                FilePerJob=10
            
 	          #if doFakes:
             #   FilePerJob=FilePerJob % 2

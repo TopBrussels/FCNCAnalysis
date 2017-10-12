@@ -16,7 +16,7 @@
 using namespace std;
 
 //int main(unsigned int argc, char *argv[])
-int CreateErrorBands( unsigned int verbose = 0, string basedir = "ErrorBandInput/", bool doOnlyConsider = true) //0 = silent, 1 = normal, 2 = loud
+int CreateErrorBands( unsigned int verbose = 0, string basedir = "ErrorBandInput/310817noIni/", bool doOnlyConsider = true) //0 = silent, 1 = normal, 2 = loud
 {
   cout<<"This macro will calculate the systematic error bands."<<endl;
   cout<<"Note that it makes use of the fixed structure of MultiSamplePlots + some hardcoded strings to recognize systematics and physics-process names!"<<endl;
@@ -84,7 +84,7 @@ int CreateErrorBands( unsigned int verbose = 0, string basedir = "ErrorBandInput
   syst.push_back("PU");
   syst.push_back("MuonSF");
   syst.push_back("ElectronSF");
-  // rates
+ // rates
   syst.push_back("zz_XS");
   syst.push_back("tzq_XS");
   syst.push_back("ttz_XS");
@@ -110,27 +110,31 @@ int CreateErrorBands( unsigned int verbose = 0, string basedir = "ErrorBandInput
   //MSPlotsIgnore.push_back("BtagWeight");
   //bool doOnlyConsider = true; //true: only consider MSPlots with names including one of the strings in MSPlotsIgnore, false: strings in MSPlotsIgnore will not be used to 'only consider' certain MSPlots
   vector<string> MSPlotsOnlyConsider;
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_mWt");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_SMtop_eta");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_mlb");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_dPhiWlepb");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_deltaRWlepJet_min");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_Zboson_M");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_dPhiZWlep");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_dRWlepb");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_NJets_CSVv2M");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_FCNCtop_M");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_dRZc");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_dRZb");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_dRSMjetLightjet");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_charge_asym");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_bdiscCSVv2_jet_0");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_TotalHt_lep");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_ptWQ");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_TotalInvMass");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_TotalInvMass_lep");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_dRZWlep");
-  MSPlotsOnlyConsider.push_back("wzcontrol_MVA_Bdis_LightJet");
+  MSPlotsOnlyConsider.push_back("_MVA_mWt_");
+  MSPlotsOnlyConsider.push_back("_MVA_SMtop_eta");
+  MSPlotsOnlyConsider.push_back("_MVA_mlb");
+  MSPlotsOnlyConsider.push_back("_MVA_dPhiWlepb");
+  MSPlotsOnlyConsider.push_back("_MVA_deltaRWlepJet_min");
+  MSPlotsOnlyConsider.push_back("_MVA_Zboson_M");
+  MSPlotsOnlyConsider.push_back("_MVA_dPhiZWlep");
+  MSPlotsOnlyConsider.push_back("_MVA_dRWlepb");
+  MSPlotsOnlyConsider.push_back("_MVA_NJets_CSVv2M");
+  MSPlotsOnlyConsider.push_back("_MVA_FCNCtop_M");
+  MSPlotsOnlyConsider.push_back("MVA_dRZc");
+  MSPlotsOnlyConsider.push_back("_MVA_dRZb");
+  MSPlotsOnlyConsider.push_back("_MVA_dRSMjetLightjet");
+  MSPlotsOnlyConsider.push_back("_MVA_charge_asym");
+  MSPlotsOnlyConsider.push_back("_MVA_bdiscCSVv2_jet_0");
+  MSPlotsOnlyConsider.push_back("_MVA_TotalHt_lep");
+  MSPlotsOnlyConsider.push_back("_MVA_ptWQ");
+  MSPlotsOnlyConsider.push_back("_MVA_TotalInvMass_all");
+   MSPlotsOnlyConsider.push_back("_MVA_TotalInvMass_eee");
+   MSPlotsOnlyConsider.push_back("_MVA_TotalInvMass_eeu");
+   MSPlotsOnlyConsider.push_back("_MVA_TotalInvMass_uue");
+   MSPlotsOnlyConsider.push_back("_MVA_TotalInvMass_uuu");
+  MSPlotsOnlyConsider.push_back("_MVA_TotalInvMass_lep");
+  MSPlotsOnlyConsider.push_back("_MVA_dRZWlep");
+  MSPlotsOnlyConsider.push_back("_MVA_Bdis_LightJet");
   
   //note: if plot name should both be 'ignored' and 'only considered', it will be ignored.
   

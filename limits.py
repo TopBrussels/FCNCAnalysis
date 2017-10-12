@@ -31,16 +31,16 @@ def limitsZut():
     xmin = 0.00005
     xmax = 0.01 
 
-    c,h = draw_canvas_histo( xmin, xmax, "95% CL limit on BR(tZu)" )
+    c,h = draw_canvas_histo( xmin, xmax, "95% CL limit on B(tZu)" )
     c.SetLogx()
 
     gexpect1sig = TGraphAsymmErrors( nchannels, expect, channels, lower1sig, upper1sig, ey, ey )
-    gexpect1sig.SetFillColor( kGreen )
+    gexpect1sig.SetFillColor( kGreen+2 )
     gexpect1sig.SetLineWidth( 2 )
     gexpect1sig.SetLineStyle( 2 )
     
     gexpect2sig = TGraphAsymmErrors( nchannels, expect, channels, lower2sig, upper2sig, ey, ey )
-    gexpect2sig.SetFillColor( kYellow )
+    gexpect2sig.SetFillColor( kYellow-4 )
     gexpect2sig.SetLineWidth( 2 )
     gexpect2sig.SetLineStyle( 2 )
 
@@ -55,7 +55,7 @@ def limitsZut():
 
     gsinj = TGraphErrors( nchannels, sig_inj, channels, zero, ey )
     gsinj.SetLineWidth( 2 )
-    gsinj.SetLineColor( 2 )
+    gsinj.SetLineColor( 4 )
     gsinj.SetLineStyle( 2 )
     gsinj.Draw("z")
 
@@ -115,16 +115,16 @@ def limitsZct():
     xmin = 0.00005
     xmax = 0.1 
 
-    c,h = draw_canvas_histo( xmin, xmax, "95% CL limit on BR(tZc)" )
+    c,h = draw_canvas_histo( xmin, xmax, "95% CL limit on B(tZc)" )
     c.SetLogx()
 
     gexpect1sig = TGraphAsymmErrors( nchannels, expect, channels, lower1sig, upper1sig, ey, ey )
-    gexpect1sig.SetFillColor( kGreen )
+    gexpect1sig.SetFillColor( kGreen+2 )
     gexpect1sig.SetLineWidth( 2 )
     gexpect1sig.SetLineStyle( 2 )
     
     gexpect2sig = TGraphAsymmErrors( nchannels, expect, channels, lower2sig, upper2sig, ey, ey )
-    gexpect2sig.SetFillColor( kYellow )
+    gexpect2sig.SetFillColor( kYellow-4 )
     gexpect2sig.SetLineWidth( 2 )
     gexpect2sig.SetLineStyle( 2 )
 
@@ -139,7 +139,7 @@ def limitsZct():
 
     gsinj = TGraphErrors( nchannels, sig_inj, channels, zero, ey )
     gsinj.SetLineWidth( 2 )
-    gsinj.SetLineColor( 2 )
+    gsinj.SetLineColor( 4 )
     gsinj.SetLineStyle( 2 )
     gsinj.Draw("z")
 
