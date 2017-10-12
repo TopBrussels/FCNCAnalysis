@@ -905,7 +905,7 @@ Int_t main(Int_t argc, char* argv[]){
   }
   string xmlFileName = "";
   if(doPostFit) xmlFileName = "config/Run2TriLepton_samples_analycop.xml" ;
-  else if(doPDFunc) xmlFileName = "config/Run2TriLepton_samples_analypdf.xml" ;
+  else if(doPDFunc) xmlFileName = "config/Run2TriLepton_samples_analypdfall.xml" ;
   else xmlFileName = "config/Run2TriLepton_samples_analy.xml" ;
   const char* xmlFile = xmlFileName.c_str();
   cout << " - Using config file " << xmlFile << endl;
@@ -1207,7 +1207,7 @@ Int_t main(Int_t argc, char* argv[]){
       */
       //cout << "created template histo" << endl;
       /// Initialise WZ plots
-      if((dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos || dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TTZ")!=std::string::npos || dataSetName.find("tZq")!=std::string::npos || dataSetName.find("ZZTo4")!=std::string::npos) && doPDFunc ){
+      if((dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos || dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TTZ")!=std::string::npos || dataSetName.find("tZq")!=std::string::npos || dataSetName.find("ZZTo4")!=std::string::npos || dataSetName.find("NP")!=std::string::npos) && doPDFunc ){
         InitCalculatePDFWeightHisto(dataSetName, doMTWtemplate, doTTZtemplate);
       }
       
@@ -1453,7 +1453,7 @@ Int_t main(Int_t argc, char* argv[]){
         if(isData || dataSetName.find("fake")!=std::string::npos) weightMSPlot *= MVA_Luminosity;
         /// Fill plots
         if(doPDFunc){
-          if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos || dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TTZ")!=std::string::npos || dataSetName.find("tZq")!=std::string::npos || dataSetName.find("ZZTo4")!=std::string::npos ) CalculatePDFWeight(dataSetName, MVA_BDT,MVA_weight_nom, MVA_channel,doMTWtemplate,doTTZtemplate);
+          if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos || dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TTZ")!=std::string::npos || dataSetName.find("tZq")!=std::string::npos || dataSetName.find("ZZTo4")!=std::string::npos || dataSetName.find("NP")!=std::string::npos ) CalculatePDFWeight(dataSetName, MVA_BDT,MVA_weight_nom, MVA_channel,doMTWtemplate,doTTZtemplate);
         }
         if(PlotMVAvars  && isys == 0 && !doMTWtemplate && !doTTZtemplate){
           Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
@@ -2342,9 +2342,10 @@ Int_t main(Int_t argc, char* argv[]){
   
   cout << "ENTRIES " << histo1DMTW["MTW_WZ"]->GetEntries() << endl;
   if(!doMTWtemplate && !doTTZtemplate && !doPostFit){
-    fin->Close();
-    delete fin;
+    
+   // delete fin;
   }
+  //if(doTTZtemplate) fin->Close();
   ///*****************///
   ///   PDF envelope   ///
   ///*****************///
@@ -2354,8 +2355,31 @@ Int_t main(Int_t argc, char* argv[]){
     GetPDFEnvelope("WZTo3LNu_amc_80X", doMTWtemplate,doTTZtemplate);
     GetPDFEnvelope("tZq_amc_80X", doMTWtemplate, doTTZtemplate);
     GetPDFEnvelope("TTZToLLNuNu_amc_80X", doMTWtemplate,doTTZtemplate);
-     GetPDFEnvelope("ZZTo4L_80X",doMTWtemplate, doTTZtemplate);
+    GetPDFEnvelope("ZZTo4L_80X",doMTWtemplate, doTTZtemplate);
+    if(!doMTWtemplate && !doTTZtemplate){
+   if(doZut ){
+     GetPDFEnvelope("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80X",doMTWtemplate, doTTZtemplate);
+     GetPDFEnvelope("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut_80X",doMTWtemplate, doTTZtemplate);
+     GetPDFEnvelope("NP_overlay_ST_FCNC_zut_80X",doMTWtemplate, doTTZtemplate);
+     
+   }
+   else {GetPDFEnvelope("NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80X",doMTWtemplate, doTTZtemplate);
+     GetPDFEnvelope("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct_80X",doMTWtemplate, doTTZtemplate);
+     GetPDFEnvelope("NP_overlay_ST_FCNC_zct_80X",doMTWtemplate, doTTZtemplate);
+   }}
+    else {
+      GetPDFEnvelope("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80X",doMTWtemplate, doTTZtemplate);
+      GetPDFEnvelope("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut_80X",doMTWtemplate, doTTZtemplate);
+      GetPDFEnvelope("NP_overlay_ST_FCNC_zut_80X",doMTWtemplate, doTTZtemplate);
+      GetPDFEnvelope("NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80X",doMTWtemplate, doTTZtemplate);
+      GetPDFEnvelope("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct_80X",doMTWtemplate, doTTZtemplate);
+      GetPDFEnvelope("NP_overlay_ST_FCNC_zct_80X",doMTWtemplate, doTTZtemplate);
+
+
+    }
   }
+ 
+  
   ///*****************///
   ///   Pseudodata   ///
   ///*****************///
@@ -2577,24 +2601,24 @@ Int_t main(Int_t argc, char* argv[]){
       
     }
     if(doPDFunc ){
-      string pdfrootFileName ="PDFhistograms_BDT_toppair_Zut.root";
+      string pdfrootFileName ="PDFhistograms_BDT_toppair_Zutttz.root";
       if(!doMTWtemplate && !doTTZtemplate){
-      if(toppair && doZut) pdfrootFileName ="PDFhistograms_BDT_toppair_Zut.root";
-      else if(!toppair && doZut) pdfrootFileName ="PDFhistograms_BDT_singletop_Zut.root";
-      else if(toppair && !doZut) pdfrootFileName ="PDFhistograms_BDT_toppair_Zct.root";
-      else if(!toppair && !doZut) pdfrootFileName ="PDFhistograms_BDT_singletop_Zct.root";
+       if(toppair && doZut) pdfrootFileName ="PDFhistograms_BDT_toppair_Zutttz.root";
+       else if(!toppair && doZut) pdfrootFileName ="PDFhistograms_BDT_singletop_Zutttz.root";
+       else if(toppair && !doZut) pdfrootFileName ="PDFhistograms_BDT_toppair_Zctttz.root";
+       else if(!toppair && !doZut) pdfrootFileName ="PDFhistograms_BDT_singletop_Zctttz.root";
       }
       else if(!doMTWtemplate ){
-        if(toppair && doZut) pdfrootFileName ="PDFhistograms_MTW_toppair_Zut.root";
-        else if(!toppair && doZut) pdfrootFileName ="PDFhistograms_MTW_singletop_Zut.root";
-        else if(toppair && !doZut) pdfrootFileName ="PDFhistograms_MTW_toppair_Zct.root";
-        else if(!toppair && !doZut) pdfrootFileName ="PDFhistograms_MTW_singletop_Zct.root";
+        if(toppair && doZut) pdfrootFileName ="PDFhistograms_MTW_toppair_Zutttz.root";
+        else if(!toppair && doZut) pdfrootFileName ="PDFhistograms_MTW_singletop_Zutttz.root";
+        else if(toppair && !doZut) pdfrootFileName ="PDFhistograms_MTW_toppair_Zctttz.root";
+        else if(!toppair && !doZut) pdfrootFileName ="PDFhistograms_MTW_singletop_Zcttz.root";
       }
       else if( doTTZtemplate){
-        if(toppair && doZut) pdfrootFileName ="PDFhistograms_Zmass_toppair_Zut.root";
-        else if(!toppair && doZut) pdfrootFileName ="PDFhistograms_Zmass_singletop_Zut.root";
-        else if(toppair && !doZut) pdfrootFileName ="PDFhistograms_Zmass_toppair_Zct.root";
-        else if(!toppair && !doZut) pdfrootFileName ="PDFhistograms_Zmass_singletop_Zct.root";
+        if(toppair && doZut) pdfrootFileName ="PDFhistograms_Zmass_toppair_Zutttz.root";
+        else if(!toppair && doZut) pdfrootFileName ="PDFhistograms_Zmass_singletop_Zutttz.root";
+        else if(toppair && !doZut) pdfrootFileName ="PDFhistograms_Zmass_toppair_Zctttz.root";
+        else if(!toppair && !doZut) pdfrootFileName ="PDFhistograms_Zmass_singletop_Zctttz.root";
       }
       TFile *pdffout = new TFile ((pdfrootFileName).c_str(), "RECREATE");
       cout << "   Output file is " << pdfrootFileName << endl;
@@ -2602,7 +2626,7 @@ Int_t main(Int_t argc, char* argv[]){
       TDirectory* th1dir = pdffout->mkdir("1D_PDF_histograms");
       th1dir->cd();
       gStyle->SetOptStat(1110);
-      if(!doMTWtemplate && !doTTZtemplate){
+      if(!doMTWtemplate ){
       for (std::map<std::string,TH1F*>::const_iterator it = histo1DPDF.begin(); it != histo1DPDF.end(); it++)
       {
         TH1F *temp = it->second;
@@ -6655,6 +6679,9 @@ Int_t main(Int_t argc, char* argv[]){
       cout << "(This corresponds to " << mins << " min and " << secs << " s)" << endl;
   }
   
+  //fin->Close();
+   delete fin;
+
   cout << "********************************************" << endl;
   cout << "           End of the program !!            " << endl;
   cout << "********************************************" << endl;
@@ -6887,7 +6914,7 @@ void InitCalculatePDFWeightHisto(string dataSetName,bool doMTWtemplate,bool doTT
   string template_name = "BDT";
   if(doMTWtemplate) template_name = "MTW";
   else if (doTTZtemplate) template_name = "Zmass";
-  if(!doMTWtemplate && !doTTZtemplate){
+  if(!doMTWtemplate ){
     for(Int_t iChan = 0; iChan < channel_list.size(); iChan++){
       channel = channel_list[iChan];
       for ( Int_t i=0; i<101; i++)
@@ -6898,31 +6925,12 @@ void InitCalculatePDFWeightHisto(string dataSetName,bool doMTWtemplate,bool doTT
         histo1DPDF[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,BDT_begin,BDT_end);
       }
       output_histo_name = dataSetName+"_"+template_name+"_"+channel+"_nominal";
+     // cout << output_histo_name << endl;
       histo1DPDF[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,BDT_begin,BDT_end);
       output_histo_name = dataSetName+"_"+template_name+"_"+channel+"_PDFEnvelopeUp";
       histo1DPDF[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,BDT_begin,BDT_end);
       output_histo_name = dataSetName+"_"+template_name+"_"+channel+"_PDFEnvelopeDown";
       histo1DPDF[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,BDT_begin,BDT_end);
-      
-      output_histo_name = "";
-    }
-  }
-  else if(doTTZtemplate){
-    for(Int_t iChan = 0; iChan < channel_list.size(); iChan++){
-      channel = channel_list[iChan];
-      for ( Int_t i=0; i<101; i++)
-      {
-        
-        output_histo_name = dataSetName+"_"+template_name+"_"+channel+"_"+intToStr(i);
-      //  cout << output_histo_name << endl;
-        histo1DPDF[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbinTTZ,beginTTZ,endTTZ);
-      }
-      output_histo_name = dataSetName+"_"+template_name+"_"+channel+"_nominal";
-      histo1DPDF[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbinTTZ,beginTTZ,endTTZ);
-      output_histo_name = dataSetName+"_"+template_name+"_"+channel+"_PDFEnvelopeUp";
-      histo1DPDF[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbinTTZ,beginTTZ,endTTZ);
-      output_histo_name = dataSetName+"_"+template_name+"_"+channel+"_PDFEnvelopeDown";
-      histo1DPDF[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbinTTZ,beginTTZ,endTTZ);
       
       output_histo_name = "";
     }
@@ -7371,7 +7379,7 @@ vector<double> BDTCUT(string region, string coupling){
   
 }
 void CalculatePDFWeight(string dataSetName, Double_t BDT, Double_t MVA_weight_nom, Int_t MVA_channel,bool doMTWtemplate,bool doTTZtemplate){
-  cout << "calculate pdf" << endl;
+ // cout << "calculate pdf" << endl;
   //std::vector<double> pdfweights;
   //cout << "MVA channel " << MVA_channel << endl;
   std::vector<string> channel_list;
@@ -7387,7 +7395,7 @@ void CalculatePDFWeight(string dataSetName, Double_t BDT, Double_t MVA_weight_no
   if(dataSetName.find("WZTo3LNu_amc")!=std::string::npos || dataSetName.find("TTZ")!=std::string::npos) sbase = "NNPDF30_nlo_nf_5_pdfas";
   else if(dataSetName.find("tZq")!=std::string::npos) sbase = "NNPDF30_nlo_nf_5_pdfas";
   else if(dataSetName.find("ZZTo4L")!=std::string::npos) sbase ="NNPDF30_nlo_as_0118";
- 
+  else if(dataSetName.find("NP")!=std::string::npos) sbase ="NNPDF23_nlo_as_0119"; 
   //cout << "base set " << sbase << endl;
    LHAPDF::PDFSet basepdfSet(sbase.c_str());
   //LHAPDF::PDFSet basepdfSet("NNPDF30_lo_as_0130"); // base from main MC // WZ
@@ -7612,10 +7620,11 @@ void GetPDFEnvelope(string dataSetName,bool doMTWtemplate,bool doTTZtemplate){
     vector<double> bincontents;
     output_histo_name = dataSetName+"_"+ template_name+"_" + channel + "_nominal";
     //cout <<  output_histo_name << endl;
+    //cout << histo1DPDF[output_histo_name]->GetTitle() << endl;
     // get nominal th1F
     TH1F* histo_nom;
-    if(!doMTWtemplate && !doTTZtemplate) histo_nom = (TH1F*) histo1DPDF[output_histo_name]->Clone();
-    else if(doMTWtemplate) histo_nom = (TH1F*) histo1DPDFMTW[output_histo_name]->Clone();
+    if(!doMTWtemplate) histo_nom = (TH1F*) histo1DPDF[output_histo_name]->Clone();
+    if(doMTWtemplate) histo_nom = (TH1F*) histo1DPDFMTW[output_histo_name]->Clone();
     
     // loop over bins
     for( Int_t ibin = 1; ibin <histo_nom->GetNbinsX(); ibin++)
@@ -7631,8 +7640,8 @@ void GetPDFEnvelope(string dataSetName,bool doMTWtemplate,bool doTTZtemplate){
         
          if(doMTWtemplate ) cout << histo1DPDFMTW.size() << endl;
      //   cout <<" pushing "<< endl;
-        if(!doMTWtemplate && !doTTZtemplate) bincontents.push_back(histo1DPDF[output_histo_name]->GetBinContent(ibin));
-        else if(doMTWtemplate ) bincontents.push_back(histo1DPDFMTW[output_histo_name]->GetBinContent(ibin));
+        if(!doMTWtemplate)bincontents.push_back(histo1DPDF[output_histo_name]->GetBinContent(ibin));
+        if(doMTWtemplate ) bincontents.push_back(histo1DPDFMTW[output_histo_name]->GetBinContent(ibin));
        // cout << output_histo_name << endl;
       }
       if(binContentMin > minimumValue(bincontents)) binContentMin = minimumValue(bincontents);
@@ -7641,7 +7650,7 @@ void GetPDFEnvelope(string dataSetName,bool doMTWtemplate,bool doTTZtemplate){
       else binContentMax = histo_nom->GetBinContent(ibin);
       
       output_histo_name = dataSetName+"_"+template_name+"_"+channel + "_PDFEnvelopeUp";
-      //cout << output_histo_name << endl;
+    // cout << output_histo_name << endl;
       if(!doMTWtemplate && !doTTZtemplate) histo1DPDF[output_histo_name]->SetBinContent(ibin, binContentMax);
       else if(doMTWtemplate ) histo1DPDFMTW[output_histo_name]->SetBinContent(ibin, binContentMax);
       output_histo_name = dataSetName+"_"+template_name+"_"+channel + "_PDFEnvelopeDown";
