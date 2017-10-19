@@ -45,6 +45,7 @@ using namespace TopTree;
 map<string,TH1F*> histo1D;
 map<string,TH1F*> histo1DBDTvars;
 map<string,TH1F*> histo1DPDF;
+map<string,TH1F*> histo1DRen;
 map<string,TH1F*> histo1DSys;
 map<string,TH1F*> histo1DSysMTW;
 map<string,TH2F*> histo2D;
@@ -86,6 +87,7 @@ void InitMSPlotsMTW(string prefix, vector <int> decayChannels);
 void InitMSPlotsTTZ(string prefix, vector <int> decayChannels);
 void InitMSPlots(string prefix, vector <int> decayChannels , bool istoppair, bool isZut);
 void InitCalculatePDFWeightHisto(string dataSetName,bool doMTWtemplate,bool doTTZtemplate);
+void InitCalculateRenWeightHisto(string dataSetName,bool doMTWtemplate,bool doTTZtemplate);
 void InitMTWShapeHisto(string dataSetName, string systematic, Int_t isys,  vector <int> decayChannels);
 void InitSystematicHisto(string dataSetName, string systematic, Int_t isys, bool doMTWtemplate);
 void InitTree(TTree* tree, bool isData, bool istoppair, bool doZut);
@@ -94,11 +96,14 @@ void Init1DHisto(string dataSetName, string systematic, bool istoppair, bool isZ
 // functions
 vector<double> BDTCUT(string region, string coupling);
 void CalculatePDFWeight(string dataSetName, Double_t BDT, Double_t MVA_weight_nom, Int_t MVA_channel,bool doMTWtemplate,bool doTTZtemplate);
+void CalculateRenWeight(string dataSetName, Double_t BDT, Double_t MVA_weight_nom, Int_t MVA_channel,bool doMTWtemplate,bool doTTZtemplate);
 void FillMTWPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm);
 void FillTTZPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm);
 
 void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool isZut , bool istoppair, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm,bool postfit);
 void GetPDFEnvelope(string dataSetName,bool doMTWtemplate,bool doTTZtemplate);
+void GetRenEnvelope(string dataSetName,bool doMTWtemplate,bool doTTZtemplate);
+
 void Fill1DHisto(string dataSetName,string systematic, bool istoppair, bool isZut, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel);
 void FillMTWShapeHisto(string dataSetName, string systematic, Double_t weight_,Int_t isys, Int_t MVA_channel, vector <int> decayChannels);
 void FillSystematicHisto(string dataSetName, string systematic, Double_t weight_, Int_t isys, bool doMTWtemplate);
@@ -124,6 +129,7 @@ bool addData = false;
 bool DetermineCut = false;
 bool CalculateSign = false;
 bool doPDFunc  = false;
+bool doRenunc  = false;
 bool doWZonly = false;
 bool doNPSTonly = false;
 bool doNPTTonly = false;
@@ -815,6 +821,7 @@ Int_t main(Int_t argc, char* argv[]){
       std::cout << "   PSdata: generate pseudo data" << endl;
       std::cout << "   doSystematics: loop over systematics" << endl;
       std::cout << "   doPDFunc: calculate PDF unc" << endl;
+      std::cout << "   doRenunc: calculate reno/fac unc" << endl;
       std::cout << "   PlotSystematics: make sys plots " << endl;
       std::cout << "   PlotMVAvars: plot mva vars" << endl;
       std::cout << "  doMTWtemplate make mtw templates" << endl;
@@ -853,6 +860,24 @@ Int_t main(Int_t argc, char* argv[]){
     if(string(argv[i]).find("doPDFunc")!=std::string::npos){
       doPDFunc = true;
       cout << "******* calculating pdf uncertainties *********" << endl;
+      i++;
+      doWZonly = false;
+      doNPSTonly = false;
+      doNPTTonly = false;
+      dotZqonly = false;
+      doTTZonly = false;
+      doZZonly = false;
+      if(string(argv[i]).find("WZ")!=std::string::npos)         doWZonly = true;
+      else  if(string(argv[i]).find("NPST")!=std::string::npos) doNPSTonly = true;
+      else  if(string(argv[i]).find("NPTT")!=std::string::npos) doNPTTonly = true;
+      else  if(string(argv[i]).find("tZq")!=std::string::npos)  dotZqonly = true;
+      else  if(string(argv[i]).find("TTZ")!=std::string::npos)  doTTZonly = true;
+      else  if(string(argv[i]).find("ZZ")!=std::string::npos)   doZZonly = true;
+      
+    }
+    if(string(argv[i]).find("doRenunc")!=std::string::npos){
+      doRenunc = true;
+      cout << "******* calculating ren/facto uncertainties *********" << endl;
       i++;
       doWZonly = false;
       doNPSTonly = false;
@@ -925,13 +950,13 @@ Int_t main(Int_t argc, char* argv[]){
   }
   string xmlFileName = "";
   if(doPostFit) xmlFileName = "config/Run2TriLepton_samples_analycop.xml" ;
-  else if(doPDFunc && doWZonly) xmlFileName = "config/Run2TriLepton_samples_analypdf_WZ.xml" ;
-  else if(doPDFunc && doTTZonly) xmlFileName = "config/Run2TriLepton_samples_analypdf_TTZ.xml" ;
-  else if(doPDFunc && doZZonly) xmlFileName = "config/Run2TriLepton_samples_analypdf_ZZ.xml" ;
-  else if(doPDFunc && dotZqonly) xmlFileName = "config/Run2TriLepton_samples_analypdf_tZq.xml" ;
-  else if(doPDFunc && doNPSTonly) xmlFileName = "config/Run2TriLepton_samples_analypdf_NPST.xml" ;
-  else if(doPDFunc && doNPTTonly) xmlFileName = "config/Run2TriLepton_samples_analypdf_NPTT.xml" ;
-  else if(doPDFunc ) xmlFileName = "config/Run2TriLepton_samples_analypdfall.xml" ;
+  else if((doPDFunc|| doRenunc) && doWZonly) xmlFileName = "config/Run2TriLepton_samples_analypdf_WZ.xml" ;
+  else if((doPDFunc|| doRenunc)  && doTTZonly) xmlFileName = "config/Run2TriLepton_samples_analypdf_TTZ.xml" ;
+  else if((doPDFunc|| doRenunc)  && doZZonly) xmlFileName = "config/Run2TriLepton_samples_analypdf_ZZ.xml" ;
+  else if((doPDFunc|| doRenunc)  && dotZqonly) xmlFileName = "config/Run2TriLepton_samples_analypdf_tZq.xml" ;
+  else if((doPDFunc|| doRenunc)  && doNPSTonly) xmlFileName = "config/Run2TriLepton_samples_analypdf_NPST.xml" ;
+  else if((doPDFunc|| doRenunc)  && doNPTTonly) xmlFileName = "config/Run2TriLepton_samples_analypdf_NPTT.xml" ;
+  else if((doPDFunc|| doRenunc)  ) xmlFileName = "config/Run2TriLepton_samples_analypdfall.xml" ;
   else xmlFileName = "config/Run2TriLepton_samples_analycop.xml" ;
   const char* xmlFile = xmlFileName.c_str();
   cout << " - Using config file " << xmlFile << endl;
@@ -1237,7 +1262,9 @@ Int_t main(Int_t argc, char* argv[]){
         InitCalculatePDFWeightHisto(dataSetName, doMTWtemplate, doTTZtemplate);
       }
       
-      
+      if((dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos || dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TTZ")!=std::string::npos || dataSetName.find("tZq")!=std::string::npos || dataSetName.find("ZZTo4")!=std::string::npos || dataSetName.find("NP")!=std::string::npos) && doRenunc ){
+        InitCalculateRenWeightHisto(dataSetName, doMTWtemplate, doTTZtemplate);
+      }
       
       
       if((dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos || dataSetName.find("FCNC")!=std::string::npos || dataSetName.find("fake")!=std::string::npos) && doMTWtemplate){
@@ -1480,6 +1507,9 @@ Int_t main(Int_t argc, char* argv[]){
         /// Fill plots
         if(doPDFunc){
           if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos || dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TTZ")!=std::string::npos || dataSetName.find("tZq")!=std::string::npos || dataSetName.find("ZZTo4")!=std::string::npos || dataSetName.find("NP")!=std::string::npos ) CalculatePDFWeight(dataSetName, MVA_BDT,MVA_weight_nom, MVA_channel,doMTWtemplate,doTTZtemplate);
+        }
+        if(doRenunc){
+          if(dataSetName.find("WZTo3LNu_3Jets_MLL50_80X")!=std::string::npos || dataSetName.find("WZJTo3LNu")!=std::string::npos || dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TTZ")!=std::string::npos || dataSetName.find("tZq")!=std::string::npos || dataSetName.find("ZZTo4")!=std::string::npos || dataSetName.find("NP")!=std::string::npos ) CalculateRenWeight(dataSetName, MVA_BDT,MVA_weight_nom, MVA_channel,doMTWtemplate,doTTZtemplate);
         }
         if(PlotMVAvars  && isys == 0 && !doMTWtemplate && !doTTZtemplate){
           Fill1DHisto(dataSetName, systematic, toppair, doZut, decayChannels, weight, MVA_channel);
@@ -1785,7 +1815,7 @@ Int_t main(Int_t argc, char* argv[]){
         continue;
       }
       //cout << "making template" << endl;
-      if(!doPDFunc){
+      if(!doPDFunc && !doRenunc){
       TFile* combinetemplate_file(0);
       
       if(d == 0 && isys == 0) combinetemplate_file = TFile::Open( combinetemplate_filename.c_str(), "RECREATE" );
@@ -2343,7 +2373,9 @@ Int_t main(Int_t argc, char* argv[]){
           
         }*/
       }
-      
+      if(doRenunc &&( dataSetName.find("WZTo3LNu")!=std::string::npos || dataSetName.find("TTZ")!=std::string::npos || dataSetName.find("tZq")!=std::string::npos || dataSetName.find("ZZTo4")!=std::string::npos || dataSetName.find("NP")!=std::string::npos ) ) {
+        GetRenEnvelope(dataSetName, doMTWtemplate,doTTZtemplate);
+      }
       
     }// datasets
     
@@ -2541,7 +2573,7 @@ Int_t main(Int_t argc, char* argv[]){
   ///   Write plots   ///
   ///*****************///
   
-  if((makePlots || doPDFunc || PlotMVAvars || PlotSystematics || PlotJeSystematics) ){
+  if((makePlots || doPDFunc || doRenunc|| PlotMVAvars || PlotSystematics || PlotJeSystematics) ){
     string pathOutput = "OutputPlots/";
     mkdir(pathOutput.c_str(),0777);
     string pathOutputdate = pathOutput + dateString + "/"  ;
@@ -7007,6 +7039,40 @@ void InitCalculatePDFWeightHisto(string dataSetName,bool doMTWtemplate,bool doTT
     }
   }
 }
+void InitCalculateRenWeightHisto(string dataSetName,bool doMTWtemplate,bool doTTZtemplate){
+  TH1::SetDefaultSumw2();
+  std::vector<string> channel_list;
+  channel_list.push_back("eee");
+  channel_list.push_back("uue");
+  channel_list.push_back("eeu");
+  channel_list.push_back("uuu");
+  string channel = "";
+  string template_name = "BDT";
+  if(doMTWtemplate) template_name = "MTW";
+  else if (doTTZtemplate) template_name = "Zmass";
+  
+  for(Int_t iChan = 0; iChan < channel_list.size(); iChan++){
+    channel = channel_list[iChan];
+    for ( Int_t i=1; i<9; i++)
+    {
+      if(i == 5 || i ==7) continue;
+      output_histo_name = dataSetName+"_"+template_name+"_"+channel+"_reno_"+intToStr(i);
+      //  cout << output_histo_name << endl;
+      histo1DRen[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,BDT_begin,BDT_end);
+    }
+    output_histo_name = dataSetName+"_"+template_name+"_"+channel+"_reno_nominal";
+    // cout << output_histo_name << endl;
+    histo1DRen[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,BDT_begin,BDT_end);
+    output_histo_name = dataSetName+"_"+template_name+"_"+channel+"_RenFactEnvelopeUp";
+    histo1DRen[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,BDT_begin,BDT_end);
+    output_histo_name = dataSetName+"_"+template_name+"_"+channel+"_RenFactEnvelopeDown";
+    histo1DRen[output_histo_name] = new TH1F(output_histo_name.c_str(), output_histo_name.c_str(), nbin,BDT_begin,BDT_end);
+    
+    output_histo_name = "";
+  }
+
+}
+
 void InitMTWShapeHisto(string dataSetName, string systematic, Int_t isys,  vector <int> decayChannels){
   TH1::SetDefaultSumw2();
   //histo1DMTW.clear();
@@ -7054,6 +7120,17 @@ void InitAnalyzerTree(TTree* tree){
   tree->SetBranchAddress("MVA_mWt2", &MVA_mWt2, &b_MVA_mWt2);
   tree->SetBranchAddress("MVA_mWt", &MVA_mWt, &b_MVA_mWt);
   tree->SetBranchAddress("MVA_region", &MVA_region, &b_MVA_region);
+  
+   tree->SetBranchAddress("MVA_weight0", &MVA_weight0, &b_MVA_weight0);
+   tree->SetBranchAddress("MVA_weight1", &MVA_weight1, &b_MVA_weight1);
+   tree->SetBranchAddress("MVA_weight2", &MVA_weight2, &b_MVA_weight2);
+   tree->SetBranchAddress("MVA_weight3", &MVA_weight3, &b_MVA_weight3);
+   tree->SetBranchAddress("MVA_weight4", &MVA_weight4, &b_MVA_weight4);
+   tree->SetBranchAddress("MVA_weight5", &MVA_weight5, &b_MVA_weight5);
+   tree->SetBranchAddress("MVA_weight6", &MVA_weight6, &b_MVA_weight6);
+   tree->SetBranchAddress("MVA_weight7", &MVA_weight7, &b_MVA_weight7);
+   tree->SetBranchAddress("MVA_weight8", &MVA_weight8, &b_MVA_weight8);
+  
   
   tree->SetBranchAddress("MVA_x1", &MVA_x1, &b_MVA_x1);
   tree->SetBranchAddress("MVA_x2", &MVA_x2, &b_MVA_x2);
@@ -7491,6 +7568,56 @@ void CalculatePDFWeight(string dataSetName, Double_t BDT, Double_t MVA_weight_no
   
   
 }
+void CalculateRenWeight(string dataSetName, Double_t BDT, Double_t MVA_weight_nom, Int_t MVA_channel,bool doMTWtemplate,bool doTTZtemplate){
+  // cout << "calculate pdf" << endl;
+  //std::vector<double> pdfweights;
+  //cout << "MVA channel " << MVA_channel << endl;
+  std::vector<string> channel_list;
+  channel_list.push_back("eee");
+  channel_list.push_back("uue");
+  channel_list.push_back("eeu");
+  channel_list.push_back("uuu");
+  string channel = "";
+  
+   channel = channel_list[MVA_channel];
+  //cout << "MVA_x1 "<< MVA_x1 <<" MVA_x2 "<< MVA_x2 <<" MVA_id1 "<< MVA_id1 <<" MVA_id2 "<< MVA_id2 <<" MVA_q "<< MVA_q << endl;
+  
+  string template_name = "BDT";
+  if(doMTWtemplate) template_name = "MTW";
+  else if (doTTZtemplate) template_name = "Zmass";
+  
+  for ( size_t i=1; i<9; i++)
+  {
+    if( i == 5 || i==7) continue;
+    
+    Double_t weightreno = MVA_weight_nom; // MVA_weight_puSF_up * MVA_weight_electronSF * MVA_weight_btagSF * MVA_weight_muonSF * MVA_weight_nloSF;
+   // cout << output_histo_name << " " << weightreno << endl;
+    if(i == 1) weightreno = weightreno * MVA_weight1;
+    else if(i == 2) weightreno = weightreno * MVA_weight2;
+    else if(i == 3) weightreno = weightreno * MVA_weight3;
+    else if(i == 4) weightreno = weightreno * MVA_weight4;
+    else if(i == 6) weightreno = weightreno * MVA_weight6;
+    else if(i == 8) weightreno = weightreno * MVA_weight8;
+    
+    output_histo_name = dataSetName+"_"+template_name +"_"+channel+"_reno_"+intToStr(i);
+    
+  //  cout << output_histo_name << " " << weightreno << endl;
+    if(!doTTZtemplate && !doMTWtemplate) histo1DRen[output_histo_name]->Fill(MVA_BDT,weightreno);
+    else if(doMTWtemplate) histo1DRen[output_histo_name]->Fill(MVA_mWt,weightreno);
+    else if (doTTZtemplate) histo1DRen[output_histo_name]->Fill(MVA_Zboson_M,weightreno);
+    
+    
+    
+  }
+  output_histo_name = dataSetName+"_"+template_name+"_"+channel+"_reno_nominal";
+  if(!doTTZtemplate && !doMTWtemplate) histo1DRen[output_histo_name]->Fill(MVA_BDT,MVA_weight_nom);
+  else if(doMTWtemplate) histo1DRen[output_histo_name]->Fill(MVA_mWt,MVA_weight_nom);
+  else if (doTTZtemplate) histo1DRen[output_histo_name]->Fill(MVA_Zboson_M,MVA_weight_nom);
+  output_histo_name = "";
+ 
+  
+  
+}
 void FillMTWPlots(Int_t d, string postfix, vector <int> decayChannels, Double_t weight_, Int_t MVA_channel, Float_t zbosonmass, Float_t njetscsvm){
   decaystring = "";
   Double_t eventW = 1.;
@@ -7642,7 +7769,7 @@ void FillGeneralPlots(Int_t d, string prefix, vector <int> decayChannels, bool i
         MSPlot[(prefix+"_cdiscCvsL_jet_0_"+decaystring).c_str()] ->Fill(MVA_cdiscCvsL_jet_0, datasets[d], true, weight_);
         MSPlot[(prefix+"_cdiscCvsL_jet_1_"+decaystring).c_str()] ->Fill(MVA_cdiscCvsL_jet_1, datasets[d], true, weight_);
         
-        
+     
       }
     }*/
   }
@@ -7747,6 +7874,109 @@ void GetPDFEnvelope(string dataSetName,bool doMTWtemplate,bool doTTZtemplate){
   pdffout->Write();
   pdffout->Close();
   delete pdffout;
+  
+  
+}
+void GetRenEnvelope(string dataSetName,bool doMTWtemplate,bool doTTZtemplate){
+  Double_t binContentMax = -1.;
+  Double_t binContentMin = 1000000000000000.;
+  
+  string renrootFileName = "RenoFact/New/"+dataSetName;
+  if(!doMTWtemplate && !doTTZtemplate){
+    if(toppair && doZut) renrootFileName +="RenoFactohistograms_BDT_toppair_Zut.root";
+    else if(!toppair && doZut) renrootFileName +="RenoFactohistograms_BDT_singletop_Zut.root";
+    else if(toppair && !doZut) renrootFileName +="RenoFactohistograms_BDT_toppair_Zct.root";
+    else if(!toppair && !doZut) renrootFileName +="RenoFactohistograms_BDT_singletop_Zct.root";
+  }
+  else if(doMTWtemplate ){
+    if(toppair && doZut) renrootFileName +="RenoFactohistograms_MTW_toppair_Zut.root";
+    else if(!toppair && doZut) renrootFileName +="RenoFactohistograms_MTW_singletop_Zut.root";
+    else if(toppair && !doZut) renrootFileName +="RenoFactohistograms_MTW_toppair_Zct.root";
+    else if(!toppair && !doZut) renrootFileName +="RenoFactohistograms_MTW_singletop_Zc.root";
+  }
+  else if( doTTZtemplate){
+    if(toppair && doZut) renrootFileName +="RenoFactohistograms_Zmass_toppair_Zut.root";
+    else if(!toppair && doZut) renrootFileName +="RenoFactohistograms_Zmass_singletop_Zut.root";
+    else if(toppair && !doZut) renrootFileName +="RenoFactohistograms_Zmass_toppair_Zct.root";
+    else if(!toppair && !doZut) renrootFileName +="RenoFactohistograms_Zmass_singletop_Zct.root";
+  }
+  TFile *renfout = new TFile ((renrootFileName).c_str(), "RECREATE");
+  cout << "   Output file is " << renrootFileName << endl;
+  renfout->cd();
+  
+  std::vector<string> channel_list;
+  channel_list.push_back("eee");
+  channel_list.push_back("uue");
+  channel_list.push_back("eeu");
+  channel_list.push_back("uuu");
+  string channel = "";
+  
+  string template_name = "BDT";
+  if(doMTWtemplate) template_name = "MTW";
+  else if (doTTZtemplate) template_name = "Zmass";
+  
+  // loop over channels
+  for(Int_t iChan = 0; iChan < channel_list.size(); iChan++){
+    channel = channel_list[iChan];
+    vector<double> bincontents;
+    output_histo_name = dataSetName+"_"+ template_name+"_" + channel + "_reno_nominal";
+    //cout <<  output_histo_name << endl;
+    //cout << histo1DPDF[output_histo_name]->GetTitle() << endl;
+    // get nominal th1F
+    TH1F* histo_nom;
+     histo_nom = (TH1F*) histo1DRen[output_histo_name]->Clone();
+    
+    // loop over bins
+    for( Int_t ibin = 1; ibin <histo_nom->GetNbinsX(); ibin++)
+    {
+      binContentMax = -100000000000000.;
+      binContentMin = 1000000000000000.;
+      bincontents.clear();
+       cout << "ibin " << ibin << endl;
+      // get bincontents of each histo for this bin
+      for(Int_t iCount = 1; iCount < 9; iCount++)
+      {
+        if(iCount == 5 || iCount ==7) continue;
+
+        output_histo_name = dataSetName+"_"+template_name +"_"+channel+"_reno_"+intToStr(iCount);
+        
+        
+        //   if(doMTWtemplate ) cout << histo1DPDF.size() << endl;
+       //   cout <<" pushing "<< endl;
+        bincontents.push_back(histo1DRen[output_histo_name]->GetBinContent(ibin));
+       // cout << output_histo_name << endl;
+      }
+      if(binContentMin > minimumValue(bincontents)) binContentMin = minimumValue(bincontents);
+      else binContentMin = histo_nom->GetBinContent(ibin);
+      if(binContentMax < maximumValue(bincontents)) binContentMax = maximumValue(bincontents);
+      else binContentMax = histo_nom->GetBinContent(ibin);
+     
+      //cout << "Min " << binContentMin << " Max " << binContentMax << endl;
+      output_histo_name = dataSetName+"_"+template_name+"_"+channel + "_RenFactEnvelopeUp";
+      // cout << output_histo_name << endl;
+      if(!doMTWtemplate && !doTTZtemplate) histo1DRen[output_histo_name]->SetBinContent(ibin, binContentMax);
+      else if(doMTWtemplate ) histo1DRen[output_histo_name]->SetBinContent(ibin, binContentMax);
+      output_histo_name = dataSetName+"_"+template_name+"_"+channel + "_RenFactEnvelopeDown";
+      //cout << output_histo_name << endl;
+      if(!doMTWtemplate && !doTTZtemplate) histo1DRen[output_histo_name]->SetBinContent(ibin, binContentMin);
+      else if(doMTWtemplate ) histo1DRen[output_histo_name]->SetBinContent(ibin, binContentMin);
+      
+      
+      output_histo_name = "";
+    }// bins
+    output_histo_name = dataSetName+"_"+template_name+"_"+channel + "_RenFactEnvelopeDown";
+    histo1DRen[output_histo_name]->Write();
+    output_histo_name = dataSetName+"_"+template_name+"_"+channel + "_RenFactEnvelopeUp";
+    histo1DRen[output_histo_name]->Write();
+    output_histo_name = dataSetName+"_"+template_name+"_"+channel + "_reno_nominal";
+    histo1DRen[output_histo_name]->Write();
+    
+    
+  }//channels
+  
+  renfout->Write();
+  renfout->Close();
+  delete renfout;
   
   
 }
