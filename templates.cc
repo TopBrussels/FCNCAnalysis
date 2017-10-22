@@ -14,15 +14,16 @@
 
 using namespace std;
 
-void templates(string coupling= "Zut", string region = "toppair", string temp = "TTTTZ"){
+void templates(string coupling= "Zut", string region = "singletop", string temp = "BDT"){
   TH1::SetDefaultSumw2();
   
   string inputfilename = "MVAoutput/outputtemplates/" + coupling +"_"+ region +"/Reader_"+coupling+"_"+region;
  
+  bool isSingle = false;
   if(temp.find("MTW")!=std::string::npos) inputfilename ="MVAoutput/outputtemplates/MTWtemplate/Reader_Zut_MTW";
-  if(temp.find("STTTZ")!=std::string::npos) inputfilename ="MVAoutput/outputtemplates/STTTZtemplate/Reader_Zut_TTZ";
+  if(temp.find("STTTZ")!=std::string::npos){ inputfilename ="MVAoutput/outputtemplates/STTTZtemplate/Reader_Zut_TTZ"; isSingle = true;}
   if(temp.find("TTTTZ")!=std::string::npos) inputfilename ="MVAoutput/outputtemplates/TTTTZtemplate/Reader_Zut_TTZ";
-  TFile* inputfile = new TFile((inputfilename+".root").c_str(),"READ");
+  TFile* inputfile = new TFile((inputfilename+".root").c_str(),"UPDATE");
   if (!inputfile->IsOpen()) {
     std::cout << "can 't open " << inputfilename << std::endl;
     exit(1) ;
@@ -34,11 +35,11 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
   if(temp.find("STTTZ")!=std::string::npos) outputfilename ="MVAoutput/outputtemplates/STTTZtemplate/Reader_Zut_TTZ";
   if(temp.find("TTTTZ")!=std::string::npos) outputfilename ="MVAoutput/outputtemplates/TTTTZtemplate/Reader_Zut_TTZ";
 
-  TFile* outputfile = new TFile((outputfilename+"_new.root").c_str(),"RECREATE");
+ /* TFile* outputfile = new TFile((outputfilename+"_new.root").c_str(),"RECREATE");
   if (!outputfile->IsOpen()) {
     std::cout << "can 't open " << outputfilename<< std::endl;
     exit(1) ;
-  }
+  }*/
   if(temp.find("STTTZ")!=std::string::npos  || temp.find("TTTTZ")!=std::string::npos) temp = "Zmass";
   vector <string> channels;
   channels.push_back("uuu");
@@ -257,7 +258,8 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
         zz_new->SetName((coupling+"_"+temp+"_"+ region+"_"+ channel +"_ZZTo4L_80X"+systematic).c_str());
         
         
-        outputfile->cd();
+       // outputfile->cd();
+        inputfile->cd();
         other_new->Write();
         if(coupling.find("Zct")!=std::string::npos)ST_Zct_new->Write();
         if(coupling.find("Zut")!=std::string::npos)ST_Zut_new->Write();
@@ -285,7 +287,13 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
         std::cout << "sys " << thesystlist[iSys] << std::endl;
         string systematic = "_" + thesystlist[iSys];
         if(iSys == 0) systematic = "";
-        
+        if(iSys == 0){
+          
+          data_new = ((TH1F*)inputfile->Get((temp+"_"+ channel +"_"+"data").c_str())->Clone("data"));
+          data_new->SetTitle((temp+"_"+ channel +"_data").c_str());
+          data_new->SetName((temp+"_"+ channel +"_data").c_str());
+          
+        }
         
         for(int iProcess = 0 ; iProcess < nProcess-1 ; iProcess++){
           std::cout << (temp+"_"+ channel +"_"+processName[iProcess]+ "_80X"+systematic).c_str() << std::endl;
@@ -329,13 +337,14 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
           TT_Zut->SetName((temp+"_"+  channel +"_TT_Zut_80X"+systematic).c_str());
         
         
-        outputfile->cd();
+       // outputfile->cd();
+         inputfile->cd();
         other->Write();
         ST_Zct->Write();
         ST_Zut->Write();
         TT_Zut->Write();
         TT_Zct->Write();
-
+        if(iSys == 0) data_new->Write();
 
       }
     }
@@ -349,8 +358,13 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
         std::cout << "sys " << thesystlist[iSys] << std::endl;
         string systematic = "_" + thesystlist[iSys];
         if(iSys == 0) systematic = "";
-        
-        
+        if(iSys == 0){
+          
+          data_new = ((TH1F*)inputfile->Get((temp+"_"+ channel +"_"+"data").c_str())->Clone("data"));
+          data_new->SetTitle((temp+"_"+ channel +"_data").c_str());
+          data_new->SetName((temp+"_"+ channel +"_data").c_str());
+          
+        }
         for(int iProcess = 0 ; iProcess < nProcess-1 ; iProcess++){
           if(iProcess == 0 ){
              cout << (temp+"_"+channel +"_"+processName[iProcess]+"_80X"+systematic).c_str() << endl;
@@ -360,6 +374,7 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
             other->Add((TH1F*)inputfile->Get((temp+"_"+ channel +"_"+processName[iProcess]+"_80X"+systematic).c_str()));
           }
         }
+
        /* other->Add((TH1F*)inputfile->Get((temp+"_"+ channel +"_WZTo3LNu_amc_80X"+systematic).c_str()));
         other->Add((TH1F*)inputfile->Get((temp+"_"+ channel +"_tZq_amc_80X"+systematic).c_str()));
         other->Add((TH1F*)inputfile->Get((temp+"_"+ channel +"_TTZToLLNuNu_amc_80X"+systematic).c_str()));
@@ -388,13 +403,14 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
           TT_Zut->SetTitle((temp+"_"+  channel +"_TT_Zut_80X"+systematic).c_str());
           TT_Zut->SetName((temp+"_"+  channel +"_TT_Zut_80X"+systematic).c_str());
         
-        outputfile->cd();
+       // outputfile->cd();
+         inputfile->cd();
         other->Write();
         ST_Zct->Write();
         ST_Zut->Write();
         TT_Zut->Write();
          TT_Zct->Write();
-
+        if(iSys == 0) data_new->Write();
       }
     }
   }
@@ -409,7 +425,7 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
        string channel = channels[iCHan];
       if(temp.find("BDT")!=std::string::npos && region.find("singletop")!=std::string::npos){
         if(coupling.find("Zct")!=std::string::npos){
-          
+          /*
          
           //cout << "Get PDFs/root/NP_overlay_ST_FCNC_zct_80XPDFhistograms_BDT_singletop_Zctttz.root" << endl;
           TFile* inputfilePDF_STNP = new TFile("PDFs/root/NP_overlay_ST_FCNC_zct_80XPDFhistograms_BDT_singletop_Zctttz.root","READ");
@@ -433,44 +449,52 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
           signal = (TH1F*) ST_Zct->Clone("TotalSig"); signal->Add((TH1F*) TT_Zct->Clone(""));
           signal->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TotalSignal_80X_"+syst).c_str());
           signal->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TotalSignal_80X_"+syst).c_str());
-          
+          */
           
           TFile* inputfilePDF_WZ = new TFile("PDFs/root/WZTo3LNu_amc_80XPDFhistograms_BDT_singletop_Zctttz.root","READ");
           wz_new = (TH1F*) inputfilePDF_WZ->Get(("WZTo3LNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           wz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
           wz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
-          
+          /*
           TFile* inputfilePDF_ttz_new = new TFile("PDFs/root/TTZToLLNuNu_amc_80XPDFhistograms_BDT_singletop_Zctttz.root","READ");
           ttz_new = (TH1F*) inputfilePDF_ttz_new->Get(("TTZToLLNuNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("ttZ");
           ttz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
-          ttz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_"+syst).c_str());
-          
+          ttz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
+          */
           TFile* inputfilePDF_zz_new = new TFile("PDFs/root/ZZTo4L_80XPDFhistograms_BDT_singletop_Zctttz.root","READ");
           zz_new = (TH1F*) inputfilePDF_zz_new->Get(("ZZTo4L_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("ZZ");
          zz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
-          zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_"+syst).c_str());
+          zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
           
           TFile* inputfilePDF_tzq_new = new TFile("PDFs/root/tZq_amc_80XPDFhistograms_BDT_singletop_Zctttz.root","READ");
           tzq_new = (TH1F*) inputfilePDF_tzq_new->Get(("tZq_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("tZq");
           tzq_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
-          tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_"+syst).c_str());
+          tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
           
           
           
           
-          outputfile->cd();
-          ST_Zct->Write();
-          signal->Write();
-          TT_Zct->Write();
+         // outputfile->cd();
+           inputfile->cd();
+         // ST_Zct->Write();
+         // signal->Write();
+        //  TT_Zct->Write();
           wz_new->Write();
           zz_new->Write();
-          ttz_new->Write();
+        //  ttz_new->Write();
           tzq_new->Write();
+          inputfilePDF_tzq_new ->Close();
+          inputfilePDF_WZ->Close();
+          inputfilePDF_zz_new->Close();
+        //  inputfilePDF_ttz_new->Close();
+        //  inputfilePDF_TT->Close();
+        //  inputfilePDF_STNP->Close();
+         // inputfilePDF_aTT->Close();
         }
         else if(coupling.find("Zut")!=std::string::npos){
           
           
-            TFile* inputfilePDF_STNP = new TFile("PDFs/root/NP_overlay_ST_FCNC_zut_80XPDFhistograms_BDT_singletop_Zutttz.root","READ");
+          /*  TFile* inputfilePDF_STNP = new TFile("PDFs/root/NP_overlay_ST_FCNC_zut_80XPDFhistograms_BDT_singletop_Zutttz.root","READ");
            ST_Zut = (TH1F*)(inputfilePDF_STNP->Get(("NP_overlay_ST_FCNC_zut_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("ST_Zct"));
           //  //cout << "cloned" << endl;
           ST_Zut->SetTitle((coupling+"_"+temp+"_"+ region +"_"+ channel +"_ST_Zut_80X_"+syst).c_str());
@@ -488,37 +512,45 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
           signal = (TH1F*) ST_Zut->Clone("TotalSig"); signal->Add((TH1F*) TT_Zut->Clone(""));
           signal->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TotalSignal_80X_"+syst).c_str());
           signal->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TotalSignal_80X_"+syst).c_str());
-          
+          */
           TFile* inputfilePDF_WZ = new TFile("PDFs/root/WZTo3LNu_amc_80XPDFhistograms_BDT_singletop_Zutttz.root","READ");
           wz_new = (TH1F*) inputfilePDF_WZ->Get(("WZTo3LNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           wz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
           wz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
-          
+         /*
           TFile* inputfilePDF_ttz_new = new TFile("PDFs/root/TTZToLLNuNu_amc_80XPDFhistograms_BDT_singletop_Zutttz.root","READ");
           ttz_new = (TH1F*) inputfilePDF_ttz_new->Get(("TTZToLLNuNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           ttz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
-          ttz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_"+syst).c_str());
-          
+          ttz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
+          */
           TFile* inputfilePDF_zz_new = new TFile("PDFs/root/ZZTo4L_80XPDFhistograms_BDT_singletop_Zutttz.root","READ");
           zz_new = (TH1F*) inputfilePDF_zz_new->Get(("ZZTo4L_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           zz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
-          zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_"+syst).c_str());
+          zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
           
           TFile* inputfilePDF_tzq_new = new TFile("PDFs/root/tZq_amc_80XPDFhistograms_BDT_singletop_Zutttz.root","READ");
           tzq_new = (TH1F*) inputfilePDF_tzq_new->Get(("tZq_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           tzq_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
-          tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_"+syst).c_str());
+          tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
           
           
           
-          outputfile->cd();
-          ST_Zut->Write();
+          //outputfile->cd();
+           inputfile->cd();
+         /* ST_Zut->Write();
           signal->Write();
-          TT_Zut->Write();
+          TT_Zut->Write();*/
           wz_new->Write();
           zz_new->Write();
-          ttz_new->Write();
+        //  ttz_new->Write();
           tzq_new->Write();
+          inputfilePDF_tzq_new ->Close();
+          inputfilePDF_WZ->Close();
+          inputfilePDF_zz_new->Close();
+         // inputfilePDF_ttz_new->Close();
+         /* inputfilePDF_TT->Close();
+          inputfilePDF_STNP->Close();
+          inputfilePDF_aTT->Close();*/
         }
         
 
@@ -527,7 +559,7 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
       else if(temp.find("BDT")!=std::string::npos && region.find("toppair")!=std::string::npos){
         if(coupling.find("Zct")!=std::string::npos){
           
-          
+          /*
           //cout << "Get PDFs/root/NP_overlay_ST_FCNC_zct_80XPDFhistograms_BDT_toppair_Zctttz.root" << endl;
           TFile* inputfilePDF_STNP = new TFile("PDFs/root/NP_overlay_ST_FCNC_zct_80XPDFhistograms_BDT_toppair_Zctttz.root","READ");
           //cout << "histo " << ("NP_overlay_ST_FCNC_zct_80X_"+temp +"_" +channel+"_"+syst).c_str() << endl;
@@ -550,42 +582,50 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
           signal = (TH1F*) ST_Zct->Clone("TotalSig"); signal->Add((TH1F*) TT_Zct->Clone(""));
           signal->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TotalSignal_80X_"+syst).c_str());
           signal->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TotalSignal_80X_"+syst).c_str());
-          
+          */
            TFile* inputfilePDF_WZ = new TFile("PDFs/root/WZTo3LNu_amc_80XPDFhistograms_BDT_toppair_Zctttz.root","READ");
            wz_new = (TH1F*) inputfilePDF_WZ->Get(("WZTo3LNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           wz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
           wz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
           
-         
+         /*
           TFile* inputfilePDF_ttz_new = new TFile("PDFs/root/TTZToLLNuNu_amc_80XPDFhistograms_BDT_toppair_Zctttz.root","READ");
           ttz_new = (TH1F*) inputfilePDF_ttz_new->Get(("TTZToLLNuNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           ttz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
-          ttz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_"+syst).c_str());
-          
+          ttz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
+          */
           TFile* inputfilePDF_zz_new = new TFile("PDFs/root/ZZTo4L_80XPDFhistograms_BDT_toppair_Zctttz.root","READ");
           zz_new = (TH1F*) inputfilePDF_zz_new->Get(("ZZTo4L_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           zz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
-          zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_"+syst).c_str());
+          zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
           
           TFile* inputfilePDF_tzq_new = new TFile("PDFs/root/tZq_amc_80XPDFhistograms_BDT_toppair_Zctttz.root","READ");
           tzq_new = (TH1F*) inputfilePDF_tzq_new->Get(("tZq_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           tzq_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
-          tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_"+syst).c_str());
+          tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
           
           
           
-          outputfile->cd();
-          ST_Zct->Write();
-          signal->Write();
-          TT_Zct->Write();
+          //outputfile->cd();
+           inputfile->cd();
+         /* ST_Zct->Write();
+          signal->Write();*/
+         // TT_Zct->Write();
            wz_new ->Write();
           zz_new->Write();
-          ttz_new->Write();
+          //ttz_new->Write();
           tzq_new->Write();
+          inputfilePDF_tzq_new ->Close();
+          inputfilePDF_WZ->Close();
+          inputfilePDF_zz_new->Close();
+          //inputfilePDF_ttz_new->Close();
+          /*inputfilePDF_TT->Close();
+          inputfilePDF_STNP->Close();
+          inputfilePDF_aTT->Close();*/
         }
         else if(coupling.find("Zut")!=std::string::npos){
           
-          
+          /*
           TFile* inputfilePDF_STNP = new TFile("PDFs/root/NP_overlay_ST_FCNC_zut_80XPDFhistograms_BDT_toppair_Zutttz.root","READ");
           ST_Zut = (TH1F*)(inputfilePDF_STNP->Get(("NP_overlay_ST_FCNC_zut_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("ST_Zct"));
           //  //cout << "cloned" << endl;
@@ -604,38 +644,46 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
           signal = (TH1F*) ST_Zut->Clone("TotalSig"); signal->Add((TH1F*) TT_Zut->Clone(""));
           signal->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TotalSignal_80X_"+syst).c_str());
           signal->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TotalSignal_80X_"+syst).c_str());
-          
+          */
           TFile* inputfilePDF_WZ = new TFile("PDFs/root/WZTo3LNu_amc_80XPDFhistograms_BDT_toppair_Zutttz.root","READ");
           wz_new = (TH1F*) inputfilePDF_WZ->Get(("WZTo3LNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           wz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
           wz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
           
-          
+          /*
           TFile* inputfilePDF_ttz_new = new TFile("PDFs/root/TTZToLLNuNu_amc_80XPDFhistograms_BDT_toppair_Zutttz.root","READ");
           ttz_new = (TH1F*) inputfilePDF_ttz_new->Get(("TTZToLLNuNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           ttz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
-          ttz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_"+syst).c_str());
-          
+          ttz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
+          */
           TFile* inputfilePDF_zz_new = new TFile("PDFs/root/ZZTo4L_80XPDFhistograms_BDT_toppair_Zutttz.root","READ");
           zz_new = (TH1F*) inputfilePDF_zz_new->Get(("ZZTo4L_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           zz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
-          zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_"+syst).c_str());
+          zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
           
           
           TFile* inputfilePDF_tzq_new = new TFile("PDFs/root/tZq_amc_80XPDFhistograms_BDT_toppair_Zutttz.root","READ");
           tzq_new = (TH1F*) inputfilePDF_tzq_new->Get(("tZq_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           tzq_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
-          tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_"+syst).c_str());
+          tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
           
           
-          outputfile->cd();
-          ST_Zut->Write();
+         // outputfile->cd();
+           inputfile->cd();
+        /*  ST_Zut->Write();
           signal->Write();
-          TT_Zut->Write();
+          TT_Zut->Write();*/
            wz_new ->Write();
           zz_new->Write();
-          ttz_new->Write();
+          //ttz_new->Write();
           tzq_new->Write();
+          inputfilePDF_tzq_new ->Close();
+          inputfilePDF_WZ->Close();
+          inputfilePDF_zz_new->Close();
+         // inputfilePDF_ttz_new->Close();
+        /*  inputfilePDF_TT->Close();
+          inputfilePDF_STNP->Close();
+          inputfilePDF_aTT->Close();*/
         }
         
 
@@ -647,8 +695,8 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
         //cout << "histo " << ("NP_overlay_ST_FCNC_zct_80X_"+temp +"_" +channel+"_"+syst).c_str() << endl;
         ST_Zct = (TH1F*)(inputfilePDF_STNP->Get(("NP_overlay_ST_FCNC_zct_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("ST_Zct"));
         //  //cout << "cloned" << endl;
-        ST_Zct->SetTitle((coupling+"_"+temp+"_"+ region +"_"+ channel +"_ST_Zct_80X_"+syst).c_str());
-        ST_Zct->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ST_Zct_80X_"+syst).c_str());
+        ST_Zct->SetTitle((temp+"_"+ channel +"_ST_Zct_80X_"+syst).c_str());
+        ST_Zct->SetName((temp+"_"+  channel +"_ST_Zct_80X_"+syst).c_str());
         
         
         //cout << "Get PDFs/root/NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80XPDFhistograms_MTW_toppair_Zutttz.root" << endl;
@@ -658,14 +706,14 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
         
         TT_Zct = (TH1F*) inputfilePDF_TT->Get(("NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("TT_Zct");
         TT_Zct->Add( (TH1F*)inputfilePDF_aTT->Get(("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("TT_Zct"));
-        TT_Zct->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TT_Zct_80X_"+syst).c_str());
-        TT_Zct->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TT_Zct_80X_"+syst).c_str());
+        TT_Zct->SetTitle((temp+"_"+  channel +"_TT_Zct_80X_"+syst).c_str());
+        TT_Zct->SetName((temp+"_"+  channel +"_TT_Zct_80X_"+syst).c_str());
         
         TFile* inputfilePDF_STNPu = new TFile("PDFs/root/NP_overlay_ST_FCNC_zut_80XPDFhistograms_MTW_toppair_Zutttz.root","READ");
         ST_Zut = (TH1F*)(inputfilePDF_STNPu->Get(("NP_overlay_ST_FCNC_zut_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("ST_Zct"));
         //  //cout << "cloned" << endl;
-        ST_Zut->SetTitle((coupling+"_"+temp+"_"+ region +"_"+ channel +"_ST_Zut_80X_"+syst).c_str());
-        ST_Zut->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ST_Zut_80X_"+syst).c_str());
+        ST_Zut->SetTitle((temp+"_"+ channel +"_ST_Zut_80X_"+syst).c_str());
+        ST_Zut->SetName((temp+"_"+  channel +"_ST_Zut_80X_"+syst).c_str());
         
         
         TFile* inputfilePDF_TTu = new TFile("PDFs/root/NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80XPDFhistograms_MTW_toppair_Zutttz.root" ,"READ");
@@ -673,34 +721,35 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
         
         TT_Zut = (TH1F*) inputfilePDF_TTu->Get(("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("TT_Zut");
         TT_Zut->Add( (TH1F*)inputfilePDF_aTTu->Get(("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("TT_Zut"));
-        TT_Zut->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TT_Zut_80X_"+syst).c_str());
-        TT_Zut->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TT_Zut_80X_"+syst).c_str());
+        TT_Zut->SetTitle((temp+"_"+  channel +"_TT_Zut_80X_"+syst).c_str());
+        TT_Zut->SetName((temp+"_"+  channel +"_TT_Zut_80X_"+syst).c_str());
         
         
         TFile* inputfilePDF_WZ = new TFile("PDFs/root/WZTo3LNu_amc_80XPDFhistograms_MTW_toppair_Zutttz.root","READ");
         wz_new = (TH1F*) inputfilePDF_WZ->Get(("WZTo3LNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
-        wz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
-        wz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
-        
+        wz_new->SetTitle((temp+"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
+        wz_new->SetName((temp+"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
+        cout << (temp+"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str() << endl;
         
         TFile* inputfilePDF_ttz_new = new TFile("PDFs/root/TTZToLLNuNu_amc_80XPDFhistograms_MTW_toppair_Zutttz.root","READ");
         ttz_new = (TH1F*) inputfilePDF_ttz_new->Get(("TTZToLLNuNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
-        ttz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
-        ttz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_"+syst).c_str());
+        ttz_new->SetTitle((temp+"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
+        ttz_new->SetName((temp+"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
         
         TFile* inputfilePDF_zz_new = new TFile("PDFs/root/ZZTo4L_80XPDFhistograms_MTW_toppair_Zutttz.root","READ");
         zz_new = (TH1F*) inputfilePDF_zz_new->Get(("ZZTo4L_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
-        zz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
-        zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_"+syst).c_str());
+        zz_new->SetTitle((temp+"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
+        zz_new->SetName((temp+"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
         
         TFile* inputfilePDF_tzq_new = new TFile("PDFs/root/tZq_amc_80XPDFhistograms_MTW_toppair_Zutttz.root","READ");
         tzq_new = (TH1F*) inputfilePDF_tzq_new->Get(("tZq_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
-        tzq_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
-        tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_"+syst).c_str());
+        tzq_new->SetTitle((temp+"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
+        tzq_new->SetName((temp+"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
         
         
         
-        outputfile->cd();
+        //outputfile->cd();
+         inputfile->cd();
         ST_Zct->Write();
          TT_Zct->Write();
         wz_new ->Write();
@@ -709,79 +758,118 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
         tzq_new->Write();
         ST_Zut->Write();
         TT_Zut->Write();
-        
+        inputfilePDF_tzq_new ->Close();
+        inputfilePDF_WZ->Close();
+        inputfilePDF_zz_new->Close();
+        inputfilePDF_ttz_new->Close();
+        inputfilePDF_TTu->Close();
+        inputfilePDF_TT->Close();
+        inputfilePDF_STNPu->Close();
+        inputfilePDF_STNP->Close();
+        inputfilePDF_aTTu->Close();
+        inputfilePDF_aTT->Close();
 
       }
       else if(temp.find("Zmass")!=std::string::npos){
         //cout << "Get PDFs/root/NP_overlay_ST_FCNC_zct_80XPDFhistograms_Zmass_toppair_Zutttz.root" << endl;
-        TFile* inputfilePDF_STNP = new TFile("PDFs/root/NP_overlay_ST_FCNC_zct_80XPDFhistograms_Zmass_toppair_Zutttz.root","READ");
+        TFile* inputfilePDF_STNP ;
+        if(!isSingle) inputfilePDF_STNP= new TFile("PDFs/root/NP_overlay_ST_FCNC_zct_80XPDFhistograms_Zmass_toppair_Zutttz.root","READ");
+        else if(isSingle) inputfilePDF_STNP= new TFile("PDFs/root/NP_overlay_ST_FCNC_zct_80XPDFhistograms_Zmass_toppair_Zutttz.root","READ");
         //cout << "histo " << ("NP_overlay_ST_FCNC_zct_80X_"+temp +"_" +channel+"_"+syst).c_str() << endl;
         ST_Zct = (TH1F*)(inputfilePDF_STNP->Get(("NP_overlay_ST_FCNC_zct_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("ST_Zct"));
         //  //cout << "cloned" << endl;
-        ST_Zct->SetTitle((coupling+"_"+temp+"_"+ region +"_"+ channel +"_ST_Zct_80X_"+syst).c_str());
-        ST_Zct->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ST_Zct_80X_"+syst).c_str());
+        ST_Zct->SetTitle((temp+"_"+ channel +"_ST_Zct_80X_"+syst).c_str());
+        ST_Zct->SetName((temp+"_"+  channel +"_ST_Zct_80X_"+syst).c_str());
         
         
         //cout << "Get PDFs/root/NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80XPDFhistograms_Zmass_toppair_Zutttz.root" << endl;
-        TFile* inputfilePDF_TT = new TFile("PDFs/root/NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80XPDFhistograms_Zmass_toppair_Zutttz.root" ,"READ");
+        TFile* inputfilePDF_TT;
+        if(!isSingle) inputfilePDF_TT = new TFile("PDFs/root/NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80XPDFhistograms_Zmass_toppair_Zutttz.root" ,"READ");
+        else inputfilePDF_TT = new TFile("PDFs/root/NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80XPDFhistograms_Zmass_singletop_Zutttz.root" ,"READ");
         //cout << "Get PDFs/root/NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct_80XPDFhistograms_Zmass_toppair_Zutttz.root" << endl;
-        TFile* inputfilePDF_aTT = new TFile("PDFs/root/NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct_80XPDFhistograms_Zmass_toppair_Zutttz.root" ,"READ");
+        TFile* inputfilePDF_aTT;
+        if(!isSingle) inputfilePDF_aTT = new TFile("PDFs/root/NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct_80XPDFhistograms_Zmass_toppair_Zutttz.root" ,"READ");
+        else inputfilePDF_aTT = new TFile("PDFs/root/NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct_80XPDFhistograms_Zmass_singletop_Zutttz.root" ,"READ");
         
         TT_Zct = (TH1F*) inputfilePDF_TT->Get(("NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("TT_Zct");
         TT_Zct->Add( (TH1F*)inputfilePDF_aTT->Get(("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("TT_Zct"));
-        TT_Zct->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TT_Zct_80X_"+syst).c_str());
-        TT_Zct->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TT_Zct_80X_"+syst).c_str());
+        TT_Zct->SetTitle((temp+"_"+  channel +"_TT_Zct_80X_"+syst).c_str());
+        TT_Zct->SetName((temp+"_"+  channel +"_TT_Zct_80X_"+syst).c_str());
         
-        TFile* inputfilePDF_STNPu = new TFile("PDFs/root/NP_overlay_ST_FCNC_zut_80XPDFhistograms_Zmass_toppair_Zutttz.root","READ");
+        TFile* inputfilePDF_STNPu;
+        if(!isSingle) inputfilePDF_STNPu = new TFile("PDFs/root/NP_overlay_ST_FCNC_zut_80XPDFhistograms_Zmass_toppair_Zutttz.root","READ");
+        else inputfilePDF_STNPu = new TFile("PDFs/root/NP_overlay_ST_FCNC_zut_80XPDFhistograms_Zmass_singletop_Zutttz.root","READ");
         ST_Zut = (TH1F*)(inputfilePDF_STNPu->Get(("NP_overlay_ST_FCNC_zut_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("ST_Zct"));
         //  //cout << "cloned" << endl;
-        ST_Zut->SetTitle((coupling+"_"+temp+"_"+ region +"_"+ channel +"_ST_Zut_80X_"+syst).c_str());
-        ST_Zut->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ST_Zut_80X_"+syst).c_str());
+        ST_Zut->SetTitle((temp+"_"+ channel +"_ST_Zut_80X_"+syst).c_str());
+        ST_Zut->SetName((temp+"_"+  channel +"_ST_Zut_80X_"+syst).c_str());
         
         
-        TFile* inputfilePDF_TTu = new TFile("PDFs/root/NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80XPDFhistograms_Zmass_toppair_Zutttz.root" ,"READ");
-        TFile* inputfilePDF_aTTu= new TFile("PDFs/root/NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut_80XPDFhistograms_Zmass_toppair_Zutttz.root " ,"READ");
+        TFile* inputfilePDF_TTu;
+        if(!isSingle) inputfilePDF_TTu = new TFile("PDFs/root/NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80XPDFhistograms_Zmass_toppair_Zutttz.root" ,"READ");
+        else  inputfilePDF_TTu = new TFile("PDFs/root/NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80XPDFhistograms_Zmass_singletop_Zutttz.root" ,"READ");
+        TFile* inputfilePDF_aTTu;
+        if(!isSingle) inputfilePDF_aTTu= new TFile("PDFs/root/NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut_80XPDFhistograms_Zmass_toppair_Zutttz.root " ,"READ");
+        else inputfilePDF_aTTu= new TFile("PDFs/root/NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut_80XPDFhistograms_Zmass_singletop_Zutttz.root " ,"READ");
         
         TT_Zut = (TH1F*) inputfilePDF_TTu->Get(("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("TT_Zut");
         TT_Zut->Add( (TH1F*)inputfilePDF_aTTu->Get(("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("TT_Zut"));
-        TT_Zut->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TT_Zut_80X_"+syst).c_str());
-        TT_Zut->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TT_Zut_80X_"+syst).c_str());
+        TT_Zut->SetTitle((temp+"_"+  channel +"_TT_Zut_80X_"+syst).c_str());
+        TT_Zut->SetName((temp+"_"+  channel +"_TT_Zut_80X_"+syst).c_str());
         
         
-        TFile* inputfilePDF_WZ = new TFile("PDFs/root/WZTo3LNu_amc_80XPDFhistograms_Zmass_toppair_Zutttz.root","READ");
+        TFile* inputfilePDF_WZ;
+        if(!isSingle) inputfilePDF_WZ = new TFile("PDFs/root/WZTo3LNu_amc_80XPDFhistograms_Zmass_toppair_Zutttz.root","READ");
+        else inputfilePDF_WZ = new TFile("PDFs/root/WZTo3LNu_amc_80XPDFhistograms_Zmass_singletop_Zutttz.root","READ");
         wz_new = (TH1F*) inputfilePDF_WZ->Get(("WZTo3LNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
-        wz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
-        wz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
+        wz_new->SetTitle((temp+"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
+        wz_new->SetName((temp+"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
         
         
-        TFile* inputfilePDF_ttz_new = new TFile("PDFs/root/TTZToLLNuNu_amc_80XPDFhistograms_Zmass_toppair_Zutttz.root","READ");
+        TFile* inputfilePDF_ttz_new ;
+        if(!isSingle) inputfilePDF_ttz_new = new TFile("PDFs/root/TTZToLLNuNu_amc_80XPDFhistograms_Zmass_toppair_Zutttz.root","READ");
+        else inputfilePDF_ttz_new = new TFile("PDFs/root/TTZToLLNuNu_amc_80XPDFhistograms_Zmass_singletop_Zutttz.root","READ");
         ttz_new = (TH1F*) inputfilePDF_ttz_new->Get(("TTZToLLNuNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
-        ttz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
-        ttz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_"+syst).c_str());
+        ttz_new->SetTitle((temp+"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
+        ttz_new->SetName((temp+"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
         
-        TFile* inputfilePDF_zz_new = new TFile("PDFs/root/ZZTo4L_80XPDFhistograms_Zmass_toppair_Zutttz.root","READ");
+        TFile* inputfilePDF_zz_new;
+        if(!isSingle) inputfilePDF_zz_new= new TFile("PDFs/root/ZZTo4L_80XPDFhistograms_Zmass_toppair_Zutttz.root","READ");
+        else inputfilePDF_zz_new= new TFile("PDFs/root/ZZTo4L_80XPDFhistograms_Zmass_singletop_Zutttz.root","READ");
         zz_new = (TH1F*) inputfilePDF_zz_new->Get(("ZZTo4L_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
-        zz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
-        zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_"+syst).c_str());
+        zz_new->SetTitle((temp+"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
+        zz_new->SetName((temp+"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
         
-        TFile* inputfilePDF_tzq_new = new TFile("PDFs/root/tZq_amc_80XPDFhistograms_Zmass_toppair_Zutttz.root","READ");
+        TFile* inputfilePDF_tzq_new;
+        if(!isSingle) inputfilePDF_tzq_new = new TFile("PDFs/root/tZq_amc_80XPDFhistograms_Zmass_toppair_Zutttz.root","READ");
+        else  inputfilePDF_tzq_new = new TFile("PDFs/root/tZq_amc_80XPDFhistograms_Zmass_singletop_Zutttz.root","READ");
         tzq_new = (TH1F*) inputfilePDF_tzq_new->Get(("tZq_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
-        tzq_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
-        tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_"+syst).c_str());
+        tzq_new->SetTitle((temp+"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
+        tzq_new->SetName((temp+"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
         
         
         
-        outputfile->cd();
-      //  ST_Zct->Write();
-       // TT_Zct->Write();
+        //outputfile->cd();
+        inputfile->cd();
+        ST_Zct->Write();
+        TT_Zct->Write();
         wz_new ->Write();
         zz_new->Write();
         ttz_new->Write();
         tzq_new->Write();
-      //ST_Zut->Write();
-       // TT_Zut->Write();
+        ST_Zut->Write();
+        TT_Zut->Write();
         
-        
+        inputfilePDF_tzq_new ->Close();
+        inputfilePDF_WZ->Close();
+        inputfilePDF_zz_new->Close();
+        inputfilePDF_ttz_new->Close();
+        inputfilePDF_TTu->Close();
+        inputfilePDF_TT->Close();
+        inputfilePDF_STNPu->Close();
+        inputfilePDF_STNP->Close();
+        inputfilePDF_aTTu->Close();
+        inputfilePDF_aTT->Close();
       }
     }
   }
@@ -798,7 +886,7 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
       if(temp.find("BDT")!=std::string::npos && region.find("singletop")!=std::string::npos){
         if(coupling.find("Zct")!=std::string::npos){
           
-          
+          /*
           //cout << "Get RenoFact/root/NP_overlay_ST_FCNC_zct_80XRenoFactohistograms_BDT_singletop_Zct.root" << endl;
           TFile* inputfilePDF_STNP = new TFile("RenoFact/root/NP_overlay_ST_FCNC_zct_80XRenoFactohistograms_BDT_singletop_Zct.root","READ");
           //cout << "histo " << ("NP_overlay_ST_FCNC_zct_80X_"+temp +"_" +channel+"_"+syst).c_str() << endl;
@@ -821,7 +909,7 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
           signal = (TH1F*) ST_Zct->Clone("TotalSig"); signal->Add((TH1F*) TT_Zct->Clone(""));
           signal->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TotalSignal_80X_"+syst).c_str());
           signal->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TotalSignal_80X_"+syst).c_str());
-          
+          */
           
           TFile* inputfilePDF_WZ = new TFile("RenoFact/root/WZTo3LNu_amc_80XRenoFactohistograms_BDT_singletop_Zct.root","READ");
           wz_new = (TH1F*) inputfilePDF_WZ->Get(("WZTo3LNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
@@ -836,27 +924,35 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
           TFile* inputfilePDF_zz_new = new TFile("RenoFact/root/ZZTo4L_80XRenoFactohistograms_BDT_singletop_Zct.root","READ");
           zz_new = (TH1F*) inputfilePDF_zz_new->Get(("ZZTo4L_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("ZZ");
           zz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
-          zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_"+syst).c_str());
+          zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
           
           TFile* inputfilePDF_tzq_new = new TFile("RenoFact/root/tZq_amc_80XRenoFactohistograms_BDT_singletop_Zct.root","READ");
           tzq_new = (TH1F*) inputfilePDF_tzq_new->Get(("tZq_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("tZq");
           tzq_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
-          tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_"+syst).c_str());
+          tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
           
           
           
           
-          outputfile->cd();
-          ST_Zct->Write();
-          signal->Write();
-          TT_Zct->Write();
+          //outputfile->cd();
+           inputfile->cd();
+         // ST_Zct->Write();
+         // signal->Write();
+         // TT_Zct->Write();
           wz_new->Write();
           zz_new->Write();
           ttz_new->Write();
           tzq_new->Write();
+          inputfilePDF_tzq_new ->Close();
+          inputfilePDF_WZ->Close();
+          inputfilePDF_zz_new->Close();
+          inputfilePDF_ttz_new->Close();
+         // inputfilePDF_TT->Close();
+         // inputfilePDF_STNP->Close();
+         // inputfilePDF_aTT->Close();
         }
         else if(coupling.find("Zut")!=std::string::npos){
-          
+          /*
           
           TFile* inputfilePDF_STNP = new TFile("RenoFact/root/NP_overlay_ST_FCNC_zut_80XRenoFactohistograms_BDT_singletop_Zut.root","READ");
           ST_Zut = (TH1F*)(inputfilePDF_STNP->Get(("NP_overlay_ST_FCNC_zut_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("ST_Zct"));
@@ -876,7 +972,7 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
           signal = (TH1F*) ST_Zut->Clone("TotalSig"); signal->Add((TH1F*) TT_Zut->Clone(""));
           signal->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TotalSignal_80X_"+syst).c_str());
           signal->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TotalSignal_80X_"+syst).c_str());
-          
+          */
           TFile* inputfilePDF_WZ = new TFile("RenoFact/root/WZTo3LNu_amc_80XRenoFactohistograms_BDT_singletop_Zut.root","READ");
           wz_new = (TH1F*) inputfilePDF_WZ->Get(("WZTo3LNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           wz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
@@ -885,28 +981,36 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
           TFile* inputfilePDF_ttz_new = new TFile("RenoFact/root/TTZToLLNuNu_amc_80XRenoFactohistograms_BDT_singletop_Zut.root","READ");
           ttz_new = (TH1F*) inputfilePDF_ttz_new->Get(("TTZToLLNuNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           ttz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
-          ttz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_"+syst).c_str());
+          ttz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
           
           TFile* inputfilePDF_zz_new = new TFile("RenoFact/root/ZZTo4L_80XRenoFactohistograms_BDT_singletop_Zut.root","READ");
           zz_new = (TH1F*) inputfilePDF_zz_new->Get(("ZZTo4L_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           zz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
-          zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_"+syst).c_str());
+          zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
           
           TFile* inputfilePDF_tzq_new = new TFile("RenoFact/root/tZq_amc_80XRenoFactohistograms_BDT_singletop_Zut.root","READ");
           tzq_new = (TH1F*) inputfilePDF_tzq_new->Get(("tZq_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           tzq_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
-          tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_"+syst).c_str());
+          tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
           
           
           
-          outputfile->cd();
-          ST_Zut->Write();
+          //outputfile->cd();
+           inputfile->cd();
+        /*  ST_Zut->Write();
           signal->Write();
-          TT_Zut->Write();
+          TT_Zut->Write();*/
           wz_new->Write();
           zz_new->Write();
           ttz_new->Write();
           tzq_new->Write();
+          inputfilePDF_tzq_new ->Close();
+          inputfilePDF_WZ->Close();
+          inputfilePDF_zz_new->Close();
+          inputfilePDF_ttz_new->Close();
+        /*  inputfilePDF_TT->Close();
+          inputfilePDF_STNP->Close();
+          inputfilePDF_aTT->Close();*/
         }
         
         
@@ -914,7 +1018,7 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
       }
       else if(temp.find("BDT")!=std::string::npos && region.find("toppair")!=std::string::npos){
         if(coupling.find("Zct")!=std::string::npos){
-          
+          /*
           
           //cout << "Get RenoFact/root/NP_overlay_ST_FCNC_zct_80XRenoFactohistograms_BDT_toppair_Zct.root" << endl;
           TFile* inputfilePDF_STNP = new TFile("RenoFact/root/NP_overlay_ST_FCNC_zct_80XRenoFactohistograms_BDT_toppair_Zct.root","READ");
@@ -938,7 +1042,7 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
           signal = (TH1F*) ST_Zct->Clone("TotalSig"); signal->Add((TH1F*) TT_Zct->Clone(""));
           signal->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TotalSignal_80X_"+syst).c_str());
           signal->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TotalSignal_80X_"+syst).c_str());
-          
+          */
           TFile* inputfilePDF_WZ = new TFile("RenoFact/root/WZTo3LNu_amc_80XRenoFactohistograms_BDT_toppair_Zct.root","READ");
           wz_new = (TH1F*) inputfilePDF_WZ->Get(("WZTo3LNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           wz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
@@ -948,33 +1052,41 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
           TFile* inputfilePDF_ttz_new = new TFile("RenoFact/root/TTZToLLNuNu_amc_80XRenoFactohistograms_BDT_toppair_Zct.root","READ");
           ttz_new = (TH1F*) inputfilePDF_ttz_new->Get(("TTZToLLNuNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           ttz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
-          ttz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_"+syst).c_str());
+          ttz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
           
           TFile* inputfilePDF_zz_new = new TFile("RenoFact/root/ZZTo4L_80XRenoFactohistograms_BDT_toppair_Zct.root","READ");
           zz_new = (TH1F*) inputfilePDF_zz_new->Get(("ZZTo4L_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           zz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
-          zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_"+syst).c_str());
+          zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
           
           TFile* inputfilePDF_tzq_new = new TFile("RenoFact/root/tZq_amc_80XRenoFactohistograms_BDT_toppair_Zct.root","READ");
           tzq_new = (TH1F*) inputfilePDF_tzq_new->Get(("tZq_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           tzq_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
-          tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_"+syst).c_str());
+          tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
           
           
           
-          outputfile->cd();
-          ST_Zct->Write();
-          signal->Write();
-          TT_Zct->Write();
+          //outputfile->cd();
+           inputfile->cd();
+        //  ST_Zct->Write();
+        //signal->Write();
+         // TT_Zct->Write();
           wz_new ->Write();
           zz_new->Write();
           ttz_new->Write();
           tzq_new->Write();
+          inputfilePDF_tzq_new ->Close();
+          inputfilePDF_WZ->Close();
+          inputfilePDF_zz_new->Close();
+          inputfilePDF_ttz_new->Close();
+         // inputfilePDF_TT->Close();
+         // inputfilePDF_STNP->Close();
+         // inputfilePDF_aTT->Close();
         }
         else if(coupling.find("Zut")!=std::string::npos){
           
           
-          TFile* inputfilePDF_STNP = new TFile("RenoFact/root/NP_overlay_ST_FCNC_zut_80XRenoFactohistograms_BDT_toppair_Zut.root","READ");
+       /*   TFile* inputfilePDF_STNP = new TFile("RenoFact/root/NP_overlay_ST_FCNC_zut_80XRenoFactohistograms_BDT_toppair_Zut.root","READ");
           ST_Zut = (TH1F*)(inputfilePDF_STNP->Get(("NP_overlay_ST_FCNC_zut_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("ST_Zct"));
           //  //cout << "cloned" << endl;
           ST_Zut->SetTitle((coupling+"_"+temp+"_"+ region +"_"+ channel +"_ST_Zut_80X_"+syst).c_str());
@@ -992,7 +1104,7 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
           signal = (TH1F*) ST_Zut->Clone("TotalSig"); signal->Add((TH1F*) TT_Zut->Clone(""));
           signal->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TotalSignal_80X_"+syst).c_str());
           signal->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TotalSignal_80X_"+syst).c_str());
-          
+        */
           TFile* inputfilePDF_WZ = new TFile("RenoFact/root/WZTo3LNu_amc_80XRenoFactohistograms_BDT_toppair_Zut.root","READ");
           wz_new = (TH1F*) inputfilePDF_WZ->Get(("WZTo3LNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           wz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
@@ -1002,31 +1114,39 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
           TFile* inputfilePDF_ttz_new = new TFile("RenoFact/root/TTZToLLNuNu_amc_80XRenoFactohistograms_BDT_toppair_Zut.root","READ");
           ttz_new = (TH1F*) inputfilePDF_ttz_new->Get(("TTZToLLNuNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           ttz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
-          ttz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_"+syst).c_str());
+          ttz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
           
           TFile* inputfilePDF_zz_new = new TFile("RenoFact/root/ZZTo4L_80XRenoFactohistograms_BDT_toppair_Zut.root","READ");
           zz_new = (TH1F*) inputfilePDF_zz_new->Get(("ZZTo4L_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           zz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
-          zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_"+syst).c_str());
+          zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
           
           
           TFile* inputfilePDF_tzq_new = new TFile("RenoFact/root/tZq_amc_80XRenoFactohistograms_BDT_toppair_Zut.root","READ");
           tzq_new = (TH1F*) inputfilePDF_tzq_new->Get(("tZq_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
           tzq_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
-          tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_"+syst).c_str());
+          tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
           
           
-          outputfile->cd();
-          ST_Zut->Write();
-          signal->Write();
-          TT_Zut->Write();
+         // outputfile->cd();
+           inputfile->cd();
+         // ST_Zut->Write();
+         // signal->Write();
+         // TT_Zut->Write();
           wz_new ->Write();
           zz_new->Write();
           ttz_new->Write();
           tzq_new->Write();
+          inputfilePDF_tzq_new ->Close();
+          inputfilePDF_WZ->Close();
+          inputfilePDF_zz_new->Close();
+          inputfilePDF_ttz_new->Close();
+         // inputfilePDF_TT->Close();
+        //  inputfilePDF_STNP->Close();
+       //   inputfilePDF_aTT->Close();
         }
         
-        
+       
         
       }
       else if(temp.find("MTW")!=std::string::npos){
@@ -1035,8 +1155,8 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
         //cout << "histo " << ("NP_overlay_ST_FCNC_zct_80X_"+temp +"_" +channel+"_"+syst).c_str() << endl;
         ST_Zct = (TH1F*)(inputfilePDF_STNP->Get(("NP_overlay_ST_FCNC_zct_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("ST_Zct"));
         //  //cout << "cloned" << endl;
-        ST_Zct->SetTitle((coupling+"_"+temp+"_"+ region +"_"+ channel +"_ST_Zct_80X_"+syst).c_str());
-        ST_Zct->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ST_Zct_80X_"+syst).c_str());
+        ST_Zct->SetTitle((temp+"_"+ channel +"_ST_Zct_80X_"+syst).c_str());
+        ST_Zct->SetName((temp+"_"+  channel +"_ST_Zct_80X_"+syst).c_str());
         
         
         //cout << "Get RenoFact/root/NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80XRenoFactohistograms_MTW_toppair_Zut.root" << endl;
@@ -1046,14 +1166,14 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
         
         TT_Zct = (TH1F*) inputfilePDF_TT->Get(("NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("TT_Zct");
         TT_Zct->Add( (TH1F*)inputfilePDF_aTT->Get(("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("TT_Zct"));
-        TT_Zct->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TT_Zct_80X_"+syst).c_str());
-        TT_Zct->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TT_Zct_80X_"+syst).c_str());
+        TT_Zct->SetTitle((temp+"_"+  channel +"_TT_Zct_80X_"+syst).c_str());
+        TT_Zct->SetName((temp+"_"+  channel +"_TT_Zct_80X_"+syst).c_str());
         
         TFile* inputfilePDF_STNPu = new TFile("RenoFact/root/NP_overlay_ST_FCNC_zut_80XRenoFactohistograms_MTW_toppair_Zut.root","READ");
         ST_Zut = (TH1F*)(inputfilePDF_STNPu->Get(("NP_overlay_ST_FCNC_zut_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("ST_Zct"));
         //  //cout << "cloned" << endl;
-        ST_Zut->SetTitle((coupling+"_"+temp+"_"+ region +"_"+ channel +"_ST_Zut_80X_"+syst).c_str());
-        ST_Zut->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ST_Zut_80X_"+syst).c_str());
+        ST_Zut->SetTitle((temp+"_"+ channel +"_ST_Zut_80X_"+syst).c_str());
+        ST_Zut->SetName((temp+"_"+  channel +"_ST_Zut_80X_"+syst).c_str());
         
         
         TFile* inputfilePDF_TTu = new TFile("RenoFact/root/NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80XRenoFactohistograms_MTW_toppair_Zut.root" ,"READ");
@@ -1061,34 +1181,35 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
         
         TT_Zut = (TH1F*) inputfilePDF_TTu->Get(("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("TT_Zut");
         TT_Zut->Add( (TH1F*)inputfilePDF_aTTu->Get(("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("TT_Zut"));
-        TT_Zut->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TT_Zut_80X_"+syst).c_str());
-        TT_Zut->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TT_Zut_80X_"+syst).c_str());
+        TT_Zut->SetTitle((temp+"_"+  channel +"_TT_Zut_80X_"+syst).c_str());
+        TT_Zut->SetName((temp+"_"+  channel +"_TT_Zut_80X_"+syst).c_str());
         
         
         TFile* inputfilePDF_WZ = new TFile("RenoFact/root/WZTo3LNu_amc_80XRenoFactohistograms_MTW_toppair_Zut.root","READ");
         wz_new = (TH1F*) inputfilePDF_WZ->Get(("WZTo3LNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
-        wz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
-        wz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
+        wz_new->SetTitle((temp+"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
+        wz_new->SetName((temp+"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
         
         
         TFile* inputfilePDF_ttz_new = new TFile("RenoFact/root/TTZToLLNuNu_amc_80XRenoFactohistograms_MTW_toppair_Zut.root","READ");
         ttz_new = (TH1F*) inputfilePDF_ttz_new->Get(("TTZToLLNuNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
-        ttz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
-        ttz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_"+syst).c_str());
+        ttz_new->SetTitle((temp+"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
+        ttz_new->SetName((temp+"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
         
         TFile* inputfilePDF_zz_new = new TFile("RenoFact/root/ZZTo4L_80XRenoFactohistograms_MTW_toppair_Zut.root","READ");
         zz_new = (TH1F*) inputfilePDF_zz_new->Get(("ZZTo4L_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
-        zz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
-        zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_"+syst).c_str());
+        zz_new->SetTitle((temp+"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
+        zz_new->SetName((temp+"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
         
         TFile* inputfilePDF_tzq_new = new TFile("RenoFact/root/tZq_amc_80XRenoFactohistograms_MTW_toppair_Zut.root","READ");
         tzq_new = (TH1F*) inputfilePDF_tzq_new->Get(("tZq_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
-        tzq_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
-        tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_"+syst).c_str());
+        tzq_new->SetTitle((temp+"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
+        tzq_new->SetName((temp+"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
         
         
         
-        outputfile->cd();
+       // outputfile->cd();
+         inputfile->cd();
         ST_Zct->Write();
         TT_Zct->Write();
         wz_new ->Write();
@@ -1098,68 +1219,99 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
         ST_Zut->Write();
         TT_Zut->Write();
         
+        inputfilePDF_tzq_new ->Close();
+        inputfilePDF_WZ->Close();
+        inputfilePDF_zz_new->Close();
+        inputfilePDF_ttz_new->Close();
+        inputfilePDF_TTu->Close();
+        inputfilePDF_TT->Close();
+        inputfilePDF_STNPu->Close();
+        inputfilePDF_STNP->Close();
+        inputfilePDF_aTTu->Close();
+        inputfilePDF_aTT->Close();
         
       }
       else if(temp.find("Zmass")!=std::string::npos){
         //cout << "Get RenoFact/root/NP_overlay_ST_FCNC_zct_80XRenoFactohistograms_Zmass_toppair_Zut.root" << endl;
-        TFile* inputfilePDF_STNP = new TFile("RenoFact/root/NP_overlay_ST_FCNC_zct_80XRenoFactohistograms_Zmass_toppair_Zut.root","READ");
+        TFile* inputfilePDF_STNP ;
+        if(!isSingle) inputfilePDF_STNP= new TFile("RenoFact/root/NP_overlay_ST_FCNC_zct_80XRenoFactohistograms_Zmass_toppair_Zut.root","READ");
+        else if(isSingle) inputfilePDF_STNP= new TFile("RenoFact/root/NP_overlay_ST_FCNC_zct_80XRenoFactohistograms_Zmass_toppair_Zut.root","READ");
         //cout << "histo " << ("NP_overlay_ST_FCNC_zct_80X_"+temp +"_" +channel+"_"+syst).c_str() << endl;
         ST_Zct = (TH1F*)(inputfilePDF_STNP->Get(("NP_overlay_ST_FCNC_zct_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("ST_Zct"));
         //  //cout << "cloned" << endl;
-        ST_Zct->SetTitle((coupling+"_"+temp+"_"+ region +"_"+ channel +"_ST_Zct_80X_"+syst).c_str());
-        ST_Zct->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ST_Zct_80X_"+syst).c_str());
+        ST_Zct->SetTitle((temp+"_"+ channel +"_ST_Zct_80X_"+syst).c_str());
+        ST_Zct->SetName((temp+"_"+  channel +"_ST_Zct_80X_"+syst).c_str());
         
         
         //cout << "Get RenoFact/root/NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80XRenoFactohistograms_Zmass_toppair_Zut.root" << endl;
-        TFile* inputfilePDF_TT = new TFile("RenoFact/root/NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80XRenoFactohistograms_Zmass_toppair_Zut.root" ,"READ");
+        TFile* inputfilePDF_TT;
+        if(!isSingle) inputfilePDF_TT = new TFile("RenoFact/root/NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80XRenoFactohistograms_Zmass_toppair_Zut.root" ,"READ");
+        else inputfilePDF_TT = new TFile("RenoFact/root/NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80XRenoFactohistograms_Zmass_singletop_Zut.root" ,"READ");
         //cout << "Get RenoFact/root/NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct_80XRenoFactohistograms_Zmass_toppair_Zut.root" << endl;
-        TFile* inputfilePDF_aTT = new TFile("RenoFact/root/NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct_80XRenoFactohistograms_Zmass_toppair_Zut.root" ,"READ");
+        TFile* inputfilePDF_aTT;
+        if(!isSingle) inputfilePDF_aTT = new TFile("RenoFact/root/NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct_80XRenoFactohistograms_Zmass_toppair_Zut.root" ,"READ");
+        else inputfilePDF_aTT = new TFile("RenoFact/root/NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct_80XRenoFactohistograms_Zmass_singletop_Zut.root" ,"READ");
         
         TT_Zct = (TH1F*) inputfilePDF_TT->Get(("NP_overlay_TT_FCNC-T2ZJ_aTleptonic_ZToll_kappa_zct_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("TT_Zct");
         TT_Zct->Add( (TH1F*)inputfilePDF_aTT->Get(("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zct_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("TT_Zct"));
-        TT_Zct->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TT_Zct_80X_"+syst).c_str());
-        TT_Zct->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TT_Zct_80X_"+syst).c_str());
+        TT_Zct->SetTitle((temp+"_"+  channel +"_TT_Zct_80X_"+syst).c_str());
+        TT_Zct->SetName((temp+"_"+  channel +"_TT_Zct_80X_"+syst).c_str());
         
-        TFile* inputfilePDF_STNPu = new TFile("RenoFact/root/NP_overlay_ST_FCNC_zut_80XRenoFactohistograms_Zmass_toppair_Zut.root","READ");
+        TFile* inputfilePDF_STNPu;
+        if(!isSingle) inputfilePDF_STNPu = new TFile("RenoFact/root/NP_overlay_ST_FCNC_zut_80XRenoFactohistograms_Zmass_toppair_Zut.root","READ");
+        else inputfilePDF_STNPu = new TFile("RenoFact/root/NP_overlay_ST_FCNC_zut_80XRenoFactohistograms_Zmass_singletop_Zut.root","READ");
         ST_Zut = (TH1F*)(inputfilePDF_STNPu->Get(("NP_overlay_ST_FCNC_zut_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("ST_Zct"));
         //  //cout << "cloned" << endl;
-        ST_Zut->SetTitle((coupling+"_"+temp+"_"+ region +"_"+ channel +"_ST_Zut_80X_"+syst).c_str());
-        ST_Zut->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ST_Zut_80X_"+syst).c_str());
+        ST_Zut->SetTitle((temp+"_"+ channel +"_ST_Zut_80X_"+syst).c_str());
+        ST_Zut->SetName((temp+"_"+  channel +"_ST_Zut_80X_"+syst).c_str());
         
         
-        TFile* inputfilePDF_TTu = new TFile("RenoFact/root/NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80XRenoFactohistograms_Zmass_toppair_Zut.root" ,"READ");
-        TFile* inputfilePDF_aTTu= new TFile("RenoFact/root/NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut_80XRenoFactohistograms_Zmass_toppair_Zut.root " ,"READ");
+        TFile* inputfilePDF_TTu;
+         if(!isSingle) inputfilePDF_TTu = new TFile("RenoFact/root/NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80XRenoFactohistograms_Zmass_toppair_Zut.root" ,"READ");
+        else  inputfilePDF_TTu = new TFile("RenoFact/root/NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80XRenoFactohistograms_Zmass_singletop_Zut.root" ,"READ");
+        TFile* inputfilePDF_aTTu;
+        if(!isSingle) inputfilePDF_aTTu= new TFile("RenoFact/root/NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut_80XRenoFactohistograms_Zmass_toppair_Zut.root " ,"READ");
+        else inputfilePDF_aTTu= new TFile("RenoFact/root/NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut_80XRenoFactohistograms_Zmass_singletop_Zut.root " ,"READ");
         
         TT_Zut = (TH1F*) inputfilePDF_TTu->Get(("NP_overlay_TT_FCNC_T2ZJ_aTleptonic_ZToll_kappa_zut_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("TT_Zut");
         TT_Zut->Add( (TH1F*)inputfilePDF_aTTu->Get(("NP_overlay_TT_FCNC-aT2ZJ_Tleptonic_ZToll_kappa_zut_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("TT_Zut"));
-        TT_Zut->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TT_Zut_80X_"+syst).c_str());
-        TT_Zut->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TT_Zut_80X_"+syst).c_str());
+        TT_Zut->SetTitle((temp+"_"+  channel +"_TT_Zut_80X_"+syst).c_str());
+        TT_Zut->SetName((temp+"_"+  channel +"_TT_Zut_80X_"+syst).c_str());
         
         
-        TFile* inputfilePDF_WZ = new TFile("RenoFact/root/WZTo3LNu_amc_80XRenoFactohistograms_Zmass_toppair_Zut.root","READ");
+        TFile* inputfilePDF_WZ;
+        if(!isSingle) inputfilePDF_WZ = new TFile("RenoFact/root/WZTo3LNu_amc_80XRenoFactohistograms_Zmass_toppair_Zut.root","READ");
+        else inputfilePDF_WZ = new TFile("RenoFact/root/WZTo3LNu_amc_80XRenoFactohistograms_Zmass_singletop_Zut.root","READ");
         wz_new = (TH1F*) inputfilePDF_WZ->Get(("WZTo3LNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
-        wz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
-        wz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
+        wz_new->SetTitle((temp+"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
+        wz_new->SetName((temp+"_"+  channel +"_WZTo3LNu_amc_80X_"+syst).c_str());
         
         
-        TFile* inputfilePDF_ttz_new = new TFile("RenoFact/root/TTZToLLNuNu_amc_80XRenoFactohistograms_Zmass_toppair_Zut.root","READ");
+        TFile* inputfilePDF_ttz_new ;
+        if(!isSingle) inputfilePDF_ttz_new = new TFile("RenoFact/root/TTZToLLNuNu_amc_80XRenoFactohistograms_Zmass_toppair_Zut.root","READ");
+        else inputfilePDF_ttz_new = new TFile("RenoFact/root/TTZToLLNuNu_amc_80XRenoFactohistograms_Zmass_singletop_Zut.root","READ");
         ttz_new = (TH1F*) inputfilePDF_ttz_new->Get(("TTZToLLNuNu_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
-        ttz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
-        ttz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_TTZToLLNuNu_amc_"+syst).c_str());
+        ttz_new->SetTitle((temp+"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
+        ttz_new->SetName((temp+"_"+  channel +"_TTZToLLNuNu_amc_80X_"+syst).c_str());
         
-        TFile* inputfilePDF_zz_new = new TFile("RenoFact/root/ZZTo4L_80XRenoFactohistograms_Zmass_toppair_Zut.root","READ");
+        TFile* inputfilePDF_zz_new;
+        if(!isSingle) inputfilePDF_zz_new= new TFile("RenoFact/root/ZZTo4L_80XRenoFactohistograms_Zmass_toppair_Zut.root","READ");
+        else inputfilePDF_zz_new= new TFile("RenoFact/root/ZZTo4L_80XRenoFactohistograms_Zmass_singletop_Zut.root","READ");
         zz_new = (TH1F*) inputfilePDF_zz_new->Get(("ZZTo4L_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
-        zz_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
-        zz_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_ZZTo4L_"+syst).c_str());
+        zz_new->SetTitle((temp+"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
+        zz_new->SetName((temp+"_"+  channel +"_ZZTo4L_80X_"+syst).c_str());
         
-        TFile* inputfilePDF_tzq_new = new TFile("RenoFact/root/tZq_amc_80XRenoFactohistograms_Zmass_toppair_Zut.root","READ");
+        TFile* inputfilePDF_tzq_new;
+        if(!isSingle) inputfilePDF_tzq_new = new TFile("RenoFact/root/tZq_amc_80XRenoFactohistograms_Zmass_toppair_Zut.root","READ");
+        else  inputfilePDF_tzq_new = new TFile("RenoFact/root/tZq_amc_80XRenoFactohistograms_Zmass_singletop_Zut.root","READ");
         tzq_new = (TH1F*) inputfilePDF_tzq_new->Get(("tZq_amc_80X_"+temp +"_"+channel+"_"+syst).c_str())->Clone("WZ");
-        tzq_new->SetTitle((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
-        tzq_new->SetName((coupling+"_"+temp+"_"+ region +"_"+  channel +"_tZq_amc_"+syst).c_str());
+        tzq_new->SetTitle((temp+"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
+        tzq_new->SetName((temp+"_"+  channel +"_tZq_amc_80X_"+syst).c_str());
         
         
         
-        outputfile->cd();
+        //outputfile->cd();
+         inputfile->cd();
          ST_Zct->Write();
          TT_Zct->Write();
         wz_new ->Write();
@@ -1169,12 +1321,26 @@ void templates(string coupling= "Zut", string region = "toppair", string temp = 
         ST_Zut->Write();
         TT_Zut->Write();
         
+        inputfilePDF_tzq_new ->Close();
+        inputfilePDF_WZ->Close();
+        inputfilePDF_zz_new->Close();
+        inputfilePDF_ttz_new->Close();
+        inputfilePDF_TTu->Close();
+        inputfilePDF_TT->Close();
+        inputfilePDF_STNPu->Close();
+        inputfilePDF_STNP->Close();
+        inputfilePDF_aTTu->Close();
+        inputfilePDF_aTT->Close();
         
       }
     }
   }
+  inputfile->Write();
 
+  inputfile->Close();
 
+  
+  
 
 
 }
