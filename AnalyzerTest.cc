@@ -166,13 +166,21 @@ Double_t MVA_weight_btagSF = 1.;
 Double_t MVA_weight_muonSF = 1.;
 Double_t MVA_weight_electronSF = 1.;
 Double_t MVA_weight_nloSF= 1;
+Double_t MVA_weight_nloSF1= 1;
+Double_t MVA_weight_nloSF2= 1;
+Double_t MVA_weight_nloSF3 = 1;
+Double_t MVA_weight_nloSF4= 1;
+Double_t MVA_weight_nloSF5= 1;
+Double_t MVA_weight_nloSF6= 1;
+Double_t MVA_weight_nloSF7= 1;
+Double_t MVA_weight_nloSF8= 1;
 
 Int_t         MVA_id1;
 Int_t         MVA_id2;
 Double_t         MVA_x1;
 Double_t         MVA_x2;
 Double_t         MVA_q;
-Double_t        MVA_weight0, MVA_weight1, MVA_weight2, MVA_weight3, MVA_weight4, MVA_weight5, MVA_weight6, MVA_weight7, MVA_weight8;
+Double_t        MVA_weight0, MVA_weight1, MVA_weight2, MVA_weight3, MVA_weight4, MVA_weight5, MVA_weight6, MVA_weight7, MVA_weight8, MVA_totalSumWeight0;
 Double_t        MVA_hdamp_up;
 Double_t        MVA_hdamp_down;
 
@@ -321,7 +329,8 @@ Float_t MVA_cdiscCvsB_highestdisjet = -999.;
 Float_t MVA_cdiscCvsB_cjet = -999.;
 Float_t MVA_cdiscCvsL_highestdisjet = -999.;
 Float_t MVA_cdiscCvsL_cjet = -999.;
-
+Float_t MVA_cdiscCvsB_lowestdisjet = -999.;
+Float_t MVA_cdiscCvsL_lowestdisjet = -999.;
 
 
 
@@ -332,12 +341,58 @@ Float_t MVA_cdiscCvsL_cjet = -999.;
 Int_t nEv;
 Int_t nofNegWeights;
 Int_t nofPosWeights;
+Int_t nofPosWeights1;
+Int_t nofNegWeights1;
+Int_t nofPosWeights2;
+Int_t nofNegWeights2;
+Int_t nofPosWeights3;
+Int_t nofNegWeights3;
+Int_t nofPosWeights4;
+Int_t nofNegWeights4;
+Int_t nofPosWeights5;
+Int_t nofNegWeights5;
+Int_t nofPosWeights6;
+Int_t nofNegWeights6;
+Int_t nofPosWeights7;
+Int_t nofNegWeights7;
+Int_t nofPosWeights8;
+Int_t nofNegWeights8;
+
 Int_t sumW;
+Double_t sumweight0, sumweight1, sumweight2, sumweight3, sumweight4, sumweight5, sumweight6,sumweight7,sumweight8,sumbaseweight;
+TBranch *b_sumweight0;
+TBranch *b_sumweight1;
+TBranch *b_sumweight2;
+TBranch *b_sumweight3;
+TBranch *b_sumweight4;
+TBranch *b_sumweight5;
+TBranch *b_sumweight6;
+TBranch *b_sumweight7;
+TBranch *b_sumweight8;
+TBranch *b_sumbaseweight;
 
 
 TBranch        *b_nEv;
 TBranch *b_nofNegWeights;
 TBranch *b_nofPosWeights;
+TBranch *b_nofPosWeights1;
+TBranch *b_nofNegWeights1;
+TBranch *b_nofPosWeights2;
+TBranch *b_nofNegWeights2;
+TBranch *b_nofPosWeights3;
+TBranch *b_nofNegWeights3;
+TBranch *b_nofPosWeights4;
+TBranch *b_nofNegWeights4;
+TBranch *b_nofPosWeights5;
+TBranch *b_nofNegWeights5;
+TBranch *b_nofPosWeights6;
+TBranch *b_nofNegWeights6;
+TBranch *b_nofPosWeights7;
+TBranch *b_nofNegWeights7;
+TBranch *b_nofPosWeights8;
+TBranch *b_nofNegWeights8;
+
+
 TBranch *b_sumW;
 int TotalEvents;
 Double_t Luminosity = 36000.;
@@ -932,6 +987,7 @@ Double_t scaleFactor_bfBT;
 Double_t scaleFactor_bfELSF;
 Double_t scaleFactor_bfMuSF;
 Double_t scaleFactor_bfPU;
+Double_t scaleFactor_1sPU;
 Double_t scaleFactor_puSF_down;
 Double_t scaleFactor_puSF_up;
 Double_t scaleFactor_electronSF_down;
@@ -964,6 +1020,24 @@ Double_t muonSFtemp;
 Double_t electronSFtemp;
 Double_t EquilumiSF = 1.;
 Double_t nloSF = 1.;
+Double_t nloSF1 = 1.;
+Double_t nloSF2 = 1.;
+Double_t nloSF3 = 1.;
+Double_t nloSF4 = 1.;
+Double_t nloSF5 = 1.;
+Double_t nloSF6 = 1.;
+Double_t nloSF7 = 1.;
+Double_t nloSF8 = 1.;
+
+Double_t fact_weight1 = 1;
+Double_t fact_weight2 = 1;
+Double_t fact_weight3 = 1;
+Double_t fact_weight4 = 1;
+Double_t fact_weight6 = 1;
+Double_t fact_weight8 = 1;
+Double_t totalweight0 = 1.;
+
+
 Double_t Xsect = 1.;
 Double_t mWT;
 Double_t mWT2;
@@ -980,6 +1054,8 @@ int cjetindex_Ctight ;
 
 double cdiscCvsB_highestdisjet;
 double cdiscCvsL_highestdisjet;
+double cdiscCvsB_lowestdisjet;
+double cdiscCvsL_lowestdisjet;
 
 Int_t           WmuIndiceF;
 Int_t           WelecIndiceF;
@@ -987,6 +1063,8 @@ Int_t           ZelecIndiceF_0;
 Int_t           ZelecIndiceF_1;
 Int_t           ZmuIndiceF_0;
 Int_t           ZmuIndiceF_1;
+bool doPostFitZct = false;
+bool doPostFitZut = false;
 
 int total_nbEv_3lep_all= 0;
 int total_nbEv_AtLeast1jet_all= 0;
@@ -1060,9 +1138,11 @@ int main(int argc, char* argv[]){
   clock_t start = clock();
   //setTDRStyle(); // TO FIX
   //setMyStyle(); // TO FIX stat box title
-  
+  /*
   string xmlFileName = "";
-  xmlFileName = "config/Run2TriLepton_samples_analy.xml" ;
+  xmlFileName = "config/Run2TriLepton_samples_analy_postfit.xml" ;
+  if(doPostFitZut) xmlFileName ="config/Run2TriLepton_samples_analy_postfitZut.xml" ;
+  if(doDilep) xmlFileName ="config/Run2TriLepton_samples_analy_dilep.xml";
   const char* xmlFile = xmlFileName.c_str();
   cout << " - Using config file " << xmlFile << endl;
   
@@ -1082,7 +1162,8 @@ int main(int argc, char* argv[]){
   cout << "loading " << endl;
   treeLoader.LoadDatasets(datasetsbefore, xmlFile);
   cout << "datasets loaded" <<endl;
-  bool makePlots = false;
+  */
+bool makePlots = false;
   bool makeMVAPlots = false;
   bool makeMatchingPlots = false;
   makeMVAtree = false;
@@ -1142,6 +1223,8 @@ int main(int argc, char* argv[]){
   int doerrorbandlfstats2 = 0;
   
   bool doIniWeight = false;
+   doPostFitZct = false;
+   doPostFitZut = false;
   doDilep = false;
   for(int i = 0; i <argc; i++){
     if(string(argv[i]).find("help")!=string::npos) {
@@ -1177,9 +1260,15 @@ int main(int argc, char* argv[]){
       std::cout << "   doCutTable" << endl;
       std::cout << "   doSys" << endl;
       std::cout  << "   findFakeDisc" << endl;
+      std::cout << "PostFit Zct/Zut" << endl;
       std::cout  << "   ErrorBands: JESMin, JESPlus, JERMin, JERPlus, PUSFMin/Plus, MuonSFMin/Plus, ElectronSFMinPlus" << endl;
       return 0;
     }
+    if(string(argv[i]).find("PostFit")!=std::string::npos){
+      i++;
+      if(string(argv[i]).find("Zut")!=std::string::npos) doPostFitZut = true;
+      else if(string(argv[i]).find("Zct")!=std::string::npos) doPostFitZct = true;
+       }
     if(string(argv[i]).find("IniWeight")!=std::string::npos){
       doIniWeight = true;
     }
@@ -1378,7 +1467,29 @@ int main(int argc, char* argv[]){
   
   
   if(!applyNloSF || !applyBTagSF ||! applyElectronSF || !applyMETfilter ||  !applyMuonSF || !dorochester) cout << " WARNING not all booleans set for reweighing" << endl;
-  
+    string xmlFileName = "";
+  xmlFileName = "config/Run2TriLepton_samples_analycop5.xml" ;
+  if(doPostFitZut) xmlFileName ="config/Run2TriLepton_samples_analy_postfitZut.xml" ;
+  if(doDilep) xmlFileName ="config/Run2TriLepton_samples_analy_dilep.xml";
+  const char* xmlFile = xmlFileName.c_str();
+  cout << " - Using config file " << xmlFile << endl;
+
+  string pathOutput = "OutputPlots/";
+  mkdir(pathOutput.c_str(),0777);
+  pathOutputdate = pathOutput + dateString + "/"  ;
+  mkdir(pathOutputdate.c_str(),0777);
+
+
+
+  //  load datasets
+      datasets.clear();
+        datasetsbefore.clear();
+          TTreeLoader treeLoader;
+            cout << "loading " << endl;
+              treeLoader.LoadDatasets(datasetsbefore, xmlFile);
+                cout << "datasets loaded" <<endl;
+                
+ 
   
   if(dofakesf && doDilep) fakescalefactorsfilename = fakescalefactorsfilename + "_" + dateString + "_dilep" ;
   else if(applyfakesf) fakescalefactorsfilename = fakescalefactorsfilename + "_170630_0933_dilep";//"_170629_2041_dilep"; //"_170620_1107_dilep" ; // "_170619_1426_dilep" ;
@@ -1438,7 +1549,7 @@ int main(int argc, char* argv[]){
   
   if(makePlots){
     firstevent = true;
-    //InitMSPlots("control_afterAtLeast1Jet", decayChannels);
+    InitMSPlots("control_dilep", decayChannels);
    // InitMSPlots("control_afterAtLeast1Jet_3lep_", decayChannels);
     // InitMSPlots("control_afterAtLeast1Jet_afterZWindow_afterAtLeast1BJet", decayChannels);
     // Init1DPlots();
@@ -2301,6 +2412,7 @@ int main(int argc, char* argv[]){
       scaleFactor_bfELSF = 1.;
       scaleFactor_bfMuSF = 1.;
       scaleFactor_bfPU = 1.;
+      scaleFactor_1sPU = 1.; 
       scaleFactor_puSF_down=1.;
       scaleFactor_puSF_up=1.;
       scaleFactor_electronSF_down=1.;
@@ -2396,14 +2508,16 @@ int main(int argc, char* argv[]){
           
         }
         else electronSFtemp = 1.;
-        
-        if (applyPUSF) {
+         scaleFactor_bfPU = scaleFactor ; 
+         scaleFactor_1sPU =scaleFactor;
+     
+        if (applyPUSF){
           scaleFactor *= puSF;
           
           scaleFactor_puSF_up *= puSF_up;
           scaleFactor_puSF_down *= puSF_down;
           scaleFactor_puSF = puSF;
-          
+           scaleFactor_1sPU *= puSF_down;
           
           
           
@@ -2413,6 +2527,8 @@ int main(int argc, char* argv[]){
         
         if (applyBTagSF) {
           scaleFactor *= btagSFshape;
+	  scaleFactor_bfPU *= btagSFshape;
+          scaleFactor_1sPU *= btagSFshape; 
           
           scaleFactor_btagSF_cferr1_down*= btagSFshape_down_cferr1  ;
           scaleFactor_btagSF_cferr1_up*= btagSFshape_up_cferr1  ;
@@ -2437,9 +2553,28 @@ int main(int argc, char* argv[]){
         
         if (applyNloSF && isAMC) {
           scaleFactor *= nloWeight * nloSF;
+	  scaleFactor_bfPU *= nloWeight * nloSF;
+           scaleFactor_1sPU *= nloWeight * nloSF;
           scaleFactor_NLO = nloWeight * nloSF;
         }  // additional SF due to number of events with neg weight!!
         
+        if(!isData){
+          fact_weight1 = weight1 * fact_weight1;  // correct number of events
+          fact_weight2 = weight2 * fact_weight2;
+          fact_weight3 = weight3 * fact_weight3;
+          fact_weight4 = weight4 * fact_weight4;
+          fact_weight6 = weight6 * fact_weight6;
+          fact_weight8 = weight8 * fact_weight8;
+          /*if(isAMC){
+            fact_weight1 = fact_weight1 / weight0; // cancel base weight from nlo reweighing
+            fact_weight2 = fact_weight2 / weight0; // cancel base weight from nlo reweighing
+            fact_weight3 = fact_weight3 / weight0; // cancel base weight from nlo reweighing
+            fact_weight4 = fact_weight4 / weight0; // cancel base weight from nlo reweighing
+            fact_weight6 = fact_weight6 / weight0; // cancel base weight from nlo reweighing
+            fact_weight8 = fact_weight8 / weight0; // cancel base weight from nlo reweighing
+          }*/
+        }
+
         
       }
       else if(isData || isfakes ){
@@ -2450,6 +2585,7 @@ int main(int argc, char* argv[]){
         scaleFactor_bfELSF = 1.;
         scaleFactor_bfMuSF = 1.;
         scaleFactor_bfPU = 1.;
+        scaleFactor_1sPU = 1.; 
         scaleFactor_puSF_down=1.;
         scaleFactor_puSF_up=1.;
         scaleFactor_electronSF_down=1.;
@@ -2477,6 +2613,7 @@ int main(int argc, char* argv[]){
         puSF = 1.;
         
       }
+       scaleFactor_bfBT  = scaleFactor /  btagSFshape; 
       /*
        if(isfakes && ( channelInt == 0 || channelInt == 2) ){ scaleFactor *= 0.0237522 * 0.0001 ; }
        if(isfakes && (channelInt== 1 || channelInt == 3) ){ scaleFactor *= 0.20771 * 0.0001;  }
@@ -2674,10 +2811,10 @@ int main(int argc, char* argv[]){
         
       }
       
-      if (makePlots && doDilep)
+      if (IamInZwindow && makePlots && doDilep)
       {
         //cout << "ievt " << ievt << endl;
-       // FillGeneralPlots(d, "control_afterAtLeast1Jet", decayChannels, isData, isfakes, threelepregion, twolepregion);
+        FillGeneralPlots(d, "control_dilep", decayChannels, isData, isfakes, threelepregion, twolepregion);
         //if(dataSetName.find("WZTo3LNu")!=std::string::npos) Fill1DPlots(dataSetName);
         
         
@@ -2694,7 +2831,7 @@ int main(int argc, char* argv[]){
         
         
       }
-      
+      /*
       if(makePlots && IamInZwindow){
         MSPlot["lepton0_pt"] ->Fill(selectedLeptons[0].Pt() , datasets[d], true,eventweightForplots);
         MSPlot["lepton1_pt"] ->Fill(selectedLeptons[1].Pt() , datasets[d], true,eventweightForplots);
@@ -2729,7 +2866,7 @@ int main(int argc, char* argv[]){
           histo1D_muon2_bkg_pt->Fill(selectedMuons[2].Pt(), eventweightForNotMSplots);
         }
       }
-      
+      */
       if(doCutflow){ // {"Z mass",">2l","STSR","TTSR","WZCR","TTCR", "STCR"};
         MSPlot["cutflow"] ->Fill(1. , datasets[d], true,eventweightForplots);
         if(channelInt == 3) MSPlot["cutflow_eee"] ->Fill(1. , datasets[d], true,eventweightForplots);
@@ -3789,32 +3926,32 @@ int main(int argc, char* argv[]){
       histo_nonpromptinW_data->Draw("hist");
       histo_nonpromptinZ_data->SetLineColor(kRed);
       histo_nonpromptinZ_data->Draw("hist sames");
-      c3->SaveAs("nonpromptallchannel.png");
+      c3->SaveAs("nonpromptallchannel.pdf");
       
       histo_nonpromptinW_data_uuu->SetMaximum(1.);
       histo_nonpromptinW_data_uuu->Draw("hist");
       histo_nonpromptinZ_data_uuu->SetLineColor(kRed);
       histo_nonpromptinZ_data_uuu->Draw("hist sames");
-      c3->SaveAs("nonpromptuuuchannel.png");
+      c3->SaveAs("nonpromptuuuchannel.pdf");
       
       gStyle->SetOptStat(0);
       histo_nonpromptinW_data_uue->SetMaximum(1.);
       histo_nonpromptinW_data_uue->Draw("hist");
       histo_nonpromptinZ_data_uue->SetLineColor(kRed);
       histo_nonpromptinZ_data_uue->Draw("hist sames");
-      c3->SaveAs("nonpromptuuechannel.png");
+      c3->SaveAs("nonpromptuuechannel.pdf");
       
       histo_nonpromptinW_data_eeu->SetMaximum(1.);
       histo_nonpromptinW_data_eeu->Draw("hist");
       histo_nonpromptinZ_data_eeu->SetLineColor(kRed);
       histo_nonpromptinZ_data_eeu->Draw("hist sames");
-      c3->SaveAs("nonprompteeuchannel.png");
+      c3->SaveAs("nonprompteeuchannel.pdf");
       
       histo_nonpromptinW_data_eee->SetMaximum(1.);
       histo_nonpromptinW_data_eee->Draw("hist");
       histo_nonpromptinZ_data_eee->SetLineColor(kRed);
       histo_nonpromptinZ_data_eee->Draw("hist sames");
-      c3->SaveAs("nonprompteeechannel.png");
+      c3->SaveAs("nonprompteeechannel.pdf");
       
     }
     
@@ -3840,13 +3977,13 @@ int main(int argc, char* argv[]){
   gStyle->SetOptStat(0);
   histo_data->Draw("text");
   c33->SetLogy();
-  c33->SaveAs("datacount.png");
+  c33->SaveAs("datacount.pdf");
   histo_ttbar->Draw("text");
   c33->SetLogy();
-  c33->SaveAs("ttcount.png");
+  c33->SaveAs("ttcount.pdf");
   histo_wz->Draw("text");
   c33->SetLogy();
-  c33->SaveAs("wzcount.png");
+  c33->SaveAs("wzcount.pdf");
   
   
   
@@ -4103,7 +4240,7 @@ int main(int argc, char* argv[]){
     fake_SFHisto->Draw("colz text");
     tempC->Update();
     tempC->Write();
-    tempC->SaveAs( "SF_fake.png" );
+    tempC->SaveAs( "SF_fake.pdf" );
     
     
     
@@ -4179,7 +4316,7 @@ int main(int argc, char* argv[]){
         tempC->SetLogy();
         tempC->Update();
         tempC->Write();
-        tempC->SaveAs( ("triggeff_"+tempstri+plotter[iplot]+".png").c_str() );
+        tempC->SaveAs( ("triggeff_"+tempstri+plotter[iplot]+".pdf").c_str() );
         
         xvalues.clear();
         for(int xval = 1 ; xval < ((TH1F*)triggerEfffile->Get((plotter[iplot]+"_"+tempstri+"data_MET").c_str()))->GetNbinsX()+1; xval ++){
@@ -4224,7 +4361,7 @@ int main(int argc, char* argv[]){
         scalefactors_Graph->Draw("AP");
         tempC->Update();
         tempC->Write();
-        tempC->SaveAs( ("SF_trigger_"+tempstri+plotter[iplot]+".png").c_str() );
+        tempC->SaveAs( ("SF_trigger_"+tempstri+plotter[iplot]+".pdf").c_str() );
       }
       // cout << "trigger SF " << histPt_MET_SF->GetBinContent(1) << endl;
     }
@@ -4320,33 +4457,36 @@ int main(int argc, char* argv[]){
       {
         ///cout << "MSPlot: " << it->first << endl;
         MultiSamplePlot *temp = it->second;
-        
+        temp->setPreliminary(false);
+        temp->showNumberEntries(false);
         //temp->showNumberEntries(showEntriesLegend);
         // temp->setPreliminary(false);
         //temp->setErrorBandFile(errorbandfile, dosystfile);
         //temp->Draw(name,RatioType, addRatioErrorBand, addErrorBand, ErrorBandAroundTotalInput, scaleNPSignal);
         string name = it->first;
         if(!datafound) temp->setDataLumi(Luminosity);
-        if(name.find("all")!=std::string::npos) temp->setChannel(true, "all");
-        if(name.find("eee")!=std::string::npos) temp->setChannel(true, "3e");
-        if(name.find("eeu")!=std::string::npos) temp->setChannel(true, "2e1#mu");
-        if(name.find("uue")!=std::string::npos) temp->setChannel(true, "1e2#mu");
-        if(name.find("uuu")!=std::string::npos) temp->setChannel(true, "3#mu");
-        if(name.find("uu")!=std::string::npos && name.find("uuu")==std::string::npos  && name.find("uue")==std::string::npos && doDilep) temp->setChannel(true, "2#mu");
-        if(name.find("ee")!=std::string::npos && name.find("eee")==std::string::npos  && name.find("eeu")==std::string::npos && doDilep) temp->setChannel(true, "2e");
+        if(name.find("all")!=std::string::npos) temp->setChannel(true, "all channels");
+        if(name.find("eee")!=std::string::npos) temp->setChannel(true, "3e channel");
+        if(name.find("eeu")!=std::string::npos) temp->setChannel(true, "2e1#mu channel");
+        if(name.find("uue")!=std::string::npos) temp->setChannel(true, "1e2#mu channel");
+        if(name.find("uuu")!=std::string::npos) temp->setChannel(true, "3#mu channel");
+        if(name.find("uu")!=std::string::npos && name.find("uuu")==std::string::npos  && name.find("uue")==std::string::npos && doDilep) temp->setChannel(true, "2#mu channel");
+        if(name.find("ee")!=std::string::npos && name.find("eee")==std::string::npos  && name.find("eeu")==std::string::npos && doDilep) temp->setChannel(true, "2e channel");
         if(name.find("Decay")!=std::string::npos && !makeerrorbands) temp->setBins(vlabel_chan);
         if(name.find("cutflow")!=std::string::npos && !makeerrorbands) temp->setBins(v_cutflow);
         if(name.find("cutflowregion")!=std::string::npos) temp->setBins(v_cutflowreg);
-        if(!makeerrorbands){
+        if(!makeerrorbands && !doDilep){
           if(doIniWeight) temp->setErrorBandFile("ErrorBand/ErrorBandFile.root", false);
+          else if(doPostFitZct) temp->setErrorBandFile("ErrorBand/ErrorBandFilePostFitZct.root", false);
+          else if(doPostFitZut) temp->setErrorBandFile("ErrorBand/ErrorBandFilePostFitZut.root", false);
           else if(!doIniWeight) temp->setErrorBandFile("ErrorBand/ErrorBandFileNoIniWeight.root", false); // false means that there are up and down sys
-          temp->Draw(name, 1, true, true, true, 10);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
+          temp->Draw(name, 1, true, true, true, 1);  // string label, unsigned int RatioType, bool addRatioErrorBand, bool addErrorBand, bool ErrorBandAroundTotalInput, int scaleNPSignal
         }
         else temp->Draw(name, 1, false, false, false, 10);
         //cout << "writing to " << pathOutputdate+"MSPlot" << endl;
         //cout << "plot " << name << endl;
         //cout << "temp " << temp << endl;
-        if(!makeerrorbands) temp->Write(fout, name, true, (pathOutputdate+"/MSPlot").c_str(), "png");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
+        if(!makeerrorbands) temp->Write(fout, name, true, (pathOutputdate+"/MSPlot").c_str(), "pdf");  // TFile* fout, string label, bool savePNG, string pathPNG, string ext
         else if(makeerrorbands){
           string postsys = "";
           if(doerrorbandElectron != 0 && doerrorbandElectron < 0) postsys = "ElMin";
@@ -4377,7 +4517,7 @@ int main(int argc, char* argv[]){
           else if (doerrorbandlfstats2 != 0 && doerrorbandlfstats2 > 0) postsys ="lfstats2Plus";
           else postsys = "nom"; 
           //cout << "writing" << endl;
-           temp->Write(fout, name, false, (pathOutputdate+"/MSPlot"+postsys).c_str(), "png");
+           temp->Write(fout, name, false, (pathOutputdate+"/MSPlot"+postsys).c_str(), "pdf");
           //cout << "writing " << name.c_str() << endl;
         }
       }
@@ -4396,7 +4536,7 @@ int main(int argc, char* argv[]){
         temp->SetEntries(temp->GetEntries()-2); // necessary since each SetBinContent adds +1 to the number of entries...
         temp->Write();
         TCanvas* tempCanvas = TCanvasCreator(temp, it->first);
-        tempCanvas->SaveAs( (placeTH1F+it->first+".png").c_str() );
+        tempCanvas->SaveAs( (placeTH1F+it->first+".pdf").c_str() );
       }
     }
     if(dofakevalidation){
@@ -4504,10 +4644,10 @@ int main(int argc, char* argv[]){
             tempDY->Draw("same histo e");
             legfakes->Draw("");
             Canvasfakes->Update();
-            Canvasfakes->SaveAs( ("fakevali/fakevalidation_"+plotnames[iv]+poststring+channelst+".png").c_str());
+            Canvasfakes->SaveAs( ("fakevali/fakevalidation_"+plotnames[iv]+poststring+channelst+".pdf").c_str());
             Canvasfakes->SetLogy();
             Canvasfakes->Update();
-            Canvasfakes->SaveAs( ("fakevali/fakevalidation_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str() );
+            Canvasfakes->SaveAs( ("fakevali/fakevalidation_"+plotnames[iv]+"LogY_"+poststring+channelst+".pdf").c_str() );
             
             TH1F* ratioFakeVsFake = (TH1F*) tempDY->Clone("ratioFakeVsFake");
             ratioFakeVsFake->Divide((TH1F*) tempfake);
@@ -4527,10 +4667,10 @@ int main(int argc, char* argv[]){
             ratioFakeVsFake->Draw("histo e");
             line->Draw("same");
             Canvasfakes->Update();
-            Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiofakes_"+plotnames[iv]+poststring+channelst+".png").c_str());
+            Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiofakes_"+plotnames[iv]+poststring+channelst+".pdf").c_str());
             Canvasfakes->SetLogy();
             Canvasfakes->Update();
-            Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiofakes_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str());
+            Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiofakes_"+plotnames[iv]+"LogY_"+poststring+channelst+".pdf").c_str());
             
             TH1F* ratioFakeVsData = (TH1F*) tempdata->Clone("ratioFakeVsData");
             ratioFakeVsData->Divide((TH1F*) tempfake);
@@ -4544,10 +4684,10 @@ int main(int argc, char* argv[]){
             ratioFakeVsData->Draw("histo e");
             line->Draw("same");
             Canvasfakes->Update();
-            Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiodata_"+plotnames[iv]+poststring+channelst+".png").c_str());
+            Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiodata_"+plotnames[iv]+poststring+channelst+".pdf").c_str());
             Canvasfakes->SetLogy();
             Canvasfakes->Update();
-            Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiodata_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str());
+            Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratiodata_"+plotnames[iv]+"LogY_"+poststring+channelst+".pdf").c_str());
             
             legfakes = new TLegend(xl1,yl1,xl2,yl2);
             legfakes->AddEntry(ratioFakeVsData,"DD non prompt/Data","L");   // h1 and h2 are histogram pointers
@@ -4568,10 +4708,10 @@ int main(int argc, char* argv[]){
             line->Draw("same");
             legfakes->Draw("");
             Canvasfakes->Update();
-            Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratio_"+plotnames[iv]+poststring+channelst+".png").c_str());
+            Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratio_"+plotnames[iv]+poststring+channelst+".pdf").c_str());
             Canvasfakes->SetLogy();
             Canvasfakes->Update();
-            Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratio_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str());
+            Canvasfakes->SaveAs( ("fakevali/fakevalidation_ratio_"+plotnames[iv]+"LogY_"+poststring+channelst+".pdf").c_str());
           }
         }
         
@@ -4684,10 +4824,10 @@ int main(int argc, char* argv[]){
             // tempDY->Draw("same histo e");
             legfakes->Draw("");
             Canvasfakes->Update();
-            Canvasfakes->SaveAs( ("fakedisc/fakedisc_"+plotnames[iv]+poststring+channelst+".png").c_str());
+            Canvasfakes->SaveAs( ("fakedisc/fakedisc_"+plotnames[iv]+poststring+channelst+".pdf").c_str());
             Canvasfakes->SetLogy();
             Canvasfakes->Update();
-            Canvasfakes->SaveAs( ("fakedisc/fakedisc_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str() );
+            Canvasfakes->SaveAs( ("fakedisc/fakedisc_"+plotnames[iv]+"LogY_"+poststring+channelst+".pdf").c_str() );
             
             TH1F* ratioFakeVsFake = (TH1F*) tempdata->Clone("ratioFakeVsFake");
             ratioFakeVsFake->Divide((TH1F*) tempNP);
@@ -4707,10 +4847,10 @@ int main(int argc, char* argv[]){
             ratioFakeVsFake->Draw("histo e");
             line->Draw("same");
             Canvasfakes->Update();
-            Canvasfakes->SaveAs( ("fakedisc/fakedisc_ratiofakes_"+plotnames[iv]+poststring+channelst+".png").c_str());
+            Canvasfakes->SaveAs( ("fakedisc/fakedisc_ratiofakes_"+plotnames[iv]+poststring+channelst+".pdf").c_str());
             Canvasfakes->SetLogy();
             Canvasfakes->Update();
-            Canvasfakes->SaveAs( ("fakedisc/fakedisc_ratiofakes_"+plotnames[iv]+"LogY_"+poststring+channelst+".png").c_str());
+            Canvasfakes->SaveAs( ("fakedisc/fakedisc_ratiofakes_"+plotnames[iv]+"LogY_"+poststring+channelst+".pdf").c_str());
             
           }
         }
@@ -4794,10 +4934,10 @@ int main(int argc, char* argv[]){
       tempup->Draw("SAME,h e");
       tempdown->Draw("SAME,h e");
       leg->Draw("sames");
-      Canvas->SaveAs( (placeTH1F+"PUSF_nvtx.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"PUSF_nvtx.pdf").c_str() );
       Canvas->SetLogy();
       Canvas->Update();
-      Canvas->SaveAs( (placeTH1F+"PUSF_nvtx_LogY.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"PUSF_nvtx_LogY.pdf").c_str() );
       
       tempnom =0;
       tempup = 0;
@@ -4854,10 +4994,10 @@ int main(int argc, char* argv[]){
       tempup->Draw("same histo e");
       tempdown->Draw("same histo e");
       leg->Draw("sames");
-      Canvas->SaveAs( (placeTH1F+"ELSF_ptelectron.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"ELSF_ptelectron.pdf").c_str() );
       Canvas->SetLogy();
       Canvas->Update();
-      Canvas->SaveAs( (placeTH1F+"ELSF_ptelectron_LogY.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"ELSF_ptelectron_LogY.pdf").c_str() );
       
       // muon SF
       tempnom =0;
@@ -4913,10 +5053,10 @@ int main(int argc, char* argv[]){
       tempup->Draw("same histo e");
       tempdown->Draw("same histo e");
       leg->Draw("sames");
-      Canvas->SaveAs( (placeTH1F+"MUSF_ptmuon.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"MUSF_ptmuon.pdf").c_str() );
       Canvas->SetLogy();
       Canvas->Update();
-      Canvas->SaveAs( (placeTH1F+"MUSF_ptmuon_LogY.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"MUSF_ptmuon_LogY.pdf").c_str() );
       
       // btag SF cferr1
       tempnom =0;
@@ -4972,10 +5112,10 @@ int main(int argc, char* argv[]){
       tempup->Draw("same histo e");
       tempdown->Draw("same histo e");
       leg->Draw("sames");
-      Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr1.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr1.pdf").c_str() );
       Canvas->SetLogy();
       Canvas->Update();
-      Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr1_LogY.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr1_LogY.pdf").c_str() );
       
       // btag SF cferr2
       tempnom =0;
@@ -5031,10 +5171,10 @@ int main(int argc, char* argv[]){
       tempup->Draw("same histo e");
       tempdown->Draw("same histo e");
       leg->Draw("sames");
-      Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr2.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr2.pdf").c_str() );
       Canvas->SetLogy();
       Canvas->Update();
-      Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr2_LogY.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"BSF_bdiscferr2_LogY.pdf").c_str() );
       
       // btag SF hfstats1
       tempnom =0;
@@ -5090,10 +5230,10 @@ int main(int argc, char* argv[]){
       tempup->Draw("same histo e");
       tempdown->Draw("same histo e");
       leg->Draw("sames");
-      Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats1.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats1.pdf").c_str() );
       Canvas->SetLogy();
       Canvas->Update();
-      Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats1_LogY.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats1_LogY.pdf").c_str() );
       
       // btag SF hfstats2
       tempnom =0;
@@ -5149,10 +5289,10 @@ int main(int argc, char* argv[]){
       tempup->Draw("same histo e");
       tempdown->Draw("same histo e");
       leg->Draw("sames");
-      Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats2.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats2.pdf").c_str() );
       Canvas->SetLogy();
       Canvas->Update();
-      Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats2_LogY.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"BSF_bdishfstats2_LogY.pdf").c_str() );
       
       
       // btag SF lfstats1
@@ -5210,10 +5350,10 @@ int main(int argc, char* argv[]){
       tempup->Draw("same histo e");
       tempdown->Draw("same histo e");
       leg->Draw("sames");
-      Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats1.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats1.pdf").c_str() );
       Canvas->SetLogy();
       Canvas->Update();
-      Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats1_LogY.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats1_LogY.pdf").c_str() );
       
       // btag SF lfstats2
       tempnom =0;
@@ -5269,10 +5409,10 @@ int main(int argc, char* argv[]){
       tempup->Draw("same histo e");
       tempdown->Draw("same histo e");
       leg->Draw("sames");
-      Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats2.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats2.pdf").c_str() );
       Canvas->SetLogy();
       Canvas->Update();
-      Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats2_LogY.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"BSF_bdislfstats2_LogY.pdf").c_str() );
       
       
       // btag SF hf
@@ -5329,10 +5469,10 @@ int main(int argc, char* argv[]){
       tempup->Draw("same histo e");
       tempdown->Draw("same histo e");
       leg->Draw("sames");
-      Canvas->SaveAs( (placeTH1F+"BSF_bdishf.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"BSF_bdishf.pdf").c_str() );
       Canvas->SetLogy();
       Canvas->Update();
-      Canvas->SaveAs( (placeTH1F+"BSF_bdishf_LogY.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"BSF_bdishf_LogY.pdf").c_str() );
       
       // btag SF lf
       tempnom =0;
@@ -5388,10 +5528,10 @@ int main(int argc, char* argv[]){
       tempup->Draw("same histo e");
       tempdown->Draw("same histo e");
       leg->Draw("sames");
-      Canvas->SaveAs( (placeTH1F+"BSF_bdislf.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"BSF_bdislf.pdf").c_str() );
       Canvas->SetLogy();
       Canvas->Update();
-      Canvas->SaveAs( (placeTH1F+"BSF_bdislf_LogY.png").c_str() );
+      Canvas->SaveAs( (placeTH1F+"BSF_bdislf_LogY.pdf").c_str() );
       
       delete tempdown;
       delete tempnom;
@@ -5409,7 +5549,7 @@ int main(int argc, char* argv[]){
       TH2F *temp = it->second;
       temp->Write();
       TCanvas* tempCanvas = TCanvasCreator(temp, it->first, "colz");
-      tempCanvas->SaveAs( (placeTH2F+it->first+".png").c_str() );
+      tempCanvas->SaveAs( (placeTH2F+it->first+".pdf").c_str() );
     }
     
     fout->Close();
@@ -5465,14 +5605,15 @@ void MakeMVAvars(int Region, Double_t scaleFactor, int nonpromptWrong_, Double_t
   MVA_id1 = id1;
   MVA_id2 = id2;
   MVA_weight0 = weight0;
-  MVA_weight1 = weight1;
-  MVA_weight2 = weight2;
-  MVA_weight3 = weight3;
-  MVA_weight4 = weight4;
+  MVA_totalSumWeight0 = totalweight0;
+  MVA_weight1 = fact_weight1;
+  MVA_weight2 = fact_weight2;
+  MVA_weight3 = fact_weight3;
+  MVA_weight4 = fact_weight4;
   MVA_weight5 = weight5;
-  MVA_weight6 = weight6;
+  MVA_weight6 = fact_weight6;
   MVA_weight7 = weight7;
-  MVA_weight8 = weight8;
+  MVA_weight8 = fact_weight8;
   MVA_hdamp_down = hdamp_down;
   MVA_hdamp_up = hdamp_up;
   
@@ -5518,6 +5659,14 @@ void MakeMVAvars(int Region, Double_t scaleFactor, int nonpromptWrong_, Double_t
   MVA_weight_btagSF_lfstats2_down =  scaleFactor_btagSF_lfstats2_down ;
   MVA_weight_nloSF = scaleFactor_NLO;
   
+  MVA_weight_nloSF1 = nloSF1 * weight1;
+  MVA_weight_nloSF2 = nloSF2 * weight2;
+  MVA_weight_nloSF3 = nloSF3 * weight3;
+  MVA_weight_nloSF4 = nloSF4 * weight4;
+  MVA_weight_nloSF7 = nloSF7 * weight7;
+  MVA_weight_nloSF5 = nloSF5 * weight5;
+  MVA_weight_nloSF6 = nloSF6 * weight6;
+  MVA_weight_nloSF8 = nloSF8 * weight8;
   
   MVA_region = static_cast<float>( Region);
   
@@ -5776,15 +5925,16 @@ void createMVAtree(string dataSetName){
   mvatree->Branch("MVA_id1", &MVA_id1, "MVA_id1/I");
   mvatree->Branch("MVA_id2", &MVA_id2, "MVA_id2/I");
   mvatree->Branch("MVA_q", &MVA_q, "MVA_q/D");
-  mvatree->Branch("MVA_weight0", &MVA_weight0," MVA_weight0/D");
-  mvatree->Branch("MVA_weight1", &MVA_weight1," MVA_weight1/D");
-  mvatree->Branch("MVA_weight2", &MVA_weight2," MVA_weight2/D");
-  mvatree->Branch("MVA_weight3", &MVA_weight3," MVA_weight3/D");
-  mvatree->Branch("MVA_weight4", &MVA_weight4," MVA_weight4/D");
-  mvatree->Branch("MVA_weight5", &MVA_weight5," MVA_weight5/D");
-  mvatree->Branch("MVA_weight6", &MVA_weight6," MVA_weight6/D");
-  mvatree->Branch("MVA_weight7", &MVA_weight7," MVA_weight7/D");
-  mvatree->Branch("MVA_weight8", &MVA_weight8," MVA_weight8/D");
+   mvatree->Branch("MVA_totalSumWeight0", &MVA_totalSumWeight0,"MVA_totalSumWeight0/D");
+  mvatree->Branch("MVA_weight0", &MVA_weight0,"MVA_weight0/D");
+  mvatree->Branch("MVA_weight1", &MVA_weight1,"MVA_weight1/D");
+  mvatree->Branch("MVA_weight2", &MVA_weight2,"MVA_weight2/D");
+  mvatree->Branch("MVA_weight3", &MVA_weight3,"MVA_weight3/D");
+  mvatree->Branch("MVA_weight4", &MVA_weight4,"MVA_weight4/D");
+  mvatree->Branch("MVA_weight5", &MVA_weight5,"MVA_weight5/D");
+  mvatree->Branch("MVA_weight6", &MVA_weight6,"MVA_weight6/D");
+  mvatree->Branch("MVA_weight7", &MVA_weight7,"MVA_weight7/D");
+  mvatree->Branch("MVA_weight8", &MVA_weight8,"MVA_weight8/D");
   mvatree->Branch("MVA_hdamp_up",&MVA_hdamp_up,"MVA_hdamp_up/D");
   mvatree->Branch("MVA_hdamp_down",&MVA_hdamp_down,"MVA_hdamp_down/D");
   
@@ -5822,6 +5972,14 @@ void createMVAtree(string dataSetName){
   mvatree->Branch("MVA_weight_btagSF_lfstats2_up", &MVA_weight_btagSF_lfstats2_up, "MVA_weight_btagSF_lfstats2_up/D");
   mvatree->Branch("MVA_weight_btagSF_lfstats2_down", &MVA_weight_btagSF_lfstats2_down, "MVA_weight_btagSF_lfstats2_down/D");
   mvatree->Branch("MVA_weight_nloSF", &MVA_weight_nloSF , "MVA_weight_nloSF/D");
+  mvatree->Branch("MVA_weight_nloSF1", &MVA_weight_nloSF1 , "MVA_weight_nloSF1/D");
+  mvatree->Branch("MVA_weight_nloSF2", &MVA_weight_nloSF2 , "MVA_weight_nloSF2/D");
+  mvatree->Branch("MVA_weight_nloSF3", &MVA_weight_nloSF3 , "MVA_weight_nloSF3/D");
+  mvatree->Branch("MVA_weight_nloSF4", &MVA_weight_nloSF4 , "MVA_weight_nloSF4/D");
+  mvatree->Branch("MVA_weight_nloSF5", &MVA_weight_nloSF5 , "MVA_weight_nloSF5/D");
+  mvatree->Branch("MVA_weight_nloSF6", &MVA_weight_nloSF6 , "MVA_weight_nloSF6/D");
+  mvatree->Branch("MVA_weight_nloSF7", &MVA_weight_nloSF7 , "MVA_weight_nloSF7/D");
+  mvatree->Branch("MVA_weight_nloSF8", &MVA_weight_nloSF8 , "MVA_weight_nloSF8/D");
   
   
   mvatree->Branch("MVA_region", &MVA_region, "MVA_region/F");
@@ -6319,9 +6477,14 @@ void ReconstructObjects(vector<int> selectedJetsID, vector<TLorentzVector> Muons
   
   cdiscCvsB_highestdisjet = -100;
   cdiscCvsL_highestdisjet = -100;
+   cdiscCvsB_lowestdisjet =100;
+  cdiscCvsL_lowestdisjet = 100;
   for(int itJ = 0 ; itJ < selectedJets.size(); itJ++){
     if( cdiscCvsB_highestdisjet < cdiscCvsB_jet[selectedJetsID[itJ]]) cdiscCvsB_highestdisjet = cdiscCvsB_jet[selectedJetsID[itJ]];
     if( cdiscCvsL_highestdisjet < cdiscCvsL_jet[selectedJetsID[itJ]]) cdiscCvsL_highestdisjet = cdiscCvsL_jet[selectedJetsID[itJ]];
+  
+      if( cdiscCvsB_lowestdisjet > cdiscCvsB_jet[selectedJetsID[itJ]]) cdiscCvsB_lowestdisjet = cdiscCvsB_jet[selectedJetsID[itJ]];
+    if( cdiscCvsL_lowestdisjet > cdiscCvsL_jet[selectedJetsID[itJ]]) cdiscCvsL_lowestdisjet = cdiscCvsL_jet[selectedJetsID[itJ]];
   }
   
   
@@ -6434,7 +6597,46 @@ void GetMetaData(TTree* tree, bool isData,int Entries, bool isAMC, bool isfakes)
   tree->SetBranchAddress("WPc_CvsL_Tight",&WPc_CvsL_Tight,&b_WPc_CvsL_Tight);
   tree->SetBranchAddress("nofPosWeights",&nofPosWeights, &b_nofPosWeights);
   tree->SetBranchAddress("nofNegWeights",&nofNegWeights, &b_nofNegWeights);
+   tree->SetBranchAddress("nofPosWeights1",&nofPosWeights1,&b_nofPosWeights1);
+   tree->SetBranchAddress("nofNegWeights1",&nofNegWeights1,&b_nofNegWeights1);
+  
+   tree->SetBranchAddress("nofPosWeights2",&nofPosWeights2,&b_nofPosWeights2);
+   tree->SetBranchAddress("nofNegWeights2",&nofNegWeights2,&b_nofNegWeights2);
+  
+   tree->SetBranchAddress("nofPosWeights3",&nofPosWeights3,&b_nofPosWeights3);
+   tree->SetBranchAddress("nofNegWeights3",&nofNegWeights3,&b_nofNegWeights3);
+  
+  
+   tree->SetBranchAddress("nofPosWeights4",&nofPosWeights4,&b_nofPosWeights4);
+   tree->SetBranchAddress("nofNegWeights4",&nofNegWeights4,&b_nofNegWeights4);
+  
+   tree->SetBranchAddress("nofPosWeights5",&nofPosWeights5,&b_nofPosWeights5);
+   tree->SetBranchAddress("nofNegWeights5",&nofNegWeights5,&b_nofNegWeights5);
+  
+   tree->SetBranchAddress("nofPosWeights6",&nofPosWeights6,&b_nofPosWeights6);
+   tree->SetBranchAddress("nofNegWeights6",&nofNegWeights6,&b_nofNegWeights6);
+  
+   tree->SetBranchAddress("nofPosWeights7",&nofPosWeights7,&b_nofPosWeights7);
+   tree->SetBranchAddress("nofNegWeights7",&nofNegWeights7,&b_nofNegWeights7);
+  
+   tree->SetBranchAddress("nofPosWeights8",&nofPosWeights8,&b_nofPosWeights8);
+   tree->SetBranchAddress("nofNegWeights8",&nofNegWeights8,&b_nofNegWeights8);
+  
+  
   tree->SetBranchAddress("sumW",&sumW, &b_sumW);
+  tree->SetBranchAddress("sumweight0",&sumweight0, &b_sumweight0);
+  tree->SetBranchAddress("sumweight1",&sumweight1, &b_sumweight1);
+  tree->SetBranchAddress("sumweight2",&sumweight2, &b_sumweight2);
+  tree->SetBranchAddress("sumweight3",&sumweight3, &b_sumweight3);
+  tree->SetBranchAddress("sumweight4",&sumweight4, &b_sumweight4);
+  tree->SetBranchAddress("sumweight5",&sumweight5, &b_sumweight5);
+  tree->SetBranchAddress("sumweight6",&sumweight6, &b_sumweight6);
+  tree->SetBranchAddress("sumweight7",&sumweight7, &b_sumweight7);
+  tree->SetBranchAddress("sumweight8",&sumweight8, &b_sumweight8);
+  tree->SetBranchAddress("sumbaseweight",&sumbaseweight, &b_sumbaseweight);
+  
+  
+  
   
   /* TO FIX
    tree->SetBranchAddress("nbEv_Initial_3e =",&nbEv_Initial_2e1mu =,&b_nbEv_Initial_all);
@@ -6481,52 +6683,81 @@ void GetMetaData(TTree* tree, bool isData,int Entries, bool isAMC, bool isfakes)
   
   int nPos = 0;
   int nNeg = 0;
+  
+  int nPos1 = 0;
+  int nNeg1 = 0;
+  int nPos2 = 0;
+  int nNeg2 = 0;
+  int nPos3 = 0;
+  int nNeg3 = 0;
+  int nPos4 = 0;
+  int nNeg4 = 0;
+  int nPos5 = 0;
+  int nNeg6 = 0;
+  int nPos6 = 0;
+  int nNeg7 = 0;
+  int nPos7 = 0;
+  int nNeg8 = 0;
+  int nPos8 = 0;
+  int nNeg5 = 0;
+  
+  
   int Weights = 0;
   
+  double totalsumweight0= 0.; 
+  double totalsumweight1= 0.; 
+  double totalsumweight2= 0.; 
+  double totalsumweight3= 0.; 
+  double totalsumweight4= 0.;
+  double totalsumweight5= 0.; 
+  double totalsumweight6= 0.; 
+  double totalsumweight7= 0.; 
+  double totalsumweight8= 0.;
+  double totalsumbaseweight = 0.;
   
   for (int k = 0; k< Entries; k++)
   {
     tree->GetEntry(k);
     TotalEvents += nEv;
-    /* TO FIX
-     total_nbEv_3lep_all += nbEv_3lep_all;
-     total_nbEv_AtLeast1jet_all += nbEv_AtLeast1jet_all;
-     total_nbEv_Initial_all += nbEv_Initial_all;
-     total_nbEv_LooseLepVeto_all += nbEv_LooseLepVeto_all;
-     total_nbEv_Trigged_all += nbEv_Trigged_all;
-     total_nbEv_ZbosonWindow_all += nbEv_ZbosonWindow_all;
-     
-     total_nbEv_3lep_uuu += nbEv_3lep_uuu;
-     total_nbEv_AtLeast1jet_uuu += nbEv_AtLeast1jet_uuu;
-     total_nbEv_Initial_uuu += nbEv_Initial_uuu;
-     total_nbEv_LooseLepVeto_uuu += nbEv_LooseLepVeto_uuu;
-     total_nbEv_Trigged_uuu += nbEv_Trigged_uuu;
-     total_nbEv_ZbosonWindow_uuu += nbEv_ZbosonWindow_uuu;
-     
-     total_nbEv_3lep_uue += nbEv_3lep_uue;
-     total_nbEv_AtLeast1jet_uue += nbEv_AtLeast1jet_uue;
-     total_nbEv_Initial_uue += nbEv_Initial_uue;
-     total_nbEv_LooseLepVeto_uue += nbEv_LooseLepVeto_uue;
-     total_nbEv_Trigged_uue += nbEv_Trigged_uue;
-     total_nbEv_ZbosonWindow_uue += nbEv_ZbosonWindow_uue;
-     
-     total_nbEv_3lep_eeu += nbEv_3lep_eeu;
-     total_nbEv_AtLeast1jet_eeu += nbEv_AtLeast1jet_eeu;
-     total_nbEv_Initial_eeu += nbEv_Initial_eeu;
-     total_nbEv_LooseLepVeto_eeu += nbEv_LooseLepVeto_eeu;
-     total_nbEv_Trigged_eeu += nbEv_Trigged_eeu;
-     total_nbEv_ZbosonWindow_eeu += nbEv_ZbosonWindow_eeu;
-     
-     total_nbEv_3lep_eee += nbEv_3lep_eee;
-     total_nbEv_AtLeast1jet_eee += nbEv_AtLeast1jet_eee;
-     total_nbEv_Initial_eee += nbEv_Initial_eee;
-     total_nbEv_LooseLepVeto_eee += nbEv_LooseLepVeto_eee;
-     total_nbEv_Trigged_eee += nbEv_Trigged_eee;
-     total_nbEv_ZbosonWindow_eee += nbEv_ZbosonWindow_eee;
-     */
+    
     if( isAMC && !isData) nPos += nofPosWeights;
     if(isAMC && !isData) nNeg += nofNegWeights;
     if(isAMC && !isData) Weights += sumW;
+    
+    if( isAMC && !isData){
+      nPos1 += nofPosWeights1;
+      nNeg1 += nofNegWeights1;
+      nPos2 += nofPosWeights2;
+      nNeg2 += nofNegWeights2;
+      nPos3 += nofPosWeights3;
+      nNeg3 += nofNegWeights3;
+      nPos4 += nofPosWeights4;
+      nNeg4 += nofNegWeights4;
+      nPos5 += nofPosWeights5;
+      nNeg5 += nofNegWeights5;
+      nPos6 += nofPosWeights6;
+      nNeg6 += nofNegWeights6;
+      nPos7 += nofPosWeights7;
+      nNeg7 += nofNegWeights7;
+      nPos8 += nofPosWeights8;
+      nNeg8 += nofNegWeights8;
+    }
+    
+    
+    
+    
+    if(!isData){
+      totalsumweight0 += sumweight0; // I AM NOMINAL
+      totalsumweight1 += sumweight1;
+      totalsumweight2 += sumweight2;
+      totalsumweight3 += sumweight3;
+      totalsumweight4 += sumweight4;
+      totalsumweight5 += sumweight5; // I AM UNPHYSICAL
+      totalsumweight6 += sumweight6;
+      totalsumweight7 += sumweight7; // I AM UNPHYSICAL
+      totalsumweight8 += sumweight8;
+      totalsumbaseweight += sumbaseweight;
+    }
     
   }
   
@@ -6537,8 +6768,31 @@ void GetMetaData(TTree* tree, bool isData,int Entries, bool isAMC, bool isfakes)
   }
   else EquilumiSF = 1.;
   cout << "equi lumi sf " << endl;
-  if(isAMC && !isData) nloSF *= ((double) (nPos + nNeg))/((double) (nPos - nNeg));
+  if(isAMC && !isData){
+    nloSF *= ((double) (nPos + nNeg))/((double) (nPos - nNeg));
+    nloSF1 *= ((double) (nPos1 - nNeg1))/((double) (nPos1 + nNeg1));
+    nloSF2 *= ((double) (nPos2 - nNeg2))/((double) (nPos2 + nNeg2));
+    nloSF3 *= ((double) (nPos3 - nNeg3))/((double) (nPos3 + nNeg3));
+    nloSF4 *= ((double) (nPos4 - nNeg4))/((double) (nPos4 + nNeg4));
+    nloSF5 *= ((double) (nPos5 - nNeg5))/((double) (nPos5 + nNeg5));
+    nloSF6 *= ((double) (nPos6 - nNeg6))/((double) (nPos6 + nNeg6));
+    nloSF7 *= ((double) (nPos7 - nNeg7))/((double) (nPos7 + nNeg7));
+    nloSF8 *= ((double) (nPos8 - nNeg8))/((double) (nPos8 + nNeg8));
+  }
   if(isAMC && !isData) cout << "                 nloSF: " << nloSF << endl;
+  
+  if(!isData){
+    fact_weight1 =  totalsumweight0 / totalsumweight1;  // correct number of events
+    fact_weight2 =  totalsumweight0 / totalsumweight2;
+    fact_weight3 =  totalsumweight0 / totalsumweight3;
+    fact_weight4 =  totalsumweight0 / totalsumweight4;
+    fact_weight6 =  totalsumweight0 / totalsumweight6;
+    fact_weight8 =  totalsumweight0 / totalsumweight8;
+  }
+  
+  totalweight0 = totalsumweight0;
+
+  
   
   
   double time_sub = ((double)clock() - start_sub) / CLOCKS_PER_SEC;
@@ -7195,6 +7449,7 @@ void ClearVars(){
   scaleFactor_bfELSF = 1.;
   scaleFactor_bfMuSF = 1.;
   scaleFactor_bfPU = 1.;
+  scaleFactor_1sPU = 1.; 
   scaleFactor_puSF_down=1.;
   scaleFactor_puSF_up=1.;
   scaleFactor_electronSF_down=1.;
@@ -7323,6 +7578,35 @@ void ClearMetaData(){
   nloSF = 1.;
   nofPosWeights = 0;
   nofNegWeights = 0;
+  
+
+  nloSF1 = 1.;
+  nofPosWeights1 = 0;
+  nofNegWeights1 = 0;
+  nloSF2 = 1.;
+  nofPosWeights2 = 0;
+  nofNegWeights2 = 0;
+  nloSF3 = 1.;
+  nofPosWeights3 = 0;
+  nofNegWeights3 = 0;
+  nloSF4 = 1.;
+  nofPosWeights4 = 0;
+  nofNegWeights4 = 0;
+  nloSF5 = 1.;
+  nofPosWeights5 = 0;
+  nofNegWeights5 = 0;
+  nloSF6 = 1.;
+  nofPosWeights6 = 0;
+  nofNegWeights6 = 0;
+  nloSF7 = 1.;
+  nofPosWeights7 = 0;
+  nofNegWeights7 = 0;
+  nloSF8 = 1.;
+  nofPosWeights8 = 0;
+  nofNegWeights8 = 0;
+  
+  
+  
   sumW = 0;
   TotalEvents = 0;
   EquilumiSF = 1.;
@@ -7338,6 +7622,13 @@ void ClearMetaData(){
   WPc_CvsL_Loose= 0.;
   WPc_CvsL_Medium= 0.;
   WPc_CvsL_Tight= 0.;
+  fact_weight1 = 1.;
+  fact_weight2 = 1.;
+  fact_weight3 = 1.;
+  fact_weight4 = 1.;
+  fact_weight6 = 1.;
+  fact_weight8 = 1.;
+  totalweight0 = 1.;
   
   // TO FIX
   total_nbEv_3lep_all= 0;
@@ -7482,7 +7773,11 @@ void InitFakeDiscriminator(string dataSetName,  vector <int> decayChannels){
       //MSPlot[plotname.c_str()]->setChannel(true, decayChan);
       
       if((decayChannels[iChan] == 4 || decayChannels[iChan] == 5) && prefixregion.find("3lep")!=std::string::npos) continue;
-      
+     
+
+
+
+ 
       histo1D_fakedisc[("ZbosonPt"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPt"+channelstr+dataSetName).c_str(),"p_{T} Z boson (GeV)",10,0,500);
       histo1D_fakedisc[("ZbosonEta"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonEta"+channelstr+dataSetName).c_str(),"#eta Z boson",3,-3,3);
       histo1D_fakedisc[("ZbosonPhi"+channelstr+dataSetName).c_str()] = new TH1F(("ZbosonPhi"+channelstr+dataSetName).c_str(),"#phi Z boson",8,-4,4);
@@ -7718,46 +8013,68 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
       
       MSPlot[(prefixregion+prefix+"_NbOfVertices_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_NbOfVertices_"+decaystring).c_str(), 60, 0, 60, "#  vertices");
       MSPlot[(prefixregion+prefix+"_NbOfVertices_bfPU_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_NbOfVertices_bfPU_"+decaystring).c_str(), 60, 0, 60, "#  vertices before PU reweighing");
-      MSPlot[(prefixregion+prefix+"_puSF_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_puSF_"+decaystring).c_str(), 200, 0, 2, "Pile up SF");
+        MSPlot[(prefixregion+prefix+"_NbOfVertices_1sPU_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_NbOfVertices_1sPU_"+decaystring).c_str(), 60, 0, 60, "#  vertices (PU-1#sigma)");
+      MSPlot[(prefixregion+prefix+"_puSF_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_puSF_"+decaystring).c_str(), 50, 0, 2, "Pile up SF");
       
       //cout << "init " << (prefixregion+prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
-      MSPlot[(prefixregion+prefix+"_bdisc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_bdisc_"+decaystring).c_str(), 21, 0., 1, "CSVv2 discriminant");
-      MSPlot[(prefixregion+prefix+"_bdisc_bfBT_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_bdisc_bfBT_"+decaystring).c_str(),21, 0., 1, "CSVv2 discriminant before Btag SF");
-      MSPlot[(prefixregion+prefix+"_btagSF_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_btagSF_"+decaystring).c_str(), 80, 0.9, 1.3, "Btag SF");
-      
+      MSPlot[(prefixregion+prefix+"_bdisc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_bdisc_"+decaystring).c_str(), 20, 0., 1, "CSVv2 discriminant");
+      MSPlot[(prefixregion+prefix+"_bdisc_bfBT_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_bdisc_bfBT_"+decaystring).c_str(),20, 0, 1, "CSVv2 discriminant before b-tag SF");
+      MSPlot[(prefixregion+prefix+"_btagSF_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_btagSF_"+decaystring).c_str(), 50, 0., 1.5, "Btag SF");
+      MSPlot[(prefixregion+prefix+"_bdiscJet0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_bdiscJet0_"+decaystring).c_str(), 20, 0., 1, "CSVv2 discriminant highest p_{T} jet");
+      MSPlot[(prefixregion+prefix+"_bdiscJet0_bfBT_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_bdiscJet0_bfBT_"+decaystring).c_str(),20, 0, 1, "CSVv2 discriminant highest p_{T} jet before b-tag SF");
+ 
       
       
       MSPlot[(prefixregion+prefix+"_nMu_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nMu_"+decaystring).c_str(), 10, -0.5, 9.5, "#  Muons");
       MSPlot[(prefixregion+prefix+"_nMu_bfMuSF_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nMu_bfMuSF_"+decaystring).c_str(), 10, -0.5, 9.5, "#  Muons before Muon SF");
-      MSPlot[(prefixregion+prefix+"_muSF_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_muSF_"+decaystring).c_str(), 60, 0.75, 1.05, "Muon SF");
+      MSPlot[(prefixregion+prefix+"_muSF_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_muSF_"+decaystring).c_str(), 30, 0.75, 1.05, "Muon SF");
       
       MSPlot[(prefixregion+prefix+"_nEl_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nEl_"+decaystring).c_str(), 10, -0.5, 9.5, "#  Electrons");
       MSPlot[(prefixregion+prefix+"_nEl_bfElSF_"+decaystring).c_str()]  = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nEl_bfElSF_"+decaystring).c_str(), 10, -0.5, 9.5, "#  Electrons before Electron SF","# e");
-      MSPlot[(prefixregion+prefix+"_elSF_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_elSF_"+decaystring).c_str(), 60, 0.8, 1.05, "Electron SF");
-      
-      MSPlot[(prefixregion+prefix+"_JetPt_bfJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_JetPt_bfJER_"+decaystring).c_str(), 20, 0, 500, "Jet p_{T} before JER, after JES ", "GeV");
-      MSPlot[(prefixregion+prefix+"_JetPt_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_JetPt_bfJES_"+decaystring).c_str(), 20, 0, 500, "Jet p_{T} before JES, before JER ", "GeV");
-      MSPlot[(prefixregion+prefix+"_JetPt_afJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_JetPt_afJER_"+decaystring).c_str(), 15, 0, 500, "Jet p_{T}","GeV");
-      MSPlot[(prefixregion+prefix+"_JetPt_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_JetPt_afJES_"+decaystring).c_str(), 20, 0, 500, "Jet p_{T} after JES, before JER ", "GeV");
+      MSPlot[(prefixregion+prefix+"_elSF_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_elSF_"+decaystring).c_str(), 30, 0.8, 1.05, "Electron SF");
+     MSPlot[(prefixregion+prefix+"_Jet0Pt_bfJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_Jet0Pt_bfJER_"+decaystring).c_str(), 20, 0, 300, "Jet p_{T} before JER, after JES ", "GeV");
+      MSPlot[(prefixregion+prefix+"_Jet0Pt_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_Jet0Pt_bfJES_"+decaystring).c_str(), 20, 0, 300, "Jet p_{T} before JES, before JER ", "GeV");
+      MSPlot[(prefixregion+prefix+"_Jet0Pt_afJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_Jet0Pt_afJER_"+decaystring).c_str(), 20, 0, 300, "Jet p_{T} after JES, after JER","GeV");
+      MSPlot[(prefixregion+prefix+"_Jet0Pt_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_Jet0Pt_afJES_"+decaystring).c_str(), 20, 0, 300, "Jet p_{T} after JES, before JER ", "GeV"); 
+      MSPlot[(prefixregion+prefix+"_JetPt_bfJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_JetPt_bfJER_"+decaystring).c_str(), 20, 0, 300, "Jet p_{T} before JER, after JES ", "GeV");
+      MSPlot[(prefixregion+prefix+"_JetPt_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_JetPt_bfJES_"+decaystring).c_str(), 20, 0, 300, "Jet p_{T} before JES, before JER ", "GeV");
+      MSPlot[(prefixregion+prefix+"_JetPt_afJER_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_JetPt_afJER_"+decaystring).c_str(), 20, 0, 300, "Jet p_{T} after JES, after JER","GeV");
+      MSPlot[(prefixregion+prefix+"_JetPt_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_JetPt_afJES_"+decaystring).c_str(), 20, 0, 300, "Jet p_{T} after JES, before JER ", "GeV");
       MSPlot[(prefixregion+prefix+"_met_bfJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_bfJES_"+decaystring).c_str(), 40, 0, 400, "E_{T}^{miss} p_{T} before JES ","GeV");
-      MSPlot[(prefixregion+prefix+"_met_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_afJES_"+decaystring).c_str(), 40, 0, 400, "E_{T}^{miss} p_{T}","GeV");
+      MSPlot[(prefixregion+prefix+"_met_afJES_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_afJES_"+decaystring).c_str(), 40, 0, 400, "E_{T}^{miss} p_{T} after JES, before JER","GeV");
       MSPlot[(prefixregion+prefix+"_met_phi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_phi_"+decaystring).c_str(), 20, -4, 4, "E_{T}^{miss} #phi");
       MSPlot[(prefixregion+prefix+"_met_px_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_px_"+decaystring).c_str(), 25, 0, 50, "E_{T}^{miss} p_{x}");
       MSPlot[(prefixregion+prefix+"_met_py_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_py_"+decaystring).c_str(), 25, 0, 50, "E_{T}^{miss} p_{y}");
       MSPlot[(prefixregion+prefix+"_met_pz_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_pz_"+decaystring).c_str(), 25, 0, 50, "E_{T}^{miss} p_{z}");
-      MSPlot[(prefixregion+prefix+"_met_pt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_pt_"+decaystring).c_str(), 20, 0, 400, "E_{T}^{miss} p_{T}");
+      MSPlot[(prefixregion+prefix+"_met_pt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_met_pt_"+decaystring).c_str(), 40, 0, 400, "E_{T}^{miss} p_{T}");
       
-      
+     
+      MSPlot[(prefixregion+prefix+"_nJetsCharmM_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nJetsCharmM_"+decaystring).c_str(),5,-0.5,4.5,"# charm M jets"); 
+      MSPlot[(prefixregion+prefix+"_nJetsCharmT_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nJetsCharmT_"+decaystring).c_str(),5,-0.5,4.5,"# charm T jets");
+      MSPlot[(prefixregion+prefix+"_nJetsCharmL_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_nJetsCharmL_"+decaystring).c_str(),5,-0.5,4.5,"# charm L jets"); 
+      MSPlot[(prefixregion+prefix+"_CvsBdisc_Cjet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_CvsBdisc_Cjet_"+decaystring).c_str(), 10,-1,1,"CvsB disc. FCNC jet"); 
+      MSPlot[(prefixregion+prefix+"_CvsLdisc_Cjet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_CvsLdisc_Cjet_"+decaystring).c_str(), 10,-1,1,"CvsL disc. FCNC jet");
+       MSPlot[(prefixregion+prefix+"_CvsBdisc_0jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_CvsBdisc_0jet_"+decaystring).c_str(), 10,-1,1,"CvsB disc. highest p_{T} jet");
+      MSPlot[(prefixregion+prefix+"_CvsLdisc_0jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_CvsLdisc_0jet_"+decaystring).c_str(), 10,-1,1,"CvsL disc. highest p_{T} jet");
+  MSPlot[(prefixregion+prefix+"_CvsBdisc_1jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_CvsBdisc_1jet_"+decaystring).c_str(), 10,-1,1,"CvsB disc. 2nd highest p_{T} jet");
+      MSPlot[(prefixregion+prefix+"_CvsLdisc_1jet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_CvsLdisc_1jet_"+decaystring).c_str(), 10,-1,1,"CvsL disc. 2nd highest p_{T} jet");
+MSPlot[(prefixregion+prefix+"_CvsBdisc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_CvsBdisc_"+decaystring).c_str(), 10,-1,1,"CvsB disc.");
+      MSPlot[(prefixregion+prefix+"_CvsLdisc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_CvsLdisc_"+decaystring).c_str(), 10,-1,1,"CvsL disc.");   
+     MSPlot[(prefixregion+prefix+"_CvsBdiscHigh_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_CvsBdiscHigh_"+decaystring).c_str(), 10,-1,1,"highest CvsB disc.");
+      MSPlot[(prefixregion+prefix+"_CvsLdiscHigh_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_CvsLdiscHigh_"+decaystring).c_str(), 10,-1,1,"highest CvsL disc.");
+      MSPlot[(prefixregion+prefix+"_CvsBdiscLow_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_CvsBdiscLow_"+decaystring).c_str(), 10,-1,1,"lowest CvsB disc.");
+      MSPlot[(prefixregion+prefix+"_CvsLdiscLow_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_CvsLdiscLow_"+decaystring).c_str(), 10,-1,1,"lowest CvsL disc.");
+
       // vars
-      MSPlot[(prefixregion+prefix+"_ZbosonMass_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMass_"+decaystring).c_str(), 20, 50, 130, "inv. mass Z boson ","GeV");
+      MSPlot[(prefixregion+prefix+"_ZbosonMass_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMass_"+decaystring).c_str(), 20, 80, 120, "inv. mass Z boson ","GeV");
       if(prefixregion.find("3lep")!=std::string::npos){
-        MSPlot[(prefixregion+prefix+"_WbosonMass_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_WbosonMass_"+decaystring).c_str(), 200, 0, 200, "inv. mass W boson ","GeV");
+        MSPlot[(prefixregion+prefix+"_WbosonMass_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_WbosonMass_"+decaystring).c_str(), 50, 0, 200, "inv. mass W boson ","GeV");
         MSPlot[(prefixregion+prefix+"_mlb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_mlb_"+decaystring).c_str(), 40, 0, 800, "Inv. Mass l_{W}+b^{SM} ","GeV");
-        MSPlot[(prefixregion+prefix+"_SMTopMass_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_SMTopMass_"+decaystring).c_str(), 100, 0, 500, "inv. mass SM top ","GeV");
+        MSPlot[(prefixregion+prefix+"_SMTopMass_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_SMTopMass_"+decaystring).c_str(), 20, 100, 500, "inv. mass SM top ","GeV");
         MSPlot[(prefixregion+prefix+"_mWT_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_mWT_"+decaystring).c_str(), 25, 0, 300, "Transv. Mass W boson ","GeV");
         MSPlot[(prefixregion+prefix+"_mWT2_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_mWT2_"+decaystring).c_str(), 25, 0, 300, "Transv. Mass W boson ","GeV");
         MSPlot[(prefixregion+prefix+"_3dLeadingLepPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_3dLeadingLepPt_"+decaystring).c_str(), 25, 0, 500, "3d leading lepton p_{T} ","GeV");
-        
+        MSPlot[(prefixregion+prefix+"_FCNCTopMass_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_FCNCTopMass_"+decaystring).c_str(), 20, 100, 500, "inv. mass FCNC top ","GeV");       
       }
       MSPlot[(prefixregion+prefix+"_LeadingJetPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_LeadingJetPt_"+decaystring).c_str(), 20, 0, 500, "leading jet p_{T} ","GeV");
       MSPlot[(prefixregion+prefix+"_LeadingLepPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_LeadingLepPt_"+decaystring).c_str(), 25, 0, 500, "leading lepton p_{T} ","GeV");
@@ -7790,7 +8107,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
         MSPlot[(prefixregion+prefix+"_ZbosonMuIso_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMuIso_"+decaystring).c_str(), 10,0,0.5, "#mu_{Z} rel. iso.");
         MSPlot[(prefixregion+prefix+"_ZbosonMudPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMudPhi_"+decaystring).c_str(), 10,-4,4, "#Delta #phi (#mu_{Z},#mu_{Z})");
         MSPlot[(prefixregion+prefix+"_ZbosonMudR_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMudR_"+decaystring).c_str(), 20,0,4, "#Delta R(#mu,#mu) ");
-        MSPlot[(prefixregion+prefix+"_ZbosonMassMu_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMassMu_"+decaystring).c_str(), 20, 50, 130, "inv. mass Z_{#mu,#mu} boson ","GeV");
+        MSPlot[(prefixregion+prefix+"_ZbosonMassMu_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMassMu_"+decaystring).c_str(), 20, 80, 120, "inv. mass Z_{#mu,#mu} boson ","GeV");
         
         MSPlot[(prefixregion+prefix+"_ZbosonPtMu_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonPtMu_"+decaystring).c_str(), 40,0,500, "Z_{#mu,#mu} boson p_{T} ","GeV");
         
@@ -7804,7 +8121,8 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
       }
       if(decayChannels[iChan] == 0 || decayChannels[iChan] == 1 || decayChannels[iChan] == 2 || decayChannels[iChan] == -9 || decayChannels[iChan] == 4){
         MSPlot[(prefixregion+prefix+"_LeadingMuPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_LeadingMuPt_"+decaystring).c_str(), 20, 0, 300, "leading muon p_{T} ","GeV");
-        MSPlot[(prefixregion+prefix+"_MuPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_MuPt_"+decaystring).c_str(), 20, 0, 300, "muon p_{T} ","GeV");
+        MSPlot[(prefixregion+prefix+"_MuPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_MuPt_"+decaystring).c_str(), 22, 30, 250, "muon p_{T} ","GeV");
+        MSPlot[(prefixregion+prefix+"_MuPtnoMuonSF_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_MuPtnoMuonSF_"+decaystring).c_str(), 22, 30, 250, "muon p_{T} ","GeV");
         MSPlot[(prefixregion+prefix+"_LeadingMuIso_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_LeadingMuIso_"+decaystring).c_str(), 10,0,0.5, "leading muon rel. iso. ");
         MSPlot[(prefixregion+prefix+"_MuIso_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_MuIso_"+decaystring).c_str(), 10,0,0.5, "muon rel. iso. ");
         MSPlot[(prefixregion+prefix+"_LeadingMuPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_LeadingMuPhi_"+decaystring).c_str(), 20,-4,4, "leading muon #phi ");
@@ -7837,8 +8155,9 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
         
         MSPlot[(prefixregion+prefix+"_ZbosonPtEl_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonPtEl_"+decaystring).c_str(), 20,0,500, "Z_{ee} boson p_{T}","GeV");
         
+
         MSPlot[(prefixregion+prefix+"_2ndLeadingElPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_2ndLeadingElPhi_"+decaystring).c_str(), 20,-4,4, "2nd leading electron #phi");
-        MSPlot[(prefixregion+prefix+"_ZbosonMassEl_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMassEl_"+decaystring).c_str(), 20, 50, 130, "inv. mass Z_{ee} boson ","GeV");
+        MSPlot[(prefixregion+prefix+"_ZbosonMassEl_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ZbosonMassEl_"+decaystring).c_str(), 20, 80, 120, "inv. mass Z_{ee} boson ","GeV");
         
         if(decayChannels[iChan] == 2  ){
           MSPlot[(prefixregion+prefix+"_WlepMuEta_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_WlepMuEta_"+decaystring).c_str(), 15,-3,3, "#mu_{W}) #eta ");
@@ -7849,7 +8168,7 @@ void InitMSPlots(string prefix, vector <int> decayChannels){
       }
       if(decayChannels[iChan] == 3 || decayChannels[iChan] == 1 || decayChannels[iChan] == 2|| decayChannels[iChan] == -9 || decayChannels[iChan] == 5){
         MSPlot[(prefixregion+prefix+"_LeadingElPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_LeadingElPt_"+decaystring).c_str(), 25, 0, 400, "leading electron p_{T} ","GeV");
-        MSPlot[(prefixregion+prefix+"_ElPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ElPt_"+decaystring).c_str(), 25, 0, 500, "electron p_{T} ","GeV");
+        MSPlot[(prefixregion+prefix+"_ElPt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ElPt_"+decaystring).c_str(), 22, 30, 250, "electron p_{T} ","GeV");
         MSPlot[(prefixregion+prefix+"_LeadingElIso_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_LeadingElIso_"+decaystring).c_str(), 5,0,0.35, "leading electron rel. iso.");
         MSPlot[(prefixregion+prefix+"_ElIso_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_ElIso_"+decaystring).c_str(), 5,0,0.35, "electron rel. iso.");
         MSPlot[(prefixregion+prefix+"_LeadingElPhi_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefixregion+prefix+"_LeadingElPhi_"+decaystring).c_str(), 20,-4,4, "leading electron #phi");
@@ -7973,7 +8292,7 @@ void InitMVAMSPlots(string prefix, vector <int> decayChannels){
 */  //   MSPlot[ (prefix+"_MVA_nElectrons_"+decaystring).c_str()]=new MultiSamplePlot(datasets, (prefix+"_MVA_nElectrons_"+decaystring).c_str(), 10,-0.5, 9.5, "# electrons");
     
     //SM kinematics
-//    MSPlot[(prefix+"_MVA_SMtop_M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_SMtop_M_"+decaystring).c_str(),30, 0,300, "inv. mass SM top ","GeV");
+     MSPlot[(prefix+"_MVA_SMtop_M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_SMtop_M_"+decaystring).c_str(),30, 0,500, "inv. mass SM top ","GeV");
 
 //    MSPlot[(prefix+"_MVA_Wboson_M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_Wboson_M_"+decaystring).c_str(),100, 0, 100, "inv. mass W boson ","GeV");
     
@@ -8019,17 +8338,17 @@ void InitMVAMSPlots(string prefix, vector <int> decayChannels){
     MSPlot[ (prefix+"_MVA_NJets_CSVv2M_"+decaystring).c_str()]=new MultiSamplePlot(datasets, (prefix+"_MVA_NJets_CSVv2M_"+decaystring).c_str(), 10,-0.5, 9.5, "# CSVv2M");
     MSPlot[ (prefix+"_MVA_NJets_CSVv2L_"+decaystring).c_str()]=new MultiSamplePlot(datasets, (prefix+"_MVA_NJets_CSVv2L_"+decaystring).c_str(), 10,-0.5, 9.5, "# CSVv2L");
     MSPlot[ (prefix+"_MVA_nJets_"+decaystring).c_str()]=new MultiSamplePlot(datasets, (prefix+"_MVA_nJets_"+decaystring).c_str(), 10,-0.5, 9.5, "# Jets");
-    MSPlot[(prefix+"_MVA_FCNCtop_M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_FCNCtop_M_"+decaystring).c_str(),20, 100,500, "inv. mass FCNC top ","GeV");
+    MSPlot[(prefix+"_MVA_FCNCtop_M_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_FCNCtop_M_"+decaystring).c_str(),20, 100,550, "inv. mass FCNC top ","GeV");
     MSPlot[(prefix+"_MVA_dRZc_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRZc_"+decaystring).c_str(),20,0, 6, "#Delta R(Z,q)");
     MSPlot[(prefix+"_MVA_dRSMjetLightjet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRSMjetLightjet_"+decaystring).c_str(),20,0, 6, "#Delta R(SM b,FCNC q)");
     MSPlot[(prefix+"_MVA_charge_asym_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_charge_asym_"+decaystring).c_str(),15, -3, 3, "l_{W} charge X |W boson #eta|");
-    MSPlot[(prefix+"_MVA_bdiscCSVv2_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_bdiscCSVv2_jet_0_"+decaystring).c_str(),10, 0, 0.6, " leading jet CSVv2 disc.");
+    MSPlot[(prefix+"_MVA_bdiscCSVv2_jet_0_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_bdiscCSVv2_jet_0_"+decaystring).c_str(),10, 0, 1., " leading jet CSVv2 disc.");
     MSPlot[(prefix+"_MVA_TotalHt_lep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalHt_lep_"+decaystring).c_str(),20, 0, 1000, "total lepton H_{T} ","GeV");
     MSPlot[(prefix+"_MVA_ptWQ_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_ptWQ_"+decaystring).c_str(),15, 0, 300, "p_{T}(l_{W} X l_{W} charge","GeV");
     MSPlot[(prefix+"_MVA_TotalInvMass_lep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalInvMass_lep_"+decaystring).c_str(),20, 0, 1000, "total lepton inv. mass ","GeV");
     MSPlot[(prefix+"_MVA_dRZWlep_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRZWlep_"+decaystring).c_str(),20,0, 6, "#Delta R(Z,l_{W})");
     MSPlot[(prefix+"_MVA_TotalInvMass_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_TotalInvMass_"+decaystring).c_str(),25, 0, 2000, "total inv. mass ","GeV");
-    MSPlot[(prefix+"_MVA_Bdis_LightJet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_Bdis_LightJet_"+decaystring).c_str(),15, 0, 0.6, "FCNC jet CSVv2");
+    MSPlot[(prefix+"_MVA_Bdis_LightJet_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_Bdis_LightJet_"+decaystring).c_str(),15, 0, 1., "FCNC jet CSVv2");
     MSPlot[(prefix+"_MVA_dRZb_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_dRZb_"+decaystring).c_str(),30,0, 6, "#Delta R(Z,b)");
     MSPlot[(prefix+"_MVA_mWt_"+decaystring).c_str()] = new MultiSamplePlot(datasets, (prefix+"_MVA_mWt_"+decaystring).c_str(),20, 0, 300, "Transv. Mass W boson  ", "GeV");
 
@@ -8333,6 +8652,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
       if((decayChannels[iChan] == 4 || decayChannels[iChan] == 5) && prefixregion.find("3lep")!=std::string::npos) continue;
       //cout << "nvtx "  << nvtx << endl;
       MSPlot[(prefixregion+prefix+"_NbOfVertices_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true,eventW*scaleFactor);
+      MSPlot[(prefixregion+prefix+"_NbOfVertices_1sPU_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true,eventW*scaleFactor_1sPU);
       MSPlot[(prefixregion+prefix+"_NbOfVertices_bfPU_"+decaystring).c_str()]->Fill(nvtx , datasets[d], true, eventW*scaleFactor_bfPU);
       MSPlot[(prefixregion+prefix+"_puSF_"+decaystring).c_str()]->Fill(puSF , datasets[d], true, 1);
       
@@ -8340,10 +8660,16 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
       
       //cout << decayChannels[iChan] << " " << channelInt << " " << (prefix+"_bdisc_bfBT_"+decaystring).c_str() << endl;
       for(int iterJ = 0 ; iterJ < selectedJets.size(); iterJ++){
-        MSPlot[(prefixregion+prefix+"_bdisc_"+decaystring).c_str()]->Fill(bdisc_jet[iterJ] , datasets[d], true,eventW*scaleFactor);
-        MSPlot[(prefixregion+prefix+"_bdisc_bfBT_"+decaystring).c_str()]->Fill(bdisc_jet[iterJ] , datasets[d], true,eventW*scaleFactor_bfBT);
-        
+        if( bdisc_jet[iterJ] > 0) MSPlot[(prefixregion+prefix+"_bdisc_"+decaystring).c_str()]->Fill(bdisc_jet[iterJ] , datasets[d], true,eventW*scaleFactor);
+        if( bdisc_jet[iterJ] > 0) MSPlot[(prefixregion+prefix+"_bdisc_bfBT_"+decaystring).c_str()]->Fill(bdisc_jet[iterJ] , datasets[d], true,eventW*scaleFactor_bfBT);
+        MSPlot[(prefixregion+prefix+"_JetPt_bfJER_"+decaystring).c_str()]->Fill(jet_Pt_before_JER[iterJ] , datasets[d], true,eventW*scaleFactor);
+        MSPlot[(prefixregion+prefix+"_JetPt_bfJES_"+decaystring).c_str()]->Fill(jet_Pt_before_JES[iterJ] , datasets[d], true,eventW*scaleFactor);
+        MSPlot[(prefixregion+prefix+"_JetPt_afJER_"+decaystring).c_str()]->Fill(jet_Pt_after_JER[iterJ] , datasets[d], true,eventW*scaleFactor);
+        MSPlot[(prefixregion+prefix+"_JetPt_afJES_"+decaystring).c_str()]->Fill(jet_Pt_after_JES[iterJ] , datasets[d], true,eventW*scaleFactor);
+ 
            }
+      if( bdisc_jet[0] > 0)  MSPlot[(prefixregion+prefix+"_bdiscJet0_"+decaystring).c_str()]->Fill(bdisc_jet[0] , datasets[d], true,eventW*scaleFactor);
+      if( bdisc_jet[0] > 0)  MSPlot[(prefixregion+prefix+"_bdiscJet0_bfBT_"+decaystring).c_str()]->Fill(bdisc_jet[0] , datasets[d], true,eventW*scaleFactor_bfBT);
       MSPlot[(prefixregion+prefix+"_nMu_"+decaystring).c_str()]->Fill(selectedMuons.size() , datasets[d], true,eventW*scaleFactor);
       MSPlot[(prefixregion+prefix+"_nMu_bfMuSF_"+decaystring).c_str()]->Fill(selectedMuons.size() , datasets[d], true, eventW*scaleFactor_bfMuSF);
       MSPlot[(prefixregion+prefix+"_muSF_"+decaystring).c_str()]->Fill(muonSFtemp , datasets[d], true, 1);
@@ -8354,10 +8680,10 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
       
       if(selectedJets.size() >0){
         // cout << (prefix+"_JetPt_bfJER_"+decaystring).c_str() << endl;
-        MSPlot[(prefixregion+prefix+"_JetPt_bfJER_"+decaystring).c_str()]->Fill(jet_Pt_before_JER[0] , datasets[d], true,eventW*scaleFactor);
-        MSPlot[(prefixregion+prefix+"_JetPt_bfJES_"+decaystring).c_str()]->Fill(jet_Pt_before_JES[0] , datasets[d], true,eventW*scaleFactor);
-        MSPlot[(prefixregion+prefix+"_JetPt_afJER_"+decaystring).c_str()]->Fill(jet_Pt_after_JER[0] , datasets[d], true,eventW*scaleFactor);
-        MSPlot[(prefixregion+prefix+"_JetPt_afJES_"+decaystring).c_str()]->Fill(jet_Pt_after_JES[0] , datasets[d], true,eventW*scaleFactor);
+        MSPlot[(prefixregion+prefix+"_Jet0Pt_bfJER_"+decaystring).c_str()]->Fill(jet_Pt_before_JER[0] , datasets[d], true,eventW*scaleFactor);
+        MSPlot[(prefixregion+prefix+"_Jet0Pt_bfJES_"+decaystring).c_str()]->Fill(jet_Pt_before_JES[0] , datasets[d], true,eventW*scaleFactor);
+        MSPlot[(prefixregion+prefix+"_Jet0Pt_afJER_"+decaystring).c_str()]->Fill(jet_Pt_after_JER[0] , datasets[d], true,eventW*scaleFactor);
+        MSPlot[(prefixregion+prefix+"_Jet0Pt_afJES_"+decaystring).c_str()]->Fill(jet_Pt_after_JES[0] , datasets[d], true,eventW*scaleFactor);
       }
       MSPlot[(prefixregion+prefix+"_met_bfJES_"+decaystring).c_str()]->Fill(met_before_JES , datasets[d], true,eventW*scaleFactor);
       MSPlot[(prefixregion+prefix+"_met_afJES_"+decaystring).c_str()]->Fill(met_after_JES , datasets[d], true,eventW*scaleFactor);
@@ -8372,11 +8698,30 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
       MSPlot[(prefixregion+prefix+"_ZbosonMass_"+decaystring).c_str()]->Fill(Zboson.M() , datasets[d], true,eventW*scaleFactor);
       if(prefixregion.find("3lep")!=std::string::npos){
         MSPlot[(prefixregion+prefix+"_WbosonMass_"+decaystring).c_str()] ->Fill(Wboson.M() , datasets[d], true,eventW*scaleFactor);
-        
+        MSPlot[(prefixregion+prefix+"_FCNCTopMass_"+decaystring).c_str()]->Fill( FCNCtop.M() , datasets[d], true,eventW*scaleFactor); 
         MSPlot[(prefixregion+prefix+"_mWT_"+decaystring).c_str()]->Fill(mWT, datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_mWT2_"+decaystring).c_str()]->Fill(mWT2, datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_SMTopMass_"+decaystring).c_str()]->Fill( SMtop.M() , datasets[d], true,eventW*scaleFactor);
         MSPlot[(prefixregion+prefix+"_mlb_"+decaystring).c_str()]->Fill((SMbjet+Wlep).M() , datasets[d], true,eventW*scaleFactor);
+    
+      MSPlot[(prefixregion+prefix+"_nJetsCharmM_"+decaystring).c_str()]->Fill(selectedCharmMJetsindex.size() , datasets[d], true,eventW*scaleFactor);
+      MSPlot[(prefixregion+prefix+"_nJetsCharmT_"+decaystring).c_str()]->Fill(selectedCharmTJetsindex.size() , datasets[d], true,eventW*scaleFactor);
+      MSPlot[(prefixregion+prefix+"_nJetsCharmL_"+decaystring).c_str()]->Fill(selectedCharmLJetsindex.size() , datasets[d], true,eventW*scaleFactor);
+      if(selectedJets.size()>1) MSPlot[(prefixregion+prefix+"_CvsBdisc_Cjet_"+decaystring).c_str()]->Fill(cdiscCvsB_jet[selectedJetsID[cjetindex]],datasets[d], true,eventW*scaleFactor);
+      if(selectedJets.size()>1)  MSPlot[(prefixregion+prefix+"_CvsLdisc_Cjet_"+decaystring).c_str()]->Fill(cdiscCvsL_jet[selectedJetsID[cjetindex]],datasets[d], true,eventW*scaleFactor);
+       MSPlot[(prefixregion+prefix+"_CvsBdisc_0jet_"+decaystring).c_str()]->Fill(cdiscCvsB_jet[selectedJetsID[0]],datasets[d], true,eventW*scaleFactor);
+      MSPlot[(prefixregion+prefix+"_CvsLdisc_0jet_"+decaystring).c_str()]->Fill(cdiscCvsL_jet[selectedJetsID[0]],datasets[d], true,eventW*scaleFactor);
+       if(selectedJets.size()>0)   MSPlot[(prefixregion+prefix+"_CvsBdisc_1jet_"+decaystring).c_str()]->Fill(cdiscCvsB_jet[selectedJetsID[1]],datasets[d], true,eventW*scaleFactor);
+      if(selectedJets.size()>0)  MSPlot[(prefixregion+prefix+"_CvsLdisc_1jet_"+decaystring).c_str()]->Fill(cdiscCvsL_jet[selectedJetsID[1]],datasets[d], true,eventW*scaleFactor);
+      for(int Ij = 0 ; Ij < selectedJets.size(); Ij++){
+             MSPlot[(prefixregion+prefix+"_CvsBdisc_"+decaystring).c_str()]->Fill(cdiscCvsB_jet[selectedJetsID[Ij]],datasets[d], true,eventW*scaleFactor);
+             MSPlot[(prefixregion+prefix+"_CvsLdisc_"+decaystring).c_str()]->Fill(cdiscCvsL_jet[selectedJetsID[Ij]],datasets[d], true,eventW*scaleFactor);
+      }
+         MSPlot[(prefixregion+prefix+"_CvsBdiscHigh_"+decaystring).c_str()]->Fill(cdiscCvsB_highestdisjet,datasets[d], true,eventW*scaleFactor);
+         MSPlot[(prefixregion+prefix+"_CvsLdiscHigh_"+decaystring).c_str()]->Fill(cdiscCvsL_highestdisjet,datasets[d], true,eventW*scaleFactor);
+          MSPlot[(prefixregion+prefix+"_CvsBdiscLow_"+decaystring).c_str()]->Fill(cdiscCvsB_lowestdisjet,datasets[d], true,eventW*scaleFactor);
+         MSPlot[(prefixregion+prefix+"_CvsLdiscLow_"+decaystring).c_str()]->Fill(cdiscCvsL_lowestdisjet,datasets[d], true,eventW*scaleFactor);
+ 
       }
       
       if(selectedJets.size()>0) MSPlot[(prefixregion+prefix+"_LeadingJetPt_"+decaystring).c_str()]->Fill( selectedJets[0].Pt() , datasets[d], true,eventW*scaleFactor);
@@ -8388,10 +8733,10 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
       MSPlot[(prefixregion+prefix+"_nJetsCSVL_"+decaystring).c_str()]->Fill(selectedCSVLJetID.size() , datasets[d], true,eventW*scaleFactor);
       MSPlot[(prefixregion+prefix+"_nJetsCSVM_"+decaystring).c_str()]->Fill(selectedCSVMJetID.size() , datasets[d], true,eventW*scaleFactor);
       MSPlot[(prefixregion+prefix+"_nJetsCSVT_"+decaystring).c_str()]->Fill(selectedCSVTJetID.size() , datasets[d], true,eventW*scaleFactor);
-      MSPlot[(prefixregion+prefix+"_nJetsCharmL_"+decaystring).c_str()]->Fill(selectedCharmLJetsindex.size() , datasets[d], true,eventW*scaleFactor);
+      /*MSPlot[(prefixregion+prefix+"_nJetsCharmL_"+decaystring).c_str()]->Fill(selectedCharmLJetsindex.size() , datasets[d], true,eventW*scaleFactor);
       MSPlot[(prefixregion+prefix+"_nJetsCharmM_"+decaystring).c_str()]->Fill(selectedCharmMJetsindex.size(), datasets[d], true,eventW*scaleFactor);
       MSPlot[(prefixregion+prefix+"_nJetsCharmT_"+decaystring).c_str()]->Fill(selectedCharmTJetsindex.size(), datasets[d], true,eventW*scaleFactor);
-      
+      */
       
       
       if(decayChannels[iChan] != 0 && decayChannels[iChan]!=4 ){ // not uuu or uu
@@ -8494,6 +8839,7 @@ void FillGeneralPlots(int d, string prefix, vector <int> decayChannels, bool isD
           MSPlot[(prefixregion+prefix+"_MuEta_"+decaystring).c_str()]->Fill(selectedMuons[iter].Eta() , datasets[d], true,eventW*scaleFactor);
           MSPlot[(prefixregion+prefix+"_MuIso_"+decaystring).c_str()]->Fill(pfIso_muon[muonID[iter]] , datasets[d], true,eventW*scaleFactor);
           MSPlot[(prefixregion+prefix+"_MuPt_"+decaystring).c_str()]->Fill(selectedMuons[iter].Pt() , datasets[d], true,eventW*scaleFactor);
+          MSPlot[(prefixregion+prefix+"_MuPtnoMuonSF_"+decaystring).c_str()]->Fill(selectedMuons[iter].Pt() , datasets[d], true,eventW*scaleFactor_bfMuSF);
         }
         
         
@@ -9161,8 +9507,68 @@ void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<i
   sregion = prefix;
   string decaystring = "";
   
-  //if(dataSetName.find("fake")!=std::string::npos) scaleFactor *= 0.0001;
-  
+    if(doPostFitZct){
+    if(dataSetName.find("fake")!=std::string::npos && prefix.find("toppair")!=std::string::npos) scaleFactor *= 8.77;
+    else if(dataSetName.find("fake")!=std::string::npos && prefix.find("singletop")!=std::string::npos) scaleFactor *= 6.74;
+    else if(dataSetName.find("fake")!=std::string::npos && prefix.find("wzcontrol")!=std::string::npos) scaleFactor *= 2.03;
+    
+    else  if(dataSetName.find("WZTo3LNu")!=std::string::npos && prefix.find("toppair")!=std::string::npos) scaleFactor *=1.14;
+    else if(dataSetName.find("WZTo3LNu")!=std::string::npos && prefix.find("singletop")!=std::string::npos) scaleFactor *= 1.15;
+    else if(dataSetName.find("WZTo3LNu")!=std::string::npos && prefix.find("wzcontrol")!=std::string::npos) scaleFactor *= 1.07;
+    
+    else if(dataSetName.find("ZZT")!=std::string::npos && prefix.find("toppair")!=std::string::npos) scaleFactor *= 1.04;
+    else if(dataSetName.find("ZZT")!=std::string::npos && prefix.find("singletop")!=std::string::npos) scaleFactor *= 1.21;
+    else if(dataSetName.find("ZZT")!=std::string::npos && prefix.find("wzcontrol")!=std::string::npos) scaleFactor *= 0.96;
+    
+    else if(dataSetName.find("tZq")!=std::string::npos && prefix.find("toppair")!=std::string::npos) scaleFactor *= 1.09;
+    else if(dataSetName.find("tZq")!=std::string::npos && prefix.find("singletop")!=std::string::npos) scaleFactor *= 1.21;
+    else if(dataSetName.find("tZq")!=std::string::npos && prefix.find("wzcontrol")!=std::string::npos) scaleFactor *= 1.01;
+    
+    else if(dataSetName.find("TTZ")!=std::string::npos && prefix.find("toppair")!=std::string::npos) scaleFactor *= 1.12;
+    else if(dataSetName.find("TTZ")!=std::string::npos && prefix.find("singletop")!=std::string::npos) scaleFactor *= 1.05;
+    else if(dataSetName.find("TTZ")!=std::string::npos && prefix.find("wzcontrol")!=std::string::npos) scaleFactor *=1.04;
+    
+    
+    else if(dataSetName.find("FCNC")!=std::string::npos  && prefix.find("toppair")!=std::string::npos) scaleFactor *= 0.01;
+    else if(dataSetName.find("FCNC")!=std::string::npos && prefix.find("singletop")!=std::string::npos) scaleFactor *= 0.01;
+    else if(dataSetName.find("FCNC")!=std::string::npos && prefix.find("wzcontrol")!=std::string::npos) scaleFactor *=0.01;
+    
+    
+    else if( dataSetName.find("TTZ")==std::string::npos && dataSetName.find("WZTo3LNu")==std::string::npos && dataSetName.find("ZZT")==std::string::npos && dataSetName.find("tZq")==std::string::npos && dataSetName.find("fake")==std::string::npos && prefix.find("toppair")!=std::string::npos) scaleFactor *= 1.;
+    else if( dataSetName.find("TTZ")==std::string::npos && dataSetName.find("WZTo3LNu")==std::string::npos  && dataSetName.find("ZZT")==std::string::npos && dataSetName.find("tZq")==std::string::npos && dataSetName.find("fake")==std::string::npos && prefix.find("singletop")!=std::string::npos) scaleFactor *= 1.;
+    else if( dataSetName.find("TTZ")==std::string::npos && dataSetName.find("WZTo3LNu")==std::string::npos &&  dataSetName.find("ZZT")==std::string::npos && dataSetName.find("tZq")==std::string::npos && dataSetName.find("fake")==std::string::npos && prefix.find("wzcontrol")!=std::string::npos) scaleFactor *=1.02;
+  }
+  if(doPostFitZut){
+    if(dataSetName.find("fake")!=std::string::npos && prefix.find("toppair")!=std::string::npos) scaleFactor *= 7.15;
+    else if(dataSetName.find("fake")!=std::string::npos && prefix.find("singletop")!=std::string::npos) scaleFactor *= 6.26;
+    else if(dataSetName.find("fake")!=std::string::npos && prefix.find("wzcontrol")!=std::string::npos) scaleFactor *= 2.0;
+    
+    else  if(dataSetName.find("WZTo3LNu")!=std::string::npos && prefix.find("toppair")!=std::string::npos) scaleFactor *=1.26;
+    else if(dataSetName.find("WZTo3LNu")!=std::string::npos && prefix.find("singletop")!=std::string::npos) scaleFactor *= 1.28;
+    else if(dataSetName.find("WZTo3LNu")!=std::string::npos && prefix.find("wzcontrol")!=std::string::npos) scaleFactor *= 1.07;
+    
+    else if(dataSetName.find("ZZT")!=std::string::npos && prefix.find("toppair")!=std::string::npos) scaleFactor *= 1.13;
+    else if(dataSetName.find("ZZT")!=std::string::npos && prefix.find("singletop")!=std::string::npos) scaleFactor *= 1.35;
+    else if(dataSetName.find("ZZT")!=std::string::npos && prefix.find("wzcontrol")!=std::string::npos) scaleFactor *= 1.07;
+    
+    else if(dataSetName.find("tZq")!=std::string::npos && prefix.find("toppair")!=std::string::npos) scaleFactor *= 1.10;
+    else if(dataSetName.find("tZq")!=std::string::npos && prefix.find("singletop")!=std::string::npos) scaleFactor *= 1.11;
+    else if(dataSetName.find("tZq")!=std::string::npos && prefix.find("wzcontrol")!=std::string::npos) scaleFactor *= 1.02;
+    
+    else if(dataSetName.find("TTZ")!=std::string::npos && prefix.find("toppair")!=std::string::npos) scaleFactor *= 1.46;
+    else if(dataSetName.find("TTZ")!=std::string::npos && prefix.find("singletop")!=std::string::npos) scaleFactor *= 1.11;
+    else if(dataSetName.find("TTZ")!=std::string::npos && prefix.find("wzcontrol")!=std::string::npos) scaleFactor *=1.07;
+    
+    
+    else if(dataSetName.find("FCNC")!=std::string::npos  && prefix.find("toppair")!=std::string::npos) scaleFactor *= 0.21;
+    else if(dataSetName.find("FCNC")!=std::string::npos && prefix.find("singletop")!=std::string::npos) scaleFactor *= 0.21;
+    else if(dataSetName.find("FCNC")!=std::string::npos && prefix.find("wzcontrol")!=std::string::npos) scaleFactor *=0.21;
+    
+    
+    else if( dataSetName.find("TTZ")==std::string::npos && dataSetName.find("WZTo3LNu")==std::string::npos && dataSetName.find("ZZT")==std::string::npos && dataSetName.find("tZq")==std::string::npos && dataSetName.find("fake")==std::string::npos && prefix.find("toppair")!=std::string::npos) scaleFactor *= 1.05;
+    else if( dataSetName.find("TTZ")==std::string::npos && dataSetName.find("WZTo3LNu")==std::string::npos  && dataSetName.find("ZZT")==std::string::npos && dataSetName.find("tZq")==std::string::npos && dataSetName.find("fake")==std::string::npos && prefix.find("singletop")!=std::string::npos) scaleFactor *= 1.04;
+    else if( dataSetName.find("TTZ")==std::string::npos && dataSetName.find("WZTo3LNu")==std::string::npos &&  dataSetName.find("ZZT")==std::string::npos && dataSetName.find("tZq")==std::string::npos && dataSetName.find("fake")==std::string::npos && prefix.find("wzcontrol")!=std::string::npos) scaleFactor *=1.1;
+  }
   //cout <<  "region " << sregion << endl;
   for(int iChan = 0;iChan < decayChannels.size() ;iChan++){
     // cout << "chan " << decayChannels[iChan] << " chan in evt " << MVA_channel << endl;
@@ -9248,9 +9654,9 @@ void FillMVAPlots(int d, string dataSetName, int Region, string prefix, vector<i
     
     
     
-    //SM kinematics
+    //SM kinematics*/
     MSPlot[(sregion+"_MVA_SMtop_M_"+decaystring).c_str()]->Fill(MVA_SMtop_M , datasets[d], true, weight_);
-*/    MSPlot[(sregion+"_MVA_mlb_"+decaystring).c_str()]->Fill(MVA_mlb , datasets[d], true, weight_);
+    MSPlot[(sregion+"_MVA_mlb_"+decaystring).c_str()]->Fill(MVA_mlb , datasets[d], true, weight_);
  /*   MSPlot[(sregion+"_MVA_Wboson_M_"+decaystring).c_str()]->Fill(MVA_Wboson_M , datasets[d], true, weight_);
     
   
